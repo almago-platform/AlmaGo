@@ -1,0 +1,4 @@
+import { createClient } from "@/lib/supabase/server";
+import { AdminApplicationsPanel } from "@/components/admin/AdminApplicationsPanel";
+export const dynamic = "force-dynamic";
+export default async function AdminApplicationsPage() { const supabase = await createClient(); const { data } = await supabase.from("applications").select("id,student_id,program_id,status,intake,deadline,next_action,student_notes,result,created_at,profiles(first_name,last_name),programs(name,universities(name,city))").order("deadline", { ascending: true, nullsFirst: false }); return <main className="mx-auto w-full max-w-7xl px-4 py-8 sm:py-12"><div className="mb-8"><p className="eyebrow">Suivi équipe</p><h1 className="page-title">Candidatures</h1><p className="page-subtitle">Pilote les prochaines actions, échéances et décisions communiquées aux étudiants.</p></div><AdminApplicationsPanel applications={data || []} /></main>; }

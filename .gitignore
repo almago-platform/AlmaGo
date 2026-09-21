@@ -1,0 +1,25 @@
+node_modules/
+.next/
+out/
+.env
+.env.*
+!.env.example
+*.log
+
+# Local tooling and deployment state
+.vercel/
+.supabase/
+supabase/.temp/
+coverage/
+playwright-report/
+test-results/
+
+# Credentials and private keys
+*.pem
+*.key
+*.p12
+*.pfx
+.npmrc
+credentials*.json
+service-account*.json
+secrets*.json

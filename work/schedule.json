@@ -1,0 +1,117 @@
+[
+  {
+    "day": 1,
+    "id": "V01",
+    "category": "Éducatif",
+    "sourceIDs": [
+      "S10"
+    ]
+  },
+  {
+    "day": 2,
+    "id": "C01",
+    "category": "Éducatif",
+    "sourceIDs": [
+      "S01",
+      "S03",
+      "S04",
+      "S06",
+      "S10"
+    ]
+  },
+  {
+    "day": 3,
+    "id": "V02",
+    "category": "Éducatif",
+    "sourceIDs": [
+      "S09"
+    ]
+  },
+  {
+    "day": 4,
+    "id": "C02",
+    "category": "Éducatif",
+    "sourceIDs": [
+      "S07",
+      "S08"
+    ]
+  },
+  {
+    "day": 5,
+    "id": "V03",
+    "category": "Éducatif",
+    "sourceIDs": [
+      "S01",
+      "S02"
+    ]
+  },
+  {
+    "day": 6,
+    "id": "C03",
+    "category": "Confiance",
+    "sourceIDs": []
+  },
+  {
+    "day": 7,
+    "id": "V04",
+    "category": "Confiance",
+    "sourceIDs": []
+  },
+  {
+    "day": 8,
+    "id": "V05",
+    "category": "Éducatif",
+    "sourceIDs": [
+      "S04",
+      "S05"
+    ]
+  },
+  {
+    "day": 9,
+    "id": "C04",
+    "category": "Éducatif",
+    "sourceIDs": [
+      "S10",
+      "S11"
+    ]
+  },
+  {
+    "day": 10,
+    "id": "V06",
+    "category": "Éducatif",
+    "sourceIDs": [
+      "S03"
+    ]
+  },
+  {
+    "day": 11,
+    "id": "C05",
+    "category": "Éducatif",
+    "sourceIDs": [
+      "S03",
+      "S12"
+    ]
+  },
+  {
+    "day": 12,
+    "id": "V07",
+    "category": "Éducatif",
+    "sourceIDs": [
+      "S06"
+    ]
+  },
+  {
+    "day": 13,
+    "id": "C06",
+    "category": "Confiance",
+    "sourceIDs": []
+  },
+  {
+    "day": 14,
+    "id": "V08",
+    "category": "Éducatif",
+    "sourceIDs": [
+      "S09"
+    ]
+  }
+]

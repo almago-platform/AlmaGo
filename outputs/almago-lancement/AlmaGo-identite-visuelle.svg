@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1400" viewBox="0 0 1800 1400" role="img" aria-labelledby="title desc">
+<title id="title">AlmaGo — proposition d’identité visuelle</title>
+<desc id="desc">Planche de marque avec cinq couleurs, un mot-symbole conceptuel, une couverture de carrousel bilingue et une carte pédagogique rappelant qu’une admission universitaire ne garantit pas un visa. Proposition, pas logo officiel.</desc>
+<style>text { font-family: Arial, sans-serif; } .ar { font-family: Arial, sans-serif; direction: rtl; unicode-bidi: embed; }</style>
+<rect x="0" y="0" width="1800" height="1400" rx="0" fill="#F5F2EA" stroke="none"/>
+<text x="72" y="76" font-size="25" fill="#182C3A" font-weight="700" >AlmaGo / identité visuelle</text>
+<rect x="1396" y="41" width="330" height="52" rx="26" fill="#FFFFFF" stroke="none"/>
+<text x="1561" y="75" font-size="19" fill="#182C3A" font-weight="700" text-anchor="middle" letter-spacing="1.5">PROPOSITION · 01</text>
+
+<text x="65" y="247" font-size="151" font-weight="700" letter-spacing="-2"><tspan fill="#182C3A">Alma</tspan><tspan fill="#176B5B">Go</tspan></text>
+<text x="72" y="309" font-size="30" fill="#182C3A" font-weight="400" >Étudier en Allemagne, étape par étape.</text>
+<text x="753" y="370" font-size="34" fill="#176B5B" font-weight="400" class="ar" text-anchor="start" lang="ar">من تونس لألمانيا، خطوة بخطوة</text>
+<path d="M72 410H220" fill="none" stroke="#176B5B" stroke-width="4"/>
+<circle cx="72" cy="410" r="7" fill="#176B5B"/><circle cx="146" cy="410" r="7" fill="#176B5B"/><circle cx="220" cy="410" r="7" fill="#176B5B"/>
+<text x="248" y="419" font-size="25" fill="#182C3A" font-weight="400" >Clair. Structuré. Accessible.</text>
+
+<text x="961" y="130" font-size="24" fill="#182C3A" font-weight="700" >Palette de marque</text>
+<rect x="961" y="158" width="137" height="133" rx="18" fill="#182C3A" stroke="none"/>
+  <text x="961" y="329" font-size="22" fill="#182C3A" font-weight="700" >Encre</text>
+  <text x="961" y="363" font-size="21" fill="#182C3A" font-weight="400" >#182C3A</text><rect x="1114" y="158" width="137" height="133" rx="18" fill="#F5F2EA" stroke="#CBD2D0"/>
+  <text x="1114" y="329" font-size="22" fill="#182C3A" font-weight="700" >Crème</text>
+  <text x="1114" y="363" font-size="21" fill="#182C3A" font-weight="400" >#F5F2EA</text><rect x="1267" y="158" width="137" height="133" rx="18" fill="#176B5B" stroke="none"/>
+  <text x="1267" y="329" font-size="22" fill="#182C3A" font-weight="700" >Vert profond</text>
+  <text x="1267" y="363" font-size="21" fill="#182C3A" font-weight="400" >#176B5B</text><rect x="1420" y="158" width="137" height="133" rx="18" fill="#F4A77D" stroke="none"/>
+  <text x="1420" y="329" font-size="22" fill="#182C3A" font-weight="700" >Abricot</text>
+  <text x="1420" y="363" font-size="21" fill="#182C3A" font-weight="400" >#F4A77D</text><rect x="1573" y="158" width="137" height="133" rx="18" fill="#FFFFFF" stroke="#CBD2D0"/>
+  <text x="1573" y="329" font-size="22" fill="#182C3A" font-weight="700" >Blanc</text>
+  <text x="1573" y="363" font-size="21" fill="#182C3A" font-weight="400" >#FFFFFF</text>
+<text x="961" y="412" font-size="21" fill="#182C3A" font-weight="400" >Texte encre sur abricot · blanc sur encre ou vert</text>
+
+<path d="M72 464H1726" fill="none" stroke="#CAD2CE" stroke-width="1"/>
+<text x="72" y="515" font-size="22" fill="#182C3A" font-weight="700" >Le système</text>
+<text x="500" y="515" font-size="22" fill="#182C3A" font-weight="700" >Carrousel · 4:5</text>
+<text x="1208" y="515" font-size="22" fill="#182C3A" font-weight="700" >Reel / TikTok · 9:16</text>
+
+<text x="72" y="606" font-size="35" fill="#182C3A" font-weight="700" >Un chemin,</text>
+<text x="72" y="651" font-size="35" fill="#182C3A" font-weight="700" >des repères.</text>
+<text x="72" y="704" font-size="24" fill="#182C3A" font-weight="400" >Des étapes visibles,</text>
+<text x="72" y="738" font-size="24" fill="#182C3A" font-weight="400" >sans codes officiels.</text>
+<path d="M72 782H310" fill="none" stroke="#176B5B" stroke-width="4"/>
+<circle cx="72" cy="782" r="8" fill="#176B5B"/><circle cx="191" cy="782" r="8" fill="#176B5B"/><circle cx="310" cy="782" r="8" fill="#176B5B"/>
+<text x="72" y="885" font-size="61" fill="#182C3A" font-weight="700" >Arial</text>
+<text x="72" y="934" font-size="35" fill="#176B5B" font-weight="400" >Aa / 0123</text>
+<text x="72" y="1007" font-size="25" fill="#182C3A" font-weight="700" >Deux langues.</text>
+<text x="72" y="1043" font-size="25" fill="#182C3A" font-weight="400" >Des blocs distincts.</text>
+<text x="72" y="1105" font-size="25" fill="#182C3A" font-weight="700" >Une idée par visuel.</text>
+<text x="72" y="1141" font-size="25" fill="#182C3A" font-weight="400" >Sans visage.</text>
+<text x="72" y="1177" font-size="25" fill="#182C3A" font-weight="400" >Sans fausse preuve.</text>
+<rect x="72" y="1232" width="308" height="52" rx="26" fill="#FFFFFF" stroke="none"/>
+<text x="226" y="1265" font-size="20" fill="#182C3A" font-weight="700" text-anchor="middle">Concept à valider</text>
+
+<rect x="500" y="552" width="584" height="730" rx="0" fill="#FFFFFF" stroke="none"/>
+<text x="540" y="619" font-size="37" font-weight="700" letter-spacing="-2"><tspan fill="#182C3A">Alma</tspan><tspan fill="#176B5B">Go</tspan></text>
+<rect x="540" y="659" width="241" height="36" rx="18" fill="#F5F2EA" stroke="none"/>
+<text x="560" y="683" font-size="16" fill="#176B5B" font-weight="700" letter-spacing="1">01 / PREMIERS PAS</text>
+<text x="535" y="784" font-size="65" fill="#182C3A" font-weight="700" >Ton projet</text>
+<text x="535" y="855" font-size="65" fill="#182C3A" font-weight="700" >commence</text>
+<text x="535" y="926" font-size="65" fill="#182C3A" font-weight="700" >ici.</text>
+<text x="540" y="988" font-size="29" fill="#182C3A" font-weight="400" >Étudier en Allemagne,</text>
+<text x="540" y="1027" font-size="29" fill="#182C3A" font-weight="400" >étape par étape.</text>
+<rect x="540" y="1067" width="504" height="106" rx="14" fill="#176B5B" stroke="none"/>
+<text x="1015" y="1127" font-size="29" fill="#FFFFFF" font-weight="400" class="ar" text-anchor="start" lang="ar">من تونس لألمانيا، خطوة بخطوة</text>
+<path d="M550 1220H928" fill="none" stroke="#176B5B" stroke-width="3"/>
+<circle cx="550" cy="1220" r="7" fill="#176B5B"/><circle cx="739" cy="1220" r="7" fill="#176B5B"/><circle cx="928" cy="1220" r="7" fill="#176B5B"/>
+<text x="1042" y="1229" font-size="20" fill="#182C3A" font-weight="400" text-anchor="end">1 / 7</text>
+
+<rect x="1208" y="552" width="411" height="730" rx="0" fill="#182C3A" stroke="none"/>
+<text x="1242" y="619" font-size="35" font-weight="700" letter-spacing="-2"><tspan fill="#FFFFFF">Alma</tspan><tspan fill="#F4A77D">Go</tspan></text>
+<text x="1242" y="689" font-size="23" fill="#F4A77D" font-weight="700" >Vrai ou faux ?</text>
+<text x="1242" y="764" font-size="42" fill="#FFFFFF" font-weight="700" >Une admission</text>
+<text x="1242" y="821" font-size="42" fill="#FFFFFF" font-weight="700" >= un visa ?</text>
+<rect x="1242" y="866" width="343" height="262" rx="16" fill="#F5F2EA" stroke="none"/>
+<text x="1265" y="935" font-size="55" fill="#176B5B" font-weight="700" >Non.</text>
+<text x="1265" y="978" font-size="22" fill="#182C3A" font-weight="700" >Deux décisions distinctes.</text>
+<text x="1265" y="1025" font-size="20" fill="#182C3A" font-weight="400" >Admission → université</text>
+<text x="1265" y="1065" font-size="20" fill="#182C3A" font-weight="400" >Visa → autorités</text>
+<text x="1323" y="1094" font-size="20" fill="#182C3A" font-weight="400" >compétentes</text>
+<text x="1242" y="1198" font-size="23" fill="#FFFFFF" font-weight="700" >Comprendre les étapes.</text>
+<text x="1242" y="1237" font-size="19" fill="#FFFFFF" font-weight="400" >Aucune décision garantie.</text>
+
+<path d="M72 1323H1726" fill="none" stroke="#CAD2CE" stroke-width="1"/>
+<text x="72" y="1366" font-size="21" fill="#182C3A" font-weight="400" >Mot-symbole conceptuel et gabarits de démonstration · pas un logo officiel ni des publications finales.</text>
+<text x="1726" y="1366" font-size="21" fill="#182C3A" font-weight="400" text-anchor="end">21.09.2026</text>
+</svg>

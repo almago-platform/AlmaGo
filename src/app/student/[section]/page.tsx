@@ -1,0 +1,2 @@
+const labels: Record<string, string> = { documents: "Documents", orientation: "Orientation", checklist: "Checklist", applications: "Candidatures" };
+export default async function StudentSection({ params }: { params: Promise<{ section: string }> }) { const { section } = await params; const label = labels[section] || "Espace étudiant"; return <main className="mx-auto max-w-6xl px-4 py-12"><h1 className="text-3xl font-semibold">{label}</h1><p className="mt-3 rounded-2xl border border-slate-200 bg-white p-5 text-slate-600">Bientôt disponible.</p></main>; }
