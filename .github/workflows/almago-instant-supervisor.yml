@@ -20,7 +20,7 @@ jobs:
       github.event.issue.pull_request != null &&
       contains(github.event.comment.body, 'ALMAGO REVIEW REQUEST') &&
       !startsWith(github.event.comment.body, 'SUPERVISOR:') &&
-      github.actor != 'github-actions[bot]'
+      (github.actor == 'chatgpt-codex-connector[bot]' || github.actor == 'tayariAyoub')
     runs-on: ubuntu-latest
     timeout-minutes: 10
     env:
