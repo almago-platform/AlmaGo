@@ -1,0 +1,209 @@
+name: AlmaGo Codex Patch Bridge
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: write
+  pull-requests: read
+  issues: write
+
+concurrency:
+  group: almago-codex-patch-bridge-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  apply-patch:
+    if: >-
+      github.event.issue.pull_request != null &&
+      contains(github.event.comment.body, 'ALMAGO PATCH') &&
+      (github.actor == 'chatgpt-codex-connector[bot]' || github.actor == 'tayariAyoub')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Read PR metadata
+        id: pr
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { data: pr } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number,
+            });
+
+            if (pr.head.repo.full_name !== `${context.repo.owner}/${context.repo.repo}`) {
+              core.setFailed("Patch bridge only supports same-repository PR branches.");
+              return;
+            }
+
+            core.setOutput("head_ref", pr.head.ref);
+            core.setOutput("head_sha", pr.head.sha);
+
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.pr.outputs.head_ref }}
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Validate and extract literal patch
+        id: patch
+        uses: actions/github-script@v7
+        env:
+          EXPECTED_HEAD: ${{ steps.pr.outputs.head_sha }}
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require("fs");
+            const path = require("path");
+            const body = String(context.payload.comment.body || "");
+            const expectedHead = process.env.EXPECTED_HEAD;
+
+            const baseMatch = body.match(/^BASE HEAD:\s*([0-9a-f]{40})\s*$/mi);
+            if (!baseMatch) {
+              core.setFailed("ALMAGO PATCH is missing BASE HEAD: <40-char sha>.");
+              return;
+            }
+            if (baseMatch[1] !== expectedHead) {
+              core.setFailed(`Patch base ${baseMatch[1]} does not match current PR HEAD ${expectedHead}.`);
+              return;
+            }
+
+            const patchMatch = body.match(/\\`\\`\\`diff\s*\n([\s\S]*?)\n\\`\\`\\`/m);
+            if (!patchMatch) {
+              core.setFailed("ALMAGO PATCH must contain exactly one fenced diff block.");
+              return;
+            }
+
+            const patch = patchMatch[1];
+            if (patch.length > 80000) {
+              core.setFailed("Patch is too large (>80k characters).");
+              return;
+            }
+
+            const fileMatches = [...patch.matchAll(/^diff --git a\/(.+?) b\/(.+?)$/gm)];
+            if (!fileMatches.length) {
+              core.setFailed("No git diff file headers found.");
+              return;
+            }
+            if (fileMatches.length > 25) {
+              core.setFailed("Patch touches more than 25 files.");
+              return;
+            }
+
+            const protectedPatterns = [
+              /^\.github\/workflows\//,
+              /^\.github\/actions\//,
+              /(^|\/)\.env(\.|$)/,
+              /^supabase\/migrations\//,
+              /service[_-]?role/i,
+              /secret/i,
+            ];
+
+            const touched = new Set();
+            for (const match of fileMatches) {
+              for (const file of [match[1], match[2]]) {
+                touched.add(file);
+                if (protectedPatterns.some((pattern) => pattern.test(file))) {
+                  core.setFailed(`Protected path cannot be modified by patch bridge: ${file}`);
+                  return;
+                }
+              }
+            }
+
+            fs.writeFileSync(path.join(process.env.RUNNER_TEMP, "almago.patch"), patch + "\n", "utf8");
+            core.setOutput("files", [...touched].join(", "));
+
+      - name: Apply patch safely
+        run: |
+          git diff --quiet
+          git apply --check "$RUNNER_TEMP/almago.patch"
+          git apply "$RUNNER_TEMP/almago.patch"
+          git diff --check
+
+      - name: Commit and push patch
+        id: commit
+        env:
+          HEAD_REF: ${{ steps.pr.outputs.head_ref }}
+        run: |
+          if git diff --quiet; then
+            echo "No changes after applying patch."
+            exit 1
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "fix: apply Codex patch bridge"
+          SHA="$(git rev-parse HEAD)"
+          git push origin "HEAD:$HEAD_REF"
+          echo "sha=$SHA" >> "$GITHUB_OUTPUT"
+
+      - name: Verify remote HEAD and request supervision
+        uses: actions/github-script@v7
+        env:
+          EXPECTED_NEW_HEAD: ${{ steps.commit.outputs.sha }}
+          FILES: ${{ steps.patch.outputs.files }}
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const expected = process.env.EXPECTED_NEW_HEAD;
+            const { data: pr } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number,
+            });
+
+            if (pr.head.sha !== expected) {
+              core.setFailed(`Remote PR HEAD is ${pr.head.sha}, expected ${expected}.`);
+              return;
+            }
+
+            const body = [
+              "ALMAGO REVIEW REQUEST",
+              "",
+              `REMOTE HEAD: ${pr.head.sha}`,
+              "SOURCE: AlmaGo Codex Patch Bridge",
+              `FILES: ${process.env.FILES || "(see PR diff)"}`,
+              "",
+              "Le patch littéral Codex a été appliqué sur la branche distante, commité et poussé. Le HEAD GitHub de la PR a été vérifié avant ce checkpoint.",
+            ].join("\n");
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body,
+            });
+
+      - name: Report bridge failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const marker = `<!-- almago-patch-bridge-failed:${context.payload.comment.id} -->`;
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              per_page: 100,
+            });
+
+            if (!comments.some((c) => c.body?.includes(marker))) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: [
+                  "PATCH BRIDGE: BLOCKED",
+                  marker,
+                  "",
+                  "Le patch n’a pas pu être appliqué/poussé automatiquement. Consulte le run GitHub Actions correspondant; aucune modification distante n’a été considérée comme livrée.",
+                ].join("\n"),
+              });
+            }
