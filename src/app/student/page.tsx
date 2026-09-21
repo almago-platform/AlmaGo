@@ -24,7 +24,7 @@ export default async function StudentEntry() {
   const progression = checklist.length ? Math.round((completed / checklist.length) * 100) : 0;
   const actionableChecklist = checklist.filter((item) => ["waiting_student", "todo", "in_progress", "not_started"].includes(item.status));
   const waitingAlmaGo = checklist.filter((item) => item.status === "waiting_almago");
-  const nextItem = actionableChecklist[0];
+  const nextItem = actionableChecklist.find((item) => item.status === "waiting_student") || actionableChecklist[0];
   const documentsNeedingAction = (documents || []).filter((document) => ["rejected", "replace_required"].includes(document.status)).length;
   const nextApplication = applications?.[0];
   const actionableApplications = (applications || []).filter((application) => Boolean(application.next_action));
