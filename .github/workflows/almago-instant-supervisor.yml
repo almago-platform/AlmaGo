@@ -286,7 +286,7 @@ jobs:
                 model,
                 store: false,
                 reasoning: { effort: "medium" },
-                max_output_tokens: 1400,
+                max_output_tokens: 2200,
                 instructions,
                 input: contextText,
                 text: {
@@ -306,9 +306,45 @@ jobs:
               throw new Error(`OpenAI API error ${response.status}: ${redact(errorBody, 2000)}`);
             }
 
-            const data = await response.json();
+            let data = await response.json();
             if (data.status !== "completed") {
-              throw new Error(`OpenAI response did not complete (status=${redact(data.status, 100)}).`);
+              core.info(`First OpenAI response status=${redact(data.status, 100)}. Retrying once with lower reasoning effort.`);
+
+              const retryResponse = await fetch("https://api.openai.com/v1/responses", {
+                method: "POST",
+                headers: {
+                  "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`,
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  model,
+                  store: false,
+                  reasoning: { effort: "low" },
+                  max_output_tokens: 2200,
+                  instructions,
+                  input: contextText,
+                  text: {
+                    verbosity: "low",
+                    format: {
+                      type: "json_schema",
+                      name: "almago_supervisor_decision",
+                      strict: true,
+                      schema,
+                    },
+                  },
+                }),
+              });
+
+              if (!retryResponse.ok) {
+                const retryErrorBody = await retryResponse.text();
+                throw new Error(`OpenAI API retry error ${retryResponse.status}: ${redact(retryErrorBody, 2000)}`);
+              }
+
+              data = await retryResponse.json();
+            }
+
+            if (data.status !== "completed") {
+              throw new Error(`OpenAI response did not complete after retry (status=${redact(data.status, 100)}).`);
             }
             const refusal = (data.output || [])
               .filter((item) => item.type === "message")
