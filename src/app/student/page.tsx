@@ -22,13 +22,15 @@ export default async function StudentEntry() {
   const checklist = items || [];
   const completed = checklist.filter((item) => item.status === "completed").length;
   const progression = checklist.length ? Math.round((completed / checklist.length) * 100) : 0;
-  const waitingStudent = checklist.filter((item) => item.status === "waiting_student");
+  const actionableChecklist = checklist.filter((item) => ["waiting_student", "todo", "in_progress", "not_started"].includes(item.status));
   const waitingAlmaGo = checklist.filter((item) => item.status === "waiting_almago");
-  const nextItem = waitingStudent[0] || checklist.find((item) => ["todo", "in_progress", "not_started"].includes(item.status));
+  const nextItem = actionableChecklist[0];
   const documentsNeedingAction = (documents || []).filter((document) => ["rejected", "replace_required"].includes(document.status)).length;
   const nextApplication = applications?.[0];
-  const actionableApplication = applications?.find((application) => Boolean(application.next_action));
-  const hasActionRequired = documentsNeedingAction > 0 || Boolean(actionableApplication?.next_action) || Boolean(nextItem);
+  const actionableApplications = (applications || []).filter((application) => Boolean(application.next_action));
+  const actionableApplication = actionableApplications[0];
+  const studentActionCount = actionableChecklist.length + documentsNeedingAction + actionableApplications.length;
+  const hasActionRequired = studentActionCount > 0;
   const nextAction = documentsNeedingAction
     ? { label: "Remplacer mes documents", detail: `${documentsNeedingAction} document${documentsNeedingAction > 1 ? "s sont" : " est"} à corriger pour poursuivre ton dossier.`, href: "/student/documents" }
     : actionableApplication?.next_action
@@ -49,7 +51,7 @@ export default async function StudentEntry() {
     </div>
     <section className="mt-8" aria-labelledby="overview-title"><div className="mb-4 flex items-end justify-between gap-4"><div><p className="text-sm font-semibold text-emerald-700">Vue d’ensemble</p><h2 id="overview-title" className="mt-1 text-2xl font-semibold text-slate-950">Ton parcours aujourd’hui</h2></div><ButtonLink href="/student/checklist" variant="secondary">Voir toutes les étapes</ButtonLink></div>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Metric title="Actions pour toi" value={waitingStudent.length + documentsNeedingAction} detail="Tâches ou documents à traiter." tone={waitingStudent.length + documentsNeedingAction ? "warning" : "success"} />
+        <Metric title="Actions pour toi" value={studentActionCount} detail="Tâches, documents ou candidatures à traiter." tone={studentActionCount ? "warning" : "success"} />
         <Metric title="Avec AlmaGo" value={waitingAlmaGo.length} detail="Éléments suivis par notre équipe." tone="info" />
         <Metric title="Recommandations" value={recommendations?.length || 0} detail="Programmes sélectionnés pour toi." />
         <Metric title="Candidatures" value={applications?.length || 0} detail="Dossiers actuellement suivis." />
