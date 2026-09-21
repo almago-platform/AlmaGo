@@ -67,6 +67,33 @@ jobs:
             });
 
             const headSha = pr.head.sha;
+            const checkpointBody = String(context.payload.comment.body || "");
+            const remoteHeadMatch = checkpointBody.match(/^REMOTE HEAD:\\s*([0-9a-f]{40})\\s*$/mi);
+
+            if (!remoteHeadMatch || remoteHeadMatch[1] !== headSha) {
+              const claimed = remoteHeadMatch?.[1] || "(missing)";
+              const marker = `<!-- almago-supervisor-head-mismatch:checkpoint=${checkpointId};actual=${headSha} -->`;
+              const mismatchBody = [
+                "SUPERVISOR: REVISE",
+                "",
+                `Reviewed HEAD: \`${headSha}\``,
+                `Checkpoint: \`${checkpointId}\``,
+                marker,
+                "",
+                `Checkpoint remote-head claim is ${claimed}, but the actual GitHub PR HEAD is ${headSha}. A local/workspace-only commit is not considered delivered.`,
+                "",
+                "@codex Vérifie d’abord le HEAD distant réel. Si le push est possible, pousse puis republie ALMAGO REVIEW REQUEST avec `REMOTE HEAD: <sha exact>`. Si le push est impossible, ne republie pas de review request : publie `ALMAGO PATCH` avec `BASE HEAD: " + headSha + "` et un unique bloc fenced `diff` contenant le diff unifié littéral complet.",
+              ].join("\\n");
+
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: pull_number,
+                body: mismatchBody,
+              });
+              core.info(`Rejected checkpoint: claimed remote head ${claimed}, actual ${headSha}.`);
+              return;
+            }
 
             const comments = await github.paginate(github.rest.issues.listComments, {
               owner,
