@@ -27,11 +27,12 @@ export default async function StudentEntry() {
   const nextItem = waitingStudent[0] || checklist.find((item) => ["todo", "in_progress", "not_started"].includes(item.status));
   const documentsNeedingAction = (documents || []).filter((document) => ["rejected", "replace_required"].includes(document.status)).length;
   const nextApplication = applications?.[0];
-  const hasActionRequired = documentsNeedingAction > 0 || Boolean(nextApplication?.next_action) || Boolean(nextItem);
+  const actionableApplication = applications?.find((application) => Boolean(application.next_action));
+  const hasActionRequired = documentsNeedingAction > 0 || Boolean(actionableApplication?.next_action) || Boolean(nextItem);
   const nextAction = documentsNeedingAction
     ? { label: "Remplacer mes documents", detail: `${documentsNeedingAction} document${documentsNeedingAction > 1 ? "s sont" : " est"} à corriger pour poursuivre ton dossier.`, href: "/student/documents" }
-    : nextApplication?.next_action
-      ? { label: "Voir ma candidature", detail: nextApplication.next_action, href: "/student/applications" }
+    : actionableApplication?.next_action
+      ? { label: "Voir ma candidature", detail: actionableApplication.next_action, href: "/student/applications" }
       : nextItem
         ? { label: "Continuer ma checklist", detail: nextItem.title, href: "/student/checklist" }
         : { label: "Voir ma checklist", detail: "Ton dossier est à jour. AlmaGo reviendra vers toi si nécessaire.", href: "/student/checklist" };
