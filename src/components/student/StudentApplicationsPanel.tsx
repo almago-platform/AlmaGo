@@ -18,6 +18,9 @@ function dateValue(value: string | null | undefined) {
   return new Date(`${value}T12:00:00`).getTime();
 }
 
+const submittedStatuses = new Set(["submitted", "waiting_university", "admission", "accepted", "rejection", "rejected"]);
+const terminalStatuses = new Set(["admission", "accepted", "rejection", "rejected", "withdrawn"]);
+
 export function StudentApplicationsPanel({
   applications,
   loadError,
@@ -26,9 +29,18 @@ export function StudentApplicationsPanel({
   loadError?: string;
 }) {
   const actionable = applications.filter((application) => Boolean(application.next_action));
-  const submitted = applications.filter((application) => Boolean(application.submitted_at));
+  const submitted = applications.filter(
+    (application) => Boolean(application.submitted_at) || submittedStatuses.has(application.status),
+  );
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
   const nextDeadlineApplication = [...applications]
-    .filter((application) => application.deadline)
+    .filter(
+      (application) =>
+        application.deadline &&
+        !terminalStatuses.has(application.status) &&
+        dateValue(application.deadline) >= today.getTime(),
+    )
     .sort((a, b) => dateValue(a.deadline) - dateValue(b.deadline))[0];
 
   return (

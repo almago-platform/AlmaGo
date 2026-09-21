@@ -79,20 +79,26 @@ export default async function ChecklistPage() {
           <div className="flex items-start justify-between gap-4">
             <div>
               <p className="text-sm font-medium text-slate-600">Progression globale</p>
-              <p className="mt-1 text-3xl font-semibold text-slate-950">{progression}%</p>
+              <p className="mt-1 text-3xl font-semibold text-slate-950">{error ? "—" : `${progression}%`}</p>
             </div>
-            <Badge variant={progression === 100 ? "success" : "neutral"}>
-              {completedCount}/{checklistItems.length} terminées
+            <Badge variant={!error && progression === 100 ? "success" : "neutral"}>
+              {error ? "Indisponible" : `${completedCount}/${checklistItems.length} terminées`}
             </Badge>
           </div>
           <div className="mt-5">
-            <ProgressBar value={progression} label="Progression de la checklist" />
+            {!error && <ProgressBar value={progression} label="Progression de la checklist" />}
           </div>
         </Card>
 
         <Card>
           <p className="text-sm font-medium text-slate-600">Prochaine action</p>
-          {nextItem ? (
+          {error ? (
+            <>
+              <Badge variant="neutral">Indisponible</Badge>
+              <h2 className="mt-3 text-lg font-semibold text-slate-950">Action non disponible</h2>
+              <p className="mt-2 text-sm text-slate-600">Réessaie dans quelques instants pour connaître ta prochaine étape.</p>
+            </>
+          ) : nextItem ? (
             <>
               <div className="mt-3">
                 <Badge variant={nextItem.status === "waiting_student" ? "warning" : "info"}>

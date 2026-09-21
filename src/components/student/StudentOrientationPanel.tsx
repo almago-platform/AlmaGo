@@ -41,12 +41,23 @@ function recommendationVariant(status: string): "success" | "warning" | "info" |
 
 export function StudentOrientationPanel({
   recommendations,
+  applicationProgramIds,
   loadError,
 }: {
   recommendations: Recommendation[];
+  applicationProgramIds: string[];
   loadError?: string;
 }) {
-  const [items, setItems] = useState(recommendations);
+  const [items, setItems] = useState(() =>
+    recommendations.map((recommendation) => {
+      const program = Array.isArray(recommendation.programs)
+        ? recommendation.programs[0]
+        : recommendation.programs;
+      return applicationProgramIds.includes(program?.id || "")
+        ? { ...recommendation, student_interest_at: recommendation.student_interest_at || "persisted" }
+        : recommendation;
+    }),
+  );
   const [feedback, setFeedback] = useState<Feedback>(null);
   const [busy, setBusy] = useState<string | null>(null);
 
