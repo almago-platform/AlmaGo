@@ -17,7 +17,7 @@ jobs:
   apply-patch:
     if: >-
       github.event.issue.pull_request != null &&
-      contains(github.event.comment.body, 'ALMAGO PATCH') &&
+      startsWith(github.event.comment.body, 'ALMAGO PATCH') &&
       (github.actor == 'chatgpt-codex-connector[bot]' || github.actor == 'tayariAyoub')
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -73,7 +73,7 @@ jobs:
               return;
             }
 
-            const patchMatch = body.match(/\\`\\`\\`diff\s*\n([\s\S]*?)\n\\`\\`\\`/m);
+            const patchMatch = body.match(/```diff\s*\n([\s\S]*?)\n```/m);
             if (!patchMatch) {
               core.setFailed("ALMAGO PATCH must contain exactly one fenced diff block.");
               return;
