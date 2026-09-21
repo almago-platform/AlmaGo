@@ -144,9 +144,9 @@ export function AppShell({
           </nav>
         </header>
 
-        <main id="main-content" className="min-h-screen">
+        <div id="main-content" tabIndex={-1} className="min-h-screen">
           {children}
-        </main>
+        </div>
       </div>
     </div>
   );
