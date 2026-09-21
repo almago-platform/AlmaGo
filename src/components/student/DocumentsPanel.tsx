@@ -121,17 +121,17 @@ export function DocumentsPanel({
 
       <section aria-label="Résumé des documents" className="grid gap-4 sm:grid-cols-3">
         <Card>
-          <p className="text-sm text-slate-600">Validés</p>
+          <h3 className="text-sm font-semibold text-slate-700">Validés</h3>
           <p className="mt-1 text-3xl font-semibold text-slate-950">{approvedCount}</p>
           <div className="mt-3"><Badge variant="success">Conformes</Badge></div>
         </Card>
         <Card>
-          <p className="text-sm text-slate-600">En vérification</p>
+          <h3 className="text-sm font-semibold text-slate-700">En vérification</h3>
           <p className="mt-1 text-3xl font-semibold text-slate-950">{reviewCount}</p>
           <div className="mt-3"><Badge variant="info">Chez AlmaGo</Badge></div>
         </Card>
         <Card>
-          <p className="text-sm text-slate-600">À corriger</p>
+          <h3 className="text-sm font-semibold text-slate-700">À corriger</h3>
           <p className="mt-1 text-3xl font-semibold text-slate-950">{correctionCount}</p>
           <div className="mt-3"><Badge variant={correctionCount ? "warning" : "neutral"}>{correctionCount ? "Action requise" : "Rien à signaler"}</Badge></div>
         </Card>
