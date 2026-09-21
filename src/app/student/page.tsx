@@ -27,6 +27,7 @@ export default async function StudentEntry() {
   const nextItem = waitingStudent[0] || checklist.find((item) => ["todo", "in_progress", "not_started"].includes(item.status));
   const documentsNeedingAction = (documents || []).filter((document) => ["rejected", "replace_required"].includes(document.status)).length;
   const nextApplication = applications?.[0];
+  const hasActionRequired = documentsNeedingAction > 0 || Boolean(nextApplication?.next_action) || Boolean(nextItem);
   const nextAction = documentsNeedingAction
     ? { label: "Remplacer mes documents", detail: `${documentsNeedingAction} document${documentsNeedingAction > 1 ? "s sont" : " est"} à corriger pour poursuivre ton dossier.`, href: "/student/documents" }
     : nextApplication?.next_action
@@ -43,7 +44,7 @@ export default async function StudentEntry() {
         <div className="mt-6 [&_[role=progressbar]]:bg-white/20 [&_[role=progressbar]>div]:bg-emerald-300"><ProgressBar value={progression} label="Progression du dossier" /></div>
         <p className="mt-4 text-sm leading-6 text-emerald-100">Chaque étape terminée rapproche ton dossier de son dépôt.</p>
       </Card>
-      <Card><Badge variant={documentsNeedingAction ? "warning" : "success"}>{documentsNeedingAction ? "Action requise" : "Dossier à jour"}</Badge><h2 className="mt-4 text-xl font-semibold text-slate-950">Ta prochaine action</h2><p className="mt-2 text-sm leading-6 text-slate-600">{nextAction.detail}</p><div className="mt-5"><ButtonLink href={nextAction.href}>{nextAction.label}</ButtonLink></div></Card>
+      <Card><Badge variant={hasActionRequired ? "warning" : "success"}>{hasActionRequired ? "Action requise" : "Dossier à jour"}</Badge><h2 className="mt-4 text-xl font-semibold text-slate-950">Ta prochaine action</h2><p className="mt-2 text-sm leading-6 text-slate-600">{nextAction.detail}</p><div className="mt-5"><ButtonLink href={nextAction.href}>{nextAction.label}</ButtonLink></div></Card>
     </div>
     <section className="mt-8" aria-labelledby="overview-title"><div className="mb-4 flex items-end justify-between gap-4"><div><p className="text-sm font-semibold text-emerald-700">Vue d’ensemble</p><h2 id="overview-title" className="mt-1 text-2xl font-semibold text-slate-950">Ton parcours aujourd’hui</h2></div><ButtonLink href="/student/checklist" variant="secondary">Voir toutes les étapes</ButtonLink></div>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -58,5 +59,5 @@ export default async function StudentEntry() {
 }
 
 function Metric({ title, value, detail, tone = "neutral" }: { title: string; value: number; detail: string; tone?: "success" | "info" | "warning" | "neutral" }) {
-  return <Card as="article"><Badge variant={tone}>{title}</Badge><p className="mt-5 text-3xl font-semibold text-slate-950">{value}</p><p className="mt-2 text-sm leading-6 text-slate-600">{detail}</p></Card>;
+  return <Card as="article"><h3><Badge variant={tone}>{title}</Badge></h3><p className="mt-5 text-3xl font-semibold text-slate-950">{value}</p><p className="mt-2 text-sm leading-6 text-slate-600">{detail}</p></Card>;
 }
