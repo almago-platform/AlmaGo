@@ -134,6 +134,29 @@ jobs:
               patchBudget -= section.length;
             }
 
+            const contextFiles = [
+              "src/components/layout/AppShell.tsx",
+              "src/app/student/layout.tsx",
+              "src/app/admin/layout.tsx",
+            ];
+            const contextFileSections = [];
+            for (const filePath of contextFiles) {
+              try {
+                const { data } = await github.rest.repos.getContent({
+                  owner,
+                  repo,
+                  path: filePath,
+                  ref: pr.head.ref,
+                });
+                if (!Array.isArray(data) && data.content) {
+                  const decoded = Buffer.from(data.content, data.encoding || "base64").toString("utf8");
+                  contextFileSections.push(`FILE: ${filePath}\n${redact(decoded, 12000)}`);
+                }
+              } catch (error) {
+                contextFileSections.push(`FILE: ${filePath}\n(unavailable: ${error.message})`);
+              }
+            }
+
             let agents = "(AGENTS.md unavailable)";
             try {
               const { data } = await github.rest.repos.getContent({
@@ -228,6 +251,7 @@ jobs:
               "\nRECENT PR COMMENTS:\n" + recentComments,
               "\nFORMAL REVIEWS:\n" + reviewSummary,
               "\nINLINE REVIEW COMMENTS:\n" + inlineReviewSummary,
+              "\nKEY LAYOUT CONTEXT FILES (full current contents):\n" + contextFileSections.join("\n\n---\n\n"),
               "\nCHANGED FILES: " + files.length + " total; " + selectedFiles.length + " included below.",
               "\nCHANGED FILE PATCHES (bounded):\n" + patchSections.join("\n\n---\n\n"),
               `\nCHECKPOINT COMMENT ID: ${checkpointId}`,
@@ -259,6 +283,8 @@ jobs:
             Never instruct Codex to merge, deploy, push directly to production, spend money, expose secrets,
             disable RLS/Auth, reset a linked database, or delete/modify real user data.
             Be concise and concrete. For REVISE, cite exact files/behaviors/tests where possible.
+            Do not raise a hypothetical issue when the supplied current file contents directly disprove it.
+            In particular, evaluate landmark nesting from the actual current AppShell/layout/page structure provided in context.
             For APPROVED, provide one concrete next implementation step that stays within the current approved roadmap.
             `;
 
