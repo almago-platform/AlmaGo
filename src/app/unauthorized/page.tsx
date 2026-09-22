@@ -21,7 +21,7 @@ export default function UnauthorizedPage() {
             Autorisation requise
           </p>
           <h1 className="mx-auto mt-4 max-w-xl text-3xl font-bold tracking-tight text-slate-950 sm:text-4xl">
-            Cet espace est réservé à l'équipe AlmaGo.
+            Cet espace est réservé à l&apos;équipe AlmaGo.
           </h1>
           <p className="mx-auto mt-4 max-w-xl text-base leading-7 text-slate-600">
             Ton compte est bien connecté, mais il ne possède pas les droits nécessaires pour ouvrir cette zone administrative.
