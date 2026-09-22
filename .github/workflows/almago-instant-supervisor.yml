@@ -1,5 +1,6 @@
 name: AlmaGo Instant Supervisor
 
+
 on:
   issue_comment:
     types: [created]
@@ -9,15 +10,18 @@ on:
   repository_dispatch:
     types: [almago_supervise]
 
+
 permissions:
   contents: write
   pull-requests: write
   issues: write
   checks: read
 
+
 concurrency:
   group: almago-instant-supervisor-${{ github.event.issue.number || github.event.client_payload.pull_number || github.run_id }}
   cancel-in-progress: false
+
 
 jobs:
   supervise:
@@ -54,15 +58,9 @@ jobs:
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       OPENAI_MODEL: gpt-5.4-mini
 
-    steps:
-      - name: Require OpenAI API key
-        if: ${{ env.OPENAI_API_KEY == '' }}
-        run: |
-          echo "::error::OPENAI_API_KEY is not configured in GitHub Actions secrets."
-          exit 1
 
+    steps:
       - name: Review AlmaGo checkpoint immediately
-        if: ${{ env.OPENAI_API_KEY != '' }}
         uses: actions/github-script@v7
         env:
           CHECKPOINT_COMMENT_ID: ${{ github.event.comment.id }}
@@ -80,11 +78,10 @@ jobs:
                 ? Number(context.payload.workflow_run?.pull_requests?.[0]?.number)
                 : context.issue.number;
             const checkpointId = isDispatch
-              ? `autonomous-${String(context.runId)}-${String(context.payload.client_payload?.head_sha || "")}`
+              ? String(context.payload.client_payload?.checkpoint_id || "autonomous-" + String(context.runId) + "-" + String(context.payload.client_payload?.head_sha || ""))
               : isWorkflowRun
-                ? `pr-ci-${String(context.payload.workflow_run?.id || context.runId)}-${String(context.payload.workflow_run?.head_sha || "")}`
-                : String(process.env.CHECKPOINT_COMMENT_ID || "");
-            const checkpointCreatedAt = isDispatch
+                ? "pr-ci-" + String(context.payload.workflow_run?.head_sha || "")
+                : String(process.env.CHECKPOINT_COMMENT_ID || "");            const checkpointCreatedAt = isDispatch
               ? new Date().toISOString()
               : isWorkflowRun
                 ? String(context.payload.workflow_run?.updated_at || "")
@@ -151,16 +148,43 @@ jobs:
               per_page: 100,
             });
 
-            const dedupeMarker = `<!-- almago-supervisor:head=${headSha};checkpoint=${checkpointId} -->`;
+            const dedupeMarker = "<!-- almago-supervisor:head=" + headSha + ";checkpoint=" + checkpointId + " -->";
+            const apiBlockedMarker = "<!-- almago-supervisor-api-blocked:head=" + headSha + ";checkpoint=" + checkpointId + " -->";
             const alreadyHandled = comments.some((comment) =>
-              comment.body?.includes(dedupeMarker)
+              comment.body?.includes(dedupeMarker) || comment.body?.includes(apiBlockedMarker)
             );
 
+            async function publishApiBlocked(status, detail) {
+              const body = [
+                "SUPERVISOR: BLOCKED",
+                "",
+                "Reviewed HEAD: " + headSha,
+                "Checkpoint: " + checkpointId,
+                apiBlockedMarker,
+                "",
+                "OpenAI supervision is unavailable (" + status + ").",
+                "This is an API/quota/auth blocker, not a repairable repository failure, so no recovery attempt was consumed.",
+                redact(detail, 1200),
+              ].join("\n");
+              await github.rest.issues.createComment({
+                owner, repo, issue_number: pull_number, body,
+              });
+            }
+
+            function isQuotaOrAuthFailure(status, detail) {
+              return [401, 403, 429].includes(Number(status)) ||
+                /quota|insufficient_quota|credit.?balance|billing|rate.?limit|invalid.?api.?key|authentication|unauthorized/i.test(String(detail || ""));
+            }
+
             if (alreadyHandled) {
-              core.info(`Checkpoint ${checkpointId} for HEAD ${headSha} is already supervised. Skipping.`);
+              core.info("Checkpoint " + checkpointId + " for HEAD " + headSha + " is already supervised or blocked. Skipping.");
               return;
             }
 
+            if (!process.env.OPENAI_API_KEY) {
+              await publishApiBlocked("OPENAI_API_KEY is not configured", "Configure a valid repository Actions secret before resuming.");
+              return;
+            }
             const files = await github.paginate(github.rest.pulls.listFiles, {
               owner,
               repo,
@@ -389,7 +413,11 @@ jobs:
 
             if (!response.ok) {
               const errorBody = await response.text();
-              throw new Error(`OpenAI API error ${response.status}: ${redact(errorBody, 2000)}`);
+              if (isQuotaOrAuthFailure(response.status, errorBody)) {
+                await publishApiBlocked("OpenAI API " + response.status, errorBody);
+                return;
+              }
+              throw new Error("OpenAI API error " + response.status + ": " + redact(errorBody, 2000));
             }
 
             let data = await response.json();
@@ -423,7 +451,11 @@ jobs:
 
               if (!retryResponse.ok) {
                 const retryErrorBody = await retryResponse.text();
-                throw new Error(`OpenAI API retry error ${retryResponse.status}: ${redact(retryErrorBody, 2000)}`);
+                if (isQuotaOrAuthFailure(retryResponse.status, retryErrorBody)) {
+                  await publishApiBlocked("OpenAI API retry " + retryResponse.status, retryErrorBody);
+                  return;
+                }
+                throw new Error("OpenAI API retry error " + retryResponse.status + ": " + redact(retryErrorBody, 2000));
               }
 
               data = await retryResponse.json();
