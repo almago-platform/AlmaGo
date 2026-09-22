@@ -4,6 +4,8 @@ name: AlmaGo PR CI
 on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
+  repository_dispatch:
+    types: [almago_ci_verify]
 
 
 permissions:
@@ -13,22 +15,57 @@ permissions:
 
 
 concurrency:
-  group: almago-pr-ci-${{ github.event.pull_request.number }}
+  group: almago-pr-ci-${{ github.event.pull_request.number || github.event.client_payload.pull_number }}
   cancel-in-progress: true
 
 
 jobs:
   verify:
-    if: github.event.pull_request.draft == false
+    if: >-
+      (
+        github.event_name == 'repository_dispatch' &&
+        github.event.action == 'almago_ci_verify' &&
+        github.event.client_payload.pull_number != null &&
+        github.event.client_payload.head_sha != null
+      ) ||
+      (
+        github.event_name == 'pull_request' &&
+        github.event.pull_request.draft == false
+      )
     runs-on: ubuntu-latest
     timeout-minutes: 15
-
+    env:
+      PR_NUMBER: ${{ github.event.pull_request.number || github.event.client_payload.pull_number }}
+      EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.event.client_payload.head_sha }}
 
     steps:
+      - name: Revalidate exact PR head
+        id: pr
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const pullNumber = Number(process.env.PR_NUMBER);
+            const expectedHead = String(process.env.EXPECTED_HEAD || "");
+            if (!pullNumber || !expectedHead) {
+              core.setFailed("CI verification requires a PR number and expected HEAD.");
+              return;
+            }
+            const { data: pr } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pullNumber,
+            });
+            if (pr.state !== "open" || pr.head.sha !== expectedHead) {
+              core.setFailed("Stale CI handoff: expected " + expectedHead + ", actual " + pr.head.sha + ".");
+              return;
+            }
+            core.setOutput("head_sha", pr.head.sha);
+
       - name: Checkout PR
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ steps.pr.outputs.head_sha }}
           fetch-depth: 0
 
 
@@ -72,7 +109,7 @@ jobs:
         if: success()
         uses: actions/github-script@v7
         env:
-          VERIFIED_HEAD: ${{ github.event.pull_request.head.sha }}
+          VERIFIED_HEAD: ${{ steps.pr.outputs.head_sha }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -123,7 +160,7 @@ jobs:
         if: failure()
         uses: actions/github-script@v7
         env:
-          FAILED_HEAD: ${{ github.event.pull_request.head.sha }}
+          FAILED_HEAD: ${{ steps.pr.outputs.head_sha }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
