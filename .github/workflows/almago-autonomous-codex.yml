@@ -341,13 +341,15 @@ jobs:
                 "",
                 summary || "Codex implemented the assigned block and canonical checks passed.",
                 "",
-                "Supervision has been requested automatically. No human checkpoint is required.",
+                "Canonical CI has been requested automatically; supervision follows only after that CI succeeds.",
               ].join("\n"),
             });
+            // A GITHUB_TOKEN push can leave pull_request/synchronize awaiting approval.
+            // Dispatch the canonical CI directly, then let CI dispatch the supervisor on success.
             await github.rest.repos.createDispatchEvent({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              event_type: "almago_supervise",
+              event_type: "almago_ci_verify",
               client_payload: {
                 pull_number,
                 head_sha: headSha,
