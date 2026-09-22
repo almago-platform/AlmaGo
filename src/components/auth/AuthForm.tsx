@@ -3,6 +3,7 @@
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { buttonClassName } from "@/components/ui/Button";
 
 type Mode = "login" | "signup" | "forgot";
 
@@ -44,8 +45,8 @@ export function AuthForm({ initialMode = "login" }: { initialMode?: Mode }) {
       {mode !== "forgot" && <label className="block text-sm text-slate-700">Mot de passe<input required minLength={8} type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="field" /></label>}
       {error && <p role="alert" className="rounded-xl bg-red-50 p-3 text-sm text-red-700">{error}</p>}
       {message && <p role="status" className="rounded-xl bg-emerald-50 p-3 text-sm text-emerald-800">{message}</p>}
-      <button type="submit" disabled={loading} className="w-full rounded-xl bg-emerald-700 px-4 py-3 font-semibold text-white transition hover:bg-emerald-800 disabled:opacity-60">{loading ? "Patiente…" : mode === "login" ? "Se connecter" : mode === "signup" ? "Créer mon compte" : "Envoyer le lien"}</button>
+      <button type="submit" disabled={loading} className={buttonClassName("primary", "w-full")}>{loading ? "Patiente…" : mode === "login" ? "Se connecter" : mode === "signup" ? "Créer mon compte" : "Envoyer le lien"}</button>
     </form>
-    <div className="mt-5 flex flex-wrap gap-3 text-sm text-emerald-700"><button type="button" onClick={() => setMode(mode === "login" ? "signup" : "login")}>{mode === "login" ? "Créer un compte" : "J’ai déjà un compte"}</button>{mode !== "signup" && <button type="button" onClick={() => setMode(mode === "forgot" ? "login" : "forgot")}>{mode === "forgot" ? "Retour à la connexion" : "Mot de passe oublié ?"}</button>}</div>
+    <div className="mt-5 flex flex-wrap gap-3 text-sm text-emerald-700"><button type="button" className="rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" onClick={() => setMode(mode === "login" ? "signup" : "login")}>{mode === "login" ? "Créer un compte" : "J’ai déjà un compte"}</button>{mode !== "signup" && <button type="button" className="rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" onClick={() => setMode(mode === "forgot" ? "login" : "forgot")}>{mode === "forgot" ? "Retour à la connexion" : "Mot de passe oublié ?"}</button>}</div>
   </section>;
 }
