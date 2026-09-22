@@ -1,23 +1,28 @@
 name: AlmaGo PR CI
 
+
 on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
 
+
 permissions:
-  contents: read
+  contents: write
   issues: write
   pull-requests: write
+
 
 concurrency:
   group: almago-pr-ci-${{ github.event.pull_request.number }}
   cancel-in-progress: true
+
 
 jobs:
   verify:
     if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     timeout-minutes: 15
+
 
     steps:
       - name: Checkout PR
@@ -26,23 +31,29 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
 
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
 
+
       - name: Install dependencies
         run: npm ci
+
 
       - name: Tests
         run: npm test --if-present
 
+
       - name: Typecheck
         run: npx tsc --noEmit
 
+
       - name: Lint
         run: npm run lint
+
 
       - name: Build
         env:
@@ -50,8 +61,11 @@ jobs:
           NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
         run: npm run build
 
+
       - name: Diff check
         run: git diff --check
+
+
 
 
       - name: Publish verified review checkpoint
@@ -72,24 +86,38 @@ jobs:
             });
 
             if (comments.some((comment) => comment.body?.includes(marker))) {
-              core.info(`Verified checkpoint already published for ${head}.`);
-              return;
+              core.info("Verified checkpoint already published for " + head + ".");
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: [
+                  "ALMAGO REVIEW REQUEST",
+                  "",
+                  "REMOTE HEAD: " + head,
+                  "SOURCE: AlmaGo PR CI",
+                  marker,
+                  "",
+                  "Canonical remote checks passed: tests, TypeScript, lint, build and git diff --check.",
+                ].join("\n"),
+              });
             }
 
-            await github.rest.issues.createComment({
+            // GITHUB_TOKEN comments do not trigger issue_comment workflows.
+            // repository_dispatch is explicitly exempt from GitHub recursion protection.
+            await github.rest.repos.createDispatchEvent({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: context.issue.number,
-              body: [
-                "ALMAGO REVIEW REQUEST",
-                "",
-                `REMOTE HEAD: ${head}`,
-                "SOURCE: AlmaGo PR CI",
-                marker,
-                "",
-                "Canonical remote checks passed: tests, TypeScript, lint, build and git diff --check.",
-              ].join("\n"),
+              event_type: "almago_supervise",
+              client_payload: {
+                pull_number: context.issue.number,
+                head_sha: head,
+                checkpoint_id: "pr-ci-" + head,
+                source: "AlmaGo PR CI",
+              },
             });
+            core.info("Dispatched reliable supervision handoff for " + head + ".");
 
       - name: Publish CI failure handoff
         if: failure()
