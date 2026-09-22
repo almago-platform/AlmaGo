@@ -32,6 +32,11 @@ function statusVariant(status: string): "success" | "warning" | "info" | "neutra
   return "neutral";
 }
 
+function formatFileSize(sizeBytes: number) {
+  if (sizeBytes >= 1024 * 1024) return `${(sizeBytes / (1024 * 1024)).toFixed(1)} MiB`;
+  return `${Math.ceil(sizeBytes / 1024)} Ko`;
+}
+
 export function DocumentsPanel({
   documents,
   history,
@@ -49,9 +54,10 @@ export function DocumentsPanel({
 
   const approvedCount = documents.filter((document) => document.status === "approved").length;
   const reviewCount = documents.filter((document) => ["pending", "reviewed"].includes(document.status)).length;
-  const correctionCount = documents.filter((document) =>
-    ["rejected", "replace_required"].includes(document.status),
-  ).length;
+  const correctionDocuments = documents.filter((document) => ["rejected", "replace_required"].includes(document.status));
+  const correctionCount = correctionDocuments.length;
+  const latestDocument = documents[0];
+  const priorityDocument = correctionDocuments[0] || documents.find((document) => document.status === "pending") || latestDocument;
 
   async function upload(event: React.FormEvent) {
     event.preventDefault();
@@ -113,41 +119,57 @@ export function DocumentsPanel({
   }
 
   return (
-    <div className="space-y-7">
+    <div className="space-y-8">
       {loadError && (
         <div role="alert" className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-800">
           {loadError}
         </div>
       )}
 
-      <section aria-label="Résumé des documents" className="grid gap-4 sm:grid-cols-3">
-        <Card aria-labelledby="documents-approved-title">
-          <h2 id="documents-approved-title" className="text-sm font-semibold text-slate-700">Validés</h2>
-          <p className="mt-1 text-3xl font-semibold text-slate-950">{approvedCount}</p>
-          <div className="mt-3"><Badge variant="success">Conformes</Badge></div>
+      <section aria-label="Priorité documentaire" className="grid gap-5 lg:grid-cols-[1fr_0.85fr]">
+        <Card className="bg-slate-950 text-white">
+          <Badge variant={correctionCount ? "warning" : reviewCount ? "info" : "success"}>
+            {correctionCount ? "Correction demandée" : reviewCount ? "En vérification" : "Dossier documentaire"}
+          </Badge>
+          <h2 className="mt-5 text-2xl font-semibold tracking-tight">Votre prochaine action document</h2>
+          <p className="mt-3 text-sm leading-6 text-slate-300">
+            {correctionCount
+              ? `${correctionCount} document${correctionCount > 1 ? "s doivent" : " doit"} être corrigé${correctionCount > 1 ? "s" : ""}. Consultez le message AlmaGo avant de remplacer le fichier.`
+              : reviewCount
+                ? "Vos fichiers envoyés sont en cours de vérification. Vous pouvez suivre les retours au même endroit."
+                : "Ajoutez uniquement les pièces demandées ou nécessaires pour éviter les doublons dans votre dossier."}
+          </p>
+          {priorityDocument && (
+            <div className="mt-6 rounded-xl border border-white/10 bg-white/5 p-4">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-200">Document suivi</p>
+              <p className="mt-2 break-words font-semibold">{priorityDocument.original_filename}</p>
+              <p className="mt-1 text-sm text-slate-300">{categoryLabel(priorityDocument.category)} · {statusLabel(priorityDocument.status)}</p>
+            </div>
+          )}
         </Card>
-        <Card aria-labelledby="documents-review-title">
-          <h2 id="documents-review-title" className="text-sm font-semibold text-slate-700">En vérification</h2>
-          <p className="mt-1 text-3xl font-semibold text-slate-950">{reviewCount}</p>
-          <div className="mt-3"><Badge variant="info">Chez AlmaGo</Badge></div>
-        </Card>
-        <Card aria-labelledby="documents-correction-title">
-          <h2 id="documents-correction-title" className="text-sm font-semibold text-slate-700">À corriger</h2>
-          <p className="mt-1 text-3xl font-semibold text-slate-950">{correctionCount}</p>
-          <div className="mt-3"><Badge variant={correctionCount ? "warning" : "neutral"}>{correctionCount ? "Action requise" : "Rien à signaler"}</Badge></div>
-        </Card>
+
+        <section aria-label="Résumé des documents" className="grid gap-4 sm:grid-cols-3 lg:grid-cols-1">
+          <SummaryCard id="documents-summary-approved" title="Validés" value={approvedCount} badge="Conformes" tone="success" />
+          <SummaryCard id="documents-summary-review" title="En vérification" value={reviewCount} badge="Chez AlmaGo" tone="info" />
+          <SummaryCard id="documents-summary-correction" title="À corriger" value={correctionCount} badge={correctionCount ? "Action requise" : "Rien à signaler"} tone={correctionCount ? "warning" : "neutral"} />
+        </section>
       </section>
 
       <Card aria-labelledby="document-upload-title">
-        <h2 id="document-upload-title" className="text-lg font-semibold text-slate-950">Ajouter un document</h2>
-        <p className="mt-1 text-sm text-slate-600">
-          PDF, JPEG ou PNG · 10 MiB maximum. Tes fichiers restent privés.
-        </p>
+        <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
+          <div>
+            <Badge variant="neutral">Nouveau fichier</Badge>
+            <h2 id="document-upload-title" className="mt-3 text-xl font-semibold text-slate-950">Ajouter un document</h2>
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
+              PDF, JPEG ou PNG · 10 MiB maximum. Les fichiers restent privés et accessibles uniquement depuis votre dossier.
+            </p>
+          </div>
+        </div>
 
-        <form onSubmit={upload} className="mt-5">
-          <div className="grid gap-4 sm:grid-cols-2">
+        <form onSubmit={upload} className="mt-6">
+          <div className="grid gap-4 sm:grid-cols-[0.75fr_1fr]">
             <label className="text-sm font-medium text-slate-700">
-              Catégorie
+              Type de document
               <select
                 value={category}
                 onChange={(event) => setCategory(event.target.value)}
@@ -161,7 +183,7 @@ export function DocumentsPanel({
             </label>
 
             <label className="text-sm font-medium text-slate-700">
-              Fichier
+              Fichier à envoyer
               <input
                 ref={fileInput}
                 type="file"
@@ -185,21 +207,20 @@ export function DocumentsPanel({
             </p>
           )}
 
-          <Button
-            type="submit"
-            disabled={busy}
-            className="mt-4"
-          >
-            {busy ? "Envoi…" : "Envoyer le document"}
-          </Button>
+          <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center">
+            <Button type="submit" disabled={busy}>
+              {busy ? "Envoi en cours…" : "Envoyer le document"}
+            </Button>
+            <p className="text-sm text-slate-500">Un remplacement ne supprime pas automatiquement les anciens fichiers validés.</p>
+          </div>
         </form>
       </Card>
 
       <section aria-labelledby="documents-list-title">
-        <div className="flex items-end justify-between gap-4">
+        <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
           <div>
-            <h2 id="documents-list-title" className="text-xl font-semibold text-slate-950">Mes documents</h2>
-            <p className="mt-1 text-sm text-slate-600">{documents.length} document{documents.length > 1 ? "s" : ""} dans ton dossier.</p>
+            <h2 id="documents-list-title" className="text-2xl font-semibold tracking-tight text-slate-950">Mes documents</h2>
+            <p className="mt-1 text-sm text-slate-600">{documents.length} document{documents.length > 1 ? "s" : ""} dans votre dossier.</p>
           </div>
         </div>
 
@@ -207,7 +228,7 @@ export function DocumentsPanel({
           {documents.length === 0 ? (
             <Card aria-labelledby="documents-empty-title" className="border-dashed text-center">
               <h3 id="documents-empty-title" className="font-semibold text-slate-950">Aucun document envoyé</h3>
-              <p className="mt-2 text-sm text-slate-600">Utilise le formulaire ci-dessus dès qu’une pièce est demandée.</p>
+              <p className="mt-2 text-sm text-slate-600">Utilisez le formulaire ci-dessus dès qu’une pièce est demandée.</p>
             </Card>
           ) : (
             documents.map((document) => (
@@ -216,20 +237,20 @@ export function DocumentsPanel({
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
                       <Badge variant={statusVariant(document.status)}>{statusLabel(document.status)}</Badge>
-                      <span className="text-xs font-medium text-slate-500">{categoryLabel(document.category)}</span>
+                      <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">{categoryLabel(document.category)}</span>
                     </div>
-                    <h3 id={`student-document-title-${document.id}`} className="mt-3 break-words font-semibold text-slate-950">{document.original_filename}</h3>
+                    <h3 id={`student-document-title-${document.id}`} className="mt-3 break-words text-lg font-semibold text-slate-950">{document.original_filename}</h3>
                     <p className="mt-1 text-sm text-slate-500">
-                      {Math.ceil(document.size_bytes / 1024)} Ko · envoyé le{" "}
+                      {formatFileSize(document.size_bytes)} · envoyé le{" "}
                       <time dateTime={document.created_at}>
                         {new Intl.DateTimeFormat("fr-TN", { dateStyle: "medium" }).format(new Date(document.created_at))}
                       </time>
                     </p>
                     {document.admin_comment && (
-                      <Card aria-labelledby={`document-comment-title-${document.id}`} className="mt-4 bg-slate-50 p-4 shadow-none">
-                        <h4 id={`document-comment-title-${document.id}`} className="text-sm font-semibold text-slate-900">Message AlmaGo</h4>
-                        <p className="mt-1 text-sm leading-6 text-slate-700">{document.admin_comment}</p>
-                      </Card>
+                      <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4">
+                        <h4 className="text-sm font-semibold text-amber-950">Message AlmaGo</h4>
+                        <p className="mt-1 text-sm leading-6 text-amber-900">{document.admin_comment}</p>
+                      </div>
                     )}
                   </div>
 
@@ -266,7 +287,7 @@ export function DocumentsPanel({
       </section>
 
       <section aria-labelledby="document-history-title">
-        <h2 id="document-history-title" className="text-xl font-semibold text-slate-950">Historique du dossier</h2>
+        <h2 id="document-history-title" className="text-2xl font-semibold tracking-tight text-slate-950">Historique du dossier</h2>
         <div className="mt-4 space-y-2">
           {history.length === 0 ? (
             <Card aria-labelledby="document-history-empty-title" className="border-dashed">
@@ -274,7 +295,7 @@ export function DocumentsPanel({
             </Card>
           ) : (
             history.map((event) => (
-              <Card as="article" key={event.id} aria-labelledby={`document-event-title-${event.id}`} className="p-4">
+              <Card as="article" key={event.id} aria-labelledby={`document-event-title-${event.id}`} className="p-4 shadow-none">
                 <h3 id={`document-event-title-${event.id}`} className="text-sm font-medium text-slate-700">{event.message}</h3>
                 <time dateTime={event.created_at} className="mt-1 block text-xs text-slate-500">
                   {new Intl.DateTimeFormat("fr-TN", {
@@ -288,5 +309,15 @@ export function DocumentsPanel({
         </div>
       </section>
     </div>
+  );
+}
+
+function SummaryCard({ id, title, value, badge, tone }: { id: string; title: string; value: number; badge: string; tone: "success" | "info" | "warning" | "neutral" }) {
+  return (
+    <Card aria-labelledby={id} className="shadow-none">
+      <h2 id={id} className="text-sm font-semibold text-slate-700">{title}</h2>
+      <p className="mt-1 text-3xl font-semibold text-slate-950">{value}</p>
+      <div className="mt-3"><Badge variant={tone}>{badge}</Badge></div>
+    </Card>
   );
 }

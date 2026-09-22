@@ -1,4 +1,5 @@
 import { PageHeader } from "@/components/ui/PageHeader";
+import { ButtonLink } from "@/components/ui/ButtonLink";
 import { StudentOrientationPanel } from "@/components/student/StudentOrientationPanel";
 import { createClient } from "@/lib/supabase/server";
 
@@ -16,18 +17,19 @@ export default async function StudentOrientationPage() {
   ]);
 
   return (
-    <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:py-12">
+    <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
       <PageHeader
         badge="Orientation"
-        title="Les programmes recommandés pour toi"
-        description="Compare les pistes préparées par AlmaGo et indique celles qui t’intéressent. Une recommandation ne garantit jamais une admission."
+        title="Programmes recommandés"
+        description="Comparez les pistes préparées par AlmaGo, vérifiez les critères principaux et indiquez les programmes qui vous intéressent. Une recommandation reste une piste de travail, pas une garantie d’admission."
+        actions={<ButtonLink href="/student/applications" variant="secondary">Voir mes candidatures</ButtonLink>}
       />
 
       <StudentOrientationPanel
         recommendations={data || []}
         applicationProgramIds={(applications || []).map((application) => application.program_id)}
-        loadError={error ? "Impossible de charger tes recommandations pour le moment." : undefined}
-        applicationStateError={applicationsError ? "Impossible de vérifier tes intérêts enregistrés pour le moment." : undefined}
+        loadError={error ? "Impossible de charger vos recommandations pour le moment." : undefined}
+        applicationStateError={applicationsError ? "Impossible de vérifier vos intérêts enregistrés pour le moment." : undefined}
       />
     </main>
   );
