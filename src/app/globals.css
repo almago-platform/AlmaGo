@@ -1,13 +1,20 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f7f9f8;
-  --foreground: #10211b;
+  --background: #f5f7f9;
+  --foreground: #14263d;
   --surface: #ffffff;
-  --surface-muted: #eef4f1;
-  --brand: #147a59;
-  --brand-strong: #0f6248;
-  --brand-soft: #e9f6f0;
+  --surface-muted: #eef3f6;
+  --brand: #006b55;
+  --brand-strong: #004f3f;
+  --brand-soft: #e7f5ef;
+  --accent: #0069c2;
+  --muted: #526174;
+  --border: #dce3e9;
+  --border-strong: #7a8b9f;
+  --warning: #b45309;
+  --danger: #b42318;
+  --shadow-soft: 0 20px 60px -40px rgba(20, 38, 61, 0.5);
 }
 
 @theme inline {
@@ -23,8 +30,8 @@ html { scroll-behavior: smooth; }
 body {
   margin: 0;
   background:
-    radial-gradient(circle at top right, rgba(20, 122, 89, 0.05), transparent 28rem),
-    var(--background);
+    radial-gradient(circle at top right, rgba(0, 107, 85, 0.08), transparent 30rem),
+    linear-gradient(180deg, #f8fafb 0%, var(--background) 28rem);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
   text-rendering: optimizeLegibility;
@@ -35,7 +42,7 @@ a, button, input, select, textarea {
 }
 
 :focus-visible {
-  outline: 3px solid rgba(20, 122, 89, 0.28);
+  outline: 3px solid rgba(0, 105, 194, 0.32);
   outline-offset: 3px;
 }
 
@@ -66,7 +73,7 @@ a, button, input, select, textarea {
 }
 
 @layer components {
-  .field { @apply mt-1 w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-slate-900 outline-none transition focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100; }
+  .field { @apply mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-blue-700 focus:ring-2 focus:ring-blue-100; }
   .section-title { @apply mb-4 text-xl font-semibold text-slate-950; }
   .eyebrow { @apply text-sm font-semibold uppercase tracking-[0.18em] text-emerald-700; }
   .page-title { @apply mt-2 text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl; }
