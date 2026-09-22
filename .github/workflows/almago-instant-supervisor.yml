@@ -454,12 +454,15 @@ jobs:
               nextStep = "";
             }
 
+            let codexTask = "";
             let codexLine = "";
             if (decision === "APPROVED") {
-              codexLine = nextStep
-                ? `@codex ${nextStep} Travaille jusqu’au prochain bloc important, exécute les tests, puis publie une nouvelle ALMAGO REVIEW REQUEST.`
-                : "@codex Continue avec la prochaine étape approuvée de la roadmap, teste, puis publie une nouvelle ALMAGO REVIEW REQUEST.";
+              codexTask = nextStep
+                ? `IMPLEMENTATION TASK: ${nextStep} Travaille sur ce bloc maintenant, reste dans le périmètre Phase 5 approuvé, exécute les vérifications, puis livre par push réel ou ALMAGO PATCH.`
+                : "IMPLEMENTATION TASK: Continue avec la prochaine étape approuvée de la roadmap Phase 5, exécute les vérifications, puis livre par push réel ou ALMAGO PATCH.";
+              codexLine = "@codex address that feedback";
             } else if (decision === "APPROVED_WITH_CHANGES" || decision === "REVISE") {
+              codexTask = "IMPLEMENTATION TASK: Applique les corrections décrites dans cette décision, exécute les vérifications, puis livre par push réel ou ALMAGO PATCH.";
               codexLine = "@codex address that feedback";
             }
 
@@ -472,6 +475,7 @@ jobs:
               "",
               summary,
               nextStep && decision === "APPROVED" ? `\nNext step: ${nextStep}` : "",
+              codexTask ? `\n${codexTask}` : "",
               codexLine ? `\n${codexLine}` : "",
             ].filter(Boolean).join("\n");
 
