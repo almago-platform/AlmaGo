@@ -43,10 +43,12 @@ export function StudentOrientationPanel({
   recommendations,
   applicationProgramIds,
   loadError,
+  applicationStateError,
 }: {
   recommendations: Recommendation[];
   applicationProgramIds: string[];
   loadError?: string;
+  applicationStateError?: string;
 }) {
   const [items, setItems] = useState(() =>
     recommendations.map((recommendation) => {
@@ -62,9 +64,9 @@ export function StudentOrientationPanel({
   const [busy, setBusy] = useState<string | null>(null);
 
   const interestedCount = items.filter((item) => Boolean(item.student_interest_at)).length;
-  const actionable = items.find(
-    (item) => !item.student_interest_at && item.status !== "not_recommended",
-  );
+  const actionable = applicationStateError
+    ? undefined
+    : items.find((item) => !item.student_interest_at && item.status !== "not_recommended");
 
   async function interested(id: string) {
     setBusy(id);
@@ -107,6 +109,12 @@ export function StudentOrientationPanel({
         </div>
       )}
 
+      {applicationStateError && (
+        <div role="alert" className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+          {applicationStateError}
+        </div>
+      )}
+
       {feedback && (
         <div
           role={feedback.kind === "error" ? "alert" : "status"}
@@ -126,13 +134,13 @@ export function StudentOrientationPanel({
         </Card>
         <Card>
           <h2 className="text-sm font-semibold text-slate-700">Intérêts enregistrés</h2>
-          <p className="mt-1 text-3xl font-semibold text-slate-950">{interestedCount}</p>
-          <div className="mt-3"><Badge variant={interestedCount ? "success" : "neutral"}>{interestedCount ? "Suivi démarré" : "Aucun pour l’instant"}</Badge></div>
+          <p className="mt-1 text-3xl font-semibold text-slate-950">{applicationStateError ? "—" : interestedCount}</p>
+          <div className="mt-3"><Badge variant={applicationStateError ? "neutral" : interestedCount ? "success" : "neutral"}>{applicationStateError ? "Indisponible" : interestedCount ? "Suivi démarré" : "Aucun pour l’instant"}</Badge></div>
         </Card>
         <Card>
           <h2 className="text-sm font-semibold text-slate-700">Prochaine étape</h2>
           <p className="mt-2 text-sm font-medium leading-6 text-slate-900">
-            {actionable ? "Choisis un programme qui correspond à ton projet." : items.length ? "Tes choix actuels sont enregistrés." : "Attends les recommandations AlmaGo."}
+            {applicationStateError ? "Réessaie plus tard pour vérifier tes choix enregistrés." : actionable ? "Choisis un programme qui correspond à ton projet." : items.length ? "Tes choix actuels sont enregistrés." : "Attends les recommandations AlmaGo."}
           </p>
         </Card>
       </section>
@@ -220,7 +228,7 @@ export function StudentOrientationPanel({
                     )}
                     <button
                       type="button"
-                      disabled={Boolean(recommendation.student_interest_at) || busy === recommendation.id || recommendation.status === "not_recommended"}
+                      disabled={Boolean(applicationStateError) || Boolean(recommendation.student_interest_at) || busy === recommendation.id || recommendation.status === "not_recommended"}
                       onClick={() => interested(recommendation.id)}
                       className="inline-flex min-h-11 items-center justify-center rounded-xl bg-emerald-700 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-50"
                     >
