@@ -101,6 +101,36 @@ jobs:
 
 
 
+      - name: Select cost-aware Codex tier
+        id: route
+        env:
+          IMPLEMENTATION_TASK: ${{ env.IMPLEMENTATION_TASK }}
+        shell: bash
+        run: |
+          task="$(printf '%s' "$IMPLEMENTATION_TASK" | tr '[:upper:]' '[:lower:]')"
+          tier="standard"
+          model="gpt-5.6-terra"
+          effort="medium"
+
+          if [[ "$task" =~ (deep[[:space:]-]architecture|cross[[:space:]-]cutting|system[[:space:]-]wide|multiple[[:space:]-]systems|persistent.*(failure|regression)|critical.*(failure|regression|bug)|multi[[:space:]-]step.*(investigation|diagnosis)) ]]; then
+            tier="critical"
+            model="gpt-6-astra"
+            effort="max"
+          elif [[ "$task" =~ (auth|rls|storage|supabase|security|migration|refactor|fatal|failure|regression|diagnos|complex|multi[[:space:]-]page|multiple[[:space:]-]pages) ]]; then
+            tier="complex"
+            model="gpt-5.6-sol"
+            effort="high"
+          elif [[ "$task" =~ (documentation|copy[[:space:]-]only|label|wording|formatting|rename|comment[[:space:]-]only) ]]; then
+            tier="routine"
+            model="gpt-5.6-luna"
+            effort="low"
+          fi
+
+          echo "tier=$tier" >> "$GITHUB_OUTPUT"
+          echo "model=$model" >> "$GITHUB_OUTPUT"
+          echo "effort=$effort" >> "$GITHUB_OUTPUT"
+          echo "::notice::Codex route: $tier -> $model / $effort"
+
       - name: Run autonomous Codex implementation
         id: codex
         timeout-minutes: 12
@@ -110,7 +140,8 @@ jobs:
           allow-bots: true
           sandbox: workspace-write
           safety-strategy: drop-sudo
-          effort: medium
+          model: ${{ steps.route.outputs.model }}
+          effort: ${{ steps.route.outputs.effort }}
           codex-args: '["--ephemeral"]'
           prompt: |
             Implement one small, bounded AlmaGo development block on the checked-out pull-request branch.
@@ -420,4 +451,3 @@ jobs:
                 task: "A previous autonomous attempt failed before delivery (" + failedStages + "). Diagnose the technical cause from repository evidence, repair it if it is safe and within Phase 5 scope, run the relevant checks, then deliver and request supervision. Do not change secrets, Auth/RLS, real data, deployments, or branches outside this PR.",
               },
             });
-
