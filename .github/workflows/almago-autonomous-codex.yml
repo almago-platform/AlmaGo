@@ -322,3 +322,102 @@ jobs:
                 source: "AlmaGo Autonomous Codex",
               },
             });
+
+  recover:
+    needs: [implement, deliver]
+    if: ${{ always() && (needs.implement.result == 'failure' || needs.deliver.result == 'failure') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      PR_NUMBER: ${{ github.event.client_payload.pull_number || inputs.pull_number }}
+      EXPECTED_HEAD: ${{ github.event.client_payload.head_sha || inputs.head_sha }}
+      FAILED_IMPLEMENT: ${{ needs.implement.result }}
+      FAILED_DELIVERY: ${{ needs.deliver.result }}
+    steps:
+      - name: Schedule bounded technical recovery
+        uses: actions/github-script@v7
+        env:
+          PR_NUMBER: ${{ env.PR_NUMBER }}
+          EXPECTED_HEAD: ${{ env.EXPECTED_HEAD }}
+          FAILED_IMPLEMENT: ${{ env.FAILED_IMPLEMENT }}
+          FAILED_DELIVERY: ${{ env.FAILED_DELIVERY }}
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const pullNumber = Number(process.env.PR_NUMBER);
+            const expectedHead = String(process.env.EXPECTED_HEAD || "");
+            if (!pullNumber || !expectedHead) {
+              core.setFailed("Recovery requires a PR number and expected HEAD.");
+              return;
+            }
+
+            const { data: pr } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pullNumber,
+            });
+            if (pr.state !== "open" || pr.head.sha !== expectedHead) {
+              core.info("Skipping recovery because the PR HEAD changed or closed.");
+              return;
+            }
+
+            const marker = "<!-- almago-autonomous-recovery:head=" + expectedHead + " -->";
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pullNumber,
+              per_page: 100,
+            });
+            const previousAttempts = comments.filter((comment) =>
+              String(comment.body || "").includes(marker)
+            ).length;
+
+            if (previousAttempts >= 3) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pullNumber,
+                body: [
+                  "SUPERVISOR: BLOCKED",
+                  "",
+                  "Technical recovery failed three times for unchanged HEAD: " + expectedHead,
+                  marker,
+                  "",
+                  "Stopping this HEAD to avoid an infinite costly retry loop. A new safe code change or explicit intervention is required.",
+                ].join("\n"),
+              });
+              core.setFailed("Recovery limit reached for this unchanged HEAD.");
+              return;
+            }
+
+            const attempt = previousAttempts + 1;
+            const failedStages = [
+              "implement=" + String(process.env.FAILED_IMPLEMENT || "skipped"),
+              "deliver=" + String(process.env.FAILED_DELIVERY || "skipped"),
+            ].join(", ");
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pullNumber,
+              body: [
+                "AUTONOMOUS RECOVERY ATTEMPT " + attempt + "/3",
+                "",
+                "HEAD: " + expectedHead,
+                marker,
+                "",
+                "A technical workflow failure was detected (" + failedStages + "). Codex is being restarted automatically to diagnose, repair, test, and continue.",
+              ].join("\n"),
+            });
+
+            await github.rest.repos.createDispatchEvent({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              event_type: "almago_codex_continue",
+              client_payload: {
+                pull_number: pullNumber,
+                head_sha: expectedHead,
+                task: "A previous autonomous attempt failed before delivery (" + failedStages + "). Diagnose the technical cause from repository evidence, repair it if it is safe and within Phase 5 scope, run the relevant checks, then deliver and request supervision. Do not change secrets, Auth/RLS, real data, deployments, or branches outside this PR.",
+              },
+            });
+
