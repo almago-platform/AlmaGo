@@ -24,7 +24,10 @@ jobs:
       (
         github.actor == 'chatgpt-codex-connector[bot]' ||
         github.actor == 'tayariAyoub' ||
-        (github.actor == 'github-actions[bot]' && contains(github.event.comment.body, 'SOURCE: AlmaGo Codex Patch Bridge'))
+        (github.actor == 'github-actions[bot]' && (
+          contains(github.event.comment.body, 'SOURCE: AlmaGo Codex Patch Bridge') ||
+          contains(github.event.comment.body, 'SOURCE: AlmaGo PR CI')
+        ))
       )
     runs-on: ubuntu-latest
     timeout-minutes: 10
