@@ -87,3 +87,12 @@ Ne jamais :
 - supprimer de vraies données ;
 - lancer une migration destructive sans validation explicite ;
 - utiliser `ALMAGO PATCH` pour modifier `.github/workflows/`, `.github/actions/`, des fichiers de secrets, ou des migrations Supabase.
+
+
+## Règles GitHub Codex obligatoires
+
+Quand un commentaire du superviseur contient exactement `@codex address that feedback`, traite-le comme une tâche d’implémentation, pas comme une simple review. Modifie réellement le code demandé, exécute les vérifications locales si disponibles, puis livre par le protocole GitHub ci-dessus.
+
+Le workflow `AlmaGo PR CI` est la preuve canonique des tests sur le HEAD distant. Ne bloque pas un checkpoint uniquement parce que les résultats de tests ne sont pas recopiés dans le texte du commentaire si les checks GitHub du HEAD sont verts.
+
+Si le push est impossible, le commentaire de fallback doit réellement COMMENCER par `ALMAGO PATCH`. Ne dis jamais seulement dans un résumé qu’un patch a été publié : le patch littéral doit être présent dans ce commentaire top-level, avec `BASE HEAD` et exactement un bloc fenced `diff`.
