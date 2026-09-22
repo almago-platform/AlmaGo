@@ -1,4 +1,5 @@
 import { PageHeader } from "@/components/ui/PageHeader";
+import { ButtonLink } from "@/components/ui/ButtonLink";
 import { StudentApplicationsPanel } from "@/components/student/StudentApplicationsPanel";
 import { createClient } from "@/lib/supabase/server";
 
@@ -12,16 +13,17 @@ export default async function StudentApplicationsPage() {
     .order("created_at", { ascending: false });
 
   return (
-    <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:py-12">
+    <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
       <PageHeader
         badge="Candidatures"
-        title="Ton suivi de candidatures"
-        description="Retrouve les statuts, échéances et prochaines actions de chaque dossier au même endroit."
+        title="Suivi des candidatures"
+        description="Retrouvez l’état de chaque dossier, les échéances officielles enregistrées et les prochaines actions à traiter."
+        actions={<ButtonLink href="/student/orientation" variant="secondary">Voir les recommandations</ButtonLink>}
       />
 
       <StudentApplicationsPanel
         applications={data || []}
-        loadError={error ? "Impossible de charger toutes tes candidatures pour le moment." : undefined}
+        loadError={error ? "Impossible de charger toutes vos candidatures pour le moment." : undefined}
       />
     </main>
   );
