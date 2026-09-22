@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/Badge";
+import { Button, buttonClassName } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import {
   categoryLabel,
@@ -184,12 +185,13 @@ export function DocumentsPanel({
             </p>
           )}
 
-          <button
+          <Button
+            type="submit"
             disabled={busy}
-            className="mt-4 inline-flex min-h-11 items-center justify-center rounded-xl bg-emerald-700 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-60"
+            className="mt-4"
           >
             {busy ? "Envoi…" : "Envoyer le document"}
-          </button>
+          </Button>
         </form>
       </Card>
 
@@ -237,22 +239,23 @@ export function DocumentsPanel({
                       aria-label={`Ouvrir ${document.original_filename} (nouvel onglet)`}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex min-h-11 items-center justify-center rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50"
+                      className={buttonClassName("secondary")}
                     >
                       Ouvrir
                     </a>
                     {removableDocumentStatuses.includes(
                       document.status as (typeof removableDocumentStatuses)[number],
                     ) && (
-                      <button
+                      <Button
                         type="button"
                         aria-label={`Supprimer ${document.original_filename}`}
                         onClick={() => removeDocument(document.id)}
                         disabled={busy}
-                        className="inline-flex min-h-11 items-center justify-center rounded-xl border border-red-200 px-4 py-2 text-sm font-semibold text-red-700 transition-colors hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
+                        variant="secondary"
+                        className="border-red-200 text-red-700 hover:bg-red-50"
                       >
                         Supprimer
-                      </button>
+                      </Button>
                     )}
                   </div>
                 </div>
