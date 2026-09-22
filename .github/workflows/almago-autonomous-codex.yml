@@ -25,6 +25,7 @@ on:
 
 
 permissions:
+  actions: read
   contents: write
   pull-requests: write
   issues: write
@@ -365,6 +366,52 @@ jobs:
       FAILED_IMPLEMENT: ${{ needs.implement.result }}
       FAILED_DELIVERY: ${{ needs.deliver.result }}
     steps:
+      - name: Classify Codex API failure
+        id: classify
+        if: ${{ needs.implement.result == 'failure' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          FAILED_IMPLEMENT: ${{ env.FAILED_IMPLEMENT }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          classification=unknown
+          if [ "$FAILED_IMPLEMENT" != "failure" ]; then
+            echo "classification=$classification" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          jobs_url="https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/jobs?per_page=100"
+          jobs_json="$(curl --fail --silent --show-error --retry 2 \
+            -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            "$jobs_url")" || true
+          job_id="$(printf '%s' "$jobs_json" | jq -r '.jobs[]? | select(.name == "implement") | .id' | head -n1)"
+          if [ -z "$job_id" ] || [ "$job_id" = "null" ]; then
+            echo "::warning::Could not identify the failed implement job; keeping bounded technical recovery available."
+            echo "classification=$classification" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          log_path="$(mktemp)"
+          log_url="https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/jobs/${job_id}/logs"
+          if curl --fail --silent --show-error --location --retry 2 \
+            -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            "$log_url" -o "$log_path"; then
+            api_failure_pattern='no credits remaining|insufficient_quota|credit[[:space:]-]?balance|billing|rate[[:space:]-]?limit|invalid[[:space:]-]?api[[:space:]-]?key|authentication|unauthorized|OPENAI_API_KEY is not configured'
+            set +o pipefail
+            if unzip -p "$log_path" 2>/dev/null | grep -Eqi "$api_failure_pattern"; then
+              classification=quota_or_auth
+            elif grep -aEqi "$api_failure_pattern" "$log_path"; then
+              classification=quota_or_auth
+            fi
+            set -o pipefail
+          else
+            echo "::warning::Could not read failed job logs; keeping bounded technical recovery available."
+          fi
+          rm -f "$log_path"
+          echo "classification=$classification" >> "$GITHUB_OUTPUT"
       - name: Schedule bounded technical recovery
         uses: actions/github-script@v7
         env:
@@ -372,11 +419,13 @@ jobs:
           EXPECTED_HEAD: ${{ env.EXPECTED_HEAD }}
           FAILED_IMPLEMENT: ${{ env.FAILED_IMPLEMENT }}
           FAILED_DELIVERY: ${{ env.FAILED_DELIVERY }}
+          FAILURE_CLASS: ${{ steps.classify.outputs.classification || 'unknown' }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const pullNumber = Number(process.env.PR_NUMBER);
             const expectedHead = String(process.env.EXPECTED_HEAD || "");
+            const failureClass = String(process.env.FAILURE_CLASS || "unknown");
             if (!pullNumber || !expectedHead) {
               core.setFailed("Recovery requires a PR number and expected HEAD.");
               return;
@@ -402,6 +451,29 @@ jobs:
             const previousAttempts = comments.filter((comment) =>
               String(comment.body || "").includes(marker)
             ).length;
+
+            const apiBlockedMarker = "<!-- almago-autonomous-api-blocked:head=" + expectedHead + " -->";
+            if (failureClass === "quota_or_auth") {
+              if (!comments.some((comment) => String(comment.body || "").includes(apiBlockedMarker))) {
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: pullNumber,
+                  body: [
+                    "SUPERVISOR: BLOCKED",
+                    "",
+                    "HEAD: " + expectedHead,
+                    apiBlockedMarker,
+                    "",
+                    "OpenAI/Codex API quota or authentication failure was detected in the implementation job.",
+                    "No recovery retry was scheduled, so this non-repairable API failure cannot consume the bounded technical recovery budget.",
+                    "Add credits or repair the OpenAI API credential, then start a new safe checkpoint.",
+                  ].join("\n"),
+                });
+              }
+              core.info("Blocked Codex API quota/auth failure without retrying.");
+              return;
+            }
 
             if (previousAttempts >= 3) {
               await github.rest.issues.createComment({
