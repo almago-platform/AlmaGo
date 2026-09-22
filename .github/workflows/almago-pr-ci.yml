@@ -54,28 +54,6 @@ jobs:
         run: git diff --check
 
 
-      - name: Dispatch instant supervisor
-        if: success()
-        uses: actions/github-script@v7
-        env:
-          VERIFIED_HEAD: ${{ github.event.pull_request.head.sha }}
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const head = process.env.VERIFIED_HEAD;
-            await github.request("POST /repos/{owner}/{repo}/dispatches", {
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              event_type: "almago_supervise",
-              client_payload: {
-                pull_number: context.issue.number,
-                remote_head: head,
-                checkpoint_id: `pr-ci-${context.runId}-${head}`,
-                created_at: new Date().toISOString(),
-              },
-            });
-            core.info(`Dispatched instant supervision for PR #${context.issue.number} at ${head}.`);
-
       - name: Publish verified review checkpoint
         if: success()
         uses: actions/github-script@v7
