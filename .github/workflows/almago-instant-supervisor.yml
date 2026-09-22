@@ -3,6 +3,8 @@ name: AlmaGo Instant Supervisor
 on:
   issue_comment:
     types: [created]
+  repository_dispatch:
+    types: [almago_supervise]
 
 permissions:
   contents: read
@@ -17,17 +19,24 @@ concurrency:
 jobs:
   supervise:
     if: >-
-      github.event.issue.pull_request != null &&
-      contains(github.event.comment.body, 'ALMAGO REVIEW REQUEST') &&
-      !contains(github.event.comment.body, 'SUPERVISOR:') &&
-      !contains(github.event.comment.body, '@codex') &&
       (
-        github.actor == 'chatgpt-codex-connector[bot]' ||
-        github.actor == 'tayariAyoub' ||
-        (github.actor == 'github-actions[bot]' && (
-          contains(github.event.comment.body, 'SOURCE: AlmaGo Codex Patch Bridge') ||
-          contains(github.event.comment.body, 'SOURCE: AlmaGo PR CI')
-        ))
+        github.event_name == 'repository_dispatch' &&
+        github.event.action == 'almago_supervise'
+      ) ||
+      (
+        github.event_name == 'issue_comment' &&
+        github.event.issue.pull_request != null &&
+        contains(github.event.comment.body, 'ALMAGO REVIEW REQUEST') &&
+        !contains(github.event.comment.body, 'SUPERVISOR:') &&
+        !contains(github.event.comment.body, '@codex') &&
+        (
+          github.actor == 'chatgpt-codex-connector[bot]' ||
+          github.actor == 'tayariAyoub' ||
+          (github.actor == 'github-actions[bot]' && (
+            contains(github.event.comment.body, 'SOURCE: AlmaGo Codex Patch Bridge') ||
+            contains(github.event.comment.body, 'SOURCE: AlmaGo PR CI')
+          ))
+        )
       )
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -53,10 +62,22 @@ jobs:
           script: |
             const owner = context.repo.owner;
             const repo = context.repo.repo;
-            const pull_number = context.issue.number;
-            const checkpointId = String(process.env.CHECKPOINT_COMMENT_ID || "");
-            const checkpointCreatedAt = process.env.CHECKPOINT_CREATED_AT || "";
+            const isDispatch = context.eventName === "repository_dispatch";
+            const pull_number = isDispatch
+              ? Number(context.payload.client_payload?.pull_number)
+              : context.issue.number;
+            const checkpointId = isDispatch
+              ? String(context.payload.client_payload?.checkpoint_id || `dispatch-${context.runId}`)
+              : String(process.env.CHECKPOINT_COMMENT_ID || "");
+            const checkpointCreatedAt = isDispatch
+              ? String(context.payload.client_payload?.created_at || "")
+              : (process.env.CHECKPOINT_CREATED_AT || "");
             const model = process.env.OPENAI_MODEL || "gpt-5.4-mini";
+
+            if (!pull_number) {
+              core.setFailed("Missing pull request number for supervisor run.");
+              return;
+            }
 
             function redact(value, max = 12000) {
               let text = String(value ?? "");
@@ -74,7 +95,9 @@ jobs:
             });
 
             const headSha = pr.head.sha;
-            const checkpointBody = String(context.payload.comment.body || "");
+            const checkpointBody = isDispatch
+              ? `REMOTE HEAD: ${String(context.payload.client_payload?.remote_head || "")}`
+              : String(context.payload.comment.body || "");
             const remoteHeadMatch = checkpointBody.match(/^REMOTE HEAD:\s*([0-9a-f]{40})\s*$/mi);
 
             if (!remoteHeadMatch || remoteHeadMatch[1] !== headSha) {
