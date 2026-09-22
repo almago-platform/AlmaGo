@@ -44,8 +44,8 @@ export function AuthForm({ initialMode = "login" }: { initialMode?: Mode }) {
       {mode !== "forgot" && <label className="block text-sm text-slate-700">Mot de passe<input required minLength={8} type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="field" /></label>}
       {error && <p role="alert" className="rounded-xl bg-red-50 p-3 text-sm text-red-700">{error}</p>}
       {message && <p role="status" className="rounded-xl bg-emerald-50 p-3 text-sm text-emerald-800">{message}</p>}
-      <button disabled={loading} className="w-full rounded-xl bg-emerald-700 px-4 py-3 font-semibold text-white transition hover:bg-emerald-800 disabled:opacity-60">{loading ? "Patiente…" : mode === "login" ? "Se connecter" : mode === "signup" ? "Créer mon compte" : "Envoyer le lien"}</button>
+      <button type="submit" disabled={loading} className="w-full rounded-xl bg-emerald-700 px-4 py-3 font-semibold text-white transition hover:bg-emerald-800 disabled:opacity-60">{loading ? "Patiente…" : mode === "login" ? "Se connecter" : mode === "signup" ? "Créer mon compte" : "Envoyer le lien"}</button>
     </form>
-    <div className="mt-5 flex flex-wrap gap-3 text-sm text-emerald-700"><button onClick={() => setMode(mode === "login" ? "signup" : "login")}>{mode === "login" ? "Créer un compte" : "J’ai déjà un compte"}</button>{mode !== "signup" && <button onClick={() => setMode(mode === "forgot" ? "login" : "forgot")}>{mode === "forgot" ? "Retour à la connexion" : "Mot de passe oublié ?"}</button>}</div>
+    <div className="mt-5 flex flex-wrap gap-3 text-sm text-emerald-700"><button type="button" onClick={() => setMode(mode === "login" ? "signup" : "login")}>{mode === "login" ? "Créer un compte" : "J’ai déjà un compte"}</button>{mode !== "signup" && <button type="button" onClick={() => setMode(mode === "forgot" ? "login" : "forgot")}>{mode === "forgot" ? "Retour à la connexion" : "Mot de passe oublié ?"}</button>}</div>
   </section>;
 }
