@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { PreferredCitiesPicker, SearchableDatalistInput, SelectInput, TextInput } from "@/components/student/ProfileControls";
+import { Button } from "@/components/ui/Button";
 import { budgetOptions, certificateOptions, degreeOptions, diplomaOptions, languageLevelOptions, nationalityOptions, studyFieldOptions, studyLanguageOptions, tunisianBacTrackOptions } from "@/lib/student/profile-options";
 
 type Values = Record<string, string | string[]>;
@@ -38,6 +39,6 @@ export function ProfileForm({ profile }: { profile: Record<string, unknown> }) {
       <SelectInput label="Niveau visé" required value={String(data.target_degree)} onChange={(value) => set("target_degree", value)} options={degreeOptions} /><SelectInput label="Domaine souhaité" required value={String(data.target_field)} onChange={(value) => set("target_field", value)} options={studyFieldOptions} /><SelectInput label="Langue d’études souhaitée" required value={String(data.study_language)} onChange={(value) => set("study_language", value)} options={studyLanguageOptions} /><TextInput label="Semestre / rentrée souhaitée" required value={String(data.target_intake)} onChange={(value) => set("target_intake", value)} /><PreferredCitiesPicker value={Array.isArray(data.preferred_cities) ? data.preferred_cities : []} onChange={(value) => set("preferred_cities", value)} /><SelectInput label="Budget indicatif" value={String(data.budget_range)} onChange={(value) => set("budget_range", value)} options={budgetOptions} />
     </div></section>
     {error && <p role="alert" className="rounded-xl bg-red-50 p-3 text-sm text-red-700">{error}</p>}{status && <p role="status" className="rounded-xl bg-emerald-50 p-3 text-sm text-emerald-700">{status}</p>}
-    <button className="rounded-xl bg-emerald-700 px-5 py-3 font-semibold text-white">Enregistrer les modifications</button>
+    <Button type="submit">Enregistrer les modifications</Button>
   </form>;
 }
