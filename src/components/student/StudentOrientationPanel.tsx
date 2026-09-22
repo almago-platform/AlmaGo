@@ -174,13 +174,13 @@ export function StudentOrientationPanel({
               if (!program) return null;
 
               return (
-                <Card as="article" key={recommendation.id}>
+                <Card as="article" key={recommendation.id} aria-labelledby={`student-recommendation-title-${recommendation.id}`}>
                   <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
                     <div className="min-w-0">
                       <p className="text-sm font-semibold text-emerald-700">
                         {university?.name || "Université"}{university?.city ? ` · ${university.city}` : ""}
                       </p>
-                      <h3 className="mt-2 text-xl font-semibold text-slate-950">{program.name}</h3>
+                      <h3 id={`student-recommendation-title-${recommendation.id}`} className="mt-2 text-xl font-semibold text-slate-950">{program.name}</h3>
                       <p className="mt-1 text-sm text-slate-500">
                         {program.degree_level} · {program.field || "Domaine à préciser"}
                       </p>
@@ -219,6 +219,7 @@ export function StudentOrientationPanel({
                     {program.application_url && (
                       <a
                         href={program.application_url}
+                        aria-label={`Site officiel de ${program.name} (nouvel onglet)`}
                         target="_blank"
                         rel="noreferrer"
                         className="inline-flex min-h-11 items-center justify-center rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50"

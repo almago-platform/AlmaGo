@@ -121,24 +121,24 @@ export function DocumentsPanel({
 
       <section aria-label="Résumé des documents" className="grid gap-4 sm:grid-cols-3">
         <Card>
-          <h3 className="text-sm font-semibold text-slate-700">Validés</h3>
+          <h2 className="text-sm font-semibold text-slate-700">Validés</h2>
           <p className="mt-1 text-3xl font-semibold text-slate-950">{approvedCount}</p>
           <div className="mt-3"><Badge variant="success">Conformes</Badge></div>
         </Card>
         <Card>
-          <h3 className="text-sm font-semibold text-slate-700">En vérification</h3>
+          <h2 className="text-sm font-semibold text-slate-700">En vérification</h2>
           <p className="mt-1 text-3xl font-semibold text-slate-950">{reviewCount}</p>
           <div className="mt-3"><Badge variant="info">Chez AlmaGo</Badge></div>
         </Card>
         <Card>
-          <h3 className="text-sm font-semibold text-slate-700">À corriger</h3>
+          <h2 className="text-sm font-semibold text-slate-700">À corriger</h2>
           <p className="mt-1 text-3xl font-semibold text-slate-950">{correctionCount}</p>
           <div className="mt-3"><Badge variant={correctionCount ? "warning" : "neutral"}>{correctionCount ? "Action requise" : "Rien à signaler"}</Badge></div>
         </Card>
       </section>
 
-      <Card>
-        <h2 className="text-lg font-semibold text-slate-950">Ajouter un document</h2>
+      <Card aria-labelledby="document-upload-title">
+        <h2 id="document-upload-title" className="text-lg font-semibold text-slate-950">Ajouter un document</h2>
         <p className="mt-1 text-sm text-slate-600">
           PDF, JPEG ou PNG · 10 MiB maximum. Tes fichiers restent privés.
         </p>
@@ -209,14 +209,14 @@ export function DocumentsPanel({
             </Card>
           ) : (
             documents.map((document) => (
-              <Card as="article" key={document.id}>
+              <Card as="article" key={document.id} aria-labelledby={`student-document-title-${document.id}`}>
                 <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-start">
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
                       <Badge variant={statusVariant(document.status)}>{statusLabel(document.status)}</Badge>
                       <span className="text-xs font-medium text-slate-500">{categoryLabel(document.category)}</span>
                     </div>
-                    <h3 className="mt-3 break-words font-semibold text-slate-950">{document.original_filename}</h3>
+                    <h3 id={`student-document-title-${document.id}`} className="mt-3 break-words font-semibold text-slate-950">{document.original_filename}</h3>
                     <p className="mt-1 text-sm text-slate-500">
                       {Math.ceil(document.size_bytes / 1024)} Ko · envoyé le{" "}
                       <time dateTime={document.created_at}>
@@ -234,6 +234,7 @@ export function DocumentsPanel({
                   <div className="flex shrink-0 flex-wrap gap-2">
                     <a
                       href={`/api/documents/${document.id}/view`}
+                      aria-label={`Ouvrir ${document.original_filename} (nouvel onglet)`}
                       target="_blank"
                       rel="noreferrer"
                       className="inline-flex min-h-11 items-center justify-center rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50"
@@ -245,6 +246,7 @@ export function DocumentsPanel({
                     ) && (
                       <button
                         type="button"
+                        aria-label={`Supprimer ${document.original_filename}`}
                         onClick={() => removeDocument(document.id)}
                         disabled={busy}
                         className="inline-flex min-h-11 items-center justify-center rounded-xl border border-red-200 px-4 py-2 text-sm font-semibold text-red-700 transition-colors hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
@@ -269,8 +271,8 @@ export function DocumentsPanel({
             </Card>
           ) : (
             history.map((event) => (
-              <Card as="article" key={event.id} className="p-4">
-                <p className="text-sm text-slate-700">{event.message}</p>
+              <Card as="article" key={event.id} aria-labelledby={`document-event-title-${event.id}`} className="p-4">
+                <h3 id={`document-event-title-${event.id}`} className="text-sm font-medium text-slate-700">{event.message}</h3>
                 <time dateTime={event.created_at} className="mt-1 block text-xs text-slate-500">
                   {new Intl.DateTimeFormat("fr-TN", {
                     dateStyle: "medium",
