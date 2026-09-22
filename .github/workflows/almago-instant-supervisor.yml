@@ -81,7 +81,8 @@ jobs:
               ? String(context.payload.client_payload?.checkpoint_id || "autonomous-" + String(context.runId) + "-" + String(context.payload.client_payload?.head_sha || ""))
               : isWorkflowRun
                 ? "pr-ci-" + String(context.payload.workflow_run?.head_sha || "")
-                : String(process.env.CHECKPOINT_COMMENT_ID || "");            const checkpointCreatedAt = isDispatch
+                : String(process.env.CHECKPOINT_COMMENT_ID || "");
+            const checkpointCreatedAt = isDispatch
               ? new Date().toISOString()
               : isWorkflowRun
                 ? String(context.payload.workflow_run?.updated_at || "")
