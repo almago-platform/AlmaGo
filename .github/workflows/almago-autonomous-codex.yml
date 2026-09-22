@@ -1,5 +1,6 @@
 name: AlmaGo Autonomous Codex
 
+
 on:
   workflow_dispatch:
     inputs:
@@ -18,14 +19,17 @@ on:
   repository_dispatch:
     types: [almago_codex_continue]
 
+
 permissions:
   contents: write
   pull-requests: write
   issues: write
 
+
 concurrency:
   group: almago-autonomous-codex-${{ github.event.client_payload.pull_number || inputs.pull_number }}
   cancel-in-progress: true
+
 
 jobs:
   implement:
@@ -84,6 +88,7 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
+
       - name: Run autonomous Codex implementation
         id: codex
         timeout-minutes: 12
@@ -122,7 +127,7 @@ jobs:
           fi
           changed_files="$(git diff --name-only)"
           printf '%s\n' "$changed_files"
-          if printf '%s\n' "$changed_files" | grep -E '^(.github/|.env($|.)|supabase/migrations/|work/|drafts/|outputs/)'; then
+          if printf '%s\n' "$changed_files" | grep -E '^(\.github/|\.env($|\.)|supabase/migrations/|work/|drafts/|outputs/)'; then
             echo "::error::Codex modified a protected path."
             exit 1
           fi
@@ -138,23 +143,29 @@ jobs:
           node-version: 22
           cache: npm
 
+
       - name: Install dependencies
         run: npm ci
+
 
       - name: Tests
         run: npm test --if-present
 
+
       - name: Typecheck
         run: npx tsc --noEmit
 
+
       - name: Lint
         run: npm run lint
+
 
       - name: Build
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
         run: npm run build
+
 
       - name: Commit and push verified changes
         id: delivery
@@ -164,10 +175,23 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git restore -- next-env.d.ts 2>/dev/null || true
           git add -A
           git commit -m "feat: autonomous Codex iteration"
           new_head="$(git rev-parse HEAD)"
-          git push origin "HEAD:$HEAD_REF"
+          push_succeeded=false
+          for attempt in 1 2 3 4 5; do
+            if git push origin "HEAD:$HEAD_REF"; then
+              push_succeeded=true
+              break
+            fi
+            echo "::warning::Push attempt $attempt failed; retrying."
+            sleep $((attempt * 5))
+          done
+          if [ "$push_succeeded" != "true" ]; then
+            echo "::error::Unable to push after five attempts."
+            exit 1
+          fi
           echo "head_sha=$new_head" >> "$GITHUB_OUTPUT"
 
       - name: Publish delivery and request supervision
