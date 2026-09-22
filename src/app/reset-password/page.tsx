@@ -24,7 +24,7 @@ export default function ResetPasswordPage() {
               Choisis un nouveau mot de passe pour retrouver ton espace.
             </h1>
             <p className="mt-5 text-base leading-7 text-slate-600">
-              Cette étape sécurise l'accès à ton dossier étudiant. Après validation, tu seras redirigé vers ton tableau de bord.
+              Cette étape sécurise l&apos;accès à ton dossier étudiant. Après validation, tu seras redirigé vers ton tableau de bord.
             </p>
           </div>
 
