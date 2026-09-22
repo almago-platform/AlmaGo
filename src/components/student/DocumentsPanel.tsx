@@ -149,9 +149,9 @@ export function DocumentsPanel({
         </Card>
 
         <section aria-label="Résumé des documents" className="grid gap-4 sm:grid-cols-3 lg:grid-cols-1">
-          <SummaryCard title="Validés" value={approvedCount} badge="Conformes" tone="success" />
-          <SummaryCard title="En vérification" value={reviewCount} badge="Chez AlmaGo" tone="info" />
-          <SummaryCard title="À corriger" value={correctionCount} badge={correctionCount ? "Action requise" : "Rien à signaler"} tone={correctionCount ? "warning" : "neutral"} />
+          <SummaryCard id="documents-summary-approved" title="Validés" value={approvedCount} badge="Conformes" tone="success" />
+          <SummaryCard id="documents-summary-review" title="En vérification" value={reviewCount} badge="Chez AlmaGo" tone="info" />
+          <SummaryCard id="documents-summary-correction" title="À corriger" value={correctionCount} badge={correctionCount ? "Action requise" : "Rien à signaler"} tone={correctionCount ? "warning" : "neutral"} />
         </section>
       </section>
 
@@ -312,10 +312,10 @@ export function DocumentsPanel({
   );
 }
 
-function SummaryCard({ title, value, badge, tone }: { title: string; value: number; badge: string; tone: "success" | "info" | "warning" | "neutral" }) {
+function SummaryCard({ id, title, value, badge, tone }: { id: string; title: string; value: number; badge: string; tone: "success" | "info" | "warning" | "neutral" }) {
   return (
-    <Card aria-labelledby={`documents-summary-${title}`} className="shadow-none">
-      <h2 id={`documents-summary-${title}`} className="text-sm font-semibold text-slate-700">{title}</h2>
+    <Card aria-labelledby={id} className="shadow-none">
+      <h2 id={id} className="text-sm font-semibold text-slate-700">{title}</h2>
       <p className="mt-1 text-3xl font-semibold text-slate-950">{value}</p>
       <div className="mt-3"><Badge variant={tone}>{badge}</Badge></div>
     </Card>
