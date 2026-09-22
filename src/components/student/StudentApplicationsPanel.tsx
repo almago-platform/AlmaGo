@@ -18,7 +18,7 @@ function dateValue(value: string | null | undefined) {
   return new Date(`${value}T12:00:00`).getTime();
 }
 
-const submittedStatuses = new Set(["submitted", "waiting_university", "admission", "accepted", "rejection", "rejected"]);
+const submittedStatuses = new Set(["submitted", "in_review", "waiting_university", "admission", "accepted", "rejection", "rejected"]);
 const terminalStatuses = new Set(["admission", "accepted", "rejection", "rejected", "withdrawn"]);
 
 export function StudentApplicationsPanel({
@@ -54,26 +54,28 @@ export function StudentApplicationsPanel({
       <section aria-label="Résumé des candidatures" className="grid gap-4 sm:grid-cols-3">
         <Card>
           <h2 className="text-sm font-semibold text-slate-700">Actions pour toi</h2>
-          <p className="mt-1 text-3xl font-semibold text-slate-950">{actionable.length}</p>
+          <p className="mt-1 text-3xl font-semibold text-slate-950">{loadError ? "—" : actionable.length}</p>
           <div className="mt-3">
-            <Badge variant={actionable.length ? "warning" : "success"}>
-              {actionable.length ? "À traiter" : "À jour"}
+            <Badge variant={loadError ? "neutral" : actionable.length ? "warning" : "success"}>
+              {loadError ? "Indisponible" : actionable.length ? "À traiter" : "À jour"}
             </Badge>
           </div>
         </Card>
         <Card>
           <h2 className="text-sm font-semibold text-slate-700">Dossiers déposés</h2>
-          <p className="mt-1 text-3xl font-semibold text-slate-950">{submitted.length}</p>
-          <div className="mt-3"><Badge variant="info">Suivis par AlmaGo</Badge></div>
+          <p className="mt-1 text-3xl font-semibold text-slate-950">{loadError ? "—" : submitted.length}</p>
+          <div className="mt-3"><Badge variant={loadError ? "neutral" : "info"}>{loadError ? "Indisponible" : "Suivis par AlmaGo"}</Badge></div>
         </Card>
         <Card>
           <h2 className="text-sm font-semibold text-slate-700">Prochaine échéance</h2>
           <p className="mt-2 text-sm font-medium leading-6 text-slate-900">
-            {nextDeadlineApplication
-              ? formatDeadline(nextDeadlineApplication.deadline)
-              : "Aucune date confirmée"}
+            {loadError
+              ? "Indisponible"
+              : nextDeadlineApplication
+                ? formatDeadline(nextDeadlineApplication.deadline)
+                : "Aucune date confirmée"}
           </p>
-          {nextDeadlineApplication && (
+          {!loadError && nextDeadlineApplication && (
             <p className="mt-1 text-xs text-slate-500">
               {Array.isArray(nextDeadlineApplication.programs)
                 ? nextDeadlineApplication.programs[0]?.name
