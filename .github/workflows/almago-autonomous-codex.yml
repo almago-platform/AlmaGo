@@ -35,10 +35,10 @@ jobs:
       PR_NUMBER: ${{ github.event.client_payload.pull_number || inputs.pull_number }}
       EXPECTED_HEAD: ${{ github.event.client_payload.head_sha || inputs.head_sha }}
       IMPLEMENTATION_TASK: ${{ github.event.client_payload.task || inputs.task }}
-
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
     steps:
       - name: Require OpenAI API key
-        if: ${{ secrets.OPENAI_API_KEY == '' }}
+        if: ${{ env.OPENAI_API_KEY == '' }}
         run: |
           echo "::error::OPENAI_API_KEY is not configured."
           exit 1
@@ -57,14 +57,12 @@ jobs:
               core.setFailed("Missing pull request number.");
               return;
             }
-
             const { data: pr } = await github.rest.pulls.get({
               owner: context.repo.owner,
               repo: context.repo.repo,
               pull_number,
             });
-
-            if (pr.head.repo.full_name !== `${context.repo.owner}/${context.repo.repo}`) {
+            if (pr.head.repo.full_name !== context.repo.owner + "/" + context.repo.repo) {
               core.setFailed("Autonomous Codex only supports same-repository PR branches.");
               return;
             }
@@ -73,10 +71,9 @@ jobs:
               return;
             }
             if (process.env.EXPECTED_HEAD && pr.head.sha !== process.env.EXPECTED_HEAD) {
-              core.setFailed(`Stale autonomous task: expected ${process.env.EXPECTED_HEAD}, actual ${pr.head.sha}.`);
+              core.setFailed("Stale autonomous task: expected " + process.env.EXPECTED_HEAD + ", actual " + pr.head.sha + ".");
               return;
             }
-
             core.setOutput("head_ref", pr.head.ref);
             core.setOutput("head_sha", pr.head.sha);
 
@@ -115,24 +112,18 @@ jobs:
             - Do not merely describe a solution: implement it in the working tree.
 
       - name: Reject protected or empty changes
-        id: changes
         shell: bash
         run: |
           if git diff --quiet; then
             echo "::error::Codex produced no repository changes."
             exit 1
           fi
-
           changed_files="$(git diff --name-only)"
-          printf '%s
-' "$changed_files"
-
-          if printf '%s
-' "$changed_files" | grep -E '^(\.github/(workflows|actions)/|\.env($|\.)|supabase/migrations/)'; then
+          printf '%s\n' "$changed_files"
+          if printf '%s\n' "$changed_files" | grep -E '^(.github/(workflows|actions)/|.env($|.)|supabase/migrations/)'; then
             echo "::error::Codex modified a protected path."
             exit 1
           fi
-
           git diff --check
 
       - name: Setup Node
@@ -185,8 +176,7 @@ jobs:
             const pull_number = Number(process.env.PR_NUMBER);
             const headSha = String(process.env.NEW_HEAD || "");
             const summary = String(process.env.CODEX_SUMMARY || "").slice(0, 6000);
-            const marker = `<!-- almago-autonomous-delivery:head=${headSha} -->`;
-
+            const marker = "<!-- almago-autonomous-delivery:head=" + headSha + " -->";
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -194,7 +184,7 @@ jobs:
               body: [
                 "AUTONOMOUS CODEX DELIVERY",
                 "",
-                `REMOTE HEAD: ${headSha}`,
+                "REMOTE HEAD: " + headSha,
                 marker,
                 "",
                 summary || "Codex implemented the assigned block and canonical checks passed.",
@@ -202,7 +192,6 @@ jobs:
                 "Supervision has been requested automatically. No human checkpoint is required.",
               ].join("\n"),
             });
-
             await github.rest.repos.createDispatchEvent({
               owner: context.repo.owner,
               repo: context.repo.repo,
