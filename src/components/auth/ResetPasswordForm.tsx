@@ -28,7 +28,7 @@ export function ResetPasswordForm() {
         <p id="reset-password-hint" className="text-sm text-slate-600">Utilise au moins 8 caractères.</p>
         <p role="alert" className={error ? "text-sm text-red-700" : "sr-only"}>{error}</p>
         <p role="status" className={message ? "text-sm text-emerald-700" : "sr-only"}>{message}</p>
-        <button className="w-full rounded-xl bg-emerald-700 px-4 py-3 font-semibold text-white">Enregistrer</button>
+        <button type="submit" className="w-full rounded-xl bg-emerald-700 px-4 py-3 font-semibold text-white">Enregistrer</button>
       </form>
     </section>
   );
