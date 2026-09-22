@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { Badge } from "@/components/ui/Badge";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Card } from "@/components/ui/Card";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { createClient } from "@/lib/supabase/server";
 
@@ -40,7 +41,11 @@ export default async function StudentEntry() {
         : { label: "Voir ma checklist", detail: "Ton dossier est à jour. AlmaGo reviendra vers toi si nécessaire.", href: "/student/checklist" };
 
   return <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
-    <header className="mb-8"><Badge variant="success">Tableau de bord étudiant</Badge><h1 className="mt-4 text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">Bonjour, {profile.first_name || "étudiant"} 👋</h1><p className="mt-2 max-w-2xl text-base leading-7 text-slate-600">Suis ton projet d’études en Allemagne et retrouve toujours la prochaine étape utile.</p></header>
+    <PageHeader
+      badge="Tableau de bord étudiant"
+      title={<>Bonjour, {profile.first_name || "étudiant"} <span aria-hidden="true">👋</span></>}
+      description="Suis ton projet d’études en Allemagne et retrouve toujours la prochaine étape utile."
+    />
     <div className="grid gap-6 lg:grid-cols-[1.4fr_0.6fr]">
       <Card className="bg-gradient-to-br from-emerald-950 to-emerald-800 text-white">
         <div className="flex flex-wrap items-start justify-between gap-4"><div><p className="text-sm font-semibold text-emerald-100">Progression de ton dossier</p><p className="mt-3 text-4xl font-semibold">{progression}%</p></div><Badge variant={progression === 100 ? "success" : "info"}>{completed} sur {checklist.length} étapes</Badge></div>

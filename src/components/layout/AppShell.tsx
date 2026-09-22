@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import type { ReactNode } from "react";
+import { Button } from "@/components/ui/Button";
 import { createClient } from "@/lib/supabase/client";
 
 type AppShellRole = "student" | "admin";
@@ -101,29 +102,30 @@ export function AppShell({
         </nav>
 
         <div className="border-t border-slate-100 p-4">
-          <button
+          <Button
             type="button"
             onClick={signOut}
-            className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-left text-sm font-medium text-slate-600 transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-950"
+            variant="secondary"
+            className="w-full justify-start"
           >
             Déconnexion
-          </button>
+          </Button>
         </div>
       </aside>
 
       <div className="lg:pl-72">
         <header className="sticky top-0 z-30 border-b border-slate-200/80 bg-white/95 backdrop-blur lg:hidden">
           <div className="flex h-16 items-center justify-between px-4">
-            <Link href={role === "admin" ? "/admin" : "/student"} className="flex items-center gap-2.5">
+            <Link href={role === "admin" ? "/admin" : "/student"} className="flex items-center gap-2.5" aria-label="Accueil AlmaGo">
               <span className="grid h-9 w-9 place-items-center rounded-xl bg-emerald-700 text-sm font-bold text-white">A</span>
               <span>
                 <span className="block text-base font-bold leading-none text-slate-950">AlmaGo</span>
                 <span className="mt-1 block text-[11px] font-medium text-slate-500">{role === "admin" ? "Administration" : "Mon espace"}</span>
               </span>
             </Link>
-            <button type="button" onClick={signOut} className="rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50">
+            <Button type="button" onClick={signOut} variant="secondary" className="min-h-11 px-3 py-2">
               Déconnexion
-            </button>
+            </Button>
           </div>
 
           <nav className="mobile-nav-scroll flex gap-1 overflow-x-auto border-t border-slate-100 px-3 py-2" aria-label={role === "admin" ? "Navigation administration" : "Navigation étudiant"}>
@@ -134,7 +136,7 @@ export function AppShell({
                   key={item.href}
                   href={item.href}
                   aria-current={active ? "page" : undefined}
-                  className={`flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium ${active ? "bg-emerald-50 text-emerald-800" : "text-slate-600 hover:bg-slate-50"}`}
+                  className={`flex min-h-11 shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium ${active ? "bg-emerald-50 text-emerald-800" : "text-slate-600 hover:bg-slate-50"}`}
                 >
                   {item.icon}
                   {item.label}
