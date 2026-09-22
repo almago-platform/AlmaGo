@@ -1,6 +1,8 @@
 name: AlmaGo Autonomous Codex
 
 
+
+
 on:
   workflow_dispatch:
     inputs:
@@ -20,10 +22,14 @@ on:
     types: [almago_codex_continue]
 
 
+
+
 permissions:
   contents: write
   pull-requests: write
   issues: write
+
+
 
 
 concurrency:
@@ -31,10 +37,14 @@ concurrency:
   cancel-in-progress: true
 
 
+
+
 jobs:
   implement:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 20
+    outputs:
+      codex_summary: ${{ steps.codex.outputs.final-message }}
     env:
       PR_NUMBER: ${{ github.event.client_payload.pull_number || inputs.pull_number }}
       EXPECTED_HEAD: ${{ github.event.client_payload.head_sha || inputs.head_sha }}
@@ -87,6 +97,8 @@ jobs:
           ref: ${{ steps.pr.outputs.head_ref }}
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
+
+
 
 
       - name: Run autonomous Codex implementation
@@ -144,20 +156,30 @@ jobs:
           cache: npm
 
 
+
+
       - name: Install dependencies
         run: npm ci
+
+
 
 
       - name: Tests
         run: npm test --if-present
 
 
+
+
       - name: Typecheck
         run: npx tsc --noEmit
 
 
+
+
       - name: Lint
         run: npm run lint
+
+
 
 
       - name: Build
@@ -167,16 +189,84 @@ jobs:
         run: npm run build
 
 
-      - name: Commit and push verified changes
+
+
+      - name: Prepare implementation patch
+        shell: bash
+        run: |
+          git restore -- next-env.d.ts 2>/dev/null || true
+          git diff --check
+          git diff --binary > almago.patch
+          test -s almago.patch
+
+      - name: Upload implementation patch
+        uses: actions/upload-artifact@v4
+        with:
+          name: almago-patch-${{ github.run_id }}
+          path: almago.patch
+          if-no-files-found: error
+          retention-days: 1
+
+  deliver:
+    needs: implement
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      PR_NUMBER: ${{ github.event.client_payload.pull_number || inputs.pull_number }}
+      EXPECTED_HEAD: ${{ github.event.client_payload.head_sha || inputs.head_sha }}
+    steps:
+      - name: Revalidate PR head
+        id: pr
+        uses: actions/github-script@v7
+        env:
+          PR_NUMBER: ${{ env.PR_NUMBER }}
+          EXPECTED_HEAD: ${{ env.EXPECTED_HEAD }}
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const pull_number = Number(process.env.PR_NUMBER);
+            const { data: pr } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number,
+            });
+            if (pr.state !== "open") {
+              core.setFailed("Pull request is no longer open.");
+              return;
+            }
+            if (pr.head.repo.full_name !== context.repo.owner + "/" + context.repo.repo) {
+              core.setFailed("Autonomous delivery only supports same-repository PR branches.");
+              return;
+            }
+            if (process.env.EXPECTED_HEAD && pr.head.sha !== process.env.EXPECTED_HEAD) {
+              core.setFailed("Stale delivery: expected " + process.env.EXPECTED_HEAD + ", actual " + pr.head.sha + ".");
+              return;
+            }
+            core.setOutput("head_ref", pr.head.ref);
+
+      - name: Checkout clean PR branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.pr.outputs.head_ref }}
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Download implementation patch
+        uses: actions/download-artifact@v4
+        with:
+          name: almago-patch-${{ github.run_id }}
+          path: .autonomous-artifact
+
+      - name: Apply, commit, and push verified patch
         id: delivery
         env:
           HEAD_REF: ${{ steps.pr.outputs.head_ref }}
         shell: bash
         run: |
+          git apply --index --whitespace=nowarn .autonomous-artifact/almago.patch
+          git diff --cached --check
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git restore -- next-env.d.ts 2>/dev/null || true
-          git add -A
           git commit -m "feat: autonomous Codex iteration"
           new_head="$(git rev-parse HEAD)"
           push_succeeded=false
@@ -185,7 +275,7 @@ jobs:
               push_succeeded=true
               break
             fi
-            echo "::warning::Push attempt $attempt failed; retrying."
+            echo "::warning::Push attempt $attempt failed; retrying from clean runner."
             sleep $((attempt * 5))
           done
           if [ "$push_succeeded" != "true" ]; then
@@ -199,7 +289,7 @@ jobs:
         env:
           PR_NUMBER: ${{ env.PR_NUMBER }}
           NEW_HEAD: ${{ steps.delivery.outputs.head_sha }}
-          CODEX_SUMMARY: ${{ steps.codex.outputs.final-message }}
+          CODEX_SUMMARY: ${{ needs.implement.outputs.codex_summary }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
