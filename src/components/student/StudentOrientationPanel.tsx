@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Badge } from "@/components/ui/Badge";
+import { Button, buttonClassName } from "@/components/ui/Button";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Card } from "@/components/ui/Card";
 import { formatDeadline, recommendationStatusLabels } from "@/lib/phase4";
@@ -127,18 +128,18 @@ export function StudentOrientationPanel({
       )}
 
       <section aria-label="Résumé de l’orientation" className="grid gap-4 sm:grid-cols-3">
-        <Card>
-          <h2 className="text-sm font-semibold text-slate-700">Recommandations</h2>
+        <Card aria-labelledby="orientation-recommendations-title">
+          <h2 id="orientation-recommendations-title" className="text-sm font-semibold text-slate-700">Recommandations</h2>
           <p className="mt-1 text-3xl font-semibold text-slate-950">{items.length}</p>
           <div className="mt-3"><Badge variant="neutral">Préparées par AlmaGo</Badge></div>
         </Card>
-        <Card>
-          <h2 className="text-sm font-semibold text-slate-700">Intérêts enregistrés</h2>
+        <Card aria-labelledby="orientation-interests-title">
+          <h2 id="orientation-interests-title" className="text-sm font-semibold text-slate-700">Intérêts enregistrés</h2>
           <p className="mt-1 text-3xl font-semibold text-slate-950">{applicationStateError ? "—" : interestedCount}</p>
           <div className="mt-3"><Badge variant={applicationStateError ? "neutral" : interestedCount ? "success" : "neutral"}>{applicationStateError ? "Indisponible" : interestedCount ? "Suivi démarré" : "Aucun pour l’instant"}</Badge></div>
         </Card>
-        <Card>
-          <h2 className="text-sm font-semibold text-slate-700">Prochaine étape</h2>
+        <Card aria-labelledby="orientation-next-step-title">
+          <h2 id="orientation-next-step-title" className="text-sm font-semibold text-slate-700">Prochaine étape</h2>
           <p className="mt-2 text-sm font-medium leading-6 text-slate-900">
             {applicationStateError ? "Réessaie plus tard pour vérifier tes choix enregistrés." : actionable ? "Choisis un programme qui correspond à ton projet." : items.length ? "Tes choix actuels sont enregistrés." : "Attends les recommandations AlmaGo."}
           </p>
@@ -146,8 +147,8 @@ export function StudentOrientationPanel({
       </section>
 
       {!loadError && items.length === 0 ? (
-        <Card className="border-dashed text-center">
-          <h2 className="text-lg font-semibold text-slate-950">Tes recommandations arrivent bientôt</h2>
+        <Card aria-labelledby="orientation-empty-title" className="border-dashed text-center">
+          <h2 id="orientation-empty-title" className="text-lg font-semibold text-slate-950">Tes recommandations arrivent bientôt</h2>
           <p className="mx-auto mt-2 max-w-xl text-sm text-slate-600">
             L’équipe AlmaGo analyse ton profil avant de publier des pistes adaptées à ton projet.
           </p>
@@ -222,23 +223,22 @@ export function StudentOrientationPanel({
                         aria-label={`Site officiel de ${program.name} (nouvel onglet)`}
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-flex min-h-11 items-center justify-center rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50"
+                        className={buttonClassName("secondary")}
                       >
                         Site officiel
                       </a>
                     )}
-                    <button
+                    <Button
                       type="button"
                       disabled={Boolean(applicationStateError) || Boolean(recommendation.student_interest_at) || busy === recommendation.id || recommendation.status === "not_recommended"}
                       onClick={() => interested(recommendation.id)}
-                      className="inline-flex min-h-11 items-center justify-center rounded-xl bg-emerald-700 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       {recommendation.student_interest_at
                         ? "Intérêt enregistré"
                         : busy === recommendation.id
                           ? "Enregistrement…"
                           : "Ce programme m’intéresse"}
-                    </button>
+                    </Button>
                   </div>
                 </Card>
               );

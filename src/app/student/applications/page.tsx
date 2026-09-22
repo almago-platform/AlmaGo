@@ -1,3 +1,4 @@
+import { PageHeader } from "@/components/ui/PageHeader";
 import { StudentApplicationsPanel } from "@/components/student/StudentApplicationsPanel";
 import { createClient } from "@/lib/supabase/server";
 
@@ -12,20 +13,16 @@ export default async function StudentApplicationsPage() {
 
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:py-12">
-      <div className="max-w-3xl">
-        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-emerald-700">Candidatures</p>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">Ton suivi de candidatures</h1>
-        <p className="mt-3 text-slate-600">
-          Retrouve les statuts, échéances et prochaines actions de chaque dossier au même endroit.
-        </p>
-      </div>
+      <PageHeader
+        badge="Candidatures"
+        title="Ton suivi de candidatures"
+        description="Retrouve les statuts, échéances et prochaines actions de chaque dossier au même endroit."
+      />
 
-      <div className="mt-8">
-        <StudentApplicationsPanel
-          applications={data || []}
-          loadError={error ? "Impossible de charger toutes tes candidatures pour le moment." : undefined}
-        />
-      </div>
+      <StudentApplicationsPanel
+        applications={data || []}
+        loadError={error ? "Impossible de charger toutes tes candidatures pour le moment." : undefined}
+      />
     </main>
   );
 }

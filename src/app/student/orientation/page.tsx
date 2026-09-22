@@ -1,3 +1,4 @@
+import { PageHeader } from "@/components/ui/PageHeader";
 import { StudentOrientationPanel } from "@/components/student/StudentOrientationPanel";
 import { createClient } from "@/lib/supabase/server";
 
@@ -16,24 +17,18 @@ export default async function StudentOrientationPage() {
 
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:py-12">
-      <div className="max-w-3xl">
-        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-emerald-700">Orientation</p>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">
-          Les programmes recommandés pour toi
-        </h1>
-        <p className="mt-3 text-slate-600">
-          Compare les pistes préparées par AlmaGo et indique celles qui t’intéressent. Une recommandation ne garantit jamais une admission.
-        </p>
-      </div>
+      <PageHeader
+        badge="Orientation"
+        title="Les programmes recommandés pour toi"
+        description="Compare les pistes préparées par AlmaGo et indique celles qui t’intéressent. Une recommandation ne garantit jamais une admission."
+      />
 
-      <div className="mt-8">
-        <StudentOrientationPanel
-          recommendations={data || []}
-          applicationProgramIds={(applications || []).map((application) => application.program_id)}
-          loadError={error ? "Impossible de charger tes recommandations pour le moment." : undefined}
-          applicationStateError={applicationsError ? "Impossible de vérifier tes intérêts enregistrés pour le moment." : undefined}
-        />
-      </div>
+      <StudentOrientationPanel
+        recommendations={data || []}
+        applicationProgramIds={(applications || []).map((application) => application.program_id)}
+        loadError={error ? "Impossible de charger tes recommandations pour le moment." : undefined}
+        applicationStateError={applicationsError ? "Impossible de vérifier tes intérêts enregistrés pour le moment." : undefined}
+      />
     </main>
   );
 }

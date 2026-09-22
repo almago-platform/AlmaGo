@@ -52,8 +52,8 @@ export function StudentApplicationsPanel({
       )}
 
       <section aria-label="Résumé des candidatures" className="grid gap-4 sm:grid-cols-3">
-        <Card>
-          <h2 className="text-sm font-semibold text-slate-700">Actions pour toi</h2>
+        <Card aria-labelledby="applications-actions-title">
+          <h2 id="applications-actions-title" className="text-sm font-semibold text-slate-700">Actions pour toi</h2>
           <p className="mt-1 text-3xl font-semibold text-slate-950">{loadError ? "—" : actionable.length}</p>
           <div className="mt-3">
             <Badge variant={loadError ? "neutral" : actionable.length ? "warning" : "success"}>
@@ -61,13 +61,13 @@ export function StudentApplicationsPanel({
             </Badge>
           </div>
         </Card>
-        <Card>
-          <h2 className="text-sm font-semibold text-slate-700">Dossiers déposés</h2>
+        <Card aria-labelledby="applications-submitted-title">
+          <h2 id="applications-submitted-title" className="text-sm font-semibold text-slate-700">Dossiers déposés</h2>
           <p className="mt-1 text-3xl font-semibold text-slate-950">{loadError ? "—" : submitted.length}</p>
           <div className="mt-3"><Badge variant={loadError ? "neutral" : "info"}>{loadError ? "Indisponible" : "Suivis par AlmaGo"}</Badge></div>
         </Card>
-        <Card>
-          <h2 className="text-sm font-semibold text-slate-700">Prochaine échéance</h2>
+        <Card aria-labelledby="applications-deadline-title">
+          <h2 id="applications-deadline-title" className="text-sm font-semibold text-slate-700">Prochaine échéance</h2>
           <p className="mt-2 text-sm font-medium leading-6 text-slate-900">
             {loadError
               ? "Indisponible"
@@ -86,8 +86,8 @@ export function StudentApplicationsPanel({
       </section>
 
       {!loadError && applications.length === 0 ? (
-        <Card className="border-dashed text-center">
-          <h2 className="text-lg font-semibold text-slate-950">Aucune candidature pour le moment</h2>
+        <Card aria-labelledby="applications-empty-title" className="border-dashed text-center">
+          <h2 id="applications-empty-title" className="text-lg font-semibold text-slate-950">Aucune candidature pour le moment</h2>
           <p className="mx-auto mt-2 max-w-xl text-sm text-slate-600">
             Consulte tes recommandations et enregistre ton intérêt pour démarrer un suivi.
           </p>
@@ -115,13 +115,13 @@ export function StudentApplicationsPanel({
               );
 
               return (
-                <Card as="article" key={application.id}>
+                <Card as="article" key={application.id} aria-labelledby={`student-application-title-${application.id}`}>
                   <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
                     <div className="min-w-0">
                       <p className="text-sm font-semibold text-emerald-700">
                         {university?.name || "Université"}{university?.city ? ` · ${university.city}` : ""}
                       </p>
-                      <h3 className="mt-1 text-xl font-semibold text-slate-950">{program?.name || "Programme"}</h3>
+                      <h3 id={`student-application-title-${application.id}`} className="mt-1 text-xl font-semibold text-slate-950">{program?.name || "Programme"}</h3>
                       <p className="mt-1 text-sm text-slate-500">
                         {application.intake_term || "Semestre à confirmer"} · Deadline {formatDeadline(application.deadline)}
                       </p>
@@ -132,35 +132,35 @@ export function StudentApplicationsPanel({
                   </div>
 
                   <div className="mt-6 grid gap-4 sm:grid-cols-3">
-                    <div className={`rounded-2xl p-4 ${application.next_action ? "bg-amber-50" : "bg-slate-50"}`}>
-                      <h4 className="text-xs font-semibold uppercase tracking-wide text-slate-500">Prochaine action</h4>
+                    <Card aria-labelledby={`application-action-title-${application.id}`} className={`shadow-none ${application.next_action ? "bg-amber-50" : "bg-slate-50"}`}>
+                      <h4 id={`application-action-title-${application.id}`} className="text-xs font-semibold uppercase tracking-wide text-slate-500">Prochaine action</h4>
                       <p className="mt-2 text-sm font-medium leading-6 text-slate-900">
                         {application.next_action || "AlmaGo reviendra vers toi."}
                       </p>
-                    </div>
-                    <div className="rounded-2xl bg-slate-50 p-4">
-                      <h4 className="text-xs font-semibold uppercase tracking-wide text-slate-500">Documents nécessaires</h4>
+                    </Card>
+                    <Card aria-labelledby={`application-documents-title-${application.id}`} className="bg-slate-50 shadow-none">
+                      <h4 id={`application-documents-title-${application.id}`} className="text-xs font-semibold uppercase tracking-wide text-slate-500">Documents nécessaires</h4>
                       <p className="mt-2 text-sm leading-6 text-slate-700">
                         {application.required_documents?.length
                           ? application.required_documents.join(", ")
                           : "À confirmer"}
                       </p>
-                    </div>
-                    <div className="rounded-2xl bg-slate-50 p-4">
-                      <h4 className="text-xs font-semibold uppercase tracking-wide text-slate-500">Résultat</h4>
+                    </Card>
+                    <Card aria-labelledby={`application-result-title-${application.id}`} className="bg-slate-50 shadow-none">
+                      <h4 id={`application-result-title-${application.id}`} className="text-xs font-semibold uppercase tracking-wide text-slate-500">Résultat</h4>
                       <p className="mt-2 text-sm font-medium leading-6 text-slate-900">{application.result || "En attente"}</p>
-                    </div>
+                    </Card>
                   </div>
 
                   {application.student_notes && (
-                    <div className="mt-5 rounded-2xl bg-slate-50 p-4">
-                      <h4 className="text-sm font-semibold text-slate-900">Notes</h4>
+                    <Card aria-labelledby={`application-notes-title-${application.id}`} className="mt-5 bg-slate-50 shadow-none">
+                      <h4 id={`application-notes-title-${application.id}`} className="text-sm font-semibold text-slate-900">Notes</h4>
                       <p className="mt-1 text-sm leading-6 text-slate-700">{application.student_notes}</p>
-                    </div>
+                    </Card>
                   )}
 
-                  <section aria-label={`Historique de la candidature ${program?.name || "Programme"}`} className="mt-6 border-l-2 border-emerald-200 pl-4">
-                    <h4 className="text-xs font-semibold uppercase tracking-wide text-slate-500">Historique</h4>
+                  <section aria-labelledby={`application-history-title-${application.id}`} className="mt-6 border-l-2 border-emerald-200 pl-4">
+                    <h4 id={`application-history-title-${application.id}`} className="text-xs font-semibold uppercase tracking-wide text-slate-500">Historique<span className="sr-only"> de la candidature {program?.name || "Programme"}</span></h4>
                     {events.length === 0 ? (
                       <p className="mt-3 text-sm text-slate-600">Aucun événement enregistré pour le moment.</p>
                     ) : (

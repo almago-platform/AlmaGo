@@ -1,3 +1,4 @@
+import { PageHeader } from "@/components/ui/PageHeader";
 import { redirect } from "next/navigation";
 import { DocumentsPanel } from "@/components/student/DocumentsPanel";
 import { createClient } from "@/lib/supabase/server";
@@ -39,20 +40,16 @@ export default async function StudentDocumentsPage() {
 
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:py-12">
-      <div className="max-w-3xl">
-        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-emerald-700">Documents</p>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">Mon dossier documentaire</h1>
-        <p className="mt-3 text-slate-600">
-          Dépose les pièces demandées, suis leur vérification et retrouve les retours AlmaGo au même endroit.
-        </p>
-      </div>
-      <div className="mt-8">
-        <DocumentsPanel
-          documents={documentsResult.data || []}
-          history={historyResult.data || []}
-          loadError={loadError}
-        />
-      </div>
+      <PageHeader
+        badge="Documents"
+        title="Mon dossier documentaire"
+        description="Dépose les pièces demandées, suis leur vérification et retrouve les retours AlmaGo au même endroit."
+      />
+      <DocumentsPanel
+        documents={documentsResult.data || []}
+        history={historyResult.data || []}
+        loadError={loadError}
+      />
     </main>
   );
 }

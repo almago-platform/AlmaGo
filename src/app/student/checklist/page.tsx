@@ -1,3 +1,4 @@
+import { PageHeader } from "@/components/ui/PageHeader";
 import { redirect } from "next/navigation";
 import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
@@ -66,19 +67,17 @@ export default async function ChecklistPage() {
 
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:py-12">
-      <div className="max-w-3xl">
-        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-emerald-700">Checklist</p>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">Mes prochaines étapes</h1>
-        <p className="mt-3 text-slate-600">
-          Suis l’avancement de ton dossier et vois immédiatement ce qui demande ton attention.
-        </p>
-      </div>
+      <PageHeader
+        badge="Checklist"
+        title="Mes prochaines étapes"
+        description="Suis l’avancement de ton dossier et vois immédiatement ce qui demande ton attention."
+      />
 
-      <div className="mt-8 grid gap-5 lg:grid-cols-[1.25fr_0.75fr]">
-        <Card>
+      <div className="grid gap-5 lg:grid-cols-[1.25fr_0.75fr]">
+        <Card aria-labelledby="checklist-progress-title">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <p className="text-sm font-medium text-slate-600">Progression globale</p>
+              <h2 id="checklist-progress-title" className="text-sm font-medium text-slate-600">Progression globale</h2>
               <p className="mt-1 text-3xl font-semibold text-slate-950">{error ? "—" : `${progression}%`}</p>
             </div>
             <Badge variant={!error && progression === 100 ? "success" : "neutral"}>
@@ -90,12 +89,12 @@ export default async function ChecklistPage() {
           </div>
         </Card>
 
-        <Card>
+        <Card aria-labelledby="checklist-next-action-title">
           <p className="text-sm font-medium text-slate-600">Prochaine action</p>
           {error ? (
             <>
               <Badge variant="neutral">Indisponible</Badge>
-              <h2 className="mt-3 text-lg font-semibold text-slate-950">Action non disponible</h2>
+              <h2 id="checklist-next-action-title" className="mt-3 text-lg font-semibold text-slate-950">Action non disponible</h2>
               <p className="mt-2 text-sm text-slate-600">Réessaie dans quelques instants pour connaître ta prochaine étape.</p>
             </>
           ) : nextItem ? (
@@ -105,13 +104,13 @@ export default async function ChecklistPage() {
                   {labels[nextItem.status] || nextItem.status}
                 </Badge>
               </div>
-              <h2 className="mt-3 text-lg font-semibold text-slate-950">{nextItem.title}</h2>
+              <h2 id="checklist-next-action-title" className="mt-3 text-lg font-semibold text-slate-950">{nextItem.title}</h2>
               {nextItem.description && <p className="mt-2 text-sm text-slate-600">{nextItem.description}</p>}
             </>
           ) : (
             <>
               <Badge variant="success">Dossier à jour</Badge>
-              <h2 className="mt-3 text-lg font-semibold text-slate-950">Aucune action urgente</h2>
+              <h2 id="checklist-next-action-title" className="mt-3 text-lg font-semibold text-slate-950">Aucune action urgente</h2>
               <p className="mt-2 text-sm text-slate-600">AlmaGo mettra cette page à jour dès qu’une nouvelle étape sera nécessaire.</p>
             </>
           )}
@@ -125,8 +124,8 @@ export default async function ChecklistPage() {
       )}
 
       {!error && checklistItems.length === 0 ? (
-        <Card className="mt-6 border-dashed text-center">
-          <h2 className="text-lg font-semibold text-slate-950">Ta checklist arrive bientôt</h2>
+        <Card aria-labelledby="checklist-empty-title" className="mt-6 border-dashed text-center">
+          <h2 id="checklist-empty-title" className="text-lg font-semibold text-slate-950">Ta checklist arrive bientôt</h2>
           <p className="mx-auto mt-2 max-w-xl text-sm text-slate-600">
             AlmaGo préparera ici tes étapes personnalisées à partir de ton profil et de ton dossier.
           </p>
@@ -146,10 +145,10 @@ export default async function ChecklistPage() {
               </div>
               <div className="space-y-3">
                 {group.map((item) => (
-                  <Card as="article" key={item.id} className={item.status === "waiting_student" ? "border-amber-200" : ""}>
+                  <Card as="article" key={item.id} aria-labelledby={`checklist-item-title-${item.id}`} className={item.status === "waiting_student" ? "border-amber-200" : ""}>
                     <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
                       <div className="min-w-0">
-                        <h3 className="font-semibold text-slate-950">{item.title}</h3>
+                        <h3 id={`checklist-item-title-${item.id}`} className="font-semibold text-slate-950">{item.title}</h3>
                         {item.description && <p className="mt-1 text-sm leading-6 text-slate-600">{item.description}</p>}
                         {item.completed_at && (
                           <p className="mt-3 text-xs text-slate-500">
