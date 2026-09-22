@@ -120,18 +120,18 @@ export function DocumentsPanel({
       )}
 
       <section aria-label="Résumé des documents" className="grid gap-4 sm:grid-cols-3">
-        <Card>
-          <h2 className="text-sm font-semibold text-slate-700">Validés</h2>
+        <Card aria-labelledby="documents-approved-title">
+          <h2 id="documents-approved-title" className="text-sm font-semibold text-slate-700">Validés</h2>
           <p className="mt-1 text-3xl font-semibold text-slate-950">{approvedCount}</p>
           <div className="mt-3"><Badge variant="success">Conformes</Badge></div>
         </Card>
-        <Card>
-          <h2 className="text-sm font-semibold text-slate-700">En vérification</h2>
+        <Card aria-labelledby="documents-review-title">
+          <h2 id="documents-review-title" className="text-sm font-semibold text-slate-700">En vérification</h2>
           <p className="mt-1 text-3xl font-semibold text-slate-950">{reviewCount}</p>
           <div className="mt-3"><Badge variant="info">Chez AlmaGo</Badge></div>
         </Card>
-        <Card>
-          <h2 className="text-sm font-semibold text-slate-700">À corriger</h2>
+        <Card aria-labelledby="documents-correction-title">
+          <h2 id="documents-correction-title" className="text-sm font-semibold text-slate-700">À corriger</h2>
           <p className="mt-1 text-3xl font-semibold text-slate-950">{correctionCount}</p>
           <div className="mt-3"><Badge variant={correctionCount ? "warning" : "neutral"}>{correctionCount ? "Action requise" : "Rien à signaler"}</Badge></div>
         </Card>
@@ -203,8 +203,8 @@ export function DocumentsPanel({
 
         <div className="mt-4 space-y-3">
           {documents.length === 0 ? (
-            <Card className="border-dashed text-center">
-              <h3 className="font-semibold text-slate-950">Aucun document envoyé</h3>
+            <Card aria-labelledby="documents-empty-title" className="border-dashed text-center">
+              <h3 id="documents-empty-title" className="font-semibold text-slate-950">Aucun document envoyé</h3>
               <p className="mt-2 text-sm text-slate-600">Utilise le formulaire ci-dessus dès qu’une pièce est demandée.</p>
             </Card>
           ) : (
@@ -224,14 +224,14 @@ export function DocumentsPanel({
                       </time>
                     </p>
                     {document.admin_comment && (
-                      <p className="mt-4 rounded-xl bg-slate-50 p-3 text-sm leading-6 text-slate-700">
-                        <span className="font-semibold">Message AlmaGo : </span>
-                        {document.admin_comment}
-                      </p>
+                      <Card aria-labelledby={`document-comment-title-${document.id}`} className="mt-4 bg-slate-50 p-4 shadow-none">
+                        <h4 id={`document-comment-title-${document.id}`} className="text-sm font-semibold text-slate-900">Message AlmaGo</h4>
+                        <p className="mt-1 text-sm leading-6 text-slate-700">{document.admin_comment}</p>
+                      </Card>
                     )}
                   </div>
 
-                  <div className="flex shrink-0 flex-wrap gap-2">
+                  <div className="flex w-full flex-wrap gap-2 sm:w-auto sm:shrink-0">
                     <a
                       href={`/api/documents/${document.id}/view`}
                       aria-label={`Ouvrir ${document.original_filename} (nouvel onglet)`}
@@ -266,8 +266,8 @@ export function DocumentsPanel({
         <h2 id="document-history-title" className="text-xl font-semibold text-slate-950">Historique du dossier</h2>
         <div className="mt-4 space-y-2">
           {history.length === 0 ? (
-            <Card className="border-dashed">
-              <p className="text-sm text-slate-600">Les décisions et mises à jour AlmaGo apparaîtront ici.</p>
+            <Card aria-labelledby="document-history-empty-title" className="border-dashed">
+              <p id="document-history-empty-title" className="text-sm text-slate-600">Les décisions et mises à jour AlmaGo apparaîtront ici.</p>
             </Card>
           ) : (
             history.map((event) => (
