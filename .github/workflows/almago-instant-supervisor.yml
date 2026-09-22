@@ -21,7 +21,11 @@ jobs:
       contains(github.event.comment.body, 'ALMAGO REVIEW REQUEST') &&
       !contains(github.event.comment.body, 'SUPERVISOR:') &&
       !contains(github.event.comment.body, '@codex') &&
-      (github.actor == 'chatgpt-codex-connector[bot]' || github.actor == 'tayariAyoub')
+      (
+        github.actor == 'chatgpt-codex-connector[bot]' ||
+        github.actor == 'tayariAyoub' ||
+        (github.actor == 'github-actions[bot]' && contains(github.event.comment.body, 'SOURCE: AlmaGo Codex Patch Bridge'))
+      )
     runs-on: ubuntu-latest
     timeout-minutes: 10
     env:
@@ -174,14 +178,25 @@ jobs:
 
             let checkSummary = "(No GitHub check runs found)";
             try {
-              const { data } = await github.rest.checks.listForRef({
-                owner,
-                repo,
-                ref: headSha,
-                per_page: 100,
-              });
-              if (data.check_runs?.length) {
-                checkSummary = data.check_runs
+              let checkRuns = [];
+              for (let attempt = 1; attempt <= 20; attempt++) {
+                const { data } = await github.rest.checks.listForRef({
+                  owner,
+                  repo,
+                  ref: headSha,
+                  per_page: 100,
+                });
+                checkRuns = data.check_runs || [];
+
+                const canonical = checkRuns.find((run) => run.name === "verify");
+                if (!canonical || canonical.status === "completed") break;
+
+                core.info(`PR CI still running for ${headSha}; wait 10s (attempt ${attempt}/20).`);
+                await new Promise((resolve) => setTimeout(resolve, 10000));
+              }
+
+              if (checkRuns.length) {
+                checkSummary = checkRuns
                   .slice(0, 30)
                   .map((run) => `- ${run.name}: status=${run.status}, conclusion=${run.conclusion || "n/a"}`)
                   .join("\n");
@@ -419,7 +434,7 @@ jobs:
                 ? `@codex ${nextStep} Travaille jusqu’au prochain bloc important, exécute les tests, puis publie une nouvelle ALMAGO REVIEW REQUEST.`
                 : "@codex Continue avec la prochaine étape approuvée de la roadmap, teste, puis publie une nouvelle ALMAGO REVIEW REQUEST.";
             } else if (decision === "APPROVED_WITH_CHANGES" || decision === "REVISE") {
-              codexLine = "@codex Applique les corrections décrites ci-dessus, exécute les tests, puis publie une nouvelle ALMAGO REVIEW REQUEST.";
+              codexLine = "@codex address that feedback";
             }
 
             const body = [
