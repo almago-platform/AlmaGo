@@ -19,26 +19,10 @@ Avant de publier `ALMAGO REVIEW REQUEST`, tu dois vérifier que le commit est r�
 - pousse sur la branche distante de la PR ;
 - vérifie le HEAD distant réel de la PR ;
 - ouvre ou mets à jour une Pull Request ;
-- ajoute dans la PR :
+- vérifie que le HEAD distant réel de la PR correspond au commit poussé ;
+- puis arrête-toi.
 
-`ALMAGO REVIEW REQUEST`
-
-avec obligatoirement une ligne :
-
-`REMOTE HEAD: <sha GitHub exact de la PR>`
-
-et :
-
-- objectif ;
-- fonctionnalités terminées ;
-- migrations ;
-- sécurité/RLS ;
-- tests ;
-- bugs corrigés ;
-- risques ;
-- prochaine étape proposée.
-
-Puis arrête-toi.
+Le workflow `AlmaGo PR CI` exécute automatiquement tests, typecheck, lint, build et `git diff --check` sur chaque nouveau HEAD distant. Si tout est vert, il publie lui-même le `ALMAGO REVIEW REQUEST` avec le vrai `REMOTE HEAD`. Ne duplique pas ce checkpoint manuellement.
 
 ## Fallback obligatoire si le push est impossible
 
@@ -60,7 +44,7 @@ Si ton environnement ne possède pas de remote Git utilisable, si `git push` éc
 
 `BASE HEAD: <sha distant exact>`
 
-Le workflow `AlmaGo Codex Patch Bridge` appliquera ce patch de façon contrôlée sur la branche distante, poussera le commit, vérifiera le nouveau HEAD GitHub, puis publiera lui-même `ALMAGO REVIEW REQUEST`.
+Le workflow `AlmaGo Codex Patch Bridge` appliquera ce patch de façon contrôlée sur la branche distante et poussera le commit. Le nouveau push déclenchera ensuite `AlmaGo PR CI`, qui publiera le checkpoint de review après vérifications vertes.
 
 Ne prétends jamais qu’un commit local est le HEAD GitHub tant que tu ne l’as pas vérifié.
 
