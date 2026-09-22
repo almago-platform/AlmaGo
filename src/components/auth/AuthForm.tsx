@@ -20,20 +20,25 @@ export function AuthForm({ initialMode = "login" }: { initialMode?: Mode }) {
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault(); setError(""); setMessage(""); setLoading(true);
-    const supabase = createClient();
-    if (mode === "forgot") {
-      const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${window.location.origin}/auth/callback?next=/reset-password` });
-      if (resetError) setError(resetError.message); else setMessage("Si cette adresse existe, un lien de réinitialisation a été envoyé.");
-    } else if (mode === "signup") {
-      const { data, error: signUpError } = await supabase.auth.signUp({ email, password, options: { data: { full_name: `${firstName} ${lastName}`.trim() } } });
-      if (signUpError) setError(signUpError.message);
-      else if (data.session) router.push("/student");
-      else setMessage("Vérifie ton adresse email pour continuer.");
-    } else {
-      const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
-      if (signInError) setError("Email ou mot de passe incorrect."); else router.push("/student");
+    try {
+      const supabase = createClient();
+      if (mode === "forgot") {
+        const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${window.location.origin}/auth/callback?next=/reset-password` });
+        if (resetError) setError(resetError.message); else setMessage("Si cette adresse existe, un lien de réinitialisation a été envoyé.");
+      } else if (mode === "signup") {
+        const { data, error: signUpError } = await supabase.auth.signUp({ email, password, options: { data: { full_name: `${firstName} ${lastName}`.trim() } } });
+        if (signUpError) setError(signUpError.message);
+        else if (data.session) router.push("/student");
+        else setMessage("Vérifie ton adresse email pour continuer.");
+      } else {
+        const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+        if (signInError) setError("Email ou mot de passe incorrect."); else router.push("/student");
+      }
+    } catch {
+      setError("Une erreur est survenue. Réessaie.");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }
 
   const title = mode === "login" ? "Connexion" : mode === "signup" ? "Créer mon compte étudiant" : "Mot de passe oublié";

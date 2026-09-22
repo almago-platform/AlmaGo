@@ -7,7 +7,18 @@ import { Button } from "@/components/ui/Button";
 
 export function ResetPasswordForm() {
   const [password, setPassword] = useState(""); const [message, setMessage] = useState(""); const [error, setError] = useState(""); const [saving, setSaving] = useState(false); const router = useRouter();
-  async function submit(event: FormEvent) { event.preventDefault(); setError(""); setMessage(""); setSaving(true); const { error: updateError } = await createClient().auth.updateUser({ password }); setSaving(false); if (updateError) setError("Le lien est expiré ou invalide."); else { setMessage("Mot de passe mis à jour."); setTimeout(() => router.push("/student"), 700); } }
+  async function submit(event: FormEvent) {
+    event.preventDefault(); setError(""); setMessage(""); setSaving(true);
+    try {
+      const { error: updateError } = await createClient().auth.updateUser({ password });
+      if (updateError) setError("Le lien est expiré ou invalide.");
+      else { setMessage("Mot de passe mis à jour."); setTimeout(() => router.push("/student"), 700); }
+    } catch {
+      setError("Une erreur est survenue. Réessaie.");
+    } finally {
+      setSaving(false);
+    }
+  }
   return (
     <section className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
       <p className="text-sm font-semibold uppercase tracking-[0.18em] text-emerald-700">AlmaGo</p>
