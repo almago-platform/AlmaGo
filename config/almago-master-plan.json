@@ -1,0 +1,871 @@
+{
+  "schemaVersion": 1,
+  "name": "AlmaGo Plan de Refonte Professionnelle",
+  "sourceDate": "2026-09-22",
+  "machineIdsNote": "Les IDs A01-A45 et E01-E06 sont ajoutés le 23/09 pour orchestrer le plan reconstruit depuis le plan total du 22/09 et l’état réel du repository.",
+  "policy": {
+    "sourceOfTruth": "config/almago-master-plan.json",
+    "maxConcurrentTasks": 1,
+    "defaultAiMaxFiles": 3,
+    "defaultAiMaxChangedLines": 300,
+    "noAutonomousCriticalChanges": true,
+    "protectedDomains": [
+      "auth",
+      "rls",
+      "supabase",
+      "storage",
+      "admin-permissions",
+      "migrations",
+      "secrets"
+    ],
+    "deferredUntilExplicitApproval": [
+      "payments",
+      "whatsapp",
+      "mass-scraping",
+      "native-mobile"
+    ]
+  },
+  "lots": [
+    {
+      "id": 1,
+      "title": "État réel, règles et tests"
+    },
+    {
+      "id": 2,
+      "title": "Direction visuelle et écrans de référence"
+    },
+    {
+      "id": 3,
+      "title": "Cœur du dossier étudiant"
+    },
+    {
+      "id": 4,
+      "title": "Orientation et suivi"
+    },
+    {
+      "id": 5,
+      "title": "Vitrine et accès"
+    },
+    {
+      "id": 6,
+      "title": "Recette et publication"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "A01",
+      "lot": 1,
+      "title": "Inventorier les routes, écrans et capacités réelles",
+      "status": "DONE",
+      "risk": "low",
+      "execution": "system",
+      "files": [],
+      "dependsOn": [],
+      "acceptance": [
+        "Inventaire fonctionnel cohérent avec le code"
+      ]
+    },
+    {
+      "id": "A02",
+      "lot": 1,
+      "title": "Vérifier isolation étudiant/admin et gardes serveur",
+      "status": "DONE",
+      "risk": "critical",
+      "execution": "codex",
+      "files": [
+        "src/app/student/layout.tsx",
+        "src/app/admin/layout.tsx"
+      ],
+      "dependsOn": [
+        "A01"
+      ],
+      "acceptance": [
+        "Contrôles serveur étudiant/admin conservés"
+      ]
+    },
+    {
+      "id": "A03",
+      "lot": 1,
+      "title": "Auditer RLS, Storage privé et privilèges Supabase",
+      "status": "DONE",
+      "risk": "critical",
+      "execution": "codex",
+      "files": [],
+      "dependsOn": [
+        "A02"
+      ],
+      "acceptance": [
+        "RLS et Storage privé vérifiés"
+      ]
+    },
+    {
+      "id": "A04",
+      "lot": 1,
+      "title": "Stabiliser statuts candidature et règles de deadline",
+      "status": "DONE",
+      "risk": "medium",
+      "execution": "codex",
+      "files": [
+        "src/lib/phase4.ts"
+      ],
+      "dependsOn": [
+        "A03"
+      ],
+      "acceptance": [
+        "Statuts et dates invalides testés"
+      ]
+    },
+    {
+      "id": "A05",
+      "lot": 1,
+      "title": "Distinguer chargement, erreur, vide et succès",
+      "status": "DONE",
+      "risk": "low",
+      "execution": "ai",
+      "files": [
+        "src/app/student/page.tsx",
+        "src/app/student/checklist/page.tsx",
+        "src/app/student/documents/page.tsx"
+      ],
+      "dependsOn": [
+        "A04"
+      ],
+      "acceptance": [
+        "Les erreurs ne sont jamais présentées comme un état vide"
+      ]
+    },
+    {
+      "id": "A06",
+      "lot": 1,
+      "title": "Ajouter tests métier et contrats sécurité",
+      "status": "DONE",
+      "risk": "critical",
+      "execution": "codex",
+      "files": [
+        "tests/phase4.test.mjs",
+        "tests/security.test.mjs"
+      ],
+      "dependsOn": [
+        "A05"
+      ],
+      "acceptance": [
+        "CI détecte les régressions métier et sécurité"
+      ]
+    },
+    {
+      "id": "A07",
+      "lot": 1,
+      "title": "Nettoyer documentation, branches et workflows redondants",
+      "status": "DONE",
+      "risk": "low",
+      "execution": "system",
+      "files": [],
+      "dependsOn": [
+        "A06"
+      ],
+      "acceptance": [
+        "Main reste propre et les workflows redondants sont éliminés"
+      ]
+    },
+    {
+      "id": "A08",
+      "lot": 2,
+      "title": "Appliquer identité visuelle AlmaGo inspirée TLScontact",
+      "status": "DONE",
+      "risk": "low",
+      "execution": "ai",
+      "files": [
+        "src/app/globals.css",
+        "src/components/ui/Button.tsx",
+        "src/components/ui/ProgressBar.tsx"
+      ],
+      "dependsOn": [
+        "A07"
+      ],
+      "acceptance": [
+        "Palette et hiérarchie visuelle cohérentes"
+      ]
+    },
+    {
+      "id": "A09",
+      "lot": 2,
+      "title": "Consolider tokens visuels et composants de base",
+      "status": "TODO",
+      "risk": "low",
+      "execution": "ai",
+      "files": [
+        "src/app/globals.css",
+        "src/components/ui/Button.tsx",
+        "src/components/ui/Card.tsx"
+      ],
+      "dependsOn": [
+        "A08"
+      ],
+      "acceptance": [
+        "Espacements, rayons, boutons et cards cohérents"
+      ]
+    },
+    {
+      "id": "A10",
+      "lot": 2,
+      "title": "Harmoniser shell et navigation étudiante",
+      "status": "TODO",
+      "risk": "low",
+      "execution": "ai",
+      "files": [
+        "src/components/layout/AppShell.tsx",
+        "src/components/student/StudentNav.tsx"
+      ],
+      "dependsOn": [
+        "A09"
+      ],
+      "acceptance": [
+        "Navigation claire desktop/mobile sans débordement"
+      ]
+    },
+    {
+      "id": "A11",
+      "lot": 2,
+      "title": "Établir Mon dossier comme écran de référence",
+      "status": "DONE",
+      "risk": "low",
+      "execution": "ai",
+      "files": [
+        "src/app/student/page.tsx"
+      ],
+      "dependsOn": [
+        "A10"
+      ],
+      "acceptance": [
+        "Prochaine action et progression compréhensibles"
+      ]
+    },
+    {
+      "id": "A12",
+      "lot": 2,
+      "title": "Établir Mes documents comme écran de référence",
+      "status": "DONE",
+      "risk": "low",
+      "execution": "ai",
+      "files": [
+        "src/app/student/documents/page.tsx",
+        "src/components/student/DocumentsPanel.tsx"
+      ],
+      "dependsOn": [
+        "A11"
+      ],
+      "acceptance": [
+        "Statuts et actions documents lisibles"
+      ]
+    },
+    {
+      "id": "A13",
+      "lot": 2,
+      "title": "Uniformiser visuellement les écrans Auth",
+      "status": "TODO",
+      "risk": "medium",
+      "execution": "codex",
+      "files": [
+        "src/app/login/page.tsx",
+        "src/app/signup/page.tsx",
+        "src/components/auth/AuthForm.tsx"
+      ],
+      "dependsOn": [
+        "A12"
+      ],
+      "acceptance": [
+        "Cohérence visuelle sans modifier la logique Auth"
+      ]
+    },
+    {
+      "id": "A14",
+      "lot": 2,
+      "title": "Finaliser échelle typographique et rythme responsive",
+      "status": "TODO",
+      "risk": "low",
+      "execution": "ai",
+      "files": [
+        "src/app/globals.css",
+        "src/components/ui/PageHeader.tsx",
+        "src/components/layout/AppShell.tsx"
+      ],
+      "dependsOn": [
+        "A13"
+      ],
+      "acceptance": [
+        "Lisible à 320px et sur desktop"
+      ]
+    },
+    {
+      "id": "A15",
+      "lot": 2,
+      "title": "Finaliser focus hover disabled et feedback UI",
+      "status": "TODO",
+      "risk": "low",
+      "execution": "ai",
+      "files": [
+        "src/components/ui/Button.tsx",
+        "src/components/ui/ButtonLink.tsx",
+        "src/components/ui/Badge.tsx"
+      ],
+      "dependsOn": [
+        "A14"
+      ],
+      "acceptance": [
+        "Focus clavier visible et états explicites"
+      ]
+    },
+    {
+      "id": "A16",
+      "lot": 3,
+      "title": "Rendre dashboard étudiant orienté prochaine action",
+      "status": "DONE",
+      "risk": "low",
+      "execution": "ai",
+      "files": [
+        "src/app/student/page.tsx"
+      ],
+      "dependsOn": [
+        "A15"
+      ],
+      "acceptance": [
+        "Prochaine action fiable visible"
+      ]
+    },
+    {
+      "id": "A17",
+      "lot": 3,
+      "title": "Polir Mon profil et sa lisibilité",
+      "status": "TODO",
+      "risk": "low",
+      "execution": "ai",
+      "files": [
+        "src/app/student/profile/page.tsx",
+        "src/components/student/ProfileForm.tsx",
+        "src/components/student/ProfileControls.tsx"
+      ],
+      "dependsOn": [
+        "A16"
+      ],
+      "acceptance": [
+        "Profil clair et utilisable sur mobile"
+      ]
+    },
+    {
+      "id": "A18",
+      "lot": 3,
+      "title": "Polir onboarding étudiant",
+      "status": "DONE",
+      "risk": "low",
+      "execution": "ai",
+      "files": [
+        "src/app/student/onboarding/page.tsx",
+        "src/components/student/OnboardingForm.tsx"
+      ],
+      "dependsOn": [
+        "A17"
+      ],
+      "acceptance": [
+        "Étapes et erreurs compréhensibles"
+      ]
+    },
+    {
+      "id": "A19",
+      "lot": 3,
+      "title": "Fiabiliser Mes documents et ses états",
+      "status": "DONE",
+      "risk": "medium",
+      "execution": "codex",
+      "files": [
+        "src/app/student/documents/page.tsx",
+        "src/components/student/DocumentsPanel.tsx"
+      ],
+      "dependsOn": [
+        "A18"
+      ],
+      "acceptance": [
+        "Erreur vide et historique distingués"
+      ]
+    },
+    {
+      "id": "A20",
+      "lot": 3,
+      "title": "Rendre checklist honnête et actionnable",
+      "status": "DONE",
+      "risk": "low",
+      "execution": "ai",
+      "files": [
+        "src/app/student/checklist/page.tsx"
+      ],
+      "dependsOn": [
+        "A19"
+      ],
+      "acceptance": [
+        "Blocage et prochaine action explicites"
+      ]
+    },
+    {
+      "id": "A21",
+      "lot": 3,
+      "title": "Optimiser navigation mobile étudiant",
+      "status": "TODO",
+      "risk": "low",
+      "execution": "ai",
+      "files": [
+        "src/components/student/StudentNav.tsx",
+        "src/components/layout/AppShell.tsx"
+      ],
+      "dependsOn": [
+        "A20"
+      ],
+      "acceptance": [
+        "Navigation tactile utilisable à 320px"
+      ]
+    },
+    {
+      "id": "A22",
+      "lot": 3,
+      "title": "Uniformiser messages de récupération après erreur",
+      "status": "TODO",
+      "risk": "low",
+      "execution": "ai",
+      "files": [
+        "src/app/student/profile/page.tsx",
+        "src/app/student/documents/page.tsx",
+        "src/app/student/checklist/page.tsx"
+      ],
+      "dependsOn": [
+        "A21"
+      ],
+      "acceptance": [
+        "Chaque erreur propose une reprise claire"
+      ]
+    },
+    {
+      "id": "A23",
+      "lot": 3,
+      "title": "Uniformiser loading et skeletons étudiants",
+      "status": "TODO",
+      "risk": "low",
+      "execution": "ai",
+      "files": [
+        "src/app/student/applications/loading.tsx",
+        "src/app/student/orientation/loading.tsx",
+        "src/app/student/page.tsx"
+      ],
+      "dependsOn": [
+        "A22"
+      ],
+      "acceptance": [
+        "Chargements cohérents et stables"
+      ]
+    },
+    {
+      "id": "A24",
+      "lot": 3,
+      "title": "Uniformiser microcopy étudiant en français",
+      "status": "TODO",
+      "risk": "low",
+      "execution": "ai",
+      "files": [
+        "src/app/student/checklist/page.tsx",
+        "src/components/student/StudentApplicationsPanel.tsx",
+        "src/components/student/StudentOrientationPanel.tsx"
+      ],
+      "dependsOn": [
+        "A23"
+      ],
+      "acceptance": [
+        "Vocabulaire cohérent sans promesse spéculative"
+      ]
+    },
+    {
+      "id": "A25",
+      "lot": 4,
+      "title": "Polir cartes orientation et recommandations",
+      "status": "TODO",
+      "risk": "low",
+      "execution": "ai",
+      "files": [
+        "src/app/student/orientation/page.tsx",
+        "src/components/student/StudentOrientationPanel.tsx"
+      ],
+      "dependsOn": [
+        "A24"
+      ],
+      "acceptance": [
+        "Programme université statut et CTA lisibles"
+      ]
+    },
+    {
+      "id": "A26",
+      "lot": 4,
+      "title": "Fiabiliser états recommandation et intérêt",
+      "status": "DONE",
+      "risk": "medium",
+      "execution": "codex",
+      "files": [
+        "src/components/student/StudentOrientationPanel.tsx"
+      ],
+      "dependsOn": [
+        "A25"
+      ],
+      "acceptance": [
+        "Actions cohérentes avec état backend"
+      ]
+    },
+    {
+      "id": "A27",
+      "lot": 4,
+      "title": "Fiabiliser statuts et deadlines candidatures",
+      "status": "DONE",
+      "risk": "medium",
+      "execution": "codex",
+      "files": [
+        "src/lib/phase4.ts",
+        "src/components/student/StudentApplicationsPanel.tsx"
+      ],
+      "dependsOn": [
+        "A26"
+      ],
+      "acceptance": [
+        "Deadline active cohérente partout"
+      ]
+    },
+    {
+      "id": "A28",
+      "lot": 4,
+      "title": "Clarifier prochaine action dans Mes candidatures",
+      "status": "TODO",
+      "risk": "low",
+      "execution": "ai",
+      "files": [
+        "src/app/student/applications/page.tsx",
+        "src/components/student/StudentApplicationsPanel.tsx"
+      ],
+      "dependsOn": [
+        "A27"
+      ],
+      "acceptance": [
+        "Chaque candidature expose son prochain geste"
+      ]
+    },
+    {
+      "id": "A29",
+      "lot": 4,
+      "title": "Polir workflow admin Orientation",
+      "status": "TODO",
+      "risk": "high",
+      "execution": "codex",
+      "files": [
+        "src/app/admin/orientation/page.tsx",
+        "src/components/admin/AdminOrientationPanel.tsx"
+      ],
+      "dependsOn": [
+        "A28"
+      ],
+      "acceptance": [
+        "Admin traite les dossiers sans affaiblir les permissions"
+      ]
+    },
+    {
+      "id": "A30",
+      "lot": 4,
+      "title": "Polir workflow admin Candidatures",
+      "status": "TODO",
+      "risk": "high",
+      "execution": "codex",
+      "files": [
+        "src/app/admin/applications/page.tsx",
+        "src/components/admin/AdminApplicationsPanel.tsx"
+      ],
+      "dependsOn": [
+        "A29"
+      ],
+      "acceptance": [
+        "File de traitement et statuts compréhensibles"
+      ]
+    },
+    {
+      "id": "A31",
+      "lot": 4,
+      "title": "Auditer cohérence notifications et historique étudiant",
+      "status": "TODO",
+      "risk": "high",
+      "execution": "codex",
+      "files": [
+        "src/components/student/StudentApplicationsPanel.tsx",
+        "src/components/student/DocumentsPanel.tsx"
+      ],
+      "dependsOn": [
+        "A30"
+      ],
+      "acceptance": [
+        "Aucune fuite de note interne ni doublon trompeur"
+      ]
+    },
+    {
+      "id": "A32",
+      "lot": 4,
+      "title": "Uniformiser vide erreur reprise Orientation/Candidatures",
+      "status": "TODO",
+      "risk": "low",
+      "execution": "ai",
+      "files": [
+        "src/app/student/orientation/page.tsx",
+        "src/app/student/applications/page.tsx",
+        "src/components/student/StudentOrientationPanel.tsx"
+      ],
+      "dependsOn": [
+        "A31"
+      ],
+      "acceptance": [
+        "États vides utiles et erreurs récupérables"
+      ]
+    },
+    {
+      "id": "A33",
+      "lot": 5,
+      "title": "Restructurer landing autour proposition de valeur",
+      "status": "TODO",
+      "risk": "low",
+      "execution": "ai",
+      "files": [
+        "src/app/page.tsx",
+        "src/app/globals.css"
+      ],
+      "dependsOn": [
+        "A32"
+      ],
+      "acceptance": [
+        "Valeur AlmaGo comprise rapidement et CTA évident"
+      ]
+    },
+    {
+      "id": "A34",
+      "lot": 5,
+      "title": "Renforcer éléments de confiance landing",
+      "status": "TODO",
+      "risk": "low",
+      "execution": "ai",
+      "files": [
+        "src/app/page.tsx"
+      ],
+      "dependsOn": [
+        "A33"
+      ],
+      "acceptance": [
+        "Processus expliqué sans promesse excessive"
+      ]
+    },
+    {
+      "id": "A35",
+      "lot": 5,
+      "title": "Harmoniser login signup récupération",
+      "status": "DONE",
+      "risk": "medium",
+      "execution": "codex",
+      "files": [
+        "src/app/login/page.tsx",
+        "src/app/signup/page.tsx",
+        "src/app/reset-password/page.tsx"
+      ],
+      "dependsOn": [
+        "A34"
+      ],
+      "acceptance": [
+        "Parcours cohérent et accessible"
+      ]
+    },
+    {
+      "id": "A36",
+      "lot": 5,
+      "title": "Polir unauthorized et reset edge cases",
+      "status": "DONE",
+      "risk": "medium",
+      "execution": "codex",
+      "files": [
+        "src/app/unauthorized/page.tsx",
+        "src/app/reset-password/page.tsx"
+      ],
+      "dependsOn": [
+        "A35"
+      ],
+      "acceptance": [
+        "Pas de dead-end UX"
+      ]
+    },
+    {
+      "id": "A37",
+      "lot": 5,
+      "title": "Finaliser metadata SEO et partage social",
+      "status": "TODO",
+      "risk": "low",
+      "execution": "ai",
+      "files": [
+        "src/app/layout.tsx",
+        "src/app/page.tsx"
+      ],
+      "dependsOn": [
+        "A36"
+      ],
+      "acceptance": [
+        "Titre description et metadata publics cohérents"
+      ]
+    },
+    {
+      "id": "A38",
+      "lot": 5,
+      "title": "Préparer confidentialité mentions et conditions",
+      "status": "TODO",
+      "risk": "high",
+      "execution": "human",
+      "files": [],
+      "dependsOn": [
+        "A37"
+      ],
+      "acceptance": [
+        "Contenu juridique relu humainement"
+      ]
+    },
+    {
+      "id": "A39",
+      "lot": 6,
+      "title": "Ajouter smoke tests navigateur publics",
+      "status": "TODO",
+      "risk": "low",
+      "execution": "system",
+      "files": [],
+      "dependsOn": [
+        "A38"
+      ],
+      "acceptance": [
+        "Landing login signup chargent dans Chromium"
+      ]
+    },
+    {
+      "id": "A40",
+      "lot": 6,
+      "title": "Ajouter matrice responsive et screenshots",
+      "status": "TODO",
+      "risk": "low",
+      "execution": "system",
+      "files": [],
+      "dependsOn": [
+        "A39"
+      ],
+      "acceptance": [
+        "Desktop et mobile testés avec artifacts"
+      ]
+    },
+    {
+      "id": "A41",
+      "lot": 6,
+      "title": "Ajouter audit accessibilité axe",
+      "status": "TODO",
+      "risk": "low",
+      "execution": "system",
+      "files": [],
+      "dependsOn": [
+        "A40"
+      ],
+      "acceptance": [
+        "Violations serious et critical visibles"
+      ]
+    },
+    {
+      "id": "A42",
+      "lot": 6,
+      "title": "Ajouter budgets Lighthouse performance SEO",
+      "status": "TODO",
+      "risk": "low",
+      "execution": "system",
+      "files": [],
+      "dependsOn": [
+        "A41"
+      ],
+      "acceptance": [
+        "Rapport Lighthouse produit"
+      ]
+    },
+    {
+      "id": "A43",
+      "lot": 6,
+      "title": "Ajouter E2E authentifiés étudiant/admin",
+      "status": "BLOCKED",
+      "risk": "critical",
+      "execution": "human",
+      "files": [],
+      "dependsOn": [
+        "A42"
+      ],
+      "acceptance": [
+        "Comptes test séparés sans donnée réelle"
+      ],
+      "notes": "Nécessite des identifiants de test dans GitHub Secrets."
+    },
+    {
+      "id": "A44",
+      "lot": 6,
+      "title": "Connecter observabilité production et analytics",
+      "status": "BLOCKED",
+      "risk": "high",
+      "execution": "human",
+      "files": [],
+      "dependsOn": [
+        "A43"
+      ],
+      "acceptance": [
+        "Erreurs et événements produit observables sans données sensibles"
+      ],
+      "notes": "Nécessite un compte fournisseur et ses secrets."
+    },
+    {
+      "id": "A45",
+      "lot": 6,
+      "title": "Mettre en place recette finale et gate publication",
+      "status": "TODO",
+      "risk": "high",
+      "execution": "system",
+      "files": [],
+      "dependsOn": [
+        "A44"
+      ],
+      "acceptance": [
+        "Release gate visible avant publication critique"
+      ]
+    }
+  ],
+  "extensions": [
+    {
+      "id": "E01",
+      "title": "Messagerie étudiant-AlmaGo",
+      "status": "DEFERRED"
+    },
+    {
+      "id": "E02",
+      "title": "Notifications avancées multicanales",
+      "status": "DEFERRED"
+    },
+    {
+      "id": "E03",
+      "title": "Sauvegarde profil section par section",
+      "status": "DEFERRED"
+    },
+    {
+      "id": "E04",
+      "title": "Nouvelles structures de données produit",
+      "status": "DEFERRED"
+    },
+    {
+      "id": "E05",
+      "title": "Paiements et facturation",
+      "status": "DEFERRED"
+    },
+    {
+      "id": "E06",
+      "title": "Application mobile et canaux additionnels",
+      "status": "DEFERRED"
+    }
+  ]
+}
