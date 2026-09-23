@@ -79,9 +79,43 @@ jobs:
               return;
             }
 
+            let observabilityEnabled = "";
+            let observabilityProvider = "";
+            try {
+              const enabled = await github.rest.actions.getRepoVariable({
+                owner,
+                repo,
+                name: "ALMAGO_OBSERVABILITY_ENABLED",
+              });
+              observabilityEnabled = String(enabled.data.value || "");
+              const provider = await github.rest.actions.getRepoVariable({
+                owner,
+                repo,
+                name: "ALMAGO_OBSERVABILITY_PROVIDER",
+              });
+              observabilityProvider = String(provider.data.value || "").trim();
+            } catch (error) {
+              core.setFailed(
+                "A44 evidence is missing: configure ALMAGO_OBSERVABILITY_ENABLED and ALMAGO_OBSERVABILITY_PROVIDER.",
+              );
+              return;
+            }
+
+            if (observabilityEnabled !== "true" || !observabilityProvider) {
+              core.setFailed(
+                "A44 evidence is incomplete: ALMAGO_OBSERVABILITY_ENABLED must be true and ALMAGO_OBSERVABILITY_PROVIDER must be non-empty.",
+              );
+              return;
+            }
+
             core.summary
               .addHeading("AlmaGo final release gate")
-              .addRaw("Prerequisites A38, A43 and A44 are complete. Testing exact main SHA: " + mainSha)
+              .addRaw(
+                "Prerequisites A38, A43 and A44 are complete. Observability provider: " +
+                observabilityProvider +
+                ". Testing exact main SHA: " +
+                mainSha,
+              )
               .write();
 
   quality:
@@ -179,6 +213,28 @@ jobs:
             const owner = context.repo.owner;
             const repo = context.repo.repo;
             const sha = "${{ needs.prerequisites.outputs.main_sha }}";
+
+            const { data: repository } = await github.rest.repos.get({ owner, repo });
+            const mainBranch = repository.default_branch || "main";
+            const { data: currentMain } = await github.rest.repos.getBranch({
+              owner,
+              repo,
+              branch: mainBranch,
+            });
+            if (currentMain.commit.sha !== sha) {
+              core.summary
+                .addHeading("AlmaGo final release gate")
+                .addRaw(
+                  "BLOCKED — main changed during the release gate. Expected " +
+                  sha +
+                  ", current " +
+                  currentMain.commit.sha +
+                  ".",
+                )
+                .write();
+              core.setFailed("main changed during the release gate; rerun on the new exact SHA.");
+              return;
+            }
 
             const { data: combined } = await github.rest.repos.getCombinedStatusForRef({
               owner,

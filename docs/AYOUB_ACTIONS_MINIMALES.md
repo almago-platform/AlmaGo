@@ -78,6 +78,12 @@ Avant activation :
 
 A44 reste bloquée tant qu’un compte fournisseur n’est pas connecté.
 
+Après activation et vérification, renseigner aussi les variables GitHub Actions non sensibles :
+- `ALMAGO_OBSERVABILITY_ENABLED=true`
+- `ALMAGO_OBSERVABILITY_PROVIDER=<nom-du-fournisseur>`
+
+Le Final Release Gate exige ces deux preuves en plus de la clôture A44.
+
 ## A45 — gate final
 
 A45 est gérée par le système et dépend d’A44. Elle doit fournir un gate de publication visible avant une mise en production critique.
