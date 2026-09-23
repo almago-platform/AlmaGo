@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 const journey = [
@@ -99,9 +100,25 @@ export default function Home() {
           </div>
 
           <aside
-            className="overflow-hidden rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-white shadow-[var(--shadow-card)]"
+            className="overflow-hidden rounded-[calc(var(--radius-panel)+0.25rem)] border border-[var(--brand-border)] bg-white shadow-[0_30px_70px_-40px_rgba(15,23,42,0.48)]"
             aria-label="Exemple d’interface du dossier AlmaGo"
           >
+            <div className="relative h-52 overflow-hidden sm:h-60">
+              <Image
+                src="https://images.unsplash.com/photo-1760111085279-6c4b6d831acc?auto=format&fit=crop&q=85&w=1600"
+                alt="Étudiants traversant un campus universitaire"
+                fill
+                priority
+                sizes="(max-width: 1024px) 100vw, 44vw"
+                className="object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-slate-900/10 to-transparent" />
+              <div className="absolute inset-x-0 bottom-0 p-5 text-white sm:p-6">
+                <p className="text-xs font-bold uppercase tracking-[0.18em] text-[var(--accent-light)]">Projet d’études</p>
+                <p className="mt-1 max-w-sm text-xl font-bold leading-tight">Une expérience plus claire, du premier document à la candidature.</p>
+              </div>
+            </div>
+
             <div className="flex items-center justify-between gap-4 border-b border-[var(--border)] px-5 py-4 sm:px-6">
               <div>
                 <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--accent-strong)]">Aperçu d’exemple</p>
@@ -113,7 +130,7 @@ export default function Home() {
             </div>
 
             <div className="p-5 sm:p-6">
-              <div className="rounded-[var(--radius-panel)] bg-[var(--brand)] p-5 text-white">
+              <div className="rounded-[var(--radius-panel)] bg-[var(--brand)] p-5 text-white shadow-[0_18px_36px_-24px_rgba(41,48,139,0.95)]">
                 <p className="text-sm font-semibold text-indigo-100">Ce qui compte maintenant</p>
                 <p className="mt-3 text-xl font-bold">Une prochaine action clairement identifiée</p>
                 <p className="mt-2 text-sm leading-6 text-indigo-100">
@@ -128,9 +145,17 @@ export default function Home() {
                 <PreviewItem label="Démarches" value="Étapes regroupées" />
               </div>
 
-              <p className="mt-4 text-xs leading-5 text-slate-500">
-                Illustration de l’organisation de l’espace AlmaGo. Les informations réelles dépendent de votre dossier.
-              </p>
+              <div className="mt-4 flex flex-wrap items-center justify-between gap-2 text-xs leading-5 text-slate-500">
+                <p>Illustration de l’organisation de l’espace AlmaGo.</p>
+                <a
+                  href="https://unsplash.com/photos/students-walking-through-a-university-campus-archway-MUiv880yORo"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="font-medium text-slate-500 underline decoration-slate-300 underline-offset-2 hover:text-[var(--brand)]"
+                >
+                  Photo : Brelyn Bashrum / Unsplash
+                </a>
+              </div>
             </div>
           </aside>
         </div>
@@ -150,7 +175,7 @@ export default function Home() {
 
           <div className="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
             {journey.map((item) => (
-              <article key={item.number} className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-5 shadow-[var(--shadow-card)]">
+              <article key={item.number} className="professional-hover rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-5 shadow-[var(--shadow-card)]">
                 <span className="text-sm font-bold text-[var(--accent-strong)]">{item.number}</span>
                 <h3 className="mt-4 text-lg font-bold text-slate-950">{item.title}</h3>
                 <p className="mt-2 text-sm leading-6 text-slate-600">{item.description}</p>
