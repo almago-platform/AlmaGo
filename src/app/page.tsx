@@ -28,7 +28,10 @@ const journey = [
 export default function Home() {
   return (
     <main className="min-h-screen bg-[var(--background)] text-slate-950">
-      <HomeHeader />\n      <HomeHero />\n\n    <section id="parcours" className="bg-white py-16 sm:py-20">
+      <HomeHeader />
+      <HomeHero />
+
+      <section id="parcours" className="bg-white py-16 sm:py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl">
             <p className="eyebrow">Comment ça marche</p>
