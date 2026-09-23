@@ -36,13 +36,26 @@ const dashboardCards = [
 
 export default async function AdminEntry() {
   const supabase = await createClient();
-  const [{ count: universityCount }, { count: programCount }, { count: applicationCount }, { count: pendingDocuments }] =
+  const [{ count: universityCount, error: universitiesError }, { count: programCount, error: programsError }, { count: applicationCount, error: applicationsError }, { count: pendingDocuments, error: documentsError }] =
     await Promise.all([
       supabase.from("universities").select("id", { count: "exact", head: true }).eq("is_active", true),
       supabase.from("programs").select("id", { count: "exact", head: true }).eq("is_active", true),
       supabase.from("applications").select("id", { count: "exact", head: true }).not("status", "in", "(admission,rejection,withdrawn)"),
       supabase.from("documents").select("id", { count: "exact", head: true }).eq("status", "pending"),
     ]);
+
+  if (universitiesError || programsError || applicationsError || documentsError) {
+    return (
+      <main className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 sm:py-12">
+        <PageHeader badge="Administration" title="Pilotage AlmaGo" />
+        <Card role="alert">
+          <h2 className="text-xl font-semibold text-slate-950">Indicateurs indisponibles</h2>
+          <p className="mt-2 text-sm text-slate-600">Impossible de charger les données pour le moment. Réessayez dans quelques instants.</p>
+          <div className="mt-5"><ButtonLink href="/admin">Réessayer</ButtonLink></div>
+        </Card>
+      </main>
+    );
+  }
 
   const counts = {
     universities: universityCount || 0,
