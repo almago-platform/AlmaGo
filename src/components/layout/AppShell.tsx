@@ -73,10 +73,11 @@ export function AppShell({
         Aller au contenu
       </a>
 
-      <aside className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-[17.5rem] lg:flex-col lg:border-r lg:border-slate-200 lg:bg-white">
-        <div className="flex h-20 items-center border-b border-slate-100 px-7">
+      <aside className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-[17.5rem] lg:flex-col lg:border-r lg:border-[var(--border)] lg:bg-[#fbfbfd] lg:shadow-[12px_0_40px_-32px_rgba(15,23,42,0.22)]">
+        <div className="relative flex h-20 items-center border-b border-[var(--border)] px-7">
+          <span aria-hidden="true" className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[var(--brand)] via-[var(--brand)] to-[var(--accent)]" />
           <Link href={role === "admin" ? "/admin" : "/student"} className="flex items-center gap-3" aria-label="Accueil AlmaGo">
-            <span className="grid h-10 w-10 place-items-center rounded-2xl bg-[var(--brand)] text-sm font-bold text-white shadow-sm">A</span>
+            <span className="relative grid h-10 w-10 place-items-center rounded-[var(--radius-control)] bg-[var(--brand)] text-sm font-bold text-white shadow-[0_10px_24px_-14px_rgba(41,48,139,0.9)]">A<span aria-hidden="true" className="absolute -bottom-1 -right-1 h-2.5 w-2.5 rounded-full border-2 border-white bg-[var(--accent)]" /></span>
             <span>
               <span className="block text-base font-bold tracking-tight text-slate-950 xl:text-lg">AlmaGo</span>
               <span className="block text-[11px] font-medium leading-4 text-slate-500 xl:text-xs">{role === "admin" ? "Espace administration" : "Espace étudiant"}</span>
@@ -84,7 +85,7 @@ export function AppShell({
           </Link>
         </div>
 
-        <nav className="flex-1 space-y-1 px-4 py-6" aria-label={role === "admin" ? "Navigation administration" : "Navigation étudiant"}>
+        <nav className="flex-1 space-y-1 px-4 py-6 before:mb-3 before:block before:px-3.5 before:text-[10px] before:font-bold before:uppercase before:tracking-[0.18em] before:text-slate-400 before:content-['Navigation']" aria-label={role === "admin" ? "Navigation administration" : "Navigation étudiant"}>
           {items.map((item) => {
             const active = isActive(pathname, item.href);
             return (
@@ -92,7 +93,7 @@ export function AppShell({
                 key={item.href}
                 href={item.href}
                 aria-current={active ? "page" : undefined}
-                className={`group flex min-h-11 items-center gap-3 rounded-[var(--radius-control)] px-3.5 py-2.5 text-sm font-medium transition-colors duration-150 ${active ? "bg-[var(--brand-soft)] text-[var(--brand)]" : "text-slate-600 hover:bg-slate-50 hover:text-slate-950"}`}
+                className={`group relative flex min-h-11 items-center gap-3 rounded-[var(--radius-control)] px-3.5 py-2.5 text-sm font-medium transition-all duration-150 ${active ? "bg-[var(--brand-soft)] text-[var(--brand)] shadow-[inset_3px_0_0_var(--brand)]" : "text-slate-600 hover:translate-x-0.5 hover:bg-white hover:text-slate-950 hover:shadow-sm"}`}
               >
                 <span className={active ? "text-[var(--accent-strong)]" : "text-slate-400 group-hover:text-slate-600"}>{item.icon}</span>
                 {item.label}
@@ -101,7 +102,8 @@ export function AppShell({
           })}
         </nav>
 
-        <div className="border-t border-slate-100 p-4">
+        <div className="border-t border-[var(--border)] bg-white/70 p-4">
+          <p className="mb-3 px-1 text-[11px] leading-4 text-slate-400">AlmaGo · Suivi structuré du dossier</p>
           <Button
             type="button"
             onClick={signOut}
@@ -114,7 +116,7 @@ export function AppShell({
       </aside>
 
       <div className="lg:pl-[17.5rem]">
-        <header className="sticky top-0 z-30 border-b border-slate-200/80 bg-white/95 backdrop-blur lg:hidden">
+        <header className="sticky top-0 z-30 border-b border-[var(--border)] bg-white/95 shadow-[0_8px_24px_-22px_rgba(15,23,42,0.35)] backdrop-blur lg:hidden">
           <div className="flex h-16 items-center justify-between gap-2 px-3 min-[360px]:px-4">
             <Link href={role === "admin" ? "/admin" : "/student"} className="flex items-center gap-2.5" aria-label="Accueil AlmaGo">
               <span className="grid h-9 w-9 place-items-center rounded-[var(--radius-control)] bg-[var(--brand)] text-sm font-bold text-white">A</span>
