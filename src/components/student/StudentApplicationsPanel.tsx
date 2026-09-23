@@ -23,6 +23,11 @@ function firstUniversity(program: any) {
 
 const submittedStatuses = new Set(["submitted", "in_review", "waiting_university", "admission", "accepted", "rejection", "rejected"]);
 
+function studentEventLabel(eventType: string) {
+  if (eventType === "application_status_changed") return "Statut de candidature mis à jour";
+  return "Mise à jour du dossier";
+}
+
 export function StudentApplicationsPanel({
   applications,
   loadError,
@@ -176,24 +181,32 @@ export function StudentApplicationsPanel({
 
                   {application.student_notes && (
                     <div className="mt-5 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-muted)] p-4">
-                      <h4 className="text-sm font-semibold text-slate-900">Notes</h4>
+                      <h4 className="text-sm font-semibold text-slate-900">Message pour vous</h4>
                       <p className="mt-1 text-sm leading-6 text-slate-700">{application.student_notes}</p>
+                      <p className="mt-2 text-xs leading-5 text-slate-500">
+                        Ce message est partagé dans votre espace étudiant. Les notes internes de l’équipe ne sont pas affichées ici.
+                      </p>
                     </div>
                   )}
 
                   <section aria-labelledby={`application-history-title-${application.id}`} className="mt-6">
                     <div className="mb-3 flex items-center justify-between gap-3">
-                      <h4 id={`application-history-title-${application.id}`} className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Historique<span className="sr-only"> de la candidature {program?.name || "Programme"}</span></h4>
+                      <h4 id={`application-history-title-${application.id}`} className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
+                        Historique visible
+                        <span className="sr-only"> de la candidature {program?.name || "Programme"}</span>
+                      </h4>
                       <span className="text-xs text-slate-500">{events.length} événement{events.length > 1 ? "s" : ""}</span>
                     </div>
                     {events.length === 0 ? (
-                      <p className="rounded-[var(--radius-control)] bg-[var(--surface-muted)] p-4 text-sm text-slate-600">Aucun événement enregistré pour le moment.</p>
+                      <p className="rounded-[var(--radius-control)] bg-[var(--surface-muted)] p-4 text-sm text-slate-600">
+                        Aucun événement visible n’est enregistré pour le moment.
+                      </p>
                     ) : (
                       <div className="space-y-3 border-l-2 border-[var(--brand-border)] pl-4">
                         {events.map((event: any) => (
                           <div key={event.id} className="relative">
                             <p className="text-sm font-medium text-slate-900">
-                              {applicationStatusLabels[event.event_type] || event.event_type}
+                              {studentEventLabel(event.event_type)}
                             </p>
                             {event.message && <p className="mt-1 text-sm leading-6 text-slate-700">{event.message}</p>}
                             <time dateTime={event.created_at} className="mt-1 block text-xs text-slate-500">
