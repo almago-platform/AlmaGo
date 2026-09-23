@@ -40,11 +40,11 @@ function formatFileSize(sizeBytes: number) {
 export function DocumentsPanel({
   documents,
   history,
-  loadError,
+  historyLoadError = false,
 }: {
   documents: StudentDocument[];
   history: HistoryEvent[];
-  loadError?: string;
+  historyLoadError?: boolean;
 }) {
   const router = useRouter();
   const fileInput = useRef<HTMLInputElement>(null);
@@ -120,12 +120,6 @@ export function DocumentsPanel({
 
   return (
     <div className="space-y-8">
-      {loadError && (
-        <div role="alert" className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-800">
-          {loadError}
-        </div>
-      )}
-
       <section aria-label="Priorité documentaire" className="grid gap-5 lg:grid-cols-[1fr_0.85fr]">
         <Card className="bg-slate-950 text-white">
           <Badge variant={correctionCount ? "warning" : reviewCount ? "info" : "success"}>
@@ -289,7 +283,11 @@ export function DocumentsPanel({
       <section aria-labelledby="document-history-title">
         <h2 id="document-history-title" className="text-2xl font-semibold tracking-tight text-slate-950">Historique du dossier</h2>
         <div className="mt-4 space-y-2">
-          {history.length === 0 ? (
+          {historyLoadError ? (
+            <Card>
+              <p role="alert" className="text-sm text-red-800">Historique indisponible pour le moment. Réessayez dans quelques instants.</p>
+            </Card>
+          ) : history.length === 0 ? (
             <Card aria-labelledby="document-history-empty-title" className="border-dashed">
               <p id="document-history-empty-title" className="text-sm text-slate-600">Les décisions et mises à jour AlmaGo apparaîtront ici.</p>
             </Card>
