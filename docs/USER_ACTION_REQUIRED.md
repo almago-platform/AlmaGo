@@ -20,7 +20,16 @@ Ne jamais mettre une clé API dans une Issue, un commit, une variable publique o
 
 ### E2E authentifiés
 
-Créer deux comptes **de test uniquement**, sans données personnelles réelles, puis stocker leurs identifiants dans GitHub Secrets. Les noms exacts seront documentés par la tâche A43.
+Créer deux comptes **de test uniquement**, sans données personnelles réelles : un rôle étudiant et un rôle admin. Puis ajouter dans GitHub Actions Secrets :
+
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
+- `ALMAGO_E2E_STUDENT_EMAIL`
+- `ALMAGO_E2E_STUDENT_PASSWORD`
+- `ALMAGO_E2E_ADMIN_EMAIL`
+- `ALMAGO_E2E_ADMIN_PASSWORD`
+
+Enfin définir `ALMAGO_AUTH_E2E_ENABLED=true`. Tant que cette variable reste absente/fausse, le workflow authentifié est ignoré.
 
 ### Observabilité
 
