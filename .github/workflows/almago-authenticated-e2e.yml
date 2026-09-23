@@ -1,0 +1,81 @@
+name: AlmaGo Authenticated E2E
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "src/app/admin/**"
+      - "src/app/student/**"
+      - "src/app/login/**"
+      - "src/components/auth/**"
+      - "src/lib/supabase/**"
+      - "src/proxy.ts"
+      - "tests/e2e/authenticated.spec.mjs"
+      - ".github/workflows/almago-authenticated-e2e.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: almago-authenticated-e2e
+  cancel-in-progress: true
+
+jobs:
+  authenticated-e2e:
+    if: vars.ALMAGO_AUTH_E2E_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
+      ALMAGO_E2E_STUDENT_EMAIL: ${{ secrets.ALMAGO_E2E_STUDENT_EMAIL }}
+      ALMAGO_E2E_STUDENT_PASSWORD: ${{ secrets.ALMAGO_E2E_STUDENT_PASSWORD }}
+      ALMAGO_E2E_ADMIN_EMAIL: ${{ secrets.ALMAGO_E2E_ADMIN_EMAIL }}
+      ALMAGO_E2E_ADMIN_PASSWORD: ${{ secrets.ALMAGO_E2E_ADMIN_PASSWORD }}
+      CI: "true"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+
+      - name: Require dedicated E2E configuration
+        shell: bash
+        run: |
+          for name in NEXT_PUBLIC_SUPABASE_URL NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ALMAGO_E2E_STUDENT_EMAIL ALMAGO_E2E_STUDENT_PASSWORD ALMAGO_E2E_ADMIN_EMAIL ALMAGO_E2E_ADMIN_PASSWORD; do
+            if [ -z "${!name}" ]; then echo "::error::$name is required when ALMAGO_AUTH_E2E_ENABLED=true"; exit 1; fi
+          done
+
+      - name: Install Playwright without changing the lockfile
+        run: npm install --no-save --package-lock=false @playwright/test@1.55.0
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Build and start AlmaGo
+        shell: bash
+        run: |
+          mkdir -p artifacts/auth-e2e
+          npm run build
+          npm start -- -p 3000 > artifacts/auth-e2e/server.log 2>&1 &
+          for i in {1..40}; do
+            if curl --fail --silent http://127.0.0.1:3000/login > /dev/null; then exit 0; fi
+            sleep 2
+          done
+          cat artifacts/auth-e2e/server.log
+          exit 1
+
+      - name: Run student/admin isolation journeys
+        run: npx playwright test tests/e2e/authenticated.spec.mjs --project=desktop-chromium
+
+      - name: Upload E2E artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: almago-auth-e2e-${{ github.run_id }}
+          path: artifacts/
+          retention-days: 7
+          if-no-files-found: warn
