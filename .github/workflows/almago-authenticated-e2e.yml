@@ -24,8 +24,44 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  configuration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    outputs:
+      ready: ${{ steps.check.outputs.ready }}
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
+      ALMAGO_E2E_STUDENT_EMAIL: ${{ secrets.ALMAGO_E2E_STUDENT_EMAIL }}
+      ALMAGO_E2E_STUDENT_PASSWORD: ${{ secrets.ALMAGO_E2E_STUDENT_PASSWORD }}
+      ALMAGO_E2E_ADMIN_EMAIL: ${{ secrets.ALMAGO_E2E_ADMIN_EMAIL }}
+      ALMAGO_E2E_ADMIN_PASSWORD: ${{ secrets.ALMAGO_E2E_ADMIN_PASSWORD }}
+    steps:
+      - name: Detect authenticated E2E configuration
+        id: check
+        shell: bash
+        run: |
+          missing=()
+          for name in NEXT_PUBLIC_SUPABASE_URL NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ALMAGO_E2E_STUDENT_EMAIL ALMAGO_E2E_STUDENT_PASSWORD ALMAGO_E2E_ADMIN_EMAIL ALMAGO_E2E_ADMIN_PASSWORD; do
+            if [ -z "${!name}" ]; then missing+=("$name"); fi
+          done
+
+          if [ "${#missing[@]}" -gt 0 ]; then
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Authenticated E2E is not configured yet (${#missing[@]} required repository secret(s) missing)."
+            if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then
+              echo "::error::Authenticated E2E cannot run until all required repository secrets are configured."
+              exit 1
+            fi
+            exit 0
+          fi
+
+          echo "ready=true" >> "$GITHUB_OUTPUT"
+          echo "Authenticated E2E configuration detected."
+
   authenticated-e2e:
-    if: vars.ALMAGO_AUTH_E2E_ENABLED == 'true'
+    needs: configuration
+    if: needs.configuration.outputs.ready == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
@@ -48,7 +84,7 @@ jobs:
         shell: bash
         run: |
           for name in NEXT_PUBLIC_SUPABASE_URL NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ALMAGO_E2E_STUDENT_EMAIL ALMAGO_E2E_STUDENT_PASSWORD ALMAGO_E2E_ADMIN_EMAIL ALMAGO_E2E_ADMIN_PASSWORD; do
-            if [ -z "${!name}" ]; then echo "::error::$name is required when ALMAGO_AUTH_E2E_ENABLED=true"; exit 1; fi
+            if [ -z "${!name}" ]; then echo "::error::$name is required for authenticated E2E"; exit 1; fi
           done
 
       - name: Require distinct test-only identities
