@@ -6,6 +6,7 @@ Plan directeur reconstruit à partir du plan total défini le **22 septembre 202
 
 - Ce plan est la source unique des améliorations AlmaGo : aucune IA ne doit inventer une fonctionnalité hors plan.
 - Une seule tâche d’amélioration peut être active à la fois.
+- Aucun workflow ne fusionne automatiquement une PR : les gates publient seulement un état **READY FOR MERGE**.
 - Gemini/Grok ne traitent que des tâches bornées, non sensibles et de 1 à 3 fichiers.
 - Auth, RLS, Supabase, Storage, permissions admin, migrations et secrets vont vers **CODEX/HUMAN REQUIRED**.
 - Paiements, WhatsApp, scraping massif et application mobile native restent hors V1 sans validation explicite.
