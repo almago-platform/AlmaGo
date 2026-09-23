@@ -1,5 +1,7 @@
 # A38 — confirmation propriétaire minimale
 
+A38_REVIEW_READY: false
+
 **Statut : document interne de collecte, non validé juridiquement, ne pas publier tel quel.**
 
 Objectif : réduire A38 aux seules décisions qui ne peuvent pas être déduites du code ou des migrations AlmaGo.
@@ -83,6 +85,12 @@ A38 peut être clôturée uniquement lorsque :
 3. les trois brouillons juridiques sont mis à jour avec ces réponses ;
 4. un humain compétent les relit et valide ;
 5. les pages publiques finales correspondent exactement aux textes validés.
+
+## Preuve automatique de préparation
+
+Quand toutes les informations sont réellement remplies et que les trois textes ne contiennent plus aucun placeholder/warning de brouillon, remplacer `A38_REVIEW_READY: false` par `A38_REVIEW_READY: true` dans cette même PR.
+
+Le workflow `.github/workflows/almago-a38-readiness.yml` vérifie alors automatiquement les quatre fichiers et publie sur l’Issue A38 un marqueur lié au SHA exact de `main`. Si un placeholder subsiste, le workflow échoue et A38 reste ouverte.
 
 ## Gate mécanique après la vraie relecture
 
