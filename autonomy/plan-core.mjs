@@ -57,9 +57,12 @@ export function nextEligibleTask(plan, issues = []) {
   validatePlan(plan);
   const byId = new Map(issues.map(issue => [issueTaskId(issue), issue]).filter(([id]) => id));
   const status = new Map(plan.tasks.map(task => [task.id, effectiveStatus(task, byId.get(task.id))]));
-  const active = [...status.values()].some(value => ["READY","RUNNING","REVIEW","CODEX_REQUIRED","SYSTEM_REQUIRED"].includes(value));
-  if (active) return null;
-  return plan.tasks.find(task => status.get(task.id) === "TODO" && task.dependsOn.every(dep => status.get(dep) === "DONE")) || null;
+  const activeImplementation = [...status.values()].some(value => ["READY","RUNNING","REVIEW"].includes(value));
+  if (activeImplementation) return null;
+  return plan.tasks.find(task =>
+    status.get(task.id) === "TODO" &&
+    task.dependsOn.every(dep => status.get(dep) === "DONE")
+  ) || null;
 }
 
 export function routeTask(task) {

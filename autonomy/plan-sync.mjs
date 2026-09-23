@@ -63,7 +63,9 @@ async function markStaleAiBlocked(issues) {
 
 async function upsertDashboard(plan, issues, selected) {
   const p = progress(plan, issues);
-  const active = p.rows.filter(row => !["DONE","TODO","BLOCKED"].includes(row.status));
+  const active = p.rows.filter(row => ["READY","RUNNING","REVIEW"].includes(row.status));
+  const specialist = p.rows.filter(row => ["CODEX_REQUIRED","SYSTEM_REQUIRED"].includes(row.status));
+  const human = p.rows.filter(row => row.status === "BLOCKED" || row.status === "HUMAN_REQUIRED");
   const blocked = p.rows.filter(row => row.status === "BLOCKED");
   const lines = [
     "<!-- almago-master-dashboard -->",
@@ -77,8 +79,11 @@ async function upsertDashboard(plan, issues, selected) {
     "## Prochaine tâche sélectionnée",
     selected ? "- " + selected.id + " — " + selected.title + " — route **" + routeTask(selected).toUpperCase() + "**" : "- Aucune nouvelle tâche à ouvrir",
     "",
-    "## Blocages connus",
-    blocked.length ? blocked.map(row => "- " + row.task.id + " — " + row.task.title).join("\n") : "- Aucun",
+    "## File spécialiste",
+    specialist.length ? specialist.map(row => "- " + row.task.id + " — " + row.task.title + " — **" + row.status + "**").join("\n") : "- Aucune",
+    "",
+    "## Intervention humaine / blocages",
+    human.length ? human.map(row => "- " + row.task.id + " — " + row.task.title + " — **" + row.status + "**").join("\n") : "- Aucun",
     "",
     "_Mis à jour automatiquement par AlmaGo Master Orchestrator._",
   ];

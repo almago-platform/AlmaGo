@@ -14,9 +14,40 @@ test("first unfinished task is A09", () => {
   assert.equal(nextEligibleTask(plan, [])?.id, "A09");
 });
 
-test("open plan issue prevents parallel work", () => {
+test("active implementation issue prevents parallel implementation work", () => {
   const issue = { state: "open", body: "<!-- almago-plan-task:A09 -->", labels: [{ name: "almago-ai-ready" }] };
   assert.equal(nextEligibleTask(plan, [issue]), null);
+});
+
+test("Codex-required queue does not freeze unrelated safe plan work", () => {
+  const codexIssue = {
+    state: "open",
+    body: "<!-- almago-plan-task:A13 -->",
+    labels: [{ name: "almago-codex-required" }],
+  };
+  const completedA09 = {
+    state: "closed",
+    body: "<!-- almago-plan-task:A09 -->",
+    labels: [{ name: "almago-plan-done" }],
+  };
+  const completedA10 = {
+    state: "closed",
+    body: "<!-- almago-plan-task:A10 -->",
+    labels: [{ name: "almago-plan-done" }],
+  };
+  const next = nextEligibleTask(plan, [codexIssue, completedA09, completedA10]);
+  assert.equal(next?.id, "A17");
+  assert.equal(routeTask(next), "ai");
+});
+
+test("human-required queue does not freeze unrelated safe plan work", () => {
+  const humanIssue = {
+    state: "open",
+    body: "<!-- almago-plan-task:A38 -->",
+    labels: [{ name: "almago-human-required" }],
+  };
+  const next = nextEligibleTask(plan, [humanIssue]);
+  assert.equal(next?.id, "A09");
 });
 
 test("closing A09 unlocks A10", () => {
