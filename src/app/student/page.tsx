@@ -46,75 +46,73 @@ export default async function StudentEntry() {
         ? { label: "Continuer ma checklist", detail: nextItem.title, href: "/student/checklist", owner: "À faire par toi" }
         : { label: "Consulter ma checklist", detail: "Aucune action à faire n’est enregistrée pour le moment. Consulte tes démarches pour voir les étapes connues.", href: "/student/checklist", owner: "Suivi du dossier" };
 
-  return <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
-    <PageHeader
-      badge="Espace étudiant"
-      title={<>Mon dossier Allemagne</>}
-      description={<>Bonjour {profile.first_name || "étudiant"}. Retrouvez ici l’état réel de votre dossier, votre prochaine action et les éléments suivis par AlmaGo.</>}
-      actions={<ButtonLink href={nextAction.href}>{nextAction.label}</ButtonLink>}
-    />
+  return (
+    <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
+      <PageHeader
+        badge="Espace étudiant"
+        title="Votre dossier"
+        description={<>Bonjour {profile.first_name || "étudiant"}. Retrouvez vos démarches, documents et candidatures au même endroit.</>}
+      />
 
-    <div className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
-      <Card className="bg-slate-950 text-white">
-        <div className="flex flex-wrap items-start justify-between gap-4">
+      <div className="grid gap-5 lg:grid-cols-[minmax(0,1.45fr)_minmax(17rem,0.85fr)]">
+        <Card className="relative overflow-hidden border-emerald-200 shadow-none">
+          <div aria-hidden="true" className="absolute inset-y-0 left-0 w-1 bg-[var(--brand)]" />
+          <div className="pl-2">
+            <div className="flex flex-wrap items-center gap-3">
+              <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">À suivre maintenant</p>
+              <Badge variant={hasActionRequired ? "warning" : waitingAlmaGo.length ? "info" : "neutral"}>
+                {hasActionRequired ? "Action à faire" : waitingAlmaGo.length ? "En attente" : "Aucune action enregistrée"}
+              </Badge>
+            </div>
+            <h2 className="mt-5 text-2xl font-semibold tracking-tight text-slate-950 sm:text-3xl">Votre prochaine étape</h2>
+            <p className="mt-3 max-w-2xl text-base leading-7 text-slate-700">{nextAction.detail}</p>
+            <p className="mt-4 text-sm font-medium text-slate-500">Responsable : {nextAction.owner}</p>
+            <div className="mt-6 [&_a]:w-full sm:[&_a]:w-auto"><ButtonLink href={nextAction.href}>{nextAction.label}</ButtonLink></div>
+          </div>
+        </Card>
+
+        <Card className="shadow-none">
+          <p className="text-xs font-bold uppercase tracking-[0.14em] text-slate-500">Préparation</p>
+          <h2 className="mt-2 text-xl font-semibold text-slate-950">Étapes du dossier</h2>
+          <div className="mt-6 flex items-end justify-between gap-3">
+            <p className="text-3xl font-semibold text-slate-950">{checklist.length ? `${completed} sur ${checklist.length}` : "Aucune étape"}</p>
+            {checklist.length > 0 && <span className="text-sm font-semibold text-[var(--brand)]">{progression}%</span>}
+          </div>
+          {checklist.length > 0 && <div className="mt-4"><ProgressBar value={progression} label="Étapes terminées dans le dossier" /></div>}
+          <p className="mt-5 text-sm leading-6 text-slate-600">Ce suivi concerne les démarches enregistrées. Il ne représente ni une admission ni une validation finale.</p>
+          <div className="mt-5"><ButtonLink href="/student/checklist" variant="secondary">Voir les démarches</ButtonLink></div>
+        </Card>
+      </div>
+
+      <section className="mt-10" aria-labelledby="overview-title">
+        <div className="mb-4">
+          <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">Vue d’ensemble</p>
+          <h2 id="overview-title" className="mt-2 text-2xl font-semibold tracking-tight text-slate-950">Le suivi de votre dossier</h2>
+        </div>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <Metric title="À traiter" value={studentActionCount} detail="Actions enregistrées pour vous." tone={studentActionCount ? "warning" : "neutral"} />
+          <Metric title="En attente côté AlmaGo" value={waitingAlmaGo.length} detail="Étapes suivies par l’équipe." tone="info" />
+          <Metric title="Recommandations" value={recommendations?.length || 0} detail="Pistes d’études proposées." />
+          <Metric title="Candidatures" value={applications?.length || 0} detail="Dossiers enregistrés." />
+        </div>
+      </section>
+
+      <Card className="mt-8 shadow-none">
+        <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-emerald-200">État du dossier</p>
-            <h2 className="mt-4 text-3xl font-semibold tracking-tight">Progression générale</h2>
+            <Badge variant={deadlineOverdue ? "warning" : "neutral"}>{deadlineOverdue ? "Échéance dépassée" : "Prochaine échéance"}</Badge>
+            <h2 className="mt-3 text-xl font-semibold text-slate-950">{nextApplication?.deadline ? formatDeadline(nextApplication.deadline) : "Aucune date enregistrée"}</h2>
+            <p className="mt-2 text-sm leading-6 text-slate-600">{nextApplication?.next_action || (nextApplication ? "Vérifiez les détails de cette candidature active." : "Aucune échéance n’est enregistrée pour les candidatures actives.")}</p>
           </div>
-          <Badge variant={checklist.length > 0 && progression === 100 ? "success" : "info"}>{checklist.length ? `${completed} / ${checklist.length} étapes` : "Aucune étape"}</Badge>
+          <div className="shrink-0"><ButtonLink href="/student/applications" variant="secondary">Voir mes candidatures</ButtonLink></div>
         </div>
-        <div className="mt-8">
-          <div className="mb-3 flex items-end justify-between gap-4">
-            <p className="text-5xl font-semibold tracking-tight">{checklist.length ? `${progression}%` : "—"}</p>
-            <p className="text-right text-sm text-slate-300">Basé sur votre checklist actuelle</p>
-          </div>
-          {checklist.length > 0 && <div className="[&_[role=progressbar]]:bg-white/15 [&_[role=progressbar]>div]:bg-emerald-300"><ProgressBar value={progression} label="Progression du dossier" /></div>}
-        </div>
-        <p className="mt-5 max-w-2xl text-sm leading-6 text-slate-300">La progression indique les étapes déjà terminées. Elle ne remplace pas la vérification finale des documents ou des candidatures.</p>
       </Card>
-
-      <Card>
-        <div className="flex items-center justify-between gap-3">
-          <Badge variant={hasActionRequired ? "warning" : waitingAlmaGo.length ? "info" : "neutral"}>{hasActionRequired ? "Action requise" : waitingAlmaGo.length ? "En attente" : "Aucune action enregistrée"}</Badge>
-          <span className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">{nextAction.owner}</span>
-        </div>
-        <h2 className="mt-5 text-2xl font-semibold tracking-tight text-slate-950">Prochaine étape</h2>
-        <p className="mt-3 text-base leading-7 text-slate-700">{nextAction.detail}</p>
-        <div className="mt-6"><ButtonLink href={nextAction.href}>{nextAction.label}</ButtonLink></div>
-      </Card>
-    </div>
-
-    <section className="mt-8" aria-labelledby="overview-title">
-      <div className="mb-4 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
-        <div>
-          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--brand)]">Vue d’ensemble</p>
-          <h2 id="overview-title" className="mt-1 text-2xl font-semibold tracking-tight text-slate-950">Ce qui demande votre attention</h2>
-        </div>
-        <ButtonLink href="/student/checklist" variant="secondary">Voir toutes les étapes</ButtonLink>
-      </div>
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Metric title="À traiter" value={studentActionCount} detail="Actions étudiant, documents ou candidatures." tone={studentActionCount ? "warning" : "success"} />
-        <Metric title="Suivi AlmaGo" value={waitingAlmaGo.length} detail="Éléments en attente côté équipe." tone="info" />
-        <Metric title="Recommandations" value={recommendations?.length || 0} detail="Programmes actuellement proposés." />
-        <Metric title="Candidatures" value={applications?.length || 0} detail="Dossiers suivis dans votre espace." />
-      </div>
-    </section>
-
-    <Card className="mt-8">
-      <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
-        <div>
-          <Badge variant={deadlineOverdue ? "warning" : "neutral"}>{deadlineOverdue ? "Échéance dépassée" : "Prochaine échéance"}</Badge>
-          <h2 className="mt-3 text-xl font-semibold text-slate-950">{nextApplication?.deadline ? formatDeadline(nextApplication.deadline) : "Aucune date enregistrée"}</h2>
-          <p className="mt-2 text-sm leading-6 text-slate-600">{nextApplication?.next_action || (nextApplication ? "Vérifiez les détails de cette candidature active." : "Aucune échéance n’est enregistrée pour les candidatures actives.")}</p>
-        </div>
-        <ButtonLink href="/student/applications" variant="secondary">Suivre mes candidatures</ButtonLink>
-      </div>
-    </Card>
-  </main>;
+    </main>
+  );
 }
 
 function Metric({ title, value, detail, tone = "neutral" }: { title: string; value: number; detail: string; tone?: "success" | "info" | "warning" | "neutral" }) {
-  return <Card as="article"><h3><Badge variant={tone}>{title}</Badge></h3><p className="mt-5 text-3xl font-semibold text-slate-950">{value}</p><p className="mt-2 text-sm leading-6 text-slate-600">{detail}</p></Card>;
+  return <Card as="article" className="shadow-none"><h3><Badge variant={tone}>{title}</Badge></h3><p className="mt-4 text-2xl font-semibold text-slate-950">{value}</p><p className="mt-2 text-sm leading-6 text-slate-600">{detail}</p></Card>;
 }
 
 function DashboardUnavailable() {
