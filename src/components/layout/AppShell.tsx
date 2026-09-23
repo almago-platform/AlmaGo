@@ -115,7 +115,7 @@ export function AppShell({
 
       <div className="lg:pl-[17.5rem]">
         <header className="sticky top-0 z-30 border-b border-slate-200/80 bg-white/95 backdrop-blur lg:hidden">
-          <div className="flex h-16 items-center justify-between px-4">
+          <div className="flex h-16 items-center justify-between gap-2 px-3 min-[360px]:px-4">
             <Link href={role === "admin" ? "/admin" : "/student"} className="flex items-center gap-2.5" aria-label="Accueil AlmaGo">
               <span className="grid h-9 w-9 place-items-center rounded-[var(--radius-control)] bg-[var(--brand)] text-sm font-bold text-white">A</span>
               <span>
@@ -123,12 +123,19 @@ export function AppShell({
                 <span className="mt-1 block text-[11px] font-medium text-slate-500">{role === "admin" ? "Administration" : "Mon espace"}</span>
               </span>
             </Link>
-            <Button type="button" onClick={signOut} variant="secondary" className="min-h-11 px-3 py-2">
-              Déconnexion
+            <Button
+              type="button"
+              onClick={signOut}
+              variant="secondary"
+              aria-label="Se déconnecter"
+              className="min-h-10 shrink-0 px-2.5 py-2 text-xs min-[360px]:min-h-11 min-[360px]:px-3 min-[360px]:text-sm"
+            >
+              <span className="min-[360px]:hidden">Quitter</span>
+              <span className="hidden min-[360px]:inline">Déconnexion</span>
             </Button>
           </div>
 
-          <nav className="mobile-nav-scroll flex snap-x snap-mandatory gap-1 overflow-x-auto border-t border-slate-100 px-3 py-2" aria-label={role === "admin" ? "Navigation administration" : "Navigation étudiant"}>
+          <nav className="mobile-nav-scroll flex snap-x snap-mandatory gap-1 overflow-x-auto overscroll-x-contain border-t border-slate-100 px-3 py-2 scroll-px-3" aria-label={role === "admin" ? "Navigation administration" : "Navigation étudiant"}>
             {items.map((item) => {
               const active = isActive(pathname, item.href);
               return (
@@ -136,7 +143,7 @@ export function AppShell({
                   key={item.href}
                   href={item.href}
                   aria-current={active ? "page" : undefined}
-                  className={`flex min-h-11 shrink-0 snap-start items-center gap-2 rounded-[var(--radius-control)] px-3 py-2 text-sm font-medium transition-colors duration-150 ${active ? "bg-[var(--brand-soft)] text-[var(--brand)]" : "text-slate-600 hover:bg-slate-50 hover:text-slate-950"}`}
+                  className={`flex min-h-11 max-w-[11rem] shrink-0 snap-start items-center gap-2 whitespace-nowrap rounded-[var(--radius-control)] px-3 py-2 text-sm font-medium transition-colors duration-150 ${active ? "bg-[var(--brand-soft)] text-[var(--brand)]" : "text-slate-600 hover:bg-slate-50 hover:text-slate-950"}`}
                 >
                   {item.icon}
                   {item.label}
