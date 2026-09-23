@@ -33,6 +33,27 @@ export const applicationStatusLabels: Record<string, string> = {
   rejected: "Refusée",
 };
 
+export const terminalApplicationStatuses = new Set(["admission", "accepted", "rejection", "rejected", "withdrawn"]);
+
+export function isActiveApplication(status: string) {
+  return !terminalApplicationStatuses.has(status);
+}
+
+export function nextActiveDeadline<T extends { status: string; deadline: string | null }>(applications: T[]): T | undefined {
+  return applications
+    .filter((application) => application.deadline && isActiveApplication(application.status))
+    .sort((a, b) => String(a.deadline).localeCompare(String(b.deadline)))[0];
+}
+
+export function isPastDeadline(deadline: string, now = new Date()) {
+  const parts = new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Europe/Berlin", year: "numeric", month: "2-digit", day: "2-digit",
+  }).formatToParts(now);
+  const part = (type: string) => parts.find((item) => item.type === type)?.value || "";
+  const today = `${part("year")}-${part("month")}-${part("day")}`;
+  return deadline < today;
+}
+
 export function formatDeadline(value: string | null | undefined) {
   if (!value) return "Date à confirmer";
   return new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium" }).format(new Date(`${value}T12:00:00`));
