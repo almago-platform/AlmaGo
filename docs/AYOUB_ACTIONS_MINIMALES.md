@@ -61,7 +61,7 @@ Aucune variable d'activation supplémentaire n'est requise. Le workflow détecte
 - dès que les secrets sont présents, les changements Auth/étudiant/admin déclenchent automatiquement le parcours E2E ;
 - un lancement manuel (`workflow_dispatch`) échoue explicitement si un secret requis manque, au lieu de produire un faux résultat.
 
-Il ne reste donc que les **deux mots de passe des comptes de test** à renseigner. Après les avoir configurés une seule fois, lancer le workflow manuellement pour obtenir la première preuve A43. Ensuite, les changements concernés sont vérifiés automatiquement.
+Il ne reste donc que les **deux mots de passe des comptes de test** à renseigner. Le Master Orchestrator sonde automatiquement A43 à chaque passage (push sur `main` et toutes les trois heures). Tant que les mots de passe manquent, le probe se termine proprement sans faux échec ; dès qu'ils sont présents, le vrai parcours E2E s'exécute et A43 se clôture automatiquement. Un lancement manuel reste possible uniquement pour obtenir la preuve immédiatement, mais il n'est plus obligatoire.
 
 Le test vérifie que :
 
