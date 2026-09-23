@@ -50,9 +50,13 @@ Secrets GitHub Actions requis :
 - `ALMAGO_E2E_ADMIN_EMAIL`
 - `ALMAGO_E2E_ADMIN_PASSWORD`
 
-Variable GitHub Actions :
+Aucune variable d'activation supplémentaire n'est requise. Le workflow détecte automatiquement si ces six secrets sont disponibles :
 
-- `ALMAGO_AUTH_E2E_ENABLED=true`
+- sur un `push` pertinent, il se met en attente proprement si la configuration est incomplète ;
+- dès que les secrets sont présents, les changements Auth/étudiant/admin déclenchent automatiquement le parcours E2E ;
+- un lancement manuel (`workflow_dispatch`) échoue explicitement si un secret requis manque, au lieu de produire un faux résultat.
+
+Après avoir configuré les secrets une seule fois, lancer le workflow manuellement pour obtenir la première preuve A43. Ensuite, les changements concernés sont vérifiés automatiquement.
 
 Le test vérifie que :
 
