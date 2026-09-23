@@ -245,8 +245,11 @@ export function DocumentsPanel({
                     </p>
                     {document.admin_comment && (
                       <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4">
-                        <h4 className="text-sm font-semibold text-amber-950">Message AlmaGo</h4>
+                        <h4 className="text-sm font-semibold text-amber-950">Message pour ce document</h4>
                         <p className="mt-1 text-sm leading-6 text-amber-900">{document.admin_comment}</p>
+                        <p className="mt-2 text-xs leading-5 text-amber-800">
+                          Ce commentaire est destiné à votre espace étudiant et concerne uniquement ce document.
+                        </p>
                       </div>
                     )}
                   </div>
@@ -284,7 +287,12 @@ export function DocumentsPanel({
       </section>
 
       <section aria-labelledby="document-history-title">
-        <h2 id="document-history-title" className="text-2xl font-semibold tracking-tight text-slate-950">Historique du dossier</h2>
+        <h2 id="document-history-title" className="text-2xl font-semibold tracking-tight text-slate-950">
+          Historique visible du dossier
+        </h2>
+        <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
+          Cette chronologie reprend les décisions et demandes communiquées dans votre espace. Les notes internes de l’équipe n’y apparaissent pas.
+        </p>
         <div className="mt-4 space-y-2">
           {historyLoadError ? (
             <Card>
@@ -292,7 +300,9 @@ export function DocumentsPanel({
             </Card>
           ) : history.length === 0 ? (
             <Card aria-labelledby="document-history-empty-title" className="border-dashed">
-              <p id="document-history-empty-title" className="text-sm text-slate-600">Les décisions et mises à jour AlmaGo apparaîtront ici.</p>
+              <p id="document-history-empty-title" className="text-sm text-slate-600">
+                Les décisions et mises à jour qui vous sont communiquées apparaîtront ici.
+              </p>
             </Card>
           ) : (
             history.map((event) => (
