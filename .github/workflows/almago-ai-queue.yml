@@ -202,6 +202,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
+      actions: write
       contents: write
       issues: write
       pull-requests: write
@@ -260,7 +261,12 @@ jobs:
               ...context.repo, event_type: "almago_ci_verify",
               client_payload: { pull_number: pr.number, head_sha: head, source: "AlmaGo AI Task Queue" }
             });
-            core.info("PR #" + pr.number + " opened at verified HEAD " + head);
+            await github.rest.actions.createWorkflowDispatch({
+              ...context.repo,
+              workflow_id: "almago-browser-quality.yml",
+              ref: branch
+            });
+            core.info("PR #" + pr.number + " opened at verified HEAD " + head + "; canonical CI and Browser Quality dispatched.");
       - name: Report delivery failure
         if: failure()
         uses: actions/github-script@v7
