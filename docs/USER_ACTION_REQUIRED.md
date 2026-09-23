@@ -20,7 +20,7 @@ Ne jamais mettre une clé API dans une Issue, un commit, une variable publique o
 
 ### E2E authentifiés
 
-Créer deux comptes **de test uniquement**, sans données personnelles réelles : un rôle étudiant et un rôle admin. Puis ajouter dans GitHub Actions Secrets :
+Les comptes **de test uniquement** existent déjà dans Supabase et leurs rôles étudiant/admin ont été vérifiés le 23/09/2026. Ne pas en créer de nouveaux. Si nécessaire, réinitialiser uniquement leurs mots de passe depuis Supabase, puis ajouter dans GitHub Actions Secrets :
 
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
@@ -29,7 +29,7 @@ Créer deux comptes **de test uniquement**, sans données personnelles réelles 
 - `ALMAGO_E2E_ADMIN_EMAIL`
 - `ALMAGO_E2E_ADMIN_PASSWORD`
 
-Enfin définir `ALMAGO_AUTH_E2E_ENABLED=true`. Tant que cette variable reste absente/fausse, le workflow authentifié est ignoré.
+Enfin définir `ALMAGO_AUTH_E2E_ENABLED=true`. Tant que cette variable reste absente/fausse, le workflow authentifié est ignoré. Après un run réussi, A43 est clôturée automatiquement ; aucune manipulation manuelle de label n’est nécessaire.
 
 ### Observabilité
 
