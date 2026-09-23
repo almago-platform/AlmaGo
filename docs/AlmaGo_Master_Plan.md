@@ -78,10 +78,10 @@ Plan directeur reconstruit à partir du plan total défini le **22 septembre 202
 
 | ID | État | Tâche | Route | Dépendances |
 |---|---|---|---|---|
-| A39 | ⬜ TODO | Ajouter smoke tests navigateur publics | SYSTEM | A38 |
-| A40 | ⬜ TODO | Ajouter matrice responsive et screenshots | SYSTEM | A39 |
-| A41 | ⬜ TODO | Ajouter audit accessibilité axe | SYSTEM | A40 |
-| A42 | ⬜ TODO | Ajouter budgets Lighthouse performance SEO | SYSTEM | A41 |
+| A39 | ✅ DONE | Ajouter smoke tests navigateur publics | SYSTEM | A38 |
+| A40 | ✅ DONE | Ajouter matrice responsive et screenshots | SYSTEM | A39 |
+| A41 | ✅ DONE | Ajouter audit accessibilité axe | SYSTEM | A40 |
+| A42 | ✅ DONE | Ajouter budgets Lighthouse performance SEO | SYSTEM | A41 |
 | A43 | ⛔ BLOCKED | Ajouter E2E authentifiés étudiant/admin | HUMAN | A42 |
 | A44 | ⛔ BLOCKED | Connecter observabilité production et analytics | HUMAN | A43 |
 | A45 | ⬜ TODO | Mettre en place recette finale et gate publication | SYSTEM | A44 |
