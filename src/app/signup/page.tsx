@@ -3,9 +3,9 @@ import { AuthForm } from "@/components/auth/AuthForm";
 
 export default function SignupPage() {
   return (
-    <main className="min-h-screen bg-slate-50 px-4 py-10 text-slate-950 sm:px-6 lg:px-8">
+    <main className="min-h-screen bg-[var(--background)] px-4 py-10 text-slate-950 sm:px-6 lg:px-8">
       <div className="mx-auto grid min-h-[calc(100vh-5rem)] w-full max-w-6xl items-center gap-10 lg:grid-cols-[0.9fr_1.1fr]">
-        <section className="hidden rounded-2xl border border-slate-200 bg-white p-8 shadow-sm lg:block">
+        <section className="hidden rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-8 shadow-[var(--shadow-card)] lg:block">
           <Link href="/" className="inline-flex items-center gap-3" aria-label="Retour à l'accueil AlmaGo">
             <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--brand)] text-lg font-bold text-white shadow-sm">
               A
@@ -28,7 +28,7 @@ export default function SignupPage() {
             </p>
           </div>
 
-          <div className="mt-10 rounded-xl bg-slate-950 p-5 text-white">
+          <div className="mt-10 rounded-[var(--radius-panel)] bg-[var(--brand)] p-5 text-white">
             <p className="text-sm font-semibold text-[var(--accent-light)]">Après inscription</p>
             <ol className="mt-4 space-y-3 text-sm leading-6 text-slate-200">
               <li>1. Confirme ton email.</li>
