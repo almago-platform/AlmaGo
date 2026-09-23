@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { HomeHeader } from "@/components/public/HomeHeader";
 import { HomeHero } from "@/components/public/HomeHero";
+import { HomeValueSection } from "@/components/public/HomeValueSection";
 
 const journey = [
   {
@@ -30,6 +31,7 @@ export default function Home() {
     <main className="min-h-screen bg-[var(--background)] text-slate-950">
       <HomeHeader />
       <HomeHero />
+      <HomeValueSection />
 
       <section id="parcours" className="bg-white py-16 sm:py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
