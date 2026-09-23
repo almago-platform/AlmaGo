@@ -59,7 +59,7 @@ export function HomeJourneySection() {
             <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-[rgba(32,38,111,0.12)] to-transparent" />
 
             <div className="absolute inset-x-0 bottom-0 p-6 text-white sm:p-8">
-              <div className="inline-flex h-12 min-w-12 items-center justify-center rounded-full bg-[var(--accent)] px-4 text-sm font-bold shadow-lg">
+              <div className="inline-flex h-12 min-w-12 items-center justify-center rounded-full bg-[var(--accent-strong)] px-4 text-sm font-bold shadow-lg">
                 6 étapes
               </div>
               <h3 className="mt-4 max-w-md text-2xl font-bold tracking-tight sm:text-3xl">
