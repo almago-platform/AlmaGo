@@ -43,13 +43,14 @@ jobs:
 
       - name: Start production server
         run: |
-          npm start -- -p 3000 > /tmp/almago-server.log 2>&1 &
+          mkdir -p artifacts
+          npm start -- -p 3000 > artifacts/server.log 2>&1 &
           echo $! > /tmp/almago-server.pid
           for i in {1..40}; do
             if curl --fail --silent http://127.0.0.1:3000/ > /dev/null; then exit 0; fi
             sleep 2
           done
-          cat /tmp/almago-server.log
+          cat artifacts/server.log
           exit 1
 
       - name: Playwright responsive and accessibility smoke tests
@@ -66,6 +67,5 @@ jobs:
           name: almago-browser-quality-${{ github.run_id }}
           path: |
             artifacts/
-            /tmp/almago-server.log
           if-no-files-found: warn
           retention-days: 7
