@@ -3,9 +3,9 @@ import { AuthForm } from "@/components/auth/AuthForm";
 
 export default function LoginPage() {
   return (
-    <main className="min-h-screen bg-slate-50 px-4 py-10 text-slate-950 sm:px-6 lg:px-8">
+    <main className="min-h-screen bg-[var(--background)] px-4 py-10 text-slate-950 sm:px-6 lg:px-8">
       <div className="mx-auto grid min-h-[calc(100vh-5rem)] w-full max-w-6xl items-center gap-10 lg:grid-cols-[0.9fr_1.1fr]">
-        <section className="hidden rounded-2xl border border-slate-200 bg-white p-8 shadow-sm lg:block">
+        <section className="hidden rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-8 shadow-[var(--shadow-card)] lg:block">
           <Link href="/" className="inline-flex items-center gap-3" aria-label="Retour à l'accueil AlmaGo">
             <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--brand)] text-lg font-bold text-white shadow-sm">
               A
@@ -29,11 +29,11 @@ export default function LoginPage() {
           </div>
 
           <div className="mt-10 grid gap-4">
-            <div className="rounded-xl border border-slate-200 p-4">
+            <div className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-muted)]/50 p-4">
               <p className="text-sm font-semibold text-slate-500">Suivi clair</p>
               <p className="mt-1 font-bold text-slate-950">Chaque étape reliée à une action concrète.</p>
             </div>
-            <div className="rounded-xl border border-slate-200 p-4">
+            <div className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-muted)]/50 p-4">
               <p className="text-sm font-semibold text-slate-500">Dossier centralisé</p>
               <p className="mt-1 font-bold text-slate-950">Profil, documents et candidatures au même endroit.</p>
             </div>
