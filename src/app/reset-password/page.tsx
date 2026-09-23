@@ -7,7 +7,7 @@ export default function ResetPasswordPage() {
       <div className="mx-auto grid min-h-[calc(100vh-5rem)] w-full max-w-6xl items-center gap-10 lg:grid-cols-[0.9fr_1.1fr]">
         <section className="hidden rounded-2xl border border-slate-200 bg-white p-8 shadow-sm lg:block">
           <Link href="/" className="inline-flex items-center gap-3" aria-label="Retour à l'accueil AlmaGo">
-            <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-700 text-lg font-bold text-white shadow-sm">
+            <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--brand)] text-lg font-bold text-white shadow-sm">
               A
             </span>
             <span>
@@ -19,7 +19,7 @@ export default function ResetPasswordPage() {
           </Link>
 
           <div className="mt-12">
-            <p className="text-sm font-bold uppercase tracking-[0.16em] text-emerald-700">Réinitialisation</p>
+            <p className="text-sm font-bold uppercase tracking-[0.16em] text-[var(--accent-strong)]">Réinitialisation</p>
             <h1 className="mt-3 text-4xl font-bold tracking-tight text-slate-950">
               Choisis un nouveau mot de passe pour retrouver ton espace.
             </h1>
@@ -42,7 +42,7 @@ export default function ResetPasswordPage() {
 
         <section className="mx-auto w-full max-w-xl">
           <div className="mb-6 flex items-center justify-between lg:hidden">
-            <Link href="/" className="text-sm font-bold text-emerald-800">
+            <Link href="/" className="text-sm font-bold text-[var(--brand)]">
               AlmaGo
             </Link>
             <Link href="/login" className="text-sm font-semibold text-slate-600">
