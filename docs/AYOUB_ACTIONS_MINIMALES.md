@@ -24,7 +24,7 @@ Elle regroupe uniquement les informations impossibles à déduire du code : iden
 
 Le contenu ne doit pas être présenté comme final avant cette relecture humaine.
 
-Après que les textes finalisés sont mergés et marqués prêts sur le SHA exact de `main`, la seule action mécanique finale du propriétaire est de poster exactement `A38 HUMAN REVIEW APPROVED` sur l’Issue A38. Le gate vérifie le propriétaire + le SHA avant de fermer A38 et relancer l’orchestrateur.
+Quand les quatre fichiers A38 sont complètement renseignés, `A38_REVIEW_READY: true` déclenche automatiquement une vérification des placeholders et publie la preuve liée au SHA exact de `main`. Après cette preuve et la vraie relecture humaine, la seule action mécanique finale du propriétaire est de poster exactement `A38 HUMAN REVIEW APPROVED` sur l’Issue A38. Le gate vérifie le propriétaire + le SHA avant de fermer A38 et relancer l’orchestrateur.
 
 ## A43 — E2E authentifiés
 
