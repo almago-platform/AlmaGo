@@ -39,6 +39,15 @@
 
 html { scroll-behavior: smooth; }
 
+.public-hero-grid {
+  background:
+    linear-gradient(rgba(41, 48, 139, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(41, 48, 139, 0.035) 1px, transparent 1px),
+    radial-gradient(circle at 78% 18%, rgba(234, 92, 11, 0.10), transparent 18rem),
+    linear-gradient(180deg, #f8f9fe 0%, #f3f5fc 100%);
+  background-size: 32px 32px, 32px 32px, auto, auto;
+}
+
 body {
   margin: 0;
   background:
