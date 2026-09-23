@@ -17,7 +17,7 @@ export default async function StudentApplicationsPage() {
       <PageHeader
         badge="Candidatures"
         title="Suivi des candidatures"
-        description="Retrouvez l’état de chaque dossier, les échéances officielles enregistrées et les prochaines actions à traiter."
+        description="Retrouvez le statut, l’échéance et surtout la prochaine action enregistrée pour chaque candidature."
         actions={<ButtonLink href="/student/orientation" variant="secondary">Voir les recommandations</ButtonLink>}
       />
 
