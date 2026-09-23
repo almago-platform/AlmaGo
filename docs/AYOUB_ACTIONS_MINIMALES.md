@@ -32,12 +32,14 @@ Le workflow est déjà prêt dans :
 
 `.github/workflows/almago-authenticated-e2e.yml`
 
-Créer deux comptes Supabase **réservés aux tests, sans donnée réelle** :
+Des identités Supabase **réservées aux tests, sans donnée réelle**, existent déjà et ont été vérifiées le 23/09/2026 :
 
-- un compte étudiant ;
-- un compte admin avec une ligne `user_roles.role = 'admin'`.
+- au moins un compte étudiant avec le rôle `student` ;
+- un compte admin avec le rôle `admin`.
 
-Pour empêcher l'utilisation accidentelle d'un vrai compte, les deux adresses doivent être différentes et contenir `e2e` ou `test` dans leur adresse.
+**Ne pas créer de nouveaux comptes pour A43.** Réutiliser ces identités dédiées. Si leurs mots de passe ne sont plus connus, les réinitialiser depuis le compte propriétaire Supabase avant de renseigner GitHub Actions.
+
+Pour empêcher l'utilisation accidentelle d'un vrai compte, conserver uniquement des adresses dédiées contenant `e2e` ou `test`.
 
 Secrets GitHub Actions requis :
 
@@ -58,7 +60,7 @@ Le test vérifie que :
 - le compte étudiant ne peut pas entrer dans `/admin` ;
 - le compte admin passe le garde de rôle côté serveur.
 
-Ne jamais réutiliser les identifiants d’un vrai étudiant pour ces tests.
+Ne jamais réutiliser les identifiants d’un vrai étudiant pour ces tests. Aucun mot de passe de test ne doit être ajouté au repository, à une Issue ou au chat.
 
 ## A44 — observabilité et analytics
 
