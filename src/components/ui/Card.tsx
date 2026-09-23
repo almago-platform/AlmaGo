@@ -9,7 +9,10 @@ type CardProps = {
 
 export function Card({ as: Component = "section", children, className = "", "aria-labelledby": labelledBy }: CardProps) {
   return (
-    <Component aria-labelledby={labelledBy} className={`rounded-2xl border border-[var(--border)] bg-white p-5 shadow-[var(--shadow-soft)] sm:p-6 ${className}`}>
+    <Component
+      aria-labelledby={labelledBy}
+      className={`rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[var(--shadow-card)] sm:p-6 ${className}`}
+    >
       {children}
     </Component>
   );
