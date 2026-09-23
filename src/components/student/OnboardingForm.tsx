@@ -115,20 +115,20 @@ export function OnboardingForm({ profile }: { profile: Partial<FormData> }) {
     <section className="mx-auto grid w-full max-w-6xl gap-6 lg:grid-cols-[0.36fr_1fr]">
       <aside className="space-y-4">
         <Card className="bg-slate-950 text-white shadow-xl">
-          <p className="text-sm font-bold uppercase tracking-[0.18em] text-emerald-200">AlmaGo</p>
+          <p className="text-sm font-bold uppercase tracking-[0.18em] text-[var(--accent-light)]">AlmaGo</p>
           <h1 className="mt-4 text-3xl font-bold tracking-tight">Prépare ton dossier étudiant</h1>
           <p className="mt-4 text-sm leading-6 text-slate-200">
             Donne les informations essentielles pour construire un parcours clair vers les études en Allemagne.
           </p>
           <div className="mt-6 rounded-xl bg-white/10 p-4">
-            <p className="text-sm font-semibold text-emerald-100">Étape actuelle</p>
+            <p className="text-sm font-semibold text-[var(--accent-light)]">Étape actuelle</p>
             <p className="mt-2 text-xl font-bold">{currentStep.title}</p>
             <p className="mt-1 text-sm text-slate-300">{currentStep.description}</p>
           </div>
         </Card>
 
         <Card className="shadow-none">
-          <h2 className="text-sm font-bold uppercase tracking-[0.16em] text-emerald-700">Progression</h2>
+          <h2 className="text-sm font-bold uppercase tracking-[0.16em] text-[var(--accent-strong)]">Progression</h2>
           <ol className="mt-5 space-y-3">
             {steps.map((item) => {
               const active = item.id === step;
@@ -137,7 +137,7 @@ export function OnboardingForm({ profile }: { profile: Partial<FormData> }) {
                 <li key={item.id} className="flex gap-3">
                   <span
                     className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-sm font-bold ${
-                      active || done ? "bg-emerald-700 text-white" : "bg-slate-100 text-slate-500"
+                      active || done ? "bg-[var(--brand)] text-white" : "bg-slate-100 text-slate-500"
                     }`}
                   >
                     {item.id}
@@ -157,16 +157,16 @@ export function OnboardingForm({ profile }: { profile: Partial<FormData> }) {
         <div className="mb-8">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div>
-              <p className="text-sm font-bold uppercase tracking-[0.18em] text-emerald-700">Étape {step} sur 5</p>
+              <p className="text-sm font-bold uppercase tracking-[0.18em] text-[var(--accent-strong)]">Étape {step} sur 5</p>
               <h2 className="mt-2 text-3xl font-bold tracking-tight text-slate-950">{currentStep.title}</h2>
               <p className="mt-2 text-sm leading-6 text-slate-600">{currentStep.description}</p>
             </div>
-            <span className="rounded-full border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-bold text-emerald-800">
+            <span className="rounded-full border border-[var(--brand-border)] bg-[var(--brand-soft)] px-4 py-2 text-sm font-bold text-[var(--brand)]">
               {progress}
             </span>
           </div>
           <div className="mt-5 h-2 overflow-hidden rounded-full bg-slate-100">
-            <div className="h-full rounded-full bg-emerald-700 transition-all" style={{ width: progress }} />
+            <div className="h-full rounded-full bg-[var(--brand)] transition-all" style={{ width: progress }} />
           </div>
           <p className="mt-3 text-sm text-slate-500">Tes réponses sont sauvegardées à chaque étape validée.</p>
         </div>
@@ -252,16 +252,16 @@ export function OnboardingForm({ profile }: { profile: Partial<FormData> }) {
                 </div>
               ))}
             </dl>
-            <label className="flex gap-3 rounded-2xl border border-emerald-100 bg-emerald-50 p-4 text-sm leading-6 text-slate-700">
+            <label className="flex gap-3 rounded-2xl border border-[var(--brand-border)] bg-[var(--brand-soft)] p-4 text-sm leading-6 text-slate-700">
               <input
                 type="checkbox"
                 checked={consent}
                 onChange={(event) => setConsent(event.target.checked)}
-                className="mt-1 h-4 w-4 accent-emerald-700"
+                className="mt-1 h-4 w-4 accent-[var(--brand)]"
               />
               <span>
                 J&apos;accepte que les informations fournies soient utilisées pour traiter mon dossier AlmaGo.
-                <span className="font-bold text-emerald-800"> Obligatoire.</span>
+                <span className="font-bold text-[var(--brand)]"> Obligatoire.</span>
               </span>
             </label>
           </div>
