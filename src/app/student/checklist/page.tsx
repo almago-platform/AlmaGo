@@ -34,18 +34,21 @@ export default async function ChecklistPage() {
 
   if (!user) redirect("/login");
 
-  const { data: profile } = await supabase
+  const { data: profile, error: profileError } = await supabase
     .from("profiles")
     .select("onboarding_completed")
     .eq("id", user.id)
     .maybeSingle();
 
+  if (profileError) return <ChecklistUnavailable />;
   if (!profile?.onboarding_completed) redirect("/student/onboarding");
 
   const { data: items, error } = await supabase
     .from("student_checklist_items")
     .select("id,title,description,status,completed_at,checklist_templates(category,sort_order)")
     .order("created_at");
+
+  if (error) return <ChecklistUnavailable />;
 
   const checklistItems = items || [];
   const completedCount = checklistItems.filter((item) => item.status === "completed").length;
@@ -83,34 +86,29 @@ export default async function ChecklistPage() {
               <p className="text-sm font-semibold uppercase tracking-[0.18em] text-emerald-200">Avancement</p>
               <h2 id="checklist-progress-title" className="mt-4 text-3xl font-semibold tracking-tight">Checklist du dossier</h2>
             </div>
-            <Badge variant={!error && progression === 100 ? "success" : "info"}>
-              {error ? "Indisponible" : `${completedCount}/${checklistItems.length} terminées`}
+            <Badge variant={checklistItems.length > 0 && progression === 100 ? "success" : "info"}>
+              {checklistItems.length ? `${completedCount}/${checklistItems.length} terminées` : "Aucune étape"}
             </Badge>
           </div>
           <div className="mt-8">
             <div className="mb-3 flex items-end justify-between gap-4">
-              <p className="text-5xl font-semibold tracking-tight">{error ? "—" : `${progression}%`}</p>
+              <p className="text-5xl font-semibold tracking-tight">{checklistItems.length ? `${progression}%` : "—"}</p>
               <p className="text-right text-sm text-slate-300">Étapes réellement enregistrées dans votre dossier</p>
             </div>
-            {!error && <div className="[&_[role=progressbar]]:bg-white/15 [&_[role=progressbar]>div]:bg-emerald-300"><ProgressBar value={progression} label="Progression de la checklist" /></div>}
+            {checklistItems.length > 0 && <div className="[&_[role=progressbar]]:bg-white/15 [&_[role=progressbar]>div]:bg-emerald-300"><ProgressBar value={progression} label="Progression de la checklist" /></div>}
           </div>
         </Card>
 
         <Card aria-labelledby="checklist-next-action-title">
           <div className="flex items-center justify-between gap-3">
-            <Badge variant={nextItem?.status === "waiting_student" ? "warning" : error ? "neutral" : "success"}>
-              {error ? "Indisponible" : nextItem ? "Prochaine action" : "Dossier à jour"}
+            <Badge variant={nextItem ? "warning" : waitingAlmaGoCount ? "info" : "neutral"}>
+              {nextItem ? "Prochaine action" : waitingAlmaGoCount ? "En attente" : "Aucune action enregistrée"}
             </Badge>
             <span className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
-              {nextItem?.status === "waiting_almago" ? "AlmaGo" : nextItem ? "Vous" : "Suivi"}
+              {nextItem ? "Vous" : waitingAlmaGoCount ? "AlmaGo" : "Suivi"}
             </span>
           </div>
-          {error ? (
-            <>
-              <h2 id="checklist-next-action-title" className="mt-5 text-2xl font-semibold text-slate-950">Action non disponible</h2>
-              <p className="mt-3 text-sm leading-6 text-slate-600">Réessayez dans quelques instants pour connaître votre prochaine étape.</p>
-            </>
-          ) : nextItem ? (
+          {nextItem ? (
             <>
               <h2 id="checklist-next-action-title" className="mt-5 text-2xl font-semibold tracking-tight text-slate-950">{nextItem.title}</h2>
               {nextItem.description && <p className="mt-3 text-sm leading-6 text-slate-600">{nextItem.description}</p>}
@@ -118,8 +116,8 @@ export default async function ChecklistPage() {
             </>
           ) : (
             <>
-              <h2 id="checklist-next-action-title" className="mt-5 text-2xl font-semibold text-slate-950">Aucune action urgente</h2>
-              <p className="mt-3 text-sm leading-6 text-slate-600">AlmaGo mettra cette page à jour dès qu’une nouvelle étape sera nécessaire.</p>
+              <h2 id="checklist-next-action-title" className="mt-5 text-2xl font-semibold text-slate-950">{waitingAlmaGoCount ? "Étapes en attente côté AlmaGo" : "Aucune action enregistrée"}</h2>
+              <p className="mt-3 text-sm leading-6 text-slate-600">{waitingAlmaGoCount ? "Aucune action n’est actuellement demandée de votre côté. Consultez les étapes suivies ci-dessous." : "Aucune démarche ne demande votre action pour le moment. Consultez les étapes connues ci-dessous."}</p>
             </>
           )}
         </Card>
@@ -127,21 +125,15 @@ export default async function ChecklistPage() {
 
       <section aria-label="Résumé checklist" className="mt-5 grid gap-4 sm:grid-cols-3">
         <SummaryCard title="À traiter" value={actionableItems.length} badge="Côté étudiant" tone={actionableItems.length ? "warning" : "success"} />
-        <SummaryCard title="Suivi AlmaGo" value={waitingAlmaGoCount} badge="En cours" tone="info" />
-        <SummaryCard title="Terminées" value={completedCount} badge="Validées" tone="success" />
+        <SummaryCard title="Suivi AlmaGo" value={waitingAlmaGoCount} badge="En attente" tone="info" />
+        <SummaryCard title="Terminées" value={completedCount} badge="Étapes" tone="success" />
       </section>
 
-      {error && (
-        <div role="alert" className="mt-6 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-800">
-          Impossible de charger la checklist pour le moment. Réessayez dans quelques instants.
-        </div>
-      )}
-
-      {!error && checklistItems.length === 0 ? (
+      {checklistItems.length === 0 ? (
         <Card aria-labelledby="checklist-empty-title" className="mt-6 border-dashed text-center">
-          <h2 id="checklist-empty-title" className="text-lg font-semibold text-slate-950">Votre checklist arrive bientôt</h2>
+          <h2 id="checklist-empty-title" className="text-lg font-semibold text-slate-950">Aucune démarche enregistrée</h2>
           <p className="mx-auto mt-2 max-w-xl text-sm text-slate-600">
-            AlmaGo préparera ici vos étapes personnalisées à partir de votre profil et de votre dossier.
+            Votre dossier ne contient pas encore d’étapes. Vous pouvez vérifier vos documents ou revenir consulter cette page plus tard.
           </p>
         </Card>
       ) : (
@@ -200,5 +192,20 @@ function SummaryCard({ title, value, badge, tone }: { title: string; value: numb
       <p className="mt-1 text-3xl font-semibold text-slate-950">{value}</p>
       <div className="mt-3"><Badge variant={tone}>{badge}</Badge></div>
     </Card>
+  );
+}
+
+function ChecklistUnavailable() {
+  return (
+    <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
+      <PageHeader badge="Checklist" title="Prochaines étapes du dossier" />
+      <Card>
+        <div role="alert">
+          <h2 className="text-xl font-semibold text-slate-950">Démarches temporairement indisponibles</h2>
+          <p className="mt-2 text-sm leading-6 text-slate-600">Impossible de charger les étapes du dossier pour le moment. Réessayez dans quelques instants.</p>
+        </div>
+        <div className="mt-5"><ButtonLink href="/student/checklist">Réessayer</ButtonLink></div>
+      </Card>
+    </main>
   );
 }
