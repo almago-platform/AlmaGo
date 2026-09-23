@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/Card";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { createClient } from "@/lib/supabase/server";
+import { formatDeadline, isActiveApplication, isPastDeadline, nextActiveDeadline } from "@/lib/phase4";
 
 export const dynamic = "force-dynamic";
 
@@ -30,8 +31,10 @@ export default async function StudentEntry() {
   const waitingAlmaGo = checklist.filter((item) => item.status === "waiting_almago");
   const nextItem = actionableChecklist.find((item) => item.status === "waiting_student") || actionableChecklist[0];
   const documentsNeedingAction = (documents || []).filter((document) => ["rejected", "replace_required"].includes(document.status)).length;
-  const nextApplication = applications?.[0];
-  const actionableApplications = (applications || []).filter((application) => Boolean(application.next_action));
+  const activeApplications = (applications || []).filter((application) => isActiveApplication(application.status));
+  const nextApplication = nextActiveDeadline(activeApplications);
+  const deadlineOverdue = nextApplication?.deadline ? isPastDeadline(nextApplication.deadline) : false;
+  const actionableApplications = activeApplications.filter((application) => Boolean(application.next_action));
   const actionableApplication = actionableApplications[0];
   const studentActionCount = actionableChecklist.length + documentsNeedingAction + actionableApplications.length;
   const hasActionRequired = studentActionCount > 0;
@@ -58,21 +61,21 @@ export default async function StudentEntry() {
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-emerald-200">État du dossier</p>
             <h2 className="mt-4 text-3xl font-semibold tracking-tight">Progression générale</h2>
           </div>
-          <Badge variant={progression === 100 ? "success" : "info"}>{completed} / {checklist.length || 0} étapes</Badge>
+          <Badge variant={checklist.length > 0 && progression === 100 ? "success" : "info"}>{checklist.length ? `${completed} / ${checklist.length} étapes` : "Aucune étape"}</Badge>
         </div>
         <div className="mt-8">
           <div className="mb-3 flex items-end justify-between gap-4">
-            <p className="text-5xl font-semibold tracking-tight">{progression}%</p>
+            <p className="text-5xl font-semibold tracking-tight">{checklist.length ? `${progression}%` : "—"}</p>
             <p className="text-right text-sm text-slate-300">Basé sur votre checklist actuelle</p>
           </div>
-          <div className="[&_[role=progressbar]]:bg-white/15 [&_[role=progressbar]>div]:bg-emerald-300"><ProgressBar value={progression} label="Progression du dossier" /></div>
+          {checklist.length > 0 && <div className="[&_[role=progressbar]]:bg-white/15 [&_[role=progressbar]>div]:bg-emerald-300"><ProgressBar value={progression} label="Progression du dossier" /></div>}
         </div>
         <p className="mt-5 max-w-2xl text-sm leading-6 text-slate-300">La progression indique les étapes déjà terminées. Elle ne remplace pas la vérification finale des documents ou des candidatures.</p>
       </Card>
 
       <Card>
         <div className="flex items-center justify-between gap-3">
-          <Badge variant={hasActionRequired ? "warning" : "success"}>{hasActionRequired ? "Action requise" : "Dossier à jour"}</Badge>
+          <Badge variant={hasActionRequired ? "warning" : waitingAlmaGo.length ? "info" : "neutral"}>{hasActionRequired ? "Action requise" : waitingAlmaGo.length ? "En attente" : "Aucune action enregistrée"}</Badge>
           <span className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">{nextAction.owner}</span>
         </div>
         <h2 className="mt-5 text-2xl font-semibold tracking-tight text-slate-950">Prochaine étape</h2>
@@ -100,9 +103,9 @@ export default async function StudentEntry() {
     <Card className="mt-8">
       <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
         <div>
-          <Badge variant="neutral">Échéance</Badge>
-          <h2 className="mt-3 text-xl font-semibold text-slate-950">{nextApplication?.deadline || "Aucune date confirmée"}</h2>
-          <p className="mt-2 text-sm leading-6 text-slate-600">{nextApplication?.next_action || "Aucune échéance officielle n’est enregistrée pour le moment."}</p>
+          <Badge variant={deadlineOverdue ? "warning" : "neutral"}>{deadlineOverdue ? "Échéance dépassée" : "Prochaine échéance"}</Badge>
+          <h2 className="mt-3 text-xl font-semibold text-slate-950">{nextApplication?.deadline ? formatDeadline(nextApplication.deadline) : "Aucune date enregistrée"}</h2>
+          <p className="mt-2 text-sm leading-6 text-slate-600">{nextApplication?.next_action || (nextApplication ? "Vérifiez les détails de cette candidature active." : "Aucune échéance n’est enregistrée pour les candidatures actives.")}</p>
         </div>
         <ButtonLink href="/student/applications" variant="secondary">Suivre mes candidatures</ButtonLink>
       </div>
