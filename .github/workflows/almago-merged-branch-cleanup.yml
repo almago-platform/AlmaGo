@@ -99,11 +99,8 @@ jobs:
 
             await core.summary
               .addHeading("AlmaGo branch cleanup")
-              .addRaw(`Deleted merged branches: ${deleted.length}
-`)
+              .addRaw("Deleted merged branches: " + deleted.length + "\\n")
               .addList(deleted.length ? deleted : ["No stale merged branch found."])
-              .addRaw(`
-Skipped protected/open branches: ${skipped.length}
-`)
+              .addRaw("\\nSkipped protected/open branches: " + skipped.length + "\\n")
               .addList(skipped.length ? skipped : ["None."])
               .write();
