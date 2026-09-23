@@ -15,6 +15,7 @@ Run **AlmaGo Final Release Gate** manually from GitHub Actions and type `RELEASE
 The workflow must:
 
 - verify A38, A43 and A44 are completed in the Master Plan issue state;
+- reject high/critical production dependency vulnerabilities via `npm audit --omit=dev --audit-level=high`;
 - run unit/security/business tests;
 - run TypeScript, lint and production build;
 - run public Playwright responsive/accessibility tests;
