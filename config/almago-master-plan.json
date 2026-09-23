@@ -191,7 +191,7 @@
       "id": "A09",
       "lot": 2,
       "title": "Consolider tokens visuels et composants de base",
-      "status": "TODO",
+      "status": "DONE",
       "risk": "low",
       "execution": "ai",
       "files": [
@@ -210,7 +210,7 @@
       "id": "A10",
       "lot": 2,
       "title": "Harmoniser shell et navigation étudiante",
-      "status": "TODO",
+      "status": "DONE",
       "risk": "low",
       "execution": "ai",
       "files": [
@@ -263,7 +263,7 @@
       "id": "A13",
       "lot": 2,
       "title": "Uniformiser visuellement les écrans Auth",
-      "status": "TODO",
+      "status": "DONE",
       "risk": "medium",
       "execution": "codex",
       "files": [
@@ -282,7 +282,7 @@
       "id": "A14",
       "lot": 2,
       "title": "Finaliser échelle typographique et rythme responsive",
-      "status": "TODO",
+      "status": "DONE",
       "risk": "low",
       "execution": "ai",
       "files": [
@@ -301,7 +301,7 @@
       "id": "A15",
       "lot": 2,
       "title": "Finaliser focus hover disabled et feedback UI",
-      "status": "TODO",
+      "status": "DONE",
       "risk": "low",
       "execution": "ai",
       "files": [
@@ -337,7 +337,7 @@
       "id": "A17",
       "lot": 3,
       "title": "Polir Mon profil et sa lisibilité",
-      "status": "TODO",
+      "status": "DONE",
       "risk": "low",
       "execution": "ai",
       "files": [
@@ -409,7 +409,7 @@
       "id": "A21",
       "lot": 3,
       "title": "Optimiser navigation mobile étudiant",
-      "status": "TODO",
+      "status": "DONE",
       "risk": "low",
       "execution": "ai",
       "files": [
@@ -427,7 +427,7 @@
       "id": "A22",
       "lot": 3,
       "title": "Uniformiser messages de récupération après erreur",
-      "status": "TODO",
+      "status": "DONE",
       "risk": "low",
       "execution": "ai",
       "files": [
@@ -446,7 +446,7 @@
       "id": "A23",
       "lot": 3,
       "title": "Uniformiser loading et skeletons étudiants",
-      "status": "TODO",
+      "status": "DONE",
       "risk": "low",
       "execution": "ai",
       "files": [
@@ -465,7 +465,7 @@
       "id": "A24",
       "lot": 3,
       "title": "Uniformiser microcopy étudiant en français",
-      "status": "TODO",
+      "status": "DONE",
       "risk": "low",
       "execution": "ai",
       "files": [
@@ -484,7 +484,7 @@
       "id": "A25",
       "lot": 4,
       "title": "Polir cartes orientation et recommandations",
-      "status": "TODO",
+      "status": "DONE",
       "risk": "low",
       "execution": "ai",
       "files": [
@@ -537,7 +537,7 @@
       "id": "A28",
       "lot": 4,
       "title": "Clarifier prochaine action dans Mes candidatures",
-      "status": "TODO",
+      "status": "DONE",
       "risk": "low",
       "execution": "ai",
       "files": [
@@ -555,7 +555,7 @@
       "id": "A29",
       "lot": 4,
       "title": "Polir workflow admin Orientation",
-      "status": "TODO",
+      "status": "DONE",
       "risk": "high",
       "execution": "codex",
       "files": [
@@ -573,7 +573,7 @@
       "id": "A30",
       "lot": 4,
       "title": "Polir workflow admin Candidatures",
-      "status": "TODO",
+      "status": "DONE",
       "risk": "high",
       "execution": "codex",
       "files": [
@@ -591,7 +591,7 @@
       "id": "A31",
       "lot": 4,
       "title": "Auditer cohérence notifications et historique étudiant",
-      "status": "TODO",
+      "status": "DONE",
       "risk": "high",
       "execution": "codex",
       "files": [
@@ -609,7 +609,7 @@
       "id": "A32",
       "lot": 4,
       "title": "Uniformiser vide erreur reprise Orientation/Candidatures",
-      "status": "TODO",
+      "status": "DONE",
       "risk": "low",
       "execution": "ai",
       "files": [
@@ -628,7 +628,7 @@
       "id": "A33",
       "lot": 5,
       "title": "Restructurer landing autour proposition de valeur",
-      "status": "TODO",
+      "status": "DONE",
       "risk": "low",
       "execution": "ai",
       "files": [
@@ -646,7 +646,7 @@
       "id": "A34",
       "lot": 5,
       "title": "Renforcer éléments de confiance landing",
-      "status": "TODO",
+      "status": "DONE",
       "risk": "low",
       "execution": "ai",
       "files": [
@@ -700,7 +700,7 @@
       "id": "A37",
       "lot": 5,
       "title": "Finaliser metadata SEO et partage social",
-      "status": "TODO",
+      "status": "DONE",
       "risk": "low",
       "execution": "ai",
       "files": [
