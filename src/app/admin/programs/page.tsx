@@ -7,10 +7,24 @@ export const dynamic = "force-dynamic";
 
 export default async function AdminProgramsPage() {
   const supabase = await createClient();
-  const [{ data: programs }, { data: universities }] = await Promise.all([
+  const [{ data: programs, error: programsError }, { data: universities, error: universitiesError }] = await Promise.all([
     supabase.from("programs").select("*, universities(name,city)").order("name"),
     supabase.from("universities").select("id,name").eq("is_active", true).order("name"),
   ]);
+
+  if (programsError || universitiesError) {
+    return (
+      <main className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 sm:py-12">
+        <PageHeader badge="Catalogue" title="Programmes d’études" />
+        <Card>
+          <div role="alert">
+            <h2 className="text-xl font-semibold text-slate-950">Catalogue indisponible</h2>
+            <p className="mt-2 text-sm text-slate-600">Impossible de charger les programmes. Réessayez dans quelques instants.</p>
+          </div>
+        </Card>
+      </main>
+    );
+  }
 
   const programRows = programs || [];
   const activePrograms = programRows.filter((program) => program.is_active).length;
