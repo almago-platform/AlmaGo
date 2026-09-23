@@ -1,29 +1,43 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
+  applicationStatuses,
+  formatDeadline,
   isActiveApplication,
   isPastDeadline,
   nextActiveDeadline,
 } from "../src/lib/phase4.ts";
 
-test("completed and withdrawn applications cannot become current actions", () => {
+test("canonical and legacy terminal applications cannot become current actions", () => {
   for (const status of ["admission", "accepted", "rejection", "rejected", "withdrawn"]) {
     assert.equal(isActiveApplication(status), false, status);
   }
-  for (const status of ["interested", "preparing", "submitted", "waiting_university"]) {
+
+  const canonicalActive = applicationStatuses.filter(
+    (status) => !["admission", "rejection", "withdrawn"].includes(status),
+  );
+  for (const status of [...canonicalActive, "draft", "planned", "in_review"]) {
     assert.equal(isActiveApplication(status), true, status);
   }
 });
 
-test("earliest active deadline excludes closed dossiers and keeps overdue dates visible", () => {
+test("unknown application states fail closed instead of becoming actionable", () => {
+  for (const status of ["", "unknown", "processing_elsewhere", "ADMIN_OVERRIDE"]) {
+    assert.equal(isActiveApplication(status), false, status);
+  }
+});
+
+test("earliest active deadline excludes closed dossiers, invalid dates, and keeps overdue dates visible", () => {
   const applications = [
     { id: "closed", status: "admission", deadline: "2026-01-01" },
     { id: "later", status: "preparing", deadline: "2026-10-01" },
+    { id: "invalid", status: "submitted", deadline: "2026-02-30" },
     { id: "none", status: "submitted", deadline: null },
     { id: "overdue", status: "documents_missing", deadline: "2026-09-01" },
   ];
+
   assert.equal(nextActiveDeadline(applications)?.id, "overdue");
-  assert.deepEqual(applications.map(({ id }) => id), ["closed", "later", "none", "overdue"]);
+  assert.deepEqual(applications.map(({ id }) => id), ["closed", "later", "invalid", "none", "overdue"]);
   assert.equal(nextActiveDeadline([{ status: "withdrawn", deadline: "2026-09-01" }]), undefined);
 });
 
@@ -33,4 +47,13 @@ test("deadline changes to overdue at midnight in Berlin", () => {
   assert.equal(isPastDeadline("2026-09-23", beforeMidnight), false);
   assert.equal(isPastDeadline("2026-09-23", afterMidnight), true);
   assert.equal(isPastDeadline("2026-09-24", afterMidnight), false);
+});
+
+test("invalid or missing deadlines are never treated as real deadlines", () => {
+  for (const deadline of ["", "23-09-2026", "2026-13-01", "2026-02-30"]) {
+    assert.equal(isPastDeadline(deadline), false, deadline);
+    assert.equal(formatDeadline(deadline), "Date à confirmer", deadline);
+  }
+  assert.equal(formatDeadline(null), "Date à confirmer");
+  assert.equal(formatDeadline(undefined), "Date à confirmer");
 });
