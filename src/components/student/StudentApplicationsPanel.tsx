@@ -4,18 +4,13 @@
 import { Badge } from "@/components/ui/Badge";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Card } from "@/components/ui/Card";
-import { applicationStatusLabels, formatDeadline } from "@/lib/phase4";
+import { applicationStatusLabels, formatDeadline, isActiveApplication, isPastDeadline, nextActiveDeadline } from "@/lib/phase4";
 
 function applicationVariant(status: string): "success" | "warning" | "info" | "neutral" {
   if (status === "admission" || status === "accepted") return "success";
   if (["documents_missing", "interested", "rejection", "rejected"].includes(status)) return "warning";
   if (["preparing", "ready_to_submit", "submitted", "waiting_university", "in_review"].includes(status)) return "info";
   return "neutral";
-}
-
-function dateValue(value: string | null | undefined) {
-  if (!value) return Number.POSITIVE_INFINITY;
-  return new Date(`${value}T12:00:00`).getTime();
 }
 
 function firstProgram(application: any) {
@@ -27,7 +22,6 @@ function firstUniversity(program: any) {
 }
 
 const submittedStatuses = new Set(["submitted", "in_review", "waiting_university", "admission", "accepted", "rejection", "rejected"]);
-const terminalStatuses = new Set(["admission", "accepted", "rejection", "rejected", "withdrawn"]);
 
 export function StudentApplicationsPanel({
   applications,
@@ -36,21 +30,13 @@ export function StudentApplicationsPanel({
   applications: any[];
   loadError?: string;
 }) {
-  const actionable = applications.filter((application) => Boolean(application.next_action));
+  const actionable = applications.filter((application) => isActiveApplication(application.status) && Boolean(application.next_action));
   const submitted = applications.filter(
     (application) => Boolean(application.submitted_at) || submittedStatuses.has(application.status),
   );
-  const activeApplications = applications.filter((application) => !terminalStatuses.has(application.status));
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const nextDeadlineApplication = [...applications]
-    .filter(
-      (application) =>
-        application.deadline &&
-        !terminalStatuses.has(application.status) &&
-        dateValue(application.deadline) >= today.getTime(),
-    )
-    .sort((a, b) => dateValue(a.deadline) - dateValue(b.deadline))[0];
+  const activeApplications = applications.filter((application) => isActiveApplication(application.status));
+  const nextDeadlineApplication = nextActiveDeadline(applications);
+  const overdue = nextDeadlineApplication?.deadline && isPastDeadline(nextDeadlineApplication.deadline);
   const priorityApplication = actionable[0] || nextDeadlineApplication || activeApplications[0];
   const priorityProgram = firstProgram(priorityApplication);
 
@@ -82,7 +68,7 @@ export function StudentApplicationsPanel({
               <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-200">Dossier suivi</p>
               <p className="mt-2 font-semibold">{priorityProgram?.name || "Programme"}</p>
               <p className="mt-1 text-sm text-slate-300">
-                {priorityApplication.intake_term || "Semestre à confirmer"} · Deadline {formatDeadline(priorityApplication.deadline)}
+                {priorityApplication.intake_term || "Semestre à confirmer"} · Échéance {formatDeadline(priorityApplication.deadline)}
               </p>
             </div>
           )}
@@ -98,7 +84,7 @@ export function StudentApplicationsPanel({
       <Card aria-labelledby="applications-deadline-title" className="shadow-none">
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
           <div>
-            <Badge variant={nextDeadlineApplication ? "warning" : "neutral"}>Prochaine échéance</Badge>
+            <Badge variant={nextDeadlineApplication ? "warning" : "neutral"}>{overdue ? "Échéance dépassée" : "Prochaine échéance"}</Badge>
             <h2 id="applications-deadline-title" className="mt-3 text-xl font-semibold text-slate-950">
               {loadError
                 ? "Indisponible"
@@ -107,7 +93,7 @@ export function StudentApplicationsPanel({
                   : "Aucune date confirmée"}
             </h2>
             {!loadError && nextDeadlineApplication && (
-              <p className="mt-1 text-sm text-slate-600">{firstProgram(nextDeadlineApplication)?.name || "Programme"}</p>
+              <p className="mt-1 text-sm text-slate-600">{firstProgram(nextDeadlineApplication)?.name || "Programme"}{overdue ? " · Vérifiez ce dossier" : ""}</p>
             )}
           </div>
           <ButtonLink href="/student/checklist" variant="secondary">Voir mes étapes</ButtonLink>
@@ -143,7 +129,7 @@ export function StudentApplicationsPanel({
               );
 
               return (
-                <Card as="article" key={application.id} aria-labelledby={`student-application-title-${application.id}`} className={application.next_action ? "border-amber-300 bg-amber-50/30" : ""}>
+                <Card as="article" key={application.id} aria-labelledby={`student-application-title-${application.id}`} className={isActiveApplication(application.status) && application.next_action ? "border-amber-300 bg-amber-50/30" : ""}>
                   <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
                     <div className="min-w-0">
                       <p className="text-sm font-semibold text-[var(--brand)]">
@@ -151,7 +137,7 @@ export function StudentApplicationsPanel({
                       </p>
                       <h3 id={`student-application-title-${application.id}`} className="mt-1 text-xl font-semibold tracking-tight text-slate-950">{program?.name || "Programme"}</h3>
                       <p className="mt-1 text-sm text-slate-500">
-                        {application.intake_term || "Semestre à confirmer"} · Deadline {formatDeadline(application.deadline)}
+                        {application.intake_term || "Semestre à confirmer"} · Échéance {formatDeadline(application.deadline)}
                       </p>
                     </div>
                     <Badge variant={applicationVariant(application.status)}>
@@ -160,9 +146,9 @@ export function StudentApplicationsPanel({
                   </div>
 
                   <div className="mt-6 grid gap-4 lg:grid-cols-3">
-                    <InfoCard title="Prochaine action" value={application.next_action || "AlmaGo reviendra vers vous."} highlight={Boolean(application.next_action)} />
+                    <InfoCard title="Prochaine action" value={isActiveApplication(application.status) ? application.next_action || "Aucune action enregistrée." : "Dossier terminé."} highlight={isActiveApplication(application.status) && Boolean(application.next_action)} />
                     <InfoCard title="Documents nécessaires" value={application.required_documents?.length ? application.required_documents.join(", ") : "À confirmer"} />
-                    <InfoCard title="Résultat" value={application.result || "En attente"} />
+                    <InfoCard title="Résultat" value={application.result || "Aucun résultat détaillé enregistré."} />
                   </div>
 
                   {application.student_notes && (
