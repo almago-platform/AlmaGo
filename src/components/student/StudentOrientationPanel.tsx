@@ -110,17 +110,32 @@ export function StudentOrientationPanel({
     }
   }
 
+  if (loadError) {
+    return (
+      <Card>
+        <div role="alert">
+          <h2 className="text-lg font-semibold text-slate-950">Recommandations indisponibles</h2>
+          <p className="mt-2 text-sm leading-6 text-slate-600">{loadError}</p>
+        </div>
+        <div className="mt-5 flex flex-col gap-3 sm:flex-row">
+          <ButtonLink href="/student/orientation">Réessayer</ButtonLink>
+          <ButtonLink href="/student" variant="secondary">Retour à mon dossier</ButtonLink>
+        </div>
+      </Card>
+    );
+  }
+
   return (
     <div className="space-y-8">
-      {loadError && (
-        <div role="alert" className="rounded-[var(--radius-control)] border border-red-200 bg-red-50 p-4 text-sm text-red-800">
-          {loadError}
-        </div>
-      )}
-
       {applicationStateError && (
         <div role="alert" className="rounded-[var(--radius-control)] border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
-          {applicationStateError}
+          <p>{applicationStateError}</p>
+          <p className="mt-1 leading-6">
+            Vos recommandations restent visibles, mais les boutons d’intérêt sont désactivés jusqu’à ce que l’état puisse être revérifié.
+          </p>
+          <div className="mt-3">
+            <ButtonLink href="/student/orientation" variant="secondary">Réessayer la vérification</ButtonLink>
+          </div>
         </div>
       )}
 
@@ -170,8 +185,9 @@ export function StudentOrientationPanel({
           <p className="mx-auto mt-2 max-w-xl text-sm text-slate-600">
             Aucune recommandation n’est publiée dans votre dossier pour le moment. Vous pouvez vérifier les informations de votre profil.
           </p>
-          <div className="mt-5">
+          <div className="mt-5 flex flex-col justify-center gap-3 sm:flex-row">
             <ButtonLink href="/student/profile" variant="secondary">Vérifier mon profil</ButtonLink>
+            <ButtonLink href="/student">Retour à mon dossier</ButtonLink>
           </div>
         </Card>
       ) : (
