@@ -1,0 +1,71 @@
+name: AlmaGo Master Orchestrator
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "23 */3 * * *"
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  issues: write
+  actions: write
+
+concurrency:
+  group: almago-master-orchestrator
+  cancel-in-progress: false
+
+jobs:
+  orchestrate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Validate master plan and router
+        run: node --test autonomy/plan-core.test.mjs
+
+      - name: Sync plan and select next task
+        id: sync
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node autonomy/plan-sync.mjs
+
+      - name: Dispatch bounded Gemini/Grok worker
+        if: >-
+          steps.sync.outputs.route == 'ai' &&
+          steps.sync.outputs.issue_number != '' &&
+          vars.ALMAGO_AI_ENABLED == 'true' &&
+          vars.ALMAGO_AI_BILLING_CAP_CONFIRMED == 'true'
+        uses: actions/github-script@v7
+        env:
+          ISSUE_NUMBER: ${{ steps.sync.outputs.issue_number }}
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              ...context.repo,
+              workflow_id: "almago-ai-queue.yml",
+              ref: "main",
+              inputs: { issue_number: process.env.ISSUE_NUMBER }
+            });
+            core.info("Dispatched bounded AI queue for issue #" + process.env.ISSUE_NUMBER);
+
+      - name: Explain inactive AI provider gate
+        if: >-
+          steps.sync.outputs.route == 'ai' &&
+          steps.sync.outputs.issue_number != '' &&
+          (vars.ALMAGO_AI_ENABLED != 'true' || vars.ALMAGO_AI_BILLING_CAP_CONFIRMED != 'true')
+        run: |
+          echo "Task is READY but external AI is intentionally inactive."
+          echo "Enable ALMAGO_AI_ENABLED and ALMAGO_AI_BILLING_CAP_CONFIRMED only after provider billing caps are configured."
+
+      - name: Summarize routing
+        run: |
+          echo "Task: ${{ steps.sync.outputs.task_id || 'none' }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "Route: ${{ steps.sync.outputs.route || 'none' }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "Issue: ${{ steps.sync.outputs.issue_number || 'none' }}" >> "$GITHUB_STEP_SUMMARY"
