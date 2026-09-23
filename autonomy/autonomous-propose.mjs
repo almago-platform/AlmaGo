@@ -154,7 +154,7 @@ export async function propose(task) {
     try {
       const patch = (await ask(prompt)).trim().replace(/^```diff\s*\n|\n```$/g, '');
       validatePatch(patch, task.files);
-      return { patch: `${patch}\n`, provider: name };
+      return { patch: `${patch}\n`, provider: name, attempts: index + 1 };
     } catch (error) {
       if (!error.fallback || index === providers.length - 1) throw error;
       process.stderr.write(`${name} unavailable (${error.message}); trying next configured provider.\n`);
@@ -169,9 +169,10 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
     if (process.argv[3] === '--validate') {
       validatePatch(readFileSync(process.argv[4], 'utf8'), task.files);
     } else {
-      const { patch, provider } = await propose(task);
+      const { patch, provider, attempts } = await propose(task);
       writeFileSync('almago-ai.patch', patch, { mode: 0o600 });
-      process.stdout.write(`Patch prepared by ${provider} for issue #${task.number}.\n`);
+      writeFileSync('almago-ai-provider.json', JSON.stringify({ provider, attempts }, null, 2) + '\n', { mode: 0o600 });
+      process.stdout.write(`Patch prepared by ${provider} after ${attempts} provider attempt(s) for issue #${task.number}.\n`);
     }
   } catch (error) {
     process.stderr.write(`AlmaGo worker stopped: ${error.message}\n`);

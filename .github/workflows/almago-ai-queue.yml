@@ -109,6 +109,14 @@ jobs:
           git apply almago-ai.patch
           git diff --check
           git diff --exit-code -- . ':!src/app' ':!src/components' ':!src/lib'
+      - name: Independent cross-provider review
+        if: steps.pick.outputs.number != ''
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
+          ALMAGO_GEMINI_MODEL: ${{ vars.ALMAGO_GEMINI_MODEL }}
+          ALMAGO_XAI_MODEL: ${{ vars.ALMAGO_XAI_MODEL }}
+        run: node autonomy/autonomous-review.mjs .almago-task.json almago-ai.patch almago-ai-provider.json
       - name: Verify proposal locally
         if: steps.pick.outputs.number != ''
         env:
@@ -128,6 +136,8 @@ jobs:
           path: |
             .almago-task.json
             almago-ai.patch
+            almago-ai-provider.json
+            almago-ai-review.txt
           if-no-files-found: error
           retention-days: 1
       - name: Report proposal failure
@@ -146,8 +156,14 @@ jobs:
             });
             await github.rest.issues.createComment({
               ...context.repo, issue_number,
-              body: "Automatic proposal stopped. Check the Actions run " +
-                context.runId + " before relabeling this issue almago-ai-ready."
+              body: (() => {
+                const fs = require("fs");
+                const review = fs.existsSync("almago-ai-review.txt")
+                  ? "\n\nIndependent review:\n\n" + fs.readFileSync("almago-ai-review.txt", "utf8").slice(0, 4000)
+                  : "";
+                return "Automatic proposal stopped. Check the Actions run " +
+                  context.runId + " before relabeling this issue almago-ai-ready." + review;
+              })()
             });
 
   deliver:
