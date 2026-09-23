@@ -34,18 +34,41 @@ export const applicationStatusLabels: Record<string, string> = {
 };
 
 export const terminalApplicationStatuses = new Set(["admission", "accepted", "rejection", "rejected", "withdrawn"]);
+export const activeApplicationStatuses = new Set([
+  "interested",
+  "preparing",
+  "documents_missing",
+  "ready_to_submit",
+  "submitted",
+  "waiting_university",
+  "draft",
+  "planned",
+  "in_review",
+]);
 
 export function isActiveApplication(status: string) {
-  return !terminalApplicationStatuses.has(status);
+  return activeApplicationStatuses.has(status);
+}
+
+function isValidDateOnly(value: string) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const [year, month, day] = value.split("-").map(Number);
+  const candidate = new Date(Date.UTC(year, month - 1, day));
+  return candidate.getUTCFullYear() === year
+    && candidate.getUTCMonth() === month - 1
+    && candidate.getUTCDate() === day;
 }
 
 export function nextActiveDeadline<T extends { status: string; deadline: string | null }>(applications: T[]): T | undefined {
   return applications
-    .filter((application) => application.deadline && isActiveApplication(application.status))
+    .filter((application) => Boolean(application.deadline)
+      && isValidDateOnly(String(application.deadline))
+      && isActiveApplication(application.status))
     .sort((a, b) => String(a.deadline).localeCompare(String(b.deadline)))[0];
 }
 
 export function isPastDeadline(deadline: string, now = new Date()) {
+  if (!isValidDateOnly(deadline)) return false;
   const parts = new Intl.DateTimeFormat("en-GB", {
     timeZone: "Europe/Berlin", year: "numeric", month: "2-digit", day: "2-digit",
   }).formatToParts(now);
@@ -55,14 +78,14 @@ export function isPastDeadline(deadline: string, now = new Date()) {
 }
 
 export function formatDeadline(value: string | null | undefined) {
-  if (!value) return "Date à confirmer";
-  return new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium" }).format(new Date(`${value}T12:00:00`));
+  if (!value || !isValidDateOnly(value)) return "Date à confirmer";
+  return new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium" }).format(new Date(`${value}T12:00:00Z`));
 }
 
 export function statusTone(status: string) {
-  if (["admission", "recommended", "possible"].includes(status)) return "bg-emerald-100 text-emerald-800";
-  if (["ambitious", "preparing", "waiting_university"].includes(status)) return "bg-blue-100 text-blue-800";
-  if (["missing_requirements", "documents_missing", "interested"].includes(status)) return "bg-amber-100 text-amber-900";
+  if (["admission", "accepted", "recommended", "possible"].includes(status)) return "bg-emerald-100 text-emerald-800";
+  if (["ambitious", "preparing", "ready_to_submit", "submitted", "waiting_university", "in_review"].includes(status)) return "bg-blue-100 text-blue-800";
+  if (["missing_requirements", "documents_missing", "interested", "draft", "planned"].includes(status)) return "bg-amber-100 text-amber-900";
   if (["rejection", "rejected", "not_recommended"].includes(status)) return "bg-red-100 text-red-800";
   return "bg-slate-100 text-slate-700";
 }
