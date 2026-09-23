@@ -51,7 +51,7 @@ export function StudentApplicationsPanel({
       <section aria-label="Priorité candidature" className="grid gap-5 lg:grid-cols-[1fr_0.85fr]">
         <Card className="bg-slate-950 text-white">
           <Badge variant={loadError ? "neutral" : actionable.length ? "warning" : "info"}>
-            {loadError ? "Indisponible" : actionable.length ? "Action requise" : "Suivi des dossiers"}
+            {loadError ? "Indisponible" : actionable.length ? "Action requise" : "Suivi des candidatures"}
           </Badge>
           <h2 className="mt-5 text-2xl font-semibold tracking-tight">Prochaine priorité</h2>
           <p className="mt-3 text-sm leading-6 text-slate-300">
@@ -61,11 +61,11 @@ export function StudentApplicationsPanel({
                 ? priorityApplication.next_action
                 : priorityApplication
                   ? "Aucune action urgente n’est enregistrée, mais ce dossier reste à suivre."
-                  : "Aucune candidature n’est encore suivie. Enregistrez votre intérêt depuis les recommandations pour démarrer."}
+                  : "Aucune candidature n’est encore enregistrée. Consultez vos recommandations pour choisir un programme à suivre."}
           </p>
           {priorityApplication && (
             <div className="mt-6 rounded-xl border border-white/10 bg-white/5 p-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--accent-light)]">Dossier suivi</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--accent-light)]">Candidature suivie</p>
               <p className="mt-2 font-semibold">{priorityProgram?.name || "Programme"}</p>
               <p className="mt-1 text-sm text-slate-300">
                 {priorityApplication.intake_term || "Semestre à confirmer"} · Échéance {formatDeadline(priorityApplication.deadline)}
@@ -75,9 +75,9 @@ export function StudentApplicationsPanel({
         </Card>
 
         <section aria-label="Résumé des candidatures" className="grid gap-4 sm:grid-cols-3 lg:grid-cols-1">
-          <SummaryCard title="Actions" value={loadError ? "—" : actionable.length} badge={loadError ? "Indisponible" : actionable.length ? "À traiter" : "À jour"} tone={loadError ? "neutral" : actionable.length ? "warning" : "success"} />
-          <SummaryCard title="Dossiers déposés" value={loadError ? "—" : submitted.length} badge={loadError ? "Indisponible" : "Suivis"} tone={loadError ? "neutral" : "info"} />
-          <SummaryCard title="Dossiers actifs" value={loadError ? "—" : activeApplications.length} badge="En cours" tone={loadError ? "neutral" : "info"} />
+          <SummaryCard title="À traiter" value={loadError ? "—" : actionable.length} badge={loadError ? "Indisponible" : actionable.length ? "À traiter" : "À jour"} tone={loadError ? "neutral" : actionable.length ? "warning" : "success"} />
+          <SummaryCard title="Candidatures déposées" value={loadError ? "—" : submitted.length} badge={loadError ? "Indisponible" : "Déposées"} tone={loadError ? "neutral" : "info"} />
+          <SummaryCard title="Candidatures actives" value={loadError ? "—" : activeApplications.length} badge="Actives" tone={loadError ? "neutral" : "info"} />
         </section>
       </section>
 
@@ -114,8 +114,8 @@ export function StudentApplicationsPanel({
         <section aria-labelledby="applications-list-title">
           <div className="mb-4 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--brand)]">Dossiers</p>
-              <h2 id="applications-list-title" className="mt-1 text-2xl font-semibold tracking-tight text-slate-950">Candidatures suivies</h2>
+              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--brand)]">Candidatures</p>
+              <h2 id="applications-list-title" className="mt-1 text-2xl font-semibold tracking-tight text-slate-950">Mes candidatures</h2>
               <p className="mt-1 text-sm text-slate-600">{applications.length} candidature{applications.length > 1 ? "s" : ""} dans votre espace.</p>
             </div>
           </div>
