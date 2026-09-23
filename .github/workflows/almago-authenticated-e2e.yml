@@ -50,6 +50,7 @@ jobs:
             echo "ready=false" >> "$GITHUB_OUTPUT"
             echo "::notice::Authenticated E2E is not configured yet (${#missing[@]} required repository secret(s) missing)."
             if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then
+              echo "::error::Missing required repository secret names: ${missing[*]}"
               echo "::error::Authenticated E2E cannot run until all required repository secrets are configured."
               exit 1
             fi
