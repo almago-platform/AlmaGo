@@ -1,14 +1,14 @@
 import type { ButtonHTMLAttributes } from "react";
 
 export const buttonVariants = {
-  primary: "bg-[var(--brand)] text-white shadow-sm hover:bg-[var(--brand-strong)]",
-  secondary: "border border-slate-300 bg-white text-slate-900 shadow-sm hover:border-slate-400 hover:bg-slate-50",
+  primary: "border border-transparent bg-[var(--brand)] text-white shadow-sm hover:bg-[var(--brand-strong)]",
+  secondary: "border border-[var(--border)] bg-white text-slate-900 shadow-sm hover:border-[var(--border-strong)] hover:bg-slate-50",
 };
 
 export type ButtonVariant = keyof typeof buttonVariants;
 
 export function buttonClassName(variant: ButtonVariant = "primary", className = "") {
-  return `inline-flex min-h-11 items-center justify-center rounded-lg px-5 py-2.5 text-sm font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brand)] disabled:cursor-not-allowed disabled:opacity-60 ${buttonVariants[variant]} ${className}`;
+  return `inline-flex min-h-11 items-center justify-center rounded-[var(--radius-control)] px-5 py-2.5 text-sm font-semibold transition-colors duration-150 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-55 ${buttonVariants[variant]} ${className}`;
 }
 
 export function Button({ variant = "primary", className = "", type = "button", ...props }: ButtonHTMLAttributes<HTMLButtonElement> & { variant?: ButtonVariant }) {
