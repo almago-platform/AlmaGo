@@ -10,19 +10,17 @@ Chaîne restante avant la recette finale :
 
 **A38 juridique → A43 E2E authentifiés → A44 observabilité/analytics → A45 gate de publication.**
 
-## A38 — informations juridiques à confirmer
+## A38 — confirmation juridique minimale
 
 Ne jamais envoyer ici de mot de passe, clé privée, document d’identité ou autre secret.
 
-Pour préparer les pages juridiques, confirmer uniquement les informations publiques nécessaires :
+Le dépôt connaît déjà les catégories de données, Supabase/Vercel et l’état actuel **sans analytics actif**. Il n’est plus demandé de choisir un fournisseur analytics dans A38 : ce choix appartient à A44.
 
-- nom légal de l’éditeur/exploitant du site (personne physique ou société) ;
-- adresse postale/de contact à publier ;
-- adresse e-mail publique de contact ;
-- numéro d’immatriculation ou TVA uniquement si applicable ;
-- AlmaGo est-il actuellement gratuit ou payant ;
-- catégories de données utilisateur réellement conservées et règles de suppression/rétention déjà décidées ;
-- personne qui effectuera la relecture juridique finale avant publication.
+Une seule réponse propriétaire est requise via :
+
+`docs/A38_OWNER_CONFIRMATION.md`
+
+Elle regroupe uniquement les informations impossibles à déduire du code : identité publique de l’éditeur, statut juridique/commercial, conservation/suppression, éventuel DPO/activité réglementée et relecteur final.
 
 Le contenu ne doit pas être présenté comme final avant cette relecture humaine.
 
