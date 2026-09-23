@@ -73,13 +73,13 @@ export function AppShell({
         Aller au contenu
       </a>
 
-      <aside className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-72 lg:flex-col lg:border-r lg:border-slate-200 lg:bg-white">
+      <aside className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-[17.5rem] lg:flex-col lg:border-r lg:border-slate-200 lg:bg-white">
         <div className="flex h-20 items-center border-b border-slate-100 px-7">
           <Link href={role === "admin" ? "/admin" : "/student"} className="flex items-center gap-3" aria-label="Accueil AlmaGo">
             <span className="grid h-10 w-10 place-items-center rounded-2xl bg-[var(--brand)] text-sm font-bold text-white shadow-sm">A</span>
             <span>
-              <span className="block text-lg font-bold tracking-tight text-slate-950">AlmaGo</span>
-              <span className="block text-xs font-medium text-slate-500">{role === "admin" ? "Espace administration" : "Espace étudiant"}</span>
+              <span className="block text-base font-bold tracking-tight text-slate-950 xl:text-lg">AlmaGo</span>
+              <span className="block text-[11px] font-medium leading-4 text-slate-500 xl:text-xs">{role === "admin" ? "Espace administration" : "Espace étudiant"}</span>
             </span>
           </Link>
         </div>
@@ -113,7 +113,7 @@ export function AppShell({
         </div>
       </aside>
 
-      <div className="lg:pl-72">
+      <div className="lg:pl-[17.5rem]">
         <header className="sticky top-0 z-30 border-b border-slate-200/80 bg-white/95 backdrop-blur lg:hidden">
           <div className="flex h-16 items-center justify-between px-4">
             <Link href={role === "admin" ? "/admin" : "/student"} className="flex items-center gap-2.5" aria-label="Accueil AlmaGo">
