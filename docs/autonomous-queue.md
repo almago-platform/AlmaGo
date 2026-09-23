@@ -73,3 +73,10 @@ avec une nouvelle issue et ne modifie jamais cette PR automatiquement.
 Quand les deux fournisseurs sont configurés et que le premier patch a été obtenu au premier appel, AlmaGo utilise le second fournisseur comme reviewer indépendant. Le budget reste borné à **deux appels fournisseur maximum** : un appel de construction + un appel de revue. Si le constructeur a déjà utilisé le fallback (deux appels), la revue croisée est sautée plutôt que de dépenser un troisième appel.
 
 Le reviewer ne produit pas de code. Il rend `APPROVED` ou `REVISE` en contrôlant le scope, les critères d’acceptation, les promesses produit, la sécurité et les régressions évidentes. Un verdict `REVISE` bloque la proposition avant création de PR.
+
+
+## Plafond journalier de travail IA
+
+La file applique aussi un plafond journalier de lancements fournisseur. Par défaut, au maximum **4 exécutions de la file IA par jour UTC** peuvent passer le budget gate. Une variable optionnelle `ALMAGO_MAX_AI_TASKS_PER_DAY` permet de choisir une valeur entre 1 et 12. Une fois le plafond atteint, l’Issue reste `almago-ai-ready` et attend le jour suivant ; aucun appel fournisseur supplémentaire n’est effectué.
+
+Ce plafond opérationnel complète — mais ne remplace jamais — le plafond financier configuré directement chez Google/xAI.

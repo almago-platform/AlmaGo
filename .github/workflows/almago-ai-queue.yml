@@ -20,6 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
+      actions: read
       contents: read
       issues: write
     outputs:
@@ -33,7 +34,35 @@ jobs:
         with:
           node-version: 22
           cache: npm
+      - name: Enforce daily AI task cap
+        id: budget
+        uses: actions/github-script@v7
+        env:
+          MAX_DAILY_TASKS: ${{ vars.ALMAGO_MAX_AI_TASKS_PER_DAY }}
+        with:
+          script: |
+            const parsed = Number.parseInt(process.env.MAX_DAILY_TASKS || "4", 10);
+            const max = Number.isFinite(parsed) ? Math.min(12, Math.max(1, parsed)) : 4;
+            const { data } = await github.rest.actions.listWorkflowRuns({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: "almago-ai-queue.yml",
+              per_page: 100,
+            });
+            const start = new Date();
+            start.setUTCHours(0, 0, 0, 0);
+            const today = data.workflow_runs.filter(run =>
+              new Date(run.created_at).getTime() >= start.getTime()
+            );
+            const allowed = today.length <= max;
+            core.setOutput("allowed", allowed ? "true" : "false");
+            core.summary
+              .addHeading("AlmaGo AI daily budget gate")
+              .addRaw(`Runs today: ${today.length} / ${max}. Provider work ${allowed ? "allowed" : "paused until next UTC day"}.`)
+              .write();
+
       - name: Check provider configuration
+        if: steps.budget.outputs.allowed == 'true'
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
@@ -43,6 +72,7 @@ jobs:
             exit 1
           fi
       - name: Pick one ready issue
+        if: steps.budget.outputs.allowed == 'true'
         id: pick
         uses: actions/github-script@v7
         env:
