@@ -24,12 +24,22 @@ test.describe("authenticated role journeys", () => {
     await page.goto("/admin", { waitUntil: "networkidle" });
     await page.waitForURL(/\/unauthorized$/, { timeout: 20_000 });
     expect(new URL(page.url()).pathname).toBe("/unauthorized");
+
+    const deniedApi = await page.request.post("/api/admin/orientation", {
+      data: {},
+    });
+    expect(deniedApi.status()).toBe(403);
   });
 
-  test("admin account passes the server-side admin role guard", async ({ page }) => {
+  test("admin account passes server-side page and API role guards", async ({ page }) => {
     await login(page, adminEmail, adminPassword);
     const response = await page.goto("/admin", { waitUntil: "networkidle" });
     expect(response?.ok()).toBeTruthy();
     expect(new URL(page.url()).pathname).toMatch(/^\/admin(?:\/|$)/);
+
+    const authorizedApi = await page.request.post("/api/admin/orientation", {
+      data: {},
+    });
+    expect(authorizedApi.status()).toBe(400);
   });
 });
