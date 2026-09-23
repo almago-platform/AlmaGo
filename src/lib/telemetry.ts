@@ -18,15 +18,20 @@ export type PreparedTelemetryEvent = {
 const maxStringLength = 128;
 
 export function prepareTelemetryEvent(
-  name: TelemetryEventName,
+  name: string,
   properties: Record<string, unknown>,
 ): PreparedTelemetryEvent {
-  const allowed = new Set<string>(telemetryEventProperties[name]);
+  if (!(name in telemetryEventProperties)) {
+    throw new Error(`telemetry_event_not_allowed:${name}`);
+  }
+
+  const eventName = name as TelemetryEventName;
+  const allowed = new Set<string>(telemetryEventProperties[eventName]);
   const prepared: TelemetryProperties = {};
 
   for (const [key, value] of Object.entries(properties)) {
     if (!allowed.has(key)) {
-      throw new Error(`telemetry_property_not_allowed:${name}:${key}`);
+      throw new Error(`telemetry_property_not_allowed:${eventName}:${key}`);
     }
 
     if (value === null || typeof value === "boolean") {
@@ -36,7 +41,7 @@ export function prepareTelemetryEvent(
 
     if (typeof value === "number") {
       if (!Number.isFinite(value)) {
-        throw new Error(`telemetry_value_invalid:${name}:${key}`);
+        throw new Error(`telemetry_value_invalid:${eventName}:${key}`);
       }
       prepared[key] = value;
       continue;
@@ -45,16 +50,16 @@ export function prepareTelemetryEvent(
     if (typeof value === "string") {
       const normalized = value.trim();
       if (!normalized || normalized.length > maxStringLength) {
-        throw new Error(`telemetry_value_invalid:${name}:${key}`);
+        throw new Error(`telemetry_value_invalid:${eventName}:${key}`);
       }
       prepared[key] = normalized;
       continue;
     }
 
-    throw new Error(`telemetry_value_invalid:${name}:${key}`);
+    throw new Error(`telemetry_value_invalid:${eventName}:${key}`);
   }
 
-  return { name, properties: prepared };
+  return { name: eventName, properties: prepared };
 }
 
 export type TelemetrySink = (
