@@ -16,6 +16,8 @@ on:
 
 permissions:
   contents: read
+  issues: write
+  actions: write
 
 concurrency:
   group: almago-authenticated-e2e
@@ -97,6 +99,83 @@ jobs:
 
       - name: Run student/admin isolation journeys
         run: npx playwright test tests/e2e/authenticated.spec.mjs --project=desktop-chromium
+
+      - name: Complete A43 after successful authenticated evidence
+        if: success()
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const issues = await github.paginate(github.rest.issues.listForRepo, {
+              owner,
+              repo,
+              state: "open",
+              labels: "almago-plan",
+              per_page: 100,
+            });
+            const issue = issues.find(item =>
+              !item.pull_request &&
+              String(item.body || "").includes("<!-- almago-plan-task:A43 -->")
+            );
+            if (!issue) {
+              core.info("A43 is already closed or not materialized.");
+              return;
+            }
+
+            const marker = `<!-- almago-a43-evidence:run=${context.runId};sha=${context.sha} -->`;
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner,
+              repo,
+              issue_number: issue.number,
+              per_page: 100,
+            });
+            if (!comments.some(comment => String(comment.body || "").includes(marker))) {
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: issue.number,
+                body: [
+                  "A43 AUTHENTICATED E2E: PASS",
+                  "",
+                  "Run: " + context.serverUrl + "/" + owner + "/" + repo + "/actions/runs/" + context.runId,
+                  "SHA: " + context.sha,
+                  marker,
+                  "",
+                  "Dedicated student/admin identities passed the authenticated isolation journeys."
+                ].join("\n"),
+              });
+            }
+
+            await github.rest.issues.addLabels({
+              owner,
+              repo,
+              issue_number: issue.number,
+              labels: ["almago-plan-done"],
+            });
+            for (const label of ["almago-human-required", "almago-ai-blocked"]) {
+              await github.rest.issues.removeLabel({
+                owner,
+                repo,
+                issue_number: issue.number,
+                name: label,
+              }).catch(() => null);
+            }
+            await github.rest.issues.update({
+              owner,
+              repo,
+              issue_number: issue.number,
+              state: "closed",
+              state_reason: "completed",
+            });
+
+            await github.rest.actions.createWorkflowDispatch({
+              owner,
+              repo,
+              workflow_id: "almago-master-orchestrator.yml",
+              ref: "main",
+            });
 
       - name: Upload E2E artifacts
         if: always()
