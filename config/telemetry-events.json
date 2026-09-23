@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "defaultMode": "disabled",
+  "policy": "allowlist-only",
+  "events": [
+    {
+      "name": "route_render_failed",
+      "properties": [
+        "route_group",
+        "error_code"
+      ]
+    },
+    {
+      "name": "api_request_failed",
+      "properties": [
+        "route_group",
+        "method",
+        "http_status",
+        "error_code"
+      ]
+    },
+    {
+      "name": "form_submit_result",
+      "properties": [
+        "surface",
+        "result",
+        "error_code"
+      ]
+    },
+    {
+      "name": "navigation_action",
+      "properties": [
+        "destination_group"
+      ]
+    },
+    {
+      "name": "web_vital",
+      "properties": [
+        "metric",
+        "value_bucket"
+      ]
+    }
+  ],
+  "forbiddenPropertyPatterns": [
+    "email",
+    "e-mail",
+    "name",
+    "first_name",
+    "last_name",
+    "user_id",
+    "student_id",
+    "password",
+    "token",
+    "secret",
+    "key",
+    "authorization",
+    "cookie",
+    "document",
+    "filename",
+    "file_name",
+    "content",
+    "notes",
+    "note",
+    "message",
+    "address",
+    "phone",
+    "birth",
+    "nationality",
+    "ip"
+  ]
+}
