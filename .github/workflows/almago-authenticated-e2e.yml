@@ -2,6 +2,12 @@ name: AlmaGo Authenticated E2E
 
 on:
   workflow_dispatch:
+    inputs:
+      probe:
+        description: "Automation probe: skip cleanly if A43 passwords are not configured yet"
+        required: false
+        default: false
+        type: boolean
   push:
     branches: [main]
     paths:
@@ -36,6 +42,7 @@ jobs:
       ALMAGO_E2E_STUDENT_PASSWORD: ${{ secrets.ALMAGO_E2E_STUDENT_PASSWORD }}
       ALMAGO_E2E_ADMIN_EMAIL: ${{ vars.ALMAGO_E2E_ADMIN_EMAIL || 'phase3.admin@almago.test' }}
       ALMAGO_E2E_ADMIN_PASSWORD: ${{ secrets.ALMAGO_E2E_ADMIN_PASSWORD }}
+      ALMAGO_E2E_PROBE_MODE: ${{ inputs.probe }}
     steps:
       - name: Detect authenticated E2E configuration
         id: check
@@ -49,7 +56,7 @@ jobs:
           if [ "${#missing[@]}" -gt 0 ]; then
             echo "ready=false" >> "$GITHUB_OUTPUT"
             echo "::notice::Authenticated E2E is not configured yet (${#missing[@]} required configuration value(s) missing)."
-            if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then
+            if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ] && [ "$ALMAGO_E2E_PROBE_MODE" != "true" ]; then
               echo "::error::Missing required configuration names: ${missing[*]}"
               echo "::error::Authenticated E2E cannot run until all required repository secrets are configured."
               exit 1
