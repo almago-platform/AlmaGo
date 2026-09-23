@@ -65,7 +65,7 @@ export function StudentApplicationsPanel({
           </p>
           {priorityApplication && (
             <div className="mt-6 rounded-xl border border-white/10 bg-white/5 p-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-200">Dossier suivi</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--accent-light)]">Dossier suivi</p>
               <p className="mt-2 font-semibold">{priorityProgram?.name || "Programme"}</p>
               <p className="mt-1 text-sm text-slate-300">
                 {priorityApplication.intake_term || "Semestre à confirmer"} · Échéance {formatDeadline(priorityApplication.deadline)}
@@ -166,7 +166,7 @@ export function StudentApplicationsPanel({
                     {events.length === 0 ? (
                       <p className="rounded-xl bg-slate-50 p-4 text-sm text-slate-600">Aucun événement enregistré pour le moment.</p>
                     ) : (
-                      <div className="space-y-3 border-l-2 border-emerald-200 pl-4">
+                      <div className="space-y-3 border-l-2 border-[var(--brand-border)] pl-4">
                         {events.map((event: any) => (
                           <div key={event.id} className="relative">
                             <p className="text-sm font-medium text-slate-900">
