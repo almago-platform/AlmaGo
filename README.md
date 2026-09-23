@@ -2,7 +2,7 @@
 
 Socle technique de la V1 : Next.js App Router, TypeScript, Tailwind CSS, Supabase Auth, PostgreSQL et Supabase Storage privé.
 
-La Phase 2 ajoute l’authentification, l’onboarding étudiant et le premier dashboard étudiant. Les documents, l’orientation, les candidatures, les paiements et l’IA restent hors périmètre.
+La V1 couvre désormais l’authentification, l’onboarding et le tableau de bord étudiant, les documents privés, la checklist, l’orientation manuelle, le suivi des candidatures et un espace d’administration protégé par rôle. Les paiements automatisés et toute prise de décision d’admission par IA restent hors périmètre produit.
 
 ## Prérequis
 
@@ -66,9 +66,16 @@ Cette commande n’est jamais exposée à l’interface et aucun email réel n�
 
 ## Vérifications
 
+La CI des pull requests exécute les mêmes garde-fous sur le HEAD distant :
+
 ```bash
+npm test
+npx tsc --noEmit
 npm run lint
 npm run build
+git diff --check
 ```
+
+Les tests incluent des règles métier de candidature et des contrats de sécurité qui vérifient les gardes d’authentification, l’absence de clé service-role dans les clients Supabase et les protections RLS critiques des migrations.
 
 Les politiques RLS distinguent l’historique visible (`application_events`) des journaux techniques internes (`technical_logs`). Les uploads futurs utiliseront un bucket privé, limité à 10 MiB et PDF/JPEG/PNG ; le contrôle antivirus pourra être ajouté dans une future route serveur sans changer cette frontière de stockage.
