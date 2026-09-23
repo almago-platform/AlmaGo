@@ -48,9 +48,11 @@ export default async function AdminEntry() {
     return (
       <main className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 sm:py-12">
         <PageHeader badge="Administration" title="Pilotage AlmaGo" />
-        <Card role="alert">
-          <h2 className="text-xl font-semibold text-slate-950">Indicateurs indisponibles</h2>
-          <p className="mt-2 text-sm text-slate-600">Impossible de charger les données pour le moment. Réessayez dans quelques instants.</p>
+        <Card>
+          <div role="alert">
+            <h2 className="text-xl font-semibold text-slate-950">Indicateurs indisponibles</h2>
+            <p className="mt-2 text-sm text-slate-600">Impossible de charger les données pour le moment. Réessayez dans quelques instants.</p>
+          </div>
           <div className="mt-5"><ButtonLink href="/admin">Réessayer</ButtonLink></div>
         </Card>
       </main>
