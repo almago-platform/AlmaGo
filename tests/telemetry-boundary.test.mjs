@@ -21,6 +21,13 @@ test("runtime telemetry boundary matches the canonical allow-list contract", () 
   assert.deepEqual(runtime, canonical);
 });
 
+test("telemetry rejects unknown event names at runtime", () => {
+  assert.throws(
+    () => prepareTelemetryEvent("user_profile_opened", {}),
+    /telemetry_event_not_allowed/,
+  );
+});
+
 test("telemetry rejects unknown properties instead of silently forwarding them", () => {
   assert.throws(
     () =>
