@@ -2,9 +2,40 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import "./globals.css";
 
+const publicTitle = "AlmaGo | Études en Allemagne";
+const publicDescription =
+  "Préparez votre dossier d’études en Allemagne avec AlmaGo : profil, documents, orientation, candidatures et suivi dans un espace structuré.";
+
 export const metadata: Metadata = {
-  title: "AlmaGo",
-  description: "Accompagnement transparent vers les études en Allemagne",
+  title: {
+    default: publicTitle,
+    template: "%s | AlmaGo",
+  },
+  description: publicDescription,
+  applicationName: "AlmaGo",
+  keywords: [
+    "études en Allemagne",
+    "dossier étudiant",
+    "orientation universitaire",
+    "candidatures Allemagne",
+    "AlmaGo",
+  ],
+  robots: {
+    index: true,
+    follow: true,
+  },
+  openGraph: {
+    type: "website",
+    locale: "fr_FR",
+    siteName: "AlmaGo",
+    title: publicTitle,
+    description: publicDescription,
+  },
+  twitter: {
+    card: "summary",
+    title: publicTitle,
+    description: publicDescription,
+  },
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
