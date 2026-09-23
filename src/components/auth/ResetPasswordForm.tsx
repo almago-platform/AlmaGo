@@ -36,7 +36,7 @@ export function ResetPasswordForm() {
 
   return (
     <section className="w-full rounded-2xl border border-slate-200 bg-white p-6 shadow-xl sm:p-8">
-      <p className="text-sm font-bold uppercase tracking-[0.18em] text-emerald-700">AlmaGo</p>
+      <p className="text-sm font-bold uppercase tracking-[0.18em] text-[var(--accent-strong)]">AlmaGo</p>
       <h1 className="mt-3 text-3xl font-bold tracking-tight text-slate-950">Nouveau mot de passe</h1>
       <p className="mt-3 text-sm leading-6 text-slate-600">
         Saisis un mot de passe solide pour sécuriser ton accès au dossier.
