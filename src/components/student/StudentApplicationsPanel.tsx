@@ -127,9 +127,22 @@ export function StudentApplicationsPanel({
               const events = [...(application.application_events || [])].sort(
                 (a: any, b: any) => String(a.created_at).localeCompare(String(b.created_at)),
               );
+              const active = isActiveApplication(application.status);
+              const applicationOverdue = Boolean(application.deadline && isPastDeadline(application.deadline));
+              const nextAction = active
+                ? application.next_action ||
+                  (applicationOverdue
+                    ? "Échéance dépassée : vérifiez cette candidature et les informations enregistrées."
+                    : "Aucune action spécifique n’est enregistrée. Vérifiez le statut et l’échéance de cette candidature.")
+                : "Le suivi de cette candidature est terminé dans AlmaGo. Consultez le résultat et l’historique.";
 
               return (
-                <Card as="article" key={application.id} aria-labelledby={`student-application-title-${application.id}`} className={isActiveApplication(application.status) && application.next_action ? "border-amber-300 bg-amber-50/30" : ""}>
+                <Card
+                  as="article"
+                  key={application.id}
+                  aria-labelledby={`student-application-title-${application.id}`}
+                  className={active && application.next_action ? "border-amber-300 bg-amber-50/30" : ""}
+                >
                   <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
                     <div className="min-w-0">
                       <p className="text-sm font-semibold text-[var(--brand)]">
@@ -145,14 +158,24 @@ export function StudentApplicationsPanel({
                     </Badge>
                   </div>
 
-                  <div className="mt-6 grid gap-4 lg:grid-cols-3">
-                    <InfoCard title="Prochaine action" value={isActiveApplication(application.status) ? application.next_action || "Aucune action enregistrée." : "Candidature terminée."} highlight={isActiveApplication(application.status) && Boolean(application.next_action)} />
+                  <section
+                    aria-label="Prochaine action"
+                    className={`mt-6 rounded-[var(--radius-panel)] border p-4 sm:p-5 ${active ? "border-amber-200 bg-amber-50" : "border-[var(--border)] bg-[var(--surface-muted)]"}`}
+                  >
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <h4 className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-600">Prochaine action</h4>
+                      {active && applicationOverdue && <Badge variant="warning">Échéance dépassée</Badge>}
+                    </div>
+                    <p className="mt-2 text-sm font-semibold leading-6 text-slate-950">{nextAction}</p>
+                  </section>
+
+                  <div className="mt-4 grid gap-4 sm:grid-cols-2">
                     <InfoCard title="Documents nécessaires" value={application.required_documents?.length ? application.required_documents.join(", ") : "À confirmer"} />
                     <InfoCard title="Résultat" value={application.result || "Aucun résultat détaillé enregistré."} />
                   </div>
 
                   {application.student_notes && (
-                    <div className="mt-5 rounded-xl border border-[var(--border)] bg-slate-50 p-4">
+                    <div className="mt-5 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-muted)] p-4">
                       <h4 className="text-sm font-semibold text-slate-900">Notes</h4>
                       <p className="mt-1 text-sm leading-6 text-slate-700">{application.student_notes}</p>
                     </div>
@@ -164,7 +187,7 @@ export function StudentApplicationsPanel({
                       <span className="text-xs text-slate-500">{events.length} événement{events.length > 1 ? "s" : ""}</span>
                     </div>
                     {events.length === 0 ? (
-                      <p className="rounded-xl bg-slate-50 p-4 text-sm text-slate-600">Aucun événement enregistré pour le moment.</p>
+                      <p className="rounded-[var(--radius-control)] bg-[var(--surface-muted)] p-4 text-sm text-slate-600">Aucun événement enregistré pour le moment.</p>
                     ) : (
                       <div className="space-y-3 border-l-2 border-[var(--brand-border)] pl-4">
                         {events.map((event: any) => (
@@ -201,9 +224,9 @@ function SummaryCard({ title, value, badge, tone }: { title: string; value: numb
   );
 }
 
-function InfoCard({ title, value, highlight = false }: { title: string; value: string; highlight?: boolean }) {
+function InfoCard({ title, value }: { title: string; value: string }) {
   return (
-    <div className={`rounded-2xl border p-4 ${highlight ? "border-amber-200 bg-amber-50" : "border-[var(--border)] bg-slate-50"}`}>
+    <div className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-muted)] p-4">
       <h4 className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">{title}</h4>
       <p className="mt-2 text-sm font-medium leading-6 text-slate-900">{value}</p>
     </div>
