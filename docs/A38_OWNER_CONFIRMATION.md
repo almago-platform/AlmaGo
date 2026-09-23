@@ -84,4 +84,14 @@ A38 peut être clôturée uniquement lorsque :
 4. un humain compétent les relit et valide ;
 5. les pages publiques finales correspondent exactement aux textes validés.
 
+## Gate mécanique après la vraie relecture
+
+La décision reste humaine. Le workflow `.github/workflows/almago-a38-human-approval.yml` ne peut fermer A38 que lorsque :
+
+1. les textes finalisés ont été mergés sur `main` ;
+2. l’Issue A38 contient une preuve machine liée au **SHA exact** sous la forme `<!-- almago-a38-review-ready:sha=... -->` ;
+3. le propriétaire du repository poste exactement : `A38 HUMAN REVIEW APPROVED`.
+
+Le workflow vérifie que le signal vient du propriétaire et qu’il correspond au SHA courant de `main`, puis il ferme A38 et relance le Master Orchestrator. Il n’effectue aucune appréciation juridique lui-même.
+
 Jusqu’à cette étape, les brouillons restent marqués **NE PAS PUBLIER TEL QUEL**.
