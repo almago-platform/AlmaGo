@@ -38,6 +38,16 @@ jobs:
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
 
+      - name: Prepare safe public test configuration
+        shell: bash
+        run: |
+          if [ -z "$NEXT_PUBLIC_SUPABASE_URL" ]; then
+            echo "NEXT_PUBLIC_SUPABASE_URL=https://example.supabase.co" >> "$GITHUB_ENV"
+          fi
+          if [ -z "$NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY" ]; then
+            echo "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_browser_quality_placeholder" >> "$GITHUB_ENV"
+          fi
+
       - name: Build AlmaGo
         run: npm run build
 
