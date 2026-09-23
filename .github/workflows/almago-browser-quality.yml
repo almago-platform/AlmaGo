@@ -55,6 +55,12 @@ jobs:
       - name: Install browser-quality tools without changing the lockfile
         run: npm install --no-save --package-lock=false @playwright/test@1.55.0 @axe-core/playwright@4.10.2 @lhci/cli@0.14.0
 
+      - name: Cache Playwright browser
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-1.55.0-chromium
+
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
 
