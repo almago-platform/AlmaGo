@@ -37,6 +37,8 @@ Créer deux comptes Supabase **réservés aux tests, sans donnée réelle** :
 - un compte étudiant ;
 - un compte admin avec une ligne `user_roles.role = 'admin'`.
 
+Pour empêcher l'utilisation accidentelle d'un vrai compte, les deux adresses doivent être différentes et contenir `e2e` ou `test` dans leur adresse.
+
 Secrets GitHub Actions requis :
 
 - `NEXT_PUBLIC_SUPABASE_URL`
