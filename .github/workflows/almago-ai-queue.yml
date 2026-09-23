@@ -44,7 +44,7 @@ jobs:
           fi
       - name: Pick one ready issue
         id: pick
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         env:
           REQUESTED_ISSUE: ${{ inputs.issue_number }}
         with:
@@ -132,7 +132,7 @@ jobs:
           retention-days: 1
       - name: Report proposal failure
         if: failure() && steps.pick.outputs.number != ''
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         env:
           ISSUE_NUMBER: ${{ steps.pick.outputs.number }}
         with:
@@ -185,7 +185,7 @@ jobs:
           git -c http.extraheader="AUTHORIZATION: basic $(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)" push origin "HEAD:refs/heads/$branch"
           echo "head=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
       - name: Open PR and request canonical CI
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         env:
           ISSUE_NUMBER: ${{ needs.propose.outputs.number }}
           HEAD_SHA: ${{ steps.commit.outputs.head }}
@@ -217,7 +217,7 @@ jobs:
             core.info("PR #" + pr.number + " opened at verified HEAD " + head);
       - name: Report delivery failure
         if: failure()
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         env:
           ISSUE_NUMBER: ${{ needs.propose.outputs.number }}
         with:

@@ -41,7 +41,7 @@ jobs:
           steps.sync.outputs.issue_number != '' &&
           vars.ALMAGO_AI_ENABLED == 'true' &&
           vars.ALMAGO_AI_BILLING_CAP_CONFIRMED == 'true'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         env:
           ISSUE_NUMBER: ${{ steps.sync.outputs.issue_number }}
         with:

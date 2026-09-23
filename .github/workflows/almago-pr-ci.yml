@@ -41,7 +41,7 @@ jobs:
     steps:
       - name: Revalidate exact PR head
         id: pr
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -107,7 +107,7 @@ jobs:
 
       - name: Publish verified review checkpoint
         if: success()
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         env:
           VERIFIED_HEAD: ${{ steps.pr.outputs.head_sha }}
         with:
@@ -158,7 +158,7 @@ jobs:
 
       - name: Publish CI failure handoff
         if: failure()
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         env:
           FAILED_HEAD: ${{ steps.pr.outputs.head_sha }}
         with:
