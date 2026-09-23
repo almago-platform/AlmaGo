@@ -47,7 +47,7 @@ export default async function StudentEntry() {
         : { label: "Consulter ma checklist", detail: "Aucune action à faire n’est enregistrée pour le moment. Consulte tes démarches pour voir les étapes connues.", href: "/student/checklist", owner: "Suivi du dossier" };
 
   return (
-    <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
+    <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
       <PageHeader
         badge="Espace étudiant"
         title="Votre dossier"
