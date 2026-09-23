@@ -37,6 +37,12 @@ jobs:
               "feat/",
               "automation/",
               "chore/",
+              "plan/",
+              "ci/",
+              "docs/",
+              "fix/",
+              "test/",
+              "dependabot/",
             ];
 
             const openPulls = await github.paginate(github.rest.pulls.list, {
