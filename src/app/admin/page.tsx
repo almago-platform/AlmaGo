@@ -68,8 +68,8 @@ export default async function AdminEntry() {
       />
 
       <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4" aria-label="Indicateurs administration">
-        {dashboardCards.map((card) => (
-          <DashboardCard key={card.key} {...card} value={counts[card.key]} />
+        {dashboardCards.map(({ key, title, description, href }) => (
+          <DashboardCard key={key} title={title} value={counts[key]} description={description} href={href} />
         ))}
       </section>
 
