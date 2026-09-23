@@ -137,8 +137,8 @@ export function StudentOrientationPanel({
 
       <section aria-label="Synthèse orientation" className="grid gap-5 lg:grid-cols-[1fr_0.85fr]">
         <Card className="bg-slate-950 text-white">
-          <Badge variant={items.length ? "info" : "neutral"}>{items.length ? "Pistes disponibles" : "En préparation"}</Badge>
-          <h2 className="mt-5 text-2xl font-semibold tracking-tight">Choix de programme</h2>
+          <Badge variant={items.length ? "info" : "neutral"}>{items.length ? "Recommandations disponibles" : "En préparation"}</Badge>
+          <h2 className="mt-5 text-2xl font-semibold tracking-tight">Choisir un programme</h2>
           <p className="mt-3 text-sm leading-6 text-slate-300">
             {applicationStateError
               ? "Vos recommandations sont visibles, mais l’état des intérêts enregistrés n’a pas pu être vérifié."
@@ -146,7 +146,7 @@ export function StudentOrientationPanel({
                 ? `Prochaine piste à examiner : ${nextProgram.name}. Vérifiez les critères avant d’enregistrer votre intérêt.`
                 : items.length
                   ? "Vos intérêts actuels sont enregistrés. Continuez à suivre les candidatures depuis votre espace."
-                  : "AlmaGo publiera ici les pistes adaptées après analyse de votre profil."}
+                  : "Aucune recommandation n’est publiée pour le moment. Vérifiez que votre profil contient les informations nécessaires."}
           </p>
           {nextProgram && (
             <div className="mt-6 rounded-xl border border-white/10 bg-white/5 p-4">
@@ -158,17 +158,17 @@ export function StudentOrientationPanel({
         </Card>
 
         <section aria-label="Résumé de l’orientation" className="grid gap-4 sm:grid-cols-3 lg:grid-cols-1">
-          <SummaryCard title="Recommandations" value={items.length} badge="Préparées" tone="info" />
+          <SummaryCard title="Recommandations" value={items.length} badge="Publiées" tone="info" />
           <SummaryCard title="À comparer" value={comparableItems.length - interestedCount} badge="À décider" tone={comparableItems.length - interestedCount > 0 ? "warning" : "success"} />
-          <SummaryCard title="Intérêts" value={applicationStateError ? "—" : interestedCount} badge={applicationStateError ? "Indisponible" : interestedCount ? "Suivi démarré" : "Aucun"} tone={applicationStateError ? "neutral" : interestedCount ? "success" : "neutral"} />
+          <SummaryCard title="Intérêts enregistrés" value={applicationStateError ? "—" : interestedCount} badge={applicationStateError ? "Indisponible" : interestedCount ? "Suivi démarré" : "Aucun"} tone={applicationStateError ? "neutral" : interestedCount ? "success" : "neutral"} />
         </section>
       </section>
 
       {!loadError && items.length === 0 ? (
         <Card aria-labelledby="orientation-empty-title" className="border-dashed text-center">
-          <h2 id="orientation-empty-title" className="text-lg font-semibold text-slate-950">Vos recommandations arrivent bientôt</h2>
+          <h2 id="orientation-empty-title" className="text-lg font-semibold text-slate-950">Aucune recommandation publiée</h2>
           <p className="mx-auto mt-2 max-w-xl text-sm text-slate-600">
-            L’équipe AlmaGo analyse votre profil avant de publier des pistes adaptées à votre projet.
+            Aucune recommandation n’est publiée dans votre dossier pour le moment. Vous pouvez vérifier les informations de votre profil.
           </p>
           <div className="mt-5">
             <ButtonLink href="/student/profile" variant="secondary">Vérifier mon profil</ButtonLink>
@@ -179,7 +179,7 @@ export function StudentOrientationPanel({
           <div className="mb-4 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
             <div>
               <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--brand)]">Comparaison</p>
-              <h2 id="recommended-programs-title" className="mt-1 text-2xl font-semibold tracking-tight text-slate-950">Programmes à examiner</h2>
+              <h2 id="recommended-programs-title" className="mt-1 text-2xl font-semibold tracking-tight text-slate-950">Programmes recommandés</h2>
               <p className="mt-1 text-sm text-slate-600">Consultez les critères visibles avant d’enregistrer votre intérêt.</p>
             </div>
             <ButtonLink href="/student/applications" variant="secondary">Candidatures suivies</ButtonLink>
@@ -210,7 +210,7 @@ export function StudentOrientationPanel({
                   </div>
 
                   <p className="mt-5 text-sm leading-6 text-slate-700">
-                    {recommendation.note || "L’équipe AlmaGo a identifié ce programme comme une piste pertinente pour votre projet."}
+                    {recommendation.note || "Consultez les critères enregistrés pour évaluer cette recommandation."}
                   </p>
 
                   <dl className="mt-5 grid gap-3 text-sm sm:grid-cols-2">
