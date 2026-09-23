@@ -12,14 +12,17 @@ export default async function StudentEntry() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
-  const { data: profile } = await supabase.from("profiles").select("first_name,onboarding_completed").eq("id", user.id).single();
+  const { data: profile, error: profileError } = await supabase.from("profiles").select("first_name,onboarding_completed").eq("id", user.id).maybeSingle();
+  if (profileError) return <DashboardUnavailable />;
   if (!profile?.onboarding_completed) redirect("/student/onboarding");
-  const [{ data: items }, { data: documents }, { data: recommendations }, { data: applications }] = await Promise.all([
+  const [{ data: items, error: itemsError }, { data: documents, error: documentsError }, { data: recommendations, error: recommendationsError }, { data: applications, error: applicationsError }] = await Promise.all([
     supabase.from("student_checklist_items").select("title,status").order("created_at"),
     supabase.from("documents").select("id,status"),
     supabase.from("program_recommendations").select("id,programs(name,universities(name))").eq("is_archived", false),
     supabase.from("applications").select("id,status,deadline,next_action,programs(name)").order("deadline", { ascending: true, nullsFirst: false }),
   ]);
+  if (itemsError || documentsError || recommendationsError || applicationsError) return <DashboardUnavailable />;
+
   const checklist = items || [];
   const completed = checklist.filter((item) => item.status === "completed").length;
   const progression = checklist.length ? Math.round((completed / checklist.length) * 100) : 0;
@@ -38,7 +41,7 @@ export default async function StudentEntry() {
       ? { label: "Voir ma candidature", detail: actionableApplication.next_action, href: "/student/applications", owner: "À faire par toi" }
       : nextItem
         ? { label: "Continuer ma checklist", detail: nextItem.title, href: "/student/checklist", owner: "À faire par toi" }
-        : { label: "Consulter ma checklist", detail: "Ton dossier est à jour. AlmaGo reviendra vers toi si une nouvelle action est nécessaire.", href: "/student/checklist", owner: "Suivi AlmaGo" };
+        : { label: "Consulter ma checklist", detail: "Aucune action à faire n’est enregistrée pour le moment. Consulte tes démarches pour voir les étapes connues.", href: "/student/checklist", owner: "Suivi du dossier" };
 
   return <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
     <PageHeader
@@ -109,4 +112,19 @@ export default async function StudentEntry() {
 
 function Metric({ title, value, detail, tone = "neutral" }: { title: string; value: number; detail: string; tone?: "success" | "info" | "warning" | "neutral" }) {
   return <Card as="article"><h3><Badge variant={tone}>{title}</Badge></h3><p className="mt-5 text-3xl font-semibold text-slate-950">{value}</p><p className="mt-2 text-sm leading-6 text-slate-600">{detail}</p></Card>;
+}
+
+function DashboardUnavailable() {
+  return (
+    <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
+      <PageHeader badge="Espace étudiant" title="Mon dossier Allemagne" />
+      <Card>
+        <div role="alert">
+          <h2 className="text-xl font-semibold text-slate-950">Dossier temporairement indisponible</h2>
+          <p className="mt-2 text-sm leading-6 text-slate-600">Impossible de charger les informations de votre dossier. Aucune modification n’a été effectuée. Réessayez dans quelques instants.</p>
+        </div>
+        <div className="mt-5"><ButtonLink href="/student">Réessayer</ButtonLink></div>
+      </Card>
+    </main>
+  );
 }
