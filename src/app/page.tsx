@@ -37,15 +37,15 @@ export default function Home() {
       <section className="mx-auto grid w-full max-w-7xl items-center gap-12 px-6 pb-16 pt-10 lg:grid-cols-2 lg:px-8 lg:pb-24 lg:pt-20">
         <div className="max-w-3xl">
           <p className="mb-5 inline-flex rounded-full border border-[var(--brand-border)] bg-[var(--brand-soft)] px-4 py-2 text-sm font-bold text-[var(--brand)]">
-            Accompagnement structuré Tunisie vers Allemagne
+            Dossier étudiant structuré pour l’Allemagne
           </p>
           <h1 className="text-4xl font-bold tracking-tight text-slate-950 sm:text-6xl">
             Construis ton dossier d&apos;études en Allemagne avec une méthode claire.
           </h1>
           <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-700">
-            AlmaGo transforme ton projet en étapes simples : profil, documents,
-            orientation, candidatures et suivi. Tu sais toujours quoi faire, pourquoi
-            le faire et ce qui reste à valider.
+            AlmaGo structure ton projet en étapes simples : profil, documents,
+            orientation, candidatures et suivi. Tu vois ce qui est enregistré,
+            ce qui reste à vérifier et la prochaine action disponible.
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Link
