@@ -34,7 +34,7 @@ export default function Home() {
             </span>
             <span className="min-w-0">
               <span className="block text-lg font-bold leading-5 tracking-tight text-slate-950">AlmaGo</span>
-              <span className="block truncate text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">
+              <span className="hidden text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500 sm:block">
                 Études en Allemagne
               </span>
             </span>
@@ -43,7 +43,6 @@ export default function Home() {
           <nav className="hidden items-center gap-7 text-sm font-semibold text-slate-600 lg:flex" aria-label="Navigation principale">
             <a className="transition-colors hover:text-[var(--brand)]" href="#parcours">Comment ça marche</a>
             <a className="transition-colors hover:text-[var(--brand)]" href="#espace">Votre espace</a>
-            <Link className="transition-colors hover:text-[var(--brand)]" href="/login">Connexion</Link>
           </nav>
 
           <div className="flex shrink-0 items-center gap-2">
