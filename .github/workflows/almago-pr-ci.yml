@@ -83,6 +83,10 @@ jobs:
       - name: Tests
         run: npm test --if-present
 
+      - name: Validate workflow YAML syntax
+        shell: bash
+        run: |
+          ruby -e 'require "yaml"; Dir[".github/workflows/*.{yml,yaml}"].sort.each { |file| YAML.parse_file(file); puts "valid yaml: #{file}" }'
 
       - name: Typecheck
         run: npx tsc --noEmit
