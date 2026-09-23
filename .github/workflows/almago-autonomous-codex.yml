@@ -93,7 +93,7 @@ jobs:
             core.setOutput("head_sha", pr.head.sha);
 
       - name: Checkout PR branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: ${{ steps.pr.outputs.head_ref }}
           fetch-depth: 0
@@ -277,7 +277,7 @@ jobs:
             core.setOutput("head_ref", pr.head.ref);
 
       - name: Checkout clean PR branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: ${{ steps.pr.outputs.head_ref }}
           fetch-depth: 0
