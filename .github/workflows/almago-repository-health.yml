@@ -1,0 +1,70 @@
+name: AlmaGo Repository Health
+
+on:
+  schedule:
+    - cron: "41 4 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: almago-repository-health
+  cancel-in-progress: true
+
+jobs:
+  health:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+
+      - name: Regression checks
+        run: |
+          npm test
+          npx tsc --noEmit
+          npm run lint
+
+      - name: Produce dependency health reports
+        run: |
+          mkdir -p artifacts/repository-health
+          npm audit --omit=dev --json > artifacts/repository-health/npm-audit.json || true
+          npm outdated --json > artifacts/repository-health/npm-outdated.json || true
+
+      - name: Summarize dependency health
+        shell: bash
+        run: |
+          node <<'NODE'
+          const fs = require("fs");
+          const auditPath = "artifacts/repository-health/npm-audit.json";
+          const outdatedPath = "artifacts/repository-health/npm-outdated.json";
+          let audit = {}, outdated = {};
+          try { audit = JSON.parse(fs.readFileSync(auditPath, "utf8")); } catch {}
+          try { outdated = JSON.parse(fs.readFileSync(outdatedPath, "utf8")); } catch {}
+          const v = audit.metadata?.vulnerabilities || {};
+          const lines = [
+            "# AlmaGo repository health",
+            "",
+            `Production vulnerabilities — critical: ${v.critical || 0}, high: ${v.high || 0}, moderate: ${v.moderate || 0}, low: ${v.low || 0}`,
+            `Outdated packages reported: ${Object.keys(outdated).length}`,
+            "",
+            "This scheduled report is advisory. Dependabot handles bounded minor/patch update proposals; major upgrades remain manual."
+          ];
+          fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, lines.join("\n") + "\n");
+          NODE
+
+      - name: Upload health report
+        uses: actions/upload-artifact@v4
+        with:
+          name: almago-repository-health-${{ github.run_id }}
+          path: artifacts/repository-health/
+          retention-days: 14
+          if-no-files-found: error
