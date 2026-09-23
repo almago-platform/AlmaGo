@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { ProfileForm } from "@/components/student/ProfileForm";
+import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
 import { PageHeader } from "@/components/ui/PageHeader";
@@ -10,7 +11,21 @@ export default async function ProfilePage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
-  const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).single();
+  const { data: profile, error } = await supabase.from("profiles").select("*").eq("id", user.id).maybeSingle();
+  if (error) {
+    return (
+      <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
+        <PageHeader badge="Mon profil" title="Informations du dossier" />
+        <Card>
+          <div role="alert">
+            <h2 className="text-xl font-semibold text-slate-950">Profil temporairement indisponible</h2>
+            <p className="mt-2 text-sm text-slate-600">Impossible de charger votre profil. Réessayez dans quelques instants.</p>
+          </div>
+          <div className="mt-5"><ButtonLink href="/student/profile">Réessayer</ButtonLink></div>
+        </Card>
+      </main>
+    );
+  }
   if (!profile?.onboarding_completed) redirect("/student/onboarding");
 
   return (
