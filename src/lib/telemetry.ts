@@ -6,8 +6,23 @@ export const telemetryEventProperties = {
   web_vital: ["metric", "value_bucket"],
 } as const;
 
+// Values are bounded too: a safe property name cannot make free-form data safe.
+export const telemetryAllowedValues = {
+  route_group: ["public", "auth", "student", "admin", "api", "other"],
+  error_code: [
+    "unknown", "auth_required", "admin_required", "access_denied",
+    "validation_failed", "not_found", "network_error", "server_error",
+  ],
+  method: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+  surface: ["login", "signup", "profile", "onboarding", "documents", "orientation", "applications", "other"],
+  result: ["success", "failure"],
+  destination_group: ["public", "auth", "student", "admin", "other"],
+  metric: ["LCP", "INP", "CLS", "FCP", "TTFB"],
+  value_bucket: ["good", "needs_improvement", "poor"],
+} as const;
+
 export type TelemetryEventName = keyof typeof telemetryEventProperties;
-export type TelemetryValue = string | number | boolean | null;
+export type TelemetryValue = string | number;
 export type TelemetryProperties = Record<string, TelemetryValue>;
 
 export type PreparedTelemetryEvent = {
@@ -15,14 +30,12 @@ export type PreparedTelemetryEvent = {
   properties: TelemetryProperties;
 };
 
-const maxStringLength = 128;
-
 export function prepareTelemetryEvent(
   name: string,
   properties: Record<string, unknown>,
 ): PreparedTelemetryEvent {
-  if (!(name in telemetryEventProperties)) {
-    throw new Error(`telemetry_event_not_allowed:${name}`);
+  if (!Object.hasOwn(telemetryEventProperties, name)) {
+    throw new Error("telemetry_event_not_allowed");
   }
 
   const eventName = name as TelemetryEventName;
@@ -31,32 +44,22 @@ export function prepareTelemetryEvent(
 
   for (const [key, value] of Object.entries(properties)) {
     if (!allowed.has(key)) {
-      throw new Error(`telemetry_property_not_allowed:${eventName}:${key}`);
+      throw new Error("telemetry_property_not_allowed");
     }
 
-    if (value === null || typeof value === "boolean") {
-      prepared[key] = value;
-      continue;
-    }
-
-    if (typeof value === "number") {
-      if (!Number.isFinite(value)) {
-        throw new Error(`telemetry_value_invalid:${eventName}:${key}`);
+    if (key === "http_status") {
+      if (typeof value !== "number" || !Number.isInteger(value) || value < 100 || value > 599) {
+        throw new Error("telemetry_value_invalid");
       }
       prepared[key] = value;
       continue;
     }
 
-    if (typeof value === "string") {
-      const normalized = value.trim();
-      if (!normalized || normalized.length > maxStringLength) {
-        throw new Error(`telemetry_value_invalid:${eventName}:${key}`);
-      }
-      prepared[key] = normalized;
-      continue;
+    const choices = telemetryAllowedValues[key as keyof typeof telemetryAllowedValues];
+    if (typeof value !== "string" || !choices || !(choices as readonly string[]).includes(value)) {
+      throw new Error("telemetry_value_invalid");
     }
-
-    throw new Error(`telemetry_value_invalid:${eventName}:${key}`);
+    prepared[key] = value;
   }
 
   return { name: eventName, properties: prepared };

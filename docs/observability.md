@@ -1,12 +1,10 @@
 # AlmaGo observability contract
 
-A44 must remain **disabled by default** until a production observability/analytics provider is connected and the privacy/legal review in A38 is complete.
+A44 remains **disabled by default** until a production observability/analytics provider is connected and the privacy/legal review in A38 is complete. A43 must pass first.
 
 ## Privacy boundary
 
-Telemetry is allow-list only. The canonical contract is:
-
-`config/telemetry-events.json`
+Telemetry is allow-list only. The canonical contract is `config/telemetry-events.json`. The runtime gate in `src/lib/telemetry.ts` checks **both property names and values** against it.
 
 Allowed initial events:
 
@@ -16,7 +14,7 @@ Allowed initial events:
 - `navigation_action`
 - `web_vital`
 
-Only the properties listed for each event may be sent.
+Each property must use exactly one of the categorical values in `allowedValues`, except `http_status`, which must be an integer from 100 to 599. Map unexpected values to a safe generic category (`other` or `unknown`) only where that category exists. Never derive event values from free-form user input, error messages, URLs or identifiers. Validation errors must not echo rejected values.
 
 ## Never send
 
@@ -30,17 +28,17 @@ Do not send:
 - full URLs containing identifiers or query strings;
 - raw IP addresses from application code.
 
-Provider-side defaults must also be reviewed before production activation.
+Provider-side defaults must also be reviewed before production activation. Do not enable automatic capture of page URLs, session replay, user profiles, network payloads, or unfiltered exception messages.
 
 ## Provider activation checklist
 
-1. Complete A38 legal/privacy review.
+1. Complete A38 legal/privacy review and A43 authenticated E2E.
 2. Create/connect the provider account.
 3. Store keys only in Vercel/GitHub secrets.
 4. Configure retention and any consent requirement.
-5. Map provider events to the allow-list contract.
+5. Map provider events to the allow-list contract; disable provider automatic capture until separately reviewed.
 6. Verify production error capture with synthetic/test-only data.
-7. Confirm no forbidden property appears in provider payloads.
+7. Inspect outgoing application payloads and provider-side enrichment for forbidden data.
 8. Mark A44 complete only after this verification.
 
 Recommended low-friction path: Vercel runtime context plus a dedicated product analytics/error provider such as PostHog, subject to the final privacy review.
