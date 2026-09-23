@@ -30,11 +30,11 @@ export default function LoginPage() {
 
           <div className="mt-10 grid gap-4">
             <div className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-muted)]/50 p-4">
-              <p className="text-sm font-semibold text-slate-500">Suivi clair</p>
+              <p className="text-sm font-semibold text-slate-600">Suivi clair</p>
               <p className="mt-1 font-bold text-slate-950">Chaque étape reliée à une action concrète.</p>
             </div>
             <div className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-muted)]/50 p-4">
-              <p className="text-sm font-semibold text-slate-500">Dossier centralisé</p>
+              <p className="text-sm font-semibold text-slate-600">Dossier centralisé</p>
               <p className="mt-1 font-bold text-slate-950">Profil, documents et candidatures au même endroit.</p>
             </div>
           </div>
