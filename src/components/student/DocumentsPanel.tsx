@@ -85,7 +85,7 @@ export function DocumentsPanel({
       }
 
       if (fileInput.current) fileInput.current.value = "";
-      setFeedback({ message: "Document envoyé. AlmaGo le vérifiera prochainement.", kind: "success" });
+      setFeedback({ message: "Document envoyé. Son statut apparaîtra dans votre dossier.", kind: "success" });
       router.refresh();
     } catch {
       setFeedback({ message: "Erreur réseau. Vérifie ta connexion puis réessaie.", kind: "error" });
@@ -120,26 +120,29 @@ export function DocumentsPanel({
 
   return (
     <div className="space-y-8">
-      <section aria-label="Priorité documentaire" className="grid gap-5 lg:grid-cols-[1fr_0.85fr]">
-        <Card className="bg-slate-950 text-white">
-          <Badge variant={correctionCount ? "warning" : reviewCount ? "info" : "success"}>
-            {correctionCount ? "Correction demandée" : reviewCount ? "En vérification" : "Dossier documentaire"}
+      <section aria-label="Priorité documentaire" className="grid gap-5 lg:grid-cols-[minmax(0,1.45fr)_minmax(17rem,0.85fr)]">
+        <Card className="relative overflow-hidden border-emerald-200 shadow-none">
+          <div aria-hidden="true" className="absolute inset-y-0 left-0 w-1 bg-[var(--brand)]" />
+          <div className="pl-2">
+          <Badge variant={correctionCount ? "warning" : reviewCount ? "info" : "neutral"}>
+            {correctionCount ? "Correction demandée" : reviewCount ? "En attente de vérification" : "Dossier documentaire"}
           </Badge>
-          <h2 className="mt-5 text-2xl font-semibold tracking-tight">Votre prochaine action document</h2>
-          <p className="mt-3 text-sm leading-6 text-slate-300">
+          <h2 className="mt-5 text-2xl font-semibold tracking-tight text-slate-950 sm:text-3xl">Vos documents : prochaine étape</h2>
+          <p className="mt-3 text-base leading-7 text-slate-700">
             {correctionCount
               ? `${correctionCount} document${correctionCount > 1 ? "s doivent" : " doit"} être corrigé${correctionCount > 1 ? "s" : ""}. Consultez le message AlmaGo avant de remplacer le fichier.`
               : reviewCount
-                ? "Vos fichiers envoyés sont en cours de vérification. Vous pouvez suivre les retours au même endroit."
+                ? "Vos fichiers envoyés attendent une vérification. Vous pourrez consulter les retours sur cette page."
                 : "Ajoutez uniquement les pièces demandées ou nécessaires pour éviter les doublons dans votre dossier."}
           </p>
           {priorityDocument && (
-            <div className="mt-6 rounded-xl border border-white/10 bg-white/5 p-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-200">Document suivi</p>
-              <p className="mt-2 break-words font-semibold">{priorityDocument.original_filename}</p>
-              <p className="mt-1 text-sm text-slate-300">{categoryLabel(priorityDocument.category)} · {statusLabel(priorityDocument.status)}</p>
+            <div className="mt-6 rounded-lg border border-slate-200 bg-slate-50 p-4">
+              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--brand)]">Document suivi</p>
+              <p className="mt-2 break-words font-semibold text-slate-950">{priorityDocument.original_filename}</p>
+              <p className="mt-1 text-sm text-slate-600">{categoryLabel(priorityDocument.category)} · {statusLabel(priorityDocument.status)}</p>
             </div>
           )}
+          </div>
         </Card>
 
         <section aria-label="Résumé des documents" className="grid gap-4 sm:grid-cols-3 lg:grid-cols-1">
@@ -149,13 +152,13 @@ export function DocumentsPanel({
         </section>
       </section>
 
-      <Card aria-labelledby="document-upload-title">
+      <Card aria-labelledby="document-upload-title" className="shadow-none">
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
           <div>
             <Badge variant="neutral">Nouveau fichier</Badge>
             <h2 id="document-upload-title" className="mt-3 text-xl font-semibold text-slate-950">Ajouter un document</h2>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
-              PDF, JPEG ou PNG · 10 MiB maximum. Les fichiers restent privés et accessibles uniquement depuis votre dossier.
+              PDF, JPEG ou PNG · 10 MiB maximum. Les fichiers sont conservés dans un espace privé.
             </p>
           </div>
         </div>
@@ -226,7 +229,7 @@ export function DocumentsPanel({
             </Card>
           ) : (
             documents.map((document) => (
-              <Card as="article" key={document.id} aria-labelledby={`student-document-title-${document.id}`}>
+              <Card as="article" key={document.id} aria-labelledby={`student-document-title-${document.id}`} className="shadow-none">
                 <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-start">
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
@@ -314,7 +317,7 @@ function SummaryCard({ id, title, value, badge, tone }: { id: string; title: str
   return (
     <Card aria-labelledby={id} className="shadow-none">
       <h2 id={id} className="text-sm font-semibold text-slate-700">{title}</h2>
-      <p className="mt-1 text-3xl font-semibold text-slate-950">{value}</p>
+      <p className="mt-2 text-2xl font-semibold text-slate-950">{value}</p>
       <div className="mt-3"><Badge variant={tone}>{badge}</Badge></div>
     </Card>
   );

@@ -43,8 +43,8 @@ export default async function StudentDocumentsPage() {
     <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:py-12">
       <PageHeader
         badge="Documents"
-        title="Mon dossier documentaire"
-        description="Dépose les pièces demandées, suis leur vérification et retrouve les retours AlmaGo au même endroit."
+        title="Vos documents"
+        description="Retrouvez les pièces envoyées, leur statut et les demandes de correction au même endroit."
       />
       <DocumentsPanel
         documents={documentsResult.data || []}
@@ -58,7 +58,7 @@ export default async function StudentDocumentsPage() {
 function DocumentsUnavailable() {
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:py-12">
-      <PageHeader badge="Documents" title="Mon dossier documentaire" />
+      <PageHeader badge="Documents" title="Vos documents" />
       <Card>
         <div role="alert">
           <h2 className="text-xl font-semibold text-slate-950">Documents temporairement indisponibles</h2>
