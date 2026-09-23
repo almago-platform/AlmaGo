@@ -28,12 +28,12 @@ const icons = {
 };
 
 const studentItems: NavItem[] = [
-  { label: "Tableau de bord", href: "/student", icon: icons.dashboard },
+  { label: "Mon dossier", href: "/student", icon: icons.dashboard },
   { label: "Mon profil", href: "/student/profile", icon: icons.profile },
-  { label: "Documents", href: "/student/documents", icon: icons.documents },
-  { label: "Orientation", href: "/student/orientation", icon: icons.orientation },
-  { label: "Checklist", href: "/student/checklist", icon: icons.checklist },
-  { label: "Candidatures", href: "/student/applications", icon: icons.applications },
+  { label: "Mes documents", href: "/student/documents", icon: icons.documents },
+  { label: "Mon orientation", href: "/student/orientation", icon: icons.orientation },
+  { label: "Mes démarches", href: "/student/checklist", icon: icons.checklist },
+  { label: "Mes candidatures", href: "/student/applications", icon: icons.applications },
 ];
 
 const adminItems: NavItem[] = [
@@ -92,7 +92,7 @@ export function AppShell({
                 key={item.href}
                 href={item.href}
                 aria-current={active ? "page" : undefined}
-                className={`group flex items-center gap-3 rounded-xl px-3.5 py-3 text-sm font-medium transition ${active ? "bg-[var(--brand-soft)] text-[var(--brand)]" : "text-slate-600 hover:bg-slate-50 hover:text-slate-950"}`}
+                className={`group flex min-h-11 items-center gap-3 rounded-[var(--radius-control)] px-3.5 py-2.5 text-sm font-medium transition-colors duration-150 ${active ? "bg-[var(--brand-soft)] text-[var(--brand)]" : "text-slate-600 hover:bg-slate-50 hover:text-slate-950"}`}
               >
                 <span className={active ? "text-[var(--accent-strong)]" : "text-slate-400 group-hover:text-slate-600"}>{item.icon}</span>
                 {item.label}
@@ -117,7 +117,7 @@ export function AppShell({
         <header className="sticky top-0 z-30 border-b border-slate-200/80 bg-white/95 backdrop-blur lg:hidden">
           <div className="flex h-16 items-center justify-between px-4">
             <Link href={role === "admin" ? "/admin" : "/student"} className="flex items-center gap-2.5" aria-label="Accueil AlmaGo">
-              <span className="grid h-9 w-9 place-items-center rounded-xl bg-[var(--brand)] text-sm font-bold text-white">A</span>
+              <span className="grid h-9 w-9 place-items-center rounded-[var(--radius-control)] bg-[var(--brand)] text-sm font-bold text-white">A</span>
               <span>
                 <span className="block text-base font-bold leading-none text-slate-950">AlmaGo</span>
                 <span className="mt-1 block text-[11px] font-medium text-slate-500">{role === "admin" ? "Administration" : "Mon espace"}</span>
@@ -128,7 +128,7 @@ export function AppShell({
             </Button>
           </div>
 
-          <nav className="mobile-nav-scroll flex gap-1 overflow-x-auto border-t border-slate-100 px-3 py-2" aria-label={role === "admin" ? "Navigation administration" : "Navigation étudiant"}>
+          <nav className="mobile-nav-scroll flex snap-x snap-mandatory gap-1 overflow-x-auto border-t border-slate-100 px-3 py-2" aria-label={role === "admin" ? "Navigation administration" : "Navigation étudiant"}>
             {items.map((item) => {
               const active = isActive(pathname, item.href);
               return (
@@ -136,7 +136,7 @@ export function AppShell({
                   key={item.href}
                   href={item.href}
                   aria-current={active ? "page" : undefined}
-                  className={`flex min-h-11 shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium ${active ? "bg-[var(--brand-soft)] text-[var(--brand)]" : "text-slate-600 hover:bg-slate-50"}`}
+                  className={`flex min-h-11 shrink-0 snap-start items-center gap-2 rounded-[var(--radius-control)] px-3 py-2 text-sm font-medium transition-colors duration-150 ${active ? "bg-[var(--brand-soft)] text-[var(--brand)]" : "text-slate-600 hover:bg-slate-50 hover:text-slate-950"}`}
                 >
                   {item.icon}
                   {item.label}
