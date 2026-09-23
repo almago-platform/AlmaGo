@@ -35,6 +35,22 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: node autonomy/plan-sync.mjs
 
+      - name: Probe A43 authenticated E2E
+        if: >-
+          steps.sync.outputs.task_id == 'A43' &&
+          steps.sync.outputs.issue_number != ''
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              ...context.repo,
+              workflow_id: "almago-authenticated-e2e.yml",
+              ref: "main",
+              inputs: { probe: "true" }
+            });
+            core.info("Dispatched safe A43 authenticated E2E probe.");
+
       - name: Dispatch bounded Gemini/Grok worker
         if: >-
           steps.sync.outputs.route == 'ai' &&
