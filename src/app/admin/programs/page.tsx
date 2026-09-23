@@ -19,8 +19,8 @@ export default async function AdminProgramsPage() {
     <main className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 sm:py-12">
       <PageHeader
         badge="Catalogue"
-        title="Programmes d&apos;études"
-        description="Centralisez les conditions, langues, échéances et liens utilisés par l&apos;équipe d&apos;orientation."
+        title="Programmes d’études"
+        description="Centralisez les conditions, langues, échéances et liens utilisés par l’équipe d’orientation."
       />
 
       <div className="mb-6 grid gap-4 sm:grid-cols-3">
