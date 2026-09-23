@@ -198,7 +198,7 @@ function SummaryCard({ title, value, badge, tone }: { title: string; value: numb
 function ChecklistUnavailable() {
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
-      <PageHeader badge="Mes démarches" title="Prochaines étapes du dossier" />
+      <PageHeader badge="Mes démarches" title="Mes démarches" />
       <Card>
         <div role="alert">
           <h2 className="text-xl font-semibold text-slate-950">Démarches temporairement indisponibles</h2>
