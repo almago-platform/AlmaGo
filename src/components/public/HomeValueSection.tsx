@@ -58,7 +58,7 @@ export function HomeValueSection() {
                   <span className="grid h-12 w-12 place-items-center rounded-[var(--radius-control)] bg-[var(--brand-soft)] text-[var(--brand)]">
                     <ValueIcon type={item.icon} />
                   </span>
-                  <span className="text-xs font-bold tracking-[0.16em] text-slate-400">{item.number}</span>
+                  <span className="text-xs font-bold tracking-[0.16em] text-slate-600">{item.number}</span>
                 </div>
                 <h3 className="mt-7 text-xl font-bold tracking-tight text-slate-950">{item.title}</h3>
                 <p className="mt-3 text-sm leading-6 text-slate-600">{item.description}</p>
