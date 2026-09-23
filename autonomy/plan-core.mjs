@@ -70,6 +70,19 @@ export function routeTask(task) {
   return "ai";
 }
 
+export function dispatchableReadyIssue(plan, issues = []) {
+  validatePlan(plan);
+  for (const issue of issues) {
+    if (issue.state !== "open") continue;
+    const labels = new Set((issue.labels || []).map(label => typeof label === "string" ? label : label.name));
+    if (!labels.has("almago-ai-ready") || labels.has("almago-ai-running") || labels.has("almago-ai-blocked")) continue;
+    const id = issueTaskId(issue);
+    const task = plan.tasks.find(item => item.id === id);
+    if (task && routeTask(task) === "ai") return { issue, task };
+  }
+  return null;
+}
+
 export function taskIssueBody(task) {
   const files = (task.files || []).map(file => "- " + file).join("\n");
   const acceptance = task.acceptance.map(item => "- " + item).join("\n");

@@ -1,4 +1,4 @@
-import { loadPlan, validatePlan, nextEligibleTask, routeTask, taskIssueBody, progress, issueTaskId } from "./plan-core.mjs";
+import { loadPlan, validatePlan, nextEligibleTask, routeTask, taskIssueBody, progress, issueTaskId, dispatchableReadyIssue } from "./plan-core.mjs";
 
 const token = process.env.GITHUB_TOKEN;
 const repository = process.env.GITHUB_REPOSITORY;
@@ -107,10 +107,21 @@ if (next) {
   });
   issues = await listPlanIssues();
 }
+
+const ready = dispatchableReadyIssue(plan, issues);
+const dispatchIssue = created || ready?.issue || null;
+const dispatchTask = created ? next : ready?.task || null;
+const dispatchRoute = dispatchTask ? routeTask(dispatchTask) : null;
+
 await upsertDashboard(plan, issues, next);
 
 if (process.env.GITHUB_OUTPUT) {
   const fs = await import("node:fs");
-  fs.appendFileSync(process.env.GITHUB_OUTPUT, "issue_number=" + (created?.number || "") + "\nroute=" + (route || "") + "\ntask_id=" + (next?.id || "") + "\n");
+  fs.appendFileSync(process.env.GITHUB_OUTPUT,
+    "issue_number=" + (dispatchIssue?.number || "") +
+    "\nroute=" + (dispatchRoute || "") +
+    "\ntask_id=" + (dispatchTask?.id || "") + "\n");
 }
-console.log(created ? "Created #" + created.number + " for " + next.id + " via " + route + "." : "No new task created.");
+if (created) console.log("Created #" + created.number + " for " + next.id + " via " + route + ".");
+else if (ready) console.log("Existing ready issue #" + ready.issue.number + " is dispatchable for " + ready.task.id + ".");
+else console.log("No new or dispatchable task.");

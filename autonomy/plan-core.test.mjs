@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { loadPlan, validatePlan, nextEligibleTask, routeTask, taskIssueBody, progress } from "./plan-core.mjs";
+import { loadPlan, validatePlan, nextEligibleTask, routeTask, taskIssueBody, progress, dispatchableReadyIssue } from "./plan-core.mjs";
 
 const plan = loadPlan();
 
@@ -43,4 +43,16 @@ test("progress includes already completed plan work", () => {
   assert.equal(result.total, 45);
   assert.ok(result.done >= 10);
   assert.ok(result.percent > 0 && result.percent < 100);
+});
+
+test("existing ready AI issue can be dispatched after provider activation", () => {
+  const issue = {
+    number: 18,
+    state: "open",
+    body: "<!-- almago-plan-task:A09 -->\n<!-- almago-ai-task -->",
+    labels: [{ name: "almago-plan" }, { name: "almago-ai-ready" }],
+  };
+  const ready = dispatchableReadyIssue(plan, [issue]);
+  assert.equal(ready?.issue.number, 18);
+  assert.equal(ready?.task.id, "A09");
 });
