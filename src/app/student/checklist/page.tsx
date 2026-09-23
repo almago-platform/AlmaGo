@@ -73,9 +73,9 @@ export default async function ChecklistPage() {
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
       <PageHeader
-        badge="Checklist"
-        title="Prochaines étapes du dossier"
-        description="Suivez les démarches demandées, les éléments suivis par AlmaGo et ce qui mérite votre attention maintenant."
+        badge="Mes démarches"
+        title="Mes démarches"
+        description="Retrouvez les démarches enregistrées, les actions attendues de votre côté et les étapes suivies par AlmaGo."
         actions={<ButtonLink href="/student/documents" variant="secondary">Voir mes documents</ButtonLink>}
       />
 
@@ -84,7 +84,7 @@ export default async function ChecklistPage() {
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
               <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--accent-light)]">Avancement</p>
-              <h2 id="checklist-progress-title" className="mt-4 text-3xl font-semibold tracking-tight">Checklist du dossier</h2>
+              <h2 id="checklist-progress-title" className="mt-4 text-3xl font-semibold tracking-tight">Progression des démarches</h2>
             </div>
             <Badge variant={checklistItems.length > 0 && progression === 100 ? "success" : "info"}>
               {checklistItems.length ? `${completedCount}/${checklistItems.length} terminées` : "Aucune étape"}
@@ -95,7 +95,7 @@ export default async function ChecklistPage() {
               <p className="text-5xl font-semibold tracking-tight">{checklistItems.length ? `${progression}%` : "—"}</p>
               <p className="text-right text-sm text-slate-300">Étapes réellement enregistrées dans votre dossier</p>
             </div>
-            {checklistItems.length > 0 && <div className="[&_[role=progressbar]]:bg-white/15 [&_[role=progressbar]>div]:bg-[var(--accent)]"><ProgressBar value={progression} label="Progression de la checklist" /></div>}
+            {checklistItems.length > 0 && <div className="[&_[role=progressbar]]:bg-white/15 [&_[role=progressbar]>div]:bg-[var(--accent)]"><ProgressBar value={progression} label="Progression des démarches" /></div>}
           </div>
         </Card>
 
@@ -117,13 +117,13 @@ export default async function ChecklistPage() {
           ) : (
             <>
               <h2 id="checklist-next-action-title" className="mt-5 text-2xl font-semibold text-slate-950">{waitingAlmaGoCount ? "Étapes en attente côté AlmaGo" : "Aucune action enregistrée"}</h2>
-              <p className="mt-3 text-sm leading-6 text-slate-600">{waitingAlmaGoCount ? "Aucune action n’est actuellement demandée de votre côté. Consultez les étapes suivies ci-dessous." : "Aucune démarche ne demande votre action pour le moment. Consultez les étapes connues ci-dessous."}</p>
+              <p className="mt-3 text-sm leading-6 text-slate-600">{waitingAlmaGoCount ? "Aucune action n’est actuellement demandée de votre côté. Consultez les étapes suivies ci-dessous." : "Aucune action n’est actuellement demandée de votre côté. Consultez les démarches enregistrées ci-dessous."}</p>
             </>
           )}
         </Card>
       </div>
 
-      <section aria-label="Résumé checklist" className="mt-5 grid gap-4 sm:grid-cols-3">
+      <section aria-label="Résumé des démarches" className="mt-5 grid gap-4 sm:grid-cols-3">
         <SummaryCard title="À traiter" value={actionableItems.length} badge="Côté étudiant" tone={actionableItems.length ? "warning" : "success"} />
         <SummaryCard title="Suivi AlmaGo" value={waitingAlmaGoCount} badge="En attente" tone="info" />
         <SummaryCard title="Terminées" value={completedCount} badge="Étapes" tone="success" />
@@ -133,7 +133,7 @@ export default async function ChecklistPage() {
         <Card aria-labelledby="checklist-empty-title" className="mt-6 border-dashed text-center">
           <h2 id="checklist-empty-title" className="text-lg font-semibold text-slate-950">Aucune démarche enregistrée</h2>
           <p className="mx-auto mt-2 max-w-xl text-sm text-slate-600">
-            Votre dossier ne contient pas encore d’étapes. Vous pouvez vérifier vos documents ou revenir consulter cette page plus tard.
+            Aucune démarche n’est enregistrée dans votre dossier pour le moment. Vous pouvez vérifier vos documents ou revenir à votre dossier.
           </p>
         </Card>
       ) : (
@@ -198,7 +198,7 @@ function SummaryCard({ title, value, badge, tone }: { title: string; value: numb
 function ChecklistUnavailable() {
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
-      <PageHeader badge="Checklist" title="Prochaines étapes du dossier" />
+      <PageHeader badge="Mes démarches" title="Prochaines étapes du dossier" />
       <Card>
         <div role="alert">
           <h2 className="text-xl font-semibold text-slate-950">Démarches temporairement indisponibles</h2>
