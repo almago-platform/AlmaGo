@@ -49,8 +49,35 @@ jobs:
             if [ -z "${!name}" ]; then echo "::error::$name is required when ALMAGO_AUTH_E2E_ENABLED=true"; exit 1; fi
           done
 
+      - name: Require distinct test-only identities
+        shell: bash
+        run: |
+          student_email="$(printf '%s' "$ALMAGO_E2E_STUDENT_EMAIL" | tr '[:upper:]' '[:lower:]')"
+          admin_email="$(printf '%s' "$ALMAGO_E2E_ADMIN_EMAIL" | tr '[:upper:]' '[:lower:]')"
+
+          if [ "$student_email" = "$admin_email" ]; then
+            echo "::error::Student and admin E2E accounts must be different."
+            exit 1
+          fi
+
+          for email in "$student_email" "$admin_email"; do
+            case "$email" in
+              *e2e*|*test*) ;;
+              *)
+                echo "::error::Authenticated E2E emails must be dedicated test identities containing 'e2e' or 'test'."
+                exit 1
+                ;;
+            esac
+          done
+
       - name: Install Playwright without changing the lockfile
         run: npm install --no-save --package-lock=false @playwright/test@1.55.0
+
+      - name: Cache Playwright browser
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-1.55.0-chromium
 
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
