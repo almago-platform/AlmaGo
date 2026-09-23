@@ -110,15 +110,17 @@ jobs:
         uses: actions/github-script@v7
         env:
           VERIFIED_HEAD: ${{ steps.pr.outputs.head_sha }}
+          VERIFIED_PR_NUMBER: ${{ env.PR_NUMBER }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const head = process.env.VERIFIED_HEAD;
+            const pullNumber = Number(process.env.VERIFIED_PR_NUMBER);
             const marker = `<!-- almago-pr-ci:verified-head=${head} -->`;
             const comments = await github.paginate(github.rest.issues.listComments, {
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: context.issue.number,
+              issue_number: pullNumber,
               per_page: 100,
             });
 
@@ -128,7 +130,7 @@ jobs:
               await github.rest.issues.createComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                issue_number: context.issue.number,
+                issue_number: pullNumber,
                 body: [
                   "ALMAGO REVIEW REQUEST",
                   "",
@@ -148,7 +150,7 @@ jobs:
               repo: context.repo.repo,
               event_type: "almago_supervise",
               client_payload: {
-                pull_number: context.issue.number,
+                pull_number: pullNumber,
                 head_sha: head,
                 checkpoint_id: "pr-ci-" + head,
                 source: "AlmaGo PR CI",
@@ -161,15 +163,17 @@ jobs:
         uses: actions/github-script@v7
         env:
           FAILED_HEAD: ${{ steps.pr.outputs.head_sha }}
+          FAILED_PR_NUMBER: ${{ env.PR_NUMBER }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const head = process.env.FAILED_HEAD;
+            const pullNumber = Number(process.env.FAILED_PR_NUMBER);
             const marker = `<!-- almago-pr-ci:failed-head=${head};run=${context.runId} -->`;
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: context.issue.number,
+              issue_number: pullNumber,
               body: [
                 "CI: FAILED",
                 "",
@@ -181,3 +185,34 @@ jobs:
                 "@codex address that feedback",
               ].join("\n"),
             });
+
+            const { data: failedPr } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pullNumber,
+            });
+            const automationMatch = failedPr.head.ref.match(/^automation\/issue-([1-9][0-9]*)$/);
+            if (automationMatch) {
+              const issueNumber = Number(automationMatch[1]);
+              for (const name of ["almago-ai-running", "almago-ai-proposed"]) {
+                await github.rest.issues.removeLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issueNumber,
+                  name,
+                }).catch(() => null);
+              }
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                labels: ["almago-ai-blocked"],
+              });
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                body: "AUTOMATION: BLOCKED\n\nCanonical CI failed for PR #" + pullNumber +
+                  ". No additional provider call was spent automatically. Inspect the failed CI run before retrying.",
+              });
+            }
