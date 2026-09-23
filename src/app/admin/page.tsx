@@ -56,7 +56,7 @@ export default async function AdminEntry() {
       <PageHeader
         badge="Administration"
         title="Pilotage AlmaGo"
-        description="Gardez une vue claire sur le catalogue, les dossiers étudiants et les actions qui demandent l&apos;attention de l&apos;équipe."
+        description="Gardez une vue claire sur le catalogue, les dossiers étudiants et les actions qui demandent l’attention de l’équipe."
         actions={
           <>
             <ButtonLink href="/admin/orientation">Préparer une orientation</ButtonLink>
