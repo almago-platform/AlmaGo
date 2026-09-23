@@ -83,7 +83,7 @@ export default async function ChecklistPage() {
         <Card aria-labelledby="checklist-progress-title" className="bg-slate-950 text-white">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-emerald-200">Avancement</p>
+              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--accent-light)]">Avancement</p>
               <h2 id="checklist-progress-title" className="mt-4 text-3xl font-semibold tracking-tight">Checklist du dossier</h2>
             </div>
             <Badge variant={checklistItems.length > 0 && progression === 100 ? "success" : "info"}>
@@ -95,7 +95,7 @@ export default async function ChecklistPage() {
               <p className="text-5xl font-semibold tracking-tight">{checklistItems.length ? `${progression}%` : "—"}</p>
               <p className="text-right text-sm text-slate-300">Étapes réellement enregistrées dans votre dossier</p>
             </div>
-            {checklistItems.length > 0 && <div className="[&_[role=progressbar]]:bg-white/15 [&_[role=progressbar]>div]:bg-emerald-300"><ProgressBar value={progression} label="Progression de la checklist" /></div>}
+            {checklistItems.length > 0 && <div className="[&_[role=progressbar]]:bg-white/15 [&_[role=progressbar]>div]:bg-[var(--accent)]"><ProgressBar value={progression} label="Progression de la checklist" /></div>}
           </div>
         </Card>
 
