@@ -12,6 +12,7 @@ permissions:
   contents: read
   issues: write
   statuses: read
+  actions: write
 
 concurrency:
   group: almago-final-release-gate
@@ -201,10 +202,52 @@ jobs:
               labels: "almago-plan",
               per_page: 100,
             });
-            const a45 = allIssues.find(issue =>
+            let a45 = allIssues.find(issue =>
               !issue.pull_request &&
               String(issue.body || "").includes("<!-- almago-plan-task:A45 -->")
             );
+
+            if (!a45) {
+              const planResponse = await github.rest.repos.getContent({
+                owner,
+                repo,
+                path: "config/almago-master-plan.json",
+                ref: sha,
+              });
+              if (Array.isArray(planResponse.data) || !("content" in planResponse.data)) {
+                core.setFailed("Unable to load the AlmaGo Master Plan for A45.");
+                return;
+              }
+              const plan = JSON.parse(
+                Buffer.from(planResponse.data.content, "base64").toString("utf8"),
+              );
+              const task = plan.tasks.find(item => item.id === "A45");
+              if (!task) {
+                core.setFailed("A45 is missing from the AlmaGo Master Plan.");
+                return;
+              }
+
+              const created = await github.rest.issues.create({
+                owner,
+                repo,
+                title: "[A45] " + task.title,
+                body: [
+                  "<!-- almago-plan-task:A45 -->",
+                  "Plan task: A45",
+                  "Execution: system",
+                  "",
+                  "Goal:",
+                  task.title,
+                  "",
+                  "Acceptance:",
+                  ...(task.acceptance || []).map(item => "- " + item),
+                  "",
+                  "Created by the successful AlmaGo Final Release Gate."
+                ].join("\n"),
+                labels: ["almago-plan", "almago-system-required"],
+              });
+              a45 = created.data;
+            }
 
             const body = [
               "RELEASE GATE: READY",
@@ -238,7 +281,14 @@ jobs:
               });
             }
 
+            await github.rest.actions.createWorkflowDispatch({
+              owner,
+              repo,
+              workflow_id: "almago-master-orchestrator.yml",
+              ref: "main",
+            });
+
             await core.summary
               .addHeading("AlmaGo final release gate")
-              .addRaw("RELEASE GATE: READY\n\nExact main SHA: " + sha)
+              .addRaw("RELEASE GATE: READY\n\nExact main SHA: " + sha + "\n\nMaster Orchestrator refresh dispatched.")
               .write();
