@@ -19,7 +19,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/github-script@v7
+      - name: Mark failed autonomous plan task blocked
+        uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -30,45 +31,71 @@ jobs:
             let pullNumber = Number(run.pull_requests?.[0]?.number || 0);
             if (!pullNumber && run.head_branch) {
               const { data: candidates } = await github.rest.pulls.list({
-                owner, repo, state: "open", head: `${owner}:${run.head_branch}`, per_page: 10
+                owner,
+                repo,
+                state: "open",
+                head: `${owner}:${run.head_branch}`,
+                per_page: 10,
               });
-              pullNumber = Number(candidates.find(pr => pr.head.sha === run.head_sha)?.number || 0);
+              pullNumber = Number(
+                candidates.find(pr => pr.head.sha === run.head_sha)?.number || 0,
+              );
             }
-
-            core.summary
-              .addHeading("AlmaGo automation failure")
-              .addRaw(`Issue #${issueNumber} marked blocked after ${run.name} failure.`)
-              .write();
             if (!pullNumber) return;
 
-            const { data: pr } = await github.rest.pulls.get({ owner, repo, pull_number: pullNumber });
+            const { data: pr } = await github.rest.pulls.get({
+              owner,
+              repo,
+              pull_number: pullNumber,
+            });
             if (pr.state !== "open" || pr.head.sha !== run.head_sha) return;
+            if (pr.head.repo?.full_name !== `${owner}/${repo}`) return;
+
             const match = pr.head.ref.match(/^automation\/issue-([1-9][0-9]*)$/);
-            if (!match || pr.head.repo?.full_name !== `${owner}/${repo}`) return;
+            if (!match) return;
             const issueNumber = Number(match[1]);
 
-            const { data: issue } = await github.rest.issues.get({ owner, repo, issue_number: issueNumber });
-            const labels = new Set(issue.labels.map(label => typeof label === "string" ? label : label.name));
+            const { data: issue } = await github.rest.issues.get({
+              owner,
+              repo,
+              issue_number: issueNumber,
+            });
+            const labels = new Set(
+              issue.labels.map(label => typeof label === "string" ? label : label.name),
+            );
             if (!labels.has("almago-plan")) return;
 
             for (const label of ["almago-ai-running", "almago-ai-proposed"]) {
               if (labels.has(label)) {
-                await github.rest.issues.removeLabel({ owner, repo, issue_number: issueNumber, name: label }).catch(() => null);
+                await github.rest.issues.removeLabel({
+                  owner,
+                  repo,
+                  issue_number: issueNumber,
+                  name: label,
+                }).catch(() => null);
               }
             }
+
             if (!labels.has("almago-ai-blocked")) {
               await github.rest.issues.addLabels({
-                owner, repo, issue_number: issueNumber, labels: ["almago-ai-blocked"]
+                owner,
+                repo,
+                issue_number: issueNumber,
+                labels: ["almago-ai-blocked"],
               });
             }
 
             const marker = `<!-- almago-automation-failure:${run.id} -->`;
-            const comments = await github.paginate(github.rest.issues.listComments, {
-              owner, repo, issue_number: issueNumber, per_page: 100
-            });
+            const comments = await github.paginate(
+              github.rest.issues.listComments,
+              { owner, repo, issue_number: issueNumber, per_page: 100 },
+            );
+
             if (!comments.some(comment => String(comment.body || "").includes(marker))) {
               await github.rest.issues.createComment({
-                owner, repo, issue_number: issueNumber,
+                owner,
+                repo,
+                issue_number: issueNumber,
                 body: [
                   marker,
                   "AUTOMATION: BLOCKED",
@@ -77,7 +104,15 @@ jobs:
                   `HEAD: ${run.head_sha}`,
                   `Run: ${run.html_url}`,
                   "",
-                  "No extra provider call was spent automatically. Inspect the failure before relabeling this task `almago-ai-ready`."
-                ].join("\n")
+                  "No extra provider call was spent automatically.",
+                  "Inspect the failure before relabeling this task almago-ai-ready.",
+                ].join("\n"),
               });
             }
+
+            await core.summary
+              .addHeading("AlmaGo automation failure")
+              .addRaw(
+                `Issue #${issueNumber} marked blocked after ${run.name} failed on ${run.head_sha}.`,
+              )
+              .write();
