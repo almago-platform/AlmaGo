@@ -22,7 +22,7 @@ export default async function StudentOrientationPage() {
         badge="Orientation"
         title="Programmes recommandés"
         description="Comparez les pistes préparées par AlmaGo, vérifiez les critères principaux et indiquez les programmes qui vous intéressent. Une recommandation reste une piste de travail, pas une garantie d’admission."
-        actions={<ButtonLink href="/student/applications" variant="secondary">Voir mes candidatures</ButtonLink>}
+        actions={<ButtonLink href="/student/applications" variant="secondary">Mes candidatures</ButtonLink>}
       />
 
       <StudentOrientationPanel
