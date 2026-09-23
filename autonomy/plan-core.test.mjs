@@ -4,55 +4,57 @@ import { loadPlan, validatePlan, nextEligibleTask, routeTask, taskIssueBody, pro
 
 const plan = loadPlan();
 
+function planWithStatuses(overrides = {}) {
+  const fixture = structuredClone(plan);
+  for (const task of fixture.tasks) {
+    if (Object.hasOwn(overrides, task.id)) task.status = overrides[task.id];
+  }
+  return fixture;
+}
+
 test("master plan has 45 tasks and 6 extensions", () => {
   assert.equal(validatePlan(plan), true);
   assert.equal(plan.tasks.length, 45);
   assert.equal(plan.extensions.length, 6);
 });
 
-test("first unfinished task is A09", () => {
-  assert.equal(nextEligibleTask(plan, [])?.id, "A09");
+test("current first unfinished task is A38", () => {
+  assert.equal(nextEligibleTask(plan, [])?.id, "A38");
 });
 
 test("active implementation issue prevents parallel implementation work", () => {
+  const fixture = planWithStatuses({ A09: "TODO" });
   const issue = { state: "open", body: "<!-- almago-plan-task:A09 -->", labels: [{ name: "almago-ai-ready" }] };
-  assert.equal(nextEligibleTask(plan, [issue]), null);
+  assert.equal(nextEligibleTask(fixture, [issue]), null);
 });
 
 test("Codex-required queue does not freeze unrelated safe plan work", () => {
+  const fixture = planWithStatuses({ A13: "TODO", A17: "TODO" });
   const codexIssue = {
     state: "open",
     body: "<!-- almago-plan-task:A13 -->",
     labels: [{ name: "almago-codex-required" }],
   };
-  const completedA09 = {
-    state: "closed",
-    body: "<!-- almago-plan-task:A09 -->",
-    labels: [{ name: "almago-plan-done" }],
-  };
-  const completedA10 = {
-    state: "closed",
-    body: "<!-- almago-plan-task:A10 -->",
-    labels: [{ name: "almago-plan-done" }],
-  };
-  const next = nextEligibleTask(plan, [codexIssue, completedA09, completedA10]);
+  const next = nextEligibleTask(fixture, [codexIssue]);
   assert.equal(next?.id, "A17");
   assert.equal(routeTask(next), "ai");
 });
 
 test("human-required queue does not freeze unrelated safe plan work", () => {
+  const fixture = planWithStatuses({ A09: "TODO" });
   const humanIssue = {
     state: "open",
     body: "<!-- almago-plan-task:A38 -->",
     labels: [{ name: "almago-human-required" }],
   };
-  const next = nextEligibleTask(plan, [humanIssue]);
+  const next = nextEligibleTask(fixture, [humanIssue]);
   assert.equal(next?.id, "A09");
 });
 
 test("closing A09 unlocks A10", () => {
+  const fixture = planWithStatuses({ A09: "TODO", A10: "TODO" });
   const issue = { state: "closed", body: "<!-- almago-plan-task:A09 -->", labels: [{ name: "almago-plan-done" }] };
-  assert.equal(nextEligibleTask(plan, [issue])?.id, "A10");
+  assert.equal(nextEligibleTask(fixture, [issue])?.id, "A10");
 });
 
 test("router isolates AI, Codex, human and system work", () => {
