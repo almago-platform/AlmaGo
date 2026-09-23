@@ -62,9 +62,12 @@ function DocumentsUnavailable() {
       <Card>
         <div role="alert">
           <h2 className="text-xl font-semibold text-slate-950">Documents temporairement indisponibles</h2>
-          <p className="mt-2 text-sm text-slate-600">Impossible de charger vos documents. Réessayez dans quelques instants.</p>
+          <p className="mt-2 text-sm leading-6 text-slate-600">Impossible de charger vos documents pour le moment. Aucun document n’a été supprimé ou remplacé. Vous pouvez relancer le chargement ou revenir à votre dossier.</p>
         </div>
-        <div className="mt-5"><ButtonLink href="/student/documents">Réessayer</ButtonLink></div>
+        <div className="mt-5 flex flex-wrap gap-3">
+          <ButtonLink href="/student/documents">Réessayer</ButtonLink>
+          <ButtonLink href="/student" variant="secondary">Retour à mon dossier</ButtonLink>
+        </div>
       </Card>
     </main>
   );
