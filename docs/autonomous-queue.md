@@ -54,6 +54,13 @@ avec une nouvelle issue et ne modifie jamais cette PR automatiquement.
 - Le correctif doit être un diff unifié appliqué seulement aux fichiers désignés.
   Fichiers secrets, workflows, migrations, permissions et création/suppression de
   fichiers sont exclus.
+- Les chemins sensibles sont refusés techniquement, pas seulement par le prompt :
+  `src/app/api/`, `src/app/admin/`, les écrans/composants d’authentification,
+  les composants admin, `src/lib/supabase/` et les helpers de rôles/permissions/
+  sécurité ne peuvent pas être modifiés par la file autonome.
+- Les patchs qui ajoutent des références à des clés secrètes, au service role,
+  aux rôles admin ou à de l’exécution dynamique (`eval`/`new Function`) sont
+  rejetés. Une proposition autonome est aussi limitée à 300 lignes modifiées.
 - Tests, TypeScript, lint et build passent avant publication. Le CI distant
   recommence les vérifications sur le vrai commit de la PR.
 - L'historique Actions et les tableaux de facturation des fournisseurs permettent
