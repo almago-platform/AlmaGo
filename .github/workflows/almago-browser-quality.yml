@@ -86,6 +86,14 @@ jobs:
       - name: Playwright responsive and accessibility smoke tests
         run: npx playwright test --config=playwright.config.mjs
 
+      - name: Gemini visual review of screenshots
+        if: ${{ vars.ALMAGO_AI_ENABLED == 'true' && vars.ALMAGO_AI_BILLING_CAP_CONFIRMED == 'true' }}
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          ALMAGO_GEMINI_MODEL: ${{ vars.ALMAGO_GEMINI_MODEL }}
+          ALMAGO_VISUAL_REVIEW_MAX_IMAGES: "2"
+        run: node autonomy/visual-review.mjs artifacts/screenshots
+
       - name: Lighthouse advisory budgets
         if: always()
         run: npx lhci autorun --config=./lighthouserc.cjs || true
