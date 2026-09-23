@@ -1,5 +1,6 @@
-import { PageHeader } from "@/components/ui/PageHeader";
 import { ButtonLink } from "@/components/ui/ButtonLink";
+import { Card } from "@/components/ui/Card";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { StudentOrientationPanel } from "@/components/student/StudentOrientationPanel";
 import { createClient } from "@/lib/supabase/server";
 
@@ -16,6 +17,10 @@ export default async function StudentOrientationPage() {
     supabase.from("applications").select("program_id"),
   ]);
 
+  if (error) {
+    return <OrientationUnavailable />;
+  }
+
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
       <PageHeader
@@ -28,9 +33,28 @@ export default async function StudentOrientationPage() {
       <StudentOrientationPanel
         recommendations={data || []}
         applicationProgramIds={(applications || []).map((application) => application.program_id)}
-        loadError={error ? "Impossible de charger vos recommandations pour le moment." : undefined}
         applicationStateError={applicationsError ? "Impossible de vérifier vos intérêts enregistrés pour le moment." : undefined}
       />
+    </main>
+  );
+}
+
+function OrientationUnavailable() {
+  return (
+    <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
+      <PageHeader badge="Orientation" title="Programmes recommandés" />
+      <Card>
+        <div role="alert">
+          <h2 className="text-xl font-semibold text-slate-950">Orientation temporairement indisponible</h2>
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
+            Impossible de charger vos recommandations pour le moment. Cela ne signifie pas que votre dossier ne contient aucune recommandation.
+          </p>
+        </div>
+        <div className="mt-5 flex flex-col gap-3 sm:flex-row">
+          <ButtonLink href="/student/orientation">Réessayer</ButtonLink>
+          <ButtonLink href="/student" variant="secondary">Retour à mon dossier</ButtonLink>
+        </div>
+      </Card>
     </main>
   );
 }
