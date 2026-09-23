@@ -24,6 +24,9 @@
   --space-page-x: 1.5rem;
   --space-panel: 1.25rem;
   --focus-ring: 0 0 0 3px rgba(41, 48, 139, 0.2);
+  --text-page-title: clamp(2rem, 6vw, 2.5rem);
+  --text-section-title: clamp(1.125rem, 3vw, 1.25rem);
+  --page-leading: 1.08;
 }
 
 @theme inline {
@@ -44,6 +47,7 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
   text-rendering: optimizeLegibility;
+  line-height: 1.5;
 }
 
 a, button, input, select, textarea {
@@ -84,10 +88,10 @@ a, button, input, select, textarea {
 
 @layer components {
   .field { @apply mt-1 w-full border border-slate-300 bg-white px-3 py-2.5 text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-indigo-700 focus:ring-2 focus:ring-indigo-100; border-radius: var(--radius-control); }
-  .section-title { @apply mb-4 text-xl font-semibold text-slate-950; }
+  .section-title { @apply mb-4 font-semibold text-slate-950; font-size: var(--text-section-title); line-height: 1.25; }
   .eyebrow { @apply text-sm font-semibold uppercase tracking-[0.18em] text-[var(--accent-strong)]; }
-  .page-title { @apply mt-2 text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl; }
-  .page-subtitle { @apply mt-2 max-w-3xl text-slate-600; }
+  .page-title { @apply mt-2 font-semibold tracking-tight text-slate-950; font-size: var(--text-page-title); line-height: var(--page-leading); }
+  .page-subtitle { @apply mt-2 max-w-3xl text-sm leading-6 text-slate-600 sm:text-base sm:leading-7; }
   .status-badge { @apply inline-flex rounded-full px-3 py-1 text-xs font-semibold; }
   .status-success { @apply bg-emerald-100 text-emerald-800; }
   .status-muted { @apply bg-slate-100 text-slate-600; }
