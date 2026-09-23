@@ -1,5 +1,6 @@
-import Image from "next/image";
 import Link from "next/link";
+import { HomeHeader } from "@/components/public/HomeHeader";
+import { HomeHero } from "@/components/public/HomeHero";
 
 const journey = [
   {
@@ -27,139 +28,8 @@ const journey = [
 export default function Home() {
   return (
     <main className="min-h-screen bg-[var(--background)] text-slate-950">
-      <header className="border-b border-[var(--border)] bg-white/95 backdrop-blur">
-        <div className="mx-auto flex min-h-18 w-full max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
-          <Link href="/" className="flex min-w-0 items-center gap-3" aria-label="AlmaGo accueil">
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--radius-control)] bg-[var(--brand)] text-base font-bold text-white shadow-sm">
-              A
-            </span>
-            <span className="min-w-0">
-              <span className="block text-lg font-bold leading-5 tracking-tight text-slate-950">AlmaGo</span>
-              <span className="hidden text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500 sm:block">
-                Études en Allemagne
-              </span>
-            </span>
-          </Link>
-
-          <nav className="hidden items-center gap-7 text-sm font-semibold text-slate-600 lg:flex" aria-label="Navigation principale">
-            <a className="transition-colors hover:text-[var(--brand)]" href="#parcours">Comment ça marche</a>
-            <a className="transition-colors hover:text-[var(--brand)]" href="#espace">Votre espace</a>
-            <a className="transition-colors hover:text-[var(--brand)]" href="#confiance">Transparence</a>
-          </nav>
-
-          <div className="flex shrink-0 items-center gap-2">
-            <Link
-              href="/login"
-              className="hidden min-h-11 items-center justify-center rounded-[var(--radius-control)] px-3 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50 sm:inline-flex"
-            >
-              Connexion
-            </Link>
-            <Link
-              href="/signup"
-              className="inline-flex min-h-11 items-center justify-center rounded-[var(--radius-control)] bg-[var(--brand)] px-4 text-sm font-bold text-white shadow-sm transition-colors hover:bg-[var(--brand-strong)]"
-            >
-              Créer mon dossier
-            </Link>
-          </div>
-        </div>
-      </header>
-
-      <section className="public-hero-grid border-b border-[var(--border)]">
-        <div className="mx-auto grid w-full max-w-7xl items-center gap-12 px-4 py-12 sm:px-6 sm:py-16 lg:grid-cols-[minmax(0,1.08fr)_minmax(24rem,0.92fr)] lg:px-8 lg:py-24">
-          <div className="max-w-3xl">
-            <p className="inline-flex rounded-full border border-[var(--brand-border)] bg-white px-4 py-2 text-sm font-bold text-[var(--brand)] shadow-sm">
-              Votre dossier étudiant pour l’Allemagne
-            </p>
-            <h1 className="mt-6 max-w-4xl text-4xl font-bold leading-[1.06] tracking-[-0.04em] text-slate-950 sm:text-5xl lg:text-6xl">
-              Un seul espace pour préparer et suivre votre projet d’études en Allemagne.
-            </h1>
-            <p className="mt-6 max-w-2xl text-base leading-7 text-slate-700 sm:text-lg sm:leading-8">
-              AlmaGo organise votre profil, vos documents, votre orientation et vos candidatures pour que vous sachiez ce qui est enregistré, ce qui reste à vérifier et quelle est la prochaine action.
-            </p>
-
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Link
-                href="/signup"
-                className="inline-flex min-h-12 items-center justify-center rounded-[var(--radius-control)] bg-[var(--brand)] px-6 text-base font-bold text-white shadow-sm transition-colors hover:bg-[var(--brand-strong)]"
-              >
-                Créer mon dossier
-              </Link>
-              <Link
-                href="/login"
-                className="inline-flex min-h-12 items-center justify-center rounded-[var(--radius-control)] border border-[var(--border-strong)] bg-white px-6 text-base font-bold text-slate-900 shadow-sm transition-colors hover:border-[var(--brand)] hover:text-[var(--brand)]"
-              >
-                J’ai déjà un compte
-              </Link>
-            </div>
-
-            <dl className="mt-10 grid gap-3 sm:grid-cols-3">
-              <ValuePoint title="Profil structuré" detail="Votre projet au même endroit" />
-              <ValuePoint title="Documents suivis" detail="Statut et corrections visibles" />
-              <ValuePoint title="Candidatures lisibles" detail="Échéance et prochaine action" />
-            </dl>
-          </div>
-
-          <aside
-            className="overflow-hidden rounded-[calc(var(--radius-panel)+0.25rem)] border border-[var(--brand-border)] bg-white shadow-[0_30px_70px_-40px_rgba(15,23,42,0.48)]"
-            aria-label="Exemple d’interface du dossier AlmaGo"
-          >
-            <div className="relative h-52 overflow-hidden sm:h-60">
-              <Image
-                src="https://images.unsplash.com/photo-1760111085279-6c4b6d831acc?auto=format&fit=crop&q=85&w=1600"
-                alt="Étudiants traversant un campus universitaire"
-                fill
-                priority
-                sizes="(max-width: 1024px) 100vw, 44vw"
-                className="object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-slate-900/10 to-transparent" />
-              <div className="absolute inset-x-0 bottom-0 p-5 text-white sm:p-6">
-                <p className="text-xs font-bold uppercase tracking-[0.18em] text-[var(--accent-light)]">Projet d’études</p>
-                <p className="mt-1 max-w-sm text-xl font-bold leading-tight">Une expérience plus claire, du premier document à la candidature.</p>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between gap-4 border-b border-[var(--border)] px-5 py-4 sm:px-6">
-              <div>
-                <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--accent-strong)]">Aperçu d’exemple</p>
-                <h2 className="mt-1 text-lg font-bold text-slate-950">Mon dossier</h2>
-              </div>
-              <span className="rounded-full bg-[var(--brand-soft)] px-3 py-1 text-xs font-bold text-[var(--brand)]">
-                Espace étudiant
-              </span>
-            </div>
-
-            <div className="p-5 sm:p-6">
-              <div className="rounded-[var(--radius-panel)] bg-[var(--brand)] p-5 text-white shadow-[0_18px_36px_-24px_rgba(41,48,139,0.95)]">
-                <p className="text-sm font-semibold text-indigo-100">Ce qui compte maintenant</p>
-                <p className="mt-3 text-xl font-bold">Une prochaine action clairement identifiée</p>
-                <p className="mt-2 text-sm leading-6 text-indigo-100">
-                  Le tableau de bord rassemble le statut du dossier sans présenter une progression comme une décision d’admission.
-                </p>
-              </div>
-
-              <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                <PreviewItem label="Documents" value="Statuts visibles" />
-                <PreviewItem label="Orientation" value="Programmes à comparer" />
-                <PreviewItem label="Candidatures" value="Échéances suivies" />
-                <PreviewItem label="Démarches" value="Étapes regroupées" />
-              </div>
-
-              <div className="mt-4 flex flex-wrap items-center justify-between gap-2 text-xs leading-5 text-slate-500">
-                <p>Illustration de l’organisation de l’espace AlmaGo.</p>
-                <a
-                  href="https://unsplash.com/photos/students-walking-through-a-university-campus-archway-MUiv880yORo"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="font-medium text-slate-500 underline decoration-slate-300 underline-offset-2 hover:text-[var(--brand)]"
-                >
-                  Photo : Brelyn Bashrum / Unsplash
-                </a>
-              </div>
-            </div>
-          </aside>
-        </div>
-      </section>
+      <HomeHeader />
+      <HomeHero />
 
       <section id="parcours" className="bg-white py-16 sm:py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -270,24 +140,6 @@ export default function Home() {
         </div>
       </section>
     </main>
-  );
-}
-
-function ValuePoint({ title, detail }: { title: string; detail: string }) {
-  return (
-    <div className="rounded-[var(--radius-control)] border border-[var(--border)] bg-white/90 px-4 py-3 shadow-sm">
-      <dt className="text-sm font-bold text-slate-950">{title}</dt>
-      <dd className="mt-1 text-xs leading-5 text-slate-500">{detail}</dd>
-    </div>
-  );
-}
-
-function PreviewItem({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-muted)] p-4">
-      <p className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-600">{label}</p>
-      <p className="mt-1 text-sm font-bold text-slate-950">{value}</p>
-    </div>
   );
 }
 
