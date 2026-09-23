@@ -7,7 +7,21 @@ export const dynamic = "force-dynamic";
 
 export default async function AdminUniversitiesPage() {
   const supabase = await createClient();
-  const { data } = await supabase.from("universities").select("*").order("name");
+  const { data, error } = await supabase.from("universities").select("*").order("name");
+  if (error) {
+    return (
+      <main className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 sm:py-12">
+        <PageHeader badge="Catalogue" title="Universités allemandes" />
+        <Card>
+          <div role="alert">
+            <h2 className="text-xl font-semibold text-slate-950">Catalogue indisponible</h2>
+            <p className="mt-2 text-sm text-slate-600">Impossible de charger les universités. Réessayez dans quelques instants.</p>
+          </div>
+        </Card>
+      </main>
+    );
+  }
+
   const universities = data || [];
   const activeCount = universities.filter((university) => university.is_active).length;
 
@@ -29,7 +43,7 @@ export default async function AdminUniversitiesPage() {
           <p className="mt-2 text-3xl font-bold text-emerald-700">{activeCount}</p>
         </Card>
         <Card className="shadow-none">
-          <p className="text-sm font-semibold text-slate-500">À vérifier</p>
+          <p className="text-sm font-semibold text-slate-500">Inactives</p>
           <p className="mt-2 text-3xl font-bold text-slate-950">{Math.max(universities.length - activeCount, 0)}</p>
         </Card>
       </div>
