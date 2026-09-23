@@ -70,7 +70,7 @@ export function AuthForm({ initialMode = "login" }: { initialMode?: Mode }) {
   return (
     <section className="w-full max-w-xl rounded-2xl border border-slate-200 bg-white shadow-[0_24px_70px_rgba(15,23,42,0.10)]">
       <div className="border-b border-slate-200 px-6 py-6 sm:px-8">
-        <p className="text-sm font-bold uppercase tracking-[0.18em] text-emerald-700">AlmaGo</p>
+        <p className="text-sm font-bold uppercase tracking-[0.18em] text-[var(--accent-strong)]">AlmaGo</p>
         <h1 className="mt-3 text-3xl font-bold tracking-tight text-slate-950">{title}</h1>
         <p className="mt-3 text-base leading-7 text-slate-600">{subtitle}</p>
       </div>
@@ -157,10 +157,10 @@ export function AuthForm({ initialMode = "login" }: { initialMode?: Mode }) {
         </button>
       </form>
 
-      <div className="flex flex-col gap-3 border-t border-slate-200 bg-slate-50 px-6 py-5 text-sm font-semibold text-emerald-800 sm:flex-row sm:items-center sm:justify-between sm:px-8">
+      <div className="flex flex-col gap-3 border-t border-slate-200 bg-slate-50 px-6 py-5 text-sm font-semibold text-[var(--brand)] sm:flex-row sm:items-center sm:justify-between sm:px-8">
         <button
           type="button"
-          className="rounded text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700"
+          className="rounded text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brand)]"
           onClick={() => setMode(mode === "login" ? "signup" : "login")}
         >
           {mode === "login" ? "Créer un compte étudiant" : "J'ai déjà un compte"}
@@ -168,7 +168,7 @@ export function AuthForm({ initialMode = "login" }: { initialMode?: Mode }) {
         {mode !== "signup" && (
           <button
             type="button"
-            className="rounded text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700"
+            className="rounded text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brand)]"
             onClick={() => setMode(mode === "forgot" ? "login" : "forgot")}
           >
             {mode === "forgot" ? "Retour à la connexion" : "Mot de passe oublié ?"}

@@ -104,7 +104,7 @@ export default async function AdminEntry() {
         </Card>
 
         <Card>
-          <h2 className="text-sm font-bold uppercase tracking-[0.16em] text-emerald-700">Rythme conseillé</h2>
+          <h2 className="text-sm font-bold uppercase tracking-[0.16em] text-[var(--accent-strong)]">Rythme conseillé</h2>
           <ol className="mt-5 space-y-4 text-sm leading-6 text-slate-600">
             <li>
               <span className="font-bold text-slate-950">1. Vérifier</span> les documents en attente.
@@ -137,13 +137,13 @@ function DashboardCard({
     <Link
       href={href}
       aria-label={`Ouvrir ${title}`}
-      className="block rounded-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700"
+      className="block rounded-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brand)]"
     >
-      <Card className="h-full transition hover:-translate-y-0.5 hover:border-emerald-300 hover:shadow-xl">
+      <Card className="h-full transition hover:-translate-y-0.5 hover:border-[var(--brand)] hover:shadow-xl">
         <p className="text-sm font-semibold text-slate-500">{title}</p>
         <p className="mt-3 text-4xl font-bold tracking-tight text-slate-950">{value}</p>
         <p className="mt-3 min-h-10 text-sm leading-5 text-slate-600">{description}</p>
-        <p className="mt-4 text-sm font-bold text-emerald-700">
+        <p className="mt-4 text-sm font-bold text-[var(--accent-strong)]">
           Ouvrir <span aria-hidden="true">→</span>
         </p>
       </Card>

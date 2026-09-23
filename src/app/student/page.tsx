@@ -55,7 +55,7 @@ export default async function StudentEntry() {
       />
 
       <div className="grid gap-5 lg:grid-cols-[minmax(0,1.45fr)_minmax(17rem,0.85fr)]">
-        <Card className="relative overflow-hidden border-emerald-200 shadow-none">
+        <Card className="relative overflow-hidden border-[var(--brand-border)] shadow-none">
           <div aria-hidden="true" className="absolute inset-y-0 left-0 w-1 bg-[var(--brand)]" />
           <div className="pl-2">
             <div className="flex flex-wrap items-center gap-3">

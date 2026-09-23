@@ -150,7 +150,7 @@ export function StudentOrientationPanel({
           </p>
           {nextProgram && (
             <div className="mt-6 rounded-xl border border-white/10 bg-white/5 p-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-200">À comparer</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--accent-light)]">À comparer</p>
               <p className="mt-2 font-semibold">{nextProgram.name}</p>
               <p className="mt-1 text-sm text-slate-300">{nextProgram.degree_level} · {nextProgram.field || "Domaine à préciser"}</p>
             </div>
@@ -193,7 +193,7 @@ export function StudentOrientationPanel({
               if (!program) return null;
 
               return (
-                <Card as="article" key={recommendation.id} aria-labelledby={`student-recommendation-title-${recommendation.id}`} className={recommendation.student_interest_at ? "border-emerald-200 bg-emerald-50/30" : ""}>
+                <Card as="article" key={recommendation.id} aria-labelledby={`student-recommendation-title-${recommendation.id}`} className={recommendation.student_interest_at ? "border-[var(--brand-border)] bg-[var(--brand-soft)]" : ""}>
                   <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
                     <div className="min-w-0">
                       <p className="text-sm font-semibold text-[var(--brand)]">

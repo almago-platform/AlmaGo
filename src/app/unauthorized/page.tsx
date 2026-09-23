@@ -6,7 +6,7 @@ export default function UnauthorizedPage() {
       <div className="mx-auto flex min-h-[calc(100vh-5rem)] w-full max-w-3xl items-center justify-center">
         <section className="w-full rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-sm sm:p-10">
           <Link href="/" className="mx-auto inline-flex items-center gap-3" aria-label="Retour à l'accueil AlmaGo">
-            <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-700 text-lg font-bold text-white shadow-sm">
+            <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--brand)] text-lg font-bold text-white shadow-sm">
               A
             </span>
             <span className="text-left">
@@ -30,13 +30,13 @@ export default function UnauthorizedPage() {
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
             <Link
               href="/student"
-              className="inline-flex items-center justify-center rounded-lg bg-emerald-700 px-5 py-3 font-bold text-white shadow-sm transition hover:bg-emerald-800"
+              className="inline-flex items-center justify-center rounded-lg bg-[var(--brand)] px-5 py-3 font-bold text-white shadow-sm transition hover:bg-[var(--brand-strong)]"
             >
               Retour au tableau de bord
             </Link>
             <Link
               href="/login"
-              className="inline-flex items-center justify-center rounded-lg border border-slate-300 bg-white px-5 py-3 font-bold text-slate-900 shadow-sm transition hover:border-emerald-300 hover:text-emerald-800"
+              className="inline-flex items-center justify-center rounded-lg border border-slate-300 bg-white px-5 py-3 font-bold text-slate-900 shadow-sm transition hover:border-[var(--brand)] hover:text-[var(--brand)]"
             >
               Changer de compte
             </Link>

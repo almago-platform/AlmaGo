@@ -44,7 +44,7 @@ export default async function AdminProgramsPage() {
         </Card>
         <Card className="shadow-none">
           <p className="text-sm font-semibold text-slate-500">Actifs</p>
-          <p className="mt-2 text-3xl font-bold text-emerald-700">{activePrograms}</p>
+          <p className="mt-2 text-3xl font-bold text-[var(--accent-strong)]">{activePrograms}</p>
         </Card>
         <Card className="shadow-none">
           <p className="text-sm font-semibold text-slate-500">Universités actives</p>
