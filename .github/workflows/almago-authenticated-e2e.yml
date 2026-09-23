@@ -32,9 +32,9 @@ jobs:
     env:
       NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
       NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
-      ALMAGO_E2E_STUDENT_EMAIL: ${{ secrets.ALMAGO_E2E_STUDENT_EMAIL }}
+      ALMAGO_E2E_STUDENT_EMAIL: ${{ vars.ALMAGO_E2E_STUDENT_EMAIL || 'phase3.student.a@almago.test' }}
       ALMAGO_E2E_STUDENT_PASSWORD: ${{ secrets.ALMAGO_E2E_STUDENT_PASSWORD }}
-      ALMAGO_E2E_ADMIN_EMAIL: ${{ secrets.ALMAGO_E2E_ADMIN_EMAIL }}
+      ALMAGO_E2E_ADMIN_EMAIL: ${{ vars.ALMAGO_E2E_ADMIN_EMAIL || 'phase3.admin@almago.test' }}
       ALMAGO_E2E_ADMIN_PASSWORD: ${{ secrets.ALMAGO_E2E_ADMIN_PASSWORD }}
     steps:
       - name: Detect authenticated E2E configuration
@@ -48,9 +48,9 @@ jobs:
 
           if [ "${#missing[@]}" -gt 0 ]; then
             echo "ready=false" >> "$GITHUB_OUTPUT"
-            echo "::notice::Authenticated E2E is not configured yet (${#missing[@]} required repository secret(s) missing)."
+            echo "::notice::Authenticated E2E is not configured yet (${#missing[@]} required configuration value(s) missing)."
             if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then
-              echo "::error::Missing required repository secret names: ${missing[*]}"
+              echo "::error::Missing required configuration names: ${missing[*]}"
               echo "::error::Authenticated E2E cannot run until all required repository secrets are configured."
               exit 1
             fi
@@ -68,9 +68,9 @@ jobs:
     env:
       NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
       NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
-      ALMAGO_E2E_STUDENT_EMAIL: ${{ secrets.ALMAGO_E2E_STUDENT_EMAIL }}
+      ALMAGO_E2E_STUDENT_EMAIL: ${{ vars.ALMAGO_E2E_STUDENT_EMAIL || 'phase3.student.a@almago.test' }}
       ALMAGO_E2E_STUDENT_PASSWORD: ${{ secrets.ALMAGO_E2E_STUDENT_PASSWORD }}
-      ALMAGO_E2E_ADMIN_EMAIL: ${{ secrets.ALMAGO_E2E_ADMIN_EMAIL }}
+      ALMAGO_E2E_ADMIN_EMAIL: ${{ vars.ALMAGO_E2E_ADMIN_EMAIL || 'phase3.admin@almago.test' }}
       ALMAGO_E2E_ADMIN_PASSWORD: ${{ secrets.ALMAGO_E2E_ADMIN_PASSWORD }}
       CI: "true"
     steps:
