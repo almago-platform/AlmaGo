@@ -219,7 +219,7 @@ function ValuePoint({ title, detail }: { title: string; detail: string }) {
 function PreviewItem({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-muted)] p-4">
-      <p className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">{label}</p>
+      <p className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-600">{label}</p>
       <p className="mt-1 text-sm font-bold text-slate-950">{value}</p>
     </div>
   );
