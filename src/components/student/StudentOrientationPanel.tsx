@@ -137,15 +137,15 @@ export function StudentOrientationPanel({
 
       <section aria-label="Synthèse orientation" className="grid gap-5 lg:grid-cols-[1fr_0.85fr]">
         <Card className="bg-slate-950 text-white">
-          <Badge variant={items.length ? "info" : "neutral"}>{items.length ? "Recommandations disponibles" : "En préparation"}</Badge>
+          <Badge variant={items.length ? "info" : "neutral"}>{items.length ? "Recommandations disponibles" : "Aucune publiée"}</Badge>
           <h2 className="mt-5 text-2xl font-semibold tracking-tight">Choisir un programme</h2>
           <p className="mt-3 text-sm leading-6 text-slate-300">
             {applicationStateError
               ? "Vos recommandations sont visibles, mais l’état des intérêts enregistrés n’a pas pu être vérifié."
               : nextProgram
-                ? `Prochaine piste à examiner : ${nextProgram.name}. Vérifiez les critères avant d’enregistrer votre intérêt.`
+                ? `Prochaine recommandation à examiner : ${nextProgram.name}. Vérifiez les critères avant d’enregistrer votre intérêt.`
                 : items.length
-                  ? "Vos intérêts actuels sont enregistrés. Continuez à suivre les candidatures depuis votre espace."
+                  ? "Vos intérêts enregistrés sont visibles dans vos candidatures."
                   : "Aucune recommandation n’est publiée pour le moment. Vérifiez que votre profil contient les informations nécessaires."}
           </p>
           {nextProgram && (
@@ -160,7 +160,7 @@ export function StudentOrientationPanel({
         <section aria-label="Résumé de l’orientation" className="grid gap-4 sm:grid-cols-3 lg:grid-cols-1">
           <SummaryCard title="Recommandations" value={items.length} badge="Publiées" tone="info" />
           <SummaryCard title="À comparer" value={comparableItems.length - interestedCount} badge="À décider" tone={comparableItems.length - interestedCount > 0 ? "warning" : "success"} />
-          <SummaryCard title="Intérêts enregistrés" value={applicationStateError ? "—" : interestedCount} badge={applicationStateError ? "Indisponible" : interestedCount ? "Suivi démarré" : "Aucun"} tone={applicationStateError ? "neutral" : interestedCount ? "success" : "neutral"} />
+          <SummaryCard title="Intérêts enregistrés" value={applicationStateError ? "—" : interestedCount} badge={applicationStateError ? "Indisponible" : interestedCount ? "Suivi démarré" : "Aucun intérêt"} tone={applicationStateError ? "neutral" : interestedCount ? "success" : "neutral"} />
         </section>
       </section>
 
@@ -182,7 +182,7 @@ export function StudentOrientationPanel({
               <h2 id="recommended-programs-title" className="mt-1 text-2xl font-semibold tracking-tight text-slate-950">Programmes recommandés</h2>
               <p className="mt-1 text-sm text-slate-600">Consultez les critères visibles avant d’enregistrer votre intérêt.</p>
             </div>
-            <ButtonLink href="/student/applications" variant="secondary">Candidatures suivies</ButtonLink>
+            <ButtonLink href="/student/applications" variant="secondary">Mes candidatures</ButtonLink>
           </div>
 
           <div className="grid gap-5 lg:grid-cols-2">
