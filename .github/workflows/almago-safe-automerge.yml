@@ -1,0 +1,164 @@
+name: AlmaGo Safe Auto Merge
+
+on:
+  workflow_run:
+    workflows: ["AlmaGo PR CI", "AlmaGo Browser Quality"]
+    types: [completed]
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  actions: read
+  statuses: read
+
+concurrency:
+  group: almago-safe-automerge-${{ github.event.workflow_run.head_sha }}
+  cancel-in-progress: false
+
+jobs:
+  merge-safe-plan-task:
+    if: github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Verify every safety gate then merge
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const run = context.payload.workflow_run;
+            const headSha = run.head_sha;
+
+            let pullNumber = Number(run.pull_requests?.[0]?.number || 0);
+            if (!pullNumber && run.head_branch) {
+              const { data: candidates } = await github.rest.pulls.list({
+                owner, repo, state: "open", head: `${owner}:${run.head_branch}`, per_page: 10
+              });
+              pullNumber = Number(candidates.find(pr => pr.head.sha === headSha)?.number || 0);
+            }
+            if (!pullNumber) {
+              core.info("No open PR is associated with this workflow run.");
+              return;
+            }
+
+            const { data: pr } = await github.rest.pulls.get({ owner, repo, pull_number: pullNumber });
+            if (pr.state !== "open" || pr.head.sha !== headSha || pr.head.repo?.full_name !== `${owner}/${repo}`) {
+              core.info("PR is closed, stale, or from another repository.");
+              return;
+            }
+
+            const branch = pr.head.ref;
+            const branchMatch = branch.match(/^automation\/issue-([1-9][0-9]*)$/);
+            if (!branchMatch) {
+              core.info("Not an AlmaGo bounded automation branch.");
+              return;
+            }
+            const issueNumber = Number(branchMatch[1]);
+            const { data: issue } = await github.rest.issues.get({ owner, repo, issue_number: issueNumber });
+            const labels = new Set(issue.labels.map(label => typeof label === "string" ? label : label.name));
+            if (!labels.has("almago-plan") || !labels.has("almago-ai-proposed") || labels.has("almago-ai-blocked") || labels.has("almago-human-required") || labels.has("almago-codex-required")) {
+              core.info("Issue labels do not permit safe auto-merge.");
+              return;
+            }
+
+            const taskId = String(issue.body || "").match(/<!--\s*almago-plan-task:(A\d{2})\s*-->/)?.[1];
+            if (!taskId) {
+              core.info("Issue is not tied to a master-plan task.");
+              return;
+            }
+
+            const planResponse = await github.rest.repos.getContent({
+              owner, repo, path: "config/almago-master-plan.json", ref: pr.base.ref
+            });
+            if (Array.isArray(planResponse.data) || !("content" in planResponse.data)) {
+              throw new Error("Unable to load master plan.");
+            }
+            const plan = JSON.parse(Buffer.from(planResponse.data.content, "base64").toString("utf8"));
+            const task = plan.tasks.find(item => item.id === taskId);
+            if (!task || task.execution !== "ai" || task.risk !== "low") {
+              core.info("Only low-risk AI-routed master-plan tasks may auto-merge.");
+              return;
+            }
+
+            const files = await github.paginate(github.rest.pulls.listFiles, {
+              owner, repo, pull_number: pullNumber, per_page: 100
+            });
+            const changed = files.map(file => file.filename);
+            const allowed = new Set(task.files || []);
+            const protectedPath = file =>
+              file.startsWith("src/app/api/") ||
+              file.startsWith("src/app/admin/") ||
+              file.startsWith("src/app/auth/") ||
+              file.startsWith("src/app/login/") ||
+              file.startsWith("src/app/signup/") ||
+              file.startsWith("src/app/reset-password/") ||
+              file.startsWith("src/components/admin/") ||
+              file.startsWith("src/components/auth/") ||
+              file.startsWith("src/lib/supabase/") ||
+              /^src\/lib\/.*(?:auth|role|permission|security|secret|token)/i.test(file);
+
+            if (!changed.length || changed.length > 3 || changed.some(file => !allowed.has(file) || protectedPath(file))) {
+              core.setFailed("PR changes files outside the exact low-risk task boundary.");
+              return;
+            }
+
+            const requiredWorkflows = ["AlmaGo PR CI", "AlmaGo Browser Quality"];
+            let gatesReady = false;
+            for (let attempt = 0; attempt < 20; attempt++) {
+              const { data: runs } = await github.rest.actions.listWorkflowRunsForRepo({
+                owner, repo, per_page: 100
+              });
+              const matching = runs.workflow_runs.filter(item => item.head_sha === headSha);
+              const state = Object.fromEntries(requiredWorkflows.map(name => {
+                const latest = matching.filter(item => item.name === name).sort((a,b) => b.id - a.id)[0];
+                return [name, latest ? `${latest.status}:${latest.conclusion || ""}` : "missing"];
+              }));
+
+              const failed = requiredWorkflows.some(name => state[name].startsWith("completed:") && state[name] !== "completed:success");
+              if (failed) {
+                core.info("Required workflow failed: " + JSON.stringify(state));
+                return;
+              }
+              const workflowsGreen = requiredWorkflows.every(name => state[name] === "completed:success");
+
+              const { data: combined } = await github.rest.repos.getCombinedStatusForRef({ owner, repo, ref: headSha });
+              const vercel = combined.statuses.find(status => status.context === "Vercel");
+              if (vercel?.state === "failure" || vercel?.state === "error") {
+                core.info("Vercel deployment is not healthy.");
+                return;
+              }
+              if (workflowsGreen && vercel?.state === "success") {
+                gatesReady = true;
+                break;
+              }
+              core.info(`Waiting for gates (attempt ${attempt + 1}/20): ${JSON.stringify(state)}, Vercel=${vercel?.state || "missing"}`);
+              await new Promise(resolve => setTimeout(resolve, 30000));
+            }
+
+            if (!gatesReady) {
+              core.info("Safe auto-merge timed out waiting for required green gates; a later workflow completion will retry.");
+              return;
+            }
+
+            const fresh = await github.rest.pulls.get({ owner, repo, pull_number: pullNumber });
+            if (fresh.data.state !== "open" || fresh.data.head.sha !== headSha || fresh.data.mergeable === false) {
+              core.info("PR changed or is not mergeable; refusing auto-merge.");
+              return;
+            }
+
+            const result = await github.rest.pulls.merge({
+              owner, repo, pull_number: pullNumber, sha: headSha, merge_method: "squash",
+              commit_title: `[${taskId}] ${task.title}`
+            });
+            if (!result.data.merged) throw new Error("GitHub refused merge: " + result.data.message);
+
+            await github.rest.issues.addLabels({ owner, repo, issue_number: issueNumber, labels: ["almago-plan-done"] });
+            await github.rest.issues.update({ owner, repo, issue_number: issueNumber, state: "closed" });
+            await github.rest.issues.createComment({
+              owner, repo, issue_number: issueNumber,
+              body: `Automatically merged PR #${pullNumber} after exact-file scope validation, canonical CI, browser/accessibility quality, and Vercel success. Merge SHA: ${result.data.sha}.`
+            });
+            core.summary.addHeading("AlmaGo safe auto-merge").addRaw(`Merged plan task ${taskId} via PR #${pullNumber}.`).write();
