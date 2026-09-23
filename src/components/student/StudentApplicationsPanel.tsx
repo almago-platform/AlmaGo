@@ -60,7 +60,7 @@ export function StudentApplicationsPanel({
               : priorityApplication?.next_action
                 ? priorityApplication.next_action
                 : priorityApplication
-                  ? "Aucune action urgente n’est enregistrée, mais ce dossier reste à suivre."
+                  ? "Aucune action urgente n’est enregistrée, mais cette candidature reste à suivre."
                   : "Aucune candidature n’est encore enregistrée. Consultez vos recommandations pour choisir un programme à suivre."}
           </p>
           {priorityApplication && (
@@ -93,7 +93,7 @@ export function StudentApplicationsPanel({
                   : "Aucune date confirmée"}
             </h2>
             {!loadError && nextDeadlineApplication && (
-              <p className="mt-1 text-sm text-slate-600">{firstProgram(nextDeadlineApplication)?.name || "Programme"}{overdue ? " · Vérifiez ce dossier" : ""}</p>
+              <p className="mt-1 text-sm text-slate-600">{firstProgram(nextDeadlineApplication)?.name || "Programme"}{overdue ? " · Vérifiez cette candidature" : ""}</p>
             )}
           </div>
           <ButtonLink href="/student/checklist" variant="secondary">Voir mes étapes</ButtonLink>
@@ -146,7 +146,7 @@ export function StudentApplicationsPanel({
                   </div>
 
                   <div className="mt-6 grid gap-4 lg:grid-cols-3">
-                    <InfoCard title="Prochaine action" value={isActiveApplication(application.status) ? application.next_action || "Aucune action enregistrée." : "Dossier terminé."} highlight={isActiveApplication(application.status) && Boolean(application.next_action)} />
+                    <InfoCard title="Prochaine action" value={isActiveApplication(application.status) ? application.next_action || "Aucune action enregistrée." : "Candidature terminée."} highlight={isActiveApplication(application.status) && Boolean(application.next_action)} />
                     <InfoCard title="Documents nécessaires" value={application.required_documents?.length ? application.required_documents.join(", ") : "À confirmer"} />
                     <InfoCard title="Résultat" value={application.result || "Aucun résultat détaillé enregistré."} />
                   </div>
