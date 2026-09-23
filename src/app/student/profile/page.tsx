@@ -36,8 +36,8 @@ export default async function ProfilePage() {
         description="Mettez à jour les données utilisées pour comprendre votre parcours et préparer des recommandations cohérentes."
       />
 
-      <div className="grid gap-6 lg:grid-cols-[0.35fr_1fr]">
-        <aside className="space-y-4" aria-label="Repères du profil">
+      <div className="grid gap-5 lg:grid-cols-[minmax(15rem,0.35fr)_minmax(0,1fr)] lg:gap-6">
+        <aside className="space-y-4 lg:sticky lg:top-6 lg:self-start" aria-label="Repères du profil">
           <Card>
             <Badge variant="success">Profil étudiant</Badge>
             <h2 className="mt-4 text-xl font-semibold text-slate-950">Données à vérifier</h2>
