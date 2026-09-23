@@ -40,7 +40,7 @@ export function ProfileForm({ profile }: { profile: Record<string, unknown> }) {
     }
   }
 
-  return <form onSubmit={submit} className="space-y-8">
+  return <form onSubmit={submit} className="space-y-6 sm:space-y-8">
     <ProfileSection badge="Identité" title="Informations personnelles" description="Ces informations permettent d’identifier correctement votre dossier.">
       <TextInput label="Prénom" required value={String(data.first_name)} onChange={(value) => set("first_name", value)} />
       <TextInput label="Nom" required value={String(data.last_name)} onChange={(value) => set("last_name", value)} />
@@ -78,13 +78,13 @@ export function ProfileForm({ profile }: { profile: Record<string, unknown> }) {
       <SelectInput label="Budget indicatif" value={String(data.budget_range)} onChange={(value) => set("budget_range", value)} options={budgetOptions} />
     </ProfileSection>
 
-    {error && <p role="alert" className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error}</p>}
-    {status && <p role="status" className="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-700">{status}</p>}
+    {error && <p role="alert" className="rounded-[var(--radius-control)] border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error}</p>}
+    {status && <p role="status" className="rounded-[var(--radius-control)] border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-700">{status}</p>}
 
-    <div className="sticky bottom-0 -mx-5 border-t border-[var(--border)] bg-white/95 px-5 py-4 backdrop-blur sm:-mx-6 sm:px-6">
+    <div className="sticky bottom-0 -mx-5 border-t border-[var(--border)] bg-[var(--surface)]/95 px-5 py-4 backdrop-blur sm:-mx-6 sm:px-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-sm text-slate-500">Les changements sont enregistrés dans votre dossier étudiant.</p>
-        <Button type="submit" disabled={saving}>{saving ? "Enregistrement…" : "Enregistrer les modifications"}</Button>
+        <Button type="submit" disabled={saving} className="w-full sm:w-auto">{saving ? "Enregistrement…" : "Enregistrer les modifications"}</Button>
       </div>
     </div>
   </form>;
@@ -92,7 +92,7 @@ export function ProfileForm({ profile }: { profile: Record<string, unknown> }) {
 
 function ProfileSection({ badge, title, description, children }: { badge: string; title: string; description: string; children: React.ReactNode }) {
   return (
-    <section className="rounded-2xl border border-[var(--border)] bg-slate-50/60 p-4 sm:p-5">
+    <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface-muted)]/55 p-4 sm:p-5">
       <div className="mb-5">
         <Badge variant="neutral">{badge}</Badge>
         <h2 className="mt-3 text-xl font-semibold text-slate-950">{title}</h2>
