@@ -1,0 +1,71 @@
+name: AlmaGo Browser Quality
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: almago-browser-quality-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  public-browser-quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      CI: "true"
+      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install application dependencies
+        run: npm ci
+
+      - name: Install browser-quality tools without changing the lockfile
+        run: npm install --no-save --package-lock=false @playwright/test@1.55.0 @axe-core/playwright@4.10.2 @lhci/cli@0.14.0
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Build AlmaGo
+        run: npm run build
+
+      - name: Start production server
+        run: |
+          npm start -- -p 3000 > /tmp/almago-server.log 2>&1 &
+          echo $! > /tmp/almago-server.pid
+          for i in {1..40}; do
+            if curl --fail --silent http://127.0.0.1:3000/ > /dev/null; then exit 0; fi
+            sleep 2
+          done
+          cat /tmp/almago-server.log
+          exit 1
+
+      - name: Playwright responsive and accessibility smoke tests
+        run: npx playwright test --config=playwright.config.mjs
+
+      - name: Lighthouse advisory budgets
+        if: always()
+        run: npx lhci autorun --config=./lighthouserc.cjs || true
+
+      - name: Store browser-quality artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: almago-browser-quality-${{ github.run_id }}
+          path: |
+            artifacts/
+            /tmp/almago-server.log
+          if-no-files-found: warn
+          retention-days: 7
