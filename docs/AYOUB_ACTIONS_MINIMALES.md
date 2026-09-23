@@ -41,22 +41,27 @@ Des identités Supabase **réservées aux tests, sans donnée réelle**, existen
 
 Pour empêcher l'utilisation accidentelle d'un vrai compte, conserver uniquement des adresses dédiées contenant `e2e` ou `test`.
 
-Secrets GitHub Actions requis :
+Configuration A43 requise :
 
-- `NEXT_PUBLIC_SUPABASE_URL`
-- `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
-- `ALMAGO_E2E_STUDENT_EMAIL`
-- `ALMAGO_E2E_STUDENT_PASSWORD`
-- `ALMAGO_E2E_ADMIN_EMAIL`
-- `ALMAGO_E2E_ADMIN_PASSWORD`
+Secrets GitHub Actions :
+- `NEXT_PUBLIC_SUPABASE_URL` — déjà configuré ;
+- `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` — déjà configuré ;
+- `ALMAGO_E2E_STUDENT_PASSWORD` ;
+- `ALMAGO_E2E_ADMIN_PASSWORD`.
 
-Aucune variable d'activation supplémentaire n'est requise. Le workflow détecte automatiquement si ces six secrets sont disponibles :
+Les identités de test non sensibles sont définies par défaut dans le workflow :
+- étudiant : `phase3.student.a@almago.test` ;
+- admin : `phase3.admin@almago.test`.
+
+Elles peuvent être remplacées plus tard par les variables GitHub non sensibles `ALMAGO_E2E_STUDENT_EMAIL` et `ALMAGO_E2E_ADMIN_EMAIL` si nécessaire, sans modifier le code.
+
+Aucune variable d'activation supplémentaire n'est requise. Le workflow détecte automatiquement si la configuration nécessaire est disponible :
 
 - sur un `push` pertinent, il se met en attente proprement si la configuration est incomplète ;
 - dès que les secrets sont présents, les changements Auth/étudiant/admin déclenchent automatiquement le parcours E2E ;
 - un lancement manuel (`workflow_dispatch`) échoue explicitement si un secret requis manque, au lieu de produire un faux résultat.
 
-Après avoir configuré les secrets une seule fois, lancer le workflow manuellement pour obtenir la première preuve A43. Ensuite, les changements concernés sont vérifiés automatiquement.
+Il ne reste donc que les **deux mots de passe des comptes de test** à renseigner. Après les avoir configurés une seule fois, lancer le workflow manuellement pour obtenir la première preuve A43. Ensuite, les changements concernés sont vérifiés automatiquement.
 
 Le test vérifie que :
 
