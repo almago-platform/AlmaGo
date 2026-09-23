@@ -29,50 +29,50 @@ Plan directeur reconstruit à partir du plan total défini le **22 septembre 202
 | ID | État | Tâche | Route | Dépendances |
 |---|---|---|---|---|
 | A08 | ✅ DONE | Appliquer identité visuelle AlmaGo inspirée TLScontact | AI | A07 |
-| A09 | ⬜ TODO | Consolider tokens visuels et composants de base | AI | A08 |
-| A10 | ⬜ TODO | Harmoniser shell et navigation étudiante | AI | A09 |
+| A09 | ✅ DONE | Consolider tokens visuels et composants de base | AI | A08 |
+| A10 | ✅ DONE | Harmoniser shell et navigation étudiante | AI | A09 |
 | A11 | ✅ DONE | Établir Mon dossier comme écran de référence | AI | A10 |
 | A12 | ✅ DONE | Établir Mes documents comme écran de référence | AI | A11 |
-| A13 | ⬜ TODO | Uniformiser visuellement les écrans Auth | CODEX | A12 |
-| A14 | ⬜ TODO | Finaliser échelle typographique et rythme responsive | AI | A13 |
-| A15 | ⬜ TODO | Finaliser focus hover disabled et feedback UI | AI | A14 |
+| A13 | ✅ DONE | Uniformiser visuellement les écrans Auth | CODEX | A12 |
+| A14 | ✅ DONE | Finaliser échelle typographique et rythme responsive | AI | A13 |
+| A15 | ✅ DONE | Finaliser focus hover disabled et feedback UI | AI | A14 |
 
 ## Lot 3 — Cœur du dossier étudiant
 
 | ID | État | Tâche | Route | Dépendances |
 |---|---|---|---|---|
 | A16 | ✅ DONE | Rendre dashboard étudiant orienté prochaine action | AI | A15 |
-| A17 | ⬜ TODO | Polir Mon profil et sa lisibilité | AI | A16 |
+| A17 | ✅ DONE | Polir Mon profil et sa lisibilité | AI | A16 |
 | A18 | ✅ DONE | Polir onboarding étudiant | AI | A17 |
 | A19 | ✅ DONE | Fiabiliser Mes documents et ses états | CODEX | A18 |
 | A20 | ✅ DONE | Rendre checklist honnête et actionnable | AI | A19 |
-| A21 | ⬜ TODO | Optimiser navigation mobile étudiant | AI | A20 |
-| A22 | ⬜ TODO | Uniformiser messages de récupération après erreur | AI | A21 |
-| A23 | ⬜ TODO | Uniformiser loading et skeletons étudiants | AI | A22 |
-| A24 | ⬜ TODO | Uniformiser microcopy étudiant en français | AI | A23 |
+| A21 | ✅ DONE | Optimiser navigation mobile étudiant | AI | A20 |
+| A22 | ✅ DONE | Uniformiser messages de récupération après erreur | AI | A21 |
+| A23 | ✅ DONE | Uniformiser loading et skeletons étudiants | AI | A22 |
+| A24 | ✅ DONE | Uniformiser microcopy étudiant en français | AI | A23 |
 
 ## Lot 4 — Orientation et suivi
 
 | ID | État | Tâche | Route | Dépendances |
 |---|---|---|---|---|
-| A25 | ⬜ TODO | Polir cartes orientation et recommandations | AI | A24 |
+| A25 | ✅ DONE | Polir cartes orientation et recommandations | AI | A24 |
 | A26 | ✅ DONE | Fiabiliser états recommandation et intérêt | CODEX | A25 |
 | A27 | ✅ DONE | Fiabiliser statuts et deadlines candidatures | CODEX | A26 |
-| A28 | ⬜ TODO | Clarifier prochaine action dans Mes candidatures | AI | A27 |
-| A29 | ⬜ TODO | Polir workflow admin Orientation | CODEX | A28 |
-| A30 | ⬜ TODO | Polir workflow admin Candidatures | CODEX | A29 |
-| A31 | ⬜ TODO | Auditer cohérence notifications et historique étudiant | CODEX | A30 |
-| A32 | ⬜ TODO | Uniformiser vide erreur reprise Orientation/Candidatures | AI | A31 |
+| A28 | ✅ DONE | Clarifier prochaine action dans Mes candidatures | AI | A27 |
+| A29 | ✅ DONE | Polir workflow admin Orientation | CODEX | A28 |
+| A30 | ✅ DONE | Polir workflow admin Candidatures | CODEX | A29 |
+| A31 | ✅ DONE | Auditer cohérence notifications et historique étudiant | CODEX | A30 |
+| A32 | ✅ DONE | Uniformiser vide erreur reprise Orientation/Candidatures | AI | A31 |
 
 ## Lot 5 — Vitrine et accès
 
 | ID | État | Tâche | Route | Dépendances |
 |---|---|---|---|---|
-| A33 | ⬜ TODO | Restructurer landing autour proposition de valeur | AI | A32 |
-| A34 | ⬜ TODO | Renforcer éléments de confiance landing | AI | A33 |
+| A33 | ✅ DONE | Restructurer landing autour proposition de valeur | AI | A32 |
+| A34 | ✅ DONE | Renforcer éléments de confiance landing | AI | A33 |
 | A35 | ✅ DONE | Harmoniser login signup récupération | CODEX | A34 |
 | A36 | ✅ DONE | Polir unauthorized et reset edge cases | CODEX | A35 |
-| A37 | ⬜ TODO | Finaliser metadata SEO et partage social | AI | A36 |
+| A37 | ✅ DONE | Finaliser metadata SEO et partage social | AI | A36 |
 | A38 | ⬜ TODO | Préparer confidentialité mentions et conditions | HUMAN | A37 |
 
 ## Lot 6 — Recette et publication
