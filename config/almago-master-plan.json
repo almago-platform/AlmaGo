@@ -23,7 +23,8 @@
       "whatsapp",
       "mass-scraping",
       "native-mobile"
-    ]
+    ],
+    "noAutomaticMerge": true
   },
   "lots": [
     {
