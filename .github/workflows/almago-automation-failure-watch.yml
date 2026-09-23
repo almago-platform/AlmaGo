@@ -34,9 +34,15 @@ jobs:
               });
               pullNumber = Number(candidates.find(pr => pr.head.sha === run.head_sha)?.number || 0);
             }
+
+            core.summary
+              .addHeading("AlmaGo automation failure")
+              .addRaw(`Issue #${issueNumber} marked blocked after ${run.name} failure.`)
+              .write();
             if (!pullNumber) return;
 
             const { data: pr } = await github.rest.pulls.get({ owner, repo, pull_number: pullNumber });
+            if (pr.state !== "open" || pr.head.sha !== run.head_sha) return;
             const match = pr.head.ref.match(/^automation\/issue-([1-9][0-9]*)$/);
             if (!match || pr.head.repo?.full_name !== `${owner}/${repo}`) return;
             const issueNumber = Number(match[1]);
@@ -68,6 +74,7 @@ jobs:
                   "AUTOMATION: BLOCKED",
                   "",
                   `Workflow **${run.name}** failed for PR #${pullNumber}.`,
+                  `HEAD: ${run.head_sha}`,
                   `Run: ${run.html_url}`,
                   "",
                   "No extra provider call was spent automatically. Inspect the failure before relabeling this task `almago-ai-ready`."
