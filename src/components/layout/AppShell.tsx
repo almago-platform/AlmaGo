@@ -76,7 +76,7 @@ export function AppShell({
       <aside className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-72 lg:flex-col lg:border-r lg:border-slate-200 lg:bg-white">
         <div className="flex h-20 items-center border-b border-slate-100 px-7">
           <Link href={role === "admin" ? "/admin" : "/student"} className="flex items-center gap-3" aria-label="Accueil AlmaGo">
-            <span className="grid h-10 w-10 place-items-center rounded-2xl bg-emerald-700 text-sm font-bold text-white shadow-sm">A</span>
+            <span className="grid h-10 w-10 place-items-center rounded-2xl bg-[var(--brand)] text-sm font-bold text-white shadow-sm">A</span>
             <span>
               <span className="block text-lg font-bold tracking-tight text-slate-950">AlmaGo</span>
               <span className="block text-xs font-medium text-slate-500">{role === "admin" ? "Espace administration" : "Espace étudiant"}</span>
@@ -92,9 +92,9 @@ export function AppShell({
                 key={item.href}
                 href={item.href}
                 aria-current={active ? "page" : undefined}
-                className={`group flex items-center gap-3 rounded-xl px-3.5 py-3 text-sm font-medium transition ${active ? "bg-emerald-50 text-emerald-800" : "text-slate-600 hover:bg-slate-50 hover:text-slate-950"}`}
+                className={`group flex items-center gap-3 rounded-xl px-3.5 py-3 text-sm font-medium transition ${active ? "bg-[var(--brand-soft)] text-[var(--brand)]" : "text-slate-600 hover:bg-slate-50 hover:text-slate-950"}`}
               >
-                <span className={active ? "text-emerald-700" : "text-slate-400 group-hover:text-slate-600"}>{item.icon}</span>
+                <span className={active ? "text-[var(--accent-strong)]" : "text-slate-400 group-hover:text-slate-600"}>{item.icon}</span>
                 {item.label}
               </Link>
             );
@@ -117,7 +117,7 @@ export function AppShell({
         <header className="sticky top-0 z-30 border-b border-slate-200/80 bg-white/95 backdrop-blur lg:hidden">
           <div className="flex h-16 items-center justify-between px-4">
             <Link href={role === "admin" ? "/admin" : "/student"} className="flex items-center gap-2.5" aria-label="Accueil AlmaGo">
-              <span className="grid h-9 w-9 place-items-center rounded-xl bg-emerald-700 text-sm font-bold text-white">A</span>
+              <span className="grid h-9 w-9 place-items-center rounded-xl bg-[var(--brand)] text-sm font-bold text-white">A</span>
               <span>
                 <span className="block text-base font-bold leading-none text-slate-950">AlmaGo</span>
                 <span className="mt-1 block text-[11px] font-medium text-slate-500">{role === "admin" ? "Administration" : "Mon espace"}</span>
@@ -136,7 +136,7 @@ export function AppShell({
                   key={item.href}
                   href={item.href}
                   aria-current={active ? "page" : undefined}
-                  className={`flex min-h-11 shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium ${active ? "bg-emerald-50 text-emerald-800" : "text-slate-600 hover:bg-slate-50"}`}
+                  className={`flex min-h-11 shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium ${active ? "bg-[var(--brand-soft)] text-[var(--brand)]" : "text-slate-600 hover:bg-slate-50"}`}
                 >
                   {item.icon}
                   {item.label}
