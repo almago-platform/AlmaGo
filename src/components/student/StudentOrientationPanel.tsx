@@ -113,13 +113,13 @@ export function StudentOrientationPanel({
   return (
     <div className="space-y-8">
       {loadError && (
-        <div role="alert" className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-800">
+        <div role="alert" className="rounded-[var(--radius-control)] border border-red-200 bg-red-50 p-4 text-sm text-red-800">
           {loadError}
         </div>
       )}
 
       {applicationStateError && (
-        <div role="alert" className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+        <div role="alert" className="rounded-[var(--radius-control)] border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
           {applicationStateError}
         </div>
       )}
@@ -127,7 +127,7 @@ export function StudentOrientationPanel({
       {feedback && (
         <div
           role={feedback.kind === "error" ? "alert" : "status"}
-          className={`rounded-2xl border p-4 text-sm ${
+          className={`rounded-[var(--radius-control)] border p-4 text-sm ${
             feedback.kind === "error" ? "border-red-200 bg-red-50 text-red-800" : "border-emerald-200 bg-emerald-50 text-emerald-800"
           }`}
         >
@@ -149,7 +149,7 @@ export function StudentOrientationPanel({
                   : "Aucune recommandation n’est publiée pour le moment. Vérifiez que votre profil contient les informations nécessaires."}
           </p>
           {nextProgram && (
-            <div className="mt-6 rounded-xl border border-white/10 bg-white/5 p-4">
+            <div className="mt-6 rounded-[var(--radius-control)] border border-white/10 bg-white/5 p-4">
               <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--accent-light)]">À comparer</p>
               <p className="mt-2 font-semibold">{nextProgram.name}</p>
               <p className="mt-1 text-sm text-slate-300">{nextProgram.degree_level} · {nextProgram.field || "Domaine à préciser"}</p>
@@ -193,23 +193,32 @@ export function StudentOrientationPanel({
               if (!program) return null;
 
               return (
-                <Card as="article" key={recommendation.id} aria-labelledby={`student-recommendation-title-${recommendation.id}`} className={recommendation.student_interest_at ? "border-[var(--brand-border)] bg-[var(--brand-soft)]" : ""}>
-                  <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
-                    <div className="min-w-0">
-                      <p className="text-sm font-semibold text-[var(--brand)]">
+                <Card
+                  as="article"
+                  key={recommendation.id}
+                  aria-labelledby={`student-recommendation-title-${recommendation.id}`}
+                  className={`flex h-full flex-col transition-shadow duration-150 hover:shadow-[var(--shadow-soft)] ${recommendation.student_interest_at ? "border-[var(--brand-border)] bg-[var(--brand-soft)]" : ""}`}
+                >
+                  <div className="flex flex-col gap-4">
+                    <div className="flex flex-wrap items-start justify-between gap-3">
+                      <p className="min-w-0 text-sm font-semibold leading-5 text-[var(--brand)]">
                         {university?.name || "Université"}{university?.city ? ` · ${university.city}` : ""}
                       </p>
-                      <h3 id={`student-recommendation-title-${recommendation.id}`} className="mt-2 text-xl font-semibold tracking-tight text-slate-950">{program.name}</h3>
-                      <p className="mt-1 text-sm text-slate-500">
+                      <Badge variant={recommendation.student_interest_at ? "success" : recommendationVariant(recommendation.status)}>
+                        {recommendation.student_interest_at ? "Intérêt enregistré" : recommendationStatusLabels[recommendation.status] || recommendation.status}
+                      </Badge>
+                    </div>
+                    <div>
+                      <h3 id={`student-recommendation-title-${recommendation.id}`} className="text-xl font-semibold leading-7 tracking-tight text-slate-950">
+                        {program.name}
+                      </h3>
+                      <p className="mt-1 text-sm leading-6 text-slate-500">
                         {program.degree_level} · {program.field || "Domaine à préciser"}
                       </p>
                     </div>
-                    <Badge variant={recommendation.student_interest_at ? "success" : recommendationVariant(recommendation.status)}>
-                      {recommendation.student_interest_at ? "Intérêt enregistré" : recommendationStatusLabels[recommendation.status] || recommendation.status}
-                    </Badge>
                   </div>
 
-                  <p className="mt-5 text-sm leading-6 text-slate-700">
+                  <p className="mt-4 text-sm leading-6 text-slate-700">
                     {recommendation.note || "Consultez les critères enregistrés pour évaluer cette recommandation."}
                   </p>
 
@@ -218,7 +227,7 @@ export function StudentOrientationPanel({
                     <InfoItem label="Deadline hiver" value={formatDeadline(program.winter_deadline)} />
                     <InfoItem label="Deadline été" value={formatDeadline(program.summer_deadline || null)} />
                     <InfoItem label="Diplôme demandé" value={program.diploma_required || "À confirmer"} />
-                    <div className="rounded-2xl bg-slate-50 p-3 sm:col-span-2">
+                    <div className="rounded-[var(--radius-control)] bg-[var(--surface-muted)] p-3 sm:col-span-2">
                       <dt className="text-slate-500">Niveaux linguistiques demandés</dt>
                       <dd className="mt-1 text-slate-900">
                         {[
@@ -229,20 +238,21 @@ export function StudentOrientationPanel({
                     </div>
                   </dl>
 
-                  <div className="mt-5 flex flex-wrap gap-2">
+                  <div className="mt-auto flex flex-col gap-2 border-t border-[var(--border)] pt-5 sm:flex-row sm:flex-wrap">
                     {program.application_url && (
                       <a
                         href={program.application_url}
                         aria-label={`Site officiel de ${program.name} (nouvel onglet)`}
                         target="_blank"
                         rel="noreferrer"
-                        className={buttonClassName("secondary")}
+                        className={buttonClassName("secondary", "w-full sm:w-auto")}
                       >
                         Site officiel
                       </a>
                     )}
                     <Button
                       type="button"
+                      className="w-full sm:w-auto"
                       disabled={Boolean(applicationStateError) || Boolean(recommendation.student_interest_at) || busy === recommendation.id || recommendation.status === "not_recommended"}
                       onClick={() => interested(recommendation.id)}
                     >
@@ -250,7 +260,9 @@ export function StudentOrientationPanel({
                         ? "Intérêt enregistré"
                         : busy === recommendation.id
                           ? "Enregistrement…"
-                          : "Ce programme m’intéresse"}
+                          : recommendation.status === "not_recommended"
+                            ? "Non disponible"
+                            : "Ce programme m’intéresse"}
                     </Button>
                   </div>
                 </Card>
@@ -275,7 +287,7 @@ function SummaryCard({ title, value, badge, tone }: { title: string; value: numb
 
 function InfoItem({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl bg-slate-50 p-3">
+    <div className="rounded-[var(--radius-control)] bg-[var(--surface-muted)] p-3">
       <dt className="text-slate-500">{label}</dt>
       <dd className="mt-1 font-medium text-slate-900">{value}</dd>
     </div>
