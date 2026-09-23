@@ -40,7 +40,7 @@ export default async function AdminUniversitiesPage() {
         </Card>
         <Card className="shadow-none">
           <p className="text-sm font-semibold text-slate-500">Actives</p>
-          <p className="mt-2 text-3xl font-bold text-emerald-700">{activeCount}</p>
+          <p className="mt-2 text-3xl font-bold text-[var(--accent-strong)]">{activeCount}</p>
         </Card>
         <Card className="shadow-none">
           <p className="text-sm font-semibold text-slate-500">Inactives</p>
