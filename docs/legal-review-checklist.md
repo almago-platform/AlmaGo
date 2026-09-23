@@ -73,20 +73,16 @@ Ces documents décrivent le schéma et la frontière technique actuelle, mais ne
 
 ## 5. Informations encore attendues du propriétaire
 
-À confirmer publiquement :
+Utiliser **un seul formulaire** : `docs/A38_OWNER_CONFIRMATION.md`.
 
-- [ ] nom légal de l’éditeur/exploitant ;
-- [ ] adresse postale/de contact à publier ;
-- [ ] e-mail public de contact ;
-- [ ] forme juridique si applicable ;
-- [ ] registre et numéro si applicable ;
-- [ ] TVA/W-IdNr si applicable ;
-- [ ] AlmaGo est actuellement gratuit ou payant ;
-- [ ] pays principal d’établissement de l’exploitant ;
-- [ ] durée ou règle de conservation par grande catégorie ;
-- [ ] procédure de suppression de compte et de fichiers ;
-- [ ] choix du fournisseur analytics/observabilité ;
-- [ ] relecture humaine/juridique finale.
+Le dépôt fournit déjà les catégories de données, les sous-traitants techniques visibles et le fait qu’aucun analytics n’est actif. Le fournisseur analytics futur appartient à A44 et n’est **plus une condition préalable A38**.
+
+A38 attend uniquement :
+- les informations publiques de l’éditeur réellement applicables ;
+- le statut gratuit/payant actuel ;
+- les règles de conservation/suppression ;
+- les éventuelles informations DPO/activité réglementée ;
+- la relecture humaine/juridique finale.
 
 ## 6. Condition de clôture A38
 
