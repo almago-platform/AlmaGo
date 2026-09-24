@@ -20,6 +20,14 @@ export default async function StudentLayout({
 
   if (!user) redirect("/login");
 
+  const { data: role, error: roleError } = await supabase
+    .from("user_roles")
+    .select("role")
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  if (roleError || role?.role !== "student") redirect("/unauthorized");
+
   const { data: profile } = await supabase
     .from("profiles")
     .select("first_name")
