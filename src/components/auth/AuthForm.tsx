@@ -31,7 +31,7 @@ export function AuthForm({ initialMode = "login" }: { initialMode?: Mode }) {
         const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
           redirectTo: `${window.location.origin}/auth/callback?next=/reset-password`,
         });
-        if (resetError) setError(resetError.message);
+        if (resetError) setError("Nous n’arrivons pas à envoyer le lien de réinitialisation pour le moment.");
         else setMessage("Si cette adresse existe, un lien de réinitialisation a été envoyé.");
       } else if (mode === "signup") {
         const { data, error: signUpError } = await supabase.auth.signUp({
@@ -39,7 +39,7 @@ export function AuthForm({ initialMode = "login" }: { initialMode?: Mode }) {
           password,
           options: { data: { full_name: `${firstName} ${lastName}`.trim() } },
         });
-        if (signUpError) setError(signUpError.message);
+        if (signUpError) setError("Nous n’arrivons pas à créer ce compte pour le moment. Vérifiez les informations saisies puis réessayez.");
         else if (data.session) router.push("/student");
         else setMessage("Vérifiez votre adresse e-mail pour continuer.");
       } else {
