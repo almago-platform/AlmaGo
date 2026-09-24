@@ -147,6 +147,27 @@ jobs:
             if [ -z "${!name}" ]; then echo "::error::$name is required for final release"; exit 1; fi
           done
 
+      - name: Require distinct test-only identities
+        shell: bash
+        run: |
+          student_email="$(printf '%s' "$ALMAGO_E2E_STUDENT_EMAIL" | tr '[:upper:]' '[:lower:]')"
+          admin_email="$(printf '%s' "$ALMAGO_E2E_ADMIN_EMAIL" | tr '[:upper:]' '[:lower:]')"
+
+          if [ "$student_email" = "$admin_email" ]; then
+            echo "::error::Student and admin E2E accounts must be different."
+            exit 1
+          fi
+
+          for email in "$student_email" "$admin_email"; do
+            case "$email" in
+              *e2e*|*test*) ;;
+              *)
+                echo "::error::Final-release E2E emails must be dedicated test identities containing 'e2e' or 'test'."
+                exit 1
+                ;;
+            esac
+          done
+
       - name: Install application dependencies
         run: npm ci
 
