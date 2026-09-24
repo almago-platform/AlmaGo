@@ -33,3 +33,11 @@ test("onboarding page loads only fields needed by the form", () => {
   assert.match(onboardingPage, /target_degree,target_field,study_language,target_intake/);
   assert.match(onboardingPage, /preferred_cities,budget_range,onboarding_completed/);
 });
+
+
+test("explicit onboarding consent clears an earlier revocation", () => {
+  assert.match(onboardingRoute, /const consentedAt = new Date\(\)\.toISOString\(\)/);
+  assert.match(onboardingRoute, /granted_at: consentedAt/);
+  assert.match(onboardingRoute, /revoked_at: null/);
+  assert.match(onboardingRoute, /onConflict: "user_id,consent_type,policy_version"/);
+});
