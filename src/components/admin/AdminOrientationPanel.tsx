@@ -21,10 +21,12 @@ function recommendationVariant(status: string): "success" | "warning" | "info" |
 
 export function AdminOrientationPanel({
   students,
+  studentRoleIds,
   programs,
   recommendations,
 }: {
   students: any[];
+  studentRoleIds: string[];
   programs: any[];
   recommendations: any[];
 }) {
@@ -39,7 +41,10 @@ export function AdminOrientationPanel({
   const [archivingId, setArchivingId] = useState<string | null>(null);
 
   const selected = students.find((student) => student.id === studentId);
-  const completedStudents = students.filter((student) => student.onboarding_completed);
+  const studentRoleIdSet = new Set(studentRoleIds);
+  const completedStudents = students.filter(
+    (student) => student.onboarding_completed && studentRoleIdSet.has(student.id),
+  );
 
   const visible = useMemo(() => {
     const normalized = query.trim().toLocaleLowerCase("fr");
