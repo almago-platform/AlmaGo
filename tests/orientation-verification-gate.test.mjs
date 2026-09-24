@@ -15,6 +15,7 @@ const studentDashboard = readFileSync("src/app/student/page.tsx", "utf8");
 const studentApplicationsRoute = readFileSync("src/app/api/student/applications/route.ts", "utf8");
 const studentApplicationsPage = readFileSync("src/app/student/applications/page.tsx", "utf8");
 const adminOrientationRoute = readFileSync("src/app/api/admin/orientation/route.ts", "utf8");
+const adminOrientationArchiveRoute = readFileSync("src/app/api/admin/orientation/[id]/route.ts", "utf8");
 const adminOrientationPage = readFileSync("src/app/admin/orientation/page.tsx", "utf8");
 const adminOrientationPanel = readFileSync("src/components/admin/AdminOrientationPanel.tsx", "utf8");
 
@@ -237,4 +238,13 @@ test("UUID guard rejects malformed identifiers before Supabase lookups", () => {
   assert.match(studentApplicationsRoute, /isUuid\(body\.recommendation_id\)/);
   assert.match(adminOrientationRoute, /isUuid\(body\.student_id\)/);
   assert.match(adminOrientationRoute, /isUuid\(body\.program_id\)/);
+});
+
+
+test("orientation archive rejects malformed or missing targets", () => {
+  assert.match(adminOrientationArchiveRoute, /isUuid\(id\)/);
+  assert.match(adminOrientationArchiveRoute, /Identifiant de piste invalide/);
+  assert.match(adminOrientationArchiveRoute, /\.select\("id"\)\s*\.maybeSingle\(\)/);
+  assert.match(adminOrientationArchiveRoute, /Piste d’orientation introuvable/);
+  assert.match(adminOrientationArchiveRoute, /status: 404/);
 });
