@@ -1,16 +1,13 @@
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { getStudentUser } from "@/lib/auth/access";
 import { OnboardingForm } from "@/components/student/OnboardingForm";
 
 export const dynamic = "force-dynamic";
 
 export default async function OnboardingPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
+  const { supabase, user, isStudent } = await getStudentUser();
   if (!user) redirect("/login");
+  if (!isStudent) redirect("/unauthorized");
 
   const { data: profile } = await supabase
     .from("profiles")
