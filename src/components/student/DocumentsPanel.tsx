@@ -179,7 +179,10 @@ export function DocumentsPanel({
         <form onSubmit={upload} className="mt-6">
           <div className="grid gap-4 lg:grid-cols-[0.8fr_1fr_auto] lg:items-end">
             <label className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-muted)]/45 p-4 text-sm font-medium text-slate-700">
-              <span className="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-[var(--brand)]"><span className="grid h-6 w-6 place-items-center rounded-full bg-[var(--brand)] text-[10px] text-white">1</span> Choisir le type</span>
+              <span className="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-[var(--brand)]">
+                <span className="grid h-6 w-6 place-items-center rounded-full bg-[var(--brand)] text-[10px] text-white">1</span>
+                Choisir le type
+              </span>
               Type de document
               <select
                 value={category}
@@ -194,7 +197,10 @@ export function DocumentsPanel({
             </label>
 
             <label className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-muted)]/45 p-4 text-sm font-medium text-slate-700">
-              <span className="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-[var(--brand)]"><span className="grid h-6 w-6 place-items-center rounded-full bg-[var(--brand)] text-[10px] text-white">2</span> Choisir le fichier</span>
+              <span className="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-[var(--brand)]">
+                <span className="grid h-6 w-6 place-items-center rounded-full bg-[var(--brand)] text-[10px] text-white">2</span>
+                Choisir le fichier
+              </span>
               Fichier à envoyer
               <input
                 ref={fileInput}
@@ -204,29 +210,34 @@ export function DocumentsPanel({
                 className="field"
               />
             </label>
-          </div>
-
-          {feedback && (
-            <p
-              role={feedback.kind === "error" ? "alert" : "status"}
-              className={`mt-4 rounded-xl p-3 text-sm ${
-                feedback.kind === "error"
-                  ? "bg-red-50 text-red-800"
-                  : "bg-[var(--brand-soft)] text-[var(--brand)]"
-              }`}
-            >
-              {feedback.message}
-            </p>
-          )}
 
             <div className="rounded-[var(--radius-control)] border border-[var(--brand-border)] bg-white p-4">
-              <span className="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-[var(--brand)]"><span className="grid h-6 w-6 place-items-center rounded-full bg-[var(--brand)] text-[10px] text-white">3</span> Envoyer</span>
+              <span className="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-[var(--brand)]">
+                <span className="grid h-6 w-6 place-items-center rounded-full bg-[var(--brand)] text-[10px] text-white">3</span>
+                Envoyer
+              </span>
               <Button type="submit" disabled={busy} className="w-full justify-center lg:w-auto">
                 {busy ? "Envoi en cours…" : "Envoyer le document"}
               </Button>
             </div>
           </div>
-          <p className="mt-4 text-sm leading-6 text-slate-500">Un remplacement ne supprime pas automatiquement les anciens fichiers validés.</p>
+
+          {feedback && (
+            <p
+              role={feedback.kind === "error" ? "alert" : "status"}
+              className={"mt-4 rounded-[var(--radius-control)] border p-3.5 text-sm " + (
+                feedback.kind === "error"
+                  ? "border-red-200 bg-red-50 text-red-800"
+                  : "border-[var(--brand-border)] bg-[var(--brand-soft)] text-[var(--brand)]"
+              )}
+            >
+              {feedback.message}
+            </p>
+          )}
+
+          <p className="mt-4 text-sm leading-6 text-slate-500">
+            Un remplacement ne supprime pas automatiquement les anciens fichiers validés.
+          </p>
         </form>
       </Card>
 
