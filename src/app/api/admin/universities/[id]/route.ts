@@ -28,6 +28,9 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   }
 
   if (typeof body.name !== "string" || !body.name.trim()) return NextResponse.json({ error: "Le nom de l’université est obligatoire." }, { status: 400 });
+  if (!universityTypes.includes(body.university_type as (typeof universityTypes)[number])) {
+    return NextResponse.json({ error: "Choisissez un type d’établissement valide." }, { status: 400 });
+  }
   const websiteUrl = typeof body.website_url === "string" ? body.website_url.trim() : "";
   const sourceUrl = typeof body.source_url === "string" ? body.source_url.trim() : "";
   const universityUrls = [websiteUrl, sourceUrl].filter(Boolean);
@@ -68,7 +71,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   const { error } = await supabase.from("universities").update({
     name: body.name.trim().slice(0, 180), city: typeof body.city === "string" ? body.city.trim() : null,
     bundesland: typeof body.bundesland === "string" ? body.bundesland.trim() : null,
-    university_type: universityTypes.includes(body.university_type as (typeof universityTypes)[number]) ? body.university_type : "Universität",
+    university_type: body.university_type,
     website_url: typeof body.website_url === "string" ? body.website_url.trim() : null,
     source_url: typeof body.source_url === "string" ? body.source_url.trim() : null,
     logo_url: typeof body.logo_url === "string" ? body.logo_url.trim() : null,
