@@ -62,6 +62,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         reviewed_at: new Date().toISOString(),
       })
       .eq("id", id)
+      .eq("status", requestedStatus)
       .select("id")
       .maybeSingle();
 
@@ -69,7 +70,22 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       return NextResponse.json({ error: "Impossible de mettre à jour la candidature." }, { status: 500 });
     }
     if (!updatedApplication) {
-      return NextResponse.json({ error: "Candidature introuvable." }, { status: 404 });
+      const { data: stillExists, error: existenceError } = await supabase
+        .from("applications")
+        .select("id")
+        .eq("id", id)
+        .maybeSingle();
+
+      if (existenceError) {
+        return NextResponse.json({ error: "Impossible de vérifier la candidature." }, { status: 500 });
+      }
+      if (!stillExists) {
+        return NextResponse.json({ error: "Candidature introuvable." }, { status: 404 });
+      }
+      return NextResponse.json(
+        { error: "Le statut de cette candidature a changé. Rechargez le dossier avant d’enregistrer." },
+        { status: 409 },
+      );
     }
     return NextResponse.json({ ok: true });
   }
