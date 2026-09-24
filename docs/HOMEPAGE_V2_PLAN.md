@@ -1,6 +1,6 @@
 # AlmaGo — Homepage V2 Professional Plan
 
-**Status:** SAVED DESIGN SOURCE OF TRUTH  
+**Status:** IMPLEMENTED + VERIFIED  
 **Date:** 23 September 2026  
 **Scope:** public homepage only (`/`)  
 **Relation to Master Plan:** professional visual refinement only. No new business capability. A38/A43/A44/A45 remain unchanged.
@@ -610,3 +610,57 @@ Homepage V2 is accepted only when:
 
 The homepage should not look “engineered first, designed second”.  
 It must look like a deliberate public-facing product for international students choosing Germany.
+---
+
+## 13. Implementation record — 24 September 2026
+
+Homepage V2 has been implemented and validated against this plan.
+
+### Canonical implementation PRs
+
+- H1 — header + hero: PR #105
+- H2 — human value section: PR #108
+- H3 — six-step Germany journey: PR #109
+- H4 — truthful product preview: PR #110
+- H5 — trust + FAQ + final CTA + footer: PR #111
+- H6 — premium mobile/product-preview polish: PR #112
+
+The older parallel H3 PR #107 was closed as superseded so there is only one canonical implementation path.
+
+### Quality evidence
+
+The final H6 implementation passed:
+
+- canonical PR CI;
+- tests;
+- workflow YAML validation;
+- TypeScript;
+- lint;
+- production build;
+- diff check;
+- Playwright responsive smoke tests;
+- accessibility smoke tests;
+- Lighthouse advisory budgets.
+
+The Browser Quality screenshots were reviewed on:
+
+- desktop;
+- mobile;
+- compact mobile.
+
+The final visual review confirmed that the page preserves the intended hierarchy and remains readable at the tested sizes.
+
+### Intentional omissions / deferred items
+
+- A public programme catalogue is **not** shown because no verified public programme-discovery route is currently available. The homepage uses orientation/product explanations instead of fake programme cards.
+- Final legal/privacy/terms links are **not** published until A38 receives the required human/legal validation.
+- No fake partner logos, testimonials, success rates, government affiliation, admission guarantee or official seal were introduced.
+
+### Current result
+
+The homepage now follows the approved direction:
+
+> TLScontact clarity + uni-assist human warmth + AlmaGo modern product experience.
+
+Any future homepage change should preserve this document as the design source of truth unless the plan is explicitly revised first.
+
