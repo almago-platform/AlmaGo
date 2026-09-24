@@ -328,13 +328,14 @@ export function AdminProgramsPanel({
             </FormSection>
 
             <FormSection title="5. Maintenance interne">
+              <div className="mb-3 inline-flex rounded-full border border-[var(--border)] bg-white px-3 py-1.5 text-xs font-bold text-slate-600">Interne à AlmaGo</div>
               <label className="block text-sm font-medium text-slate-700">
                 Notes AlmaGo
                 <textarea value={form.almago_notes} onChange={(event) => change("almago_notes", event.target.value)} placeholder="Notes internes de maintenance du catalogue." className="field min-h-24 resize-y" />
               </label>
               <ToggleField label="Programme actif dans AlmaGo" checked={form.is_active} onChange={(checked) => change("is_active", checked)} />
               <p className="text-xs leading-5 text-slate-500">
-                Les notes AlmaGo sont internes. L’état actif contrôle l’utilisation du programme dans les parcours qui s’appuient sur le catalogue actif.
+                Les notes AlmaGo restent internes à l’équipe. Elles ne sont pas présentées comme une information officielle de l’établissement. L’état actif contrôle l’utilisation du programme dans les parcours qui s’appuient sur le catalogue actif.
               </p>
             </FormSection>
           </div>

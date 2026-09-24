@@ -325,10 +325,10 @@ export function AdminOrientationPanel({
                   <div className="mt-5 rounded-[var(--radius-control)] border border-[var(--brand-border)] bg-[var(--brand-soft)]/35 p-4">
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">Justification publiée</p>
-                      <Badge variant="info">Visible côté étudiant</Badge>
+                      <Badge variant="info">Visible par l’étudiant</Badge>
                     </div>
                     <p className="mt-2 text-sm leading-6 text-slate-700 [overflow-wrap:anywhere]">
-                      {recommendation.note || "Aucune justification enregistrée."}
+                      {recommendation.note || "Aucune justification n’est enregistrée pour cette recommandation."}
                     </p>
                   </div>
 

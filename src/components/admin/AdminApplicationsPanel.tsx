@@ -266,9 +266,9 @@ export function AdminApplicationsPanel({ applications }: { applications: any[] }
                 <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                   <div>
                     <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">Mise à jour du dossier</p>
-                    <p className="mt-1 text-sm leading-6 text-slate-600">Le statut, la prochaine action et la note ci-dessous alimentent le suivi visible dans l’espace étudiant.</p>
+                    <p className="mt-1 text-sm leading-6 text-slate-600">Le statut, la prochaine action et la note ci-dessous peuvent être affichés dans l’espace étudiant. Vérifiez leur formulation avant d’enregistrer.</p>
                   </div>
-                  <Badge variant="info">Visible côté étudiant</Badge>
+                  <Badge variant="info">Visible par l’étudiant</Badge>
                 </div>
 
                 <div className="grid gap-4 lg:grid-cols-2">
