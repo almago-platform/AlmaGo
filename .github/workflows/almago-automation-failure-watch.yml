@@ -15,7 +15,9 @@ concurrency:
 
 jobs:
   mark-blocked:
-    if: github.event.workflow_run.conclusion == 'failure'
+    if: >-
+      github.event.workflow_run.conclusion == 'failure' &&
+      startsWith(github.event.workflow_run.head_branch, 'automation/issue-')
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
