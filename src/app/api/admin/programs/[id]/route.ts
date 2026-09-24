@@ -90,7 +90,13 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   const verificationPatch =
     body.mark_verified === true || !verificationEvidenceChanged ? {} : { verified_at: null };
 
-  const { error } = await supabase.from("programs").update({ ...data, ...verificationPatch }).eq("id", id);
+  const { data: updated, error } = await supabase
+    .from("programs")
+    .update({ ...data, ...verificationPatch })
+    .eq("id", id)
+    .select("id")
+    .maybeSingle();
   if (error) return NextResponse.json({ error: "Impossible de modifier le programme." }, { status: 500 });
+  if (!updated) return NextResponse.json({ error: "Programme introuvable." }, { status: 404 });
   return NextResponse.json({ ok: true });
 }
