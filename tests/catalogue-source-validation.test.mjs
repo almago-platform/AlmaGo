@@ -124,8 +124,8 @@ test("programme update blocks reassignment to an inactive university but preserv
 test("material programme changes invalidate stale verification", () => {
   assert.match(programUpdate, /const verificationContentChanged =/);
   assert.match(programUpdate, /existing\.university_id !== data\.university_id/);
-  assert.match(programUpdate, /existing\.winter_deadline !== data\.winter_deadline/);
-  assert.match(programUpdate, /existing\.summer_deadline !== data\.summer_deadline/);
+  assert.match(programUpdate, /normalizeText\(existing\.winter_deadline\) !== data\.winter_deadline/);
+  assert.match(programUpdate, /normalizeText\(existing\.summer_deadline\) !== data\.summer_deadline/);
   assert.match(programUpdate, /existing\.degree_level !== data\.degree_level/);
   assert.match(programUpdate, /currentAverage !== nextAverage/);
   assert.match(programUpdate, /mark_verified === true \|\| !verificationContentChanged/);
@@ -137,7 +137,7 @@ test("material university changes invalidate stale verification", () => {
   assert.match(universityUpdate, /existing\.name !== nextUniversity\.name/);
   assert.match(universityUpdate, /existing\.university_type !== nextUniversity\.university_type/);
   assert.match(universityUpdate, /existing\.is_public !== nextUniversity\.is_public/);
-  assert.match(universityUpdate, /existing\.tuition_notes !== nextUniversity\.tuition_notes/);
+  assert.match(universityUpdate, /optionalText\(existing\.tuition_notes\) !== nextUniversity\.tuition_notes/);
   assert.match(universityUpdate, /mark_verified === true \|\| !verificationContentChanged/);
 });
 
@@ -281,4 +281,13 @@ test("optional university fields normalize empty strings to null on create", () 
   for (const field of ["city", "bundesland", "logo_url", "description", "tuition_notes"]) {
     assert.match(universityCreate, new RegExp(field + ": optionalText"));
   }
+});
+
+
+test("legacy blank catalogue values do not trigger false verification changes", () => {
+  assert.match(programUpdate, /const normalizeText =/);
+  assert.match(programUpdate, /normalizeText\(existing\.field\) !== data\.field/);
+  assert.match(programUpdate, /normalizeText\(existing\.application_fee_notes\) !== data\.application_fee_notes/);
+  assert.match(universityUpdate, /optionalText\(existing\.city\) !== nextUniversity\.city/);
+  assert.match(universityUpdate, /optionalText\(existing\.description\) !== nextUniversity\.description/);
 });
