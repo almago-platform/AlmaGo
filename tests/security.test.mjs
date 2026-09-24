@@ -287,6 +287,9 @@ test("switching accounts clears the active session first", () => {
   const page = read("src/app/unauthorized/page.tsx");
 
   assert.match(button, /auth\.signOut\(\)/);
+  assert.match(button, /signOutError/);
+  assert.match(button, /Nous n’arrivons pas à fermer cette session/);
+  assert.match(button, /role="alert"/);
   assert.match(button, /router\.push\("\/login"\)/);
   assert.match(button, /router\.refresh\(\)/);
   assert.match(page, /SwitchAccountButton/);
