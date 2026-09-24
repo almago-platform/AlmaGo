@@ -58,8 +58,9 @@ export function HomeFooter() {
             title="Parcours"
             links={[
               ["Comment ça marche", "#parcours"],
+              ["Notre rôle", "#role"],
               ["Votre espace", "#espace"],
-              ["Transparence", "#confiance"],
+              ["Confiance et transparence", "#confiance"],
             ]}
           />
           <FooterColumn
