@@ -8,6 +8,7 @@ const publicRoutes = [
   "/confiance",
   "/comprendre-les-demarches",
   "/selon-votre-pays",
+  "/sources-officielles",
 ] as const;
 
 export default function sitemap(): MetadataRoute.Sitemap {
