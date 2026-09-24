@@ -1,12 +1,15 @@
+import { redirect } from "next/navigation";
 import { AdminOrientationPanel } from "@/components/admin/AdminOrientationPanel";
 import { Card } from "@/components/ui/Card";
 import { PageHeader } from "@/components/ui/PageHeader";
-import { createClient } from "@/lib/supabase/server";
+import { getAdminUser } from "@/lib/auth/access";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminOrientationPage() {
-  const supabase = await createClient();
+  const { supabase, user, isAdmin } = await getAdminUser();
+  if (!user) redirect("/login");
+  if (!isAdmin) redirect("/unauthorized");
   const [
     { data: students, error: studentsError },
     { data: programs, error: programsError },
