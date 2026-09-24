@@ -28,7 +28,9 @@
 | Student dossier history | Implemented / PR ready | #161 | Real document-review and student-visible application events combined on “Mon dossier”; no fake audit events. |
 | Programme verification evidence | Implemented / PR ready | #162 | Explicit source + human verification confirmation; real `verified_at` shown only when present. |
 | University verification evidence | Implemented / PR ready | #163 | Same explicit source/date discipline for university records; CI and browser quality passed. |
-| Admin catalogue-quality priority | Implemented / checks running | #164 | Missing source/verification becomes an operational queue after document/application priorities; no ranking score. |
+| Admin catalogue-quality priority | Implemented / PR ready | #164 | Missing source/verification becomes an operational queue after document/application priorities; CI and browser quality passed; no ranking score. |
+| Public accessibility information | Implemented / checks running | #168 | Describes real keyboard/responsive/accessibility measures without claiming WCAG/RGAA certification. |
+| Professional 404 experience | Implemented / checks running | #169 | Non-indexable, human error page with safe routes back to Home, Help Center and login. |
 
 ## Live catalogue quality snapshot
 
