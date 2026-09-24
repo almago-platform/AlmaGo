@@ -185,3 +185,11 @@ test("verification guard does not introduce privileged secrets or schema changes
     assert.doesNotMatch(source, /service_role|SUPABASE_SECRET|secret key/i);
   }
 });
+
+
+test("student application creation distinguishes lookup failures from unavailable recommendations", () => {
+  assert.match(studentApplicationsRoute, /error: recommendationError/);
+  assert.match(studentApplicationsRoute, /Impossible de vérifier cette piste pour le moment/);
+  assert.match(studentApplicationsRoute, /status: 500/);
+  assert.match(studentApplicationsRoute, /Cette recommandation n’est plus disponible/);
+});
