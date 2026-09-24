@@ -44,7 +44,14 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   }
   const websiteUrl = typeof body.website_url === "string" ? body.website_url.trim() : "";
   const sourceUrl = typeof body.source_url === "string" ? body.source_url.trim() : "";
+  const logoUrl = typeof body.logo_url === "string" && body.logo_url.trim() ? body.logo_url.trim() : null;
   const universityUrls = [websiteUrl, sourceUrl].filter(Boolean);
+  if (logoUrl && !isHttpSourceUrl(logoUrl)) {
+    return NextResponse.json(
+      { error: "Le lien du logo doit être une URL http/https valide." },
+      { status: 400 },
+    );
+  }
   if (universityUrls.some((value) => !isHttpSourceUrl(value))) {
     return NextResponse.json(
       { error: "Les liens du site et de la source doivent être des URL http/https valides." },
@@ -106,7 +113,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 
   const { data: updated, error } = await supabase.from("universities").update({
     ...nextUniversity,
-    logo_url: optionalText(body.logo_url),
+    logo_url: logoUrl,
     is_active: body.is_active as boolean,
     ...(body.mark_verified === true ? { verified_at: new Date().toISOString() } : {}),
     ...verificationPatch,
