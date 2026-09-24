@@ -7,7 +7,7 @@ const faqs = [
   {
     question: "À qui s’adresse AlmaGo ?",
     answer:
-      "La plateforme est pensée pour les étudiants qui préparent un projet d’études en Allemagne et souhaitent garder leur dossier plus clair et plus facile à suivre.",
+      "AlmaGo s’adresse aux étudiants qui préparent un projet d’études en Allemagne et souhaitent garder leurs documents, leurs démarches et leurs candidatures plus faciles à suivre.",
   },
   {
     question: "Puis-je suivre mes documents et mes candidatures ?",
