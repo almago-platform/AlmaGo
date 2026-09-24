@@ -11,7 +11,7 @@ const labels: Record<string, string> = {
   todo: "À faire par vous",
   in_progress: "En cours",
   waiting_student: "À faire par vous",
-  waiting_almago: "Suivi par AlmaGo",
+  waiting_almago: "En cours chez AlmaGo",
   completed: "Terminé",
 };
 
@@ -113,7 +113,7 @@ export default async function ChecklistPage() {
               {nextItem ? "À faire maintenant" : waitingAlmaGoCount ? "Suivi en cours" : "Aucune action demandée"}
             </Badge>
             <span className="text-xs font-bold uppercase tracking-[0.14em] text-slate-500">
-              {nextItem ? "À faire par vous" : waitingAlmaGoCount ? "Suivi par AlmaGo" : "Dossier"}
+              {nextItem ? "À faire par vous" : waitingAlmaGoCount ? "En cours chez AlmaGo" : "Dossier"}
             </span>
           </div>
           {nextItem ? (
@@ -142,7 +142,7 @@ export default async function ChecklistPage() {
 
       <section aria-label="Résumé des démarches" className="mt-5 grid gap-4 sm:grid-cols-3">
         <SummaryCard title="À faire par vous" value={actionableItems.length} badge={actionableItems.length ? "À traiter" : "Rien à faire"} tone={actionableItems.length ? "warning" : "success"} />
-        <SummaryCard title="Suivi par AlmaGo" value={waitingAlmaGoCount} badge={waitingAlmaGoCount ? "En cours" : "Aucune étape"} tone="info" />
+        <SummaryCard title="En cours chez AlmaGo" value={waitingAlmaGoCount} badge={waitingAlmaGoCount ? "Suivi en cours" : "Aucune étape"} tone="info" />
         <SummaryCard title="Terminées" value={completedCount} badge="Étapes complétées" tone="success" />
       </section>
 
@@ -181,8 +181,8 @@ export default async function ChecklistPage() {
                             <Badge variant={badgeVariants[item.status as keyof typeof badgeVariants] || "neutral"}>
                               {labels[item.status] || item.status}
                             </Badge>
-                            {["waiting_student", "todo", "not_started"].includes(item.status) && <span className="text-xs font-bold uppercase tracking-[0.14em] text-amber-800">Responsable : vous</span>}
-                            {item.status === "waiting_almago" && <span className="text-xs font-bold uppercase tracking-[0.14em] text-blue-800">Responsable : AlmaGo</span>}
+                            {["waiting_student", "todo", "not_started"].includes(item.status) && <span className="text-xs font-bold uppercase tracking-[0.14em] text-amber-800">À faire par vous</span>}
+                            {item.status === "waiting_almago" && <span className="text-xs font-bold uppercase tracking-[0.14em] text-blue-800">En cours chez AlmaGo</span>}
                           </div>
                           <h3 id={`checklist-item-title-${item.id}`} className="mt-3 font-bold text-slate-950">{item.title}</h3>
                           {item.description && <p className="mt-1 text-sm leading-6 text-slate-600">{item.description}</p>}
