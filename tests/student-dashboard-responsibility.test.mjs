@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import test from "node:test";
 
 const dashboard = readFileSync("src/app/student/page.tsx", "utf8");
+const checklistPage = readFileSync("src/app/student/checklist/page.tsx", "utf8");
 
 test("student dashboard uses only real checklist states", () => {
   assert.match(dashboard, /item\.status === "completed"/);
@@ -40,4 +41,17 @@ test("student dashboard keeps checklist and application next steps factual", () 
   );
   assert.match(dashboard, /label="À corriger par vous"/);
   assert.match(dashboard, /label="Chez AlmaGo"/);
+});
+
+
+test("student checklist uses only the real todo-completed workflow", () => {
+  assert.match(checklistPage, /todo: "Étape à faire"/);
+  assert.match(checklistPage, /completed: "Terminée"/);
+  for (const legacy of ["waiting_student", "waiting_almago", "in_progress", "not_started"]) {
+    assert.doesNotMatch(checklistPage, new RegExp(legacy));
+  }
+  assert.doesNotMatch(checklistPage, /À faire par vous/);
+  assert.doesNotMatch(checklistPage, /En cours chez AlmaGo/);
+  assert.match(checklistPage, /Prochaine étape enregistrée/);
+  assert.match(checklistPage, /Étapes ouvertes/);
 });
