@@ -43,7 +43,7 @@ const adminItems: NavItem[] = [
   { label: "Vue d’ensemble", href: "/admin", icon: icons.dashboard, helper: "Priorités de l’équipe" },
   { label: "Documents", href: "/admin/documents", icon: icons.documents, helper: "Pièces à vérifier" },
   { label: "Candidatures", href: "/admin/applications", icon: icons.applications, helper: "Dossiers et échéances" },
-  { label: "Orientation", href: "/admin/orientation", icon: icons.orientation, helper: "Recommandations étudiants" },
+  { label: "Orientation", href: "/admin/orientation", icon: icons.orientation, helper: "Pistes d’orientation" },
   { label: "Universités", href: "/admin/universities", icon: icons.universities, helper: "Catalogue établissements" },
   { label: "Programmes", href: "/admin/programs", icon: icons.programs, helper: "Catalogue formations" },
 ];
@@ -104,7 +104,7 @@ export function AppShell({
             <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Votre parcours Allemagne</p>
             <p className="mt-2 text-sm font-bold text-slate-900">Bonjour {studentName}</p>
             <p className="mt-1 text-xs leading-5 text-slate-600">
-              Retrouvez ici ce qui est prêt, ce qui reste à vérifier et votre prochaine action.
+              Retrouvez ici ce qui est prêt, ce qui reste à vérifier et votre prochaine étape.
             </p>
           </div>
         ) : (
@@ -149,9 +149,18 @@ export function AppShell({
 
         <div className="border-t border-[var(--border)] bg-white/75 p-4">
           {role === "student" ? (
-            <p className="mb-3 px-1 text-[11px] leading-4 text-slate-500">
-              AlmaGo organise votre dossier. Les décisions officielles restent celles des organismes compétents.
-            </p>
+            <div className="mb-3 space-y-2">
+              <p className="px-1 text-[11px] leading-4 text-slate-500">
+                AlmaGo organise votre dossier. Les décisions officielles restent celles des organismes compétents.
+              </p>
+              <Link
+                href="/aide"
+                className="flex min-h-11 items-center justify-between rounded-[var(--radius-control)] border border-[var(--brand-border)] bg-[var(--brand-soft)]/55 px-3 text-sm font-bold text-[var(--brand)] transition-colors hover:bg-[var(--brand-soft)]"
+              >
+                <span>Centre d’aide</span>
+                <span aria-hidden="true">→</span>
+              </Link>
+            </div>
           ) : (
             <p className="mb-3 px-1 text-[11px] leading-4 text-slate-500">
               Les actions d’administration peuvent modifier ce qui est visible dans l’espace étudiant.
@@ -222,7 +231,14 @@ export function AppShell({
                     })}
                   </nav>
 
-                  <div className="mt-4 border-t border-[var(--border)] pt-4">
+                  <div className="mt-4 grid gap-2 border-t border-[var(--border)] pt-4">
+                    <Link
+                      href="/aide"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="inline-flex min-h-11 items-center justify-center rounded-[var(--radius-control)] border border-[var(--brand-border)] bg-[var(--brand-soft)]/55 px-4 text-sm font-bold text-[var(--brand)]"
+                    >
+                      Centre d’aide
+                    </Link>
                     <Button type="button" onClick={signOut} variant="secondary" className="w-full justify-center">
                       Déconnexion
                     </Button>
