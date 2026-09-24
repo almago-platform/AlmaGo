@@ -63,7 +63,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   }
   const { data: existing, error: existingError } = await supabase
     .from("universities")
-    .select("website_url,source_url")
+    .select("name,city,bundesland,university_type,website_url,source_url,description,is_public,tuition_notes")
     .eq("id", id)
     .maybeSingle();
 
@@ -72,22 +72,41 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   }
   if (!existing) return NextResponse.json({ error: "Université introuvable." }, { status: 404 });
 
+  const optionalText = (value: unknown) =>
+    typeof value === "string" && value.trim() ? value.trim() : null;
+
+  const nextUniversity = {
+    name: body.name.trim().slice(0, 180),
+    city: optionalText(body.city),
+    bundesland: optionalText(body.bundesland),
+    university_type: body.university_type as (typeof universityTypes)[number],
+    website_url: websiteUrl || null,
+    source_url: sourceUrl || null,
+    description: optionalText(body.description),
+    is_public: body.is_public as boolean,
+    tuition_notes: optionalText(body.tuition_notes),
+  };
+
   const sourceChanged = sourceUrlsChanged(
     [existing.website_url, existing.source_url],
-    [websiteUrl, sourceUrl],
+    [nextUniversity.website_url, nextUniversity.source_url],
   );
+  const verificationContentChanged =
+    sourceChanged ||
+    existing.name !== nextUniversity.name ||
+    existing.city !== nextUniversity.city ||
+    existing.bundesland !== nextUniversity.bundesland ||
+    existing.university_type !== nextUniversity.university_type ||
+    existing.description !== nextUniversity.description ||
+    existing.is_public !== nextUniversity.is_public ||
+    existing.tuition_notes !== nextUniversity.tuition_notes;
+
   const verificationPatch =
-    body.mark_verified === true || !sourceChanged ? {} : { verified_at: null };
+    body.mark_verified === true || !verificationContentChanged ? {} : { verified_at: null };
 
   const { data: updated, error } = await supabase.from("universities").update({
-    name: body.name.trim().slice(0, 180), city: typeof body.city === "string" ? body.city.trim() : null,
-    bundesland: typeof body.bundesland === "string" ? body.bundesland.trim() : null,
-    university_type: body.university_type as (typeof universityTypes)[number],
-    website_url: typeof body.website_url === "string" && body.website_url.trim() ? body.website_url.trim() : null,
-    source_url: typeof body.source_url === "string" && body.source_url.trim() ? body.source_url.trim() : null,
-    logo_url: typeof body.logo_url === "string" && body.logo_url.trim() ? body.logo_url.trim() : null,
-    description: typeof body.description === "string" ? body.description.trim() : null,
-    is_public: body.is_public as boolean, tuition_notes: typeof body.tuition_notes === "string" ? body.tuition_notes.trim() : null,
+    ...nextUniversity,
+    logo_url: optionalText(body.logo_url),
     is_active: body.is_active as boolean,
     ...(body.mark_verified === true ? { verified_at: new Date().toISOString() } : {}),
     ...verificationPatch,
