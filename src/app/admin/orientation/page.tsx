@@ -11,6 +11,7 @@ export default async function AdminOrientationPage() {
     { data: students, error: studentsError },
     { data: programs, error: programsError },
     { data: recommendations, error: recommendationsError },
+    { data: studentRoles, error: studentRolesError },
   ] = await Promise.all([
     supabase
       .from("profiles")
@@ -24,9 +25,13 @@ export default async function AdminOrientationPage() {
       .from("program_recommendations")
       .select("id,student_id,program_id,status,note,is_archived")
       .order("created_at", { ascending: false }),
+    supabase
+      .from("user_roles")
+      .select("user_id")
+      .eq("role", "student"),
   ]);
 
-  if (studentsError || programsError || recommendationsError) {
+  if (studentsError || programsError || recommendationsError || studentRolesError) {
     return (
       <main className="mx-auto w-full max-w-7xl px-4 py-7 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
         <PageHeader badge="Équipe AlmaGo" title="Orientation des étudiants" />
@@ -51,6 +56,7 @@ export default async function AdminOrientationPage() {
       />
       <AdminOrientationPanel
         students={students || []}
+        studentRoleIds={(studentRoles || []).map((item) => item.user_id)}
         programs={programs || []}
         recommendations={recommendations || []}
       />
