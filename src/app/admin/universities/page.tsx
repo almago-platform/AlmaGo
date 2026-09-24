@@ -33,7 +33,7 @@ export default async function AdminUniversitiesPage() {
       <PageHeader
         badge="Catalogue"
         title="Universités allemandes"
-        description="Maintenez un catalogue fiable d’établissements actifs, de liens officiels et d’informations utiles aux recommandations AlmaGo."
+        description="Maintenez un catalogue fiable d’établissements actifs, de liens officiels et d’informations utiles à l’orientation AlmaGo."
       />
 
       <div className="mb-6 grid gap-4 sm:grid-cols-3">
