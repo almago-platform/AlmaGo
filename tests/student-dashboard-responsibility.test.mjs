@@ -55,3 +55,10 @@ test("student checklist uses only the real todo-completed workflow", () => {
   assert.match(checklistPage, /Prochaine étape enregistrée/);
   assert.match(checklistPage, /Étapes ouvertes/);
 });
+
+
+test("checklist never exposes an unknown raw status code", () => {
+  const checklist = readFileSync("src/app/student/checklist/page.tsx", "utf8");
+  assert.match(checklist, /labels\[item\.status\] \|\| "Statut à vérifier"/);
+  assert.doesNotMatch(checklist, /labels\[item\.status\] \|\| item\.status/);
+});
