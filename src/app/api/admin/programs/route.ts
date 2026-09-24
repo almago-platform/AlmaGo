@@ -32,6 +32,15 @@ export async function POST(request: Request) {
   if (!body) return NextResponse.json({ error: "Données invalides." }, { status: 400 });
   const data = payload(body);
   if (!data.name || typeof data.university_id !== "string") return NextResponse.json({ error: "Université et nom du programme obligatoires." }, { status: 400 });
+  const programmeUrls = [data.source_url, data.application_url].filter(
+    (value): value is string => typeof value === "string" && Boolean(value.trim()),
+  );
+  if (programmeUrls.some((value) => !isHttpSourceUrl(value))) {
+    return NextResponse.json(
+      { error: "Les liens de source et de candidature doivent être des URL http/https valides." },
+      { status: 400 },
+    );
+  }
   if (
     body.mark_verified === true &&
     !isHttpSourceUrl(data.source_url) &&
