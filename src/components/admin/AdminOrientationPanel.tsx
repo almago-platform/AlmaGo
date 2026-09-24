@@ -199,7 +199,7 @@ export function AdminOrientationPanel({
               </select>
             </label>
             <p className="mt-2 text-xs leading-5 text-slate-500">
-              Seuls les programmes disposant d’une source officielle et d’une date de vérification enregistrée sont proposés ici.
+              Seuls les programmes actifs, rattachés à une université active et disposant d’une source officielle vérifiée sont proposés ici.
             </p>
           </StepBlock>
 
@@ -266,7 +266,7 @@ export function AdminOrientationPanel({
               Pistes d’orientation non archivées
             </h2>
             <p className="mt-1 text-sm leading-6 text-slate-600">
-              Une piste peut rester ici pour le suivi interne tout en étant masquée à l’étudiant si son programme est désactivé ou ne possède plus une source vérifiée valide.
+              Une piste peut rester ici pour le suivi interne tout en étant masquée à l’étudiant si son programme ou son université est désactivé, ou si la source vérifiée n’est plus valide.
             </p>
           </div>
           <Badge variant={visible.length ? "info" : "neutral"}>
