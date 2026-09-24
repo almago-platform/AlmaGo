@@ -83,6 +83,7 @@ export function HomeFooter() {
             links={[
               ["Centre d’aide", "/aide"],
               ["Sources officielles", "/sources-officielles"],
+              ["Accessibilité", "/accessibilite"],
               ["Questions fréquentes", "/#faq"],
               ["Pourquoi AlmaGo", "/#why-almago-title"],
             ]}
