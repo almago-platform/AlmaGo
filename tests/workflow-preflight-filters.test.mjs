@@ -109,3 +109,17 @@ test("final release gate rejects ignored or cancelled Vercel statuses", () => {
   assert.match(finalRelease, /vercel\.state !== "success" \|\| ignoredOrCancelled/);
   assert.match(finalRelease, /completed successful deployment/);
 });
+
+
+test("authenticated E2E watches shared protected helper changes", () => {
+  for (const path of [
+    "src/lib/auth/**",
+    "src/lib/phase4.ts",
+    "src/lib/documents.ts",
+    "src/lib/source-verification.ts",
+    "src/lib/application-intake.ts",
+    "src/lib/identifiers.ts",
+  ]) {
+    assert.match(authenticatedE2E, new RegExp(path.replace(/[.*+?^$\{\}()|[\]\\]/g, "\\$&")));
+  }
+});
