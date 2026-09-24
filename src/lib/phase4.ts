@@ -1,7 +1,22 @@
 export const universityTypes = ["Universität", "TU", "Hochschule", "FH"] as const;
 export const degreeLevels = ["Bachelor", "Master", "Studienkolleg"] as const;
 export const recommendationStatuses = ["recommended", "possible", "ambitious", "missing_requirements", "not_recommended"] as const;
-export const applicationStatuses = ["interested", "preparing", "documents_missing", "ready_to_submit", "submitted", "waiting_university", "admission", "rejection", "withdrawn"] as const;
+export const applicationStatuses = [
+  "interested",
+  "preparing",
+  "documents_missing",
+  "ready_to_submit",
+  "submitted",
+  "in_review",
+  "waiting_university",
+  "admission",
+  "accepted",
+  "rejection",
+  "rejected",
+  "withdrawn",
+  "draft",
+  "planned",
+] as const;
 
 export type UniversityType = (typeof universityTypes)[number];
 export type DegreeLevel = (typeof degreeLevels)[number];
