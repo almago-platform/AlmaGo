@@ -132,6 +132,7 @@ export function AdminProgramsPanel({
   );
   const [notice, setNotice] = useState<Notice | null>(null);
   const [busy, setBusy] = useState(false);
+  const [togglingId, setTogglingId] = useState<string | null>(null);
 
   const activePrograms = items.filter((program) => program.is_active);
   const missingSourceCount = activePrograms.filter(
@@ -239,6 +240,37 @@ export function AdminProgramsPanel({
       });
     } finally {
       setBusy(false);
+    }
+  }
+
+  async function toggleActive(program: Program) {
+    setTogglingId(program.id);
+    setNotice(null);
+
+    try {
+      const response = await fetch(`/api/admin/programs/${program.id}`, {
+        method: "PATCH",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ is_active: !program.is_active }),
+      });
+      const result = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        setNotice({
+          tone: "error",
+          text: result.error || "Nous n’arrivons pas à modifier l’état de ce programme pour le moment.",
+        });
+        return;
+      }
+
+      window.location.reload();
+    } catch {
+      setNotice({
+        tone: "error",
+        text: "Nous n’arrivons pas à modifier l’état de ce programme pour le moment. Vérifiez votre connexion puis réessayez.",
+      });
+    } finally {
+      setTogglingId(null);
     }
   }
 
@@ -526,8 +558,23 @@ export function AdminProgramsPanel({
                 </a>
               )}
 
-              <div className="mt-5 border-t border-[var(--border)] pt-4">
-                <Button type="button" variant="secondary" onClick={() => edit(program)} className="w-full justify-center sm:w-auto">Modifier</Button>
+              <div className="mt-5 flex flex-col gap-2 border-t border-[var(--border)] pt-4 sm:flex-row sm:flex-wrap">
+                <Button type="button" variant="secondary" onClick={() => edit(program)} className="w-full justify-center sm:w-auto">
+                  Modifier
+                </Button>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  className="w-full justify-center sm:w-auto"
+                  disabled={togglingId === program.id}
+                  onClick={() => toggleActive(program)}
+                >
+                  {togglingId === program.id
+                    ? "Enregistrement…"
+                    : program.is_active
+                      ? "Désactiver"
+                      : "Réactiver"}
+                </Button>
               </div>
             </Card>
           ))}
