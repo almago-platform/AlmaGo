@@ -13,8 +13,8 @@ export default async function AdminProgramsPage({
   const { quality } = await searchParams;
   const supabase = await createClient();
   const [{ data: programs, error: programsError }, { data: universities, error: universitiesError }] = await Promise.all([
-    supabase.from("programs").select("*, universities(name,city)").order("name"),
-    supabase.from("universities").select("id,name").eq("is_active", true).order("name"),
+    supabase.from("programs").select("*, universities(name,city,is_active)").order("name"),
+    supabase.from("universities").select("id,name,is_active").order("name"),
   ]);
 
   if (programsError || universitiesError) {
@@ -35,6 +35,8 @@ export default async function AdminProgramsPage({
 
   const programRows = programs || [];
   const activePrograms = programRows.filter((program) => program.is_active).length;
+  const universityRows = universities || [];
+  const activeUniversities = universityRows.filter((university) => university.is_active).length;
 
   return (
     <main className="mx-auto w-full max-w-7xl px-4 py-7 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
@@ -55,11 +57,11 @@ export default async function AdminProgramsPage({
         </Card>
         <Card className="shadow-none">
           <p className="text-sm font-bold text-slate-700">Universités actives</p>
-          <p className="mt-2 text-3xl font-bold tracking-tight text-slate-950">{universities?.length || 0}</p>
+          <p className="mt-2 text-3xl font-bold tracking-tight text-slate-950">{activeUniversities}</p>
         </Card>
       </div>
 
-      <AdminProgramsPanel programs={programRows} universities={universities || []} initialQuality={quality} />
+      <AdminProgramsPanel programs={programRows} universities={universityRows} initialQuality={quality} />
     </main>
   );
 }
