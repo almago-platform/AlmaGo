@@ -11,6 +11,14 @@ test("admin home loads catalogue verification evidence", () => {
   assert.match(adminHome, /catalogueVerificationGaps/);
 });
 
+test("catalogue quality treats malformed legacy URLs as missing source evidence", () => {
+  assert.match(adminHome, /isHttpSourceUrl/);
+  assert.match(adminHome, /hasValidUniversitySource/);
+  assert.match(adminHome, /hasValidProgramSource/);
+  assert.match(adminHome, /hasVerifiedUniversitySource/);
+  assert.match(adminHome, /hasVerifiedProgramSource/);
+});
+
 test("catalogue maintenance becomes an actionable admin priority", () => {
   assert.match(adminHome, /Catalogue à vérifier/);
   assert.match(adminHome, /Maintenir le catalogue/);
