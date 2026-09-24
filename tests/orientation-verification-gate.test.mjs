@@ -193,3 +193,14 @@ test("student application creation distinguishes lookup failures from unavailabl
   assert.match(studentApplicationsRoute, /status: 500/);
   assert.match(studentApplicationsRoute, /Cette recommandation n’est plus disponible/);
 });
+
+
+test("student orientation presents verification dates as recorded evidence, not guarantees", () => {
+  const studentPanel = readFileSync("src/components/student/StudentOrientationPanel.tsx", "utf8");
+  assert.match(studentPanel, /hasVerifiedProgramSource/);
+  assert.match(studentPanel, /Dernière vérification enregistrée dans AlmaGo/);
+  assert.match(studentPanel, /Vérification enregistrée ·/);
+  assert.match(studentPanel, /Vérifiez toujours les informations sur la source officielle/);
+  assert.doesNotMatch(studentPanel, /Vérifié dans AlmaGo le/);
+  assert.doesNotMatch(studentPanel, /`Vérifié le \$\{formatVerificationDate/);
+});
