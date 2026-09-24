@@ -63,7 +63,8 @@ export async function POST(request: Request) {
     description: optionalText(body.description),
     is_public: body.is_public as boolean,
     tuition_notes: optionalText(body.tuition_notes),
-    is_active: body.is_active as boolean,
+    // New catalogue records always start inactive. Activation is a separate, explicit admin action.
+    is_active: false,
     ...(body.mark_verified === true ? { verified_at: new Date().toISOString() } : {}),
   }).select("id").single();
   if (error) return NextResponse.json({ error: "Impossible de créer l’université." }, { status: 500 });
