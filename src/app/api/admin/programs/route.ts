@@ -30,6 +30,9 @@ export async function POST(request: Request) {
   if (!isAdmin) return NextResponse.json({ error: "Accès non autorisé." }, { status: 403 });
   const body = await request.json().catch(() => null) as Record<string, unknown> | null;
   if (!body) return NextResponse.json({ error: "Données invalides." }, { status: 400 });
+  if (!degreeLevels.includes(body.degree_level as (typeof degreeLevels)[number])) {
+    return NextResponse.json({ error: "Choisissez un niveau de diplôme valide." }, { status: 400 });
+  }
   const data = payload(body);
   if (!data.name || typeof data.university_id !== "string") return NextResponse.json({ error: "Université et nom du programme obligatoires." }, { status: 400 });
 
