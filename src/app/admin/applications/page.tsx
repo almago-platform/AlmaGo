@@ -1,18 +1,29 @@
+import { redirect } from "next/navigation";
 import { AdminApplicationsPanel } from "@/components/admin/AdminApplicationsPanel";
 import { Card } from "@/components/ui/Card";
 import { PageHeader } from "@/components/ui/PageHeader";
-import { createClient } from "@/lib/supabase/server";
+import { getAdminUser } from "@/lib/auth/access";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminApplicationsPage() {
-  const supabase = await createClient();
-  const { data, error } = await supabase
+  const { supabase, user, isAdmin } = await getAdminUser();
+  if (!user) redirect("/login");
+  if (!isAdmin) redirect("/unauthorized");
+  const { data: applications, error } = await supabase
     .from("applications")
-    .select("id,student_id,program_id,status,intake,deadline,next_action,student_notes,result,created_at,profiles(first_name,last_name),programs(name,universities(name,city))")
+    .select("id,student_id,program_id,status,intake,deadline,next_action,student_notes,result,created_at,programs(name,universities(name,city))")
     .order("deadline", { ascending: true, nullsFirst: false });
 
-  if (error) {
+  const studentIds = [...new Set((applications || []).map((application) => application.student_id))];
+  const { data: profiles, error: profilesError } = studentIds.length
+    ? await supabase
+        .from("profiles")
+        .select("id,first_name,last_name")
+        .in("id", studentIds)
+    : { data: [], error: null };
+
+  if (error || profilesError) {
     return (
       <main className="mx-auto w-full max-w-7xl px-4 py-7 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
         <PageHeader badge="Suivi équipe" title="Candidatures" />
@@ -35,7 +46,12 @@ export default async function AdminApplicationsPage() {
         title="Candidatures"
         description="Traitez les dossiers actifs, surveillez les échéances et gardez clairement identifiés les champs qui alimentent l’espace étudiant."
       />
-      <AdminApplicationsPanel applications={data || []} />
+      <AdminApplicationsPanel
+        applications={(applications || []).map((application) => ({
+          ...application,
+          profiles: (profiles || []).find((profile) => profile.id === application.student_id) || null,
+        }))}
+      />
     </main>
   );
 }

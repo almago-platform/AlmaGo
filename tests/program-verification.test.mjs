@@ -16,8 +16,8 @@ test("programme verification date changes only after explicit admin confirmation
 });
 
 test("programme verification requires an official source", () => {
-  assert.match(createRoute, /Ajoutez une source officielle avant de confirmer la vérification/);
-  assert.match(updateRoute, /Ajoutez une source officielle avant de confirmer la vérification/);
+  assert.match(createRoute, /Ajoutez une URL officielle valide/);
+  assert.match(updateRoute, /Ajoutez une URL officielle valide/);
 });
 
 test("student orientation exposes real source and verification metadata", () => {

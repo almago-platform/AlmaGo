@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { recommendationStatuses, recommendationStatusLabels } from "@/lib/phase4";
+import { isPublishableProgram } from "@/lib/source-verification";
 
 function firstUniversity(program: any) {
   return Array.isArray(program?.universities) ? program.universities[0] : program?.universities;
@@ -20,10 +21,12 @@ function recommendationVariant(status: string): "success" | "warning" | "info" |
 
 export function AdminOrientationPanel({
   students,
+  studentRoleIds,
   programs,
   recommendations,
 }: {
   students: any[];
+  studentRoleIds: string[];
   programs: any[];
   recommendations: any[];
 }) {
@@ -38,7 +41,10 @@ export function AdminOrientationPanel({
   const [archivingId, setArchivingId] = useState<string | null>(null);
 
   const selected = students.find((student) => student.id === studentId);
-  const completedStudents = students.filter((student) => student.onboarding_completed);
+  const studentRoleIdSet = new Set(studentRoleIds);
+  const completedStudents = students.filter(
+    (student) => student.onboarding_completed && studentRoleIdSet.has(student.id),
+  );
 
   const visible = useMemo(() => {
     const normalized = query.trim().toLocaleLowerCase("fr");
@@ -187,7 +193,7 @@ export function AdminOrientationPanel({
                 className="field"
               >
                 <option value="">Choisir un programme</option>
-                {programs.map((program) => {
+                {programs.filter(isPublishableProgram).map((program) => {
                   const university = firstUniversity(program);
                   return (
                     <option key={program.id} value={program.id}>
@@ -197,6 +203,9 @@ export function AdminOrientationPanel({
                 })}
               </select>
             </label>
+            <p className="mt-2 text-xs leading-5 text-slate-500">
+              Seuls les programmes actifs, rattachés à une université active et disposant d’une source officielle vérifiée sont proposés ici.
+            </p>
           </StepBlock>
 
           <StepBlock step="4" title="Qualifier la piste">
@@ -257,15 +266,17 @@ export function AdminOrientationPanel({
       <section aria-labelledby="admin-recommendations-title" className="min-w-0">
         <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Suivi publié</p>
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Suivi des pistes</p>
             <h2 id="admin-recommendations-title" className="mt-1 text-2xl font-bold tracking-[-0.03em] text-slate-950">
-              Pistes d’orientation actives
+              Pistes d’orientation non archivées
             </h2>
             <p className="mt-1 text-sm leading-6 text-slate-600">
-              Retrouvez ce qui est actuellement publié pour les étudiants, puis archivez uniquement les pistes qui ne doivent plus rester actives.
+              Une piste peut rester ici pour le suivi interne tout en étant masquée à l’étudiant si son programme ou son université est désactivé, ou si la source vérifiée n’est plus valide.
             </p>
           </div>
-          <Badge variant={visible.length ? "info" : "neutral"}>{visible.length} visible{visible.length > 1 ? "s" : ""}</Badge>
+          <Badge variant={visible.length ? "info" : "neutral"}>
+            {visible.length} non archivée{visible.length > 1 ? "s" : ""}
+          </Badge>
         </div>
 
         <Card className="shadow-none">
@@ -283,7 +294,7 @@ export function AdminOrientationPanel({
         <div className="mt-5 space-y-4">
           {visible.length === 0 ? (
             <Card className="border-dashed bg-white/70 py-9 text-center shadow-none">
-              <h3 className="font-bold text-slate-950">Aucune piste d’orientation active ne correspond à cette vue.</h3>
+              <h3 className="font-bold text-slate-950">Aucune piste d’orientation non archivée ne correspond à cette vue.</h3>
               <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-slate-600">
                 Modifiez la recherche ou publiez une piste depuis le formulaire. Rien n’a été supprimé.
               </p>
@@ -293,6 +304,7 @@ export function AdminOrientationPanel({
               const student = students.find((item) => item.id === recommendation.student_id);
               const program = programs.find((item) => item.id === recommendation.program_id);
               const university = firstUniversity(program);
+              const publishable = isPublishableProgram(program);
 
               return (
                 <Card
@@ -324,8 +336,10 @@ export function AdminOrientationPanel({
 
                   <div className="mt-5 rounded-[var(--radius-control)] border border-[var(--brand-border)] bg-[var(--brand-soft)]/35 p-4">
                     <div className="flex flex-wrap items-center justify-between gap-2">
-                      <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">Justification publiée</p>
-                      <Badge variant="info">Visible par l’étudiant</Badge>
+                      <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">Justification enregistrée</p>
+                      <Badge variant={publishable ? "info" : "warning"}>
+                        {publishable ? "Visible par l’étudiant" : "Masquée à l’étudiant"}
+                      </Badge>
                     </div>
                     <p className="mt-2 text-sm leading-6 text-slate-700 [overflow-wrap:anywhere]">
                       {recommendation.note || "Aucune justification n’est enregistrée pour cette piste d’orientation."}

@@ -1,17 +1,32 @@
+import { redirect } from "next/navigation";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Card } from "@/components/ui/Card";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { StudentOrientationPanel } from "@/components/student/StudentOrientationPanel";
-import { createClient } from "@/lib/supabase/server";
+import { getStudentUser } from "@/lib/auth/access";
+import { isPublishableProgram } from "@/lib/source-verification";
 
 export const dynamic = "force-dynamic";
 
 export default async function StudentOrientationPage() {
-  const supabase = await createClient();
+  const { supabase, user, isStudent } = await getStudentUser();
+  if (!user) redirect("/login");
+  if (!isStudent) redirect("/unauthorized");
+
+  const { data: profile, error: profileError } = await supabase
+    .from("profiles")
+    .select("onboarding_completed")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  if (profileError) {
+    return <OrientationUnavailable />;
+  }
+  if (!profile?.onboarding_completed) redirect("/student/onboarding");
   const [{ data, error }, { data: applications, error: applicationsError }] = await Promise.all([
     supabase
       .from("program_recommendations")
-      .select("id,status,note,student_interest_at,programs(id,name,degree_level,field,teaching_language,winter_deadline,summer_deadline,application_url,source_url,verified_at,german_level_required,english_level_required,diploma_required,universities(name,city,bundesland))")
+      .select("id,status,note,student_interest_at,programs(id,name,degree_level,field,teaching_language,winter_deadline,summer_deadline,application_url,source_url,verified_at,is_active,german_level_required,english_level_required,diploma_required,universities(name,city,bundesland,is_active))")
       .eq("is_archived", false)
       .order("created_at", { ascending: false }),
     supabase.from("applications").select("program_id"),
@@ -20,6 +35,11 @@ export default async function StudentOrientationPage() {
   if (error) {
     return <OrientationUnavailable />;
   }
+
+  const visibleRecommendations = (data || []).filter((recommendation) => {
+    const program = Array.isArray(recommendation.programs) ? recommendation.programs[0] : recommendation.programs;
+    return isPublishableProgram(program);
+  });
 
   return (
     <main className="mx-auto w-full max-w-7xl px-4 py-7 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
@@ -31,7 +51,7 @@ export default async function StudentOrientationPage() {
       />
 
       <StudentOrientationPanel
-        recommendations={data || []}
+        recommendations={visibleRecommendations}
         applicationProgramIds={(applications || []).map((application) => application.program_id)}
         applicationStateError={applicationsError ? "Impossible de vérifier vos intérêts enregistrés pour le moment." : undefined}
       />

@@ -3,17 +3,14 @@ import { redirect } from "next/navigation";
 import { DocumentsPanel } from "@/components/student/DocumentsPanel";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Card } from "@/components/ui/Card";
-import { createClient } from "@/lib/supabase/server";
+import { getStudentUser } from "@/lib/auth/access";
 
 export const dynamic = "force-dynamic";
 
 export default async function StudentDocumentsPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
+  const { supabase, user, isStudent } = await getStudentUser();
   if (!user) redirect("/login");
+  if (!isStudent) redirect("/unauthorized");
 
   const { data: profile, error: profileError } = await supabase
     .from("profiles")

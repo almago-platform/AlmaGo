@@ -11,7 +11,6 @@ type StudentNotification = {
   type: string;
   title: string;
   body: string | null;
-  metadata: unknown;
   read_at: string | null;
   created_at: string;
 };
