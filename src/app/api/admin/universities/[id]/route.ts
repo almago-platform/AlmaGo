@@ -11,7 +11,11 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   if (!body) return NextResponse.json({ error: "Données invalides." }, { status: 400 });
   const { id } = await params;
 
-  if (typeof body.is_active === "boolean" && !("name" in body)) {
+  const isActiveOnlyPatch =
+    typeof body.is_active === "boolean" &&
+    Object.keys(body).every((key) => key === "is_active");
+
+  if (isActiveOnlyPatch) {
     const { error } = await supabase
       .from("universities")
       .update({ is_active: body.is_active })
