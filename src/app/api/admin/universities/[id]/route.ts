@@ -71,7 +71,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   const { error } = await supabase.from("universities").update({
     name: body.name.trim().slice(0, 180), city: typeof body.city === "string" ? body.city.trim() : null,
     bundesland: typeof body.bundesland === "string" ? body.bundesland.trim() : null,
-    university_type: body.university_type,
+    university_type: body.university_type as (typeof universityTypes)[number],
     website_url: typeof body.website_url === "string" ? body.website_url.trim() : null,
     source_url: typeof body.source_url === "string" ? body.source_url.trim() : null,
     logo_url: typeof body.logo_url === "string" ? body.logo_url.trim() : null,
