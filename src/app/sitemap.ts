@@ -7,6 +7,7 @@ const publicRoutes = [
   "/accessibilite",
   "/a-propos",
   "/confiance",
+  "/parcours-allemagne",
   "/comprendre-les-demarches",
   "/selon-votre-pays",
   "/sources-officielles",
