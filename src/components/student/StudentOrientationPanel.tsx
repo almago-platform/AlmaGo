@@ -6,6 +6,7 @@ import { Button, buttonClassName } from "@/components/ui/Button";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Card } from "@/components/ui/Card";
 import { formatDeadline, recommendationStatusLabels } from "@/lib/phase4";
+import { isHttpSourceUrl } from "@/lib/source-verification";
 
 type University = { name: string; city: string; bundesland?: string | null };
 type Program = {
@@ -59,7 +60,9 @@ function firstUniversity(program: Program | null | undefined) {
 }
 
 function officialSourceUrl(program: Program) {
-  return program.source_url || program.application_url;
+  if (isHttpSourceUrl(program.source_url)) return program.source_url?.trim() || null;
+  if (isHttpSourceUrl(program.application_url)) return program.application_url?.trim() || null;
+  return null;
 }
 
 function formatVerificationDate(value: string | null) {
