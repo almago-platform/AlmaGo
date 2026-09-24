@@ -12,23 +12,45 @@ export async function PATCH(request: Request) {
   const validationError = validateProfileUpdate(update);
   if (validationError) return NextResponse.json({ error: validationError }, { status: 400 });
 
-  const hasFirstName = Object.prototype.hasOwnProperty.call(update, "first_name");
-  const hasLastName = Object.prototype.hasOwnProperty.call(update, "last_name");
+  const { data: currentProfile, error: profileError } = await supabase
+    .from("profiles")
+    .select("first_name,last_name,nationality,target_degree,target_field,study_language,target_intake,onboarding_completed")
+    .eq("id", user.id)
+    .maybeSingle();
 
-  if (hasFirstName || hasLastName) {
-    const { data: currentProfile, error: profileError } = await supabase
-      .from("profiles")
-      .select("first_name,last_name")
-      .eq("id", user.id)
-      .maybeSingle();
+  if (profileError) {
+    return NextResponse.json({ error: "Impossible de vérifier le profil actuel." }, { status: 500 });
+  }
 
-    if (profileError) {
-      return NextResponse.json({ error: "Impossible de vérifier le profil actuel." }, { status: 500 });
-    }
+  const mergedProfile = { ...(currentProfile || {}), ...update };
+  const requiredKeys = [
+    "first_name",
+    "last_name",
+    "nationality",
+    "target_degree",
+    "target_field",
+    "study_language",
+    "target_intake",
+  ] as const;
 
-    const firstName = hasFirstName ? update.first_name : currentProfile?.first_name;
-    const lastName = hasLastName ? update.last_name : currentProfile?.last_name;
-    const fullName = [firstName, lastName]
+  if (
+    currentProfile?.onboarding_completed &&
+    requiredKeys.some((key) => {
+      const value = mergedProfile[key];
+      return typeof value !== "string" || !value.trim();
+    })
+  ) {
+    return NextResponse.json(
+      { error: "Les informations essentielles du profil doivent rester complètes." },
+      { status: 400 },
+    );
+  }
+
+  if (
+    Object.prototype.hasOwnProperty.call(update, "first_name") ||
+    Object.prototype.hasOwnProperty.call(update, "last_name")
+  ) {
+    const fullName = [mergedProfile.first_name, mergedProfile.last_name]
       .filter((value): value is string => typeof value === "string" && Boolean(value.trim()))
       .map((value) => value.trim())
       .join(" ");
