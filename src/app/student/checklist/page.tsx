@@ -7,21 +7,13 @@ import { ProgressBar } from "@/components/ui/ProgressBar";
 import { getStudentUser } from "@/lib/auth/access";
 
 const labels: Record<string, string> = {
-  not_started: "À faire par vous",
-  todo: "À faire par vous",
-  in_progress: "En cours",
-  waiting_student: "À faire par vous",
-  waiting_almago: "En cours chez AlmaGo",
-  completed: "Terminé",
+  todo: "Étape à faire",
+  completed: "Terminée",
 };
 
 const badgeVariants = {
   completed: "success",
-  waiting_student: "warning",
-  waiting_almago: "info",
   todo: "neutral",
-  in_progress: "info",
-  not_started: "neutral",
 } as const;
 
 export const dynamic = "force-dynamic";
@@ -50,13 +42,8 @@ export default async function ChecklistPage() {
   const checklistItems = items || [];
   const completedCount = checklistItems.filter((item) => item.status === "completed").length;
   const progression = checklistItems.length ? Math.round((completedCount / checklistItems.length) * 100) : 0;
-  const actionableItems = checklistItems.filter((item) =>
-    ["waiting_student", "todo", "in_progress", "not_started"].includes(item.status),
-  );
-  const waitingAlmaGoCount = checklistItems.filter((item) => item.status === "waiting_almago").length;
-  const nextItem =
-    actionableItems.find((item) => item.status === "waiting_student") ||
-    actionableItems[0];
+  const openItems = checklistItems.filter((item) => item.status === "todo");
+  const nextItem = openItems[0];
 
   const groups = new Map<string, (typeof checklistItems)[number][]>();
   for (const item of checklistItems) {
@@ -72,7 +59,7 @@ export default async function ChecklistPage() {
       <PageHeader
         badge="Mes démarches"
         title="Mes démarches"
-        description="Voyez en un coup d’œil ce qui est à faire par vous, ce qu’AlmaGo suit et les étapes déjà terminées dans votre dossier."
+        description="Retrouvez les étapes enregistrées dans votre dossier et distinguez simplement celles qui restent ouvertes de celles qui sont terminées."
         actions={<ButtonLink href="/student/documents" variant="secondary">Voir mes documents</ButtonLink>}
       />
 
@@ -104,42 +91,39 @@ export default async function ChecklistPage() {
           </div>
         </Card>
 
-        <Card aria-labelledby="checklist-next-action-title" className={nextItem ? "border-amber-200 bg-amber-50/25 shadow-none" : "shadow-none"}>
+        <Card aria-labelledby="checklist-next-action-title" className={nextItem ? "border-[var(--brand-border)] bg-[var(--brand-soft)]/20 shadow-none" : "shadow-none"}>
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <Badge variant={nextItem ? "warning" : waitingAlmaGoCount ? "info" : "neutral"}>
-              {nextItem ? "À faire maintenant" : waitingAlmaGoCount ? "Suivi en cours" : "Aucune action demandée"}
+            <Badge variant={nextItem ? "info" : "neutral"}>
+              {nextItem ? "Étape ouverte" : "Aucune étape ouverte"}
             </Badge>
             <span className="text-xs font-bold uppercase tracking-[0.14em] text-slate-500">
-              {nextItem ? "À faire par vous" : waitingAlmaGoCount ? "En cours chez AlmaGo" : "Dossier"}
+              Démarche enregistrée
             </span>
           </div>
           {nextItem ? (
             <>
               <h2 id="checklist-next-action-title" className="mt-5 text-2xl font-bold tracking-[-0.03em] text-slate-950">{nextItem.title}</h2>
               {nextItem.description && <p className="mt-3 text-sm leading-6 text-slate-700">{nextItem.description}</p>}
-              <div className="mt-5 inline-flex items-center gap-2 rounded-full bg-white px-3 py-2 text-xs font-bold text-amber-900 ring-1 ring-amber-200">
-                <span aria-hidden="true" className="h-2 w-2 rounded-full bg-[var(--accent)]" />
-                {labels[nextItem.status] || "À faire par vous"}
+              <div className="mt-5 inline-flex items-center gap-2 rounded-full bg-white px-3 py-2 text-xs font-bold text-[var(--brand)] ring-1 ring-[var(--brand-border)]">
+                <span aria-hidden="true" className="h-2 w-2 rounded-full bg-[var(--brand)]" />
+                Prochaine étape enregistrée
               </div>
             </>
           ) : (
             <>
               <h2 id="checklist-next-action-title" className="mt-5 text-2xl font-bold tracking-[-0.03em] text-slate-950">
-                {waitingAlmaGoCount ? "Vous n’avez rien à faire pour le moment" : "Aucune action n’est demandée actuellement"}
+                Toutes les étapes enregistrées sont terminées
               </h2>
               <p className="mt-3 text-sm leading-6 text-slate-600">
-                {waitingAlmaGoCount
-                  ? "AlmaGo suit actuellement certaines étapes de votre dossier. Vous pouvez consulter leur détail ci-dessous."
-                  : "Les démarches enregistrées dans votre dossier apparaissent ci-dessous. Une nouvelle action sera mise en évidence lorsqu’elle vous concernera."}
+                Les démarches connues dans votre dossier apparaissent ci-dessous. Cette liste n’attribue pas automatiquement un responsable lorsqu’aucune donnée structurée ne le précise.
               </p>
             </>
           )}
         </Card>
       </div>
 
-      <section aria-label="Résumé des démarches" className="mt-5 grid gap-4 sm:grid-cols-3">
-        <SummaryCard title="À faire par vous" value={actionableItems.length} badge={actionableItems.length ? "À traiter" : "Rien à faire"} tone={actionableItems.length ? "warning" : "success"} />
-        <SummaryCard title="En cours chez AlmaGo" value={waitingAlmaGoCount} badge={waitingAlmaGoCount ? "Suivi en cours" : "Aucune étape"} tone="info" />
+      <section aria-label="Résumé des démarches" className="mt-5 grid gap-4 sm:grid-cols-2">
+        <SummaryCard title="Étapes ouvertes" value={openItems.length} badge={openItems.length ? "À poursuivre" : "Aucune étape ouverte"} tone={openItems.length ? "info" : "success"} />
         <SummaryCard title="Terminées" value={completedCount} badge="Étapes complétées" tone="success" />
       </section>
 
@@ -148,7 +132,7 @@ export default async function ChecklistPage() {
           <span aria-hidden="true" className="mx-auto grid h-11 w-11 place-items-center rounded-full bg-[var(--brand-soft)] text-[var(--brand)]">✓</span>
           <h2 id="checklist-empty-title" className="mt-4 text-lg font-bold text-slate-950">Aucune démarche n’est enregistrée pour le moment.</h2>
           <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-slate-600">
-            Lorsqu’une nouvelle étape sera ajoutée à votre dossier, elle apparaîtra ici avec son responsable et son statut.
+            Lorsqu’une nouvelle étape sera ajoutée à votre dossier, elle apparaîtra ici avec son statut enregistré.
           </p>
           <div className="mt-5 flex justify-center gap-3">
             <ButtonLink href="/student">Retour à mon dossier</ButtonLink>
@@ -171,15 +155,14 @@ export default async function ChecklistPage() {
                 </div>
                 <div className="space-y-3">
                   {group.map((item) => (
-                    <Card as="article" key={item.id} aria-labelledby={`checklist-item-title-${item.id}`} className={item.status === "waiting_student" || item.status === "todo" || item.status === "not_started" ? "border-amber-200 bg-amber-50/25 shadow-none" : item.status === "waiting_almago" ? "border-blue-200 bg-blue-50/20 shadow-none" : "shadow-none"}>
+                    <Card as="article" key={item.id} aria-labelledby={`checklist-item-title-${item.id}`} className={item.status === "todo" ? "border-[var(--brand-border)] bg-[var(--brand-soft)]/20 shadow-none" : "shadow-none"}>
                       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
                         <div className="min-w-0">
                           <div className="flex flex-wrap items-center gap-2">
                             <Badge variant={badgeVariants[item.status as keyof typeof badgeVariants] || "neutral"}>
                               {labels[item.status] || item.status}
                             </Badge>
-                            {["waiting_student", "todo", "not_started"].includes(item.status) && <span className="text-xs font-bold uppercase tracking-[0.14em] text-amber-800">À faire par vous</span>}
-                            {item.status === "waiting_almago" && <span className="text-xs font-bold uppercase tracking-[0.14em] text-blue-800">En cours chez AlmaGo</span>}
+                            {item.status === "todo" && <span className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">Étape ouverte</span>}
                           </div>
                           <h3 id={`checklist-item-title-${item.id}`} className="mt-3 font-bold text-slate-950">{item.title}</h3>
                           {item.description && <p className="mt-1 text-sm leading-6 text-slate-600">{item.description}</p>}
