@@ -22,7 +22,26 @@
 | V3-12 Professional QA | Implemented / PR ready | #151 | Automated public-language quality guard. |
 | Public navigation hardening | Implemented | #155 | Cross-page-safe anchors and Help Center in main navigation. |
 | Public discoverability | Implemented | #156 | Canonical URL, sitemap, robots, noindex private/auth surfaces. |
-| Public trust destination | Implemented | #157 | Dedicated “Confiance et transparence” page. |
+| Public trust destination | Implemented / PR ready | #157 | Dedicated “Confiance et transparence” page; CI and browser quality passed. |
+| Institutional About page | Implemented / PR ready | #159 | Mission, service principles and standards without invented staff, partners or marketing numbers. |
+| Public breadcrumbs | Implemented / PR ready | #160 | Accessible breadcrumb navigation on deep public guidance pages. |
+| Student dossier history | Implemented / PR ready | #161 | Real document-review and student-visible application events combined on “Mon dossier”; no fake audit events. |
+| Programme verification evidence | Implemented / PR ready | #162 | Explicit source + human verification confirmation; real `verified_at` shown only when present. |
+| University verification evidence | Implemented / PR ready | #163 | Same explicit source/date discipline for university records; CI and browser quality passed. |
+| Admin catalogue-quality priority | Implemented / checks running | #164 | Missing source/verification becomes an operational queue after document/application priorities; no ranking score. |
+
+## Live catalogue quality snapshot
+
+Read-only checks against the connected AlmaGo Supabase project on 24 September 2026 showed:
+
+- **7 active programmes**;
+- **6 / 7 active programmes** without an official source currently recorded;
+- **7 / 7 active programmes** without a verification date currently recorded;
+- **8 active universities**;
+- **8 / 8 active universities** without an official source currently recorded;
+- **8 / 8 active universities** without a verification date currently recorded.
+
+These counts are operational evidence for the new admin quality queues. They are **not** filled automatically: sources and verification dates require a real human verification action.
 
 ## What is intentionally not activated yet
 
@@ -67,7 +86,7 @@ EN / DE / AR remain planned until complete translation and human review. Do not 
 
 V3 adds professionalism without changing the original Master Plan completion rules.
 
-The original Master Plan still controls release readiness:
+The original Master Plan remains **41 / 45 complete** and still controls release readiness:
 **A38 → A43 → A44 → A45**.
 
 V3 PRs should be reviewed/merged in dependency order because they are intentionally stacked.
