@@ -11,6 +11,22 @@ export default async function StudentNotificationsPage() {
   const { supabase, user, isStudent } = await getStudentUser();
   if (!user) redirect("/login");
   if (!isStudent) redirect("/unauthorized");
+
+  const { data: profile, error: profileError } = await supabase
+    .from("profiles")
+    .select("onboarding_completed")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  if (profileError) {
+    return (
+      <main className="mx-auto w-full max-w-6xl px-4 py-7 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
+        <PageHeader badge="Notifications" title="Mes notifications" />
+        <Card><div role="alert"><h2 className="text-xl font-bold text-slate-950">Notifications temporairement indisponibles</h2></div></Card>
+      </main>
+    );
+  }
+  if (!profile?.onboarding_completed) redirect("/student/onboarding");
   const { data, error } = await supabase
     .from("notifications")
     .select("id,type,title,body,read_at,created_at")
