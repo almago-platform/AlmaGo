@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import { HomeHeader } from "@/components/public/HomeHeader";
 import { HomeFooter } from "@/components/public/HomeClosing";
 
@@ -217,7 +218,7 @@ export default function UnderstandProcessPage() {
   );
 }
 
-function GuideBlock({ title, children }: Readonly<{ title: string; children: React.ReactNode }>) {
+function GuideBlock({ title, children }: Readonly<{ title: string; children: ReactNode }>) {
   return (
     <div>
       <p className="font-bold text-slate-900">{title}</p>
