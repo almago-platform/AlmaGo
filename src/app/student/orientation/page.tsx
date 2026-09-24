@@ -1,14 +1,17 @@
+import { redirect } from "next/navigation";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Card } from "@/components/ui/Card";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { StudentOrientationPanel } from "@/components/student/StudentOrientationPanel";
-import { createClient } from "@/lib/supabase/server";
+import { getStudentUser } from "@/lib/auth/access";
 import { isPublishableProgram } from "@/lib/source-verification";
 
 export const dynamic = "force-dynamic";
 
 export default async function StudentOrientationPage() {
-  const supabase = await createClient();
+  const { supabase, user, isStudent } = await getStudentUser();
+  if (!user) redirect("/login");
+  if (!isStudent) redirect("/unauthorized");
   const [{ data, error }, { data: applications, error: applicationsError }] = await Promise.all([
     supabase
       .from("program_recommendations")
