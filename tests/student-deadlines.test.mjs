@@ -104,3 +104,13 @@ test("original legacy status remains selectable until save", () => {
     /applicationStatuses\.includes\(edit\.status as/,
   );
 });
+
+
+test("deadline center enforces student role and completed onboarding", () => {
+  assert.match(page, /getStudentUser\(\)/);
+  assert.match(page, /if \(!user\) redirect\("\/login"\)/);
+  assert.match(page, /if \(!isStudent\) redirect\("\/unauthorized"\)/);
+  assert.match(page, /select\("onboarding_completed"\)/);
+  assert.match(page, /redirect\("\/student\/onboarding"\)/);
+  assert.doesNotMatch(page, /createClient\(\)/);
+});
