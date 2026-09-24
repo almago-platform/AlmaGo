@@ -6,15 +6,15 @@ import { Card } from "@/components/ui/Card";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { StudentJourneyOverview, type StudentJourneyStage } from "@/components/student/StudentJourneyOverview";
-import { createClient } from "@/lib/supabase/server";
+import { getStudentUser } from "@/lib/auth/access";
 import { applicationEventDisplayMessage, formatDeadline, isActiveApplication, isPastDeadline, nextActiveDeadline, studentHistoryDisplayMessage } from "@/lib/phase4";
 
 export const dynamic = "force-dynamic";
 
 export default async function StudentEntry() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { supabase, user, isStudent } = await getStudentUser();
   if (!user) redirect("/login");
+  if (!isStudent) redirect("/unauthorized");
 
   const { data: profile, error: profileError } = await supabase
     .from("profiles")
