@@ -116,11 +116,12 @@ export default async function StudentDeadlinesPage() {
     );
   }
 
+  const now = new Date();
   const deadlines = ((data || []) as unknown as DeadlineApplication[])
     .filter((application) => isActiveApplication(application.status))
     .map((application) => ({
       application,
-      days: application.deadline ? daysUntilDeadline(application.deadline) : null,
+      days: application.deadline ? daysUntilDeadline(application.deadline, now) : null,
     }))
     .filter(
       (entry): entry is { application: DeadlineApplication; days: number } =>
