@@ -7,6 +7,7 @@ import {
   isActiveApplication,
   isPastDeadline,
   nextActiveDeadline,
+  terminalApplicationStatuses,
 } from "../src/lib/phase4.ts";
 
 test("canonical and legacy terminal applications cannot become current actions", () => {
@@ -107,4 +108,13 @@ test("application status catalogue covers the live database enum", () => {
   ]);
 
   assert.deepEqual(new Set(applicationStatuses), expected);
+});
+
+
+test("every database application status is classified exactly once", () => {
+  for (const status of applicationStatuses) {
+    const active = isActiveApplication(status);
+    const terminal = terminalApplicationStatuses.has(status);
+    assert.notEqual(active, terminal, status);
+  }
 });
