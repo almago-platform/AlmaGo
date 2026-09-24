@@ -49,3 +49,10 @@ test("student navigation and dashboard expose the deadline center", () => {
   assert.match(helpPage, /Mes échéances/);
   assert.match(studentQuality, /path: "\/student\/echeances", name: "deadlines"/);
 });
+
+
+test("deadline center uses one render instant for every countdown", () => {
+  assert.match(page, /const now = new Date\(\)/);
+  assert.match(page, /daysUntilDeadline\(application\.deadline, now\)/);
+  assert.doesNotMatch(page, /daysUntilDeadline\(application\.deadline\) : null/);
+});
