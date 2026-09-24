@@ -10,7 +10,7 @@ export default async function StudentNotificationsPage() {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("notifications")
-    .select("id,type,title,body,metadata,read_at,created_at")
+    .select("id,type,title,body,read_at,created_at")
     .order("created_at", { ascending: false })
     .limit(50);
 
