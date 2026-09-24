@@ -102,7 +102,7 @@ export async function POST(request: Request) {
 
   const validationError = programValidationError(body);
   if (validationError) return NextResponse.json({ error: validationError }, { status: 400 });
-  const data = payload(body);
+  const data = { ...payload(body), is_active: false };
   if (!data.name || !isUuid(data.university_id)) return NextResponse.json({ error: "Université et nom du programme obligatoires." }, { status: 400 });
 
   const { data: targetUniversity, error: targetUniversityError } = await supabase
