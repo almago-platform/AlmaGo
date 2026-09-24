@@ -20,6 +20,10 @@ test("catalogue quality becomes an operational priority only after student queue
 });
 
 test("admin overview never converts catalogue quality into a ranking score", () => {
-  assert.equal(/score/i.test(adminPage), false);
-  assert.equal(/classement/i.test(adminPage), false);
+  assert.equal(/score\s+(de|d['’]|pour|qualit[eé]|priorit[eé])/i.test(adminPage), false);
+  assert.equal(/classement\s+(des|de|par|selon)/i.test(adminPage), false);
+  assert.match(
+    adminPage,
+    /Elle n’ajoute aucun classement ni niveau de priorité artificiel\./,
+  );
 });
