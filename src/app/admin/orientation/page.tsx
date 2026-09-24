@@ -35,7 +35,7 @@ export default async function AdminOrientationPage() {
           <div role="alert">
             <h2 className="text-xl font-bold text-slate-950">Orientation temporairement indisponible</h2>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
-              Nous n’arrivons pas à charger les profils, programmes ou recommandations pour le moment. Rien n’a été modifié.
+              Nous n’arrivons pas à charger les profils, programmes ou pistes d’orientation pour le moment. Rien n’a été modifié.
             </p>
           </div>
         </Card>
@@ -48,7 +48,7 @@ export default async function AdminOrientationPage() {
       <PageHeader
         badge="Équipe AlmaGo"
         title="Orientation des étudiants"
-        description="Préparez une recommandation à partir du profil enregistré, documentez les éléments vérifiés et gardez explicite la frontière entre orientation et décision d’admission."
+        description="Préparez une piste d’orientation à partir du profil enregistré, documentez les éléments vérifiés et gardez explicite la frontière entre orientation et décision d’admission."
       />
       <AdminOrientationPanel
         students={students || []}
