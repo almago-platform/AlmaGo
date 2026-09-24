@@ -24,8 +24,9 @@ test("student orientation exposes real source and verification metadata", () => 
   assert.match(orientationPage, /source_url,verified_at/);
   assert.match(studentPanel, /source_url: string \| null/);
   assert.match(studentPanel, /verified_at: string \| null/);
-  assert.match(studentPanel, /Date de vérification non enregistrée/);
-  assert.match(studentPanel, /Vérifié dans AlmaGo le/);
+  assert.match(studentPanel, /Dernière vérification enregistrée dans AlmaGo/);
+  assert.match(studentPanel, /Vérification enregistrée ·/);
+  assert.doesNotMatch(studentPanel, /Vérifié dans AlmaGo le/);
 });
 
 test("admin catalogue can find missing verification evidence", () => {
