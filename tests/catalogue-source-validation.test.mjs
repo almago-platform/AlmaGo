@@ -164,3 +164,13 @@ test("catalogue routes reject invalid enum values instead of silently inventing 
   assert.doesNotMatch(universityCreate, /\? body\.university_type : "Universität"/);
   assert.doesNotMatch(universityUpdate, /\? body\.university_type : "Universität"/);
 });
+
+
+test("programme routes validate dates and indicative averages before database writes", () => {
+  assert.match(programCreate, /function programValidationError/);
+  assert.match(programCreate, /Les échéances doivent être des dates valides/);
+  assert.match(programCreate, /La moyenne indicative doit être un nombre valide/);
+  assert.match(programCreate, /Number\.isFinite/);
+  assert.match(programUpdate, /programValidationError\(body\)/);
+  assert.doesNotMatch(programUpdate, /degreeLevels\.includes\(body\.degree_level/);
+});
