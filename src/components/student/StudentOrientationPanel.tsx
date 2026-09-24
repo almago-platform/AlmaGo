@@ -100,7 +100,7 @@ export function StudentOrientationPanel({
         ),
       );
       setFeedback({
-        message: "Votre intérêt est enregistré. La candidature est maintenant visible dans votre espace.",
+        message: "Votre intérêt est bien enregistré. Cette piste est maintenant visible dans vos candidatures.",
         kind: "success",
       });
     } catch {
@@ -150,26 +150,32 @@ export function StudentOrientationPanel({
         </div>
       )}
 
-      <section aria-label="Synthèse orientation" className="grid gap-5 lg:grid-cols-[1fr_0.85fr]">
-        <Card className="bg-slate-950 text-white">
-          <Badge variant={items.length ? "info" : "neutral"}>{items.length ? "Recommandations disponibles" : "Aucune publiée"}</Badge>
-          <h2 className="mt-5 text-2xl font-semibold tracking-tight">Choisir un programme</h2>
-          <p className="mt-3 text-sm leading-6 text-slate-300">
-            {applicationStateError
-              ? "Vos recommandations sont visibles, mais l’état des intérêts enregistrés n’a pas pu être vérifié."
-              : nextProgram
-                ? `Prochaine recommandation à examiner : ${nextProgram.name}. Vérifiez les critères avant d’enregistrer votre intérêt.`
-                : items.length
-                  ? "Vos intérêts enregistrés sont visibles dans vos candidatures."
-                  : "Aucune recommandation n’est publiée pour le moment. Vérifiez que votre profil contient les informations nécessaires."}
-          </p>
-          {nextProgram && (
-            <div className="mt-6 rounded-[var(--radius-control)] border border-white/10 bg-white/5 p-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--accent-light)]">À comparer</p>
-              <p className="mt-2 font-semibold">{nextProgram.name}</p>
-              <p className="mt-1 text-sm text-slate-300">{nextProgram.degree_level} · {nextProgram.field || "Domaine à préciser"}</p>
+      <section aria-label="Synthèse orientation" className="grid gap-5 lg:grid-cols-[1.15fr_0.85fr]">
+        <Card className="relative overflow-hidden border-[var(--brand-border)] bg-white shadow-[0_24px_55px_-38px_rgba(41,48,139,0.5)]">
+          <div aria-hidden="true" className="absolute inset-y-0 left-0 w-1.5 bg-[var(--brand)]" />
+          <div className="pl-2 sm:pl-3">
+            <div className="flex flex-wrap items-center gap-3">
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Votre orientation</p>
+              <Badge variant={items.length ? "info" : "neutral"}>{items.length ? "Pistes disponibles" : "Aucune piste publiée"}</Badge>
             </div>
-          )}
+            <h2 className="mt-4 text-2xl font-bold tracking-[-0.03em] text-slate-950">Comparez avant de décider.</h2>
+            <p className="mt-3 text-sm leading-6 text-slate-600">
+              {applicationStateError
+                ? "Vos recommandations restent visibles, mais nous ne pouvons pas confirmer l’état de vos intérêts enregistrés pour le moment."
+                : nextProgram
+                  ? `Commencez par ${nextProgram.name}. Vérifiez les critères visibles et la source officielle avant d’enregistrer votre intérêt.`
+                  : items.length
+                    ? "Vos intérêts enregistrés sont déjà visibles dans vos candidatures."
+                    : "Aucune recommandation n’est publiée pour le moment. Vérifiez que votre profil contient les informations utiles à l’orientation."}
+            </p>
+            {nextProgram && (
+              <div className="mt-6 rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface-muted)]/55 p-4">
+                <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--accent-strong)]">À regarder maintenant</p>
+                <p className="mt-2 font-bold text-slate-950">{nextProgram.name}</p>
+                <p className="mt-1 text-sm text-slate-600">{nextProgram.degree_level} · {nextProgram.field || "Domaine à préciser"}</p>
+              </div>
+            )}
+          </div>
         </Card>
 
         <section aria-label="Résumé de l’orientation" className="grid gap-4 sm:grid-cols-3 lg:grid-cols-1">
@@ -180,10 +186,11 @@ export function StudentOrientationPanel({
       </section>
 
       {!loadError && items.length === 0 ? (
-        <Card aria-labelledby="orientation-empty-title" className="border-dashed text-center">
-          <h2 id="orientation-empty-title" className="text-lg font-semibold text-slate-950">Aucune recommandation publiée</h2>
-          <p className="mx-auto mt-2 max-w-xl text-sm text-slate-600">
-            Aucune recommandation n’est publiée dans votre dossier pour le moment. Vous pouvez vérifier les informations de votre profil.
+        <Card aria-labelledby="orientation-empty-title" className="border-dashed bg-white/70 py-9 text-center">
+          <span aria-hidden="true" className="mx-auto grid h-11 w-11 place-items-center rounded-full bg-[var(--brand-soft)] text-[var(--brand)]">⌁</span>
+          <h2 id="orientation-empty-title" className="mt-4 text-lg font-bold text-slate-950">Aucune piste d’orientation n’est publiée pour le moment.</h2>
+          <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-slate-600">
+            Cela peut être normal pendant la préparation du dossier. Vérifiez que votre profil est à jour ; les nouvelles pistes apparaîtront ici lorsqu’elles seront enregistrées.
           </p>
           <div className="mt-5 flex flex-col justify-center gap-3 sm:flex-row">
             <ButtonLink href="/student/profile" variant="secondary">Vérifier mon profil</ButtonLink>
@@ -194,9 +201,9 @@ export function StudentOrientationPanel({
         <section aria-labelledby="recommended-programs-title">
           <div className="mb-4 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--brand)]">Comparaison</p>
-              <h2 id="recommended-programs-title" className="mt-1 text-2xl font-semibold tracking-tight text-slate-950">Programmes recommandés</h2>
-              <p className="mt-1 text-sm text-slate-600">Consultez les critères visibles avant d’enregistrer votre intérêt.</p>
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Vos pistes</p>
+              <h2 id="recommended-programs-title" className="mt-1 text-2xl font-bold tracking-[-0.03em] text-slate-950">Programmes à comparer</h2>
+              <p className="mt-1 text-sm leading-6 text-slate-600">Chaque fiche reprend uniquement les critères enregistrés dans AlmaGo. Vérifiez toujours les informations importantes auprès de la source officielle.</p>
             </div>
             <ButtonLink href="/student/applications" variant="secondary">Mes candidatures</ButtonLink>
           </div>
@@ -217,31 +224,39 @@ export function StudentOrientationPanel({
                 >
                   <div className="flex flex-col gap-4">
                     <div className="flex flex-wrap items-start justify-between gap-3">
-                      <p className="min-w-0 text-sm font-semibold leading-5 text-[var(--brand)]">
-                        {university?.name || "Université"}{university?.city ? ` · ${university.city}` : ""}
-                      </p>
+                      <div className="min-w-0">
+                        <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">Établissement</p>
+                        <p className="mt-1 text-sm font-bold leading-5 text-slate-900">
+                          {university?.name || "Université à confirmer"}{university?.city ? ` · ${university.city}` : ""}
+                        </p>
+                      </div>
                       <Badge variant={recommendation.student_interest_at ? "success" : recommendationVariant(recommendation.status)}>
                         {recommendation.student_interest_at ? "Intérêt enregistré" : recommendationStatusLabels[recommendation.status] || recommendation.status}
                       </Badge>
                     </div>
                     <div>
-                      <h3 id={`student-recommendation-title-${recommendation.id}`} className="text-xl font-semibold leading-7 tracking-tight text-slate-950">
+                      <h3 id={`student-recommendation-title-${recommendation.id}`} className="text-xl font-bold leading-7 tracking-[-0.02em] text-slate-950">
                         {program.name}
                       </h3>
-                      <p className="mt-1 text-sm leading-6 text-slate-500">
-                        {program.degree_level} · {program.field || "Domaine à préciser"}
-                      </p>
+                      <div className="mt-3 flex flex-wrap gap-2 text-xs font-semibold text-slate-600">
+                        <span className="rounded-full bg-slate-100 px-3 py-1.5">{program.degree_level}</span>
+                        <span className="rounded-full bg-slate-100 px-3 py-1.5">{program.field || "Domaine à préciser"}</span>
+                        {program.teaching_language && <span className="rounded-full bg-slate-100 px-3 py-1.5">{program.teaching_language}</span>}
+                      </div>
                     </div>
                   </div>
 
-                  <p className="mt-4 text-sm leading-6 text-slate-700">
-                    {recommendation.note || "Consultez les critères enregistrés pour évaluer cette recommandation."}
-                  </p>
+                  <div className="mt-5 rounded-[var(--radius-control)] border border-[var(--brand-border)] bg-[var(--brand-soft)]/45 p-4">
+                    <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">Pourquoi cette piste apparaît ?</p>
+                    <p className="mt-2 text-sm leading-6 text-slate-700">
+                      {recommendation.note || "Cette piste a été enregistrée dans votre orientation. Consultez les critères ci-dessous et vérifiez les informations officielles avant de décider."}
+                    </p>
+                  </div>
 
                   <dl className="mt-5 grid gap-3 text-sm sm:grid-cols-2">
-                    <InfoItem label="Langue" value={program.teaching_language || "À confirmer"} />
-                    <InfoItem label="Deadline hiver" value={formatDeadline(program.winter_deadline)} />
-                    <InfoItem label="Deadline été" value={formatDeadline(program.summer_deadline || null)} />
+                    <InfoItem label="Langue d’enseignement" value={program.teaching_language || "À confirmer"} />
+                    <InfoItem label="Échéance hiver" value={formatDeadline(program.winter_deadline)} />
+                    <InfoItem label="Échéance été" value={formatDeadline(program.summer_deadline || null)} />
                     <InfoItem label="Diplôme demandé" value={program.diploma_required || "À confirmer"} />
                     <div className="rounded-[var(--radius-control)] bg-[var(--surface-muted)] p-3 sm:col-span-2">
                       <dt className="text-slate-500">Niveaux linguistiques demandés</dt>
@@ -263,7 +278,7 @@ export function StudentOrientationPanel({
                         rel="noreferrer"
                         className={buttonClassName("secondary", "w-full sm:w-auto")}
                       >
-                        Site officiel
+                        Vérifier la source officielle
                       </a>
                     )}
                     <Button
@@ -278,7 +293,7 @@ export function StudentOrientationPanel({
                           ? "Enregistrement…"
                           : recommendation.status === "not_recommended"
                             ? "Non disponible"
-                            : "Ce programme m’intéresse"}
+                            : "Cette piste m’intéresse"}
                     </Button>
                   </div>
                 </Card>
