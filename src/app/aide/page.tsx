@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { HomeHeader } from "@/components/public/HomeHeader";
 import { HomeFooter } from "@/components/public/HomeClosing";
+import { PublicBreadcrumbs } from "@/components/public/PublicBreadcrumbs";
 
 export const metadata: Metadata = {
   title: "Centre d’aide | AlmaGo",
@@ -111,6 +112,7 @@ export default function HelpCenterPage() {
   return (
     <main className="min-h-screen bg-[var(--background)] text-slate-950">
       <HomeHeader />
+      <PublicBreadcrumbs items={[{ label: "Centre d’aide" }]} />
 
       <section className="border-b border-[var(--border)] bg-[var(--brand)] text-white">
         <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-18 lg:px-8 lg:py-20">
