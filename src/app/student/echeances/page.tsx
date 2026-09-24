@@ -178,7 +178,7 @@ export default async function StudentDeadlinesPage() {
             Dates enregistrées pour vos candidatures
           </h2>
           <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
-            Les dates sont classées de la plus proche à la plus éloignée. Une date enregistrée dans AlmaGo doit toujours être confirmée sur la page officielle du programme ou de l’établissement.
+            Les dates sont classées chronologiquement. Une date enregistrée dans AlmaGo doit toujours être confirmée sur la page officielle du programme ou de l’établissement.
           </p>
         </div>
 
@@ -262,6 +262,7 @@ export default async function StudentDeadlinesPage() {
                             href={sourceUrl}
                             target="_blank"
                             rel="noreferrer"
+                            aria-label={`Consulter la page officielle de ${program?.name || "ce programme"} (nouvel onglet)`}
                             className="mt-2 inline-flex min-h-10 items-center text-sm font-bold text-[var(--brand)] underline decoration-[var(--brand-border)] underline-offset-4 hover:text-[var(--brand-hover)]"
                           >
                             Consulter la page officielle
