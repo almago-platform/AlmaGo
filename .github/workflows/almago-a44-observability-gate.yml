@@ -88,6 +88,20 @@ jobs:
           node-version: 22
           cache: npm
 
+      - name: Require provider verification evidence
+        shell: bash
+        run: |
+          if ! grep -Fxq "A44_PROVIDER_VERIFIED: true" docs/A44_PROVIDER_VERIFICATION.md; then
+            echo "::error::docs/A44_PROVIDER_VERIFICATION.md is not explicitly verified yet."
+            exit 1
+          fi
+
+          blocker='\\[À REMPLIR\\]|\\[DÉSACTIVÉE / DÉCRIRE\\]|\\[DÉSACTIVÉ / DÉCRIRE\\]|\\[OUI / N/A \\+ MOTIF\\]|\\[PASS / DÉCRIRE\\]'
+          if grep -En "$blocker" docs/A44_PROVIDER_VERIFICATION.md; then
+            echo "::error::Provider verification evidence still contains unresolved placeholders."
+            exit 1
+          fi
+
       - name: Install dependencies
         run: npm ci
 
@@ -148,7 +162,7 @@ jobs:
                   "SHA: " + context.sha,
                   marker,
                   "",
-                  "A38 and A43 are complete, repository observability variables are enabled, and the telemetry allow-list/privacy-boundary tests pass.",
+                  "A38 and A43 are complete, the provider verification file is explicitly approved, repository observability variables are enabled, and the telemetry allow-list/privacy-boundary tests pass.",
                   "",
                   "This workflow does not expose or inspect provider secrets."
                 ].join("\n"),
