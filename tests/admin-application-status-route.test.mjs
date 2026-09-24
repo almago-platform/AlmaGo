@@ -20,3 +20,21 @@ test("admin application status route maps invalid and missing targets cleanly", 
   assert.match(route, /Candidature introuvable/);
   assert.match(route, /status: 404/);
 });
+
+
+test("note-only application updates do not emit false status-change events", () => {
+  assert.match(route, /currentApplication\.status === requestedStatus/);
+  assert.match(route, /\.update\(\{[\s\S]*next_action: nextAction,[\s\S]*student_notes: studentNote,[\s\S]*reviewed_at:/);
+  assert.match(route, /\.select\("id"\)[\s\S]*\.maybeSingle\(\)/);
+  assert.match(route, /supabase\.rpc\("admin_update_application"/);
+
+  const directUpdateIndex = route.indexOf("currentApplication.status === requestedStatus");
+  const rpcIndex = route.indexOf('supabase.rpc("admin_update_application"');
+  assert.ok(directUpdateIndex >= 0 && rpcIndex > directUpdateIndex);
+});
+
+test("unchanged application edits become no-ops", () => {
+  assert.match(route, /currentApplication\.next_action === nextAction/);
+  assert.match(route, /currentApplication\.student_notes === studentNote/);
+  assert.match(route, /return NextResponse\.json\(\{ ok: true \}\)/);
+});
