@@ -31,10 +31,10 @@ export function ProfileForm({ profile }: { profile: Record<string, unknown> }) {
     try {
       const response = await fetch("/api/student/profile", { method: "PATCH", headers: { "content-type": "application/json" }, body: JSON.stringify(data) });
       const result = await response.json().catch(() => ({}));
-      if (!response.ok) setError(result.error || "Impossible d’enregistrer.");
-      else setStatus("Modifications enregistrées.");
+      if (!response.ok) setError(result.error || "Nous n’arrivons pas à enregistrer vos modifications pour le moment.");
+      else setStatus("Vos modifications ont bien été enregistrées dans votre dossier.");
     } catch {
-      setError("Erreur réseau. Vérifiez votre connexion puis réessayez.");
+      setError("Nous n’arrivons pas à enregistrer votre profil pour le moment. Vérifiez votre connexion puis réessayez.");
     } finally {
       setSaving(false);
     }
@@ -83,7 +83,7 @@ export function ProfileForm({ profile }: { profile: Record<string, unknown> }) {
 
     <div className="sticky bottom-0 -mx-5 border-t border-[var(--border)] bg-[var(--surface)]/95 px-5 py-4 backdrop-blur sm:-mx-6 sm:px-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-sm text-slate-500">Les changements sont enregistrés dans votre dossier étudiant.</p>
+        <p className="text-sm leading-6 text-slate-500">Enregistrez vos modifications avant de quitter cette page.</p>
         <Button type="submit" disabled={saving} className="w-full sm:w-auto">{saving ? "Enregistrement…" : "Enregistrer les modifications"}</Button>
       </div>
     </div>
@@ -92,10 +92,10 @@ export function ProfileForm({ profile }: { profile: Record<string, unknown> }) {
 
 function ProfileSection({ badge, title, description, children }: { badge: string; title: string; description: string; children: React.ReactNode }) {
   return (
-    <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface-muted)]/55 p-4 sm:p-5">
-      <div className="mb-5">
+    <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-4 sm:p-5">
+      <div className="mb-5 border-b border-[var(--border)] pb-4">
         <Badge variant="neutral">{badge}</Badge>
-        <h2 className="mt-3 text-xl font-semibold text-slate-950">{title}</h2>
+        <h2 className="mt-3 text-xl font-bold tracking-[-0.02em] text-slate-950">{title}</h2>
         <p className="mt-1 text-sm leading-6 text-slate-600">{description}</p>
       </div>
       <div className="grid gap-4 sm:grid-cols-2">{children}</div>
