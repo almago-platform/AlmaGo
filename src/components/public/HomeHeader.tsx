@@ -17,7 +17,8 @@ export function HomeHeader() {
           </span>
         </Link>
 
-        <nav className="hidden items-center gap-6 text-sm font-semibold text-slate-600 lg:flex" aria-label="Navigation principale">
+        <nav className="hidden items-center gap-5 text-sm font-semibold text-slate-600 lg:flex" aria-label="Navigation principale">
+          <Link className="transition-colors hover:text-[var(--brand)]" href="/#parcours">Comment ça marche</Link>
           <Link className="transition-colors hover:text-[var(--brand)]" href="/parcours-allemagne">Parcours Allemagne</Link>
           <Link className="transition-colors hover:text-[var(--brand)]" href="/#role">Notre rôle</Link>
           <Link className="transition-colors hover:text-[var(--brand)]" href="/#espace">Votre espace</Link>
