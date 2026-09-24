@@ -81,3 +81,8 @@ test("deadline countdown stays calendar-based across Berlin DST changes", () => 
   assert.equal(daysUntilDeadline("2026-10-26", new Date("2026-10-24T22:30:00Z")), 1);
   assert.equal(daysUntilDeadline("2026-10-26", new Date("2026-10-25T23:30:00Z")), 0);
 });
+
+
+test("deadline formatting is pinned to the Berlin calendar", () => {
+  assert.equal(formatDeadline("2026-10-26"), "26 oct. 2026");
+});
