@@ -1,9 +1,12 @@
 import { NextResponse } from "next/server";
-import { getAuthenticatedUser } from "@/lib/auth/access";
+import { getRoleUser } from "@/lib/auth/access";
 
 export async function GET(_: Request, { params }: { params: Promise<{ id: string }> }) {
-  const { supabase, user } = await getAuthenticatedUser();
+  const { supabase, user, role } = await getRoleUser();
   if (!user) return NextResponse.json({ error: "Non authentifié." }, { status: 401 });
+  if (role !== "student" && role !== "admin") {
+    return NextResponse.json({ error: "Accès non autorisé." }, { status: 403 });
+  }
   const { id } = await params;
   const { data: document } = await supabase.from("documents").select("storage_path").eq("id", id).maybeSingle();
   if (!document) return NextResponse.json({ error: "Document introuvable." }, { status: 404 });
