@@ -8,6 +8,7 @@ const publicRoots = [
   "src/app/aide",
   "src/app/comprendre-les-demarches",
   "src/app/selon-votre-pays",
+  "src/app/confiance",
 ];
 
 const forbiddenPublicPatterns = [
@@ -55,6 +56,7 @@ test("V3 public trust boundaries remain explicit", () => {
   const help = readFileSync("src/app/aide/page.tsx", "utf8");
   const country = readFileSync("src/app/selon-votre-pays/page.tsx", "utf8");
   const guidance = readFileSync("src/app/comprendre-les-demarches/page.tsx", "utf8");
+  const trust = readFileSync("src/app/confiance/page.tsx", "utf8");
 
   assert.match(role, /organismes comp[eé]tents/i);
   assert.match(role, /source officielle/i);
@@ -67,4 +69,8 @@ test("V3 public trust boundaries remain explicit", () => {
 
   assert.match(guidance, /Comprendre les démarches/i);
   assert.match(guidance, /Source officielle/i);
+
+  assert.match(trust, /Confiance et transparence/i);
+  assert.match(trust, /sources officielles/i);
+  assert.match(trust, /organisme compétent/i);
 });
