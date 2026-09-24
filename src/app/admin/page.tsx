@@ -167,7 +167,7 @@ export default async function AdminEntry() {
             <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">Principe de travail</p>
             <h2 className="mt-2 text-xl font-bold text-slate-950">Résoudre les blocages avant d’enrichir le catalogue.</h2>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
-              Cette vue utilise uniquement les états réellement enregistrés dans AlmaGo. Elle ne calcule aucun score de performance ou de priorité artificiel.
+              Cette vue utilise uniquement les états réellement enregistrés dans AlmaGo. Elle n’ajoute aucun classement ni niveau de priorité artificiel.
             </p>
           </div>
           <ButtonLink href="/admin/orientation" variant="secondary">Préparer une orientation</ButtonLink>
