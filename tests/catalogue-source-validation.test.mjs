@@ -278,9 +278,10 @@ test("optional programme academic fields normalize empty strings to null", () =>
 
 
 test("optional university fields normalize empty strings to null on create", () => {
-  for (const field of ["city", "bundesland", "logo_url", "description", "tuition_notes"]) {
+  for (const field of ["city", "bundesland", "description", "tuition_notes"]) {
     assert.match(universityCreate, new RegExp(field + ": optionalText"));
   }
+  assert.match(universityCreate, /logo_url: logoUrl/);
 });
 
 
@@ -290,4 +291,13 @@ test("legacy blank catalogue values do not trigger false verification changes", 
   assert.match(programUpdate, /normalizeText\(existing\.application_fee_notes\) !== data\.application_fee_notes/);
   assert.match(universityUpdate, /optionalText\(existing\.city\) !== nextUniversity\.city/);
   assert.match(universityUpdate, /optionalText\(existing\.description\) !== nextUniversity\.description/);
+});
+
+
+test("university logo URLs must be real http or https links", () => {
+  for (const source of [universityCreate, universityUpdate]) {
+    assert.match(source, /logoUrl/);
+    assert.match(source, /logoUrl && !isHttpSourceUrl\(logoUrl\)/);
+    assert.match(source, /Le lien du logo doit être une URL http\/https valide/);
+  }
 });
