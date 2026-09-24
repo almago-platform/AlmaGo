@@ -84,3 +84,11 @@ test("final release gate requires dedicated identities and full authenticated qu
   assert.match(finalRelease, /tests\/e2e\/admin-space-quality\.spec\.mjs/);
   assert.match(finalRelease, /timeout-minutes: 45/);
 });
+
+
+test("final release gate can only start from main", () => {
+  assert.match(
+    finalRelease,
+    /prerequisites:\s*\n\s*if: github\.ref == 'refs\/heads\/main'/,
+  );
+});
