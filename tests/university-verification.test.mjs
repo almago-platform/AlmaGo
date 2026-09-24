@@ -14,8 +14,8 @@ test("university verification date requires explicit admin confirmation", () => 
 });
 
 test("university verification cannot be confirmed without an official source", () => {
-  assert.match(createRoute, /Ajoutez une source officielle avant de confirmer la vérification/);
-  assert.match(updateRoute, /Ajoutez une source officielle avant de confirmer la vérification/);
+  assert.match(createRoute, /Ajoutez une URL officielle valide/);
+  assert.match(updateRoute, /Ajoutez une URL officielle valide/);
 });
 
 test("university catalogue surfaces source and verification gaps", () => {
