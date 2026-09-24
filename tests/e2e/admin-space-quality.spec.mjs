@@ -8,6 +8,7 @@ const configured = Boolean(adminEmail && adminPassword);
 
 const pages = [
   { path: "/admin", name: "dashboard" },
+  { path: "/admin/students", name: "students" },
   { path: "/admin/documents", name: "documents" },
   { path: "/admin/applications", name: "applications" },
   { path: "/admin/orientation", name: "orientation" },
@@ -25,7 +26,7 @@ test.describe("authenticated Admin Space quality", () => {
     await page.getByLabel("Email").fill(adminEmail);
     await page.getByLabel("Mot de passe").fill(adminPassword);
     await page.getByRole("button", { name: "Se connecter" }).click();
-    await page.waitForURL(/\/student(?:\/.*)?$/, { timeout: 20_000 });
+    await page.waitForURL(/\/admin(?:\/.*)?$/, { timeout: 20_000 });
 
     for (const target of pages) {
       const response = await page.goto(target.path, { waitUntil: "networkidle" });
