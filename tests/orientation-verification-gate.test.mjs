@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
-import { deadlineForIntake } from "../src/lib/application-intake.ts";
+import { applicationIntakeFromTerms, deadlineForIntake } from "../src/lib/application-intake.ts";
 import {
   hasVerifiedProgramSource,
   hasVerifiedUniversitySource,
@@ -98,7 +98,17 @@ test("student application creation prevents duplicate rows when intake is unknow
   assert.match(studentApplicationsRoute, /status: 409/);
 });
 
-test("application deadline follows the recorded intake instead of always preferring winter", () => {
+test("application intake stays uncommitted when several entry terms are possible", () => {
+  assert.equal(applicationIntakeFromTerms(["Winter"]), "Winter");
+  assert.equal(applicationIntakeFromTerms([" Summer "]), "Summer");
+  assert.equal(applicationIntakeFromTerms(["Winter", "Winter"]), "Winter");
+  assert.equal(applicationIntakeFromTerms(["Winter", "Summer"]), null);
+  assert.equal(applicationIntakeFromTerms([]), null);
+  assert.equal(applicationIntakeFromTerms(null), null);
+  assert.match(studentApplicationsRoute, /applicationIntakeFromTerms\(program\?\.intake_terms\)/);
+});
+
+test("application deadline follows only an unambiguous recorded intake", () => {
   const program = {
     winter_deadline: "2027-01-15",
     summer_deadline: "2027-07-15",
@@ -109,7 +119,8 @@ test("application deadline follows the recorded intake instead of always preferr
   assert.equal(deadlineForIntake(program, "Summer"), "2027-07-15");
   assert.equal(deadlineForIntake(program, "Sommersemester"), "2027-07-15");
   assert.equal(deadlineForIntake({ ...program, summer_deadline: null }, "Summer"), null);
-  assert.equal(deadlineForIntake(program, null), "2027-01-15");
+  assert.equal(deadlineForIntake(program, null), null);
+  assert.equal(deadlineForIntake(program, "À confirmer"), null);
   assert.match(studentApplicationsRoute, /deadlineForIntake\(program, intake\)/);
 });
 
