@@ -7,6 +7,7 @@ const a38Readiness = readFileSync(".github/workflows/almago-a38-readiness.yml", 
 const failureWatch = readFileSync(".github/workflows/almago-automation-failure-watch.yml", "utf8");
 const authenticatedE2E = readFileSync(".github/workflows/almago-authenticated-e2e.yml", "utf8");
 const masterOrchestrator = readFileSync(".github/workflows/almago-master-orchestrator.yml", "utf8");
+const finalRelease = readFileSync(".github/workflows/almago-final-release-gate.yml", "utf8");
 
 test("A38 approval gate skips ordinary comments before runner allocation", () => {
   assert.match(a38, /approve-a38:\s*\n\s*if: >-/);
@@ -57,4 +58,18 @@ test("master orchestrator never syncs the plan from a non-main ref", () => {
     masterOrchestrator,
     /orchestrate:\s*\n\s*if: github\.ref == 'refs\/heads\/main'/,
   );
+});
+
+
+test("final release gate reuses the A43 test identity defaults", () => {
+  assert.match(
+    finalRelease,
+    /ALMAGO_E2E_STUDENT_EMAIL: \$\{\{ vars\.ALMAGO_E2E_STUDENT_EMAIL \|\| 'phase3\.student\.a@almago\.test' \}\}/,
+  );
+  assert.match(
+    finalRelease,
+    /ALMAGO_E2E_ADMIN_EMAIL: \$\{\{ vars\.ALMAGO_E2E_ADMIN_EMAIL \|\| 'phase3\.admin@almago\.test' \}\}/,
+  );
+  assert.doesNotMatch(finalRelease, /secrets\.ALMAGO_E2E_STUDENT_EMAIL/);
+  assert.doesNotMatch(finalRelease, /secrets\.ALMAGO_E2E_ADMIN_EMAIL/);
 });
