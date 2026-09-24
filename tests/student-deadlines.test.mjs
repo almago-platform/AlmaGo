@@ -17,7 +17,7 @@ test("deadline center uses only real application deadlines", () => {
   assert.match(page, /from\("applications"\)/);
   assert.match(page, /\.not\("deadline", "is", null\)/);
   assert.match(page, /isActiveApplication\(application\.status\)/);
-  assert.match(page, /daysUntilDeadline\(application\.deadline\)/);
+  assert.match(page, /daysUntilDeadline\(application\.deadline, now\)/);
   assert.match(page, /Aucune échéance active n’est enregistrée/);
 });
 
