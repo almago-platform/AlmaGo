@@ -6,6 +6,13 @@ Le système AlmaGo est conçu pour fonctionner avec le moins d’intervention po
 
 Master Plan : **41/45 — 91 %**.
 
+La professionnalisation visuelle V2 est maintenant terminée pour :
+- la Homepage ;
+- l’espace étudiant ;
+- l’espace administration.
+
+Ces trois chantiers ont leurs plans et preuves dédiés dans `docs/HOMEPAGE_V2_PLAN.md`, `docs/STUDENT_SPACE_V2_PLAN.md`, `docs/STUDENT_SPACE_V2_IMPLEMENTATION.md`, `docs/ADMIN_SPACE_V2_PLAN.md` et `docs/ADMIN_SPACE_V2_IMPLEMENTATION.md`.
+
 Chaîne restante avant la recette finale :
 
 **A38 juridique → A43 E2E authentifiés → A44 observabilité/analytics → A45 gate de publication.**
@@ -63,11 +70,16 @@ Aucune variable d'activation supplémentaire n'est requise. Le workflow détecte
 
 Il ne reste donc que les **deux mots de passe des comptes de test** à renseigner. Le Master Orchestrator sonde automatiquement A43 à chaque passage (push sur `main` et toutes les trois heures). Tant que les mots de passe manquent, le probe se termine proprement sans faux échec ; dès qu'ils sont présents, le vrai parcours E2E s'exécute et A43 se clôture automatiquement. Un lancement manuel reste possible uniquement pour obtenir la preuve immédiatement, mais il n'est plus obligatoire.
 
-Le test vérifie que :
+Le test vérifie maintenant que :
 
 - le compte étudiant atteint l’espace étudiant ;
 - le compte étudiant ne peut pas entrer dans `/admin` ;
-- le compte admin passe le garde de rôle côté serveur.
+- le compte admin passe le garde de rôle côté serveur ;
+- les 6 pages principales de l’espace étudiant passent la matrice responsive 320 / 375 / 390 / 768 / 1024 / 1440 ;
+- les 6 pages principales de l’espace admin passent la même matrice ;
+- aucune de ces pages ne présente de débordement horizontal ;
+- axe ne détecte aucune violation sérieuse/critique ;
+- des screenshots authentifiés complets sont conservés comme preuve pour la revue finale.
 
 Ne jamais réutiliser les identifiants d’un vrai étudiant pour ces tests. Aucun mot de passe de test ne doit être ajouté au repository, à une Issue ou au chat.
 
