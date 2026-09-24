@@ -23,7 +23,12 @@ export default async function StudentApplicationsPage() {
         badge="Candidatures"
         title="Mes candidatures"
         description="Retrouvez chaque dossier, son échéance, sa prochaine action et l’historique visible du suivi enregistré dans AlmaGo."
-        actions={<ButtonLink href="/student/orientation" variant="secondary">Voir les pistes d’orientation</ButtonLink>}
+        actions={
+          <>
+            <ButtonLink href="/student/echeances" variant="secondary">Voir mes échéances</ButtonLink>
+            <ButtonLink href="/student/orientation" variant="secondary">Voir les pistes d’orientation</ButtonLink>
+          </>
+        }
       />
 
       <StudentApplicationsPanel applications={data || []} />
