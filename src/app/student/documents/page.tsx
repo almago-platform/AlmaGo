@@ -40,11 +40,11 @@ export default async function StudentDocumentsPage() {
   if (documentsResult.error) return <DocumentsUnavailable />;
 
   return (
-    <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:py-12">
+    <main className="mx-auto w-full max-w-7xl px-4 py-7 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
       <PageHeader
         badge="Documents"
         title="Vos documents"
-        description="Retrouvez les pièces envoyées, leur statut et les demandes de correction au même endroit."
+        description="Voyez immédiatement ce qui est validé, ce qui est en vérification et ce qui demande une action de votre part."
       />
       <DocumentsPanel
         documents={documentsResult.data || []}

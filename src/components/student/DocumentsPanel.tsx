@@ -64,7 +64,7 @@ export function DocumentsPanel({
     const file = fileInput.current?.files?.[0];
 
     if (!file) {
-      setFeedback({ message: "Choisis un fichier.", kind: "error" });
+      setFeedback({ message: "Choisissez un fichier avant de continuer.", kind: "error" });
       return;
     }
 
@@ -85,17 +85,17 @@ export function DocumentsPanel({
       }
 
       if (fileInput.current) fileInput.current.value = "";
-      setFeedback({ message: "Document envoyé. Son statut apparaîtra dans votre dossier.", kind: "success" });
+      setFeedback({ message: "Votre fichier est bien enregistré. Son statut sera mis à jour après vérification.", kind: "success" });
       router.refresh();
     } catch {
-      setFeedback({ message: "Erreur réseau. Vérifie ta connexion puis réessaie.", kind: "error" });
+      setFeedback({ message: "Erreur réseau. Vérifiez votre connexion puis réessayez.", kind: "error" });
     } finally {
       setBusy(false);
     }
   }
 
   async function removeDocument(id: string) {
-    if (!window.confirm("Supprimer ce document ?")) return;
+    if (!window.confirm("Voulez-vous supprimer ce document ?")) return;
 
     setBusy(true);
     setFeedback(null);
@@ -109,10 +109,10 @@ export function DocumentsPanel({
         return;
       }
 
-      setFeedback({ message: "Document supprimé.", kind: "success" });
+      setFeedback({ message: "Le document a bien été supprimé de votre dossier.", kind: "success" });
       router.refresh();
     } catch {
-      setFeedback({ message: "Erreur réseau. Vérifie ta connexion puis réessaie.", kind: "error" });
+      setFeedback({ message: "Erreur réseau. Vérifiez votre connexion puis réessayez.", kind: "error" });
     } finally {
       setBusy(false);
     }
@@ -120,26 +120,39 @@ export function DocumentsPanel({
 
   return (
     <div className="space-y-8">
-      <section aria-label="Priorité documentaire" className="grid gap-5 lg:grid-cols-[minmax(0,1.45fr)_minmax(17rem,0.85fr)]">
-        <Card className="relative overflow-hidden border-[var(--brand-border)] shadow-none">
+      <section aria-label="Priorité documentaire" className="grid gap-5 lg:grid-cols-[minmax(0,1.45fr)_minmax(18rem,0.85fr)]">
+        <Card className={`relative overflow-hidden shadow-[0_24px_55px_-38px_rgba(41,48,139,0.5)] ${correctionCount ? "border-amber-300 bg-amber-50/25" : "border-[var(--brand-border)] bg-white"}`}>
           <div aria-hidden="true" className="absolute inset-y-0 left-0 w-1 bg-[var(--brand)]" />
           <div className="pl-2">
           <Badge variant={correctionCount ? "warning" : reviewCount ? "info" : "neutral"}>
             {correctionCount ? "Correction demandée" : reviewCount ? "En attente de vérification" : "Dossier documentaire"}
           </Badge>
-          <h2 className="mt-5 text-2xl font-semibold tracking-tight text-slate-950 sm:text-3xl">Vos documents : prochaine étape</h2>
+          <h2 className="mt-5 text-2xl font-bold tracking-[-0.03em] text-slate-950 sm:text-3xl">
+            {correctionCount ? "Une action est nécessaire sur vos documents" : reviewCount ? "Vos documents sont en cours de vérification" : "Votre dossier documentaire"}
+          </h2>
           <p className="mt-3 text-base leading-7 text-slate-700">
             {correctionCount
               ? `${correctionCount} document${correctionCount > 1 ? "s doivent" : " doit"} être corrigé${correctionCount > 1 ? "s" : ""}. Consultez le message AlmaGo avant de remplacer le fichier.`
               : reviewCount
-                ? "Vos fichiers envoyés attendent une vérification. Vous pourrez consulter les retours sur cette page."
-                : "Ajoutez uniquement les pièces demandées ou nécessaires pour éviter les doublons dans votre dossier."}
+                ? "Aucune action n’est demandée de votre côté pendant cette vérification. Les retours apparaîtront sur cette page."
+                : documents.length
+                  ? "Aucune correction n’est demandée actuellement. Vous pouvez ajouter une nouvelle pièce lorsqu’elle est nécessaire."
+                  : "Vous n’avez encore ajouté aucun document. Lorsque votre dossier nécessitera une pièce, vous pourrez la déposer ci-dessous."}
           </p>
           {priorityDocument && (
-            <div className="mt-6 rounded-lg border border-slate-200 bg-slate-50 p-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--brand)]">Document suivi</p>
-              <p className="mt-2 break-words font-semibold text-slate-950">{priorityDocument.original_filename}</p>
-              <p className="mt-1 text-sm text-slate-600">{categoryLabel(priorityDocument.category)} · {statusLabel(priorityDocument.status)}</p>
+            <div className="mt-6 rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-4 shadow-sm">
+              <div className="flex flex-wrap items-center gap-2">
+                <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">Document suivi</p>
+                <Badge variant={statusVariant(priorityDocument.status)}>{statusLabel(priorityDocument.status)}</Badge>
+              </div>
+              <p className="mt-3 break-words font-bold text-slate-950">{priorityDocument.original_filename}</p>
+              <p className="mt-1 text-sm text-slate-600">{categoryLabel(priorityDocument.category)}</p>
+              {correctionCount > 0 && priorityDocument.admin_comment && (
+                <div className="mt-4 rounded-[var(--radius-control)] border border-amber-200 bg-amber-50 p-3.5">
+                  <p className="text-xs font-bold uppercase tracking-[0.12em] text-amber-900">Pourquoi cette correction ?</p>
+                  <p className="mt-1.5 text-sm leading-6 text-amber-900">{priorityDocument.admin_comment}</p>
+                </div>
+              )}
             </div>
           )}
           </div>
@@ -152,20 +165,24 @@ export function DocumentsPanel({
         </section>
       </section>
 
-      <Card aria-labelledby="document-upload-title" className="shadow-none">
+      <Card aria-labelledby="document-upload-title" className="overflow-hidden shadow-none">
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
           <div>
             <Badge variant="neutral">Nouveau fichier</Badge>
-            <h2 id="document-upload-title" className="mt-3 text-xl font-semibold text-slate-950">Ajouter un document</h2>
+            <h2 id="document-upload-title" className="mt-3 text-xl font-bold text-slate-950">Ajouter un document</h2>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
-              PDF, JPEG ou PNG · 10 MiB maximum. Les fichiers sont conservés dans un espace privé.
+              Trois étapes simples. PDF, JPEG ou PNG · 10 MiB maximum. Les fichiers sont conservés dans un espace privé.
             </p>
           </div>
         </div>
 
         <form onSubmit={upload} className="mt-6">
-          <div className="grid gap-4 sm:grid-cols-[0.75fr_1fr]">
-            <label className="text-sm font-medium text-slate-700">
+          <div className="grid gap-4 lg:grid-cols-[0.8fr_1fr_auto] lg:items-end">
+            <label className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-muted)]/45 p-4 text-sm font-medium text-slate-700">
+              <span className="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-[var(--brand)]">
+                <span className="grid h-6 w-6 place-items-center rounded-full bg-[var(--brand)] text-[10px] text-white">1</span>
+                Choisir le type
+              </span>
               Type de document
               <select
                 value={category}
@@ -179,7 +196,11 @@ export function DocumentsPanel({
               </select>
             </label>
 
-            <label className="text-sm font-medium text-slate-700">
+            <label className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-muted)]/45 p-4 text-sm font-medium text-slate-700">
+              <span className="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-[var(--brand)]">
+                <span className="grid h-6 w-6 place-items-center rounded-full bg-[var(--brand)] text-[10px] text-white">2</span>
+                Choisir le fichier
+              </span>
               Fichier à envoyer
               <input
                 ref={fileInput}
@@ -189,27 +210,34 @@ export function DocumentsPanel({
                 className="field"
               />
             </label>
+
+            <div className="rounded-[var(--radius-control)] border border-[var(--brand-border)] bg-white p-4">
+              <span className="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-[var(--brand)]">
+                <span className="grid h-6 w-6 place-items-center rounded-full bg-[var(--brand)] text-[10px] text-white">3</span>
+                Envoyer
+              </span>
+              <Button type="submit" disabled={busy} className="w-full justify-center lg:w-auto">
+                {busy ? "Envoi en cours…" : "Envoyer le document"}
+              </Button>
+            </div>
           </div>
 
           {feedback && (
             <p
               role={feedback.kind === "error" ? "alert" : "status"}
-              className={`mt-4 rounded-xl p-3 text-sm ${
+              className={"mt-4 rounded-[var(--radius-control)] border p-3.5 text-sm " + (
                 feedback.kind === "error"
-                  ? "bg-red-50 text-red-800"
-                  : "bg-[var(--brand-soft)] text-[var(--brand)]"
-              }`}
+                  ? "border-red-200 bg-red-50 text-red-800"
+                  : "border-[var(--brand-border)] bg-[var(--brand-soft)] text-[var(--brand)]"
+              )}
             >
               {feedback.message}
             </p>
           )}
 
-          <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center">
-            <Button type="submit" disabled={busy}>
-              {busy ? "Envoi en cours…" : "Envoyer le document"}
-            </Button>
-            <p className="text-sm text-slate-500">Un remplacement ne supprime pas automatiquement les anciens fichiers validés.</p>
-          </div>
+          <p className="mt-4 text-sm leading-6 text-slate-500">
+            Un remplacement ne supprime pas automatiquement les anciens fichiers validés.
+          </p>
         </form>
       </Card>
 
@@ -223,13 +251,14 @@ export function DocumentsPanel({
 
         <div className="mt-4 space-y-3">
           {documents.length === 0 ? (
-            <Card aria-labelledby="documents-empty-title" className="border-dashed text-center">
-              <h3 id="documents-empty-title" className="font-semibold text-slate-950">Aucun document envoyé</h3>
-              <p className="mt-2 text-sm text-slate-600">Utilisez le formulaire ci-dessus dès qu’une pièce est demandée.</p>
+            <Card aria-labelledby="documents-empty-title" className="border-dashed bg-white/70 py-8 text-center">
+              <span aria-hidden="true" className="mx-auto grid h-11 w-11 place-items-center rounded-full bg-[var(--brand-soft)] text-lg text-[var(--brand)]">+</span>
+              <h3 id="documents-empty-title" className="mt-4 font-bold text-slate-950">Vous n’avez encore ajouté aucun document.</h3>
+              <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-slate-600">Lorsque votre dossier nécessitera une pièce, vous pourrez la déposer avec le formulaire ci-dessus.</p>
             </Card>
           ) : (
             documents.map((document) => (
-              <Card as="article" key={document.id} aria-labelledby={`student-document-title-${document.id}`} className="shadow-none">
+              <Card as="article" key={document.id} aria-labelledby={`student-document-title-${document.id}`} className={`shadow-none ${["rejected", "replace_required"].includes(document.status) ? "border-amber-300 bg-amber-50/20" : ""}`}>
                 <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-start">
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
