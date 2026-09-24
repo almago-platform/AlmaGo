@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getAdminUser } from "@/lib/auth/access";
 import { universityTypes } from "@/lib/phase4";
+import { isHttpSourceUrl } from "@/lib/source-verification";
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { supabase, user, isAdmin } = await getAdminUser();
@@ -10,8 +11,15 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   if (!body || typeof body.name !== "string" || !body.name.trim()) return NextResponse.json({ error: "Le nom de l’université est obligatoire." }, { status: 400 });
   const websiteUrl = typeof body.website_url === "string" ? body.website_url.trim() : "";
   const sourceUrl = typeof body.source_url === "string" ? body.source_url.trim() : "";
-  if (body.mark_verified === true && !websiteUrl && !sourceUrl) {
-    return NextResponse.json({ error: "Ajoutez une source officielle avant de confirmer la vérification." }, { status: 400 });
+  if (
+    body.mark_verified === true &&
+    !isHttpSourceUrl(websiteUrl) &&
+    !isHttpSourceUrl(sourceUrl)
+  ) {
+    return NextResponse.json(
+      { error: "Ajoutez une URL officielle valide (http/https) avant de confirmer la vérification." },
+      { status: 400 },
+    );
   }
   const { id } = await params;
   const { error } = await supabase.from("universities").update({
