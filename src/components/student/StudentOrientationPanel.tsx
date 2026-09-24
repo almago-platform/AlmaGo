@@ -122,7 +122,7 @@ export function StudentOrientationPanel({
     return (
       <Card>
         <div role="alert">
-          <h2 className="text-lg font-semibold text-slate-950">Recommandations indisponibles</h2>
+          <h2 className="text-lg font-semibold text-slate-950">Pistes d’orientation indisponibles</h2>
           <p className="mt-2 text-sm leading-6 text-slate-600">{loadError}</p>
         </div>
         <div className="mt-5 flex flex-col gap-3 sm:flex-row">
@@ -139,7 +139,7 @@ export function StudentOrientationPanel({
         <div role="alert" className="rounded-[var(--radius-control)] border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
           <p>{applicationStateError}</p>
           <p className="mt-1 leading-6">
-            Vos recommandations restent visibles, mais les boutons d’intérêt sont désactivés jusqu’à ce que l’état puisse être revérifié.
+            Vos pistes d’orientation restent visibles, mais les boutons d’intérêt sont désactivés jusqu’à ce que l’état puisse être revérifié.
           </p>
           <div className="mt-3">
             <ButtonLink href="/student/orientation" variant="secondary">Réessayer la vérification</ButtonLink>
@@ -169,12 +169,12 @@ export function StudentOrientationPanel({
             <h2 className="mt-4 text-2xl font-bold tracking-[-0.03em] text-slate-950">Comparez avant de décider.</h2>
             <p className="mt-3 text-sm leading-6 text-slate-600">
               {applicationStateError
-                ? "Vos recommandations restent visibles, mais nous ne pouvons pas confirmer l’état de vos intérêts enregistrés pour le moment."
+                ? "Vos pistes d’orientation restent visibles, mais nous ne pouvons pas confirmer l’état de vos intérêts enregistrés pour le moment."
                 : nextProgram
                   ? `Commencez par ${nextProgram.name}. Vérifiez les critères visibles et la source officielle avant d’enregistrer votre intérêt.`
                   : items.length
                     ? "Vos intérêts enregistrés sont déjà visibles dans vos candidatures."
-                    : "Aucune recommandation n’est publiée pour le moment. Vérifiez que votre profil contient les informations utiles à l’orientation."}
+                    : "Aucune piste d’orientation n’est publiée pour le moment. Vérifiez que votre profil contient les informations utiles à l’orientation."}
             </p>
             {nextProgram && (
               <div className="mt-6 rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface-muted)]/55 p-4">
@@ -187,7 +187,7 @@ export function StudentOrientationPanel({
         </Card>
 
         <section aria-label="Résumé de l’orientation" className="grid gap-4 sm:grid-cols-3 lg:grid-cols-1">
-          <SummaryCard title="Recommandations" value={items.length} badge="Publiées" tone="info" />
+          <SummaryCard title="Pistes d’orientation" value={items.length} badge="Publiées" tone="info" />
           <SummaryCard title="À comparer" value={comparableItems.length - interestedCount} badge="À décider" tone={comparableItems.length - interestedCount > 0 ? "warning" : "success"} />
           <SummaryCard title="Intérêts enregistrés" value={applicationStateError ? "—" : interestedCount} badge={applicationStateError ? "Indisponible" : interestedCount ? "Suivi démarré" : "Aucun intérêt"} tone={applicationStateError ? "neutral" : interestedCount ? "success" : "neutral"} />
         </section>
@@ -281,7 +281,7 @@ export function StudentOrientationPanel({
                   </div>
 
                   <div className="mt-5 rounded-[var(--radius-control)] border border-amber-200 bg-amber-50/60 p-3 text-xs leading-5 text-amber-900">
-                    Cette recommandation est une piste d’orientation. Elle ne garantit ni l’éligibilité finale ni l’admission.
+                    Cette piste d’orientation ne garantit ni l’éligibilité finale ni l’admission.
                   </div>
 
                   <div className="mt-auto flex flex-col gap-2 border-t border-[var(--border)] pt-5 sm:flex-row sm:flex-wrap">
