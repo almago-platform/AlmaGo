@@ -56,5 +56,10 @@ test.describe("authenticated role journeys", () => {
       data: {},
     });
     expect(authorizedApi.status()).toBe(400);
+
+    const deniedStudentApi = await page.request.post("/api/student/applications", {
+      data: {},
+    });
+    expect(deniedStudentApi.status()).toBe(403);
   });
 });
