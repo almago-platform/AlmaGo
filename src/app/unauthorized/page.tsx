@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { SwitchAccountButton } from "@/components/auth/SwitchAccountButton";
 
@@ -16,17 +17,17 @@ export default async function UnauthorizedPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  let homeHref = "/";
-  if (user) {
-    const { data: role } = await supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", user.id)
-      .maybeSingle();
+  if (!user) redirect("/login");
 
-    if (role?.role === "admin") homeHref = "/admin";
-    if (role?.role === "student") homeHref = "/student";
-  }
+  let homeHref = "/";
+  const { data: role } = await supabase
+    .from("user_roles")
+    .select("role")
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  if (role?.role === "admin") homeHref = "/admin";
+  if (role?.role === "student") homeHref = "/student";
 
   return (
     <main className="min-h-screen bg-slate-50 px-4 py-10 text-slate-950 sm:px-6 lg:px-8">
