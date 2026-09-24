@@ -12,7 +12,10 @@ export default async function AdminUniversitiesPage({
 }) {
   const { quality } = await searchParams;
   const supabase = await createClient();
-  const { data, error } = await supabase.from("universities").select("*").order("name");
+  const { data, error } = await supabase
+    .from("universities")
+    .select("id,name,city,bundesland,university_type,website_url,source_url,verified_at,logo_url,description,is_public,tuition_notes,is_active")
+    .order("name");
 
   if (error) {
     return (
