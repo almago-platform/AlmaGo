@@ -32,6 +32,23 @@ export async function POST(request: Request) {
   if (!body) return NextResponse.json({ error: "Données invalides." }, { status: 400 });
   const data = payload(body);
   if (!data.name || typeof data.university_id !== "string") return NextResponse.json({ error: "Université et nom du programme obligatoires." }, { status: 400 });
+
+  const { data: targetUniversity, error: targetUniversityError } = await supabase
+    .from("universities")
+    .select("id,is_active")
+    .eq("id", data.university_id)
+    .maybeSingle();
+
+  if (targetUniversityError) {
+    return NextResponse.json({ error: "Impossible de vérifier l’université sélectionnée." }, { status: 500 });
+  }
+  if (!targetUniversity?.is_active) {
+    return NextResponse.json(
+      { error: "Choisissez une université active avant de créer ce programme." },
+      { status: 400 },
+    );
+  }
+
   const programmeUrls = [data.source_url, data.application_url].filter(
     (value): value is string => typeof value === "string" && Boolean(value.trim()),
   );
