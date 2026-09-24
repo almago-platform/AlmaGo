@@ -261,7 +261,9 @@ export function StudentOrientationPanel({
                     </p>
                   </div>
 
-                  <dl className="mt-5 grid gap-3 text-sm sm:grid-cols-2">
+                  <div className="mt-5">
+                    <p className="text-xs font-bold uppercase tracking-[0.14em] text-slate-500">Critères enregistrés</p>
+                    <dl className="mt-3 grid gap-3 text-sm sm:grid-cols-2">
                     <InfoItem label="Langue d’enseignement" value={program.teaching_language || "À confirmer"} />
                     <InfoItem label="Échéance hiver" value={formatDeadline(program.winter_deadline)} />
                     <InfoItem label="Échéance été" value={formatDeadline(program.summer_deadline || null)} />
@@ -275,7 +277,8 @@ export function StudentOrientationPanel({
                         ].filter(Boolean).join(" · ") || "À confirmer avec AlmaGo"}
                       </dd>
                     </div>
-                  </dl>
+                    </dl>
+                  </div>
 
                   <div className="mt-5 rounded-[var(--radius-control)] border border-amber-200 bg-amber-50/60 p-3 text-xs leading-5 text-amber-900">
                     Cette recommandation est une piste d’orientation. Elle ne garantit ni l’éligibilité finale ni l’admission.
