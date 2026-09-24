@@ -23,9 +23,6 @@ export async function PUT(request: Request) {
     update.full_name = `${update.first_name} ${update.last_name}`;
   }
 
-  const { error } = await supabase.from("profiles").upsert({ id: user.id, ...update }, { onConflict: "id" });
-  if (error) return NextResponse.json({ error: "Impossible d’enregistrer le profil." }, { status: 500 });
-
   if (input.complete === true) {
     const { error: consentError } = await supabase.from("consents").upsert({
       user_id: user.id,
@@ -33,7 +30,15 @@ export async function PUT(request: Request) {
       policy_version: "v1",
       metadata: { source: "student_onboarding" },
     }, { onConflict: "user_id,consent_type,policy_version" });
-    if (consentError) return NextResponse.json({ error: "Le consentement n’a pas pu être enregistré." }, { status: 500 });
+    if (consentError) {
+      return NextResponse.json({ error: "Le consentement n’a pas pu être enregistré." }, { status: 500 });
+    }
   }
+
+  const { error } = await supabase
+    .from("profiles")
+    .upsert({ id: user.id, ...update }, { onConflict: "id" });
+  if (error) return NextResponse.json({ error: "Impossible d’enregistrer le profil." }, { status: 500 });
+
   return NextResponse.json({ ok: true, completed: input.complete === true });
 }
