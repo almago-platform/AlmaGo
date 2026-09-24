@@ -196,7 +196,7 @@ export function AdminUniversitiesPanel({ universities }: { universities: Univers
               </p>
             </div>
             {editing && (
-              <Button type="button" variant="secondary" onClick={resetForm}>
+              <Button type="button" variant="secondary" onClick={resetForm} className="w-full justify-center sm:w-auto">
                 Annuler la modification
               </Button>
             )}
@@ -416,12 +416,13 @@ export function AdminUniversitiesPanel({ universities }: { universities: Univers
               )}
 
               <div className="mt-5 flex flex-col gap-2 border-t border-[var(--border)] pt-4 sm:flex-row sm:flex-wrap">
-                <Button type="button" variant="secondary" onClick={() => edit(university)}>
+                <Button type="button" variant="secondary" onClick={() => edit(university)} className="w-full justify-center sm:w-auto">
                   Modifier
                 </Button>
                 <Button
                   type="button"
                   variant="secondary"
+                  className="w-full justify-center sm:w-auto"
                   disabled={togglingId === university.id}
                   onClick={() => toggleActive(university)}
                 >
@@ -457,7 +458,7 @@ function FormSection({
   children: ReactNode;
 }) {
   return (
-    <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface-muted)]/35 p-4">
+    <section className="min-w-0 overflow-hidden rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface-muted)]/35 p-4">
       <h3 className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">{title}</h3>
       <div className="mt-4 space-y-3">{children}</div>
     </section>
@@ -474,7 +475,7 @@ function ToggleField({
   onChange: (checked: boolean) => void;
 }) {
   return (
-    <label className="flex min-h-12 items-center gap-3 rounded-[var(--radius-control)] border border-[var(--border)] bg-white px-3 py-2 text-sm font-medium text-slate-700">
+    <label className="flex min-h-12 min-w-0 items-center gap-3 rounded-[var(--radius-control)] border border-[var(--border)] bg-white px-3 py-2 text-sm font-medium text-slate-700">
       <input type="checkbox" checked={checked} onChange={(event) => onChange(event.target.checked)} />
       <span>{label}</span>
     </label>

@@ -299,7 +299,7 @@ export function AdminOrientationPanel({
                   as="article"
                   key={recommendation.id}
                   aria-labelledby={`admin-recommendation-title-${recommendation.id}`}
-                  className="min-w-0 break-words"
+                  className="min-w-0 overflow-hidden break-words"
                 >
                   <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
                     <div className="min-w-0">
@@ -339,6 +339,7 @@ export function AdminOrientationPanel({
                       onClick={() => archiveRecommendation(recommendation.id)}
                       disabled={archivingId === recommendation.id}
                       variant="secondary"
+                      className="w-full justify-center sm:w-auto"
                     >
                       {archivingId === recommendation.id ? "Archivage…" : "Archiver"}
                     </Button>
@@ -357,7 +358,7 @@ function ProfileItem({ label, value }: { label: string; value: string | number }
   return (
     <div>
       <dt className="text-xs text-slate-500">{label}</dt>
-      <dd className="mt-0.5 font-medium text-slate-900">{value}</dd>
+      <dd className="mt-0.5 font-medium text-slate-900 [overflow-wrap:anywhere]">{value}</dd>
     </div>
   );
 }
