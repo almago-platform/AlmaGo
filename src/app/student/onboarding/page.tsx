@@ -12,7 +12,13 @@ export default async function OnboardingPage() {
 
   if (!user) redirect("/login");
 
-  const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).single();
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select(
+      "first_name,last_name,birth_date,nationality,current_city,phone,last_diploma,bac_track,bac_year,general_average,institution,current_university_studies,current_field,university_semesters,german_level,english_level,french_level,language_certificate,language_certificate_other,target_degree,target_field,study_language,target_intake,preferred_cities,budget_range,onboarding_completed",
+    )
+    .eq("id", user.id)
+    .maybeSingle();
 
   if (profile?.onboarding_completed) redirect("/student");
 
