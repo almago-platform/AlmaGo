@@ -3,6 +3,7 @@ import Link from "next/link";
 import { HomeHeader } from "@/components/public/HomeHeader";
 import { HomeFooter } from "@/components/public/HomeClosing";
 import { PublicBreadcrumbs } from "@/components/public/PublicBreadcrumbs";
+import { HelpQuestionSearch } from "@/components/public/HelpQuestionSearch";
 
 export const metadata: Metadata = {
   title: "Centre d’aide | AlmaGo",
@@ -167,38 +168,7 @@ export default function HelpCenterPage() {
             </h2>
           </div>
 
-          <div className="mt-9 grid gap-6 lg:grid-cols-2">
-            {questions.map((group) => (
-              <section
-                key={group.category}
-                aria-labelledby={`help-${group.category.replace(/\s+/g, "-").toLowerCase()}`}
-                className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[#fbfaf8] p-5 sm:p-6"
-              >
-                <h3
-                  id={`help-${group.category.replace(/\s+/g, "-").toLowerCase()}`}
-                  className="text-xl font-bold tracking-tight text-slate-950"
-                >
-                  {group.category}
-                </h3>
-                <div className="mt-4 divide-y divide-[var(--border)]">
-                  {group.items.map((item) => (
-                    <details key={item.q} className="group">
-                      <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 py-4 font-bold text-slate-900 outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)]">
-                        <span>{item.q}</span>
-                        <span
-                          aria-hidden="true"
-                          className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[var(--brand-soft)] text-[var(--brand)] transition-transform group-open:rotate-45"
-                        >
-                          +
-                        </span>
-                      </summary>
-                      <p className="pb-4 pr-10 text-sm leading-6 text-slate-600">{item.a}</p>
-                    </details>
-                  ))}
-                </div>
-              </section>
-            ))}
-          </div>
+          <HelpQuestionSearch groups={questions} />
         </div>
       </section>
 
