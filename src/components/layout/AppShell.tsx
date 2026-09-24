@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { Button } from "@/components/ui/Button";
 import { createClient } from "@/lib/supabase/client";
 
@@ -69,9 +69,6 @@ export function AppShell({
   const currentItem = items.find((item) => isActive(pathname, item.href)) || items[0];
   const studentName = displayName?.trim() || "étudiant";
 
-  useEffect(() => {
-    setMobileMenuOpen(false);
-  }, [pathname]);
 
   async function signOut() {
     await createClient().auth.signOut();
@@ -159,7 +156,7 @@ export function AppShell({
           <>
             <header className="sticky top-0 z-30 border-b border-[var(--border)] bg-white/95 shadow-[0_8px_24px_-22px_rgba(15,23,42,0.35)] backdrop-blur lg:hidden">
               <div className="flex min-h-16 items-center justify-between gap-3 px-3 py-2.5 min-[360px]:px-4">
-                <Link href="/student" className="flex min-w-0 items-center gap-2.5" aria-label="Accueil AlmaGo">
+                <Link href="/student" onClick={() => setMobileMenuOpen(false)} className="flex min-w-0 items-center gap-2.5" aria-label="Accueil AlmaGo">
                   <span className="relative grid h-9 w-9 shrink-0 place-items-center rounded-[var(--radius-control)] bg-[var(--brand)] text-sm font-bold text-white">
                     A
                     <span aria-hidden="true" className="absolute -bottom-1 -right-1 h-2.5 w-2.5 rounded-full border-2 border-white bg-[var(--accent)]" />
@@ -196,6 +193,7 @@ export function AppShell({
                         <Link
                           key={item.href}
                           href={item.href}
+                          onClick={() => setMobileMenuOpen(false)}
                           aria-current={active ? "page" : undefined}
                           className={`flex min-h-14 items-center gap-3 rounded-[var(--radius-control)] border px-3.5 py-2.5 transition-colors ${active ? "border-[var(--brand-border)] bg-white text-[var(--brand)] shadow-sm" : "border-transparent bg-white/65 text-slate-700 hover:border-[var(--border)] hover:bg-white"}`}
                         >
