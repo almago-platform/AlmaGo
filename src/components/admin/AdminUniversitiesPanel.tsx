@@ -55,7 +55,7 @@ const empty: UniversityForm = {
   description: "",
   is_public: true,
   tuition_notes: "",
-  is_active: true,
+  is_active: false,
 };
 
 function universitySourceUrl(university: Pick<University, "source_url" | "website_url">) {
@@ -181,7 +181,7 @@ export function AdminUniversitiesPanel({
         tone: "success",
         text: editing
           ? "Les informations de l’université ont bien été mises à jour."
-          : "L’université a bien été ajoutée au catalogue.",
+          : "L’université a bien été ajoutée au catalogue en état inactif. Activez-la séparément après contrôle.",
       });
       resetForm();
       window.location.reload();
