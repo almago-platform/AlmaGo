@@ -22,7 +22,7 @@ export function HomeHeader() {
           <Link className="transition-colors hover:text-[var(--brand)]" href="/#role">Notre rôle</Link>
           <Link className="transition-colors hover:text-[var(--brand)]" href="/#espace">Votre espace</Link>
           <Link className="transition-colors hover:text-[var(--brand)]" href="/aide">Centre d’aide</Link>
-          <Link className="transition-colors hover:text-[var(--brand)]" href="/#confiance">Confiance</Link>
+          <Link className="transition-colors hover:text-[var(--brand)]" href="/confiance">Confiance</Link>
         </nav>
 
         <div className="flex shrink-0 items-center gap-2">
