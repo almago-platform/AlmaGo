@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getAdminUser } from "@/lib/auth/access";
 import { degreeLevels } from "@/lib/phase4";
+import { isHttpSourceUrl } from "@/lib/source-verification";
 
 function payload(body: Record<string, unknown>) {
   const intakeTerms = typeof body.intake_terms === "string" ? body.intake_terms.split(",").map(item => item.trim()).filter(Boolean).slice(0, 5) : [];
@@ -31,8 +32,15 @@ export async function POST(request: Request) {
   if (!body) return NextResponse.json({ error: "Données invalides." }, { status: 400 });
   const data = payload(body);
   if (!data.name || typeof data.university_id !== "string") return NextResponse.json({ error: "Université et nom du programme obligatoires." }, { status: 400 });
-  if (body.mark_verified === true && !data.source_url && !data.application_url) {
-    return NextResponse.json({ error: "Ajoutez une source officielle avant de confirmer la vérification." }, { status: 400 });
+  if (
+    body.mark_verified === true &&
+    !isHttpSourceUrl(data.source_url) &&
+    !isHttpSourceUrl(data.application_url)
+  ) {
+    return NextResponse.json(
+      { error: "Ajoutez une URL officielle valide (http/https) avant de confirmer la vérification." },
+      { status: 400 },
+    );
   }
   const { data: created, error } = await supabase.from("programs").insert(data).select("id").single();
   if (error) return NextResponse.json({ error: "Impossible de créer le programme." }, { status: 500 });
