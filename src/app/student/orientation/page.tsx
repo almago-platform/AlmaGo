@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/Card";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { StudentOrientationPanel } from "@/components/student/StudentOrientationPanel";
 import { createClient } from "@/lib/supabase/server";
-import { hasVerifiedProgramSource } from "@/lib/source-verification";
+import { isPublishableProgram } from "@/lib/source-verification";
 
 export const dynamic = "force-dynamic";
 
@@ -12,7 +12,7 @@ export default async function StudentOrientationPage() {
   const [{ data, error }, { data: applications, error: applicationsError }] = await Promise.all([
     supabase
       .from("program_recommendations")
-      .select("id,status,note,student_interest_at,programs(id,name,degree_level,field,teaching_language,winter_deadline,summer_deadline,application_url,source_url,verified_at,german_level_required,english_level_required,diploma_required,universities(name,city,bundesland))")
+      .select("id,status,note,student_interest_at,programs(id,name,degree_level,field,teaching_language,winter_deadline,summer_deadline,application_url,source_url,verified_at,is_active,german_level_required,english_level_required,diploma_required,universities(name,city,bundesland))")
       .eq("is_archived", false)
       .order("created_at", { ascending: false }),
     supabase.from("applications").select("program_id"),
@@ -24,7 +24,7 @@ export default async function StudentOrientationPage() {
 
   const visibleRecommendations = (data || []).filter((recommendation) => {
     const program = Array.isArray(recommendation.programs) ? recommendation.programs[0] : recommendation.programs;
-    return hasVerifiedProgramSource(program);
+    return isPublishableProgram(program);
   });
 
   return (
