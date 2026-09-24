@@ -79,7 +79,7 @@ export function HomeFooter() {
         </div>
 
         <div className="mt-10 flex flex-col gap-3 border-t border-white/10 pt-6 text-xs leading-5 text-indigo-200 sm:flex-row sm:items-center sm:justify-between">
-          <p>© AlmaGo · Plateforme de suivi d’un projet d’études en Allemagne.</p>
+          <p>© AlmaGo · Service de préparation et de suivi d’un projet d’études en Allemagne.</p>
           <p>Les informations officielles restent à vérifier auprès des organismes compétents.</p>
         </div>
       </div>
