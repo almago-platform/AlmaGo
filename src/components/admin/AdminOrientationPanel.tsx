@@ -85,16 +85,16 @@ export function AdminOrientationPanel({
 
       if (!response.ok) {
         setMessageKind("error");
-        setMessage(result.error || "Nous n’arrivons pas à enregistrer cette recommandation pour le moment. Rien d’autre n’a été modifié.");
+        setMessage(result.error || "Nous n’arrivons pas à enregistrer cette piste d’orientation pour le moment. Rien d’autre n’a été modifié.");
         return;
       }
 
       setMessageKind("success");
-      setMessage("La recommandation a bien été enregistrée et peut maintenant apparaître dans l’espace étudiant.");
+      setMessage("La piste d’orientation a bien été enregistrée et peut maintenant apparaître dans l’espace étudiant.");
       window.location.reload();
     } catch {
       setMessageKind("error");
-      setMessage("Nous n’arrivons pas à enregistrer cette recommandation pour le moment. Vérifiez votre connexion puis réessayez.");
+      setMessage("Nous n’arrivons pas à enregistrer cette piste d’orientation pour le moment. Vérifiez votre connexion puis réessayez.");
     } finally {
       setBusy(false);
     }
@@ -109,14 +109,14 @@ export function AdminOrientationPanel({
       if (!response.ok) {
         const result = await response.json().catch(() => ({}));
         setMessageKind("error");
-        setMessage(result.error || "Nous n’arrivons pas à archiver cette recommandation pour le moment.");
+        setMessage(result.error || "Nous n’arrivons pas à archiver cette piste d’orientation pour le moment.");
         return;
       }
 
       window.location.reload();
     } catch {
       setMessageKind("error");
-      setMessage("La recommandation n’a pas été archivée. Vérifiez votre connexion puis réessayez.");
+      setMessage("La piste d’orientation n’a pas été archivée. Vérifiez votre connexion puis réessayez.");
     } finally {
       setArchivingId(null);
     }
@@ -131,7 +131,7 @@ export function AdminOrientationPanel({
               Publication
             </p>
             <h2 id="new-recommendation-title" className="mt-1 text-xl font-semibold text-slate-950">
-              Nouvelle recommandation
+              Nouvelle piste d’orientation
             </h2>
           </div>
           <Badge variant="info">{completedStudents.length} profils prêts</Badge>
@@ -199,9 +199,9 @@ export function AdminOrientationPanel({
             </label>
           </StepBlock>
 
-          <StepBlock step="4" title="Qualifier la recommandation">
+          <StepBlock step="4" title="Qualifier la piste">
             <label className="block text-sm font-medium text-slate-700">
-              Statut de la recommandation
+              Statut de la piste d’orientation
               <select value={status} onChange={(event) => setStatus(event.target.value)} className="field">
                 {recommendationStatuses.map((item) => (
                   <option key={item} value={item}>
@@ -218,7 +218,7 @@ export function AdminOrientationPanel({
               <textarea
                 value={note}
                 onChange={(event) => setNote(event.target.value)}
-                placeholder="Expliquez les éléments vérifiés qui motivent cette recommandation."
+                placeholder="Expliquez les éléments vérifiés qui motivent cette piste d’orientation."
                 className="field min-h-28 resize-y"
               />
             </label>
@@ -232,10 +232,10 @@ export function AdminOrientationPanel({
 
           <StepBlock step="6" title="Publier">
             <div className="rounded-[var(--radius-control)] border border-amber-200 bg-amber-50/60 p-3 text-xs leading-5 text-amber-900">
-              Une recommandation accompagne l’orientation. Elle ne constitue ni une décision officielle, ni une garantie d’admission.
+              Une piste d’orientation accompagne le dossier. Elle ne constitue ni une décision officielle, ni une garantie d’admission.
             </div>
             <Button disabled={busy} type="submit" className="mt-4 w-full">
-              {busy ? "Enregistrement…" : "Publier la recommandation"}
+              {busy ? "Enregistrement…" : "Publier la piste"}
             </Button>
 
             {message && (
@@ -259,10 +259,10 @@ export function AdminOrientationPanel({
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Suivi publié</p>
             <h2 id="admin-recommendations-title" className="mt-1 text-2xl font-bold tracking-[-0.03em] text-slate-950">
-              Recommandations actives
+              Pistes d’orientation actives
             </h2>
             <p className="mt-1 text-sm leading-6 text-slate-600">
-              Retrouvez ce qui est actuellement publié pour les étudiants, puis archivez uniquement les recommandations qui ne doivent plus rester actives.
+              Retrouvez ce qui est actuellement publié pour les étudiants, puis archivez uniquement les pistes qui ne doivent plus rester actives.
             </p>
           </div>
           <Badge variant={visible.length ? "info" : "neutral"}>{visible.length} visible{visible.length > 1 ? "s" : ""}</Badge>
@@ -283,9 +283,9 @@ export function AdminOrientationPanel({
         <div className="mt-5 space-y-4">
           {visible.length === 0 ? (
             <Card className="border-dashed bg-white/70 py-9 text-center shadow-none">
-              <h3 className="font-bold text-slate-950">Aucune recommandation active ne correspond à cette vue.</h3>
+              <h3 className="font-bold text-slate-950">Aucune piste d’orientation active ne correspond à cette vue.</h3>
               <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-slate-600">
-                Modifiez la recherche ou publiez une recommandation depuis le formulaire. Rien n’a été supprimé.
+                Modifiez la recherche ou publiez une piste depuis le formulaire. Rien n’a été supprimé.
               </p>
             </Card>
           ) : (
@@ -328,12 +328,12 @@ export function AdminOrientationPanel({
                       <Badge variant="info">Visible par l’étudiant</Badge>
                     </div>
                     <p className="mt-2 text-sm leading-6 text-slate-700 [overflow-wrap:anywhere]">
-                      {recommendation.note || "Aucune justification n’est enregistrée pour cette recommandation."}
+                      {recommendation.note || "Aucune justification n’est enregistrée pour cette piste d’orientation."}
                     </p>
                   </div>
 
                   <div className="mt-4 flex flex-col gap-3 border-t border-[var(--border)] pt-4 sm:flex-row sm:items-center sm:justify-between">
-                    <p className="text-xs leading-5 text-slate-500">Archiver retire cette recommandation de la vue active sans la supprimer de l’historique.</p>
+                    <p className="text-xs leading-5 text-slate-500">Archiver retire cette piste de la vue active sans la supprimer de l’historique.</p>
                     <Button
                       type="button"
                       onClick={() => archiveRecommendation(recommendation.id)}
