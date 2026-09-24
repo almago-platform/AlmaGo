@@ -67,3 +67,13 @@ test("profile page loads only fields used by the form", () => {
   assert.match(profilePage, /target_degree,target_field,study_language,target_intake/);
   assert.match(profilePage, /preferred_cities,budget_range,onboarding_completed/);
 });
+
+
+test("completed profiles cannot lose required identity or study-plan fields", () => {
+  assert.match(profileRoute, /select\("first_name,last_name,nationality,target_degree,target_field,study_language,target_intake,onboarding_completed"\)/);
+  assert.match(profileRoute, /const mergedProfile = \{ \.\.\.\(currentProfile \|\| \{\}\), \.\.\.update \}/);
+  assert.match(profileRoute, /currentProfile\?\.onboarding_completed/);
+  assert.match(profileRoute, /requiredKeys\.some/);
+  assert.match(profileRoute, /Les informations essentielles du profil doivent rester complètes/);
+  assert.match(profileRoute, /status: 400/);
+});
