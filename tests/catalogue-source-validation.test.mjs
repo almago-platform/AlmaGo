@@ -184,3 +184,13 @@ test("catalogue payloads normalize blank URLs and deadline whitespace", () => {
   assert.match(universityCreate, /body\.source_url\.trim\(\) \? body\.source_url\.trim\(\) : null/);
   assert.match(universityUpdate, /body\.website_url\.trim\(\) \? body\.website_url\.trim\(\) : null/);
 });
+
+
+test("catalogue routes reject malformed UUIDs before database access", () => {
+  assert.match(programCreate, /isUuid\(data\.university_id\)/);
+  assert.match(programUpdate, /isUuid\(id\)/);
+  assert.match(programUpdate, /isUuid\(data\.university_id\)/);
+  assert.match(universityUpdate, /isUuid\(id\)/);
+  assert.match(programUpdate, /Identifiant de programme invalide/);
+  assert.match(universityUpdate, /Identifiant d’université invalide/);
+});
