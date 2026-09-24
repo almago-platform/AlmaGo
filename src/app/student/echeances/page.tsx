@@ -267,7 +267,7 @@ export default async function StudentDeadlinesPage() {
                           </a>
                           <p className="mt-2 text-xs leading-5 text-slate-500">
                             {checkedAt
-                              ? `Fiche programme vérifiée dans AlmaGo le ${checkedAt}.`
+                              ? `Dernière date de vérification enregistrée dans AlmaGo : ${checkedAt}. Confirmez toujours l’échéance sur la source officielle.`
                               : "Aucune date de vérification de la fiche programme n’est enregistrée."}
                           </p>
                         </>
