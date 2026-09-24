@@ -8,7 +8,16 @@ export async function POST(request: Request) {
   if (!user) return NextResponse.json({ error: "Non authentifié." }, { status: 401 });
   if (!isAdmin) return NextResponse.json({ error: "Accès non autorisé." }, { status: 403 });
   const body = await request.json().catch(() => null) as Record<string, unknown> | null;
-  if (!body || typeof body.name !== "string" || !body.name.trim()) return NextResponse.json({ error: "Le nom de l’université est obligatoire." }, { status: 400 });
+  if (!body) return NextResponse.json({ error: "Données invalides." }, { status: 400 });
+  for (const key of ["is_active", "is_public"] as const) {
+    if (typeof body[key] !== "boolean") {
+      return NextResponse.json(
+        { error: "Les états actif/public de l’établissement doivent être explicitement définis." },
+        { status: 400 },
+      );
+    }
+  }
+  if (typeof body.name !== "string" || !body.name.trim()) return NextResponse.json({ error: "Le nom de l’université est obligatoire." }, { status: 400 });
   if (!universityTypes.includes(body.university_type as (typeof universityTypes)[number])) {
     return NextResponse.json({ error: "Choisissez un type d’établissement valide." }, { status: 400 });
   }
