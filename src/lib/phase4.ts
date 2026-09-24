@@ -82,6 +82,26 @@ export function formatDeadline(value: string | null | undefined) {
   return new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium" }).format(new Date(`${value}T12:00:00Z`));
 }
 
+export function daysUntilDeadline(deadline: string, now = new Date()) {
+  if (!isValidDateOnly(deadline)) return null;
+
+  const parts = new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Europe/Berlin",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(now);
+  const part = (type: string) => parts.find((item) => item.type === type)?.value || "";
+  const today = `${part("year")}-${part("month")}-${part("day")}`;
+
+  const [targetYear, targetMonth, targetDay] = deadline.split("-").map(Number);
+  const [todayYear, todayMonth, todayDay] = today.split("-").map(Number);
+  const targetUtc = Date.UTC(targetYear, targetMonth - 1, targetDay);
+  const todayUtc = Date.UTC(todayYear, todayMonth - 1, todayDay);
+
+  return Math.round((targetUtc - todayUtc) / 86_400_000);
+}
+
 export function statusTone(status: string) {
   if (["admission", "accepted", "recommended", "possible"].includes(status)) return "bg-emerald-100 text-emerald-800";
   if (["ambitious", "preparing", "ready_to_submit", "submitted", "waiting_university", "in_review"].includes(status)) return "bg-blue-100 text-blue-800";
