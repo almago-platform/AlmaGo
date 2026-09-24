@@ -6,7 +6,7 @@ import { Button, buttonClassName } from "@/components/ui/Button";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Card } from "@/components/ui/Card";
 import { formatDeadline, recommendationStatusLabels } from "@/lib/phase4";
-import { isHttpSourceUrl } from "@/lib/source-verification";
+import { hasVerifiedProgramSource, isHttpSourceUrl } from "@/lib/source-verification";
 
 type University = { name: string; city: string; bundesland?: string | null };
 type Program = {
@@ -288,9 +288,9 @@ export function StudentOrientationPanel({
                               Consulter la source officielle
                             </a>
                             <p className="mt-2 text-xs leading-5 text-slate-500">
-                              {formatVerificationDate(program.verified_at)
-                                ? `Vérifié dans AlmaGo le ${formatVerificationDate(program.verified_at)}.`
-                                : "Date de vérification non enregistrée."}
+                              {hasVerifiedProgramSource(program) && formatVerificationDate(program.verified_at)
+                                ? `Dernière vérification enregistrée dans AlmaGo : ${formatVerificationDate(program.verified_at)}. Vérifiez toujours les informations sur la source officielle.`
+                                : "Aucune date de vérification fiable n’est enregistrée pour cette fiche."}
                             </p>
                           </>
                         ) : (
@@ -405,10 +405,10 @@ export function StudentOrientationPanel({
                   }`}>
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">Source officielle</p>
-                      <Badge variant={program.verified_at ? "success" : "neutral"}>
-                        {formatVerificationDate(program.verified_at)
-                          ? `Vérifié le ${formatVerificationDate(program.verified_at)}`
-                          : "Vérification non datée"}
+                      <Badge variant={hasVerifiedProgramSource(program) ? "success" : "neutral"}>
+                        {hasVerifiedProgramSource(program) && formatVerificationDate(program.verified_at)
+                          ? `Vérification enregistrée · ${formatVerificationDate(program.verified_at)}`
+                          : "Vérification à confirmer"}
                       </Badge>
                     </div>
                     {officialSourceUrl(program) ? (
