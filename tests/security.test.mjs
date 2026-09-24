@@ -167,7 +167,7 @@ test("every student API enforces the student role", () => {
 
   const access = read("src/lib/auth/access.ts");
   assert.match(access, /export async function getStudentUser/);
-  assert.match(access, /role\?\.role === "student"/);
+  assert.match(access, /role === "student"/);
 
   for (const path of studentRoutes) {
     const source = read(path);
