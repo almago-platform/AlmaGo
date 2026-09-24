@@ -14,10 +14,9 @@ test("admin and student areas keep server-side authentication guards", () => {
   const adminLayout = read("src/app/admin/layout.tsx");
   const studentLayout = read("src/app/student/layout.tsx");
 
-  assert.match(adminLayout, /auth\.getUser\(\)/);
-  assert.match(adminLayout, /from\("user_roles"\)/);
-  assert.match(adminLayout, /role\?\.role !== "admin"/);
-  assert.match(adminLayout, /redirect\("\/unauthorized"\)/);
+  assert.match(adminLayout, /getAdminUser\(\)/);
+  assert.match(adminLayout, /if \(!user\) redirect\("\/login"\)/);
+  assert.match(adminLayout, /if \(!isAdmin\) redirect\("\/unauthorized"\)/);
 
   assert.match(studentLayout, /getStudentUser\(\)/);
   assert.match(studentLayout, /if \(!user\) redirect\("\/login"\)/);
@@ -163,7 +162,6 @@ test("every student API enforces the student role", () => {
     "src/app/api/student/profile/route.ts",
   ];
 
-  const access = read("src/lib/auth/access.ts");
   assert.match(access, /export async function getStudentUser/);
   assert.match(access, /role === "student"/);
 
