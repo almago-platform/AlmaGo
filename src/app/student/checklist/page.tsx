@@ -160,7 +160,7 @@ export default async function ChecklistPage() {
                         <div className="min-w-0">
                           <div className="flex flex-wrap items-center gap-2">
                             <Badge variant={badgeVariants[item.status as keyof typeof badgeVariants] || "neutral"}>
-                              {labels[item.status] || item.status}
+                              {labels[item.status] || "Statut à vérifier"}
                             </Badge>
                             {item.status === "todo" && <span className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">Étape ouverte</span>}
                           </div>
