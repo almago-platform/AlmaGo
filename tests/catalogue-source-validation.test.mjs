@@ -131,8 +131,13 @@ test("material programme changes invalidate stale verification", () => {
 });
 
 
-test("university source changes still invalidate stale verification", () => {
-  assert.match(universityUpdate, /mark_verified === true \|\| !sourceChanged/);
+test("material university changes invalidate stale verification", () => {
+  assert.match(universityUpdate, /const verificationContentChanged =/);
+  assert.match(universityUpdate, /existing\.name !== nextUniversity\.name/);
+  assert.match(universityUpdate, /existing\.university_type !== nextUniversity\.university_type/);
+  assert.match(universityUpdate, /existing\.is_public !== nextUniversity\.is_public/);
+  assert.match(universityUpdate, /existing\.tuition_notes !== nextUniversity\.tuition_notes/);
+  assert.match(universityUpdate, /mark_verified === true \|\| !verificationContentChanged/);
 });
 
 
@@ -186,7 +191,8 @@ test("catalogue payloads normalize blank URLs and deadline whitespace", () => {
   assert.match(programCreate, /body\.source_url\.trim\(\) \? body\.source_url\.trim\(\) : null/);
   assert.match(universityCreate, /body\.website_url\.trim\(\) \? body\.website_url\.trim\(\) : null/);
   assert.match(universityCreate, /body\.source_url\.trim\(\) \? body\.source_url\.trim\(\) : null/);
-  assert.match(universityUpdate, /body\.website_url\.trim\(\) \? body\.website_url\.trim\(\) : null/);
+  assert.match(universityUpdate, /website_url: websiteUrl \|\| null/);
+  assert.match(universityUpdate, /const optionalText =/);
 });
 
 
@@ -238,4 +244,13 @@ test("programme verification comparison handles null averages without false chan
   assert.match(programUpdate, /existing\.indicative_average == null \? null : Number/);
   assert.match(programUpdate, /data\.indicative_average == null \? null : Number/);
   assert.doesNotMatch(programUpdate, /indicative_average \?\? NaN/);
+});
+
+
+test("university verification ignores logo-only maintenance", () => {
+  const comparisonBlock = universityUpdate.slice(
+    universityUpdate.indexOf("const verificationContentChanged"),
+    universityUpdate.indexOf("const verificationPatch"),
+  );
+  assert.doesNotMatch(comparisonBlock, /logo_url/);
 });
