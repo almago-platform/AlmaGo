@@ -168,7 +168,7 @@ test("activation-only catalogue patches return 404 when the target no longer exi
 
 test("catalogue routes reject invalid enum values instead of silently inventing defaults", () => {
   assert.match(programCreate, /Choisissez un niveau de diplôme valide/);
-  assert.match(programUpdate, /Choisissez un niveau de diplôme valide/);
+  assert.match(programUpdate, /programValidationError\(body\)/);
   assert.match(universityCreate, /Choisissez un type d’établissement valide/);
   assert.match(universityUpdate, /Choisissez un type d’établissement valide/);
   assert.doesNotMatch(universityCreate, /\? body\.university_type : "Universität"/);
