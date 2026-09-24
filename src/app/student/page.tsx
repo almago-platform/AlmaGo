@@ -30,11 +30,17 @@ export default async function StudentEntry() {
     { data: documents, error: documentsError },
     { data: recommendations, error: recommendationsError },
     { data: applications, error: applicationsError },
+    { data: dossierHistory, error: dossierHistoryError },
   ] = await Promise.all([
     supabase.from("student_checklist_items").select("title,status").order("created_at"),
     supabase.from("documents").select("id,status"),
     supabase.from("program_recommendations").select("id,programs(name,universities(name))").eq("is_archived", false),
-    supabase.from("applications").select("id,status,deadline,next_action,programs(name)").order("deadline", { ascending: true, nullsFirst: false }),
+    supabase.from("applications").select("id,status,deadline,next_action,programs(name),application_events(id,event_type,message,created_at)").order("deadline", { ascending: true, nullsFirst: false }),
+    supabase
+      .from("student_history")
+      .select("id,event_type,message,created_at")
+      .order("created_at", { ascending: false })
+      .limit(10),
   ]);
 
   if (itemsError || documentsError || recommendationsError || applicationsError) {
@@ -45,6 +51,36 @@ export default async function StudentEntry() {
   const studentDocuments = documents || [];
   const studentRecommendations = recommendations || [];
   const studentApplications = applications || [];
+  const documentHistory = dossierHistory || [];
+
+  const applicationHistory = studentApplications.flatMap((application) => {
+    const program = Array.isArray(application.programs) ? application.programs[0] : application.programs;
+    const events = Array.isArray(application.application_events) ? application.application_events : [];
+
+    return events.map((event) => ({
+      id: `application-${event.id}`,
+      kind: "Candidature" as const,
+      message: event.message || "Candidature mise à jour.",
+      created_at: event.created_at,
+      href: "/student/applications",
+      context: program?.name || null,
+    }));
+  });
+
+  const visibleHistory = [
+    ...documentHistory.map((event) => ({
+      id: `document-${event.id}`,
+      kind: "Document" as const,
+      message: event.message,
+      created_at: event.created_at,
+      href: "/student/documents",
+      context: null,
+    })),
+    ...applicationHistory,
+  ]
+    .filter((event) => Boolean(event.created_at))
+    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+    .slice(0, 8);
 
   const completed = checklist.filter((item) => item.status === "completed").length;
   const progression = checklist.length ? Math.round((completed / checklist.length) * 100) : 0;
@@ -217,6 +253,65 @@ export default async function StudentEntry() {
 
       <StudentJourneyOverview stages={journeyStages} />
 
+      <section className="mt-10" aria-labelledby="history-title">
+        <div className="mb-5 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Suivi du dossier</p>
+            <h2 id="history-title" className="mt-2 text-2xl font-bold tracking-[-0.03em] text-slate-950">
+              Historique de mon dossier
+            </h2>
+            <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
+              Retrouvez ici les derniers événements visibles enregistrés pour vos documents et vos candidatures.
+            </p>
+          </div>
+        </div>
+
+        <Card className="overflow-hidden bg-white shadow-none">
+          {visibleHistory.length ? (
+            <ol className="divide-y divide-[var(--border)]" aria-label="Derniers événements visibles du dossier">
+              {visibleHistory.map((event) => (
+                <li key={event.id} className="grid gap-3 py-4 first:pt-0 last:pb-0 sm:grid-cols-[auto_1fr_auto] sm:items-start">
+                  <span
+                    className={`inline-flex w-fit rounded-full px-2.5 py-1 text-xs font-bold ${
+                      event.kind === "Document"
+                        ? "bg-blue-50 text-blue-800"
+                        : "bg-[var(--brand-soft)] text-[var(--brand)]"
+                    }`}
+                  >
+                    {event.kind}
+                  </span>
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold leading-6 text-slate-900">{event.message}</p>
+                    {event.context && (
+                      <p className="mt-1 text-xs leading-5 text-slate-500">{event.context}</p>
+                    )}
+                    <p className="mt-1 text-xs text-slate-400">{formatHistoryDate(event.created_at)}</p>
+                  </div>
+                  <Link
+                    href={event.href}
+                    className="inline-flex min-h-10 items-center text-sm font-bold text-[var(--brand)] hover:underline hover:underline-offset-4"
+                  >
+                    Voir
+                  </Link>
+                </li>
+              ))}
+            </ol>
+          ) : (
+            <div className="rounded-[var(--radius-control)] bg-[var(--surface-muted)]/55 p-5">
+              <p className="font-bold text-slate-900">Aucun événement visible n’est encore enregistré.</p>
+              <p className="mt-2 text-sm leading-6 text-slate-600">
+                Les mises à jour visibles de documents et de candidatures apparaîtront ici lorsqu’elles seront enregistrées.
+              </p>
+              {dossierHistoryError && (
+                <p className="mt-3 text-xs leading-5 text-amber-800">
+                  L’historique des documents est temporairement incomplet.
+                </p>
+              )}
+            </div>
+          )}
+        </Card>
+      </section>
+
       <section className="mt-10" aria-labelledby="overview-title">
         <div className="mb-5">
           <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Vue d’ensemble</p>
@@ -338,6 +433,17 @@ function OverviewCard({
       <p className="mt-3 text-sm leading-6 text-slate-600">{detail}</p>
     </Link>
   );
+}
+
+function formatHistoryDate(value: string) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "Date non disponible";
+
+  return new Intl.DateTimeFormat("fr-FR", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  }).format(date);
 }
 
 function DashboardUnavailable() {
