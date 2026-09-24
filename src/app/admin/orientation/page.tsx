@@ -18,7 +18,7 @@ export default async function AdminOrientationPage() {
       .order("last_name"),
     supabase
       .from("programs")
-      .select("id,name,degree_level,field,universities(name,city)")
+      .select("id,name,degree_level,field,source_url,application_url,verified_at,universities(name,city)")
       .eq("is_active", true)
       .order("name"),
     supabase
@@ -48,7 +48,7 @@ export default async function AdminOrientationPage() {
       <PageHeader
         badge="Équipe AlmaGo"
         title="Orientation des étudiants"
-        description="Préparez une piste d’orientation à partir du profil enregistré, documentez les éléments vérifiés et gardez explicite la frontière entre orientation et décision d’admission."
+        description="Préparez une piste d’orientation à partir du profil enregistré. Seuls les programmes avec une source officielle et une date de vérification peuvent être publiés pour un étudiant."
       />
       <AdminOrientationPanel
         students={students || []}
