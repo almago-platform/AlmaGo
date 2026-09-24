@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   applicationStatuses,
+  daysUntilDeadline,
   formatDeadline,
   isActiveApplication,
   isPastDeadline,
@@ -56,4 +57,15 @@ test("invalid or missing deadlines are never treated as real deadlines", () => {
   }
   assert.equal(formatDeadline(null), "Date à confirmer");
   assert.equal(formatDeadline(undefined), "Date à confirmer");
+});
+
+
+test("deadline countdown follows the same Berlin calendar day", () => {
+  const beforeBerlinMidnight = new Date("2026-09-23T21:59:00Z");
+  const afterBerlinMidnight = new Date("2026-09-23T22:01:00Z");
+
+  assert.equal(daysUntilDeadline("2026-09-24", beforeBerlinMidnight), 1);
+  assert.equal(daysUntilDeadline("2026-09-24", afterBerlinMidnight), 0);
+  assert.equal(daysUntilDeadline("2026-09-23", afterBerlinMidnight), -1);
+  assert.equal(daysUntilDeadline("2026-02-30", afterBerlinMidnight), null);
 });
