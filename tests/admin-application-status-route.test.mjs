@@ -13,7 +13,7 @@ test("admin application status route reads all database states but only writes c
 });
 
 test("admin application status route maps invalid and missing targets cleanly", () => {
-  assert.match(route, /error\?\.code === "22P02"/);
+  assert.match(route, /currentApplicationError\?\.code === "22P02"/);
   assert.match(route, /Identifiant de candidature invalide/);
   assert.match(route, /status: 400/);
   assert.match(route, /application_not_found/);
