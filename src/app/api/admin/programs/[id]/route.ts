@@ -29,6 +29,15 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     return NextResponse.json({ ok: true });
   }
 
+  for (const key of ["is_active", "studienkolleg_required", "testas_required", "uni_assist_required"] as const) {
+    if (typeof body[key] !== "boolean") {
+      return NextResponse.json(
+        { error: "Les choix structurants du programme doivent être explicitement définis." },
+        { status: 400 },
+      );
+    }
+  }
+
   const validationError = programValidationError(body);
   if (validationError) return NextResponse.json({ error: validationError }, { status: 400 });
   const data = programPayload(body);
