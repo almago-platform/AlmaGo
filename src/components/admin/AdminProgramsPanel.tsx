@@ -212,7 +212,7 @@ export function AdminProgramsPanel({
               </p>
             </div>
             {editing && (
-              <Button type="button" variant="secondary" onClick={resetForm}>
+              <Button type="button" variant="secondary" onClick={resetForm} className="w-full justify-center sm:w-auto">
                 Annuler la modification
               </Button>
             )}
@@ -419,7 +419,7 @@ export function AdminProgramsPanel({
               )}
 
               <div className="mt-5 border-t border-[var(--border)] pt-4">
-                <Button type="button" variant="secondary" onClick={() => edit(program)}>Modifier</Button>
+                <Button type="button" variant="secondary" onClick={() => edit(program)} className="w-full justify-center sm:w-auto">Modifier</Button>
               </div>
             </Card>
           ))}
@@ -438,7 +438,7 @@ export function AdminProgramsPanel({
 
 function FormSection({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface-muted)]/35 p-4">
+    <section className="min-w-0 overflow-hidden rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface-muted)]/35 p-4">
       <h3 className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">{title}</h3>
       <div className="mt-4">{children}</div>
     </section>
@@ -447,7 +447,7 @@ function FormSection({ title, children }: { title: string; children: ReactNode }
 
 function ToggleField({ label, checked, onChange }: { label: string; checked: boolean; onChange: (checked: boolean) => void }) {
   return (
-    <label className="flex min-h-12 items-center gap-3 rounded-[var(--radius-control)] border border-[var(--border)] bg-white px-3 py-2 text-sm font-medium text-slate-700">
+    <label className="flex min-h-12 min-w-0 items-center gap-3 rounded-[var(--radius-control)] border border-[var(--border)] bg-white px-3 py-2 text-sm font-medium text-slate-700">
       <input type="checkbox" checked={checked} onChange={(event) => onChange(event.target.checked)} />
       <span>{label}</span>
     </label>
