@@ -14,7 +14,7 @@ export async function POST(request: Request) {
   const program = Array.isArray(recommendation.programs) ? recommendation.programs[0] : recommendation.programs;
   if (!isPublishableProgram(program)) {
     return NextResponse.json(
-      { error: "Cette piste doit être vérifiée avant de pouvoir créer une candidature." },
+      { error: "Cette piste n’est plus disponible pour créer une candidature. Vérifiez qu’elle est active et toujours appuyée par une source officielle vérifiée." },
       { status: 400 },
     );
   }
