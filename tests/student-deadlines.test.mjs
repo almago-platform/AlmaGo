@@ -56,3 +56,16 @@ test("deadline center uses one render instant for every countdown", () => {
   assert.match(page, /daysUntilDeadline\(application\.deadline, now\)/);
   assert.doesNotMatch(page, /daysUntilDeadline\(application\.deadline\) : null/);
 });
+
+
+test("deadline center describes its chronological ordering accurately", () => {
+  assert.match(page, /Les dates sont classées chronologiquement/);
+  assert.doesNotMatch(page, /de la plus proche à la plus éloignée/);
+});
+
+test("official deadline source link announces its new tab", () => {
+  assert.match(page, /aria-label=\{\`Consulter la page officielle de/);
+  assert.match(page, /\(nouvel onglet\)/);
+  assert.match(page, /target="_blank"/);
+  assert.match(page, /rel="noreferrer"/);
+});
