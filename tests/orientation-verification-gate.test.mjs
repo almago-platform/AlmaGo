@@ -12,6 +12,7 @@ import {
 const studentPage = readFileSync("src/app/student/orientation/page.tsx", "utf8");
 const studentDashboard = readFileSync("src/app/student/page.tsx", "utf8");
 const studentApplicationsRoute = readFileSync("src/app/api/student/applications/route.ts", "utf8");
+const studentApplicationsPage = readFileSync("src/app/student/applications/page.tsx", "utf8");
 const adminOrientationRoute = readFileSync("src/app/api/admin/orientation/route.ts", "utf8");
 const adminOrientationPage = readFileSync("src/app/admin/orientation/page.tsx", "utf8");
 const adminOrientationPanel = readFileSync("src/components/admin/AdminOrientationPanel.tsx", "utf8");
@@ -212,4 +213,13 @@ test("admin orientation selector offers only completed student-role profiles", (
   assert.match(adminOrientationPage, /studentRoleIds=\{\(studentRoles \|\| \[\]\)\.map/);
   assert.match(adminOrientationPanel, /studentRoleIds: string\[\]/);
   assert.match(adminOrientationPanel, /student\.onboarding_completed && studentRoleIdSet\.has\(student\.id\)/);
+});
+
+
+test("existing applications remain visible independently of later catalogue publication state", () => {
+  assert.match(studentApplicationsPage, /from\("applications"\)/);
+  assert.match(studentApplicationsPage, /programs\(name,degree_level,universities\(name,city\)\)/);
+  assert.doesNotMatch(studentApplicationsPage, /isPublishableProgram/);
+  assert.doesNotMatch(studentApplicationsPage, /verified_at/);
+  assert.doesNotMatch(studentApplicationsPage, /\.eq\("is_active", true\)/);
 });
