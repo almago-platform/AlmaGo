@@ -17,6 +17,8 @@ type Program = {
   winter_deadline: string | null;
   summer_deadline?: string | null;
   application_url: string | null;
+  source_url: string | null;
+  verified_at: string | null;
   german_level_required: string | null;
   english_level_required: string | null;
   diploma_required: string | null;
@@ -54,6 +56,22 @@ function firstProgram(recommendation: Recommendation) {
 
 function firstUniversity(program: Program | null | undefined) {
   return Array.isArray(program?.universities) ? program?.universities[0] : program?.universities;
+}
+
+function officialSourceUrl(program: Program) {
+  return program.source_url || program.application_url;
+}
+
+function formatVerificationDate(value: string | null) {
+  if (!value) return null;
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return null;
+
+  return new Intl.DateTimeFormat("fr-FR", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  }).format(date);
 }
 
 export function StudentOrientationPanel({
@@ -256,15 +274,22 @@ export function StudentOrientationPanel({
                         />
                       </dl>
                       <div className="mt-4 border-t border-[var(--border)] pt-4">
-                        {program.application_url ? (
-                          <a
-                            href={program.application_url}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="text-sm font-bold text-[var(--brand)] underline decoration-[var(--brand-border)] underline-offset-4 hover:text-[var(--brand-hover)]"
-                          >
-                            Consulter la source officielle
-                          </a>
+                        {officialSourceUrl(program) ? (
+                          <>
+                            <a
+                              href={officialSourceUrl(program) || "#"}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="text-sm font-bold text-[var(--brand)] underline decoration-[var(--brand-border)] underline-offset-4 hover:text-[var(--brand-hover)]"
+                            >
+                              Consulter la source officielle
+                            </a>
+                            <p className="mt-2 text-xs leading-5 text-slate-500">
+                              {formatVerificationDate(program.verified_at)
+                                ? `Vérifié dans AlmaGo le ${formatVerificationDate(program.verified_at)}.`
+                                : "Date de vérification non enregistrée."}
+                            </p>
+                          </>
                         ) : (
                           <p className="text-xs leading-5 text-slate-500">Source officielle à vérifier auprès de l’établissement.</p>
                         )}
@@ -371,18 +396,25 @@ export function StudentOrientationPanel({
                   </div>
 
                   <div className={`mt-4 rounded-[var(--radius-control)] border p-4 ${
-                    program.application_url
+                    officialSourceUrl(program)
                       ? "border-[var(--brand-border)] bg-[var(--brand-soft)]/45"
                       : "border-[var(--border)] bg-[var(--surface-muted)]"
                   }`}>
-                    <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">Source officielle</p>
-                    {program.application_url ? (
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">Source officielle</p>
+                      <Badge variant={program.verified_at ? "success" : "neutral"}>
+                        {formatVerificationDate(program.verified_at)
+                          ? `Vérifié le ${formatVerificationDate(program.verified_at)}`
+                          : "Vérification non datée"}
+                      </Badge>
+                    </div>
+                    {officialSourceUrl(program) ? (
                       <>
                         <p className="mt-2 text-sm leading-6 text-slate-700">
                           Consultez la page officielle avant de vous appuyer sur une condition, une date limite ou une procédure de candidature.
                         </p>
                         <a
-                          href={program.application_url}
+                          href={officialSourceUrl(program) || "#"}
                           aria-label={`Consulter la source officielle de ${program.name} (nouvel onglet)`}
                           target="_blank"
                           rel="noreferrer"
@@ -390,6 +422,11 @@ export function StudentOrientationPanel({
                         >
                           Consulter la source officielle
                         </a>
+                        {!program.verified_at && (
+                          <p className="mt-2 text-xs leading-5 text-slate-500">
+                            La source est enregistrée, mais aucune date de vérification n’est encore indiquée dans AlmaGo.
+                          </p>
+                        )}
                       </>
                     ) : (
                       <p className="mt-2 text-sm leading-6 text-slate-600">
