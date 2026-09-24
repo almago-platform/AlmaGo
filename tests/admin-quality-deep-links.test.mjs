@@ -24,6 +24,6 @@ test("catalogue pages accept quality filters from Next search params", () => {
 });
 
 test("catalogue panels reject unknown quality filters", () => {
-  assert.match(programsPanel, /\["all", "missing_source", "missing_verification", "missing_deadline"\]\.includes\(initialQuality\)/);
+  assert.match(programsPanel, /\["all", "missing_source", "missing_verification", "missing_deadline", "inactive_university"\]\.includes\(initialQuality\)/);
   assert.match(universitiesPanel, /\["all", "missing_source", "missing_verification"\]\.includes\(initialQuality\)/);
 });
