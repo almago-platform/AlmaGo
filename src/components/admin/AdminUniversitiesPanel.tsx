@@ -330,7 +330,7 @@ export function AdminUniversitiesPanel({
                 onChange={(checked) => change("mark_verified", checked)}
               />
               <p className="text-xs leading-5 text-slate-500">
-                Cette confirmation met à jour la date de vérification. Une modification simple de la fiche ne change pas cette date.
+                Cette confirmation met à jour la date de vérification. Si vous changez un lien officiel sans reconfirmer la vérification, l’ancienne date sera retirée.
               </p>
               <label className="block text-sm font-medium text-slate-700">
                 URL du logo
