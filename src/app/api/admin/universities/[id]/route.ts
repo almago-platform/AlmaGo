@@ -29,6 +29,15 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     return NextResponse.json({ ok: true });
   }
 
+  for (const key of ["is_active", "is_public"] as const) {
+    if (typeof body[key] !== "boolean") {
+      return NextResponse.json(
+        { error: "Les états actif/public de l’établissement doivent être explicitement définis." },
+        { status: 400 },
+      );
+    }
+  }
+
   if (typeof body.name !== "string" || !body.name.trim()) return NextResponse.json({ error: "Le nom de l’université est obligatoire." }, { status: 400 });
   if (!universityTypes.includes(body.university_type as (typeof universityTypes)[number])) {
     return NextResponse.json({ error: "Choisissez un type d’établissement valide." }, { status: 400 });
