@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { getRoleUser } from "@/lib/auth/access";
 import { SwitchAccountButton } from "@/components/auth/SwitchAccountButton";
 
 export const metadata: Metadata = {
@@ -12,22 +12,13 @@ export const metadata: Metadata = {
 };
 
 export default async function UnauthorizedPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { user, role } = await getRoleUser();
 
   if (!user) redirect("/login");
 
   let homeHref = "/";
-  const { data: role } = await supabase
-    .from("user_roles")
-    .select("role")
-    .eq("user_id", user.id)
-    .maybeSingle();
-
-  if (role?.role === "admin") homeHref = "/admin";
-  if (role?.role === "student") homeHref = "/student";
+  if (role === "admin") homeHref = "/admin";
+  if (role === "student") homeHref = "/student";
 
   return (
     <main className="min-h-screen bg-slate-50 px-4 py-10 text-slate-950 sm:px-6 lg:px-8">
