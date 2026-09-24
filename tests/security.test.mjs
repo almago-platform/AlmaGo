@@ -212,11 +212,11 @@ test("password reset returns users to the space matching their role", () => {
 test("unauthorized recovery returns each user to their own role space", () => {
   const page = read("src/app/unauthorized/page.tsx");
 
+  assert.match(page, /getRoleUser\(\)/);
   assert.match(page, /if \(!user\) redirect\("\/login"\)/);
-  assert.match(page, /from\("user_roles"\)/);
-  assert.match(page, /role\?\.role === "admin"/);
+  assert.match(page, /role === "admin"/);
   assert.match(page, /homeHref = "\/admin"/);
-  assert.match(page, /role\?\.role === "student"/);
+  assert.match(page, /role === "student"/);
   assert.match(page, /homeHref = "\/student"/);
   assert.match(page, /href=\{homeHref\}/);
   assert.match(page, /Cet espace n’est pas accessible avec votre compte/);
