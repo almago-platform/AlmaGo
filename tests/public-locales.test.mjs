@@ -26,6 +26,7 @@ test("Arabic locale is prepared for right-to-left rendering before activation", 
   assert.ok(arabic);
   assert.equal(arabic.direction, "rtl");
   assert.equal(arabic.status, "planned");
+  assert.equal(arabic.openGraphLocale, null);
 });
 
 test("every public locale has complete metadata before it can become ready", () => {
@@ -33,7 +34,12 @@ test("every public locale has complete metadata before it can become ready", () 
     assert.match(locale.code, /^[a-z]{2}$/);
     assert.ok(locale.label.trim());
     assert.ok(locale.htmlLang.trim());
-    assert.match(locale.openGraphLocale, /^[a-z]{2}_[A-Z]{2}$/);
+    if (locale.status === "ready") {
+      assert.ok(locale.openGraphLocale, "ready locale requires Open Graph locale metadata");
+      assert.match(locale.openGraphLocale, /^[a-z]{2}_[A-Z]{2}$/);
+    } else if (locale.openGraphLocale) {
+      assert.match(locale.openGraphLocale, /^[a-z]{2}_[A-Z]{2}$/);
+    }
     assert.ok(["ltr", "rtl"].includes(locale.direction));
     assert.ok(["ready", "planned"].includes(locale.status));
   }
