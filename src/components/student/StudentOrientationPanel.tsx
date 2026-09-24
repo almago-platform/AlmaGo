@@ -37,11 +37,11 @@ type Recommendation = {
 type Feedback = { message: string; kind: "success" | "error" } | null;
 
 const studentRecommendationLabels: Record<string, string> = {
-  recommended: "Piste recommandée",
-  possible: "Piste possible",
-  ambitious: "Piste ambitieuse",
+  recommended: "Correspondance relevée",
+  possible: "Piste à examiner",
+  ambitious: "Prérequis élevés",
   missing_requirements: "Prérequis à compléter",
-  not_recommended: "Piste non recommandée",
+  not_recommended: "Écart avec le profil enregistré",
 };
 
 function recommendationVariant(status: string): "success" | "warning" | "info" | "neutral" {
