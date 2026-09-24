@@ -113,7 +113,8 @@ test("programme create requires an active university server-side", () => {
 });
 
 test("programme update blocks reassignment to an inactive university but preserves historical parent edits", () => {
-  assert.match(programUpdate, /source_url,application_url,university_id/);
+  assert.match(programUpdate, /select\("university_id,/);
+  assert.match(programUpdate, /application_url,source_url"\)/);
   assert.match(programUpdate, /if \(data\.university_id !== existing\.university_id\)/);
   assert.match(programUpdate, /from\("universities"\)/);
   assert.match(programUpdate, /Vous ne pouvez pas rattacher ce programme à une université inactive/);
