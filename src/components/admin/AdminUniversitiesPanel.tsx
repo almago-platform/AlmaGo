@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { universityTypes } from "@/lib/phase4";
-import { hasVerifiedUniversitySource, isHttpSourceUrl } from "@/lib/source-verification";
+import { hasVerifiedUniversitySource, isHttpSourceUrl, isKnownCatalogueFixtureName } from "@/lib/source-verification";
 
 type University = {
   id: string;
@@ -88,7 +88,7 @@ export function AdminUniversitiesPanel({
   const [query, setQuery] = useState("");
   const [type, setType] = useState("all");
   const [quality, setQuality] = useState(
-    ["all", "missing_source", "missing_verification"].includes(initialQuality)
+    ["all", "missing_source", "missing_verification", "known_fixture"].includes(initialQuality)
       ? initialQuality
       : "all",
   );
@@ -103,6 +103,9 @@ export function AdminUniversitiesPanel({
   const missingVerificationCount = activeUniversities.filter(
     (university) => !hasVerifiedUniversitySource(university),
   ).length;
+  const activeKnownFixtureCount = activeUniversities.filter(
+    (university) => isKnownCatalogueFixtureName(university.name),
+  ).length;
 
   const filtered = useMemo(() => {
     const normalized = query.trim().toLocaleLowerCase("fr");
@@ -110,6 +113,7 @@ export function AdminUniversitiesPanel({
       if (type !== "all" && university.university_type !== type) return false;
       if (quality === "missing_source" && universitySourceUrl(university)) return false;
       if (quality === "missing_verification" && hasVerifiedUniversitySource(university)) return false;
+      if (quality === "known_fixture" && !isKnownCatalogueFixtureName(university.name)) return false;
       if (!normalized) return true;
       return [
         university.name,
@@ -400,7 +404,7 @@ export function AdminUniversitiesPanel({
       </Card>
 
       <section aria-labelledby="university-catalogue-title">
-        <div className="mb-5 grid gap-4 sm:grid-cols-2">
+        <div className="mb-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           <QualityCard
             title="Source à compléter"
             value={missingSourceCount}
@@ -412,6 +416,12 @@ export function AdminUniversitiesPanel({
             value={missingVerificationCount}
             detail="Établissements actifs sans date de vérification enregistrée"
             tone={missingVerificationCount ? "warning" : "success"}
+          />
+          <QualityCard
+            title="Données de test actives"
+            value={activeKnownFixtureCount}
+            detail="Fiches connues à examiner puis désactiver explicitement"
+            tone={activeKnownFixtureCount ? "warning" : "success"}
           />
         </div>
 
@@ -454,6 +464,7 @@ export function AdminUniversitiesPanel({
                 <option value="all">Toutes les fiches</option>
                 <option value="missing_source">Source officielle à compléter</option>
                 <option value="missing_verification">Date de vérification à compléter</option>
+                <option value="known_fixture">Données de test connues</option>
               </select>
             </label>
           </div>
@@ -471,6 +482,9 @@ export function AdminUniversitiesPanel({
                 <div className="min-w-0">
                   <div className="flex flex-wrap gap-2">
                     <Badge variant="neutral">{university.university_type}</Badge>
+                    {isKnownCatalogueFixtureName(university.name) && (
+                      <Badge variant="warning">Donnée de test connue</Badge>
+                    )}
                     <Badge variant={university.is_public ? "info" : "neutral"}>
                       {university.is_public ? "Public" : "Privé"}
                     </Badge>
