@@ -30,8 +30,10 @@ function programValidationError(body: Record<string, unknown>) {
   const average = body.indicative_average;
   if (
     average != null &&
-    String(average).trim() &&
-    !Number.isFinite(Number(average))
+    !(
+      (typeof average === "string" && (!average.trim() || Number.isFinite(Number(average)))) ||
+      (typeof average === "number" && Number.isFinite(average))
+    )
   ) {
     return "La moyenne indicative doit être un nombre valide.";
   }
@@ -41,7 +43,11 @@ function programValidationError(body: Record<string, unknown>) {
 
 function payload(body: Record<string, unknown>) {
   const intakeTerms = typeof body.intake_terms === "string" ? body.intake_terms.split(",").map(item => item.trim()).filter(Boolean).slice(0, 5) : [];
-  const numberValue = (value: unknown) => typeof value === "string" && value.trim() ? Number(value) : null;
+  const numberValue = (value: unknown) => {
+    if (typeof value === "number" && Number.isFinite(value)) return value;
+    if (typeof value === "string" && value.trim()) return Number(value);
+    return null;
+  };
   const data = {
     university_id: body.university_id, name: typeof body.name === "string" ? body.name.trim().slice(0, 180) : "",
     degree_level: body.degree_level as (typeof degreeLevels)[number],
