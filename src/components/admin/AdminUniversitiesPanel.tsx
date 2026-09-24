@@ -68,13 +68,23 @@ function formatVerificationDate(value: string) {
   }).format(date);
 }
 
-export function AdminUniversitiesPanel({ universities }: { universities: University[] }) {
+export function AdminUniversitiesPanel({
+  universities,
+  initialQuality = "all",
+}: {
+  universities: University[];
+  initialQuality?: string;
+}) {
   const [items] = useState(universities);
   const [form, setForm] = useState<UniversityForm>(empty);
   const [editing, setEditing] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [type, setType] = useState("all");
-  const [quality, setQuality] = useState("all");
+  const [quality, setQuality] = useState(
+    ["all", "missing_source", "missing_verification"].includes(initialQuality)
+      ? initialQuality
+      : "all",
+  );
   const [notice, setNotice] = useState<Notice | null>(null);
   const [busy, setBusy] = useState(false);
   const [togglingId, setTogglingId] = useState<string | null>(null);
