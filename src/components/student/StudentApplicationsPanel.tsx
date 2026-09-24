@@ -84,7 +84,7 @@ export function StudentApplicationsPanel({
                   ? priorityApplication.next_action
                   : priorityApplication
                     ? "Aucune action précise n’est enregistrée de votre côté pour cette candidature. Consultez son statut et son historique ci-dessous."
-                    : "Aucune candidature n’est encore enregistrée. Consultez vos recommandations pour choisir un programme à suivre."}
+                    : "Aucune candidature n’est encore enregistrée. Consultez vos pistes d’orientation pour choisir un programme à suivre."}
             </p>
             {priorityApplication && (
               <div className="mt-5 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-muted)]/55 p-4">
@@ -132,10 +132,10 @@ export function StudentApplicationsPanel({
           <span aria-hidden="true" className="mx-auto grid h-11 w-11 place-items-center rounded-full bg-[var(--brand-soft)] text-[var(--brand)]">＋</span>
           <h2 id="applications-empty-title" className="mt-4 text-lg font-bold text-slate-950">Vous n’avez encore aucune candidature enregistrée.</h2>
           <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-slate-600">
-            Lorsque vous indiquez votre intérêt pour une recommandation disponible, le suivi correspondant peut apparaître ici.
+            Lorsque vous indiquez votre intérêt pour une piste d’orientation disponible, le suivi correspondant peut apparaître ici.
           </p>
           <div className="mt-5">
-            <ButtonLink href="/student/orientation">Voir mes recommandations</ButtonLink>
+            <ButtonLink href="/student/orientation">Voir mes pistes d’orientation</ButtonLink>
           </div>
         </Card>
       ) : (
