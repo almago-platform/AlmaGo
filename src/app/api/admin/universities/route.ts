@@ -26,7 +26,14 @@ export async function POST(request: Request) {
     typeof value === "string" && value.trim() ? value.trim() : null;
   const websiteUrl = optionalText(body.website_url);
   const sourceUrl = optionalText(body.source_url);
+  const logoUrl = optionalText(body.logo_url);
   const universityUrls = [websiteUrl, sourceUrl].filter((value): value is string => Boolean(value));
+  if (logoUrl && !isHttpSourceUrl(logoUrl)) {
+    return NextResponse.json(
+      { error: "Le lien du logo doit être une URL http/https valide." },
+      { status: 400 },
+    );
+  }
   if (universityUrls.some((value) => !isHttpSourceUrl(value))) {
     return NextResponse.json(
       { error: "Les liens du site et de la source doivent être des URL http/https valides." },
@@ -51,7 +58,7 @@ export async function POST(request: Request) {
     university_type: universityType,
     website_url: websiteUrl,
     source_url: sourceUrl,
-    logo_url: optionalText(body.logo_url),
+    logo_url: logoUrl,
     description: optionalText(body.description),
     is_public: body.is_public as boolean,
     tuition_notes: optionalText(body.tuition_notes),
