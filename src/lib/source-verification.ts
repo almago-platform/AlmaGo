@@ -56,3 +56,19 @@ export function isPublishableProgram(program: {
     hasVerifiedProgramSource(program)
   );
 }
+
+
+export function isKnownCatalogueFixtureName(value: unknown) {
+  if (typeof value !== "string") return false;
+
+  const normalized = value
+    .trim()
+    .replace(/\s+/g, " ")
+    .toLowerCase();
+
+  return (
+    normalized === "aa" ||
+    normalized.startsWith("almago test university") ||
+    normalized.startsWith("almago test program")
+  );
+}

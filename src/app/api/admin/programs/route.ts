@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getAdminUser } from "@/lib/auth/access";
 import { degreeLevels } from "@/lib/phase4";
-import { isHttpSourceUrl } from "@/lib/source-verification";
+import { isHttpSourceUrl, isKnownCatalogueFixtureName } from "@/lib/source-verification";
 import { isUuid } from "@/lib/identifiers";
 
 function isValidDateOnly(value: string) {
@@ -14,6 +14,10 @@ function isValidDateOnly(value: string) {
 }
 
 function programValidationError(body: Record<string, unknown>) {
+  if (isKnownCatalogueFixtureName(body.name)) {
+    return "Ce nom correspond à une donnée de test connue et ne peut pas être ajouté au catalogue.";
+  }
+
   if (!degreeLevels.includes(body.degree_level as (typeof degreeLevels)[number])) {
     return "Choisissez un niveau de diplôme valide.";
   }

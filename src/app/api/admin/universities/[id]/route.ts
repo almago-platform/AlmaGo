@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getAdminUser } from "@/lib/auth/access";
 import { universityTypes } from "@/lib/phase4";
-import { isHttpSourceUrl, sourceUrlsChanged } from "@/lib/source-verification";
+import { isHttpSourceUrl, isKnownCatalogueFixtureName, sourceUrlsChanged } from "@/lib/source-verification";
 import { isUuid } from "@/lib/identifiers";
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -39,6 +39,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   }
 
   if (typeof body.name !== "string" || !body.name.trim()) return NextResponse.json({ error: "Le nom de l’université est obligatoire." }, { status: 400 });
+  if (isKnownCatalogueFixtureName(body.name)) return NextResponse.json({ error: "Ce nom correspond à une donnée de test connue et ne peut pas être enregistré dans le catalogue." }, { status: 400 });
   if (!universityTypes.includes(body.university_type as (typeof universityTypes)[number])) {
     return NextResponse.json({ error: "Choisissez un type d’établissement valide." }, { status: 400 });
   }

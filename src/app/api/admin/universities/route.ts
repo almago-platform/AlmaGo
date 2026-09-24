@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getAdminUser } from "@/lib/auth/access";
 import { universityTypes } from "@/lib/phase4";
-import { isHttpSourceUrl } from "@/lib/source-verification";
+import { isHttpSourceUrl, isKnownCatalogueFixtureName } from "@/lib/source-verification";
 
 export async function POST(request: Request) {
   const { supabase, user, isAdmin } = await getAdminUser();
@@ -18,6 +18,7 @@ export async function POST(request: Request) {
     }
   }
   if (typeof body.name !== "string" || !body.name.trim()) return NextResponse.json({ error: "Le nom de l’université est obligatoire." }, { status: 400 });
+  if (isKnownCatalogueFixtureName(body.name)) return NextResponse.json({ error: "Ce nom correspond à une donnée de test connue et ne peut pas être ajouté au catalogue." }, { status: 400 });
   if (!universityTypes.includes(body.university_type as (typeof universityTypes)[number])) {
     return NextResponse.json({ error: "Choisissez un type d’établissement valide." }, { status: 400 });
   }
