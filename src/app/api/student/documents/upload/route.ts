@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getStudentUser } from "@/lib/auth/access";
-import { isDocumentCategory, isSafeDocumentFile, maxDocumentBytes, safeFilename } from "@/lib/documents";
+import { hasSafeDocumentSignature, isDocumentCategory, isSafeDocumentFile, maxDocumentBytes, safeFilename } from "@/lib/documents";
 
 export async function POST(request: Request) {
   const { supabase, user, isStudent } = await getStudentUser();
@@ -11,7 +11,15 @@ export async function POST(request: Request) {
   const file = formData.get("file");
   const category = formData.get("category");
   if (!(file instanceof File) || !isDocumentCategory(category)) return NextResponse.json({ error: "Document ou catégorie invalide." }, { status: 400 });
-  if (!isSafeDocumentFile(file)) return NextResponse.json({ error: `Utilisez un PDF, JPEG ou PNG de 10 MiB maximum.` }, { status: 400 });
+  if (!isSafeDocumentFile(file)) {
+    return NextResponse.json({ error: "Utilisez un PDF, JPEG ou PNG de 10 MiB maximum." }, { status: 400 });
+  }
+  if (!(await hasSafeDocumentSignature(file))) {
+    return NextResponse.json(
+      { error: "Le contenu du fichier ne correspond pas à un PDF, JPEG ou PNG valide." },
+      { status: 400 },
+    );
+  }
 
   const id = crypto.randomUUID();
   const storagePath = `${user.id}/${id}/${safeFilename(file.name)}`;
