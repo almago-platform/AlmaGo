@@ -8,6 +8,7 @@ const failureWatch = readFileSync(".github/workflows/almago-automation-failure-w
 test("A38 approval gate skips ordinary comments before runner allocation", () => {
   assert.match(a38, /approve-a38:\s*\n\s*if: >-/);
   assert.match(a38, /github\.event\.issue\.pull_request == null/);
+  assert.match(a38, /github\.event\.comment\.user\.login == github\.repository_owner/);
   assert.match(a38, /contains\(github\.event\.comment\.body, 'A38 HUMAN REVIEW APPROVED'\)/);
 
   // The prefilter is only an optimization: the exact security checks stay in the script.
