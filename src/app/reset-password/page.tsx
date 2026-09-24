@@ -1,5 +1,13 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ResetPasswordForm } from "@/components/auth/ResetPasswordForm";
+
+export const metadata: Metadata = {
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 export default function ResetPasswordPage() {
   return (
@@ -21,21 +29,21 @@ export default function ResetPasswordPage() {
           <div className="mt-12">
             <p className="text-sm font-bold uppercase tracking-[0.16em] text-[var(--accent-strong)]">Réinitialisation</p>
             <h1 className="mt-3 text-4xl font-bold tracking-tight text-slate-950">
-              Choisis un nouveau mot de passe pour retrouver ton espace.
+              Choisissez un nouveau mot de passe pour retrouver votre espace.
             </h1>
             <p className="mt-5 text-base leading-7 text-slate-600">
-              Cette étape sécurise l&apos;accès à ton dossier étudiant. Après validation, tu seras redirigé vers ton tableau de bord.
+              Cette étape sécurise l&apos;accès à votre compte. Après validation, vous serez redirigé vers l&apos;espace associé à votre rôle.
             </p>
           </div>
 
           <div className="mt-10 grid gap-4">
             <div className="rounded-xl border border-slate-200 p-4">
               <p className="text-sm font-semibold text-slate-500">Conseil sécurité</p>
-              <p className="mt-1 font-bold text-slate-950">Utilise au moins 8 caractères et évite un mot de passe déjà utilisé.</p>
+              <p className="mt-1 font-bold text-slate-950">Utilisez au moins 8 caractères et évitez un mot de passe déjà utilisé.</p>
             </div>
             <div className="rounded-xl border border-slate-200 p-4">
               <p className="text-sm font-semibold text-slate-500">Accès dossier</p>
-              <p className="mt-1 font-bold text-slate-950">Le changement concerne seulement ton compte, pas tes données de dossier.</p>
+              <p className="mt-1 font-bold text-slate-950">Le changement concerne uniquement votre compte, pas les données de votre dossier.</p>
             </div>
           </div>
         </section>
