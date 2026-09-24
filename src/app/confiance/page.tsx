@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import Link from "next/link";
 import { HomeHeader } from "@/components/public/HomeHeader";
 import { HomeFooter } from "@/components/public/HomeClosing";
@@ -170,7 +171,7 @@ export default function TrustPage() {
   );
 }
 
-function TrustItem({ children }: Readonly<{ children: React.ReactNode }>) {
+function TrustItem({ children }: Readonly<{ children: ReactNode }>) {
   return (
     <li className="flex gap-3">
       <span aria-hidden="true" className="mt-2 h-2 w-2 shrink-0 rounded-full bg-[var(--accent)]" />
@@ -179,7 +180,7 @@ function TrustItem({ children }: Readonly<{ children: React.ReactNode }>) {
   );
 }
 
-function SourceRule({ title, children }: Readonly<{ title: string; children: React.ReactNode }>) {
+function SourceRule({ title, children }: Readonly<{ title: string; children: ReactNode }>) {
   return (
     <div>
       <p className="font-bold text-slate-950">{title}</p>
