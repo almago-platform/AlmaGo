@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/Badge";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Card } from "@/components/ui/Card";
 import { PageHeader } from "@/components/ui/PageHeader";
+import { hasVerifiedProgramSource, hasVerifiedUniversitySource, isHttpSourceUrl } from "@/lib/source-verification";
 
 export const dynamic = "force-dynamic";
 
@@ -62,25 +63,23 @@ export default async function AdminEntry() {
   const universitiesQuality = universityQualityRows || [];
   const programsQuality = programQualityRows || [];
   const universitySourceGaps = universitiesQuality.filter(
-    (university) => !university.source_url && !university.website_url,
+    (university) => !hasValidUniversitySource(university),
   ).length;
   const programSourceGaps = programsQuality.filter(
-    (program) => !program.source_url && !program.application_url,
+    (program) => !hasValidProgramSource(program),
   ).length;
   const universityVerificationGaps = universitiesQuality.filter(
-    (university) => !university.verified_at,
+    (university) => !hasVerifiedUniversitySource(university),
   ).length;
   const programVerificationGaps = programsQuality.filter(
-    (program) => !program.verified_at,
+    (program) => !hasVerifiedProgramSource(program),
   ).length;
   const catalogueQualityIssues =
     universitiesQuality.filter(
-      (university) =>
-        !university.verified_at || (!university.source_url && !university.website_url),
+      (university) => !hasVerifiedUniversitySource(university),
     ).length +
     programsQuality.filter(
-      (program) =>
-        !program.verified_at || (!program.source_url && !program.application_url),
+      (program) => !hasVerifiedProgramSource(program),
     ).length;
   const catalogueSourceGaps = universitySourceGaps + programSourceGaps;
   const catalogueVerificationGaps = universityVerificationGaps + programVerificationGaps;
@@ -240,6 +239,20 @@ export default async function AdminEntry() {
   );
 }
 
+function hasValidUniversitySource(university: {
+  source_url: string | null;
+  website_url: string | null;
+}) {
+  return isHttpSourceUrl(university.source_url) || isHttpSourceUrl(university.website_url);
+}
+
+function hasValidProgramSource(program: {
+  source_url: string | null;
+  application_url: string | null;
+}) {
+  return isHttpSourceUrl(program.source_url) || isHttpSourceUrl(program.application_url);
+}
+
 function universityQualityIssues(
   universities: Array<{
     source_url: string | null;
@@ -248,8 +261,7 @@ function universityQualityIssues(
   }>,
 ) {
   return universities.filter(
-    (university) =>
-      !university.verified_at || (!university.source_url && !university.website_url),
+    (university) => !hasVerifiedUniversitySource(university),
   ).length;
 }
 
@@ -261,8 +273,7 @@ function programQualityIssues(
   }>,
 ) {
   return programs.filter(
-    (program) =>
-      !program.verified_at || (!program.source_url && !program.application_url),
+    (program) => !hasVerifiedProgramSource(program),
   ).length;
 }
 
