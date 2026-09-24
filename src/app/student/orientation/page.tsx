@@ -21,6 +21,14 @@ export default async function StudentOrientationPage() {
     return <OrientationUnavailable />;
   }
 
+  const visibleRecommendations = (data || []).filter((recommendation) => {
+    const program = Array.isArray(recommendation.programs) ? recommendation.programs[0] : recommendation.programs;
+    return Boolean(
+      program?.verified_at &&
+      (program?.source_url || program?.application_url),
+    );
+  });
+
   return (
     <main className="mx-auto w-full max-w-7xl px-4 py-7 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
       <PageHeader
@@ -31,7 +39,7 @@ export default async function StudentOrientationPage() {
       />
 
       <StudentOrientationPanel
-        recommendations={data || []}
+        recommendations={visibleRecommendations}
         applicationProgramIds={(applications || []).map((application) => application.program_id)}
         applicationStateError={applicationsError ? "Impossible de vérifier vos intérêts enregistrés pour le moment." : undefined}
       />
