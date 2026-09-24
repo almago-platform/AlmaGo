@@ -1,0 +1,41 @@
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import test from "node:test";
+import { isHttpSourceUrl } from "../src/lib/source-verification.ts";
+
+const programCreate = readFileSync("src/app/api/admin/programs/route.ts", "utf8");
+const programUpdate = readFileSync("src/app/api/admin/programs/[id]/route.ts", "utf8");
+const universityCreate = readFileSync("src/app/api/admin/universities/route.ts", "utf8");
+const universityUpdate = readFileSync("src/app/api/admin/universities/[id]/route.ts", "utf8");
+
+test("catalogue source helper rejects placeholder and executable schemes", () => {
+  for (const value of ["a", "example.edu/programme", "javascript:alert(1)", "data:text/html,test", "ftp://example.edu"]) {
+    assert.equal(isHttpSourceUrl(value), false, value);
+  }
+  assert.equal(isHttpSourceUrl("https://example.edu/programme"), true);
+  assert.equal(isHttpSourceUrl("http://example.edu/programme"), true);
+});
+
+test("programme create and update routes reject malformed non-empty official links", () => {
+  for (const source of [programCreate, programUpdate]) {
+    assert.match(source, /const programmeUrls =/);
+    assert.match(source, /programmeUrls\.some\(\(value\) => !isHttpSourceUrl\(value\)\)/);
+    assert.match(source, /Les liens de source et de candidature doivent être des URL http\/https valides/);
+    assert.match(source, /mark_verified === true/);
+  }
+});
+
+test("university create and update routes reject malformed non-empty official links", () => {
+  for (const source of [universityCreate, universityUpdate]) {
+    assert.match(source, /const universityUrls =/);
+    assert.match(source, /universityUrls\.some\(\(value\) => !isHttpSourceUrl\(value\)\)/);
+    assert.match(source, /Les liens du site et de la source doivent être des URL http\/https valides/);
+    assert.match(source, /mark_verified === true/);
+  }
+});
+
+test("catalogue validation does not introduce privileged credentials", () => {
+  for (const source of [programCreate, programUpdate, universityCreate, universityUpdate]) {
+    assert.doesNotMatch(source, /service_role|SUPABASE_SECRET|secret key/i);
+  }
+});
