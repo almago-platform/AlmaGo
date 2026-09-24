@@ -62,7 +62,7 @@ export function HomeFooter() {
               ["Comprendre les démarches", "/comprendre-les-demarches"],
               ["Selon votre pays de diplôme", "/selon-votre-pays"],
               ["Votre espace", "/#espace"],
-              ["Confiance et transparence", "/#confiance"],
+              ["Confiance et transparence", "/confiance"],
             ]}
           />
           <FooterColumn
