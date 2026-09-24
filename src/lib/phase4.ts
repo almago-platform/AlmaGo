@@ -7,15 +7,23 @@ export const applicationStatuses = [
   "documents_missing",
   "ready_to_submit",
   "submitted",
-  "in_review",
   "waiting_university",
   "admission",
-  "accepted",
   "rejection",
-  "rejected",
   "withdrawn",
+] as const;
+
+export const legacyApplicationStatuses = [
   "draft",
   "planned",
+  "in_review",
+  "accepted",
+  "rejected",
+] as const;
+
+export const databaseApplicationStatuses = [
+  ...applicationStatuses,
+  ...legacyApplicationStatuses,
 ] as const;
 
 export type UniversityType = (typeof universityTypes)[number];
