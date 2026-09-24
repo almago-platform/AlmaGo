@@ -84,6 +84,20 @@ export default async function AdminEntry() {
     ).length;
   const catalogueSourceGaps = universitySourceGaps + programSourceGaps;
   const catalogueVerificationGaps = universityVerificationGaps + programVerificationGaps;
+  const universityIssues = universityQualityIssues(universitiesQuality);
+  const programIssues = programQualityIssues(programsQuality);
+  const universityPriorityFilter =
+    universityVerificationGaps >= universitySourceGaps
+      ? "missing_verification"
+      : "missing_source";
+  const programPriorityFilter =
+    programVerificationGaps >= programSourceGaps
+      ? "missing_verification"
+      : "missing_source";
+  const cataloguePriorityHref =
+    universityIssues >= programIssues
+      ? `/admin/universities?quality=${universityPriorityFilter}`
+      : `/admin/programs?quality=${programPriorityFilter}`;
 
   const priority = documents > 0
     ? {
@@ -106,9 +120,7 @@ export default async function AdminEntry() {
             badge: "Catalogue à vérifier",
             title: `${catalogueQualityIssues} fiche${catalogueQualityIssues > 1 ? "s" : ""} du catalogue demande${catalogueQualityIssues > 1 ? "nt" : ""} une vérification`,
             description: `Les dossiers opérationnels ne signalent pas de priorité plus urgente. Le catalogue contient ${catalogueSourceGaps} source${catalogueSourceGaps > 1 ? "s" : ""} à compléter et ${catalogueVerificationGaps} date${catalogueVerificationGaps > 1 ? "s" : ""} de vérification à renseigner.`,
-            href: universityQualityIssues(universitiesQuality) >= programQualityIssues(programsQuality)
-              ? "/admin/universities"
-              : "/admin/programs",
+            href: cataloguePriorityHref,
             action: "Maintenir le catalogue",
           }
         : {
@@ -199,7 +211,7 @@ export default async function AdminEntry() {
             tone="neutral"
           />
           <AdminSummaryCard
-            href="/admin/universities"
+            href={cataloguePriorityHref}
             title="Catalogue à vérifier"
             value={catalogueQualityIssues}
             detail={
