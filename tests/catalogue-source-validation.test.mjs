@@ -39,3 +39,11 @@ test("catalogue validation does not introduce privileged credentials", () => {
     assert.doesNotMatch(source, /service_role|SUPABASE_SECRET|secret key/i);
   }
 });
+
+
+test("university active-state toggle stays partial and does not overwrite catalogue fields", () => {
+  assert.match(universityUpdate, /typeof body\.is_active === "boolean"/);
+  assert.match(universityUpdate, /!\("name" in body\)/);
+  assert.match(universityUpdate, /\.update\(\{ is_active: body\.is_active \}\)/);
+  assert.match(universityUpdate, /Impossible de modifier l’état de l’université/);
+});
