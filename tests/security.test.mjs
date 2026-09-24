@@ -305,3 +305,25 @@ test("callback redirect validation compares the effective URL origin", () => {
   assert.match(callback, /candidate\.hash/);
   assert.doesNotMatch(callback, /requestedNext\.startsWith\("\/\/"\)/);
 });
+
+
+test("document and notification identifiers fail cleanly before database access", () => {
+  const studentDocument = read("src/app/api/student/documents/[id]/route.ts");
+  const notification = read("src/app/api/student/notifications/[id]/route.ts");
+  const documentView = read("src/app/api/documents/[id]/view/route.ts");
+
+  for (const source of [studentDocument, notification, documentView]) {
+    assert.match(source, /isUuid\(id\)/);
+    assert.match(source, /status: 400/);
+  }
+
+  assert.match(studentDocument, /Identifiant de document invalide/);
+  assert.match(studentDocument, /Impossible de vérifier le document/);
+  assert.match(studentDocument, /Document introuvable/);
+
+  assert.match(notification, /Identifiant de notification invalide/);
+
+  assert.match(documentView, /Identifiant de document invalide/);
+  assert.match(documentView, /Impossible de vérifier le document/);
+  assert.match(documentView, /Document introuvable/);
+});
