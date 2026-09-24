@@ -124,3 +124,16 @@ test("student notifications do not send unused metadata to the browser", () => {
   assert.doesNotMatch(page, /body,metadata,read_at/);
   assert.doesNotMatch(panel, /metadata:\s*unknown/);
 });
+
+
+test("document review route rejects missing, malformed and non-reviewable targets", () => {
+  const route = read("src/app/api/admin/documents/[id]/review/route.ts");
+
+  assert.match(route, /select\("status"\)/);
+  assert.match(route, /currentDocumentError\?\.code === "22P02"/);
+  assert.match(route, /Identifiant de document invalide/);
+  assert.match(route, /Document introuvable/);
+  assert.match(route, /\["pending", "replace_required"\]\.includes\(currentDocument\.status\)/);
+  assert.match(route, /Ce document n’est plus dans la file de revue active/);
+  assert.match(route, /status: 409/);
+});
