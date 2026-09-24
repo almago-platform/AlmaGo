@@ -13,41 +13,74 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
 
   const { id } = await params;
   const requestedStatus = body.status as (typeof databaseApplicationStatuses)[number];
+  const nextAction = typeof body.next_action === "string" && body.next_action.trim()
+    ? body.next_action.trim()
+    : null;
+  const studentNote = typeof body.student_note === "string" && body.student_note.trim()
+    ? body.student_note.trim()
+    : null;
 
-  if (!applicationStatuses.includes(requestedStatus as (typeof applicationStatuses)[number])) {
-    const { data: currentApplication, error: currentApplicationError } = await supabase
+  const { data: currentApplication, error: currentApplicationError } = await supabase
+    .from("applications")
+    .select("status,next_action,student_notes")
+    .eq("id", id)
+    .maybeSingle();
+
+  if (currentApplicationError?.code === "22P02") {
+    return NextResponse.json({ error: "Identifiant de candidature invalide." }, { status: 400 });
+  }
+  if (currentApplicationError) {
+    return NextResponse.json({ error: "Impossible de vérifier la candidature." }, { status: 500 });
+  }
+  if (!currentApplication) {
+    return NextResponse.json({ error: "Candidature introuvable." }, { status: 404 });
+  }
+
+  if (
+    !applicationStatuses.includes(requestedStatus as (typeof applicationStatuses)[number]) &&
+    currentApplication.status !== requestedStatus
+  ) {
+    return NextResponse.json(
+      { error: "Ce statut historique peut être conservé, mais pas choisi pour une nouvelle transition." },
+      { status: 400 },
+    );
+  }
+
+  if (currentApplication.status === requestedStatus) {
+    if (
+      currentApplication.next_action === nextAction &&
+      currentApplication.student_notes === studentNote
+    ) {
+      return NextResponse.json({ ok: true });
+    }
+
+    const { data: updatedApplication, error: updateError } = await supabase
       .from("applications")
-      .select("status")
+      .update({
+        next_action: nextAction,
+        student_notes: studentNote,
+        reviewed_at: new Date().toISOString(),
+      })
       .eq("id", id)
+      .select("id")
       .maybeSingle();
 
-    if (currentApplicationError?.code === "22P02") {
-      return NextResponse.json({ error: "Identifiant de candidature invalide." }, { status: 400 });
+    if (updateError) {
+      return NextResponse.json({ error: "Impossible de mettre à jour la candidature." }, { status: 500 });
     }
-    if (currentApplicationError) {
-      return NextResponse.json({ error: "Impossible de vérifier la candidature." }, { status: 500 });
-    }
-    if (!currentApplication) {
+    if (!updatedApplication) {
       return NextResponse.json({ error: "Candidature introuvable." }, { status: 404 });
     }
-    if (currentApplication.status !== requestedStatus) {
-      return NextResponse.json(
-        { error: "Ce statut historique peut être conservé, mais pas choisi pour une nouvelle transition." },
-        { status: 400 },
-      );
-    }
+    return NextResponse.json({ ok: true });
   }
 
   const { error } = await supabase.rpc("admin_update_application", {
     target_application_id: id,
     target_status: requestedStatus,
-    target_next_action: typeof body.next_action === "string" ? body.next_action : null,
-    target_student_note: typeof body.student_note === "string" ? body.student_note : null,
+    target_next_action: nextAction,
+    target_student_note: studentNote,
   });
 
-  if (error?.code === "22P02") {
-    return NextResponse.json({ error: "Identifiant de candidature invalide." }, { status: 400 });
-  }
   if (error?.message?.includes("application_not_found")) {
     return NextResponse.json({ error: "Candidature introuvable." }, { status: 404 });
   }
