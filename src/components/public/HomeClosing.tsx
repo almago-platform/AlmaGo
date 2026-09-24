@@ -73,10 +73,11 @@ export function HomeFooter() {
             ]}
           />
           <FooterColumn
-            title="Informations"
+            title="Aide"
             links={[
-              ["Pourquoi AlmaGo", "#why-almago-title"],
-              ["Questions fréquentes", "#faq"],
+              ["Centre d’aide", "/aide"],
+              ["Questions fréquentes", "/#faq"],
+              ["Pourquoi AlmaGo", "/#why-almago-title"],
             ]}
           />
         </div>
