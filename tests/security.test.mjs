@@ -19,11 +19,9 @@ test("admin and student areas keep server-side authentication guards", () => {
   assert.match(adminLayout, /role\?\.role !== "admin"/);
   assert.match(adminLayout, /redirect\("\/unauthorized"\)/);
 
-  assert.match(studentLayout, /auth\.getUser\(\)/);
+  assert.match(studentLayout, /getStudentUser\(\)/);
   assert.match(studentLayout, /if \(!user\) redirect\("\/login"\)/);
-  assert.match(studentLayout, /from\("user_roles"\)/);
-  assert.match(studentLayout, /role\?\.role !== "student"/);
-  assert.match(studentLayout, /redirect\("\/unauthorized"\)/);
+  assert.match(studentLayout, /if \(!isStudent\) redirect\("\/unauthorized"\)/);
 });
 
 test("browser and server Supabase clients never use a service-role secret", () => {
@@ -327,4 +325,11 @@ test("document and notification identifiers fail cleanly before database access"
   assert.match(documentView, /Identifiant de document invalide/);
   assert.match(documentView, /Impossible de vérifier le document/);
   assert.match(documentView, /Document introuvable/);
+});
+
+
+test("shared student access helper requires the explicit student role", () => {
+  assert.match(access, /from\("user_roles"\)/);
+  assert.match(access, /role === "student"/);
+  assert.match(access, /isStudent: Boolean\(user && role === "student"\)/);
 });
