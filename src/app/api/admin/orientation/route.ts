@@ -11,6 +11,33 @@ export async function POST(request: Request) {
   const status = body?.status as string;
   if (!body || typeof body.student_id !== "string" || typeof body.program_id !== "string" || !recommendationStatuses.includes(status as (typeof recommendationStatuses)[number])) return NextResponse.json({ error: "Étudiant, programme et statut obligatoires." }, { status: 400 });
 
+  const [
+    { data: student, error: studentError },
+    { data: studentRole, error: studentRoleError },
+  ] = await Promise.all([
+    supabase
+      .from("profiles")
+      .select("id,onboarding_completed")
+      .eq("id", body.student_id)
+      .maybeSingle(),
+    supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", body.student_id)
+      .maybeSingle(),
+  ]);
+
+  if (studentError || studentRoleError) {
+    return NextResponse.json({ error: "Impossible de vérifier le profil étudiant." }, { status: 500 });
+  }
+
+  if (!student?.onboarding_completed || studentRole?.role !== "student") {
+    return NextResponse.json(
+      { error: "Choisissez un étudiant dont le profil est complété avant de publier une piste." },
+      { status: 400 },
+    );
+  }
+
   const { data: program, error: programError } = await supabase
     .from("programs")
     .select("id,is_active,source_url,application_url,verified_at,universities(is_active)")
