@@ -23,7 +23,7 @@ export default async function StudentApplicationsPage() {
 
   const { data, error } = await supabase
     .from("applications")
-    .select("id,status,intake_term:intake,deadline,next_action,required_documents,student_notes,result,submitted_at,created_at,programs(name,degree_level,universities(name,city)),application_events(id,event_type,message,created_at)")
+    .select("id,status,intake_term:intake,deadline,next_action,required_documents,student_notes,result,submitted_at,created_at,programs(name,degree_level,universities(name,city)),application_events(id,event_type,message,visible_to_student,created_at)")
     .order("created_at", { ascending: false });
 
   if (error) {
