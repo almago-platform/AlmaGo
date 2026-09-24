@@ -231,13 +231,14 @@ test("full catalogue updates require explicit structural booleans", () => {
 });
 
 
-test("validated catalogue booleans are stored explicitly without fallback semantics", () => {
+test("validated catalogue booleans stay explicit while new records start inactive", () => {
   assert.match(programCreate, /studienkolleg_required: body\.studienkolleg_required as boolean/);
   assert.match(programCreate, /testas_required: body\.testas_required as boolean/);
   assert.match(programCreate, /uni_assist_required: body\.uni_assist_required as boolean/);
   assert.match(programCreate, /is_active: body\.is_active as boolean/);
+  assert.match(programCreate, /const data = \{ \.\.\.payload\(body\), is_active: false \};/);
   assert.match(universityCreate, /is_public: body\.is_public as boolean/);
-  assert.match(universityCreate, /is_active: body\.is_active as boolean/);
+  assert.match(universityCreate, /is_active: false/);
   assert.match(universityUpdate, /is_public: body\.is_public as boolean/);
   assert.match(universityUpdate, /is_active: body\.is_active as boolean/);
 });
