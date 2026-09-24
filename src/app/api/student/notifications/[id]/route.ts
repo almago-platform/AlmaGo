@@ -15,6 +15,7 @@ export async function PATCH(
     .from("notifications")
     .update({ read_at: readAt })
     .eq("id", id)
+    .eq("user_id", user.id)
     .select("id")
     .maybeSingle();
 
