@@ -365,3 +365,25 @@ test("profile input mapping excludes onboarding workflow fields", () => {
   assert.doesNotMatch(profile, /"onboarding_completed_at"/);
   assert.match(profile, /export function profileUpdateFromInput/);
 });
+
+
+test("every sensitive student page enforces the student role itself", () => {
+  const studentPages = [
+    "src/app/student/page.tsx",
+    "src/app/student/applications/page.tsx",
+    "src/app/student/checklist/page.tsx",
+    "src/app/student/documents/page.tsx",
+    "src/app/student/notifications/page.tsx",
+    "src/app/student/onboarding/page.tsx",
+    "src/app/student/orientation/page.tsx",
+    "src/app/student/profile/page.tsx",
+  ];
+
+  for (const path of studentPages) {
+    const source = read(path);
+    assert.match(source, /getStudentUser\(\)/, path);
+    assert.match(source, /if \(!user\) redirect\("\/login"\)/, path);
+    assert.match(source, /if \(!isStudent\) redirect\("\/unauthorized"\)/, path);
+    assert.doesNotMatch(source, /createClient\(\)/, path);
+  }
+});
