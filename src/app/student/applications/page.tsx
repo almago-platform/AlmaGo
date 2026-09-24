@@ -11,6 +11,17 @@ export default async function StudentApplicationsPage() {
   const { supabase, user, isStudent } = await getStudentUser();
   if (!user) redirect("/login");
   if (!isStudent) redirect("/unauthorized");
+
+  const { data: profile, error: profileError } = await supabase
+    .from("profiles")
+    .select("onboarding_completed")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  if (profileError) {
+    return <ApplicationsUnavailable />;
+  }
+  if (!profile?.onboarding_completed) redirect("/student/onboarding");
   const { data, error } = await supabase
     .from("applications")
     .select("id,status,intake_term:intake,deadline,next_action,required_documents,student_notes,result,submitted_at,created_at,programs(name,degree_level,universities(name,city)),application_events(id,event_type,message,created_at)")
