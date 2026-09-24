@@ -11,6 +11,13 @@ function firstUniversity(program: any) {
   return Array.isArray(program?.universities) ? program.universities[0] : program?.universities;
 }
 
+function isVerifiedProgram(program: any) {
+  return Boolean(
+    program?.verified_at &&
+    (program?.source_url || program?.application_url),
+  );
+}
+
 function recommendationVariant(status: string): "success" | "warning" | "info" | "neutral" {
   if (status === "recommended" || status === "possible") return "success";
   if (status === "missing_requirements") return "warning";
@@ -187,7 +194,7 @@ export function AdminOrientationPanel({
                 className="field"
               >
                 <option value="">Choisir un programme</option>
-                {programs.map((program) => {
+                {programs.filter(isVerifiedProgram).map((program) => {
                   const university = firstUniversity(program);
                   return (
                     <option key={program.id} value={program.id}>
@@ -197,6 +204,9 @@ export function AdminOrientationPanel({
                 })}
               </select>
             </label>
+            <p className="mt-2 text-xs leading-5 text-slate-500">
+              Seuls les programmes disposant d’une source officielle et d’une date de vérification enregistrée sont proposés ici.
+            </p>
           </StepBlock>
 
           <StepBlock step="4" title="Qualifier la piste">
