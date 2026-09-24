@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getStudentUser } from "@/lib/auth/access";
+import { isUuid } from "@/lib/identifiers";
 
 export async function PATCH(
   _: Request,
@@ -10,6 +11,8 @@ export async function PATCH(
   if (!isStudent) return NextResponse.json({ error: "Accès réservé aux étudiants." }, { status: 403 });
 
   const { id } = await params;
+  if (!isUuid(id)) return NextResponse.json({ error: "Identifiant de notification invalide." }, { status: 400 });
+
   const readAt = new Date().toISOString();
 
   const { data, error } = await supabase
