@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   applicationEventDisplayMessage,
+  applicationStatusLabels,
   applicationStatuses,
   databaseApplicationStatuses,
   legacyApplicationStatuses,
@@ -183,4 +184,13 @@ test("document history wording stays institutional", () => {
     "AlmaGo vous demande de remplacer votre document : bac.pdf.",
   );
   assert.equal(studentHistoryDisplayMessage("Message déjà professionnel."), "Message déjà professionnel.");
+});
+
+
+test("every database application status has a human label", () => {
+  for (const status of databaseApplicationStatuses) {
+    assert.equal(typeof applicationStatusLabels[status], "string", status);
+    assert.ok(applicationStatusLabels[status].trim(), status);
+    assert.notEqual(applicationStatusLabels[status], status, status);
+  }
 });
