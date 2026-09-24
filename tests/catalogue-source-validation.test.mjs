@@ -9,6 +9,7 @@ const universityCreate = readFileSync("src/app/api/admin/universities/route.ts",
 const universityUpdate = readFileSync("src/app/api/admin/universities/[id]/route.ts", "utf8");
 const programAdminPanel = readFileSync("src/components/admin/AdminProgramsPanel.tsx", "utf8");
 const programAdminPage = readFileSync("src/app/admin/programs/page.tsx", "utf8");
+const universityAdminPanel = readFileSync("src/components/admin/AdminUniversitiesPanel.tsx", "utf8");
 
 test("catalogue source helper rejects placeholder and executable schemes", () => {
   for (const value of ["a", "example.edu/programme", "javascript:alert(1)", "data:text/html,test", "ftp://example.edu"]) {
@@ -128,4 +129,10 @@ test("programme university reassignment invalidates stale verification", () => {
 
 test("university source changes still invalidate stale verification", () => {
   assert.match(universityUpdate, /mark_verified === true \|\| !sourceChanged/);
+});
+
+
+test("university admin explains the publication impact of activation state", () => {
+  assert.match(universityAdminPanel, /rend ses programmes non publiables dans les nouvelles pistes d’orientation/);
+  assert.match(universityAdminPanel, /ses programmes ne peuvent pas être proposés dans une nouvelle piste d’orientation/);
 });
