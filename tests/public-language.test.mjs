@@ -63,7 +63,7 @@ test("V3 public trust boundaries remain explicit", () => {
   assert.match(help, /d[eé]cisions officielles/i);
 
   assert.match(country, /pays de dipl[oô]me/i);
-  assert.match(country, /ne remplace pas l’évaluation/i);
+  assert.match(country, /ne remplace\s+pas l’évaluation/i);
 
   assert.match(guidance, /Comprendre les démarches/i);
   assert.match(guidance, /Source officielle/i);
