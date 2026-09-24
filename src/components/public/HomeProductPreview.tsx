@@ -1,7 +1,7 @@
 const previewMetrics = [
   ["À traiter", "Actions enregistrées"],
   ["En attente AlmaGo", "Étapes suivies"],
-  ["Recommandations", "Pistes d’études"],
+  ["Orientation", "Pistes d’études"],
   ["Candidatures", "Dossiers enregistrés"],
 ] as const;
 
@@ -21,7 +21,7 @@ export function HomeProductPreview() {
           <ul className="mt-7 space-y-4">
             <PreviewBenefit title="Une prochaine action visible" text="Votre dossier met en avant l’action enregistrée comme prioritaire pour vous aider à savoir par quoi commencer." />
             <PreviewBenefit title="Une progression expliquée" text="Le suivi concerne les étapes enregistrées ; il n’est jamais présenté comme une probabilité d’admission." />
-            <PreviewBenefit title="Vos informations reliées" text="Documents, recommandations, candidatures et échéances restent accessibles depuis le même espace." />
+            <PreviewBenefit title="Vos informations reliées" text="Documents, pistes d’orientation, candidatures et échéances restent accessibles depuis le même espace." />
           </ul>
         </div>
 
