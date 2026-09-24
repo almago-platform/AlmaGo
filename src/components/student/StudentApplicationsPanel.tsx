@@ -4,7 +4,7 @@
 import { Badge } from "@/components/ui/Badge";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Card } from "@/components/ui/Card";
-import { applicationStatusLabels, formatDeadline, isActiveApplication, isPastDeadline, nextActiveDeadline } from "@/lib/phase4";
+import { applicationEventDisplayMessage, applicationStatusLabels, formatDeadline, isActiveApplication, isPastDeadline, nextActiveDeadline } from "@/lib/phase4";
 
 function applicationVariant(status: string): "success" | "warning" | "info" | "neutral" {
   if (status === "admission" || status === "accepted") return "success";
@@ -236,7 +236,9 @@ export function StudentApplicationsPanel({
                             <p className="text-sm font-medium text-slate-900">
                               {studentEventLabel(event.event_type)}
                             </p>
-                            {event.message && <p className="mt-1 text-sm leading-6 text-slate-700 [overflow-wrap:anywhere]">{event.message}</p>}
+                            <p className="mt-1 text-sm leading-6 text-slate-700 [overflow-wrap:anywhere]">
+                              {applicationEventDisplayMessage(event.event_type, event.message)}
+                            </p>
                             <time dateTime={event.created_at} className="mt-1 block text-xs text-slate-500">
                               {new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium" }).format(new Date(event.created_at))}
                             </time>
