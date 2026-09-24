@@ -21,6 +21,9 @@ test("deadline center keeps official-source boundaries visible", () => {
   assert.match(page, /Source officielle/);
   assert.match(page, /source_url/);
   assert.match(page, /application_url/);
+  assert.match(page, /function officialSourceUrl/);
+  assert.match(page, /url\.protocol === "https:" \|\| url\.protocol === "http:"/);
+  assert.match(page, /const checkedAt = sourceUrl \? verificationDate/);
   assert.match(page, /Fiche programme vérifiée dans AlmaGo le/);
   assert.match(page, /ne remplace pas les délais publiés/);
   assert.doesNotMatch(page, /chance|probabilit[eé]|score|garanti/i);
@@ -30,6 +33,7 @@ test("deadline countdown follows the existing Berlin date model", () => {
   assert.match(phase4, /export function daysUntilDeadline/);
   assert.match(phase4, /timeZone: "Europe\/Berlin"/);
   assert.match(phase4, /86_400_000/);
+  assert.match(page, /timeZone: "Europe\/Berlin"/);
 });
 
 test("student navigation and dashboard expose the deadline center", () => {
