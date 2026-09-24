@@ -45,6 +45,7 @@ const studentItems: NavItem[] = [
 
 const adminItems: NavItem[] = [
   { label: "Vue d’ensemble", href: "/admin", icon: icons.dashboard, helper: "Priorités de l’équipe" },
+  { label: "Étudiants", href: "/admin/students", icon: icons.profile, helper: "Dossiers et suivi" },
   { label: "Documents", href: "/admin/documents", icon: icons.documents, helper: "Pièces à vérifier" },
   { label: "Candidatures", href: "/admin/applications", icon: icons.applications, helper: "Dossiers et échéances" },
   { label: "Orientation", href: "/admin/orientation", icon: icons.orientation, helper: "Pistes d’orientation" },
