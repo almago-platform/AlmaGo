@@ -399,6 +399,9 @@ export function AdminProgramsPanel({
                   <div className="flex flex-wrap gap-2">
                     <Badge variant="neutral">{program.degree_level}</Badge>
                     <Badge variant={program.is_active ? "success" : "neutral"}>{program.is_active ? "Actif" : "Inactif"}</Badge>
+                    <Badge variant={program.application_url ? "info" : "warning"}>
+                      {program.application_url ? "Source officielle enregistrée" : "Source officielle à compléter"}
+                    </Badge>
                   </div>
                   <h3 id={`admin-program-title-${program.id}`} className="mt-3 text-xl font-bold tracking-[-0.02em] text-slate-950 [overflow-wrap:anywhere]">{program.name}</h3>
                   <p className="mt-1 text-sm leading-6 text-slate-600 [overflow-wrap:anywhere]">{universityName(program)}</p>
@@ -414,7 +417,7 @@ export function AdminProgramsPanel({
 
               {program.application_url && (
                 <a href={program.application_url} target="_blank" rel="noreferrer" className="mt-4 inline-flex text-sm font-semibold text-[var(--brand)] underline decoration-[var(--brand-border)] underline-offset-4 hover:text-[var(--brand-hover)]">
-                  Vérifier la source officielle
+                  Ouvrir la source officielle
                 </a>
               )}
 
