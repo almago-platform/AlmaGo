@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getAdminUser } from "@/lib/auth/access";
 import { recommendationStatuses } from "@/lib/phase4";
 import { isPublishableProgram } from "@/lib/source-verification";
+import { isUuid } from "@/lib/identifiers";
 
 export async function POST(request: Request) {
   const { supabase, user, isAdmin } = await getAdminUser();
@@ -9,7 +10,7 @@ export async function POST(request: Request) {
   if (!isAdmin) return NextResponse.json({ error: "Accès non autorisé." }, { status: 403 });
   const body = await request.json().catch(() => null) as Record<string, unknown> | null;
   const status = body?.status as string;
-  if (!body || typeof body.student_id !== "string" || typeof body.program_id !== "string" || !recommendationStatuses.includes(status as (typeof recommendationStatuses)[number])) return NextResponse.json({ error: "Étudiant, programme et statut obligatoires." }, { status: 400 });
+  if (!body || !isUuid(body.student_id) || !isUuid(body.program_id) || !recommendationStatuses.includes(status as (typeof recommendationStatuses)[number])) return NextResponse.json({ error: "Étudiant, programme et statut obligatoires." }, { status: 400 });
 
   const [
     { data: student, error: studentError },
