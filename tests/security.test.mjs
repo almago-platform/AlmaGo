@@ -187,3 +187,22 @@ test("auth callback only accepts internal relative next paths", () => {
   assert.match(callback, /: "\/student"/);
   assert.doesNotMatch(callback, /next\.startsWith\("\/"\) \? next/);
 });
+
+
+test("password reset returns users to the space matching their role", () => {
+  const form = read("src/components/auth/ResetPasswordForm.tsx");
+  const page = read("src/app/reset-password/page.tsx");
+
+  assert.match(form, /from\("user_roles"\)/);
+  assert.match(form, /role\.role === "admin"/);
+  assert.match(form, /\? "\/admin"/);
+  assert.match(form, /role\.role === "student"/);
+  assert.match(form, /\? "\/student"/);
+  assert.match(form, /router\.push\(destination\)/);
+  assert.match(form, /supabase\.auth\.signOut\(\)/);
+  assert.doesNotMatch(form, /router\.push\("\/student"\)/);
+
+  assert.match(page, /export const metadata: Metadata/);
+  assert.match(page, /index:\s*false/);
+  assert.match(page, /follow:\s*false/);
+});
