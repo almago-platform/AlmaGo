@@ -36,3 +36,12 @@ test("student dossier blockers still outrank catalogue maintenance", () => {
   assert.ok(applicationsPosition > documentsPosition);
   assert.ok(cataloguePosition > applicationsPosition);
 });
+
+
+test("admin catalogue quality includes inactive parent universities", () => {
+  assert.match(adminHome, /universities\(is_active\)/);
+  assert.match(adminHome, /programParentGaps/);
+  assert.match(adminHome, /hasActiveProgramUniversity/);
+  assert.match(adminHome, /inactive_university/);
+  assert.match(adminHome, /sans anomalie de publication visible/);
+});
