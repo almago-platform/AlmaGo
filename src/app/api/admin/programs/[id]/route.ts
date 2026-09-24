@@ -16,11 +16,14 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     Object.keys(body).every((key) => key === "is_active");
 
   if (isActiveOnlyPatch) {
-    const { error } = await supabase
+    const { data: updated, error } = await supabase
       .from("programs")
       .update({ is_active: body.is_active })
-      .eq("id", id);
+      .eq("id", id)
+      .select("id")
+      .maybeSingle();
     if (error) return NextResponse.json({ error: "Impossible de modifier l’état du programme." }, { status: 500 });
+    if (!updated) return NextResponse.json({ error: "Programme introuvable." }, { status: 404 });
     return NextResponse.json({ ok: true });
   }
 
