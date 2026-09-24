@@ -12,6 +12,12 @@ export const metadata: Metadata = {
 
 const quickLinks = [
   {
+    title: "Parcours Allemagne",
+    text: "Suivez le bon ordre : projet académique, candidature, admission ou préparation, puis visa adapté à votre situation.",
+    href: "/parcours-allemagne",
+    action: "Voir le parcours",
+  },
+  {
     title: "Commencer mon dossier",
     text: "Créez votre espace AlmaGo et commencez par les informations essentielles de votre projet.",
     href: "/signup",
@@ -138,7 +144,7 @@ export default function HelpCenterPage() {
             </h2>
           </div>
 
-          <div className="mt-9 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="mt-9 grid gap-5 sm:grid-cols-2 xl:grid-cols-5">
             {quickLinks.map((item) => (
               <article
                 key={item.title}
