@@ -58,6 +58,7 @@ export function HomeFooter() {
             title="Parcours"
             links={[
               ["Comment ça marche", "/#parcours"],
+              ["À propos d’AlmaGo", "/a-propos"],
               ["Notre rôle", "/#role"],
               ["Comprendre les démarches", "/comprendre-les-demarches"],
               ["Selon votre pays de diplôme", "/selon-votre-pays"],
