@@ -133,7 +133,7 @@ export function studentHistoryDisplayMessage(message: string | null | undefined)
 
   return message
     .replace("AlmaGo a approuvé ton document", "AlmaGo a validé votre document")
-    .replace("AlmaGo a rejeté ton document", "AlmaGo a demandé une correction pour votre document")
+    .replace("AlmaGo a rejeté ton document", "AlmaGo n’a pas validé votre document")
     .replace("AlmaGo te demande de remplacer ton document", "AlmaGo vous demande de remplacer votre document");
 }
 
