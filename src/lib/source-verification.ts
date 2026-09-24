@@ -9,6 +9,14 @@ export function isHttpSourceUrl(value: unknown) {
   }
 }
 
+export function sourceUrlsChanged(current: unknown[], next: unknown[]) {
+  const normalize = (value: unknown) =>
+    typeof value === "string" && value.trim() ? value.trim() : null;
+
+  if (current.length !== next.length) return true;
+  return current.some((value, index) => normalize(value) !== normalize(next[index]));
+}
+
 export function hasVerifiedProgramSource(program: {
   source_url?: string | null;
   application_url?: string | null;
