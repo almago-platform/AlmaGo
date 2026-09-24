@@ -387,3 +387,25 @@ test("every sensitive student page enforces the student role itself", () => {
     assert.doesNotMatch(source, /createClient\(\)/, path);
   }
 });
+
+
+test("completed onboarding gates every student module except onboarding itself", () => {
+  const pages = [
+    "src/app/student/page.tsx",
+    "src/app/student/profile/page.tsx",
+    "src/app/student/checklist/page.tsx",
+    "src/app/student/documents/page.tsx",
+    "src/app/student/applications/page.tsx",
+    "src/app/student/orientation/page.tsx",
+    "src/app/student/notifications/page.tsx",
+  ];
+
+  for (const path of pages) {
+    const source = read(path);
+    assert.match(source, /select\("onboarding_completed"\)/, path);
+    assert.match(source, /redirect\("\/student\/onboarding"\)/, path);
+  }
+
+  const onboarding = read("src/app/student/onboarding/page.tsx");
+  assert.doesNotMatch(onboarding, /if \(!profile\?\.onboarding_completed\) redirect\("\/student\/onboarding"\)/);
+});
