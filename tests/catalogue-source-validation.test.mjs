@@ -216,3 +216,15 @@ test("full catalogue updates require explicit structural booleans", () => {
   assert.match(universityUpdate, /"is_active", "is_public"/);
   assert.match(universityUpdate, /Les états actif\/public de l’établissement doivent être explicitement définis/);
 });
+
+
+test("validated catalogue booleans are stored explicitly without fallback semantics", () => {
+  assert.match(programCreate, /studienkolleg_required: body\.studienkolleg_required as boolean/);
+  assert.match(programCreate, /testas_required: body\.testas_required as boolean/);
+  assert.match(programCreate, /uni_assist_required: body\.uni_assist_required as boolean/);
+  assert.match(programCreate, /is_active: body\.is_active as boolean/);
+  assert.match(universityCreate, /is_public: body\.is_public as boolean/);
+  assert.match(universityCreate, /is_active: body\.is_active as boolean/);
+  assert.match(universityUpdate, /is_public: body\.is_public as boolean/);
+  assert.match(universityUpdate, /is_active: body\.is_active as boolean/);
+});
