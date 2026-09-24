@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getAdminUser } from "@/lib/auth/access";
 import { programPayload } from "@/app/api/admin/programs/route";
+import { degreeLevels } from "@/lib/phase4";
 import { isHttpSourceUrl, sourceUrlsChanged } from "@/lib/source-verification";
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -27,6 +28,9 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     return NextResponse.json({ ok: true });
   }
 
+  if (!degreeLevels.includes(body.degree_level as (typeof degreeLevels)[number])) {
+    return NextResponse.json({ error: "Choisissez un niveau de diplôme valide." }, { status: 400 });
+  }
   const data = programPayload(body);
   if (!data.name || typeof data.university_id !== "string") return NextResponse.json({ error: "Université et nom du programme obligatoires." }, { status: 400 });
   const programmeUrls = [data.source_url, data.application_url].filter(
