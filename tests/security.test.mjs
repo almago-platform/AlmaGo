@@ -9,6 +9,7 @@ const read = (path) => readFileSync(join(root, path), "utf8");
 const migrationDir = join(root, "supabase", "migrations");
 const migrationFiles = readdirSync(migrationDir).filter((name) => name.endsWith(".sql")).sort();
 const migrations = migrationFiles.map((name) => readFileSync(join(migrationDir, name), "utf8")).join("\n");
+const access = read("src/lib/auth/access.ts");
 
 test("admin and student areas keep server-side authentication guards", () => {
   const adminLayout = read("src/app/admin/layout.tsx");
