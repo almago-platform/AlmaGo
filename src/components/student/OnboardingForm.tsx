@@ -48,11 +48,11 @@ const initial: FormData = {
 };
 
 const steps = [
-  { id: 1, title: "Identité", description: "Coordonnées et nationalité" },
-  { id: 2, title: "Parcours", description: "Diplôme et études" },
-  { id: 3, title: "Langues", description: "Niveaux et certificats" },
-  { id: 4, title: "Projet", description: "Objectif en Allemagne" },
-  { id: 5, title: "Validation", description: "Résumé du dossier" },
+  { id: 1, title: "Identité", description: "Vos informations principales" },
+  { id: 2, title: "Parcours", description: "Votre parcours académique" },
+  { id: 3, title: "Langues", description: "Vos niveaux et certificats" },
+  { id: 4, title: "Projet", description: "Votre projet d’études" },
+  { id: 5, title: "Validation", description: "Vérification finale" },
 ];
 
 function mergeProfile(profile: Partial<FormData>): FormData {
@@ -86,26 +86,32 @@ export function OnboardingForm({ profile }: { profile: Partial<FormData> }) {
     };
 
     if (requiredByStep[step]?.some((key) => !String(data[key] || "").trim())) {
-      setError("Complète les champs marqués d&apos;un * avant de continuer.");
+      setError("Complétez les champs marqués d’un * avant de continuer.");
       return;
     }
 
     setSaving(true);
-    const response = await fetch("/api/student/onboarding", {
-      method: "PUT",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ ...data, complete: nextStep === 6, consentAccepted: consent }),
-    });
-    const result = await response.json();
-    setSaving(false);
 
-    if (!response.ok) {
-      setError(result.error || "Une erreur est survenue.");
-      return;
+    try {
+      const response = await fetch("/api/student/onboarding", {
+        method: "PUT",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ ...data, complete: nextStep === 6, consentAccepted: consent }),
+      });
+      const result = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        setError(result.error || "Nous n’arrivons pas à enregistrer cette étape pour le moment. Réessayez dans quelques instants.");
+        return;
+      }
+
+      if (nextStep === 6) router.push("/student");
+      else setStep(nextStep);
+    } catch {
+      setError("Nous n’arrivons pas à enregistrer cette étape pour le moment. Vérifiez votre connexion puis réessayez.");
+    } finally {
+      setSaving(false);
     }
-
-    if (nextStep === 6) router.push("/student");
-    else setStep(nextStep);
   }
 
   const progress = `${step * 20}%`;
@@ -116,9 +122,9 @@ export function OnboardingForm({ profile }: { profile: Partial<FormData> }) {
       <aside className="space-y-4">
         <Card className="bg-slate-950 text-white shadow-xl">
           <p className="text-sm font-bold uppercase tracking-[0.18em] text-[var(--accent-light)]">AlmaGo</p>
-          <h1 className="mt-4 text-3xl font-bold tracking-tight">Prépare ton dossier étudiant</h1>
+          <h1 className="mt-4 text-3xl font-bold tracking-tight">Préparez votre dossier étudiant</h1>
           <p className="mt-4 text-sm leading-6 text-slate-200">
-            Donne les informations essentielles pour construire un parcours clair vers les études en Allemagne.
+            Renseignez les informations essentielles pour organiser votre dossier et votre projet d’études en Allemagne.
           </p>
           <div className="mt-6 rounded-xl bg-white/10 p-4">
             <p className="text-sm font-semibold text-[var(--accent-light)]">Étape actuelle</p>
@@ -168,7 +174,7 @@ export function OnboardingForm({ profile }: { profile: Partial<FormData> }) {
           <div className="mt-5 h-2 overflow-hidden rounded-full bg-slate-100">
             <div className="h-full rounded-full bg-[var(--brand)] transition-all" style={{ width: progress }} />
           </div>
-          <p className="mt-3 text-sm text-slate-500">Tes réponses sont sauvegardées à chaque étape validée.</p>
+          <p className="mt-3 text-sm text-slate-500">Vos réponses sont enregistrées à chaque étape validée.</p>
         </div>
 
         {step === 1 && (
@@ -233,9 +239,9 @@ export function OnboardingForm({ profile }: { profile: Partial<FormData> }) {
         {step === 5 && (
           <div className="space-y-6">
             <div>
-              <h3 className="text-xl font-bold text-slate-950">Confirme ton profil</h3>
+              <h3 className="text-xl font-bold text-slate-950">Confirmez votre profil</h3>
               <p className="mt-2 text-sm leading-6 text-slate-600">
-                Vérifie les informations principales avant de créer ton tableau de bord AlmaGo.
+                Vérifiez les informations principales avant d’accéder à votre espace AlmaGo.
               </p>
             </div>
             <dl className="overflow-hidden rounded-2xl border border-slate-200">
@@ -278,7 +284,7 @@ export function OnboardingForm({ profile }: { profile: Partial<FormData> }) {
             Retour
           </Button>
           <Button type="button" disabled={saving} onClick={() => save(step + 1)} className="justify-center">
-            {saving ? "Enregistrement..." : step === 5 ? "Valider mon profil" : "Continuer"}
+            {saving ? "Enregistrement..." : step === 5 ? "Confirmer mon profil" : "Continuer"}
           </Button>
         </div>
       </Card>
