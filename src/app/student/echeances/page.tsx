@@ -102,7 +102,7 @@ export default async function StudentDeadlinesPage() {
     );
   }
 
-  const deadlines = ((data || []) as DeadlineApplication[])
+  const deadlines = ((data || []) as unknown as DeadlineApplication[])
     .filter((application) => isActiveApplication(application.status))
     .map((application) => ({
       application,
