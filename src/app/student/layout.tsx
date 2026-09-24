@@ -12,5 +12,15 @@ export default async function StudentLayout({
 
   if (!user) redirect("/login");
 
-  return <AppShell role="student">{children}</AppShell>;
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("first_name")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  return (
+    <AppShell role="student" displayName={profile?.first_name || null}>
+      {children}
+    </AppShell>
+  );
 }
