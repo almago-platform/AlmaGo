@@ -6,6 +6,7 @@ const onboardingRoute = readFileSync("src/app/api/student/onboarding/route.ts", 
 const profileRoute = readFileSync("src/app/api/student/profile/route.ts", "utf8");
 const onboardingPage = readFileSync("src/app/student/onboarding/page.tsx", "utf8");
 const profileLib = readFileSync("src/lib/student/profile.ts", "utf8");
+const profilePage = readFileSync("src/app/student/profile/page.tsx", "utf8");
 
 test("completed onboarding records consent before persisting the completed profile", () => {
   assert.match(onboardingRoute, /input\.complete === true/);
@@ -57,4 +58,12 @@ test("onboarding load failures never fall through to an empty editable form", ()
   assert.match(onboardingPage, /if \(profileError\)/);
   assert.match(onboardingPage, /Profil temporairement indisponible/);
   assert.match(onboardingPage, /Réessayez avant de saisir de nouvelles données/);
+});
+
+
+test("profile page loads only fields used by the form", () => {
+  assert.doesNotMatch(profilePage, /select\("\*"\)/);
+  assert.match(profilePage, /first_name,last_name,birth_date,nationality/);
+  assert.match(profilePage, /target_degree,target_field,study_language,target_intake/);
+  assert.match(profilePage, /preferred_cities,budget_range,onboarding_completed/);
 });
