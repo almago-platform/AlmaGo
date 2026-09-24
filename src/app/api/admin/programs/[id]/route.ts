@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getAdminUser } from "@/lib/auth/access";
 import { programPayload } from "@/app/api/admin/programs/route";
-import { isHttpSourceUrl } from "@/lib/source-verification";
+import { isHttpSourceUrl, sourceUrlsChanged } from "@/lib/source-verification";
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { supabase, user, isAdmin } = await getAdminUser();
@@ -31,7 +31,25 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     );
   }
   const { id } = await params;
-  const { error } = await supabase.from("programs").update(data).eq("id", id);
+  const { data: existing, error: existingError } = await supabase
+    .from("programs")
+    .select("source_url,application_url")
+    .eq("id", id)
+    .maybeSingle();
+
+  if (existingError) {
+    return NextResponse.json({ error: "Impossible de vérifier la source actuelle du programme." }, { status: 500 });
+  }
+  if (!existing) return NextResponse.json({ error: "Programme introuvable." }, { status: 404 });
+
+  const sourceChanged = sourceUrlsChanged(
+    [existing.source_url, existing.application_url],
+    [data.source_url, data.application_url],
+  );
+  const verificationPatch =
+    body.mark_verified === true || !sourceChanged ? {} : { verified_at: null };
+
+  const { error } = await supabase.from("programs").update({ ...data, ...verificationPatch }).eq("id", id);
   if (error) return NextResponse.json({ error: "Impossible de modifier le programme." }, { status: 500 });
   return NextResponse.json({ ok: true });
 }
