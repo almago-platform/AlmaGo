@@ -11,7 +11,31 @@ export async function PATCH(request: Request) {
   const update = profileUpdateFromInput(input);
   const validationError = validateProfileUpdate(update);
   if (validationError) return NextResponse.json({ error: validationError }, { status: 400 });
-  if (update.first_name || update.last_name) update.full_name = `${update.first_name ?? ""} ${update.last_name ?? ""}`.trim();
+
+  const hasFirstName = Object.prototype.hasOwnProperty.call(update, "first_name");
+  const hasLastName = Object.prototype.hasOwnProperty.call(update, "last_name");
+
+  if (hasFirstName || hasLastName) {
+    const { data: currentProfile, error: profileError } = await supabase
+      .from("profiles")
+      .select("first_name,last_name")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    if (profileError) {
+      return NextResponse.json({ error: "Impossible de vérifier le profil actuel." }, { status: 500 });
+    }
+
+    const firstName = hasFirstName ? update.first_name : currentProfile?.first_name;
+    const lastName = hasLastName ? update.last_name : currentProfile?.last_name;
+    const fullName = [firstName, lastName]
+      .filter((value): value is string => typeof value === "string" && Boolean(value.trim()))
+      .map((value) => value.trim())
+      .join(" ");
+
+    update.full_name = fullName || null;
+  }
+
   const { error } = await supabase.from("profiles").upsert({ id: user.id, ...update }, { onConflict: "id" });
   if (error) return NextResponse.json({ error: "Impossible d’enregistrer les modifications." }, { status: 500 });
   return NextResponse.json({ ok: true });
