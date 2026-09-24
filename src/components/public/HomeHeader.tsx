@@ -17,14 +17,21 @@ export function HomeHeader() {
           </span>
         </Link>
 
-        <nav className="hidden items-center gap-8 text-sm font-semibold text-slate-600 lg:flex" aria-label="Navigation principale">
-          <a className="transition-colors hover:text-[var(--brand)]" href="#parcours">Comment ça marche</a>
-          <a className="transition-colors hover:text-[var(--brand)]" href="#role">Notre rôle</a>
-          <a className="transition-colors hover:text-[var(--brand)]" href="#espace">Votre espace</a>
-          <a className="transition-colors hover:text-[var(--brand)]" href="#confiance">Confiance</a>
+        <nav className="hidden items-center gap-6 text-sm font-semibold text-slate-600 lg:flex" aria-label="Navigation principale">
+          <Link className="transition-colors hover:text-[var(--brand)]" href="/#parcours">Comment ça marche</Link>
+          <Link className="transition-colors hover:text-[var(--brand)]" href="/#role">Notre rôle</Link>
+          <Link className="transition-colors hover:text-[var(--brand)]" href="/#espace">Votre espace</Link>
+          <Link className="transition-colors hover:text-[var(--brand)]" href="/aide">Centre d’aide</Link>
+          <Link className="transition-colors hover:text-[var(--brand)]" href="/#confiance">Confiance</Link>
         </nav>
 
         <div className="flex shrink-0 items-center gap-2">
+          <Link
+            href="/aide"
+            className="hidden min-h-11 items-center justify-center rounded-[var(--radius-control)] px-3 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50 hover:text-[var(--brand)] md:inline-flex lg:hidden"
+          >
+            Aide
+          </Link>
           <Link
             href="/login"
             className="hidden min-h-11 items-center justify-center rounded-[var(--radius-control)] px-3 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50 hover:text-[var(--brand)] sm:inline-flex"
