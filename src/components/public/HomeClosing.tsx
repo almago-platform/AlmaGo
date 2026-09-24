@@ -60,6 +60,7 @@ export function HomeFooter() {
               ["Comment ça marche", "/#parcours"],
               ["Notre rôle", "/#role"],
               ["Comprendre les démarches", "/comprendre-les-demarches"],
+              ["Selon votre pays de diplôme", "/selon-votre-pays"],
               ["Votre espace", "/#espace"],
               ["Confiance et transparence", "/#confiance"],
             ]}
