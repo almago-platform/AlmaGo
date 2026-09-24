@@ -123,3 +123,14 @@ test("authenticated E2E watches shared protected helper changes", () => {
     assert.match(authenticatedE2E, new RegExp(path.replace(/[.*+?^$\{\}()|[\]\\]/g, "\\$&")));
   }
 });
+
+
+test("authenticated E2E watches protected API route changes", () => {
+  for (const path of [
+    "src/app/api/admin/**",
+    "src/app/api/student/**",
+    "src/app/api/documents/**",
+  ]) {
+    assert.match(authenticatedE2E, new RegExp(path.replace(/[.*+?^$\{\}()|[\]\\]/g, "\\$&")));
+  }
+});
