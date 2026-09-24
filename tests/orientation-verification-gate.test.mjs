@@ -90,8 +90,13 @@ test("admin publication verifies programme evidence before recommendation upsert
   assert.match(adminOrientationRoute, /Vérifiez la source officielle du programme avant de publier cette piste/);
 });
 
-test("admin selector offers verified programmes while existing recommendations stay reviewable", () => {
+test("admin selector offers only publishable programmes while inactive historical recommendations stay identifiable", () => {
   assert.match(adminOrientationPage, /source_url,application_url,verified_at,is_active/);
+  const programsQuery = adminOrientationPage.slice(
+    adminOrientationPage.indexOf('.from("programs")'),
+    adminOrientationPage.indexOf('.from("program_recommendations")'),
+  );
+  assert.doesNotMatch(programsQuery, /\.eq\("is_active", true\)/);
   assert.match(adminOrientationPanel, /programs\.filter\(isPublishableProgram\)\.map/);
   assert.match(adminOrientationPanel, /Seuls les programmes disposant d’une source officielle et d’une date de vérification/);
   assert.match(adminOrientationPanel, /visible\.map\(\(recommendation\)/);
