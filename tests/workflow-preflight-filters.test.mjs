@@ -73,3 +73,14 @@ test("final release gate reuses the A43 test identity defaults", () => {
   assert.doesNotMatch(finalRelease, /secrets\.ALMAGO_E2E_STUDENT_EMAIL/);
   assert.doesNotMatch(finalRelease, /secrets\.ALMAGO_E2E_ADMIN_EMAIL/);
 });
+
+
+test("final release gate requires dedicated identities and full authenticated quality", () => {
+  assert.match(finalRelease, /Require distinct test-only identities/);
+  assert.match(finalRelease, /Student and admin E2E accounts must be different/);
+  assert.match(finalRelease, /must be dedicated test identities containing 'e2e' or 'test'/);
+  assert.match(finalRelease, /tests\/e2e\/authenticated\.spec\.mjs/);
+  assert.match(finalRelease, /tests\/e2e\/student-space-quality\.spec\.mjs/);
+  assert.match(finalRelease, /tests\/e2e\/admin-space-quality\.spec\.mjs/);
+  assert.match(finalRelease, /timeout-minutes: 45/);
+});
