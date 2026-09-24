@@ -27,6 +27,8 @@ type Program = {
   winter_deadline: string | null;
   summer_deadline: string | null;
   application_url: string | null;
+  source_url: string | null;
+  verified_at: string | null;
   almago_notes: string | null;
   is_active: boolean;
   universities: { name: string; city: string } | { name: string; city: string }[] | null;
@@ -52,6 +54,8 @@ type ProgramForm = {
   winter_deadline: string;
   summer_deadline: string;
   official_url: string;
+  source_url: string;
+  mark_verified: boolean;
   almago_notes: string;
   is_active: boolean;
 };
@@ -78,6 +82,8 @@ const empty: ProgramForm = {
   winter_deadline: "",
   summer_deadline: "",
   official_url: "",
+  source_url: "",
+  mark_verified: false,
   almago_notes: "",
   is_active: true,
 };
@@ -85,6 +91,17 @@ const empty: ProgramForm = {
 function universityName(program: Program) {
   const university = Array.isArray(program.universities) ? program.universities[0] : program.universities;
   return university ? `${university.name} · ${university.city}` : "Université";
+}
+
+function formatVerificationDate(value: string) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "date inconnue";
+
+  return new Intl.DateTimeFormat("fr-FR", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  }).format(date);
 }
 
 export function AdminProgramsPanel({
@@ -104,7 +121,10 @@ export function AdminProgramsPanel({
   const [busy, setBusy] = useState(false);
 
   const activePrograms = items.filter((program) => program.is_active);
-  const missingSourceCount = activePrograms.filter((program) => !program.application_url).length;
+  const missingSourceCount = activePrograms.filter(
+    (program) => !program.source_url && !program.application_url,
+  ).length;
+  const missingVerificationCount = activePrograms.filter((program) => !program.verified_at).length;
   const missingDeadlineCount = activePrograms.filter(
     (program) => !program.winter_deadline && !program.summer_deadline,
   ).length;
@@ -113,7 +133,8 @@ export function AdminProgramsPanel({
     const normalized = query.trim().toLocaleLowerCase("fr");
     return items.filter((program) => {
       if (level !== "all" && program.degree_level !== level) return false;
-      if (quality === "missing_source" && program.application_url) return false;
+      if (quality === "missing_source" && (program.source_url || program.application_url)) return false;
+      if (quality === "missing_verification" && program.verified_at) return false;
       if (quality === "missing_deadline" && (program.winter_deadline || program.summer_deadline)) return false;
       if (!normalized) return true;
       return [program.name, program.field, universityName(program)]
@@ -155,6 +176,8 @@ export function AdminProgramsPanel({
       winter_deadline: program.winter_deadline || "",
       summer_deadline: program.summer_deadline || "",
       official_url: program.application_url || "",
+      source_url: program.source_url || "",
+      mark_verified: false,
       almago_notes: program.almago_notes || "",
       is_active: program.is_active,
     });
@@ -330,6 +353,23 @@ export function AdminProgramsPanel({
                   <input value={form.official_url} onChange={(event) => change("official_url", event.target.value)} placeholder="https://..." className="field" />
                 </label>
                 <label className="block text-sm font-medium text-slate-700 md:col-span-2">
+                  Source officielle des informations
+                  <input value={form.source_url} onChange={(event) => change("source_url", event.target.value)} placeholder="https://..." className="field" />
+                  <span className="mt-1 block text-xs leading-5 text-slate-500">
+                    Utilisez de préférence la page officielle qui contient les critères, exigences ou échéances enregistrés dans cette fiche.
+                  </span>
+                </label>
+                <div className="md:col-span-2">
+                  <ToggleField
+                    label="J’ai vérifié les informations auprès de cette source aujourd’hui"
+                    checked={form.mark_verified}
+                    onChange={(checked) => change("mark_verified", checked)}
+                  />
+                  <p className="mt-2 text-xs leading-5 text-slate-500">
+                    Cette confirmation met à jour la date de vérification. Une simple modification de la fiche ne change pas cette date.
+                  </p>
+                </div>
+                <label className="block text-sm font-medium text-slate-700 md:col-span-2">
                   Frais de candidature
                   <textarea value={form.application_fee_notes} onChange={(event) => change("application_fee_notes", event.target.value)} placeholder="Frais ou notes vérifiées." className="field min-h-24 resize-y" />
                 </label>
@@ -375,7 +415,7 @@ export function AdminProgramsPanel({
       </Card>
 
       <section aria-labelledby="program-catalogue-title">
-        <div className="mb-5 grid gap-4 sm:grid-cols-3">
+        <div className="mb-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <QualityCard
             title="Programmes actifs"
             value={activePrograms.length}
@@ -387,6 +427,12 @@ export function AdminProgramsPanel({
             value={missingSourceCount}
             detail="Programmes actifs sans lien officiel enregistré"
             tone={missingSourceCount ? "warning" : "success"}
+          />
+          <QualityCard
+            title="Vérification à compléter"
+            value={missingVerificationCount}
+            detail="Programmes actifs sans date de vérification enregistrée"
+            tone={missingVerificationCount ? "warning" : "success"}
           />
           <QualityCard
             title="Échéance à compléter"
@@ -423,6 +469,7 @@ export function AdminProgramsPanel({
               <select value={quality} onChange={(event) => setQuality(event.target.value)} className="field">
                 <option value="all">Toutes les fiches</option>
                 <option value="missing_source">Source officielle à compléter</option>
+                <option value="missing_verification">Date de vérification à compléter</option>
                 <option value="missing_deadline">Échéance à compléter</option>
               </select>
             </label>
@@ -437,8 +484,11 @@ export function AdminProgramsPanel({
                   <div className="flex flex-wrap gap-2">
                     <Badge variant="neutral">{program.degree_level}</Badge>
                     <Badge variant={program.is_active ? "success" : "neutral"}>{program.is_active ? "Actif" : "Inactif"}</Badge>
-                    <Badge variant={program.application_url ? "info" : "warning"}>
-                      {program.application_url ? "Source officielle enregistrée" : "Source officielle à compléter"}
+                    <Badge variant={program.source_url || program.application_url ? "info" : "warning"}>
+                      {program.source_url || program.application_url ? "Source officielle enregistrée" : "Source officielle à compléter"}
+                    </Badge>
+                    <Badge variant={program.verified_at ? "success" : "warning"}>
+                      {program.verified_at ? `Vérifié le ${formatVerificationDate(program.verified_at)}` : "Vérification à compléter"}
                     </Badge>
                   </div>
                   <h3 id={`admin-program-title-${program.id}`} className="mt-3 text-xl font-bold tracking-[-0.02em] text-slate-950 [overflow-wrap:anywhere]">{program.name}</h3>
@@ -453,8 +503,8 @@ export function AdminProgramsPanel({
                 <Info label="Deadline été" value={program.summer_deadline || "À confirmer"} />
               </dl>
 
-              {program.application_url && (
-                <a href={program.application_url} target="_blank" rel="noreferrer" className="mt-4 inline-flex text-sm font-semibold text-[var(--brand)] underline decoration-[var(--brand-border)] underline-offset-4 hover:text-[var(--brand-hover)]">
+              {(program.source_url || program.application_url) && (
+                <a href={program.source_url || program.application_url || "#"} target="_blank" rel="noreferrer" className="mt-4 inline-flex text-sm font-semibold text-[var(--brand)] underline decoration-[var(--brand-border)] underline-offset-4 hover:text-[var(--brand-hover)]">
                   Ouvrir la source officielle
                 </a>
               )}
