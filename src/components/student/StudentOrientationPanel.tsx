@@ -33,6 +33,14 @@ type Recommendation = {
 
 type Feedback = { message: string; kind: "success" | "error" } | null;
 
+const studentRecommendationLabels: Record<string, string> = {
+  recommended: "Piste recommandée",
+  possible: "Piste possible",
+  ambitious: "Piste ambitieuse",
+  missing_requirements: "Prérequis à compléter",
+  not_recommended: "Piste non recommandée",
+};
+
 function recommendationVariant(status: string): "success" | "warning" | "info" | "neutral" {
   if (status === "recommended" || status === "possible") return "success";
   if (status === "missing_requirements") return "warning";
@@ -231,7 +239,7 @@ export function StudentOrientationPanel({
                         </p>
                       </div>
                       <Badge variant={recommendation.student_interest_at ? "success" : recommendationVariant(recommendation.status)}>
-                        {recommendation.student_interest_at ? "Intérêt enregistré" : recommendationStatusLabels[recommendation.status] || recommendation.status}
+                        {recommendation.student_interest_at ? "Intérêt enregistré" : studentRecommendationLabels[recommendation.status] || recommendationStatusLabels[recommendation.status] || recommendation.status}
                       </Badge>
                     </div>
                     <div>
