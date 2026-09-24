@@ -130,7 +130,7 @@ export function AdminProgramsPanel({
   const [query, setQuery] = useState("");
   const [level, setLevel] = useState("all");
   const [quality, setQuality] = useState(
-    ["all", "missing_source", "missing_verification", "missing_deadline"].includes(initialQuality)
+    ["all", "missing_source", "missing_verification", "missing_deadline", "inactive_university"].includes(initialQuality)
       ? initialQuality
       : "all",
   );
@@ -149,6 +149,9 @@ export function AdminProgramsPanel({
   const missingDeadlineCount = activePrograms.filter(
     (program) => !program.winter_deadline && !program.summer_deadline,
   ).length;
+  const inactiveUniversityCount = activePrograms.filter(
+    (program) => programUniversity(program)?.is_active !== true,
+  ).length;
 
   const filtered = useMemo(() => {
     const normalized = query.trim().toLocaleLowerCase("fr");
@@ -157,6 +160,7 @@ export function AdminProgramsPanel({
       if (quality === "missing_source" && programSourceUrl(program)) return false;
       if (quality === "missing_verification" && hasVerifiedProgramSource(program)) return false;
       if (quality === "missing_deadline" && (program.winter_deadline || program.summer_deadline)) return false;
+      if (quality === "inactive_university" && programUniversity(program)?.is_active === true) return false;
       if (!normalized) return true;
       return [program.name, program.field, universityName(program)]
         .filter(Boolean)
@@ -473,7 +477,7 @@ export function AdminProgramsPanel({
       </Card>
 
       <section aria-labelledby="program-catalogue-title">
-        <div className="mb-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="mb-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
           <QualityCard
             title="Programmes publiables"
             value={publishablePrograms.length}
@@ -497,6 +501,12 @@ export function AdminProgramsPanel({
             value={missingDeadlineCount}
             detail="Programmes actifs sans échéance hiver ni été"
             tone={missingDeadlineCount ? "warning" : "success"}
+          />
+          <QualityCard
+            title="Université inactive"
+            value={inactiveUniversityCount}
+            detail="Programmes actifs actuellement non publiables"
+            tone={inactiveUniversityCount ? "warning" : "success"}
           />
         </div>
 
@@ -529,6 +539,7 @@ export function AdminProgramsPanel({
                 <option value="missing_source">Source officielle à compléter</option>
                 <option value="missing_verification">Date de vérification à compléter</option>
                 <option value="missing_deadline">Échéance à compléter</option>
+                <option value="inactive_university">Université inactive</option>
               </select>
             </label>
           </div>
