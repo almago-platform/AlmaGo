@@ -83,6 +83,21 @@ export function AdminApplicationsPanel({ applications }: { applications: any[] }
       isPastDeadline(application.deadline),
   ).length;
 
+  const priorityApplication =
+    items.find(
+      (application) =>
+        isActiveApplication(application.status) &&
+        Boolean(application.deadline) &&
+        isPastDeadline(application.deadline),
+    ) ||
+    items.find(
+      (application) =>
+        isActiveApplication(application.status) &&
+        Boolean(application.next_action),
+    ) ||
+    items.find((application) => isActiveApplication(application.status)) ||
+    null;
+
   function changeEdit(id: string, edit: ApplicationEdit) {
     setEdits((current) => ({ ...current, [id]: edit }));
   }
@@ -171,6 +186,46 @@ export function AdminApplicationsPanel({ applications }: { applications: any[] }
           tone={overdueCount ? "warning" : "success"}
         />
       </section>
+
+      {priorityApplication && (() => {
+        const priorityProgram = firstProgram(priorityApplication);
+        const priorityStudent = firstProfile(priorityApplication);
+        const priorityUniversity = firstUniversity(priorityProgram);
+        const priorityOverdue =
+          Boolean(priorityApplication.deadline) && isPastDeadline(priorityApplication.deadline);
+
+        return (
+          <Card className={`relative overflow-hidden shadow-none ${priorityOverdue ? "border-amber-300 bg-amber-50/30" : "border-[var(--brand-border)] bg-white"}`}>
+            <div aria-hidden="true" className={`absolute inset-y-0 left-0 w-1.5 ${priorityOverdue ? "bg-amber-500" : "bg-[var(--brand)]"}`} />
+            <div className="pl-2 sm:pl-3">
+              <div className="flex flex-wrap items-center gap-2">
+                <Badge variant={priorityOverdue ? "warning" : "info"}>À traiter maintenant</Badge>
+                {priorityApplication.next_action && <Badge variant="neutral">Action enregistrée</Badge>}
+              </div>
+              <h2 className="mt-4 text-xl font-bold tracking-[-0.02em] text-slate-950 [overflow-wrap:anywhere]">
+                {priorityStudent?.first_name || "Étudiant"} {priorityStudent?.last_name || ""} · {priorityProgram?.name || "Programme"}
+              </h2>
+              <p className="mt-1 text-sm leading-6 text-slate-600 [overflow-wrap:anywhere]">
+                {priorityUniversity?.name || "Université"}{priorityUniversity?.city ? ` · ${priorityUniversity.city}` : ""}
+              </p>
+              <p className="mt-3 text-sm leading-6 text-slate-700 [overflow-wrap:anywhere]">
+                {priorityApplication.next_action ||
+                  (priorityOverdue
+                    ? "L’échéance enregistrée est dépassée. Vérifiez le statut et la prochaine action de ce dossier."
+                    : "Aucune prochaine action précise n’est enregistrée. Vérifiez le statut de ce dossier actif.")}
+              </p>
+              <div className="mt-4 flex flex-wrap gap-2 text-xs font-semibold text-slate-600">
+                <span className={`rounded-full px-3 py-1.5 ${priorityOverdue ? "bg-amber-100 text-amber-900" : "bg-slate-100"}`}>
+                  Échéance {formatDeadline(priorityApplication.deadline)}
+                </span>
+                <span className="rounded-full bg-slate-100 px-3 py-1.5">
+                  {applicationStatusLabels[priorityApplication.status] || priorityApplication.status}
+                </span>
+              </div>
+            </div>
+          </Card>
+        );
+      })()}
 
       <Card className="shadow-none">
         <div className="mb-4">
