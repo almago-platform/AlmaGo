@@ -120,6 +120,21 @@ export function daysUntilDeadline(deadline: string, now = new Date()) {
   return Math.round((targetUtc - todayUtc) / 86_400_000);
 }
 
+export function applicationEventDisplayMessage(
+  eventType: string,
+  message: string | null | undefined,
+) {
+  if (eventType !== "application_status_changed") {
+    return message || "Mise à jour du dossier.";
+  }
+
+  const rawStatus = message?.split(" : ").at(-1)?.trim() || "";
+  const label = applicationStatusLabels[rawStatus];
+  return label
+    ? `Nouveau statut : ${label}`
+    : "Le statut de cette candidature a été mis à jour.";
+}
+
 export function statusTone(status: string) {
   if (["admission", "accepted", "recommended", "possible"].includes(status)) return "bg-emerald-100 text-emerald-800";
   if (["ambitious", "preparing", "ready_to_submit", "submitted", "waiting_university", "in_review"].includes(status)) return "bg-blue-100 text-blue-800";
