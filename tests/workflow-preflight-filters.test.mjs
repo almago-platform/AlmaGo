@@ -101,3 +101,11 @@ test("A43 cannot close before A38 is complete", () => {
   assert.match(authenticatedE2E, /a38Labels\.has\("almago-plan-done"\)/);
   assert.match(authenticatedE2E, /A38 is not complete; A43 will remain open/);
 });
+
+
+test("final release gate rejects ignored or cancelled Vercel statuses", () => {
+  assert.match(finalRelease, /ignored build step\|cancelled\|canceled/);
+  assert.match(finalRelease, /ignoredOrCancelled/);
+  assert.match(finalRelease, /vercel\.state !== "success" \|\| ignoredOrCancelled/);
+  assert.match(finalRelease, /completed successful deployment/);
+});
