@@ -13,7 +13,12 @@ export default async function AdminProgramsPage({
   const { quality } = await searchParams;
   const supabase = await createClient();
   const [{ data: programs, error: programsError }, { data: universities, error: universitiesError }] = await Promise.all([
-    supabase.from("programs").select("*, universities(name,city,is_active)").order("name"),
+    supabase
+      .from("programs")
+      .select(
+        "id,university_id,name,degree_level,field,teaching_language,intake_terms,duration,nc_requirement,german_level_required,english_level_required,diploma_required,indicative_average,studienkolleg_required,testas_required,uni_assist_required,application_fee_notes,winter_deadline,summer_deadline,application_url,source_url,verified_at,almago_notes,is_active,universities(name,city,is_active)",
+      )
+      .order("name"),
     supabase.from("universities").select("id,name,is_active").order("name"),
   ]);
 
