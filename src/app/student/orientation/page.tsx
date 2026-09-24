@@ -12,6 +12,17 @@ export default async function StudentOrientationPage() {
   const { supabase, user, isStudent } = await getStudentUser();
   if (!user) redirect("/login");
   if (!isStudent) redirect("/unauthorized");
+
+  const { data: profile, error: profileError } = await supabase
+    .from("profiles")
+    .select("onboarding_completed")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  if (profileError) {
+    return <OrientationUnavailable />;
+  }
+  if (!profile?.onboarding_completed) redirect("/student/onboarding");
   const [{ data, error }, { data: applications, error: applicationsError }] = await Promise.all([
     supabase
       .from("program_recommendations")
