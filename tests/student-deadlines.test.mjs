@@ -91,3 +91,16 @@ test("admin applications preserve legacy states without offering them as new tra
   assert.match(adminApplicationsPanel, /historique/);
   assert.match(adminApplicationsPanel, /applicationStatuses\.map/);
 });
+
+
+test("original legacy status remains selectable until save", () => {
+  assert.match(
+    adminApplicationsPanel,
+    /applicationStatuses\.includes\(application\.status as/,
+  );
+  assert.match(adminApplicationsPanel, /option value=\{application\.status\}/);
+  assert.doesNotMatch(
+    adminApplicationsPanel,
+    /applicationStatuses\.includes\(edit\.status as/,
+  );
+});
