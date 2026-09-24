@@ -78,8 +78,10 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     [existing.source_url, existing.application_url],
     [data.source_url, data.application_url],
   );
+  const universityChanged = data.university_id !== existing.university_id;
+  const verificationEvidenceChanged = sourceChanged || universityChanged;
   const verificationPatch =
-    body.mark_verified === true || !sourceChanged ? {} : { verified_at: null };
+    body.mark_verified === true || !verificationEvidenceChanged ? {} : { verified_at: null };
 
   const { error } = await supabase.from("programs").update({ ...data, ...verificationPatch }).eq("id", id);
   if (error) return NextResponse.json({ error: "Impossible de modifier le programme." }, { status: 500 });
