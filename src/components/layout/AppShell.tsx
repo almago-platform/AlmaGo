@@ -24,6 +24,7 @@ const icons = {
   orientation: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={iconClass} aria-hidden="true"><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z" /><path d="m15.5 8.5-2.2 4.8-4.8 2.2 2.2-4.8 4.8-2.2Z" /></svg>,
   checklist: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={iconClass} aria-hidden="true"><path d="M8 6h12M8 12h12M8 18h12M3.5 6l1 1 2-2M3.5 12l1 1 2-2M3.5 18l1 1 2-2" /></svg>,
   applications: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={iconClass} aria-hidden="true"><path d="M5 5h14v16H5z" /><path d="M9 3h6v4H9zM8 11h8M8 15h8" /></svg>,
+  deadlines: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={iconClass} aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2" /><path d="M8 3v4M16 3v4M4 10h16M8 14h3M8 17h5" /></svg>,
   notifications: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={iconClass} aria-hidden="true"><path d="M6.5 9a5.5 5.5 0 0 1 11 0c0 6 2.5 6 2.5 8H4c0-2 2.5-2 2.5-8Z" /><path d="M9.5 20h5" /></svg>,
   universities: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={iconClass} aria-hidden="true"><path d="m3 9 9-5 9 5-9 5-9-5Z" /><path d="M6 12v5c3 2 9 2 12 0v-5M21 10v6" /></svg>,
   programs: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={iconClass} aria-hidden="true"><path d="M4 5h16v14H4z" /><path d="M8 9h8M8 13h5" /></svg>,
@@ -37,8 +38,9 @@ const studentItems: NavItem[] = [
   { label: "Mes documents", href: "/student/documents", icon: icons.documents, helper: "Pièces et statuts" },
   { label: "Mon orientation", href: "/student/orientation", icon: icons.orientation, helper: "Programmes proposés" },
   { label: "Mes démarches", href: "/student/checklist", icon: icons.checklist, helper: "Étapes du dossier" },
+  { label: "Mes échéances", href: "/student/echeances", icon: icons.deadlines, helper: "Dates du dossier" },
   { label: "Mes notifications", href: "/student/notifications", icon: icons.notifications, helper: "Mises à jour du dossier" },
-  { label: "Mes candidatures", href: "/student/applications", icon: icons.applications, helper: "Suivi et échéances" },
+  { label: "Mes candidatures", href: "/student/applications", icon: icons.applications, helper: "Suivi des dossiers" },
 ];
 
 const adminItems: NavItem[] = [
