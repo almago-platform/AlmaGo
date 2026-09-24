@@ -30,16 +30,16 @@ export function HomeTrustSection() {
             <div className="relative border-b border-white/10 p-6 sm:p-8 lg:border-b-0 lg:border-r lg:p-10">
               <div aria-hidden="true" className="absolute -left-20 -top-20 h-56 w-56 rounded-full border-[42px] border-white/[0.04]" />
               <div className="relative">
-                <p className="text-xs font-bold uppercase tracking-[0.18em] text-[var(--accent-light)]">Transparence</p>
+                <p className="text-xs font-bold uppercase tracking-[0.18em] text-[var(--accent-light)]">Confiance et transparence</p>
                 <h2 id="trust-title" className="mt-3 text-3xl font-bold tracking-[-0.035em] sm:text-4xl">
-                  Un service clair sur son rôle.
+                  Des informations utiles, avec une portée toujours claire.
                 </h2>
                 <p className="mt-5 text-base leading-7 text-indigo-100">
                   AlmaGo organise et rend visibles les informations de votre dossier. Une progression, une suggestion d’orientation ou un statut enregistré ne constitue jamais une garantie d’admission.
                 </p>
 
                 <div className="mt-7 rounded-[var(--radius-panel)] border border-white/15 bg-white/10 p-5">
-                  <p className="text-sm font-bold text-white">La source officielle reste la référence.</p>
+                  <p className="text-sm font-bold text-white">Les sources officielles restent la référence.</p>
                   <p className="mt-2 text-sm leading-6 text-indigo-100">
                     Pour les conditions d’un programme, les délais ou une décision externe, vérifiez toujours les informations auprès de l’université ou de l’organisme compétent.
                   </p>
