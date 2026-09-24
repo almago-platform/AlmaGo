@@ -4,6 +4,7 @@ import test from "node:test";
 
 const helper = readFileSync("src/lib/admin/student-case.ts", "utf8");
 const detailPage = readFileSync("src/app/admin/students/[id]/page.tsx", "utf8");
+const detailComponent = readFileSync("src/components/admin/AdminStudentCase.tsx", "utf8");
 const listPage = readFileSync("src/app/admin/students/page.tsx", "utf8");
 
 test("student-case helper keeps responsibility based on structured document states", () => {
@@ -20,9 +21,9 @@ test("student-case helper selects dates and recorded actions deterministically",
 });
 
 test("admin student case uses the existing active-application and Europe Berlin deadline contracts", () => {
-  assert.match(detailPage, /isActiveApplication/);
-  assert.match(detailPage, /isPastDeadline/);
-  assert.match(detailPage, /formatDeadline/);
+  assert.match(detailComponent, /isActiveApplication/);
+  assert.match(detailComponent, /isPastDeadline/);
+  assert.match(detailComponent, /formatDeadline/);
   assert.match(listPage, /isActiveApplication/);
 });
 
