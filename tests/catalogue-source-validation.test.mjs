@@ -8,6 +8,7 @@ const programUpdate = readFileSync("src/app/api/admin/programs/[id]/route.ts", "
 const universityCreate = readFileSync("src/app/api/admin/universities/route.ts", "utf8");
 const universityUpdate = readFileSync("src/app/api/admin/universities/[id]/route.ts", "utf8");
 const programAdminPanel = readFileSync("src/components/admin/AdminProgramsPanel.tsx", "utf8");
+const programAdminPage = readFileSync("src/app/admin/programs/page.tsx", "utf8");
 
 test("catalogue source helper rejects placeholder and executable schemes", () => {
   for (const value of ["a", "example.edu/programme", "javascript:alert(1)", "data:text/html,test", "ftp://example.edu"]) {
@@ -84,4 +85,14 @@ test("university active-state toggle stays partial and does not overwrite catalo
   assert.match(universityUpdate, /Object\.keys\(body\)\.every\(\(key\) => key === "is_active"\)/);
   assert.match(universityUpdate, /\.update\(\{ is_active: body\.is_active \}\)/);
   assert.match(universityUpdate, /Impossible de modifier l’état de l’université/);
+});
+
+
+test("programme admin preserves inactive university context without allowing new inactive assignments", () => {
+  assert.match(programAdminPage, /universities\(name,city,is_active\)/);
+  assert.match(programAdminPage, /select\("id,name,is_active"\)/);
+  assert.doesNotMatch(programAdminPage, /select\("id,name"\)\.eq\("is_active", true\)/);
+  assert.match(programAdminPage, /activeUniversities = universityRows\.filter/);
+  assert.match(programAdminPanel, /disabled=\{!university\.is_active && university\.id !== form\.university_id\}/);
+  assert.match(programAdminPanel, /Université inactive · non publiable/);
 });
