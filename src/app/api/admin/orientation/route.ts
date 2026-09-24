@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getAdminUser } from "@/lib/auth/access";
 import { recommendationStatuses } from "@/lib/phase4";
+import { hasVerifiedProgramSource } from "@/lib/source-verification";
 
 export async function POST(request: Request) {
   const { supabase, user, isAdmin } = await getAdminUser();
@@ -20,7 +21,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Impossible de vérifier la fiche programme." }, { status: 500 });
   }
 
-  if (!program?.is_active || !program.verified_at || (!program.source_url && !program.application_url)) {
+  if (!program?.is_active || !hasVerifiedProgramSource(program)) {
     return NextResponse.json(
       { error: "Vérifiez la source officielle du programme avant de publier cette piste." },
       { status: 400 },
