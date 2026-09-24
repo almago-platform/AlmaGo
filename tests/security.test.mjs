@@ -152,3 +152,28 @@ test("login routing sends each authenticated role to its own space", () => {
   assert.match(authForm, /router\.push\("\/student"\)/);
   assert.match(authForm, /supabase\.auth\.signOut\(\)/);
 });
+
+
+test("every student API enforces the student role", () => {
+  const studentRoutes = [
+    "src/app/api/student/applications/route.ts",
+    "src/app/api/student/documents/[id]/route.ts",
+    "src/app/api/student/documents/upload/route.ts",
+    "src/app/api/student/notifications/[id]/route.ts",
+    "src/app/api/student/notifications/read-all/route.ts",
+    "src/app/api/student/onboarding/route.ts",
+    "src/app/api/student/profile/route.ts",
+  ];
+
+  const access = read("src/lib/auth/access.ts");
+  assert.match(access, /export async function getStudentUser/);
+  assert.match(access, /role\?\.role === "student"/);
+
+  for (const path of studentRoutes) {
+    const source = read(path);
+    assert.match(source, /getStudentUser/);
+    assert.match(source, /if \(!isStudent\)/);
+    assert.match(source, /Accès réservé aux étudiants/);
+    assert.match(source, /status: 403/);
+  }
+});
