@@ -265,3 +265,13 @@ test("authenticated E2E role journey stays structurally intact", () => {
   assert.match(source, /page\.goto\("\/student"/);
   assert.match(source, /page\.goto\("\/admin"/);
 });
+
+
+test("auth UI does not expose raw provider errors", () => {
+  const authForm = read("src/components/auth/AuthForm.tsx");
+
+  assert.doesNotMatch(authForm, /setError\(resetError\.message\)/);
+  assert.doesNotMatch(authForm, /setError\(signUpError\.message\)/);
+  assert.match(authForm, /Nous n’arrivons pas à envoyer le lien de réinitialisation/);
+  assert.match(authForm, /Nous n’arrivons pas à créer ce compte/);
+});
