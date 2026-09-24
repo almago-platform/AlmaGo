@@ -9,7 +9,10 @@ export async function POST(request: Request) {
   if (!isAdmin) return NextResponse.json({ error: "Accès non autorisé." }, { status: 403 });
   const body = await request.json().catch(() => null) as Record<string, unknown> | null;
   if (!body || typeof body.name !== "string" || !body.name.trim()) return NextResponse.json({ error: "Le nom de l’université est obligatoire." }, { status: 400 });
-  const universityType = universityTypes.includes(body.university_type as (typeof universityTypes)[number]) ? body.university_type : "Universität";
+  if (!universityTypes.includes(body.university_type as (typeof universityTypes)[number])) {
+    return NextResponse.json({ error: "Choisissez un type d’établissement valide." }, { status: 400 });
+  }
+  const universityType = body.university_type;
   const websiteUrl = typeof body.website_url === "string" ? body.website_url.trim() : "";
   const sourceUrl = typeof body.source_url === "string" ? body.source_url.trim() : "";
   const universityUrls = [websiteUrl, sourceUrl].filter(Boolean);
