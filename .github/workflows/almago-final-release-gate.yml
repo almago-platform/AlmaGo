@@ -126,9 +126,9 @@ jobs:
       CI: "true"
       NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
       NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
-      ALMAGO_E2E_STUDENT_EMAIL: ${{ secrets.ALMAGO_E2E_STUDENT_EMAIL }}
+      ALMAGO_E2E_STUDENT_EMAIL: ${{ vars.ALMAGO_E2E_STUDENT_EMAIL || 'phase3.student.a@almago.test' }}
       ALMAGO_E2E_STUDENT_PASSWORD: ${{ secrets.ALMAGO_E2E_STUDENT_PASSWORD }}
-      ALMAGO_E2E_ADMIN_EMAIL: ${{ secrets.ALMAGO_E2E_ADMIN_EMAIL }}
+      ALMAGO_E2E_ADMIN_EMAIL: ${{ vars.ALMAGO_E2E_ADMIN_EMAIL || 'phase3.admin@almago.test' }}
       ALMAGO_E2E_ADMIN_PASSWORD: ${{ secrets.ALMAGO_E2E_ADMIN_PASSWORD }}
     steps:
       - uses: actions/checkout@v4
