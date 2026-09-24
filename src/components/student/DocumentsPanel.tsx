@@ -145,7 +145,7 @@ export function DocumentsPanel({
                 <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">Document suivi</p>
                 <Badge variant={statusVariant(priorityDocument.status)}>{statusLabel(priorityDocument.status)}</Badge>
               </div>
-              <p className="mt-3 break-words font-bold text-slate-950">{priorityDocument.original_filename}</p>
+              <p className="mt-3 [overflow-wrap:anywhere] font-bold text-slate-950">{priorityDocument.original_filename}</p>
               <p className="mt-1 text-sm text-slate-600">{categoryLabel(priorityDocument.category)}</p>
               {correctionCount > 0 && priorityDocument.admin_comment && (
                 <div className="mt-4 rounded-[var(--radius-control)] border border-amber-200 bg-amber-50 p-3.5">
@@ -207,7 +207,7 @@ export function DocumentsPanel({
                 type="file"
                 accept="application/pdf,image/jpeg,image/png,.pdf,.jpg,.jpeg,.png"
                 disabled={busy}
-                className="field"
+                className="field max-w-full text-xs sm:text-sm"
               />
             </label>
 
@@ -265,7 +265,7 @@ export function DocumentsPanel({
                       <Badge variant={statusVariant(document.status)}>{statusLabel(document.status)}</Badge>
                       <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">{categoryLabel(document.category)}</span>
                     </div>
-                    <h3 id={`student-document-title-${document.id}`} className="mt-3 break-words text-lg font-semibold text-slate-950">{document.original_filename}</h3>
+                    <h3 id={`student-document-title-${document.id}`} className="mt-3 [overflow-wrap:anywhere] text-lg font-semibold text-slate-950">{document.original_filename}</h3>
                     <p className="mt-1 text-sm text-slate-500">
                       {formatFileSize(document.size_bytes)} · envoyé le{" "}
                       <time dateTime={document.created_at}>
