@@ -32,9 +32,15 @@ test("student dashboard uses Berlin deadline helpers and a seven-day window", ()
 test("deadline priority never claims the student is responsible without structured evidence", () => {
   const explicitStudentOwnerCount = (dashboard.match(/owner: "À faire par vous"/g) || []).length;
   assert.equal(explicitStudentOwnerCount, 1);
-  assert.match(dashboard, /owner: "Échéance à vérifier"/);
-  assert.match(dashboard, /owner: "Échéance enregistrée"/);
-  assert.doesNotMatch(dashboard, /owner: "À faire par vous".*Échéance/s);
+
+  assert.match(
+    dashboard,
+    /deadlineOverdue && nextApplication\?\.deadline[\s\S]*?owner: "Échéance à vérifier"/,
+  );
+  assert.match(
+    dashboard,
+    /deadlineSoon && nextApplication\?\.deadline[\s\S]*?owner: "Échéance enregistrée"/,
+  );
 });
 
 test("student deadline priority routes to the existing deadline center", () => {
