@@ -8,7 +8,7 @@ import { ProgressBar } from "@/components/ui/ProgressBar";
 import { StudentJourneyOverview, type StudentJourneyStage } from "@/components/student/StudentJourneyOverview";
 import { createClient } from "@/lib/supabase/server";
 import { formatDeadline, isActiveApplication, isPastDeadline, nextActiveDeadline } from "@/lib/phase4";
-import { hasVerifiedProgramSource } from "@/lib/source-verification";
+import { isPublishableProgram } from "@/lib/source-verification";
 
 export const dynamic = "force-dynamic";
 
@@ -35,7 +35,7 @@ export default async function StudentEntry() {
   ] = await Promise.all([
     supabase.from("student_checklist_items").select("title,status").order("created_at"),
     supabase.from("documents").select("id,status"),
-    supabase.from("program_recommendations").select("id,programs(name,source_url,application_url,verified_at,universities(name))").eq("is_archived", false),
+    supabase.from("program_recommendations").select("id,programs(name,source_url,application_url,verified_at,is_active,universities(name))").eq("is_archived", false),
     supabase.from("applications").select("id,status,deadline,next_action,programs(name),application_events(id,event_type,message,created_at)").order("deadline", { ascending: true, nullsFirst: false }),
     supabase
       .from("student_history")
@@ -52,7 +52,7 @@ export default async function StudentEntry() {
   const studentDocuments = documents || [];
   const studentRecommendations = (recommendations || []).filter((recommendation) => {
     const program = Array.isArray(recommendation.programs) ? recommendation.programs[0] : recommendation.programs;
-    return hasVerifiedProgramSource(program);
+    return isPublishableProgram(program);
   });
   const studentApplications = applications || [];
   const documentHistory = dossierHistory || [];
