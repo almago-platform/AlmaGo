@@ -79,7 +79,10 @@ export function isPastDeadline(deadline: string, now = new Date()) {
 
 export function formatDeadline(value: string | null | undefined) {
   if (!value || !isValidDateOnly(value)) return "Date à confirmer";
-  return new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium" }).format(new Date(`${value}T12:00:00Z`));
+  return new Intl.DateTimeFormat("fr-FR", {
+    dateStyle: "medium",
+    timeZone: "Europe/Berlin",
+  }).format(new Date(`${value}T12:00:00Z`));
 }
 
 export function daysUntilDeadline(deadline: string, now = new Date()) {
