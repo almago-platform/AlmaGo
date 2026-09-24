@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
+import { deadlineForIntake } from "../src/lib/application-intake.ts";
 import {
   hasVerifiedProgramSource,
   hasVerifiedUniversitySource,
@@ -95,6 +96,21 @@ test("student application creation prevents duplicate rows when intake is unknow
   assert.match(studentApplicationsRoute, /\.eq\("intake", intake\)/);
   assert.match(studentApplicationsRoute, /Une candidature existe déjà pour ce programme/);
   assert.match(studentApplicationsRoute, /status: 409/);
+});
+
+test("application deadline follows the recorded intake instead of always preferring winter", () => {
+  const program = {
+    winter_deadline: "2027-01-15",
+    summer_deadline: "2027-07-15",
+  };
+
+  assert.equal(deadlineForIntake(program, "Winter"), "2027-01-15");
+  assert.equal(deadlineForIntake(program, "Wintersemester"), "2027-01-15");
+  assert.equal(deadlineForIntake(program, "Summer"), "2027-07-15");
+  assert.equal(deadlineForIntake(program, "Sommersemester"), "2027-07-15");
+  assert.equal(deadlineForIntake({ ...program, summer_deadline: null }, "Summer"), null);
+  assert.equal(deadlineForIntake(program, null), "2027-01-15");
+  assert.match(studentApplicationsRoute, /deadlineForIntake\(program, intake\)/);
 });
 
 test("admin publication verifies programme evidence before recommendation upsert", () => {
