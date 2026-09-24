@@ -2,13 +2,14 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { isPublishableProgram } from "@/lib/source-verification";
 import { applicationIntakeFromTerms, deadlineForIntake } from "@/lib/application-intake";
+import { isUuid } from "@/lib/identifiers";
 
 export async function POST(request: Request) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Non authentifié." }, { status: 401 });
   const body = await request.json().catch(() => null) as Record<string, unknown> | null;
-  if (!body || typeof body.recommendation_id !== "string") return NextResponse.json({ error: "Recommandation invalide." }, { status: 400 });
+  if (!body || !isUuid(body.recommendation_id)) return NextResponse.json({ error: "Recommandation invalide." }, { status: 400 });
   const { data: recommendation, error: recommendationError } = await supabase.from("program_recommendations").select("id,program_id,status,is_archived,programs(intake_terms,winter_deadline,summer_deadline,source_url,application_url,verified_at,is_active,universities(is_active))").eq("id", body.recommendation_id).eq("student_id", user.id).maybeSingle();
   if (recommendationError) {
     return NextResponse.json({ error: "Impossible de vérifier cette piste pour le moment." }, { status: 500 });
