@@ -216,6 +216,7 @@ test("password reset returns users to the space matching their role", () => {
 test("unauthorized recovery returns each user to their own role space", () => {
   const page = read("src/app/unauthorized/page.tsx");
 
+  assert.match(page, /if \(!user\) redirect\("\/login"\)/);
   assert.match(page, /from\("user_roles"\)/);
   assert.match(page, /role\?\.role === "admin"/);
   assert.match(page, /homeHref = "\/admin"/);
