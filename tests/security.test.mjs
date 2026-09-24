@@ -183,8 +183,9 @@ test("auth callback only accepts internal relative next paths", () => {
   const callback = read("src/app/auth/callback/route.ts");
 
   assert.match(callback, /requestedNext\?\.startsWith\("\/"\)/);
-  assert.match(callback, /!requestedNext\.startsWith\("\/\/"\)/);
-  assert.match(callback, /: "\/student"/);
+  assert.match(callback, /new URL\(requestedNext, url\.origin\)/);
+  assert.match(callback, /candidate\.origin === url\.origin/);
+  assert.match(callback, /let next = "\/student"/);
   assert.match(callback, /if \(!code\)/);
   assert.match(callback, /exchangeCodeForSession\(code\)/);
   assert.match(callback, /if \(error\)/);
@@ -290,4 +291,14 @@ test("switching accounts clears the active session first", () => {
   assert.match(button, /router\.refresh\(\)/);
   assert.match(page, /SwitchAccountButton/);
   assert.doesNotMatch(page, /href="\/login"[\s\S]*Changer de compte/);
+});
+
+
+test("callback redirect validation compares the effective URL origin", () => {
+  const callback = read("src/app/auth/callback/route.ts");
+
+  assert.match(callback, /candidate\.pathname/);
+  assert.match(callback, /candidate\.search/);
+  assert.match(callback, /candidate\.hash/);
+  assert.doesNotMatch(callback, /requestedNext\.startsWith\("\/\/"\)/);
 });
