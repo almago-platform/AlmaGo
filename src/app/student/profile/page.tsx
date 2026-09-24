@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { getStudentUser } from "@/lib/auth/access";
 import { ProfileForm } from "@/components/student/ProfileForm";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Badge } from "@/components/ui/Badge";
@@ -9,9 +9,9 @@ import { ProgressBar } from "@/components/ui/ProgressBar";
 
 export const dynamic = "force-dynamic";
 export default async function ProfilePage() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { supabase, user, isStudent } = await getStudentUser();
   if (!user) redirect("/login");
+  if (!isStudent) redirect("/unauthorized");
   const { data: profile, error } = await supabase.from("profiles").select("*").eq("id", user.id).maybeSingle();
   if (error) {
     return (
