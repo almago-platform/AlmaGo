@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { recommendationStatuses, recommendationStatusLabels } from "@/lib/phase4";
-import { hasVerifiedProgramSource } from "@/lib/source-verification";
+import { isPublishableProgram } from "@/lib/source-verification";
 
 function firstUniversity(program: any) {
   return Array.isArray(program?.universities) ? program.universities[0] : program?.universities;
@@ -188,7 +188,7 @@ export function AdminOrientationPanel({
                 className="field"
               >
                 <option value="">Choisir un programme</option>
-                {programs.filter(hasVerifiedProgramSource).map((program) => {
+                {programs.filter(isPublishableProgram).map((program) => {
                   const university = firstUniversity(program);
                   return (
                     <option key={program.id} value={program.id}>
