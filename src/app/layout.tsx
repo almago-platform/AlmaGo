@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: "website",
-    locale: defaultPublicLocale.openGraphLocale,
+    locale: defaultPublicLocale.openGraphLocale ?? undefined,
     siteName: "AlmaGo",
     title: publicTitle,
     description: publicDescription,
