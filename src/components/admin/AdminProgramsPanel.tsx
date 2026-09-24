@@ -107,16 +107,22 @@ function formatVerificationDate(value: string) {
 export function AdminProgramsPanel({
   programs,
   universities,
+  initialQuality = "all",
 }: {
   programs: Program[];
   universities: { id: string; name: string }[];
+  initialQuality?: string;
 }) {
   const [items] = useState(programs);
   const [form, setForm] = useState<ProgramForm>(empty);
   const [editing, setEditing] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [level, setLevel] = useState("all");
-  const [quality, setQuality] = useState("all");
+  const [quality, setQuality] = useState(
+    ["all", "missing_source", "missing_verification", "missing_deadline"].includes(initialQuality)
+      ? initialQuality
+      : "all",
+  );
   const [notice, setNotice] = useState<Notice | null>(null);
   const [busy, setBusy] = useState(false);
 
