@@ -10,6 +10,7 @@ import {
   isActiveApplication,
   isPastDeadline,
   nextActiveDeadline,
+  studentHistoryDisplayMessage,
   terminalApplicationStatuses,
 } from "../src/lib/phase4.ts";
 
