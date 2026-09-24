@@ -114,3 +114,13 @@ test("authenticated users cannot write their own role assignment", () => {
   assert.match(grants, /grant select on table public\.user_roles to authenticated/i);
   assert.doesNotMatch(grants, /grant[^;]*(?:insert|update|delete)[^;]*public\.user_roles/i);
 });
+
+
+test("student notifications do not send unused metadata to the browser", () => {
+  const page = read("src/app/student/notifications/page.tsx");
+  const panel = read("src/components/student/StudentNotificationsPanel.tsx");
+
+  assert.match(page, /select\("id,type,title,body,read_at,created_at"\)/);
+  assert.doesNotMatch(page, /body,metadata,read_at/);
+  assert.doesNotMatch(panel, /metadata:\s*unknown/);
+});
