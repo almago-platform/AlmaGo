@@ -25,7 +25,8 @@ test("deadline center keeps official-source boundaries visible", () => {
   assert.match(page, /function officialSourceUrl/);
   assert.match(page, /url\.protocol === "https:" \|\| url\.protocol === "http:"/);
   assert.match(page, /const checkedAt = sourceUrl \? verificationDate/);
-  assert.match(page, /Fiche programme vérifiée dans AlmaGo le/);
+  assert.match(page, /Dernière date de vérification enregistrée dans AlmaGo/);
+  assert.match(page, /Confirmez toujours l’échéance sur la source officielle/);
   assert.match(page, /ne remplace pas les délais publiés/);
   assert.doesNotMatch(page, /chance|probabilit[eé]|score|garanti/i);
 });
