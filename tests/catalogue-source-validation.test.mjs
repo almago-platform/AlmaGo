@@ -136,3 +136,12 @@ test("university admin explains the publication impact of activation state", () 
   assert.match(universityAdminPanel, /rend ses programmes non publiables dans les nouvelles pistes d’orientation/);
   assert.match(universityAdminPanel, /ses programmes ne peuvent pas être proposés dans une nouvelle piste d’orientation/);
 });
+
+
+test("programme quality filter exposes inactive parent universities", () => {
+  assert.match(programAdminPanel, /inactiveUniversityCount/);
+  assert.match(programAdminPanel, /quality === "inactive_university"/);
+  assert.match(programAdminPanel, /option value="inactive_university"/);
+  assert.match(programAdminPanel, /title="Université inactive"/);
+  assert.match(programAdminPanel, /Programmes actifs actuellement non publiables/);
+});
