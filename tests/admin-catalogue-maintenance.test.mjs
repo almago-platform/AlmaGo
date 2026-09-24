@@ -45,3 +45,11 @@ test("admin catalogue quality includes inactive parent universities", () => {
   assert.match(adminHome, /inactive_university/);
   assert.match(adminHome, /sans anomalie de publication visible/);
 });
+
+
+test("admin dashboard excludes canonical and legacy terminal applications", () => {
+  assert.match(
+    adminHome,
+    /\(admission,accepted,rejection,rejected,withdrawn\)/,
+  );
+});
