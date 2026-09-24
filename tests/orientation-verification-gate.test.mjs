@@ -248,3 +248,16 @@ test("orientation archive rejects malformed or missing targets", () => {
   assert.match(adminOrientationArchiveRoute, /Piste d’orientation introuvable/);
   assert.match(adminOrientationArchiveRoute, /status: 404/);
 });
+
+
+test("student orientation labels describe evidence without verdict language", () => {
+  assert.match(studentPanel, /recommended: "Correspondance relevée"/);
+  assert.match(studentPanel, /possible: "Piste à examiner"/);
+  assert.match(studentPanel, /ambitious: "Prérequis élevés"/);
+  assert.match(studentPanel, /missing_requirements: "Prérequis à compléter"/);
+  assert.match(studentPanel, /not_recommended: "Écart avec le profil enregistré"/);
+
+  assert.doesNotMatch(studentPanel, /Piste recommandée/);
+  assert.doesNotMatch(studentPanel, /Piste non recommandée/);
+  assert.doesNotMatch(studentPanel, /Piste ambitieuse/);
+});
