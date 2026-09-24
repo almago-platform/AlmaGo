@@ -1,12 +1,15 @@
+import { redirect } from "next/navigation";
 import { AdminApplicationsPanel } from "@/components/admin/AdminApplicationsPanel";
 import { Card } from "@/components/ui/Card";
 import { PageHeader } from "@/components/ui/PageHeader";
-import { createClient } from "@/lib/supabase/server";
+import { getAdminUser } from "@/lib/auth/access";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminApplicationsPage() {
-  const supabase = await createClient();
+  const { supabase, user, isAdmin } = await getAdminUser();
+  if (!user) redirect("/login");
+  if (!isAdmin) redirect("/unauthorized");
   const { data: applications, error } = await supabase
     .from("applications")
     .select("id,student_id,program_id,status,intake,deadline,next_action,student_notes,result,created_at,programs(name,universities(name,city))")
