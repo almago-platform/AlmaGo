@@ -26,7 +26,7 @@ export default async function AdminEntry() {
     supabase.from("documents").select("id", { count: "exact", head: true }).in("status", ["pending", "replace_required"]),
     supabase.from("program_recommendations").select("id", { count: "exact", head: true }).eq("is_archived", false),
     supabase.from("universities").select("id,website_url,source_url,verified_at").eq("is_active", true),
-    supabase.from("programs").select("id,application_url,source_url,verified_at").eq("is_active", true),
+    supabase.from("programs").select("id,application_url,source_url,verified_at,universities(is_active)").eq("is_active", true),
   ]);
 
   if (
@@ -74,12 +74,17 @@ export default async function AdminEntry() {
   const programVerificationGaps = programsQuality.filter(
     (program) => !hasVerifiedProgramSource(program),
   ).length;
+  const programParentGaps = programsQuality.filter(
+    (program) => !hasActiveProgramUniversity(program),
+  ).length;
   const catalogueQualityIssues =
     universitiesQuality.filter(
       (university) => !hasVerifiedUniversitySource(university),
     ).length +
     programsQuality.filter(
-      (program) => !hasVerifiedProgramSource(program),
+      (program) =>
+        !hasVerifiedProgramSource(program) ||
+        !hasActiveProgramUniversity(program),
     ).length;
   const catalogueSourceGaps = universitySourceGaps + programSourceGaps;
   const catalogueVerificationGaps = universityVerificationGaps + programVerificationGaps;
@@ -90,9 +95,11 @@ export default async function AdminEntry() {
       ? "missing_verification"
       : "missing_source";
   const programPriorityFilter =
-    programVerificationGaps >= programSourceGaps
-      ? "missing_verification"
-      : "missing_source";
+    programParentGaps >= programVerificationGaps && programParentGaps >= programSourceGaps
+      ? "inactive_university"
+      : programVerificationGaps >= programSourceGaps
+        ? "missing_verification"
+        : "missing_source";
   const cataloguePriorityHref =
     universityIssues >= programIssues
       ? `/admin/universities?quality=${universityPriorityFilter}`
@@ -118,7 +125,7 @@ export default async function AdminEntry() {
         ? {
             badge: "Catalogue à vérifier",
             title: `${catalogueQualityIssues} fiche${catalogueQualityIssues > 1 ? "s" : ""} du catalogue demande${catalogueQualityIssues > 1 ? "nt" : ""} une vérification`,
-            description: `Les dossiers opérationnels ne signalent pas de priorité plus urgente. Le catalogue contient ${catalogueSourceGaps} source${catalogueSourceGaps > 1 ? "s" : ""} à compléter et ${catalogueVerificationGaps} date${catalogueVerificationGaps > 1 ? "s" : ""} de vérification à renseigner.`,
+            description: `Les dossiers opérationnels ne signalent pas de priorité plus urgente. Le catalogue contient ${catalogueSourceGaps} source${catalogueSourceGaps > 1 ? "s" : ""} à compléter, ${catalogueVerificationGaps} date${catalogueVerificationGaps > 1 ? "s" : ""} de vérification à renseigner et ${programParentGaps} programme${programParentGaps > 1 ? "s" : ""} rattaché${programParentGaps > 1 ? "s" : ""} à une université inactive.`,
             href: cataloguePriorityHref,
             action: "Maintenir le catalogue",
           }
@@ -215,8 +222,8 @@ export default async function AdminEntry() {
             value={catalogueQualityIssues}
             detail={
               catalogueQualityIssues
-                ? `${catalogueSourceGaps} source${catalogueSourceGaps > 1 ? "s" : ""} à compléter · ${catalogueVerificationGaps} date${catalogueVerificationGaps > 1 ? "s" : ""} à renseigner`
-                : `${catalogue} fiches actives sans anomalie de vérification visible`
+                ? `${catalogueSourceGaps} source${catalogueSourceGaps > 1 ? "s" : ""} à compléter · ${catalogueVerificationGaps} date${catalogueVerificationGaps > 1 ? "s" : ""} à renseigner · ${programParentGaps} université${programParentGaps > 1 ? "s" : ""} parente${programParentGaps > 1 ? "s" : ""} inactive${programParentGaps > 1 ? "s" : ""}`
+                : `${catalogue} fiches actives sans anomalie de publication visible`
             }
             tone={catalogueQualityIssues ? "warning" : "neutral"}
           />
@@ -265,15 +272,33 @@ function universityQualityIssues(
   ).length;
 }
 
+function hasActiveProgramUniversity(program: {
+  universities?:
+    | { is_active?: boolean | null }
+    | { is_active?: boolean | null }[]
+    | null;
+}) {
+  const university = Array.isArray(program.universities)
+    ? program.universities[0]
+    : program.universities;
+  return university?.is_active === true;
+}
+
 function programQualityIssues(
   programs: Array<{
     source_url: string | null;
     application_url: string | null;
     verified_at: string | null;
+    universities?:
+      | { is_active?: boolean | null }
+      | { is_active?: boolean | null }[]
+      | null;
   }>,
 ) {
   return programs.filter(
-    (program) => !hasVerifiedProgramSource(program),
+    (program) =>
+      !hasVerifiedProgramSource(program) ||
+      !hasActiveProgramUniversity(program),
   ).length;
 }
 
