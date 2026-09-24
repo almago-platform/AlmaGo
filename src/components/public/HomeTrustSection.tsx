@@ -1,6 +1,6 @@
 const trustItems = [
   {
-    title: "Une recommandation",
+    title: "Une suggestion d’orientation",
     description:
       "C’est une piste de travail publiée dans votre dossier. Elle ne signifie pas que l’université vous acceptera.",
   },
@@ -32,10 +32,10 @@ export function HomeTrustSection() {
               <div className="relative">
                 <p className="text-xs font-bold uppercase tracking-[0.18em] text-[var(--accent-light)]">Transparence</p>
                 <h2 id="trust-title" className="mt-3 text-3xl font-bold tracking-[-0.035em] sm:text-4xl">
-                  Une plateforme claire sur son rôle.
+                  Un service clair sur son rôle.
                 </h2>
                 <p className="mt-5 text-base leading-7 text-indigo-100">
-                  AlmaGo organise et rend visibles les informations de votre dossier. La plateforme ne transforme pas une progression, une recommandation ou un statut interne en garantie d’admission.
+                  AlmaGo organise et rend visibles les informations de votre dossier. Une progression, une suggestion d’orientation ou un statut enregistré ne constitue jamais une garantie d’admission.
                 </p>
 
                 <div className="mt-7 rounded-[var(--radius-panel)] border border-white/15 bg-white/10 p-5">
