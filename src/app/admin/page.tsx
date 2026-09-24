@@ -1,5 +1,6 @@
+import { redirect } from "next/navigation";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
+import { getAdminUser } from "@/lib/auth/access";
 import { Badge } from "@/components/ui/Badge";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Card } from "@/components/ui/Card";
@@ -9,7 +10,9 @@ import { hasVerifiedProgramSource, hasVerifiedUniversitySource, isHttpSourceUrl 
 export const dynamic = "force-dynamic";
 
 export default async function AdminEntry() {
-  const supabase = await createClient();
+  const { supabase, user, isAdmin } = await getAdminUser();
+  if (!user) redirect("/login");
+  if (!isAdmin) redirect("/unauthorized");
 
   const [
     { count: universityCount, error: universitiesError },
