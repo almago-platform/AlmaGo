@@ -55,6 +55,17 @@ test.describe("authenticated role journeys", () => {
     expect(response?.ok()).toBeTruthy();
     expect(new URL(page.url()).pathname).toMatch(/^\/admin(?:\/|$)/);
 
+    const studentsResponse = await page.goto("/admin/students", { waitUntil: "networkidle" });
+    expect(studentsResponse?.ok()).toBeTruthy();
+    await expect(page.getByRole("heading", { name: "Étudiants" })).toBeVisible();
+
+    const openStudentCase = page.getByRole("link", { name: "Ouvrir le dossier" }).first();
+    if (await openStudentCase.count()) {
+      await openStudentCase.click();
+      await page.waitForURL(/\/admin\/students\/[0-9a-f-]+$/i, { timeout: 20_000 });
+      await expect(page.getByRole("heading", { name: "Situation actuelle" })).toBeVisible();
+    }
+
     const authorizedApi = await page.request.post("/api/admin/orientation", {
       data: {},
     });
