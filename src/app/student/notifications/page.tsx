@@ -1,13 +1,16 @@
+import { redirect } from "next/navigation";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Card } from "@/components/ui/Card";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { StudentNotificationsPanel } from "@/components/student/StudentNotificationsPanel";
-import { createClient } from "@/lib/supabase/server";
+import { getStudentUser } from "@/lib/auth/access";
 
 export const dynamic = "force-dynamic";
 
 export default async function StudentNotificationsPage() {
-  const supabase = await createClient();
+  const { supabase, user, isStudent } = await getStudentUser();
+  if (!user) redirect("/login");
+  if (!isStudent) redirect("/unauthorized");
   const { data, error } = await supabase
     .from("notifications")
     .select("id,type,title,body,read_at,created_at")
