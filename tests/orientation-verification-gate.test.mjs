@@ -73,6 +73,15 @@ test("students only receive recommendations backed by verified source evidence",
   assert.match(studentDashboard, /isPublishableProgram/);
 });
 
+test("student orientation links ignore malformed legacy sources and fall back to a valid application URL", () => {
+  assert.match(adminOrientationPanel, /isPublishableProgram/);
+  const studentPanel = readFileSync("src/components/student/StudentOrientationPanel.tsx", "utf8");
+  assert.match(studentPanel, /isHttpSourceUrl/);
+  assert.match(studentPanel, /isHttpSourceUrl\(program\.source_url\)/);
+  assert.match(studentPanel, /isHttpSourceUrl\(program\.application_url\)/);
+  assert.doesNotMatch(studentPanel, /return program\.source_url \|\| program\.application_url/);
+});
+
 test("student application creation rejects unverified programme recommendations", () => {
   assert.match(studentApplicationsRoute, /source_url,application_url,verified_at,is_active/);
   assert.match(studentApplicationsRoute, /isPublishableProgram\(program\)/);
