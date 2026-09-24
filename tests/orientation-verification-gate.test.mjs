@@ -124,6 +124,14 @@ test("admin publication verifies programme evidence before recommendation upsert
   assert.match(adminOrientationRoute, /Vérifiez la source officielle du programme avant de publier cette piste/);
 });
 
+test("republishing an archived orientation explicitly restores student visibility", () => {
+  assert.match(adminOrientationRoute, /is_archived:\s*false/);
+  assert.match(adminOrientationRoute, /archived_at:\s*null/);
+  const upsertPosition = adminOrientationRoute.indexOf('from("program_recommendations").upsert');
+  const unarchivePosition = adminOrientationRoute.indexOf("is_archived: false");
+  assert.ok(unarchivePosition > upsertPosition);
+});
+
 test("admin selector offers only publishable programmes while inactive historical recommendations stay identifiable", () => {
   assert.match(adminOrientationPage, /source_url,application_url,verified_at,is_active/);
   const programsQuery = adminOrientationPage.slice(
