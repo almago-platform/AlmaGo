@@ -22,11 +22,11 @@ export default async function StudentOrientationPage() {
   }
 
   return (
-    <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
+    <main className="mx-auto w-full max-w-7xl px-4 py-7 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
       <PageHeader
         badge="Orientation"
         title="Programmes recommandés"
-        description="Comparez les pistes préparées par AlmaGo, vérifiez les critères principaux et indiquez les programmes qui vous intéressent. Une recommandation reste une piste de travail, pas une garantie d’admission."
+        description="Comparez les pistes préparées pour votre dossier, comprenez pourquoi elles apparaissent et vérifiez les critères importants avant de décider. Une recommandation reste une piste de travail, pas une garantie d’admission."
         actions={<ButtonLink href="/student/applications" variant="secondary">Mes candidatures</ButtonLink>}
       />
 
@@ -47,7 +47,7 @@ function OrientationUnavailable() {
         <div role="alert">
           <h2 className="text-xl font-semibold text-slate-950">Orientation temporairement indisponible</h2>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
-            Impossible de charger vos recommandations pour le moment. Cela ne signifie pas que votre dossier ne contient aucune recommandation.
+            Nous n’arrivons pas à afficher vos recommandations pour le moment. Rien n’a été supprimé ou modifié dans votre dossier.
           </p>
         </div>
         <div className="mt-5 flex flex-col gap-3 sm:flex-row">
