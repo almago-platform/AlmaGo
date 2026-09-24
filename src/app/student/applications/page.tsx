@@ -18,11 +18,11 @@ export default async function StudentApplicationsPage() {
   }
 
   return (
-    <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
+    <main className="mx-auto w-full max-w-7xl px-4 py-7 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
       <PageHeader
         badge="Candidatures"
-        title="Suivi des candidatures"
-        description="Retrouvez le statut, l’échéance et surtout la prochaine action enregistrée pour chaque candidature."
+        title="Mes candidatures"
+        description="Retrouvez chaque dossier, son échéance, sa prochaine action et l’historique visible du suivi enregistré dans AlmaGo."
         actions={<ButtonLink href="/student/orientation" variant="secondary">Voir les recommandations</ButtonLink>}
       />
 

@@ -23,6 +23,20 @@ function firstUniversity(program: any) {
 
 const submittedStatuses = new Set(["submitted", "in_review", "waiting_university", "admission", "accepted", "rejection", "rejected"]);
 
+const studentApplicationStatusLabels: Record<string, string> = {
+  interested: "À préparer",
+  documents_missing: "Documents à compléter",
+  preparing: "Préparation en cours",
+  ready_to_submit: "Prête à déposer",
+  submitted: "Déposée",
+  waiting_university: "En attente de l’université",
+  in_review: "En cours d’examen",
+  admission: "Admission enregistrée",
+  accepted: "Admission enregistrée",
+  rejection: "Résultat négatif enregistré",
+  rejected: "Résultat négatif enregistré",
+};
+
 function studentEventLabel(eventType: string) {
   if (eventType === "application_status_changed") return "Statut de candidature mis à jour";
   return "Mise à jour du dossier";
@@ -53,30 +67,38 @@ export function StudentApplicationsPanel({
         </div>
       )}
 
-      <section aria-label="Priorité candidature" className="grid gap-5 lg:grid-cols-[1fr_0.85fr]">
-        <Card className="bg-slate-950 text-white">
-          <Badge variant={loadError ? "neutral" : actionable.length ? "warning" : "info"}>
-            {loadError ? "Indisponible" : actionable.length ? "Action requise" : "Suivi des candidatures"}
-          </Badge>
-          <h2 className="mt-5 text-2xl font-semibold tracking-tight">Prochaine priorité</h2>
-          <p className="mt-3 text-sm leading-6 text-slate-300">
-            {loadError
-              ? "Les candidatures n’ont pas pu être chargées pour le moment."
-              : priorityApplication?.next_action
-                ? priorityApplication.next_action
-                : priorityApplication
-                  ? "Aucune action urgente n’est enregistrée, mais cette candidature reste à suivre."
-                  : "Aucune candidature n’est encore enregistrée. Consultez vos recommandations pour choisir un programme à suivre."}
-          </p>
-          {priorityApplication && (
-            <div className="mt-6 rounded-xl border border-white/10 bg-white/5 p-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--accent-light)]">Candidature suivie</p>
-              <p className="mt-2 font-semibold">{priorityProgram?.name || "Programme"}</p>
-              <p className="mt-1 text-sm text-slate-300">
-                {priorityApplication.intake_term || "Semestre à confirmer"} · Échéance {formatDeadline(priorityApplication.deadline)}
-              </p>
+      <section aria-label="Priorité candidature" className="grid gap-5 lg:grid-cols-[1.08fr_0.92fr]">
+        <Card className="relative overflow-hidden border-[var(--brand-border)] bg-white shadow-[0_24px_55px_-38px_rgba(41,48,139,0.5)]">
+          <div aria-hidden="true" className="absolute inset-y-0 left-0 w-1.5 bg-[var(--brand)]" />
+          <div className="pl-2 sm:pl-3">
+            <Badge variant={loadError ? "neutral" : actionable.length ? "warning" : "info"}>
+              {loadError ? "Indisponible" : actionable.length ? "Action à faire" : "Suivi en cours"}
+            </Badge>
+            <h2 className="mt-5 text-2xl font-bold tracking-[-0.03em] text-slate-950 sm:text-3xl">
+              {actionable.length ? "Votre prochaine action" : "Vos candidatures sont suivies"}
+            </h2>
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-600">
+              {loadError
+                ? "Les candidatures n’ont pas pu être chargées pour le moment."
+                : priorityApplication?.next_action
+                  ? priorityApplication.next_action
+                  : priorityApplication
+                    ? "Aucune action précise n’est enregistrée de votre côté pour cette candidature. Consultez son statut et son historique ci-dessous."
+                    : "Aucune candidature n’est encore enregistrée. Consultez vos recommandations pour choisir un programme à suivre."}
+            </p>
+            {priorityApplication && (
+              <div className="mt-5 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-muted)]/55 p-4">
+                <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">Candidature suivie</p>
+                <p className="mt-2 font-bold text-slate-950">{priorityProgram?.name || "Programme"}</p>
+                <p className="mt-1 text-sm text-slate-600">
+                  {priorityApplication.intake_term || "Semestre à confirmer"} · Échéance {formatDeadline(priorityApplication.deadline)}
+                </p>
+              </div>
+            )}
+            <div className="mt-5 rounded-[var(--radius-control)] border border-blue-200 bg-blue-50/70 p-3.5 text-xs leading-5 text-blue-900">
+              Le statut AlmaGo reflète le suivi enregistré dans votre espace. Il ne remplace pas le statut officiel communiqué par l’université.
             </div>
-          )}
+          </div>
         </Card>
 
         <section aria-label="Résumé des candidatures" className="grid gap-4 sm:grid-cols-3 lg:grid-cols-1">
@@ -106,10 +128,11 @@ export function StudentApplicationsPanel({
       </Card>
 
       {!loadError && applications.length === 0 ? (
-        <Card aria-labelledby="applications-empty-title" className="border-dashed text-center">
-          <h2 id="applications-empty-title" className="text-lg font-semibold text-slate-950">Aucune candidature pour le moment</h2>
-          <p className="mx-auto mt-2 max-w-xl text-sm text-slate-600">
-            Consultez vos recommandations et enregistrez votre intérêt pour démarrer un suivi.
+        <Card aria-labelledby="applications-empty-title" className="border-dashed bg-white/70 py-9 text-center">
+          <span aria-hidden="true" className="mx-auto grid h-11 w-11 place-items-center rounded-full bg-[var(--brand-soft)] text-[var(--brand)]">＋</span>
+          <h2 id="applications-empty-title" className="mt-4 text-lg font-bold text-slate-950">Vous n’avez encore aucune candidature enregistrée.</h2>
+          <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-slate-600">
+            Lorsque vous indiquez votre intérêt pour une recommandation disponible, le suivi correspondant peut apparaître ici.
           </p>
           <div className="mt-5">
             <ButtonLink href="/student/orientation">Voir mes recommandations</ButtonLink>
@@ -119,9 +142,9 @@ export function StudentApplicationsPanel({
         <section aria-labelledby="applications-list-title">
           <div className="mb-4 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--brand)]">Candidatures</p>
-              <h2 id="applications-list-title" className="mt-1 text-2xl font-semibold tracking-tight text-slate-950">Mes candidatures</h2>
-              <p className="mt-1 text-sm text-slate-600">{applications.length} candidature{applications.length > 1 ? "s" : ""} dans votre espace.</p>
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Vos dossiers suivis</p>
+              <h2 id="applications-list-title" className="mt-1 text-2xl font-bold tracking-[-0.03em] text-slate-950">Mes candidatures</h2>
+              <p className="mt-1 text-sm leading-6 text-slate-600">{applications.length} candidature{applications.length > 1 ? "s" : ""} enregistrée{applications.length > 1 ? "s" : ""} dans votre espace.</p>
             </div>
           </div>
 
@@ -150,16 +173,21 @@ export function StudentApplicationsPanel({
                 >
                   <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
                     <div className="min-w-0">
-                      <p className="text-sm font-semibold text-[var(--brand)]">
-                        {university?.name || "Université"}{university?.city ? ` · ${university.city}` : ""}
+                      <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">Établissement</p>
+                      <p className="mt-1 text-sm font-bold text-slate-900">
+                        {university?.name || "Université à confirmer"}{university?.city ? ` · ${university.city}` : ""}
                       </p>
-                      <h3 id={`student-application-title-${application.id}`} className="mt-1 text-xl font-semibold tracking-tight text-slate-950">{program?.name || "Programme"}</h3>
-                      <p className="mt-1 text-sm text-slate-500">
-                        {application.intake_term || "Semestre à confirmer"} · Échéance {formatDeadline(application.deadline)}
-                      </p>
+                      <h3 id={`student-application-title-${application.id}`} className="mt-3 text-xl font-bold tracking-[-0.02em] text-slate-950">{program?.name || "Programme"}</h3>
+                      <div className="mt-2 flex flex-wrap gap-2 text-xs font-semibold text-slate-600">
+                        {program?.degree_level && <span className="rounded-full bg-slate-100 px-3 py-1.5">{program.degree_level}</span>}
+                        <span className="rounded-full bg-slate-100 px-3 py-1.5">{application.intake_term || "Semestre à confirmer"}</span>
+                        <span className={`rounded-full px-3 py-1.5 ${applicationOverdue ? "bg-amber-100 text-amber-900" : "bg-slate-100"}`}>
+                          Échéance {formatDeadline(application.deadline)}
+                        </span>
+                      </div>
                     </div>
                     <Badge variant={applicationVariant(application.status)}>
-                      {applicationStatusLabels[application.status] || application.status}
+                      {studentApplicationStatusLabels[application.status] || applicationStatusLabels[application.status] || "Statut enregistré"}
                     </Badge>
                   </div>
 
@@ -168,7 +196,7 @@ export function StudentApplicationsPanel({
                     className={`mt-6 rounded-[var(--radius-panel)] border p-4 sm:p-5 ${active ? "border-amber-200 bg-amber-50" : "border-[var(--border)] bg-[var(--surface-muted)]"}`}
                   >
                     <div className="flex flex-wrap items-center justify-between gap-2">
-                      <h4 className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-600">Prochaine action</h4>
+                      <h4 className="text-xs font-bold uppercase tracking-[0.16em] text-slate-600">Ce qui vient ensuite</h4>
                       {active && applicationOverdue && <Badge variant="warning">Échéance dépassée</Badge>}
                     </div>
                     <p className="mt-2 text-sm font-semibold leading-6 text-slate-950">{nextAction}</p>
@@ -191,8 +219,8 @@ export function StudentApplicationsPanel({
 
                   <section aria-labelledby={`application-history-title-${application.id}`} className="mt-6">
                     <div className="mb-3 flex items-center justify-between gap-3">
-                      <h4 id={`application-history-title-${application.id}`} className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
-                        Historique visible
+                      <h4 id={`application-history-title-${application.id}`} className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">
+                        Historique du suivi
                         <span className="sr-only"> de la candidature {program?.name || "Programme"}</span>
                       </h4>
                       <span className="text-xs text-slate-500">{events.length} événement{events.length > 1 ? "s" : ""}</span>
@@ -217,6 +245,10 @@ export function StudentApplicationsPanel({
                       </div>
                     )}
                   </section>
+
+                  <p className="mt-5 border-t border-[var(--border)] pt-4 text-xs leading-5 text-slate-500">
+                    Ce statut et cet historique correspondent aux informations enregistrées dans AlmaGo. Vérifiez le portail officiel de l’université pour le statut administratif définitif.
+                  </p>
                 </Card>
               );
             })}
