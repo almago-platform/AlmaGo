@@ -63,7 +63,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   }
   const { data: existing, error: existingError } = await supabase
     .from("programs")
-    .select("source_url,application_url,university_id")
+    .select("university_id,name,degree_level,field,teaching_language,intake_terms,duration,nc_requirement,german_level_required,english_level_required,diploma_required,indicative_average,studienkolleg_required,testas_required,uni_assist_required,application_fee_notes,winter_deadline,summer_deadline,application_url,source_url")
     .eq("id", id)
     .maybeSingle();
 
@@ -94,10 +94,29 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     [existing.source_url, existing.application_url],
     [data.source_url, data.application_url],
   );
-  const universityChanged = data.university_id !== existing.university_id;
-  const verificationEvidenceChanged = sourceChanged || universityChanged;
+  const verificationContentChanged =
+    sourceChanged ||
+    existing.university_id !== data.university_id ||
+    existing.name !== data.name ||
+    existing.degree_level !== data.degree_level ||
+    existing.field !== data.field ||
+    existing.teaching_language !== data.teaching_language ||
+    JSON.stringify(existing.intake_terms || []) !== JSON.stringify(data.intake_terms || []) ||
+    existing.duration !== data.duration ||
+    existing.nc_requirement !== data.nc_requirement ||
+    existing.german_level_required !== data.german_level_required ||
+    existing.english_level_required !== data.english_level_required ||
+    existing.diploma_required !== data.diploma_required ||
+    Number(existing.indicative_average ?? NaN) !== Number(data.indicative_average ?? NaN) ||
+    existing.studienkolleg_required !== data.studienkolleg_required ||
+    existing.testas_required !== data.testas_required ||
+    existing.uni_assist_required !== data.uni_assist_required ||
+    existing.application_fee_notes !== data.application_fee_notes ||
+    existing.winter_deadline !== data.winter_deadline ||
+    existing.summer_deadline !== data.summer_deadline;
+
   const verificationPatch =
-    body.mark_verified === true || !verificationEvidenceChanged ? {} : { verified_at: null };
+    body.mark_verified === true || !verificationContentChanged ? {} : { verified_at: null };
 
   const { data: updated, error } = await supabase
     .from("programs")
