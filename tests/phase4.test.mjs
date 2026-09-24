@@ -177,7 +177,7 @@ test("document history wording stays institutional", () => {
   );
   assert.equal(
     studentHistoryDisplayMessage("AlmaGo a rejeté ton document : relevé.pdf."),
-    "AlmaGo a demandé une correction pour votre document : relevé.pdf.",
+    "AlmaGo n’a pas validé votre document : relevé.pdf.",
   );
   assert.equal(
     studentHistoryDisplayMessage("AlmaGo te demande de remplacer ton document : bac.pdf."),
