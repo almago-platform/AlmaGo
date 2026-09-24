@@ -261,15 +261,17 @@ export function AdminOrientationPanel({
       <section aria-labelledby="admin-recommendations-title" className="min-w-0">
         <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Suivi publié</p>
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Suivi des pistes</p>
             <h2 id="admin-recommendations-title" className="mt-1 text-2xl font-bold tracking-[-0.03em] text-slate-950">
-              Pistes d’orientation actives
+              Pistes d’orientation non archivées
             </h2>
             <p className="mt-1 text-sm leading-6 text-slate-600">
-              Retrouvez ce qui est actuellement publié pour les étudiants, puis archivez uniquement les pistes qui ne doivent plus rester actives.
+              Une piste peut rester ici pour le suivi interne tout en étant masquée à l’étudiant si son programme est désactivé ou ne possède plus une source vérifiée valide.
             </p>
           </div>
-          <Badge variant={visible.length ? "info" : "neutral"}>{visible.length} visible{visible.length > 1 ? "s" : ""}</Badge>
+          <Badge variant={visible.length ? "info" : "neutral"}>
+            {visible.length} non archivée{visible.length > 1 ? "s" : ""}
+          </Badge>
         </div>
 
         <Card className="shadow-none">
@@ -287,7 +289,7 @@ export function AdminOrientationPanel({
         <div className="mt-5 space-y-4">
           {visible.length === 0 ? (
             <Card className="border-dashed bg-white/70 py-9 text-center shadow-none">
-              <h3 className="font-bold text-slate-950">Aucune piste d’orientation active ne correspond à cette vue.</h3>
+              <h3 className="font-bold text-slate-950">Aucune piste d’orientation non archivée ne correspond à cette vue.</h3>
               <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-slate-600">
                 Modifiez la recherche ou publiez une piste depuis le formulaire. Rien n’a été supprimé.
               </p>
@@ -297,6 +299,7 @@ export function AdminOrientationPanel({
               const student = students.find((item) => item.id === recommendation.student_id);
               const program = programs.find((item) => item.id === recommendation.program_id);
               const university = firstUniversity(program);
+              const publishable = isPublishableProgram(program);
 
               return (
                 <Card
@@ -328,8 +331,10 @@ export function AdminOrientationPanel({
 
                   <div className="mt-5 rounded-[var(--radius-control)] border border-[var(--brand-border)] bg-[var(--brand-soft)]/35 p-4">
                     <div className="flex flex-wrap items-center justify-between gap-2">
-                      <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">Justification publiée</p>
-                      <Badge variant="info">Visible par l’étudiant</Badge>
+                      <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">Justification enregistrée</p>
+                      <Badge variant={publishable ? "info" : "warning"}>
+                        {publishable ? "Visible par l’étudiant" : "Masquée à l’étudiant"}
+                      </Badge>
                     </div>
                     <p className="mt-2 text-sm leading-6 text-slate-700 [overflow-wrap:anywhere]">
                       {recommendation.note || "Aucune justification n’est enregistrée pour cette piste d’orientation."}
