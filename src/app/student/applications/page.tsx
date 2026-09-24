@@ -23,7 +23,7 @@ export default async function StudentApplicationsPage() {
         badge="Candidatures"
         title="Mes candidatures"
         description="Retrouvez chaque dossier, son échéance, sa prochaine action et l’historique visible du suivi enregistré dans AlmaGo."
-        actions={<ButtonLink href="/student/orientation" variant="secondary">Voir les recommandations</ButtonLink>}
+        actions={<ButtonLink href="/student/orientation" variant="secondary">Voir les pistes d’orientation</ButtonLink>}
       />
 
       <StudentApplicationsPanel applications={data || []} />
@@ -44,7 +44,7 @@ function ApplicationsUnavailable() {
         </div>
         <div className="mt-5 flex flex-col gap-3 sm:flex-row">
           <ButtonLink href="/student/applications">Réessayer</ButtonLink>
-          <ButtonLink href="/student/orientation" variant="secondary">Voir mes recommandations</ButtonLink>
+          <ButtonLink href="/student/orientation" variant="secondary">Voir mes pistes d’orientation</ButtonLink>
         </div>
       </Card>
     </main>
