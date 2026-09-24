@@ -191,8 +191,9 @@ test("catalogue payloads normalize blank URLs and deadline whitespace", () => {
   assert.match(programCreate, /body\.summer_deadline\.trim\(\) \? body\.summer_deadline\.trim\(\) : null/);
   assert.match(programCreate, /source_url: optionalText\(body\.source_url\)/);
   assert.match(programCreate, /application_url: optionalText\(body\.application_url \?\? body\.official_url\)/);
-  assert.match(universityCreate, /body\.website_url\.trim\(\) \? body\.website_url\.trim\(\) : null/);
-  assert.match(universityCreate, /body\.source_url\.trim\(\) \? body\.source_url\.trim\(\) : null/);
+  assert.match(universityCreate, /const optionalText =/);
+  assert.match(universityCreate, /website_url: websiteUrl/);
+  assert.match(universityCreate, /source_url: sourceUrl/);
   assert.match(universityUpdate, /website_url: websiteUrl \|\| null/);
   assert.match(universityUpdate, /const optionalText =/);
 });
@@ -273,4 +274,11 @@ test("optional programme academic fields normalize empty strings to null", () =>
     assert.match(programCreate, new RegExp(field + ": optionalText"));
   }
   assert.match(programCreate, /teaching_language: optionalText\(body\.teaching_language \?\? body\.language\)/);
+});
+
+
+test("optional university fields normalize empty strings to null on create", () => {
+  for (const field of ["city", "bundesland", "logo_url", "description", "tuition_notes"]) {
+    assert.match(universityCreate, new RegExp(field + ": optionalText"));
+  }
 });
