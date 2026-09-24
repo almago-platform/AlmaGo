@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { degreeLevels } from "@/lib/phase4";
+import { hasVerifiedProgramSource, isHttpSourceUrl } from "@/lib/source-verification";
 
 type Program = {
   id: string;
@@ -93,6 +94,12 @@ function universityName(program: Program) {
   return university ? `${university.name} · ${university.city}` : "Université";
 }
 
+function programSourceUrl(program: Pick<Program, "source_url" | "application_url">) {
+  if (isHttpSourceUrl(program.source_url)) return program.source_url?.trim() || null;
+  if (isHttpSourceUrl(program.application_url)) return program.application_url?.trim() || null;
+  return null;
+}
+
 function formatVerificationDate(value: string) {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "date inconnue";
@@ -128,9 +135,11 @@ export function AdminProgramsPanel({
 
   const activePrograms = items.filter((program) => program.is_active);
   const missingSourceCount = activePrograms.filter(
-    (program) => !program.source_url && !program.application_url,
+    (program) => !programSourceUrl(program),
   ).length;
-  const missingVerificationCount = activePrograms.filter((program) => !program.verified_at).length;
+  const missingVerificationCount = activePrograms.filter(
+    (program) => !hasVerifiedProgramSource(program),
+  ).length;
   const missingDeadlineCount = activePrograms.filter(
     (program) => !program.winter_deadline && !program.summer_deadline,
   ).length;
@@ -139,8 +148,8 @@ export function AdminProgramsPanel({
     const normalized = query.trim().toLocaleLowerCase("fr");
     return items.filter((program) => {
       if (level !== "all" && program.degree_level !== level) return false;
-      if (quality === "missing_source" && (program.source_url || program.application_url)) return false;
-      if (quality === "missing_verification" && program.verified_at) return false;
+      if (quality === "missing_source" && programSourceUrl(program)) return false;
+      if (quality === "missing_verification" && hasVerifiedProgramSource(program)) return false;
       if (quality === "missing_deadline" && (program.winter_deadline || program.summer_deadline)) return false;
       if (!normalized) return true;
       return [program.name, program.field, universityName(program)]
@@ -490,11 +499,13 @@ export function AdminProgramsPanel({
                   <div className="flex flex-wrap gap-2">
                     <Badge variant="neutral">{program.degree_level}</Badge>
                     <Badge variant={program.is_active ? "success" : "neutral"}>{program.is_active ? "Actif" : "Inactif"}</Badge>
-                    <Badge variant={program.source_url || program.application_url ? "info" : "warning"}>
-                      {program.source_url || program.application_url ? "Source officielle enregistrée" : "Source officielle à compléter"}
+                    <Badge variant={programSourceUrl(program) ? "info" : "warning"}>
+                      {programSourceUrl(program) ? "Source officielle valide enregistrée" : "Source officielle à compléter"}
                     </Badge>
-                    <Badge variant={program.verified_at ? "success" : "warning"}>
-                      {program.verified_at ? `Vérifié le ${formatVerificationDate(program.verified_at)}` : "Vérification à compléter"}
+                    <Badge variant={hasVerifiedProgramSource(program) ? "success" : "warning"}>
+                      {hasVerifiedProgramSource(program) && program.verified_at
+                        ? `Vérifié le ${formatVerificationDate(program.verified_at)}`
+                        : "Vérification à compléter"}
                     </Badge>
                   </div>
                   <h3 id={`admin-program-title-${program.id}`} className="mt-3 text-xl font-bold tracking-[-0.02em] text-slate-950 [overflow-wrap:anywhere]">{program.name}</h3>
@@ -509,8 +520,8 @@ export function AdminProgramsPanel({
                 <Info label="Deadline été" value={program.summer_deadline || "À confirmer"} />
               </dl>
 
-              {(program.source_url || program.application_url) && (
-                <a href={program.source_url || program.application_url || "#"} target="_blank" rel="noreferrer" className="mt-4 inline-flex text-sm font-semibold text-[var(--brand)] underline decoration-[var(--brand-border)] underline-offset-4 hover:text-[var(--brand-hover)]">
+              {programSourceUrl(program) && (
+                <a href={programSourceUrl(program) || "#"} target="_blank" rel="noreferrer" className="mt-4 inline-flex text-sm font-semibold text-[var(--brand)] underline decoration-[var(--brand-border)] underline-offset-4 hover:text-[var(--brand-hover)]">
                   Ouvrir la source officielle
                 </a>
               )}
