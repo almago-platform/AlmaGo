@@ -20,13 +20,10 @@ export function deadlineForIntake(
 ) {
   const normalized = intake?.trim().toLocaleLowerCase("en") || "";
 
-  if (normalized.includes("summer") || normalized.includes("sommer")) {
-    return program?.summer_deadline || null;
-  }
+  const isSummer = normalized.includes("summer") || normalized.includes("sommer");
+  const isWinter = normalized.includes("winter");
 
-  if (normalized.includes("winter")) {
-    return program?.winter_deadline || null;
-  }
-
-  return null;
+  if (isSummer === isWinter) return null;
+  if (isSummer) return program?.summer_deadline || null;
+  return program?.winter_deadline || null;
 }
