@@ -356,3 +356,12 @@ test("every admin API enforces the admin role", () => {
     assert.match(source, /status: 403/);
   }
 });
+
+
+test("profile input mapping excludes onboarding workflow fields", () => {
+  const profile = read("src/lib/student/profile.ts");
+
+  assert.doesNotMatch(profile, /"onboarding_completed"/);
+  assert.doesNotMatch(profile, /"onboarding_completed_at"/);
+  assert.match(profile, /export function profileUpdateFromInput/);
+});
