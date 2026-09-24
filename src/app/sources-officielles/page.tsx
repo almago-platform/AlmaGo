@@ -52,6 +52,14 @@ const sources = [
     action: "Voir le visa pour études",
   },
   {
+    category: "Depuis la Tunisie",
+    name: "Ambassade d’Allemagne à Tunis — préparation aux études",
+    text:
+      "Pour les candidats déposant depuis la Tunisie : documents et conditions publiés pour une préparation aux études, notamment base académique, cours préparatoire et niveau de langue.",
+    href: "https://tunis.diplo.de/tn-fr/service/05-visaeinreise/2573166-2573166",
+    action: "Voir la checklist de Tunis",
+  },
+  {
     category: "Visa et représentation allemande",
     name: "Ministère fédéral des Affaires étrangères",
     text:
