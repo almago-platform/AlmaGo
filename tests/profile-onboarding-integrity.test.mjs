@@ -77,3 +77,11 @@ test("completed profiles cannot lose required identity or study-plan fields", ()
   assert.match(profileRoute, /Les informations essentielles du profil doivent rester complètes/);
   assert.match(profileRoute, /status: 400/);
 });
+
+
+test("onboarding does not replace a load failure with an empty form", () => {
+  assert.match(onboardingPage, /error: profileError/);
+  assert.match(onboardingPage, /if \(profileError\)/);
+  assert.match(onboardingPage, /Profil temporairement indisponible/);
+  assert.match(onboardingPage, /Rien n’a été supprimé ou remplacé/);
+});
