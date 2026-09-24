@@ -7,11 +7,11 @@ import { ProgressBar } from "@/components/ui/ProgressBar";
 import { createClient } from "@/lib/supabase/server";
 
 const labels: Record<string, string> = {
-  not_started: "À démarrer",
-  todo: "À faire",
+  not_started: "À faire par vous",
+  todo: "À faire par vous",
   in_progress: "En cours",
-  waiting_student: "Action requise",
-  waiting_almago: "Suivi AlmaGo",
+  waiting_student: "À faire par vous",
+  waiting_almago: "Suivi par AlmaGo",
   completed: "Terminé",
 };
 
@@ -71,70 +71,92 @@ export default async function ChecklistPage() {
   }
 
   return (
-    <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
+    <main className="mx-auto w-full max-w-7xl px-4 py-7 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
       <PageHeader
         badge="Mes démarches"
         title="Mes démarches"
-        description="Retrouvez les démarches enregistrées, les actions attendues de votre côté et les étapes suivies par AlmaGo."
+        description="Voyez en un coup d’œil ce qui est à faire par vous, ce qu’AlmaGo suit et les étapes déjà terminées dans votre dossier."
         actions={<ButtonLink href="/student/documents" variant="secondary">Voir mes documents</ButtonLink>}
       />
 
       <div className="grid gap-5 lg:grid-cols-[1.15fr_0.85fr]">
-        <Card aria-labelledby="checklist-progress-title" className="bg-slate-950 text-white">
-          <div className="flex flex-wrap items-start justify-between gap-4">
-            <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--accent-light)]">Avancement</p>
-              <h2 id="checklist-progress-title" className="mt-4 text-3xl font-semibold tracking-tight">Progression des démarches</h2>
+        <Card aria-labelledby="checklist-progress-title" className="relative overflow-hidden border-[var(--brand-border)] bg-white shadow-[0_24px_55px_-38px_rgba(41,48,139,0.5)]">
+          <div aria-hidden="true" className="absolute inset-y-0 left-0 w-1.5 bg-[var(--brand)]" />
+          <div className="pl-2 sm:pl-3">
+            <div className="flex flex-wrap items-start justify-between gap-4">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Votre progression</p>
+                <h2 id="checklist-progress-title" className="mt-3 text-2xl font-bold tracking-[-0.03em] text-slate-950 sm:text-3xl">Démarches enregistrées dans votre dossier</h2>
+              </div>
+              <Badge variant={checklistItems.length > 0 && progression === 100 ? "success" : "info"}>
+                {checklistItems.length ? `${completedCount}/${checklistItems.length} terminées` : "Aucune étape"}
+              </Badge>
             </div>
-            <Badge variant={checklistItems.length > 0 && progression === 100 ? "success" : "info"}>
-              {checklistItems.length ? `${completedCount}/${checklistItems.length} terminées` : "Aucune étape"}
-            </Badge>
-          </div>
-          <div className="mt-8">
-            <div className="mb-3 flex items-end justify-between gap-4">
-              <p className="text-5xl font-semibold tracking-tight">{checklistItems.length ? `${progression}%` : "—"}</p>
-              <p className="text-right text-sm text-slate-300">Étapes réellement enregistrées dans votre dossier</p>
+
+            <div className="mt-7">
+              <div className="mb-3 flex items-end justify-between gap-4">
+                <p className="text-4xl font-bold tracking-tight text-slate-950 sm:text-5xl">{checklistItems.length ? `${progression}%` : "—"}</p>
+                <p className="max-w-xs text-right text-sm leading-6 text-slate-600">Étapes réellement enregistrées dans AlmaGo</p>
+              </div>
+              {checklistItems.length > 0 && <ProgressBar value={progression} label="Progression des démarches enregistrées" />}
             </div>
-            {checklistItems.length > 0 && <div className="[&_[role=progressbar]]:bg-white/15 [&_[role=progressbar]>div]:bg-[var(--accent)]"><ProgressBar value={progression} label="Progression des démarches" /></div>}
+
+            <p className="mt-5 text-sm leading-6 text-slate-600">
+              Cette progression concerne les démarches enregistrées dans votre dossier. Elle ne représente ni une admission ni une validation finale.
+            </p>
           </div>
         </Card>
 
-        <Card aria-labelledby="checklist-next-action-title">
-          <div className="flex items-center justify-between gap-3">
+        <Card aria-labelledby="checklist-next-action-title" className={nextItem ? "border-amber-200 bg-amber-50/25 shadow-none" : "shadow-none"}>
+          <div className="flex flex-wrap items-center justify-between gap-3">
             <Badge variant={nextItem ? "warning" : waitingAlmaGoCount ? "info" : "neutral"}>
-              {nextItem ? "Prochaine action" : waitingAlmaGoCount ? "En attente" : "Aucune action enregistrée"}
+              {nextItem ? "À faire maintenant" : waitingAlmaGoCount ? "Suivi en cours" : "Aucune action demandée"}
             </Badge>
-            <span className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
-              {nextItem ? "Vous" : waitingAlmaGoCount ? "AlmaGo" : "Suivi"}
+            <span className="text-xs font-bold uppercase tracking-[0.14em] text-slate-500">
+              {nextItem ? "À faire par vous" : waitingAlmaGoCount ? "Suivi par AlmaGo" : "Dossier"}
             </span>
           </div>
           {nextItem ? (
             <>
-              <h2 id="checklist-next-action-title" className="mt-5 text-2xl font-semibold tracking-tight text-slate-950">{nextItem.title}</h2>
-              {nextItem.description && <p className="mt-3 text-sm leading-6 text-slate-600">{nextItem.description}</p>}
-              <div className="mt-5"><Badge variant={nextItem.status === "waiting_student" ? "warning" : "info"}>{labels[nextItem.status] || nextItem.status}</Badge></div>
+              <h2 id="checklist-next-action-title" className="mt-5 text-2xl font-bold tracking-[-0.03em] text-slate-950">{nextItem.title}</h2>
+              {nextItem.description && <p className="mt-3 text-sm leading-6 text-slate-700">{nextItem.description}</p>}
+              <div className="mt-5 inline-flex items-center gap-2 rounded-full bg-white px-3 py-2 text-xs font-bold text-amber-900 ring-1 ring-amber-200">
+                <span aria-hidden="true" className="h-2 w-2 rounded-full bg-[var(--accent)]" />
+                {labels[nextItem.status] || "À faire par vous"}
+              </div>
             </>
           ) : (
             <>
-              <h2 id="checklist-next-action-title" className="mt-5 text-2xl font-semibold text-slate-950">{waitingAlmaGoCount ? "Étapes en attente côté AlmaGo" : "Aucune action enregistrée"}</h2>
-              <p className="mt-3 text-sm leading-6 text-slate-600">{waitingAlmaGoCount ? "Aucune action n’est actuellement demandée de votre côté. Consultez les étapes suivies ci-dessous." : "Aucune action n’est actuellement demandée de votre côté. Consultez les démarches enregistrées ci-dessous."}</p>
+              <h2 id="checklist-next-action-title" className="mt-5 text-2xl font-bold tracking-[-0.03em] text-slate-950">
+                {waitingAlmaGoCount ? "Vous n’avez rien à faire pour le moment" : "Aucune action n’est demandée actuellement"}
+              </h2>
+              <p className="mt-3 text-sm leading-6 text-slate-600">
+                {waitingAlmaGoCount
+                  ? "AlmaGo suit actuellement certaines étapes de votre dossier. Vous pouvez consulter leur détail ci-dessous."
+                  : "Les démarches enregistrées dans votre dossier apparaissent ci-dessous. Une nouvelle action sera mise en évidence lorsqu’elle vous concernera."}
+              </p>
             </>
           )}
         </Card>
       </div>
 
       <section aria-label="Résumé des démarches" className="mt-5 grid gap-4 sm:grid-cols-3">
-        <SummaryCard title="À traiter" value={actionableItems.length} badge="Côté étudiant" tone={actionableItems.length ? "warning" : "success"} />
-        <SummaryCard title="Suivi AlmaGo" value={waitingAlmaGoCount} badge="En attente" tone="info" />
-        <SummaryCard title="Terminées" value={completedCount} badge="Étapes" tone="success" />
+        <SummaryCard title="À faire par vous" value={actionableItems.length} badge={actionableItems.length ? "À traiter" : "Rien à faire"} tone={actionableItems.length ? "warning" : "success"} />
+        <SummaryCard title="Suivi par AlmaGo" value={waitingAlmaGoCount} badge={waitingAlmaGoCount ? "En cours" : "Aucune étape"} tone="info" />
+        <SummaryCard title="Terminées" value={completedCount} badge="Étapes complétées" tone="success" />
       </section>
 
       {checklistItems.length === 0 ? (
-        <Card aria-labelledby="checklist-empty-title" className="mt-6 border-dashed text-center">
-          <h2 id="checklist-empty-title" className="text-lg font-semibold text-slate-950">Aucune démarche enregistrée</h2>
-          <p className="mx-auto mt-2 max-w-xl text-sm text-slate-600">
-            Aucune démarche n’est enregistrée dans votre dossier pour le moment. Vous pouvez vérifier vos documents ou revenir à votre dossier.
+        <Card aria-labelledby="checklist-empty-title" className="mt-6 border-dashed bg-white/70 py-9 text-center">
+          <span aria-hidden="true" className="mx-auto grid h-11 w-11 place-items-center rounded-full bg-[var(--brand-soft)] text-[var(--brand)]">✓</span>
+          <h2 id="checklist-empty-title" className="mt-4 text-lg font-bold text-slate-950">Aucune démarche n’est enregistrée pour le moment.</h2>
+          <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-slate-600">
+            Lorsqu’une nouvelle étape sera ajoutée à votre dossier, elle apparaîtra ici avec son responsable et son statut.
           </p>
+          <div className="mt-5 flex justify-center gap-3">
+            <ButtonLink href="/student">Retour à mon dossier</ButtonLink>
+            <ButtonLink href="/student/documents" variant="secondary">Voir mes documents</ButtonLink>
+          </div>
         </Card>
       ) : (
         <div className="mt-8 space-y-8">
@@ -143,25 +165,26 @@ export default async function ChecklistPage() {
             const groupCompleted = group.filter((item) => item.status === "completed").length;
             return (
               <section key={category} aria-labelledby={categoryId}>
-                <div className="mb-3 flex flex-col justify-between gap-2 sm:flex-row sm:items-center">
+                <div className="mb-4 flex flex-col justify-between gap-3 border-b border-[var(--border)] pb-3 sm:flex-row sm:items-end">
                   <div>
-                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--brand)]">Catégorie</p>
-                    <h2 id={categoryId} className="mt-1 text-xl font-semibold tracking-tight text-slate-950">{category}</h2>
+                    <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Étape du dossier</p>
+                    <h2 id={categoryId} className="mt-1 text-xl font-bold tracking-[-0.02em] text-slate-950">{category}</h2>
                   </div>
                   <Badge variant={groupCompleted === group.length ? "success" : "neutral"}>{groupCompleted}/{group.length} terminées</Badge>
                 </div>
                 <div className="space-y-3">
                   {group.map((item) => (
-                    <Card as="article" key={item.id} aria-labelledby={`checklist-item-title-${item.id}`} className={item.status === "waiting_student" ? "border-amber-300 bg-amber-50/40 shadow-none" : "shadow-none"}>
+                    <Card as="article" key={item.id} aria-labelledby={`checklist-item-title-${item.id}`} className={item.status === "waiting_student" || item.status === "todo" || item.status === "not_started" ? "border-amber-200 bg-amber-50/25 shadow-none" : item.status === "waiting_almago" ? "border-blue-200 bg-blue-50/20 shadow-none" : "shadow-none"}>
                       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
                         <div className="min-w-0">
                           <div className="flex flex-wrap items-center gap-2">
                             <Badge variant={badgeVariants[item.status as keyof typeof badgeVariants] || "neutral"}>
                               {labels[item.status] || item.status}
                             </Badge>
-                            {item.status === "waiting_student" && <span className="text-xs font-semibold uppercase tracking-[0.14em] text-amber-800">Action demandée</span>}
+                            {["waiting_student", "todo", "not_started"].includes(item.status) && <span className="text-xs font-bold uppercase tracking-[0.14em] text-amber-800">Responsable : vous</span>}
+                            {item.status === "waiting_almago" && <span className="text-xs font-bold uppercase tracking-[0.14em] text-blue-800">Responsable : AlmaGo</span>}
                           </div>
-                          <h3 id={`checklist-item-title-${item.id}`} className="mt-3 font-semibold text-slate-950">{item.title}</h3>
+                          <h3 id={`checklist-item-title-${item.id}`} className="mt-3 font-bold text-slate-950">{item.title}</h3>
                           {item.description && <p className="mt-1 text-sm leading-6 text-slate-600">{item.description}</p>}
                           {item.completed_at && (
                             <p className="mt-3 text-xs text-slate-500">
@@ -202,7 +225,7 @@ function ChecklistUnavailable() {
       <Card>
         <div role="alert">
           <h2 className="text-xl font-semibold text-slate-950">Démarches temporairement indisponibles</h2>
-          <p className="mt-2 text-sm leading-6 text-slate-600">Impossible de charger les étapes du dossier pour le moment. Leur état n’a pas été modifié. Vous pouvez relancer le chargement ou revenir à votre dossier.</p>
+          <p className="mt-2 text-sm leading-6 text-slate-600">Nous n’arrivons pas à afficher vos démarches pour le moment. Rien n’a été supprimé ou modifié. Vous pouvez réessayer ou revenir à votre dossier.</p>
         </div>
         <div className="mt-5 flex flex-wrap gap-3">
           <ButtonLink href="/student/checklist">Réessayer</ButtonLink>
