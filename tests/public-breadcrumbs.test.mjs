@@ -9,6 +9,7 @@ const publicPages = [
   "src/app/selon-votre-pays/page.tsx",
   "src/app/confiance/page.tsx",
   "src/app/a-propos/page.tsx",
+  "src/app/sources-officielles/page.tsx",
 ];
 
 test("public breadcrumb component is accessible", () => {
