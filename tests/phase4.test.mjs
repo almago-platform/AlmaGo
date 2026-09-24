@@ -86,3 +86,25 @@ test("deadline countdown stays calendar-based across Berlin DST changes", () => 
 test("deadline formatting is pinned to the Berlin calendar", () => {
   assert.equal(formatDeadline("2026-10-26"), "26 oct. 2026");
 });
+
+
+test("application status catalogue covers the live database enum", () => {
+  const expected = new Set([
+    "draft",
+    "planned",
+    "submitted",
+    "in_review",
+    "accepted",
+    "rejected",
+    "withdrawn",
+    "interested",
+    "preparing",
+    "documents_missing",
+    "ready_to_submit",
+    "waiting_university",
+    "admission",
+    "rejection",
+  ]);
+
+  assert.deepEqual(new Set(applicationStatuses), expected);
+});
