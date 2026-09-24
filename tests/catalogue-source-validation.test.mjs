@@ -146,3 +146,11 @@ test("programme quality filter exposes inactive parent universities", () => {
   assert.match(programAdminPanel, /title="Université inactive"/);
   assert.match(programAdminPanel, /Programmes actifs actuellement non publiables/);
 });
+
+
+test("activation-only catalogue patches return 404 when the target no longer exists", () => {
+  assert.match(programUpdate, /\.select\("id"\)\s*\.maybeSingle\(\)/);
+  assert.match(programUpdate, /if \(!updated\).*Programme introuvable/);
+  assert.match(universityUpdate, /\.select\("id"\)\s*\.maybeSingle\(\)/);
+  assert.match(universityUpdate, /if \(!updated\).*Université introuvable/);
+});
