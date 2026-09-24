@@ -6,19 +6,11 @@ export async function getAuthenticatedUser() {
   return { supabase, user };
 }
 
-export async function getAdminUser() {
+export async function getRoleUser() {
   const { supabase, user } = await getAuthenticatedUser();
-  if (!user) return { supabase, user: null, isAdmin: false };
-  const { data: role } = await supabase.from("user_roles").select("role").eq("user_id", user.id).maybeSingle();
-  return { supabase, user, isAdmin: role?.role === "admin" };
-}
+  if (!user) return { supabase, user: null, role: null };
 
-
-export async function getStudentUser() {
-  const { supabase, user } = await getAuthenticatedUser();
-  if (!user) return { supabase, user: null, isStudent: false };
-
-  const { data: role, error: roleError } = await supabase
+  const { data, error } = await supabase
     .from("user_roles")
     .select("role")
     .eq("user_id", user.id)
@@ -27,6 +19,24 @@ export async function getStudentUser() {
   return {
     supabase,
     user,
-    isStudent: !roleError && role?.role === "student",
+    role: error ? null : data?.role ?? null,
+  };
+}
+
+export async function getAdminUser() {
+  const { supabase, user, role } = await getRoleUser();
+  return {
+    supabase,
+    user,
+    isAdmin: Boolean(user && role === "admin"),
+  };
+}
+
+export async function getStudentUser() {
+  const { supabase, user, role } = await getRoleUser();
+  return {
+    supabase,
+    user,
+    isStudent: Boolean(user && role === "student"),
   };
 }
