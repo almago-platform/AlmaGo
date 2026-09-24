@@ -57,10 +57,11 @@ export function HomeFooter() {
           <FooterColumn
             title="Parcours"
             links={[
-              ["Comment ça marche", "#parcours"],
-              ["Notre rôle", "#role"],
-              ["Votre espace", "#espace"],
-              ["Confiance et transparence", "#confiance"],
+              ["Comment ça marche", "/#parcours"],
+              ["Notre rôle", "/#role"],
+              ["Comprendre les démarches", "/comprendre-les-demarches"],
+              ["Votre espace", "/#espace"],
+              ["Confiance et transparence", "/#confiance"],
             ]}
           />
           <FooterColumn
