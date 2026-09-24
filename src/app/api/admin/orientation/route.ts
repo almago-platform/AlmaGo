@@ -13,7 +13,7 @@ export async function POST(request: Request) {
 
   const { data: program, error: programError } = await supabase
     .from("programs")
-    .select("id,is_active,source_url,application_url,verified_at")
+    .select("id,is_active,source_url,application_url,verified_at,universities(is_active)")
     .eq("id", body.program_id)
     .maybeSingle();
 
