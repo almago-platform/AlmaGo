@@ -45,13 +45,21 @@ The following PRs should not be treated as the retained implementation path:
 
 The public changes from #168/#169 are replayed on the retained chain in **#172**.
 
-## Retained dependency chain after #163
+## Retained dependency chain
 
-The current retained V3 path is:
+The complete retained V3 merge order is:
 
-`#163 → #165 → #166 → #167 → #170 → #172`
+`#142 → #143 → #144 → #145 → #146 → #147 → #148 → #149 → #150 → #151 → #152 → #153 → #155 → #156 → #157 → #159 → #160 → #161 → #162 → #163 → #165 → #166 → #167 → #170 → #172 → #173`
+
+All of these retained PRs were checked as mergeable on 24 September 2026.
+
+After #163, the retained path is specifically:
+
+`#163 → #165 → #166 → #167 → #170 → #172 → #173`
 
 This avoids reintroducing #164 while preserving all later student/public improvements.
+
+Because the PRs are stacked, merge them in dependency order and let each child PR rebase/update naturally against the merged parent. Do not merge superseded #164/#168/#169 into this path.
 
 ## Live operational snapshot
 
