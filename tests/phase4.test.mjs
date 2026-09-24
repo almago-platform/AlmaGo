@@ -3,6 +3,8 @@ import test from "node:test";
 import {
   applicationEventDisplayMessage,
   applicationStatuses,
+  databaseApplicationStatuses,
+  legacyApplicationStatuses,
   daysUntilDeadline,
   formatDeadline,
   isActiveApplication,
@@ -90,30 +92,51 @@ test("deadline formatting is pinned to the Berlin calendar", () => {
 });
 
 
-test("application status catalogue covers the live database enum", () => {
-  const expected = new Set([
-    "draft",
-    "planned",
-    "submitted",
-    "in_review",
-    "accepted",
-    "rejected",
-    "withdrawn",
-    "interested",
-    "preparing",
-    "documents_missing",
-    "ready_to_submit",
-    "waiting_university",
-    "admission",
-    "rejection",
-  ]);
+test("application status catalogues distinguish writable phase-4 states from legacy database states", () => {
+  assert.deepEqual(
+    new Set(applicationStatuses),
+    new Set([
+      "interested",
+      "preparing",
+      "documents_missing",
+      "ready_to_submit",
+      "submitted",
+      "waiting_university",
+      "admission",
+      "rejection",
+      "withdrawn",
+    ]),
+  );
 
-  assert.deepEqual(new Set(applicationStatuses), expected);
+  assert.deepEqual(
+    new Set(legacyApplicationStatuses),
+    new Set(["draft", "planned", "in_review", "accepted", "rejected"]),
+  );
+
+  assert.deepEqual(
+    new Set(databaseApplicationStatuses),
+    new Set([
+      "draft",
+      "planned",
+      "submitted",
+      "in_review",
+      "accepted",
+      "rejected",
+      "withdrawn",
+      "interested",
+      "preparing",
+      "documents_missing",
+      "ready_to_submit",
+      "waiting_university",
+      "admission",
+      "rejection",
+    ]),
+  );
 });
 
 
 test("every database application status is classified exactly once", () => {
-  for (const status of applicationStatuses) {
+  for (const status of databaseApplicationStatuses) {
     const active = isActiveApplication(status);
     const terminal = terminalApplicationStatuses.has(status);
     assert.notEqual(active, terminal, status);
