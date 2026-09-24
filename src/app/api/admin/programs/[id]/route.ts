@@ -47,7 +47,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   }
   const { data: existing, error: existingError } = await supabase
     .from("programs")
-    .select("source_url,application_url")
+    .select("source_url,application_url,university_id")
     .eq("id", id)
     .maybeSingle();
 
@@ -55,6 +55,24 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     return NextResponse.json({ error: "Impossible de vérifier la source actuelle du programme." }, { status: 500 });
   }
   if (!existing) return NextResponse.json({ error: "Programme introuvable." }, { status: 404 });
+
+  if (data.university_id !== existing.university_id) {
+    const { data: targetUniversity, error: targetUniversityError } = await supabase
+      .from("universities")
+      .select("id,is_active")
+      .eq("id", data.university_id)
+      .maybeSingle();
+
+    if (targetUniversityError) {
+      return NextResponse.json({ error: "Impossible de vérifier l’université sélectionnée." }, { status: 500 });
+    }
+    if (!targetUniversity?.is_active) {
+      return NextResponse.json(
+        { error: "Vous ne pouvez pas rattacher ce programme à une université inactive." },
+        { status: 400 },
+      );
+    }
+  }
 
   const sourceChanged = sourceUrlsChanged(
     [existing.source_url, existing.application_url],
