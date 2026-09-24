@@ -3,6 +3,42 @@ import { getAdminUser } from "@/lib/auth/access";
 import { degreeLevels } from "@/lib/phase4";
 import { isHttpSourceUrl } from "@/lib/source-verification";
 
+function isValidDateOnly(value: string) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const [year, month, day] = value.split("-").map(Number);
+  const candidate = new Date(Date.UTC(year, month - 1, day));
+  return candidate.getUTCFullYear() === year
+    && candidate.getUTCMonth() === month - 1
+    && candidate.getUTCDate() === day;
+}
+
+function programValidationError(body: Record<string, unknown>) {
+  if (!degreeLevels.includes(body.degree_level as (typeof degreeLevels)[number])) {
+    return "Choisissez un niveau de diplôme valide.";
+  }
+
+  for (const key of ["winter_deadline", "summer_deadline"] as const) {
+    const value = body[key];
+    if (typeof value === "string" && value.trim() && !isValidDateOnly(value.trim())) {
+      return "Les échéances doivent être des dates valides.";
+    }
+    if (value != null && typeof value !== "string") {
+      return "Les échéances doivent être des dates valides.";
+    }
+  }
+
+  const average = body.indicative_average;
+  if (
+    average != null &&
+    String(average).trim() &&
+    !Number.isFinite(Number(average))
+  ) {
+    return "La moyenne indicative doit être un nombre valide.";
+  }
+
+  return null;
+}
+
 function payload(body: Record<string, unknown>) {
   const intakeTerms = typeof body.intake_terms === "string" ? body.intake_terms.split(",").map(item => item.trim()).filter(Boolean).slice(0, 5) : [];
   const numberValue = (value: unknown) => typeof value === "string" && value.trim() ? Number(value) : null;
@@ -30,9 +66,8 @@ export async function POST(request: Request) {
   if (!isAdmin) return NextResponse.json({ error: "Accès non autorisé." }, { status: 403 });
   const body = await request.json().catch(() => null) as Record<string, unknown> | null;
   if (!body) return NextResponse.json({ error: "Données invalides." }, { status: 400 });
-  if (!degreeLevels.includes(body.degree_level as (typeof degreeLevels)[number])) {
-    return NextResponse.json({ error: "Choisissez un niveau de diplôme valide." }, { status: 400 });
-  }
+  const validationError = programValidationError(body);
+  if (validationError) return NextResponse.json({ error: validationError }, { status: 400 });
   const data = payload(body);
   if (!data.name || typeof data.university_id !== "string") return NextResponse.json({ error: "Université et nom du programme obligatoires." }, { status: 400 });
 
@@ -76,4 +111,4 @@ export async function POST(request: Request) {
   return NextResponse.json({ ok: true, id: created.id }, { status: 201 });
 }
 
-export { payload as programPayload };
+export { payload as programPayload, programValidationError };
