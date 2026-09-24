@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { isPublishableProgram } from "@/lib/source-verification";
-import { deadlineForIntake } from "@/lib/application-intake";
+import { applicationIntakeFromTerms, deadlineForIntake } from "@/lib/application-intake";
 
 export async function POST(request: Request) {
   const supabase = await createClient();
@@ -18,7 +18,7 @@ export async function POST(request: Request) {
       { status: 400 },
     );
   }
-  const intake = Array.isArray(program?.intake_terms) ? program.intake_terms[0] || null : null;
+  const intake = applicationIntakeFromTerms(program?.intake_terms);
   const deadline = deadlineForIntake(program, intake);
 
   let existingApplicationQuery = supabase
