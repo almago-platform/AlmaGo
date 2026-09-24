@@ -31,6 +31,7 @@ on:
       - "src/lib/application-intake.ts"
       - "src/lib/identifiers.ts"
       - "src/proxy.ts"
+      - "supabase/migrations/**"
       - "tests/e2e/authenticated.spec.mjs"
       - "tests/e2e/student-space-quality.spec.mjs"
       - "tests/e2e/admin-space-quality.spec.mjs"
