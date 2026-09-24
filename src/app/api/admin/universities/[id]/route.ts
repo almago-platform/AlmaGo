@@ -94,12 +94,12 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   const verificationContentChanged =
     sourceChanged ||
     existing.name !== nextUniversity.name ||
-    existing.city !== nextUniversity.city ||
-    existing.bundesland !== nextUniversity.bundesland ||
+    optionalText(existing.city) !== nextUniversity.city ||
+    optionalText(existing.bundesland) !== nextUniversity.bundesland ||
     existing.university_type !== nextUniversity.university_type ||
-    existing.description !== nextUniversity.description ||
+    optionalText(existing.description) !== nextUniversity.description ||
     existing.is_public !== nextUniversity.is_public ||
-    existing.tuition_notes !== nextUniversity.tuition_notes;
+    optionalText(existing.tuition_notes) !== nextUniversity.tuition_notes;
 
   const verificationPatch =
     body.mark_verified === true || !verificationContentChanged ? {} : { verified_at: null };
