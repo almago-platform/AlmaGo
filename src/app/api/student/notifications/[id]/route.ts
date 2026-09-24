@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server";
-import { getAuthenticatedUser } from "@/lib/auth/access";
+import { getStudentUser } from "@/lib/auth/access";
 
 export async function PATCH(
   _: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
-  const { supabase, user } = await getAuthenticatedUser();
+  const { supabase, user, isStudent } = await getStudentUser();
   if (!user) return NextResponse.json({ error: "Non authentifié." }, { status: 401 });
+  if (!isStudent) return NextResponse.json({ error: "Accès réservé aux étudiants." }, { status: 403 });
 
   const { id } = await params;
   const readAt = new Date().toISOString();
