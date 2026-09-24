@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getAdminUser } from "@/lib/auth/access";
 import { programPayload } from "@/app/api/admin/programs/route";
+import { isHttpSourceUrl } from "@/lib/source-verification";
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { supabase, user, isAdmin } = await getAdminUser();
@@ -10,8 +11,15 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   if (!body) return NextResponse.json({ error: "Données invalides." }, { status: 400 });
   const data = programPayload(body);
   if (!data.name || typeof data.university_id !== "string") return NextResponse.json({ error: "Université et nom du programme obligatoires." }, { status: 400 });
-  if (body.mark_verified === true && !data.source_url && !data.application_url) {
-    return NextResponse.json({ error: "Ajoutez une source officielle avant de confirmer la vérification." }, { status: 400 });
+  if (
+    body.mark_verified === true &&
+    !isHttpSourceUrl(data.source_url) &&
+    !isHttpSourceUrl(data.application_url)
+  ) {
+    return NextResponse.json(
+      { error: "Ajoutez une URL officielle valide (http/https) avant de confirmer la vérification." },
+      { status: 400 },
+    );
   }
   const { id } = await params;
   const { error } = await supabase.from("programs").update(data).eq("id", id);
