@@ -86,7 +86,7 @@ const empty: ProgramForm = {
   source_url: "",
   mark_verified: false,
   almago_notes: "",
-  is_active: true,
+  is_active: false,
 };
 
 function programUniversity(program: Program) {
@@ -238,7 +238,7 @@ export function AdminProgramsPanel({
         tone: "success",
         text: editing
           ? "Les informations du programme ont bien été mises à jour."
-          : "Le programme a bien été ajouté au catalogue.",
+          : "Le programme a bien été ajouté au catalogue en état inactif. Activez-le séparément après contrôle.",
       });
       resetForm();
       window.location.reload();
