@@ -77,6 +77,7 @@ export function StudentOrientationPanel({
   );
   const [feedback, setFeedback] = useState<Feedback>(null);
   const [busy, setBusy] = useState<string | null>(null);
+  const [comparisonIds, setComparisonIds] = useState<string[]>([]);
 
   const interestedCount = items.filter((item) => Boolean(item.student_interest_at)).length;
   const comparableItems = items.filter((item) => firstProgram(item));
@@ -84,6 +85,17 @@ export function StudentOrientationPanel({
     ? undefined
     : items.find((item) => !item.student_interest_at && item.status !== "not_recommended");
   const nextProgram = actionable ? firstProgram(actionable) : undefined;
+  const comparisonItems = items.filter(
+    (item) => comparisonIds.includes(item.id) && Boolean(firstProgram(item)),
+  );
+
+  function toggleComparison(id: string) {
+    setComparisonIds((current) => {
+      if (current.includes(id)) return current.filter((itemId) => itemId !== id);
+      if (current.length >= 3) return current;
+      return [...current, id];
+    });
+  }
 
   async function interested(id: string) {
     setBusy(id);
@@ -193,6 +205,79 @@ export function StudentOrientationPanel({
         </section>
       </section>
 
+      {comparisonIds.length > 0 && (
+        <section id="programme-comparison" aria-labelledby="programme-comparison-title">
+          <Card className="border-[var(--brand-border)] bg-white">
+            <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Votre comparaison</p>
+                <h2 id="programme-comparison-title" className="mt-2 text-2xl font-bold tracking-[-0.03em] text-slate-950">
+                  Comparer mes programmes
+                </h2>
+                <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
+                  Comparez jusqu’à trois pistes sur les informations enregistrées. AlmaGo ne désigne pas de gagnant : vérifiez les critères importants sur chaque source officielle.
+                </p>
+              </div>
+              <Button type="button" variant="secondary" onClick={() => setComparisonIds([])} className="w-full justify-center sm:w-auto">
+                Effacer la sélection
+              </Button>
+            </div>
+
+            {comparisonItems.length < 2 ? (
+              <div className="mt-6 rounded-[var(--radius-control)] border border-dashed border-[var(--brand-border)] bg-[var(--brand-soft)]/35 p-4 text-sm leading-6 text-slate-700">
+                Ajoutez encore un programme pour afficher une comparaison côte à côte.
+              </div>
+            ) : (
+              <div className={`mt-6 grid gap-4 ${comparisonItems.length === 2 ? "lg:grid-cols-2" : "lg:grid-cols-3"}`}>
+                {comparisonItems.map((item) => {
+                  const program = firstProgram(item);
+                  const university = firstUniversity(program);
+                  if (!program) return null;
+
+                  return (
+                    <article key={item.id} className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface-muted)]/35 p-4">
+                      <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">
+                        {university?.name || "Établissement à confirmer"}
+                      </p>
+                      <h3 className="mt-2 text-lg font-bold leading-6 text-slate-950">{program.name}</h3>
+                      <dl className="mt-4 space-y-2 text-sm">
+                        <ComparisonFact label="Niveau" value={program.degree_level} />
+                        <ComparisonFact label="Domaine" value={program.field || "À confirmer"} />
+                        <ComparisonFact label="Langue d’enseignement" value={program.teaching_language || "À confirmer"} />
+                        <ComparisonFact label="Échéance hiver" value={formatDeadline(program.winter_deadline)} />
+                        <ComparisonFact label="Échéance été" value={formatDeadline(program.summer_deadline || null)} />
+                        <ComparisonFact label="Diplôme demandé" value={program.diploma_required || "À confirmer"} />
+                        <ComparisonFact
+                          label="Langues demandées"
+                          value={[
+                            program.german_level_required && `Allemand ${program.german_level_required}`,
+                            program.english_level_required && `Anglais ${program.english_level_required}`,
+                          ].filter(Boolean).join(" · ") || "À confirmer"}
+                        />
+                      </dl>
+                      <div className="mt-4 border-t border-[var(--border)] pt-4">
+                        {program.application_url ? (
+                          <a
+                            href={program.application_url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-sm font-bold text-[var(--brand)] underline decoration-[var(--brand-border)] underline-offset-4 hover:text-[var(--brand-hover)]"
+                          >
+                            Consulter la source officielle
+                          </a>
+                        ) : (
+                          <p className="text-xs leading-5 text-slate-500">Source officielle à vérifier auprès de l’établissement.</p>
+                        )}
+                      </div>
+                    </article>
+                  );
+                })}
+              </div>
+            )}
+          </Card>
+        </section>
+      )}
+
       {!loadError && items.length === 0 ? (
         <Card aria-labelledby="orientation-empty-title" className="border-dashed bg-white/70 py-9 text-center">
           <span aria-hidden="true" className="mx-auto grid h-11 w-11 place-items-center rounded-full bg-[var(--brand-soft)] text-[var(--brand)]">⌁</span>
@@ -220,6 +305,7 @@ export function StudentOrientationPanel({
             {items.map((recommendation) => {
               const program = firstProgram(recommendation);
               const university = firstUniversity(program);
+              const selectedForComparison = comparisonIds.includes(recommendation.id);
 
               if (!program) return null;
 
@@ -315,6 +401,20 @@ export function StudentOrientationPanel({
                   <div className="mt-auto flex flex-col gap-2 border-t border-[var(--border)] pt-5 sm:flex-row sm:flex-wrap">
                     <Button
                       type="button"
+                      variant="secondary"
+                      className="w-full sm:w-auto"
+                      aria-pressed={selectedForComparison}
+                      disabled={!selectedForComparison && comparisonIds.length >= 3}
+                      onClick={() => toggleComparison(recommendation.id)}
+                    >
+                      {selectedForComparison
+                        ? "Retirer de la comparaison"
+                        : comparisonIds.length >= 3
+                          ? "Comparaison complète"
+                          : "Comparer"}
+                    </Button>
+                    <Button
+                      type="button"
                       className="w-full sm:w-auto"
                       disabled={Boolean(applicationStateError) || Boolean(recommendation.student_interest_at) || busy === recommendation.id || recommendation.status === "not_recommended"}
                       onClick={() => interested(recommendation.id)}
@@ -345,6 +445,15 @@ function SummaryCard({ title, value, badge, tone }: { title: string; value: numb
       <p className="mt-1 text-3xl font-semibold text-slate-950">{value}</p>
       <div className="mt-3"><Badge variant={tone}>{badge}</Badge></div>
     </Card>
+  );
+}
+
+function ComparisonFact({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex items-start justify-between gap-3 border-b border-[var(--border)]/70 pb-2 last:border-b-0 last:pb-0">
+      <dt className="text-slate-500">{label}</dt>
+      <dd className="max-w-[60%] text-right font-semibold text-slate-900 [overflow-wrap:anywhere]">{value}</dd>
+    </div>
   );
 }
 
