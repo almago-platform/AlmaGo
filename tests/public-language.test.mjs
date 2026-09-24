@@ -6,6 +6,7 @@ import test from "node:test";
 const publicRoots = [
   "src/components/public",
   "src/app/aide",
+  "src/app/confiance",
   "src/app/comprendre-les-demarches",
   "src/app/selon-votre-pays",
 ];
@@ -54,6 +55,7 @@ test("V3 public trust boundaries remain explicit", () => {
   const role = readFileSync("src/components/public/HomeRoleSection.tsx", "utf8");
   const help = readFileSync("src/app/aide/page.tsx", "utf8");
   const country = readFileSync("src/app/selon-votre-pays/page.tsx", "utf8");
+  const trustPage = readFileSync("src/app/confiance/page.tsx", "utf8");
   const guidance = readFileSync("src/app/comprendre-les-demarches/page.tsx", "utf8");
 
   assert.match(role, /organismes comp[eé]tents/i);
@@ -67,4 +69,8 @@ test("V3 public trust boundaries remain explicit", () => {
 
   assert.match(guidance, /Comprendre les démarches/i);
   assert.match(guidance, /Source officielle/i);
+
+  assert.match(trustPage, /Confiance et transparence/i);
+  assert.match(trustPage, /organismes compétents/i);
+  assert.match(trustPage, /source officielle/i);
 });
