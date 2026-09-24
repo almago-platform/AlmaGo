@@ -188,7 +188,8 @@ test("programme routes validate dates and indicative averages before database wr
 test("catalogue payloads normalize blank URLs and deadline whitespace", () => {
   assert.match(programCreate, /body\.winter_deadline\.trim\(\) \? body\.winter_deadline\.trim\(\) : null/);
   assert.match(programCreate, /body\.summer_deadline\.trim\(\) \? body\.summer_deadline\.trim\(\) : null/);
-  assert.match(programCreate, /body\.source_url\.trim\(\) \? body\.source_url\.trim\(\) : null/);
+  assert.match(programCreate, /source_url: optionalText\(body\.source_url\)/);
+  assert.match(programCreate, /application_url: optionalText\(body\.application_url \?\? body\.official_url\)/);
   assert.match(universityCreate, /body\.website_url\.trim\(\) \? body\.website_url\.trim\(\) : null/);
   assert.match(universityCreate, /body\.source_url\.trim\(\) \? body\.source_url\.trim\(\) : null/);
   assert.match(universityUpdate, /website_url: websiteUrl \|\| null/);
@@ -253,4 +254,22 @@ test("university verification ignores logo-only maintenance", () => {
     universityUpdate.indexOf("const verificationPatch"),
   );
   assert.doesNotMatch(comparisonBlock, /logo_url/);
+});
+
+
+test("optional programme academic fields normalize empty strings to null", () => {
+  assert.match(programCreate, /const optionalText =/);
+  for (const field of [
+    "field",
+    "duration",
+    "nc_requirement",
+    "german_level_required",
+    "english_level_required",
+    "diploma_required",
+    "application_fee_notes",
+    "almago_notes",
+  ]) {
+    assert.match(programCreate, new RegExp(field + ": optionalText"));
+  }
+  assert.match(programCreate, /teaching_language: optionalText\(body\.teaching_language \?\? body\.language\)/);
 });
