@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
 import { applicationIntakeFromTerms, deadlineForIntake } from "../src/lib/application-intake.ts";
+import { isUuid } from "../src/lib/identifiers.ts";
 import {
   hasVerifiedProgramSource,
   hasVerifiedUniversitySource,
@@ -222,4 +223,18 @@ test("existing applications remain visible independently of later catalogue publ
   assert.doesNotMatch(studentApplicationsPage, /isPublishableProgram/);
   assert.doesNotMatch(studentApplicationsPage, /verified_at/);
   assert.doesNotMatch(studentApplicationsPage, /\.eq\("is_active", true\)/);
+});
+
+
+test("UUID guard rejects malformed identifiers before Supabase lookups", () => {
+  assert.equal(isUuid("1074e9a8-4eb3-4f61-8351-d5f60af0945e"), true);
+  assert.equal(isUuid("AA74E9A8-4EB3-4F61-8351-D5F60AF0945E"), true);
+
+  for (const value of ["", "a", "123", "1074e9a8-4eb3-4f61-8351", null, undefined, 42]) {
+    assert.equal(isUuid(value), false, String(value));
+  }
+
+  assert.match(studentApplicationsRoute, /isUuid\(body\.recommendation_id\)/);
+  assert.match(adminOrientationRoute, /isUuid\(body\.student_id\)/);
+  assert.match(adminOrientationRoute, /isUuid\(body\.program_id\)/);
 });
