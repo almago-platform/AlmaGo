@@ -194,3 +194,17 @@ test("catalogue routes reject malformed UUIDs before database access", () => {
   assert.match(programUpdate, /Identifiant de programme invalide/);
   assert.match(universityUpdate, /Identifiant d’université invalide/);
 });
+
+
+test("full catalogue updates also confirm that a target row still exists", () => {
+  assert.match(
+    programUpdate,
+    /update\(\{ \.\.\.data, \.\.\.verificationPatch \}\)[\s\S]*\.select\("id"\)[\s\S]*\.maybeSingle\(\)/,
+  );
+  assert.match(
+    universityUpdate,
+    /from\("universities"\)\.update\([\s\S]*\.select\("id"\)\.maybeSingle\(\)/,
+  );
+  assert.match(programUpdate, /if \(!updated\).*Programme introuvable/);
+  assert.match(universityUpdate, /if \(!updated\).*Université introuvable/);
+});
