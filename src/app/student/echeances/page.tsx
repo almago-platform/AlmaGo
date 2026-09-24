@@ -271,9 +271,14 @@ export default async function StudentDeadlinesPage() {
         )}
       </section>
 
-      <p className="mt-6 text-xs leading-5 text-slate-500">
-        Ce calendrier reprend uniquement les dates actuellement enregistrées dans AlmaGo. Il ne remplace pas les délais publiés par l’université, uni-assist ou tout autre organisme compétent.
-      </p>
+      <div className="mt-6 flex flex-col gap-3 border-t border-[var(--border)] pt-5 sm:flex-row sm:items-center sm:justify-between">
+        <p className="max-w-3xl text-xs leading-5 text-slate-500">
+          Ce calendrier reprend uniquement les dates actuellement enregistrées dans AlmaGo. Il ne remplace pas les délais publiés par l’université, uni-assist ou tout autre organisme compétent.
+        </p>
+        <ButtonLink href="/aide" variant="secondary">
+          Besoin d’aide pour une échéance ?
+        </ButtonLink>
+      </div>
     </main>
   );
 }
