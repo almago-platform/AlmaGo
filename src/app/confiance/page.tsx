@@ -141,6 +141,12 @@ export default function TrustPage() {
               <p className="mt-6 border-t border-[var(--border)] pt-5 text-sm leading-6 text-slate-600">
                 AlmaGo ne doit afficher une mention de vérification datée que lorsqu’une vérification réelle a été effectuée.
               </p>
+              <Link
+                href="/sources-officielles"
+                className="mt-5 inline-flex min-h-11 items-center justify-center rounded-[var(--radius-control)] border border-[var(--brand-border)] bg-white px-4 text-sm font-bold text-[var(--brand)] transition-colors hover:border-[var(--brand)]"
+              >
+                Voir les sources officielles
+              </Link>
             </div>
           </div>
         </div>
