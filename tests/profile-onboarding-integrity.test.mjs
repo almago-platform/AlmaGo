@@ -24,8 +24,8 @@ test("partial name edits preserve the untouched half of full_name", () => {
   assert.match(profileRoute, /hasOwnProperty\.call\(update, "first_name"\)/);
   assert.match(profileRoute, /hasOwnProperty\.call\(update, "last_name"\)/);
   assert.match(profileRoute, /select\("first_name,last_name,[^"]*onboarding_completed"\)/);
-  assert.match(profileRoute, /hasFirstName \? update\.first_name : currentProfile\?\.first_name/);
-  assert.match(profileRoute, /hasLastName \? update\.last_name : currentProfile\?\.last_name/);
+  assert.match(profileRoute, /const mergedProfile = \{ \.\.\.\(currentProfile \|\| \{\}\), \.\.\.update \}/);
+  assert.match(profileRoute, /\[mergedProfile\.first_name, mergedProfile\.last_name\]/);
   assert.match(profileRoute, /update\.full_name = fullName \|\| null/);
 });
 
