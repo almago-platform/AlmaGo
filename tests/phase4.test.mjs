@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
+  applicationEventDisplayMessage,
   applicationStatuses,
   daysUntilDeadline,
   formatDeadline,
@@ -117,4 +118,28 @@ test("every database application status is classified exactly once", () => {
     const terminal = terminalApplicationStatuses.has(status);
     assert.notEqual(active, terminal, status);
   }
+});
+
+
+test("application status events are rendered with human labels", () => {
+  assert.equal(
+    applicationEventDisplayMessage("application_status_changed", "Candidature mise à jour : accepted"),
+    "Nouveau statut : Acceptée",
+  );
+  assert.equal(
+    applicationEventDisplayMessage("application_status_changed", "Candidature mise à jour : rejected"),
+    "Nouveau statut : Refusée",
+  );
+  assert.equal(
+    applicationEventDisplayMessage("application_status_changed", "Candidature mise à jour : in_review"),
+    "Nouveau statut : En revue",
+  );
+  assert.equal(
+    applicationEventDisplayMessage("application_status_changed", "Candidature mise à jour : future_state"),
+    "Le statut de cette candidature a été mis à jour.",
+  );
+  assert.equal(
+    applicationEventDisplayMessage("document_uploaded", "Document reçu"),
+    "Document reçu",
+  );
 });
