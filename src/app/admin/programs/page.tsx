@@ -1,7 +1,8 @@
+import { redirect } from "next/navigation";
 import { AdminProgramsPanel } from "@/components/admin/AdminProgramsPanel";
 import { Card } from "@/components/ui/Card";
 import { PageHeader } from "@/components/ui/PageHeader";
-import { createClient } from "@/lib/supabase/server";
+import { getAdminUser } from "@/lib/auth/access";
 
 export const dynamic = "force-dynamic";
 
@@ -11,7 +12,9 @@ export default async function AdminProgramsPage({
   searchParams: Promise<{ quality?: string }>;
 }) {
   const { quality } = await searchParams;
-  const supabase = await createClient();
+  const { supabase, user, isAdmin } = await getAdminUser();
+  if (!user) redirect("/login");
+  if (!isAdmin) redirect("/unauthorized");
   const [{ data: programs, error: programsError }, { data: universities, error: universitiesError }] = await Promise.all([
     supabase
       .from("programs")
