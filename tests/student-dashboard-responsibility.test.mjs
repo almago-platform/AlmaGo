@@ -37,8 +37,11 @@ test("student dashboard keeps checklist and application next steps factual", () 
   assert.match(dashboard, /hasStudentActionRequired = documentsNeedingAction > 0/);
   assert.match(
     dashboard,
-    /hasRecordedNextStep = Boolean\(actionableApplication\?\.next_action \|\| nextItem\)/,
+    /hasRecordedNextStep = Boolean\(actionableApplication\?\.next_action\?\.trim\(\) \|\| nextItem\)/,
   );
+  assert.match(dashboard, /owner: "Échéance à vérifier"/);
+  assert.match(dashboard, /owner: "Échéance enregistrée"/);
+  assert.match(dashboard, /owner: "Chez AlmaGo"/);
   assert.match(dashboard, /label="À corriger par vous"/);
   assert.match(dashboard, /label="Chez AlmaGo"/);
 });
