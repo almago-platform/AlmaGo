@@ -24,10 +24,13 @@ export async function PUT(request: Request) {
   }
 
   if (input.complete === true) {
+    const consentedAt = new Date().toISOString();
     const { error: consentError } = await supabase.from("consents").upsert({
       user_id: user.id,
       consent_type: "profile_processing",
       policy_version: "v1",
+      granted_at: consentedAt,
+      revoked_at: null,
       metadata: { source: "student_onboarding" },
     }, { onConflict: "user_id,consent_type,policy_version" });
     if (consentError) {
