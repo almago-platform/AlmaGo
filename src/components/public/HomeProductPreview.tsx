@@ -25,7 +25,69 @@ export function HomeProductPreview() {
           </ul>
         </div>
 
-        <div className="overflow-hidden rounded-[calc(var(--radius-panel)+0.3rem)] border border-[var(--brand-border)] bg-white shadow-[0_34px_80px_-44px_rgba(15,23,42,0.52)]">
+        <div className="overflow-hidden rounded-[calc(var(--radius-panel)+0.2rem)] border border-[var(--brand-border)] bg-white shadow-[0_24px_60px_-38px_rgba(15,23,42,0.45)] md:hidden">
+          <div className="flex items-center justify-between gap-3 border-b border-[var(--border)] px-4 py-3">
+            <div className="flex items-center gap-2">
+              <span className="grid h-8 w-8 place-items-center rounded-[var(--radius-control)] bg-[var(--brand)] text-xs font-bold text-white">A</span>
+              <div>
+                <p className="text-sm font-bold text-slate-950">AlmaGo</p>
+                <p className="text-[9px] font-bold uppercase tracking-[0.14em] text-slate-500">Espace étudiant</p>
+              </div>
+            </div>
+            <span className="rounded-full bg-[var(--brand-soft)] px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.13em] text-[var(--brand)]">
+              Exemple
+            </span>
+          </div>
+
+          <div className="bg-[#fcfcfd] p-4">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-[var(--brand)]">Votre dossier</p>
+              <h3 className="mt-1 text-xl font-bold tracking-tight text-slate-950">Ce qui compte maintenant</h3>
+              <p className="mt-1 text-sm leading-6 text-slate-600">Une vue compacte des prochaines actions et éléments enregistrés.</p>
+            </div>
+
+            <div className="relative mt-4 overflow-hidden rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-white p-4 shadow-sm">
+              <div aria-hidden="true" className="absolute inset-y-0 left-0 w-1 bg-[var(--brand)]" />
+              <div className="pl-2">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--brand)]">À suivre maintenant</span>
+                  <span className="rounded-full bg-amber-50 px-2 py-1 text-[10px] font-bold text-amber-800">Action à faire</span>
+                </div>
+                <p className="mt-3 text-base font-bold text-slate-950">Votre prochaine étape</p>
+                <p className="mt-1 text-sm leading-6 text-slate-600">L’action prioritaire enregistrée apparaît ici avec son contexte.</p>
+                <span className="mt-3 inline-flex min-h-10 items-center rounded-[var(--radius-control)] bg-[var(--brand)] px-3 text-xs font-bold text-white">
+                  Continuer ma checklist
+                </span>
+              </div>
+            </div>
+
+            <div className="mt-4 grid grid-cols-2 gap-2">
+              {previewMetrics.map(([title, detail]) => (
+                <div key={title} className="rounded-[var(--radius-control)] border border-[var(--border)] bg-white p-3">
+                  <p className="text-xs font-bold text-slate-900">{title}</p>
+                  <p className="mt-1 text-[11px] leading-4 text-slate-500">{detail}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-4 rounded-[var(--radius-control)] border border-[var(--border)] bg-white p-3">
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-xs font-bold text-slate-900">Étapes du dossier</p>
+                <span className="text-[10px] font-bold text-[var(--brand)]">Suivi visible</span>
+              </div>
+              <div className="mt-3 h-2 overflow-hidden rounded-full bg-slate-100">
+                <div aria-hidden="true" className="h-full w-3/5 rounded-full bg-[var(--brand)]" />
+              </div>
+              <p className="mt-2 text-[10px] leading-4 text-slate-500">Illustration d’un suivi interne, jamais d’une probabilité d’admission.</p>
+            </div>
+          </div>
+
+          <div className="border-t border-[var(--border)] px-4 py-3">
+            <p className="text-[10px] leading-4 text-slate-500">Aperçu d’exemple : les informations réelles dépendent de chaque dossier.</p>
+          </div>
+        </div>
+
+        <div className="hidden md:block overflow-hidden rounded-[calc(var(--radius-panel)+0.3rem)] border border-[var(--brand-border)] bg-white shadow-[0_34px_80px_-44px_rgba(15,23,42,0.52)]">
           <div className="flex items-center justify-between gap-4 border-b border-[var(--border)] bg-white px-4 py-3 sm:px-5">
             <div className="flex items-center gap-2">
               <span aria-hidden="true" className="h-2.5 w-2.5 rounded-full bg-slate-300" />
