@@ -5,7 +5,7 @@ import { degreeLevels } from "@/lib/phase4";
 function payload(body: Record<string, unknown>) {
   const intakeTerms = typeof body.intake_terms === "string" ? body.intake_terms.split(",").map(item => item.trim()).filter(Boolean).slice(0, 5) : [];
   const numberValue = (value: unknown) => typeof value === "string" && value.trim() ? Number(value) : null;
-  return {
+  const data = {
     university_id: body.university_id, name: typeof body.name === "string" ? body.name.trim().slice(0, 180) : "",
     degree_level: degreeLevels.includes(body.degree_level as (typeof degreeLevels)[number]) ? body.degree_level : "Master",
     field: typeof body.field === "string" ? body.field.trim() : null, teaching_language: typeof (body.teaching_language ?? body.language) === "string" ? String(body.teaching_language ?? body.language).trim() : null,
@@ -17,6 +17,10 @@ function payload(body: Record<string, unknown>) {
     summer_deadline: typeof body.summer_deadline === "string" && body.summer_deadline ? body.summer_deadline : null, application_url: typeof (body.application_url ?? body.official_url) === "string" ? String(body.application_url ?? body.official_url).trim() : null,
     source_url: typeof body.source_url === "string" ? body.source_url.trim() : null, almago_notes: typeof body.almago_notes === "string" ? body.almago_notes.trim() : null, is_active: body.is_active !== false,
   };
+
+  return body.mark_verified === true
+    ? { ...data, verified_at: new Date().toISOString() }
+    : data;
 }
 
 export async function POST(request: Request) {
