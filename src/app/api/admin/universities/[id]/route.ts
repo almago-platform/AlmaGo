@@ -70,7 +70,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   const verificationPatch =
     body.mark_verified === true || !sourceChanged ? {} : { verified_at: null };
 
-  const { error } = await supabase.from("universities").update({
+  const { data: updated, error } = await supabase.from("universities").update({
     name: body.name.trim().slice(0, 180), city: typeof body.city === "string" ? body.city.trim() : null,
     bundesland: typeof body.bundesland === "string" ? body.bundesland.trim() : null,
     university_type: body.university_type as (typeof universityTypes)[number],
@@ -82,7 +82,8 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     is_active: body.is_active !== false,
     ...(body.mark_verified === true ? { verified_at: new Date().toISOString() } : {}),
     ...verificationPatch,
-  }).eq("id", id);
+  }).eq("id", id).select("id").maybeSingle();
   if (error) return NextResponse.json({ error: "Impossible de modifier l’université." }, { status: 500 });
+  if (!updated) return NextResponse.json({ error: "Université introuvable." }, { status: 404 });
   return NextResponse.json({ ok: true });
 }
