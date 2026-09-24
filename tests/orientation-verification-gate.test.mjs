@@ -204,3 +204,12 @@ test("student orientation presents verification dates as recorded evidence, not 
   assert.doesNotMatch(studentPanel, /Vérifié dans AlmaGo le/);
   assert.doesNotMatch(studentPanel, /`Vérifié le \$\{formatVerificationDate/);
 });
+
+
+test("admin orientation selector offers only completed student-role profiles", () => {
+  assert.match(adminOrientationPage, /from\("user_roles"\)/);
+  assert.match(adminOrientationPage, /\.eq\("role", "student"\)/);
+  assert.match(adminOrientationPage, /studentRoleIds=\{\(studentRoles \|\| \[\]\)\.map/);
+  assert.match(adminOrientationPanel, /studentRoleIds: string\[\]/);
+  assert.match(adminOrientationPanel, /student\.onboarding_completed && studentRoleIdSet\.has\(student\.id\)/);
+});
