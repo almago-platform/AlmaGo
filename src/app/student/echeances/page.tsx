@@ -61,6 +61,19 @@ function countdownLabel(days: number) {
   return `Dans ${days} jours`;
 }
 
+function officialSourceUrl(...values: Array<string | null | undefined>) {
+  for (const value of values) {
+    if (!value?.trim()) continue;
+    try {
+      const url = new URL(value.trim());
+      if (url.protocol === "https:" || url.protocol === "http:") return value.trim();
+    } catch {
+      // Ignore malformed catalogue links instead of presenting them as official sources.
+    }
+  }
+  return null;
+}
+
 function verificationDate(value: string | null) {
   if (!value) return null;
   const date = new Date(value);
@@ -70,6 +83,7 @@ function verificationDate(value: string | null) {
     day: "2-digit",
     month: "short",
     year: "numeric",
+    timeZone: "Europe/Berlin",
   }).format(date);
 }
 
@@ -182,8 +196,8 @@ export default async function StudentDeadlinesPage() {
             {deadlines.map(({ application, days }) => {
               const program = firstProgram(application);
               const university = firstUniversity(program);
-              const sourceUrl = program?.source_url || program?.application_url;
-              const checkedAt = verificationDate(program?.verified_at || null);
+              const sourceUrl = officialSourceUrl(program?.source_url, program?.application_url);
+              const checkedAt = sourceUrl ? verificationDate(program?.verified_at || null) : null;
 
               return (
                 <Card
