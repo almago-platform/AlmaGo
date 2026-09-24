@@ -4,7 +4,7 @@ export type PublicLocale = {
   code: "fr" | "en" | "de" | "ar";
   label: string;
   htmlLang: string;
-  openGraphLocale: string;
+  openGraphLocale: string | null;
   direction: "ltr" | "rtl";
   status: PublicLocaleStatus;
 };
@@ -38,7 +38,7 @@ export const publicLocales: readonly PublicLocale[] = [
     code: "ar",
     label: "العربية",
     htmlLang: "ar",
-    openGraphLocale: "ar_AR",
+    openGraphLocale: null,
     direction: "rtl",
     status: "planned",
   },
