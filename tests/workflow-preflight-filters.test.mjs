@@ -134,3 +134,8 @@ test("authenticated E2E watches protected API route changes", () => {
     assert.match(authenticatedE2E, new RegExp(path.replace(/[.*+?^$\{\}()|[\]\\]/g, "\\$&")));
   }
 });
+
+
+test("authenticated E2E watches Supabase migration changes", () => {
+  assert.match(authenticatedE2E, /supabase\/migrations\/\*\*/);
+});
