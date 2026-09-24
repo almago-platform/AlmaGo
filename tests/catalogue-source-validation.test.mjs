@@ -103,3 +103,18 @@ test("programme admin quality summary counts only genuinely publishable programm
   assert.match(programAdminPanel, /title="Programmes publiables"/);
   assert.match(programAdminPanel, /Programme actif, université active et source vérifiée/);
 });
+
+
+test("programme create requires an active university server-side", () => {
+  assert.match(programCreate, /from\("universities"\)/);
+  assert.match(programCreate, /select\("id,is_active"\)/);
+  assert.match(programCreate, /!targetUniversity\?\.is_active/);
+  assert.match(programCreate, /Choisissez une université active avant de créer ce programme/);
+});
+
+test("programme update blocks reassignment to an inactive university but preserves historical parent edits", () => {
+  assert.match(programUpdate, /source_url,application_url,university_id/);
+  assert.match(programUpdate, /if \(data\.university_id !== existing\.university_id\)/);
+  assert.match(programUpdate, /from\("universities"\)/);
+  assert.match(programUpdate, /Vous ne pouvez pas rattacher ce programme à une université inactive/);
+});
