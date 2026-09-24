@@ -11,14 +11,14 @@ export default async function AdminEntry() {
   const supabase = await createClient();
 
   const [
-    { count: universityCount, error: universitiesError },
-    { count: programCount, error: programsError },
+    { data: universities, error: universitiesError },
+    { data: programs, error: programsError },
     { count: applicationCount, error: applicationsError },
     { count: documentsToReview, error: documentsError },
     { count: orientationCount, error: orientationError },
   ] = await Promise.all([
-    supabase.from("universities").select("id", { count: "exact", head: true }).eq("is_active", true),
-    supabase.from("programs").select("id", { count: "exact", head: true }).eq("is_active", true),
+    supabase.from("universities").select("id,source_url,website_url,verified_at").eq("is_active", true),
+    supabase.from("programs").select("id,source_url,application_url,verified_at").eq("is_active", true),
     supabase.from("applications").select("id", { count: "exact", head: true }).not("status", "in", "(admission,rejection,withdrawn)"),
     supabase.from("documents").select("id", { count: "exact", head: true }).in("status", ["pending", "replace_required"]),
     supabase.from("program_recommendations").select("id", { count: "exact", head: true }).eq("is_archived", false),
@@ -46,7 +46,18 @@ export default async function AdminEntry() {
   const documents = documentsToReview || 0;
   const applications = applicationCount || 0;
   const orientations = orientationCount || 0;
-  const catalogue = (universityCount || 0) + (programCount || 0);
+  const activeUniversities = universities || [];
+  const activePrograms = programs || [];
+  const universityCount = activeUniversities.length;
+  const programCount = activePrograms.length;
+  const catalogue = universityCount + programCount;
+  const universityQualityIssues = activeUniversities.filter(
+    (university) => (!university.source_url && !university.website_url) || !university.verified_at,
+  ).length;
+  const programQualityIssues = activePrograms.filter(
+    (program) => (!program.source_url && !program.application_url) || !program.verified_at,
+  ).length;
+  const catalogueQualityIssues = universityQualityIssues + programQualityIssues;
 
   const priority = documents > 0
     ? {
@@ -64,13 +75,21 @@ export default async function AdminEntry() {
           href: "/admin/applications",
           action: "Suivre les candidatures",
         }
-      : {
-          badge: "File prioritaire à jour",
-          title: "Aucun blocage dossier prioritaire n’est visible",
-          description: "Les documents et candidatures ne signalent pas de charge prioritaire dans cette vue. Vous pouvez poursuivre l’orientation ou la maintenance du catalogue.",
-          href: "/admin/orientation",
-          action: "Voir l’orientation",
-        };
+      : catalogueQualityIssues > 0
+        ? {
+            badge: "Catalogue à vérifier",
+            title: `${catalogueQualityIssues} fiche${catalogueQualityIssues > 1 ? "s ont" : " a"} encore une source ou une vérification à compléter`,
+            description: "Les files étudiants prioritaires sont à jour. Profitez de ce temps pour fiabiliser les informations visibles dans l’orientation.",
+            href: programQualityIssues > 0 ? "/admin/programs" : "/admin/universities",
+            action: "Vérifier le catalogue",
+          }
+        : {
+            badge: "File prioritaire à jour",
+            title: "Aucun blocage dossier prioritaire n’est visible",
+            description: "Les documents, candidatures et contrôles de qualité du catalogue ne signalent pas de charge prioritaire dans cette vue.",
+            href: "/admin/orientation",
+            action: "Voir l’orientation",
+          };
 
   return (
     <main className="mx-auto w-full max-w-7xl px-4 py-7 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
@@ -90,7 +109,7 @@ export default async function AdminEntry() {
         <Card className="relative overflow-hidden border-[var(--brand-border)] bg-white shadow-[0_24px_55px_-38px_rgba(41,48,139,0.5)]">
           <div aria-hidden="true" className="absolute inset-y-0 left-0 w-1.5 bg-[var(--brand)]" />
           <div className="pl-2 sm:pl-3">
-            <Badge variant={documents > 0 ? "warning" : applications > 0 ? "info" : "success"}>{priority.badge}</Badge>
+            <Badge variant={documents > 0 || catalogueQualityIssues > 0 ? "warning" : applications > 0 ? "info" : "success"}>{priority.badge}</Badge>
             <p className="mt-5 text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">À traiter maintenant</p>
             <h2 className="mt-2 max-w-3xl text-2xl font-bold tracking-[-0.03em] text-slate-950 sm:text-3xl">
               {priority.title}
@@ -153,10 +172,12 @@ export default async function AdminEntry() {
           />
           <AdminSummaryCard
             href="/admin/universities"
-            title="Catalogue actif"
-            value={catalogue}
-            detail={`${universityCount || 0} université${(universityCount || 0) > 1 ? "s" : ""} · ${programCount || 0} programme${(programCount || 0) > 1 ? "s" : ""}`}
-            tone="neutral"
+            title="Catalogue à vérifier"
+            value={catalogueQualityIssues}
+            detail={catalogueQualityIssues
+              ? `${universityQualityIssues} université${universityQualityIssues > 1 ? "s" : ""} · ${programQualityIssues} programme${programQualityIssues > 1 ? "s" : ""}`
+              : `${catalogue} fiche${catalogue > 1 ? "s" : ""} active${catalogue > 1 ? "s" : ""}, aucune vérification manquante`}
+            tone={catalogueQualityIssues ? "warning" : "neutral"}
           />
         </div>
       </section>
