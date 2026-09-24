@@ -167,7 +167,11 @@ export function AuthForm({ initialMode = "login" }: { initialMode?: Mode }) {
 
         <button type="submit" disabled={loading} className={buttonClassName("primary", "w-full justify-center py-3 text-base")}>
           {loading
-            ? "Connexion…"
+            ? mode === "login"
+              ? "Connexion…"
+              : mode === "signup"
+                ? "Création…"
+                : "Envoi…"
             : mode === "login"
               ? "Se connecter"
               : mode === "signup"
