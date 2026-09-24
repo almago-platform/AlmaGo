@@ -19,7 +19,7 @@ export function HomeProductPreview() {
           </p>
 
           <ul className="mt-7 space-y-4">
-            <PreviewBenefit title="Une prochaine action visible" text="Le dashboard met en avant l’action enregistrée comme prioritaire dans votre dossier." />
+            <PreviewBenefit title="Une prochaine action visible" text="Votre dossier met en avant l’action enregistrée comme prioritaire pour vous aider à savoir par quoi commencer." />
             <PreviewBenefit title="Une progression expliquée" text="Le suivi concerne les étapes enregistrées ; il n’est jamais présenté comme une probabilité d’admission." />
             <PreviewBenefit title="Vos informations reliées" text="Documents, recommandations, candidatures et échéances restent accessibles depuis le même espace." />
           </ul>
@@ -56,7 +56,7 @@ export function HomeProductPreview() {
                 <p className="mt-3 text-base font-bold text-slate-950">Votre prochaine étape</p>
                 <p className="mt-1 text-sm leading-6 text-slate-600">L’action prioritaire enregistrée apparaît ici avec son contexte.</p>
                 <span className="mt-3 inline-flex min-h-10 items-center rounded-[var(--radius-control)] bg-[var(--brand)] px-3 text-xs font-bold text-white">
-                  Continuer ma checklist
+                  Continuer mes démarches
                 </span>
               </div>
             </div>
@@ -139,7 +139,7 @@ export function HomeProductPreview() {
                       L’action prioritaire enregistrée dans votre dossier apparaît ici avec son contexte.
                     </p>
                     <span className="mt-4 inline-flex min-h-9 items-center rounded-[var(--radius-control)] bg-[var(--brand)] px-3 text-xs font-bold text-white">
-                      Continuer ma checklist
+                      Continuer mes démarches
                     </span>
                   </div>
                 </div>
@@ -187,7 +187,7 @@ export function HomeProductPreview() {
 
           <div className="border-t border-[var(--border)] bg-white px-5 py-3">
             <p className="text-[11px] leading-5 text-slate-500">
-              Illustration fidèle à la structure du dashboard AlmaGo. Les statuts, actions et informations réelles dépendent de chaque dossier.
+              Illustration fidèle à l’espace étudiant AlmaGo. Les statuts, actions et informations réelles dépendent de chaque dossier.
             </p>
           </div>
         </div>
