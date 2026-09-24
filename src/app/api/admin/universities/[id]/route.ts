@@ -11,6 +11,13 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   if (!body || typeof body.name !== "string" || !body.name.trim()) return NextResponse.json({ error: "Le nom de l’université est obligatoire." }, { status: 400 });
   const websiteUrl = typeof body.website_url === "string" ? body.website_url.trim() : "";
   const sourceUrl = typeof body.source_url === "string" ? body.source_url.trim() : "";
+  const universityUrls = [websiteUrl, sourceUrl].filter(Boolean);
+  if (universityUrls.some((value) => !isHttpSourceUrl(value))) {
+    return NextResponse.json(
+      { error: "Les liens du site et de la source doivent être des URL http/https valides." },
+      { status: 400 },
+    );
+  }
   if (
     body.mark_verified === true &&
     !isHttpSourceUrl(websiteUrl) &&
