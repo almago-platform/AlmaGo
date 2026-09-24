@@ -353,7 +353,7 @@ export function StudentOrientationPanel({
                         </p>
                       </div>
                       <Badge variant={recommendation.student_interest_at ? "success" : recommendationVariant(recommendation.status)}>
-                        {recommendation.student_interest_at ? "Intérêt enregistré" : studentRecommendationLabels[recommendation.status] || recommendationStatusLabels[recommendation.status] || recommendation.status}
+                        {recommendation.student_interest_at ? "Intérêt enregistré" : studentRecommendationLabels[recommendation.status] || recommendationStatusLabels[recommendation.status] || "Statut à vérifier"}
                       </Badge>
                     </div>
                     <div>
