@@ -18,7 +18,7 @@ export default async function AdminOrientationPage() {
       .order("last_name"),
     supabase
       .from("programs")
-      .select("id,name,degree_level,field,source_url,application_url,verified_at,is_active,universities(name,city)")
+      .select("id,name,degree_level,field,source_url,application_url,verified_at,is_active,universities(name,city,is_active)")
       .order("name"),
     supabase
       .from("program_recommendations")
