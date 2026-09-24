@@ -221,3 +221,25 @@ test("unauthorized recovery returns each user to their own role space", () => {
   assert.doesNotMatch(page, /réservé à l&apos;équipe AlmaGo/);
   assert.match(page, /index:\s*false/);
 });
+
+
+test("shared role lookup preserves admin and student guards", () => {
+  const access = read("src/lib/auth/access.ts");
+
+  assert.match(access, /export async function getRoleUser/);
+  assert.match(access, /from\("user_roles"\)/);
+  assert.match(access, /role: error \? null : data\?\.role \?\? null/);
+  assert.match(access, /export async function getAdminUser/);
+  assert.match(access, /role === "admin"/);
+  assert.match(access, /export async function getStudentUser/);
+  assert.match(access, /role === "student"/);
+});
+
+test("shared document viewing only allows known AlmaGo roles", () => {
+  const route = read("src/app/api/documents/[id]/view/route.ts");
+
+  assert.match(route, /getRoleUser/);
+  assert.match(route, /role !== "student" && role !== "admin"/);
+  assert.match(route, /Accès non autorisé/);
+  assert.match(route, /status: 403/);
+});
