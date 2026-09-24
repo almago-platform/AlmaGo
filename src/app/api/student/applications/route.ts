@@ -19,6 +19,28 @@ export async function POST(request: Request) {
   }
   const intake = Array.isArray(program?.intake_terms) ? program.intake_terms[0] || null : null;
   const deadline = program?.winter_deadline || program?.summer_deadline || null;
+
+  let existingApplicationQuery = supabase
+    .from("applications")
+    .select("id")
+    .eq("student_id", user.id)
+    .eq("program_id", recommendation.program_id);
+
+  existingApplicationQuery =
+    intake === null
+      ? existingApplicationQuery.is("intake", null)
+      : existingApplicationQuery.eq("intake", intake);
+
+  const { data: existingApplication, error: existingApplicationError } =
+    await existingApplicationQuery.limit(1).maybeSingle();
+
+  if (existingApplicationError) {
+    return NextResponse.json({ error: "Impossible de vérifier les candidatures existantes." }, { status: 500 });
+  }
+  if (existingApplication) {
+    return NextResponse.json({ error: "Une candidature existe déjà pour ce programme." }, { status: 409 });
+  }
+
   const { data, error } = await supabase.from("applications").insert({ student_id: user.id, program_id: recommendation.program_id, intake, deadline, status: "interested", next_action: "Échanger avec AlmaGo sur les prochaines étapes." }).select("id").single();
   if (error) return NextResponse.json({ error: error.code === "23505" ? "Une candidature existe déjà pour ce programme." : "Impossible de créer la candidature." }, { status: error.code === "23505" ? 409 : 500 });
   return NextResponse.json({ ok: true, id: data.id }, { status: 201 });
