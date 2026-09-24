@@ -4,8 +4,11 @@ import test from "node:test";
 
 const route = readFileSync("src/app/api/admin/applications/[id]/status/route.ts", "utf8");
 
-test("admin application status route preserves the full status catalogue contract", () => {
+test("admin application status route reads all database states but only writes canonical transitions", () => {
+  assert.match(route, /databaseApplicationStatuses\.includes/);
   assert.match(route, /applicationStatuses\.includes/);
+  assert.match(route, /currentApplication\.status !== requestedStatus/);
+  assert.match(route, /Ce statut historique peut être conservé, mais pas choisi pour une nouvelle transition/);
   assert.match(route, /Statut invalide/);
 });
 
