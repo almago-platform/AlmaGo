@@ -133,6 +133,19 @@ test("application deadline follows only an unambiguous recorded intake", () => {
   assert.match(studentApplicationsRoute, /deadlineForIntake\(program, intake\)/);
 });
 
+test("admin publication validates the target student before checking programme evidence", () => {
+  const profilePosition = adminOrientationRoute.indexOf('from("profiles")');
+  const rolePosition = adminOrientationRoute.indexOf('from("user_roles")');
+  const programmePosition = adminOrientationRoute.indexOf('from("programs")');
+
+  assert.ok(profilePosition >= 0);
+  assert.ok(rolePosition > profilePosition);
+  assert.ok(programmePosition > rolePosition);
+  assert.match(adminOrientationRoute, /onboarding_completed/);
+  assert.match(adminOrientationRoute, /studentRole\?\.role !== "student"/);
+  assert.match(adminOrientationRoute, /profil est complété avant de publier une piste/);
+});
+
 test("admin publication verifies programme evidence before recommendation upsert", () => {
   const checkPosition = adminOrientationRoute.indexOf('from("programs")');
   const upsertPosition = adminOrientationRoute.indexOf('from("program_recommendations").upsert');
