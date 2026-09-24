@@ -372,7 +372,7 @@ export function AdminProgramsPanel({
                     onChange={(checked) => change("mark_verified", checked)}
                   />
                   <p className="mt-2 text-xs leading-5 text-slate-500">
-                    Cette confirmation met à jour la date de vérification. Une simple modification de la fiche ne change pas cette date.
+                    Cette confirmation met à jour la date de vérification. Si vous changez un lien officiel sans reconfirmer la vérification, l’ancienne date sera retirée.
                   </p>
                 </div>
                 <label className="block text-sm font-medium text-slate-700 md:col-span-2">
