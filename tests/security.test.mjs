@@ -177,3 +177,13 @@ test("every student API enforces the student role", () => {
     assert.match(source, /status: 403/);
   }
 });
+
+
+test("auth callback only accepts internal relative next paths", () => {
+  const callback = read("src/app/auth/callback/route.ts");
+
+  assert.match(callback, /requestedNext\?\.startsWith\("\/"\)/);
+  assert.match(callback, /!requestedNext\.startsWith\("\/\/"\)/);
+  assert.match(callback, /: "\/student"/);
+  assert.doesNotMatch(callback, /next\.startsWith\("\/"\) \? next/);
+});
