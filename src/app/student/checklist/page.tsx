@@ -141,7 +141,7 @@ export default async function ChecklistPage() {
       </div>
 
       <section aria-label="Résumé des démarches" className="mt-5 grid gap-4 sm:grid-cols-3">
-        <SummaryCard title="À faire par vous" value={actionableItems.length} badge={actionableItems.length ? "Action requise" : "Rien à faire"} tone={actionableItems.length ? "warning" : "success"} />
+        <SummaryCard title="À faire par vous" value={actionableItems.length} badge={actionableItems.length ? "À traiter" : "Rien à faire"} tone={actionableItems.length ? "warning" : "success"} />
         <SummaryCard title="Suivi par AlmaGo" value={waitingAlmaGoCount} badge={waitingAlmaGoCount ? "En cours" : "Aucune étape"} tone="info" />
         <SummaryCard title="Terminées" value={completedCount} badge="Étapes complétées" tone="success" />
       </section>
