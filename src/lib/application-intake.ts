@@ -1,3 +1,16 @@
+export function applicationIntakeFromTerms(value: unknown) {
+  if (!Array.isArray(value)) return null;
+
+  const terms = [...new Set(
+    value
+      .filter((item): item is string => typeof item === "string")
+      .map((item) => item.trim())
+      .filter(Boolean),
+  )];
+
+  return terms.length === 1 ? terms[0] : null;
+}
+
 export function deadlineForIntake(
   program: {
     winter_deadline?: string | null;
@@ -15,5 +28,5 @@ export function deadlineForIntake(
     return program?.winter_deadline || null;
   }
 
-  return program?.winter_deadline || program?.summer_deadline || null;
+  return null;
 }
