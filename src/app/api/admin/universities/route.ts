@@ -12,7 +12,7 @@ export async function POST(request: Request) {
   if (!universityTypes.includes(body.university_type as (typeof universityTypes)[number])) {
     return NextResponse.json({ error: "Choisissez un type d’établissement valide." }, { status: 400 });
   }
-  const universityType = body.university_type;
+  const universityType = body.university_type as (typeof universityTypes)[number];
   const websiteUrl = typeof body.website_url === "string" ? body.website_url.trim() : "";
   const sourceUrl = typeof body.source_url === "string" ? body.source_url.trim() : "";
   const universityUrls = [websiteUrl, sourceUrl].filter(Boolean);
