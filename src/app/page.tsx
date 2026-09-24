@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { HomeHeader } from "@/components/public/HomeHeader";
 import { HomeHero } from "@/components/public/HomeHero";
-import { HomeWhyAlmaGo } from "@/components/public/HomeWhyAlmaGo";
 import { HomeValueSection } from "@/components/public/HomeValueSection";
 
 const journey = [
