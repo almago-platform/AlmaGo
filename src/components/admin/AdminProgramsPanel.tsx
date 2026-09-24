@@ -32,7 +32,7 @@ type Program = {
   verified_at: string | null;
   almago_notes: string | null;
   is_active: boolean;
-  universities: { name: string; city: string } | { name: string; city: string }[] | null;
+  universities: { name: string; city: string; is_active: boolean } | { name: string; city: string; is_active: boolean }[] | null;
 };
 
 type ProgramForm = {
@@ -89,8 +89,12 @@ const empty: ProgramForm = {
   is_active: true,
 };
 
+function programUniversity(program: Program) {
+  return Array.isArray(program.universities) ? program.universities[0] : program.universities;
+}
+
 function universityName(program: Program) {
-  const university = Array.isArray(program.universities) ? program.universities[0] : program.universities;
+  const university = programUniversity(program);
   return university ? `${university.name} · ${university.city}` : "Université";
 }
 
@@ -117,7 +121,7 @@ export function AdminProgramsPanel({
   initialQuality = "all",
 }: {
   programs: Program[];
-  universities: { id: string; name: string }[];
+  universities: { id: string; name: string; is_active: boolean }[];
   initialQuality?: string;
 }) {
   const [items] = useState(programs);
@@ -310,7 +314,13 @@ export function AdminProgramsPanel({
                   >
                     <option value="">Choisir une université</option>
                     {universities.map((university) => (
-                      <option key={university.id} value={university.id}>{university.name}</option>
+                      <option
+                        key={university.id}
+                        value={university.id}
+                        disabled={!university.is_active && university.id !== form.university_id}
+                      >
+                        {university.name}{university.is_active ? "" : " · inactive"}
+                      </option>
                     ))}
                   </select>
                 </label>
@@ -531,6 +541,9 @@ export function AdminProgramsPanel({
                   <div className="flex flex-wrap gap-2">
                     <Badge variant="neutral">{program.degree_level}</Badge>
                     <Badge variant={program.is_active ? "success" : "neutral"}>{program.is_active ? "Actif" : "Inactif"}</Badge>
+                    {programUniversity(program)?.is_active === false && (
+                      <Badge variant="warning">Université inactive · non publiable</Badge>
+                    )}
                     <Badge variant={programSourceUrl(program) ? "info" : "warning"}>
                       {programSourceUrl(program) ? "Source officielle valide enregistrée" : "Source officielle à compléter"}
                     </Badge>
