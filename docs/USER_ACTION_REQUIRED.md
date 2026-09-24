@@ -20,16 +20,28 @@ Ne jamais mettre une clé API dans une Issue, un commit, une variable publique o
 
 ### E2E authentifiés
 
-Les comptes **de test uniquement** existent déjà dans Supabase et leurs rôles étudiant/admin ont été vérifiés le 23/09/2026. Ne pas en créer de nouveaux. Si nécessaire, réinitialiser uniquement leurs mots de passe depuis Supabase, puis ajouter dans GitHub Actions Secrets :
+Les comptes **de test uniquement** existent déjà dans Supabase et leurs rôles étudiant/admin ont été vérifiés. Ne pas en créer de nouveaux.
+
+Le workflow utilise par défaut :
+
+- étudiant : `phase3.student.a@almago.test`
+- admin : `phase3.admin@almago.test`
+
+Les e-mails peuvent être remplacés plus tard par les variables GitHub `ALMAGO_E2E_STUDENT_EMAIL` et `ALMAGO_E2E_ADMIN_EMAIL`, mais ce n’est pas nécessaire pour A43.
+
+Les deux valeurs publiques Supabase sont déjà configurées dans GitHub Actions :
 
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
-- `ALMAGO_E2E_STUDENT_EMAIL`
+
+Il reste uniquement à ajouter **privément** dans GitHub Actions Secrets :
+
 - `ALMAGO_E2E_STUDENT_PASSWORD`
-- `ALMAGO_E2E_ADMIN_EMAIL`
 - `ALMAGO_E2E_ADMIN_PASSWORD`
 
-Enfin définir `ALMAGO_AUTH_E2E_ENABLED=true`. Tant que cette variable reste absente/fausse, le workflow authentifié est ignoré. Après un run réussi, A43 est clôturée automatiquement ; aucune manipulation manuelle de label n’est nécessaire.
+Ne jamais mettre ces mots de passe dans une Issue, un commit, une variable publique ou le chat.
+
+Il n’existe plus de variable `ALMAGO_AUTH_E2E_ENABLED` dans le workflow actuel. Une fois les deux mots de passe présents et les runners GitHub disponibles, le parcours authentifié peut s’exécuter ; après un run réussi, A43 est clôturée automatiquement.
 
 ### Observabilité
 
