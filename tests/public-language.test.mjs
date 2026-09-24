@@ -6,6 +6,7 @@ import test from "node:test";
 const publicRoots = [
   "src/components/public",
   "src/app/aide",
+  "src/app/a-propos",
   "src/app/confiance",
   "src/app/comprendre-les-demarches",
   "src/app/selon-votre-pays",
@@ -54,6 +55,7 @@ test("public AlmaGo copy avoids product and AI jargon", () => {
 test("V3 public trust boundaries remain explicit", () => {
   const role = readFileSync("src/components/public/HomeRoleSection.tsx", "utf8");
   const help = readFileSync("src/app/aide/page.tsx", "utf8");
+  const about = readFileSync("src/app/a-propos/page.tsx", "utf8");
   const country = readFileSync("src/app/selon-votre-pays/page.tsx", "utf8");
   const trustPage = readFileSync("src/app/confiance/page.tsx", "utf8");
   const guidance = readFileSync("src/app/comprendre-les-demarches/page.tsx", "utf8");
@@ -63,6 +65,10 @@ test("V3 public trust boundaries remain explicit", () => {
 
   assert.match(help, /Centre d’aide/i);
   assert.match(help, /d[eé]cisions officielles/i);
+
+  assert.match(about, /À propos d’AlmaGo/i);
+  assert.match(about, /organismes compétents/i);
+  assert.match(about, /sources officielles/i);
 
   assert.match(country, /pays de dipl[oô]me/i);
   assert.match(country, /ne remplace\s+pas l’évaluation/i);
