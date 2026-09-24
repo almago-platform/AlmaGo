@@ -261,3 +261,12 @@ test("student orientation labels describe evidence without verdict language", ()
   assert.doesNotMatch(studentPanel, /Piste non recommandée/);
   assert.doesNotMatch(studentPanel, /Piste ambitieuse/);
 });
+
+
+test("student orientation never exposes an unknown raw status code", () => {
+  assert.match(studentPanel, /"Statut à vérifier"/);
+  assert.doesNotMatch(
+    studentPanel,
+    /recommendationStatusLabels\[recommendation\.status\] \|\| recommendation\.status/,
+  );
+});
