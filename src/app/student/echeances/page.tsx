@@ -1,8 +1,9 @@
+import { redirect } from "next/navigation";
 import { Badge } from "@/components/ui/Badge";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Card } from "@/components/ui/Card";
 import { PageHeader } from "@/components/ui/PageHeader";
-import { createClient } from "@/lib/supabase/server";
+import { getStudentUser } from "@/lib/auth/access";
 import {
   applicationStatusLabels,
   daysUntilDeadline,
@@ -88,7 +89,26 @@ function verificationDate(value: string | null) {
 }
 
 export default async function StudentDeadlinesPage() {
-  const supabase = await createClient();
+  const { supabase, user, isStudent } = await getStudentUser();
+  if (!user) redirect("/login");
+  if (!isStudent) redirect("/unauthorized");
+
+  const { data: profile, error: profileError } = await supabase
+    .from("profiles")
+    .select("onboarding_completed")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  if (profileError) {
+    return (
+      <main className="mx-auto w-full max-w-6xl px-4 py-7 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
+        <PageHeader badge="Mes échéances" title="Mes échéances" />
+        <Card><div role="alert"><h2 className="text-xl font-bold text-slate-950">Échéances temporairement indisponibles</h2></div></Card>
+      </main>
+    );
+  }
+  if (!profile?.onboarding_completed) redirect("/student/onboarding");
+
   const { data, error } = await supabase
     .from("applications")
     .select(
