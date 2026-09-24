@@ -81,7 +81,7 @@ export function ProfileForm({ profile }: { profile: Record<string, unknown> }) {
     {error && <p role="alert" className="rounded-[var(--radius-control)] border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error}</p>}
     {status && <p role="status" className="rounded-[var(--radius-control)] border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-700">{status}</p>}
 
-    <div className="sticky bottom-0 -mx-5 border-t border-[var(--border)] bg-[var(--surface)]/95 px-5 py-4 backdrop-blur sm:-mx-6 sm:px-6">
+    <div className="student-sticky-actions sticky bottom-0 -mx-5 border-t border-[var(--border)] bg-[var(--surface)]/95 px-5 py-4 backdrop-blur sm:-mx-6 sm:px-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-sm leading-6 text-slate-500">Enregistrez vos modifications avant de quitter cette page.</p>
         <Button type="submit" disabled={saving} className="w-full sm:w-auto">{saving ? "Enregistrement…" : "Enregistrer les modifications"}</Button>
