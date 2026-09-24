@@ -18,10 +18,10 @@ export function HomeHeader() {
         </Link>
 
         <nav className="hidden items-center gap-8 text-sm font-semibold text-slate-600 lg:flex" aria-label="Navigation principale">
-          <a className="transition-colors hover:text-[var(--brand)]" href="#parcours">Comment ça marche</a>
-          <a className="transition-colors hover:text-[var(--brand)]" href="#role">Notre rôle</a>
-          <a className="transition-colors hover:text-[var(--brand)]" href="#espace">Votre espace</a>
-          <a className="transition-colors hover:text-[var(--brand)]" href="#confiance">Confiance</a>
+          <a className="transition-colors hover:text-[var(--brand)]" href="/#parcours">Comment ça marche</a>
+          <a className="transition-colors hover:text-[var(--brand)]" href="/#role">Notre rôle</a>
+          <a className="transition-colors hover:text-[var(--brand)]" href="/#espace">Votre espace</a>
+          <a className="transition-colors hover:text-[var(--brand)]" href="/confiance">Confiance</a>
         </nav>
 
         <div className="flex shrink-0 items-center gap-2">
