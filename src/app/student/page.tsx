@@ -89,7 +89,7 @@ export default async function StudentEntry() {
             label: "Voir mes démarches",
             detail: "Aucune action prioritaire n’est enregistrée pour le moment. Vous pouvez consulter les étapes connues de votre dossier.",
             href: "/student/checklist",
-            owner: waitingAlmaGo.length ? "Suivi par AlmaGo" : "Suivi du dossier",
+            owner: waitingAlmaGo.length ? "En cours chez AlmaGo" : "Aucune action demandée",
           };
 
   const welcomeMessage = hasActionRequired
@@ -148,7 +148,7 @@ export default async function StudentEntry() {
         <div className="max-w-3xl">
           <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Mon dossier</p>
           <h1 className="mt-3 text-3xl font-bold tracking-[-0.04em] text-slate-950 sm:text-4xl">
-            Bonjour {profile.first_name || "étudiant"}, voici votre dossier.
+            Bonjour {profile.first_name || "étudiant"}, voici où en est votre dossier.
           </h1>
           <p className="mt-4 max-w-2xl text-base leading-7 text-slate-600">
             {welcomeMessage}
@@ -156,24 +156,24 @@ export default async function StudentEntry() {
         </div>
 
         <div className="flex flex-wrap gap-2">
-          <StatusPill label="À traiter" value={studentActionCount} tone={studentActionCount ? "warning" : "neutral"} />
-          <StatusPill label="Suivi AlmaGo" value={waitingAlmaGo.length} tone="info" />
+          <StatusPill label="À faire par vous" value={studentActionCount} tone={studentActionCount ? "warning" : "neutral"} />
+          <StatusPill label="En cours chez AlmaGo" value={waitingAlmaGo.length} tone="info" />
         </div>
       </section>
 
-      <section className="grid gap-5 lg:grid-cols-[minmax(0,1.5fr)_minmax(18rem,0.82fr)]" aria-label="Priorités du dossier">
+      <section className="grid gap-5 lg:grid-cols-[minmax(0,1.5fr)_minmax(18rem,0.82fr)]" aria-label="Situation actuelle du dossier">
         <Card className="relative overflow-hidden border-[var(--brand-border)] bg-white shadow-[0_24px_55px_-38px_rgba(41,48,139,0.5)]">
           <div aria-hidden="true" className="absolute inset-y-0 left-0 w-1.5 bg-[var(--brand)]" />
           <div className="pl-2 sm:pl-3">
             <div className="flex flex-wrap items-center gap-3">
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Ce qui compte maintenant</p>
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Où en est votre dossier ?</p>
               <Badge variant={hasActionRequired ? "warning" : waitingAlmaGo.length ? "info" : "neutral"}>
                 {hasActionRequired ? "Action à faire" : waitingAlmaGo.length ? "Suivi en cours" : "Aucune action prioritaire"}
               </Badge>
             </div>
 
             <h2 className="mt-5 text-2xl font-bold tracking-[-0.03em] text-slate-950 sm:text-3xl">
-              {hasActionRequired ? "Votre prochaine action" : "Votre dossier est à jour pour le moment"}
+              {hasActionRequired ? "Votre prochaine étape" : "Votre dossier est à jour pour le moment"}
             </h2>
             <p className="mt-3 max-w-2xl text-base leading-7 text-slate-700">{nextAction.detail}</p>
 
