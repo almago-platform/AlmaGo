@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 const trustItems = [
   {
     title: "Une suggestion d’orientation",
@@ -44,6 +46,12 @@ export function HomeTrustSection() {
                     Pour les conditions d’un programme, les délais ou une décision externe, vérifiez toujours les informations auprès de l’université ou de l’organisme compétent.
                   </p>
                 </div>
+                <Link
+                  href="/confiance"
+                  className="mt-5 inline-flex min-h-11 items-center justify-center rounded-[var(--radius-control)] border border-white/25 bg-white/10 px-4 text-sm font-bold text-white transition-colors hover:bg-white/15"
+                >
+                  Comprendre notre rôle
+                </Link>
               </div>
             </div>
 
