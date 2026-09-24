@@ -126,7 +126,7 @@ export function AppShell({
                   {item.icon}
                 </span>
                 <span className="min-w-0">
-                  <span className="block text-sm font-semibold">{item.label}</span>
+                  <span className="block text-sm font-semibold [overflow-wrap:anywhere]">{item.label}</span>
                   {role === "student" && item.helper && (
                     <span className={`mt-0.5 block text-[11px] leading-4 ${active ? "text-[var(--brand)]/75" : "text-slate-400"}`}>
                       {item.helper}
@@ -154,7 +154,7 @@ export function AppShell({
       <div className="lg:pl-[18.5rem]">
         {role === "student" ? (
           <>
-            <header className="sticky top-0 z-30 border-b border-[var(--border)] bg-white/95 shadow-[0_8px_24px_-22px_rgba(15,23,42,0.35)] backdrop-blur lg:hidden">
+            <header className="sticky top-0 z-30 border-b border-[var(--border)] bg-white/95 pt-[env(safe-area-inset-top)] shadow-[0_8px_24px_-22px_rgba(15,23,42,0.35)] backdrop-blur lg:hidden">
               <div className="flex min-h-16 items-center justify-between gap-3 px-3 py-2.5 min-[360px]:px-4">
                 <Link href="/student" onClick={() => setMobileMenuOpen(false)} className="flex min-w-0 items-center gap-2.5" aria-label="Accueil AlmaGo">
                   <span className="relative grid h-9 w-9 shrink-0 place-items-center rounded-[var(--radius-control)] bg-[var(--brand)] text-sm font-bold text-white">
@@ -172,15 +172,16 @@ export function AppShell({
                   onClick={() => setMobileMenuOpen((open) => !open)}
                   aria-expanded={mobileMenuOpen}
                   aria-controls="student-mobile-menu"
-                  className="inline-flex min-h-11 items-center gap-2 rounded-[var(--radius-control)] border border-[var(--border)] bg-white px-3 text-sm font-bold text-slate-700 shadow-sm transition-colors hover:border-[var(--brand-border)] hover:text-[var(--brand)]"
+                  aria-label={mobileMenuOpen ? "Fermer le menu étudiant" : "Ouvrir le menu étudiant"}
+                  className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-[var(--radius-control)] border border-[var(--border)] bg-white px-2.5 text-sm font-bold text-slate-700 shadow-sm transition-colors hover:border-[var(--brand-border)] hover:text-[var(--brand)] min-[340px]:px-3"
                 >
                   {mobileMenuOpen ? icons.close : icons.menu}
-                  <span>{mobileMenuOpen ? "Fermer" : "Menu"}</span>
+                  <span className="hidden min-[340px]:inline">{mobileMenuOpen ? "Fermer" : "Menu"}</span>
                 </button>
               </div>
 
               {mobileMenuOpen && (
-                <div id="student-mobile-menu" className="border-t border-[var(--border)] bg-[#fbfbfd] px-3 py-4 min-[360px]:px-4">
+                <div id="student-mobile-menu" className="max-h-[calc(100svh-4rem)] overflow-y-auto overscroll-contain border-t border-[var(--border)] bg-[#fbfbfd] px-3 py-4 min-[360px]:px-4">
                   <div className="mb-4 rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--brand-soft)]/65 p-3.5">
                     <p className="text-xs font-bold text-slate-900">Bonjour {studentName}</p>
                     <p className="mt-1 text-xs leading-5 text-slate-600">Choisissez la partie de votre dossier que vous souhaitez consulter.</p>
@@ -201,7 +202,7 @@ export function AppShell({
                             {item.icon}
                           </span>
                           <span className="min-w-0">
-                            <span className="block text-sm font-semibold">{item.label}</span>
+                            <span className="block text-sm font-semibold [overflow-wrap:anywhere]">{item.label}</span>
                             {item.helper && <span className="mt-0.5 block text-[11px] text-slate-500">{item.helper}</span>}
                           </span>
                         </Link>

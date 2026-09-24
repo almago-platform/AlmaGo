@@ -120,9 +120,9 @@ export function OnboardingForm({ profile }: { profile: Partial<FormData> }) {
   return (
     <section className="mx-auto grid w-full max-w-6xl gap-6 lg:grid-cols-[0.36fr_1fr]">
       <aside className="space-y-4">
-        <Card className="bg-slate-950 text-white shadow-xl">
+        <Card className="bg-slate-950 text-white shadow-xl max-lg:shadow-none">
           <p className="text-sm font-bold uppercase tracking-[0.18em] text-[var(--accent-light)]">AlmaGo</p>
-          <h1 className="mt-4 text-3xl font-bold tracking-tight">Préparez votre dossier étudiant</h1>
+          <h1 className="mt-4 text-2xl font-bold tracking-tight min-[390px]:text-3xl">Préparez votre dossier étudiant</h1>
           <p className="mt-4 text-sm leading-6 text-slate-200">
             Renseignez les informations essentielles pour organiser votre dossier et votre projet d’études en Allemagne.
           </p>
@@ -133,7 +133,7 @@ export function OnboardingForm({ profile }: { profile: Partial<FormData> }) {
           </div>
         </Card>
 
-        <Card className="shadow-none">
+        <Card className="hidden shadow-none lg:block">
           <h2 className="text-sm font-bold uppercase tracking-[0.16em] text-[var(--accent-strong)]">Progression</h2>
           <ol className="mt-5 space-y-3">
             {steps.map((item) => {

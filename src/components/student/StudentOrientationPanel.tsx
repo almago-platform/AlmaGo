@@ -234,7 +234,7 @@ export function StudentOrientationPanel({
                     <div className="flex flex-wrap items-start justify-between gap-3">
                       <div className="min-w-0">
                         <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">Établissement</p>
-                        <p className="mt-1 text-sm font-bold leading-5 text-slate-900">
+                        <p className="mt-1 text-sm font-bold leading-5 text-slate-900 [overflow-wrap:anywhere]">
                           {university?.name || "Université à confirmer"}{university?.city ? ` · ${university.city}` : ""}
                         </p>
                       </div>
@@ -243,7 +243,7 @@ export function StudentOrientationPanel({
                       </Badge>
                     </div>
                     <div>
-                      <h3 id={`student-recommendation-title-${recommendation.id}`} className="text-xl font-bold leading-7 tracking-[-0.02em] text-slate-950">
+                      <h3 id={`student-recommendation-title-${recommendation.id}`} className="text-xl font-bold leading-7 tracking-[-0.02em] text-slate-950 [overflow-wrap:anywhere]">
                         {program.name}
                       </h3>
                       <div className="mt-3 flex flex-wrap gap-2 text-xs font-semibold text-slate-600">
@@ -256,7 +256,7 @@ export function StudentOrientationPanel({
 
                   <div className="mt-5 rounded-[var(--radius-control)] border border-[var(--brand-border)] bg-[var(--brand-soft)]/45 p-4">
                     <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">Pourquoi cette piste apparaît ?</p>
-                    <p className="mt-2 text-sm leading-6 text-slate-700">
+                    <p className="mt-2 text-sm leading-6 text-slate-700 [overflow-wrap:anywhere]">
                       {recommendation.note || "Cette piste a été enregistrée dans votre orientation. Consultez les critères ci-dessous et vérifiez les informations officielles avant de décider."}
                     </p>
                   </div>
@@ -335,7 +335,7 @@ function InfoItem({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-[var(--radius-control)] border border-[var(--border)] bg-white p-3">
       <dt className="text-xs font-semibold text-slate-500">{label}</dt>
-      <dd className="mt-1 text-sm font-medium text-slate-900">{value}</dd>
+      <dd className="mt-1 text-sm font-medium text-slate-900 [overflow-wrap:anywhere]">{value}</dd>
     </div>
   );
 }

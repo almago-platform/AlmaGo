@@ -174,10 +174,10 @@ export function StudentApplicationsPanel({
                   <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
                     <div className="min-w-0">
                       <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">Établissement</p>
-                      <p className="mt-1 text-sm font-bold text-slate-900">
+                      <p className="mt-1 text-sm font-bold text-slate-900 [overflow-wrap:anywhere]">
                         {university?.name || "Université à confirmer"}{university?.city ? ` · ${university.city}` : ""}
                       </p>
-                      <h3 id={`student-application-title-${application.id}`} className="mt-3 text-xl font-bold tracking-[-0.02em] text-slate-950">{program?.name || "Programme"}</h3>
+                      <h3 id={`student-application-title-${application.id}`} className="mt-3 text-xl font-bold tracking-[-0.02em] text-slate-950 [overflow-wrap:anywhere]">{program?.name || "Programme"}</h3>
                       <div className="mt-2 flex flex-wrap gap-2 text-xs font-semibold text-slate-600">
                         {program?.degree_level && <span className="rounded-full bg-slate-100 px-3 py-1.5">{program.degree_level}</span>}
                         <span className="rounded-full bg-slate-100 px-3 py-1.5">{application.intake_term || "Semestre à confirmer"}</span>
@@ -199,7 +199,7 @@ export function StudentApplicationsPanel({
                       <h4 className="text-xs font-bold uppercase tracking-[0.16em] text-slate-600">Ce qui vient ensuite</h4>
                       {active && applicationOverdue && <Badge variant="warning">Échéance dépassée</Badge>}
                     </div>
-                    <p className="mt-2 text-sm font-semibold leading-6 text-slate-950">{nextAction}</p>
+                    <p className="mt-2 text-sm font-semibold leading-6 text-slate-950 [overflow-wrap:anywhere]">{nextAction}</p>
                   </section>
 
                   <div className="mt-4 grid gap-4 sm:grid-cols-2">
@@ -210,7 +210,7 @@ export function StudentApplicationsPanel({
                   {application.student_notes && (
                     <div className="mt-5 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-muted)] p-4">
                       <h4 className="text-sm font-semibold text-slate-900">Message pour vous</h4>
-                      <p className="mt-1 text-sm leading-6 text-slate-700">{application.student_notes}</p>
+                      <p className="mt-1 text-sm leading-6 text-slate-700 [overflow-wrap:anywhere]">{application.student_notes}</p>
                       <p className="mt-2 text-xs leading-5 text-slate-500">
                         Ce message est partagé dans votre espace étudiant. Les notes internes de l’équipe ne sont pas affichées ici.
                       </p>
@@ -236,7 +236,7 @@ export function StudentApplicationsPanel({
                             <p className="text-sm font-medium text-slate-900">
                               {studentEventLabel(event.event_type)}
                             </p>
-                            {event.message && <p className="mt-1 text-sm leading-6 text-slate-700">{event.message}</p>}
+                            {event.message && <p className="mt-1 text-sm leading-6 text-slate-700 [overflow-wrap:anywhere]">{event.message}</p>}
                             <time dateTime={event.created_at} className="mt-1 block text-xs text-slate-500">
                               {new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium" }).format(new Date(event.created_at))}
                             </time>

@@ -138,3 +138,10 @@ a, button, input, select, textarea {
     box-shadow: 0 22px 50px -30px rgba(15, 23, 42, 0.34);
   }
 }
+
+
+@supports (padding: max(0px)) {
+  .student-sticky-actions {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+}
