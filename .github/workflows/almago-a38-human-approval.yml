@@ -17,6 +17,7 @@ jobs:
   approve-a38:
     if: >-
       github.event.issue.pull_request == null &&
+      github.event.comment.user.login == github.repository_owner &&
       contains(github.event.comment.body, 'A38 HUMAN REVIEW APPROVED')
     runs-on: ubuntu-latest
     timeout-minutes: 5
