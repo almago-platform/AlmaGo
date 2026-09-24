@@ -120,10 +120,14 @@ test("programme update blocks reassignment to an inactive university but preserv
 });
 
 
-test("programme university reassignment invalidates stale verification", () => {
-  assert.match(programUpdate, /const universityChanged = data\.university_id !== existing\.university_id/);
-  assert.match(programUpdate, /const verificationEvidenceChanged = sourceChanged \|\| universityChanged/);
-  assert.match(programUpdate, /mark_verified === true \|\| !verificationEvidenceChanged/);
+test("material programme changes invalidate stale verification", () => {
+  assert.match(programUpdate, /const verificationContentChanged =/);
+  assert.match(programUpdate, /existing\.university_id !== data\.university_id/);
+  assert.match(programUpdate, /existing\.winter_deadline !== data\.winter_deadline/);
+  assert.match(programUpdate, /existing\.summer_deadline !== data\.summer_deadline/);
+  assert.match(programUpdate, /existing\.degree_level !== data\.degree_level/);
+  assert.match(programUpdate, /currentAverage !== nextAverage/);
+  assert.match(programUpdate, /mark_verified === true \|\| !verificationContentChanged/);
 });
 
 
@@ -227,4 +231,11 @@ test("validated catalogue booleans are stored explicitly without fallback semant
   assert.match(universityCreate, /is_active: body\.is_active as boolean/);
   assert.match(universityUpdate, /is_public: body\.is_public as boolean/);
   assert.match(universityUpdate, /is_active: body\.is_active as boolean/);
+});
+
+
+test("programme verification comparison handles null averages without false changes", () => {
+  assert.match(programUpdate, /existing\.indicative_average == null \? null : Number/);
+  assert.match(programUpdate, /data\.indicative_average == null \? null : Number/);
+  assert.doesNotMatch(programUpdate, /indicative_average \?\? NaN/);
 });
