@@ -173,7 +173,7 @@ test("application status events are rendered with human labels", () => {
 test("document history wording stays institutional", () => {
   assert.equal(
     studentHistoryDisplayMessage("AlmaGo a approuvé ton document : passeport.pdf."),
-    "AlmaGo a validé votre document : passeport.pdf.",
+    "AlmaGo a approuvé votre document : passeport.pdf.",
   );
   assert.equal(
     studentHistoryDisplayMessage("AlmaGo a rejeté ton document : relevé.pdf."),
