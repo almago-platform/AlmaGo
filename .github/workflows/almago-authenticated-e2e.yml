@@ -15,9 +15,14 @@ on:
       - "src/app/student/**"
       - "src/app/login/**"
       - "src/components/auth/**"
+      - "src/components/student/**"
+      - "src/components/layout/AppShell.tsx"
+      - "src/app/globals.css"
+      - "playwright.config.mjs"
       - "src/lib/supabase/**"
       - "src/proxy.ts"
       - "tests/e2e/authenticated.spec.mjs"
+      - "tests/e2e/student-space-quality.spec.mjs"
       - ".github/workflows/almago-authenticated-e2e.yml"
 
 permissions:
@@ -71,7 +76,7 @@ jobs:
     needs: configuration
     if: needs.configuration.outputs.ready == 'true'
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     env:
       NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
       NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
@@ -116,8 +121,8 @@ jobs:
             esac
           done
 
-      - name: Install Playwright without changing the lockfile
-        run: npm install --no-save --package-lock=false @playwright/test@1.55.0
+      - name: Install authenticated browser-quality tools without changing the lockfile
+        run: npm install --no-save --package-lock=false @playwright/test@1.55.0 @axe-core/playwright@4.10.2
 
       - name: Cache Playwright browser
         uses: actions/cache@v4
@@ -143,6 +148,9 @@ jobs:
 
       - name: Run student/admin isolation journeys
         run: npx playwright test tests/e2e/authenticated.spec.mjs --project=desktop-chromium
+
+      - name: Run authenticated Student Space quality matrix
+        run: npx playwright test tests/e2e/student-space-quality.spec.mjs
 
       - name: Complete A43 after successful authenticated evidence
         if: success()
@@ -187,7 +195,7 @@ jobs:
                   "SHA: " + context.sha,
                   marker,
                   "",
-                  "Dedicated student/admin identities passed the authenticated isolation journeys."
+                  "Dedicated student/admin identities passed the authenticated isolation journeys and the Student Space responsive/accessibility quality matrix."
                 ].join("\n"),
               });
             }
