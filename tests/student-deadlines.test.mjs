@@ -122,3 +122,11 @@ test("deadline branch student dashboard uses the shared student role guard", () 
   assert.match(dashboard, /if \(!isStudent\) redirect\("\/unauthorized"\)/);
   assert.doesNotMatch(dashboard, /auth\.getUser\(\)/);
 });
+
+
+test("deadline dashboard hides orientation records that are no longer publishable", () => {
+  assert.match(dashboard, /isPublishableProgram/);
+  assert.match(dashboard, /source_url,application_url,verified_at,is_active/);
+  assert.match(dashboard, /universities\(name,is_active\)/);
+  assert.match(dashboard, /return isPublishableProgram\(program\)/);
+});
