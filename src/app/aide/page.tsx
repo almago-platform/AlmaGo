@@ -1,4 +1,4 @@
-import type { Metadata, ReactNode } from "react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { HomeHeader } from "@/components/public/HomeHeader";
 import { HomeFooter } from "@/components/public/HomeClosing";
