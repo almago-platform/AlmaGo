@@ -26,7 +26,7 @@ export default async function StudentOrientationPage() {
       <PageHeader
         badge="Orientation"
         title="Programmes recommandés"
-        description="Comparez les pistes préparées pour votre dossier, comprenez pourquoi elles apparaissent et vérifiez les critères importants avant de décider. Une recommandation reste une piste de travail, pas une garantie d’admission."
+        description="Comparez les pistes préparées pour votre dossier, comprenez pourquoi elles apparaissent et vérifiez les critères importants avant de décider. Une piste d’orientation reste une piste de travail, pas une garantie d’admission."
         actions={<ButtonLink href="/student/applications" variant="secondary">Mes candidatures</ButtonLink>}
       />
 
@@ -47,7 +47,7 @@ function OrientationUnavailable() {
         <div role="alert">
           <h2 className="text-xl font-semibold text-slate-950">Orientation temporairement indisponible</h2>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
-            Nous n’arrivons pas à afficher vos recommandations pour le moment. Rien n’a été supprimé ou modifié dans votre dossier.
+            Nous n’arrivons pas à afficher vos pistes d’orientation pour le moment. Rien n’a été supprimé ou modifié dans votre dossier.
           </p>
         </div>
         <div className="mt-5 flex flex-col gap-3 sm:flex-row">
