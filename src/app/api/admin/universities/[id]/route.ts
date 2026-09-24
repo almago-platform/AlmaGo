@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getAdminUser } from "@/lib/auth/access";
 import { universityTypes } from "@/lib/phase4";
 import { isHttpSourceUrl, sourceUrlsChanged } from "@/lib/source-verification";
+import { isUuid } from "@/lib/identifiers";
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { supabase, user, isAdmin } = await getAdminUser();
@@ -10,6 +11,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   const body = await request.json().catch(() => null) as Record<string, unknown> | null;
   if (!body) return NextResponse.json({ error: "Données invalides." }, { status: 400 });
   const { id } = await params;
+  if (!isUuid(id)) return NextResponse.json({ error: "Identifiant d’université invalide." }, { status: 400 });
 
   const isActiveOnlyPatch =
     typeof body.is_active === "boolean" &&
