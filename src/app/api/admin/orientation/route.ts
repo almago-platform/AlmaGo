@@ -23,7 +23,7 @@ export async function POST(request: Request) {
 
   if (!isPublishableProgram(program)) {
     return NextResponse.json(
-      { error: "Vérifiez la source officielle du programme avant de publier cette piste." },
+      { error: "Le programme et son université doivent être actifs et disposer d’une source officielle vérifiée avant publication." },
       { status: 400 },
     );
   }
