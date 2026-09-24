@@ -208,3 +208,11 @@ test("full catalogue updates also confirm that a target row still exists", () =>
   assert.match(programUpdate, /if \(!updated\).*Programme introuvable/);
   assert.match(universityUpdate, /if \(!updated\).*Université introuvable/);
 });
+
+
+test("full catalogue updates require explicit structural booleans", () => {
+  assert.match(programUpdate, /"is_active", "studienkolleg_required", "testas_required", "uni_assist_required"/);
+  assert.match(programUpdate, /Les choix structurants du programme doivent être explicitement définis/);
+  assert.match(universityUpdate, /"is_active", "is_public"/);
+  assert.match(universityUpdate, /Les états actif\/public de l’établissement doivent être explicitement définis/);
+});
