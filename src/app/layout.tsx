@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { defaultPublicLocale } from "@/lib/public-locales";
+import { getSiteUrl } from "@/lib/site-url";
 import "./globals.css";
 
 const publicTitle = "AlmaGo | Études en Allemagne";
@@ -8,6 +9,7 @@ const publicDescription =
   "Préparez votre dossier d’études en Allemagne avec AlmaGo : profil, documents, orientation, candidatures et suivi dans un espace structuré.";
 
 export const metadata: Metadata = {
+  metadataBase: getSiteUrl(),
   title: {
     default: publicTitle,
     template: "%s | AlmaGo",
