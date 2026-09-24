@@ -93,6 +93,22 @@ test("privileged database functions keep explicit admin checks and hardened exec
   assert.match(migrations, /create or replace function public\.is_admin\(\)[\s\S]+?security invoker/i);
 });
 
+test("committed E2E journeys never mutate the production catalogue", () => {
+  const e2eDir = join(root, "tests", "e2e");
+  const e2eFiles = readdirSync(e2eDir).filter((name) => name.endsWith(".mjs")).sort();
+
+  for (const name of e2eFiles) {
+    const source = read(`tests/e2e/${name}`);
+
+    assert.doesNotMatch(source, /\/api\/admin\/(?:programs|universities)(?:\/|["'`])/i, name);
+    assert.doesNotMatch(
+      source,
+      /\.from\(["'](?:programs|universities)["']\)\.(?:insert|upsert|update|delete)\b/i,
+      name,
+    );
+  }
+});
+
 test("authenticated users cannot write their own role assignment", () => {
   const grants = read("supabase/migrations/0003_phase2_authenticated_grants.sql");
   assert.match(grants, /grant select on table public\.user_roles to authenticated/i);
