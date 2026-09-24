@@ -277,6 +277,10 @@ export function StudentOrientationPanel({
                     </div>
                   </dl>
 
+                  <div className="mt-5 rounded-[var(--radius-control)] border border-amber-200 bg-amber-50/60 p-3 text-xs leading-5 text-amber-900">
+                    Cette recommandation est une piste d’orientation. Elle ne garantit ni l’éligibilité finale ni l’admission.
+                  </div>
+
                   <div className="mt-auto flex flex-col gap-2 border-t border-[var(--border)] pt-5 sm:flex-row sm:flex-wrap">
                     {program.application_url && (
                       <a
@@ -326,9 +330,9 @@ function SummaryCard({ title, value, badge, tone }: { title: string; value: numb
 
 function InfoItem({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-[var(--radius-control)] bg-[var(--surface-muted)] p-3">
-      <dt className="text-slate-500">{label}</dt>
-      <dd className="mt-1 font-medium text-slate-900">{value}</dd>
+    <div className="rounded-[var(--radius-control)] border border-[var(--border)] bg-white p-3">
+      <dt className="text-xs font-semibold text-slate-500">{label}</dt>
+      <dd className="mt-1 text-sm font-medium text-slate-900">{value}</dd>
     </div>
   );
 }
