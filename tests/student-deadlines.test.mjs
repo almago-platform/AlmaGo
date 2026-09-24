@@ -7,6 +7,7 @@ const shell = readFileSync("src/components/layout/AppShell.tsx", "utf8");
 const dashboard = readFileSync("src/app/student/page.tsx", "utf8");
 const applicationsPage = readFileSync("src/app/student/applications/page.tsx", "utf8");
 const applicationsPanel = readFileSync("src/components/student/StudentApplicationsPanel.tsx", "utf8");
+const documentsPanel = readFileSync("src/components/student/DocumentsPanel.tsx", "utf8");
 const helpPage = readFileSync("src/app/aide/page.tsx", "utf8");
 const phase4 = readFileSync("src/lib/phase4.ts", "utf8");
 const studentQuality = readFileSync("tests/e2e/student-space-quality.spec.mjs", "utf8");
@@ -75,4 +76,10 @@ test("official deadline source link announces its new tab", () => {
 test("student application surfaces use the human event formatter", () => {
   assert.match(applicationsPanel, /applicationEventDisplayMessage\(event\.event_type, event\.message\)/);
   assert.match(dashboard, /applicationEventDisplayMessage\(event\.event_type, event\.message\)/);
+});
+
+
+test("student document history uses the institutional message formatter", () => {
+  assert.match(documentsPanel, /studentHistoryDisplayMessage\(event\.message\)/);
+  assert.match(dashboard, /studentHistoryDisplayMessage\(event\.message\)/);
 });
