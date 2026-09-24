@@ -143,3 +143,20 @@ test("application status events are rendered with human labels", () => {
     "Document reçu",
   );
 });
+
+
+test("document history wording stays institutional", () => {
+  assert.equal(
+    studentHistoryDisplayMessage("AlmaGo a approuvé ton document : passeport.pdf."),
+    "AlmaGo a validé votre document : passeport.pdf.",
+  );
+  assert.equal(
+    studentHistoryDisplayMessage("AlmaGo a rejeté ton document : relevé.pdf."),
+    "AlmaGo a demandé une correction pour votre document : relevé.pdf.",
+  );
+  assert.equal(
+    studentHistoryDisplayMessage("AlmaGo te demande de remplacer ton document : bac.pdf."),
+    "AlmaGo vous demande de remplacer votre document : bac.pdf.",
+  );
+  assert.equal(studentHistoryDisplayMessage("Message déjà professionnel."), "Message déjà professionnel.");
+});
