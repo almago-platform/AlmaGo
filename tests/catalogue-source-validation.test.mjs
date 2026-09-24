@@ -135,6 +135,7 @@ test("university source changes still invalidate stale verification", () => {
 test("university admin explains the publication impact of activation state", () => {
   assert.match(universityAdminPanel, /rend ses programmes non publiables dans les nouvelles pistes d’orientation/);
   assert.match(universityAdminPanel, /ses programmes ne peuvent pas être proposés dans une nouvelle piste d’orientation/);
+  assert.match(universityAdminPanel, /réactiver peut rendre de nouveau publiables/);
 });
 
 
