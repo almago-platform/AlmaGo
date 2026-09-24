@@ -1,16 +1,17 @@
 import { NextResponse } from "next/server";
-import { getAuthenticatedUser } from "@/lib/auth/access";
+import { getStudentUser } from "@/lib/auth/access";
 import { isDocumentCategory, isSafeDocumentFile, maxDocumentBytes, safeFilename } from "@/lib/documents";
 
 export async function POST(request: Request) {
-  const { supabase, user } = await getAuthenticatedUser();
+  const { supabase, user, isStudent } = await getStudentUser();
   if (!user) return NextResponse.json({ error: "Non authentifié." }, { status: 401 });
+  if (!isStudent) return NextResponse.json({ error: "Accès réservé aux étudiants." }, { status: 403 });
 
   const formData = await request.formData();
   const file = formData.get("file");
   const category = formData.get("category");
   if (!(file instanceof File) || !isDocumentCategory(category)) return NextResponse.json({ error: "Document ou catégorie invalide." }, { status: 400 });
-  if (!isSafeDocumentFile(file)) return NextResponse.json({ error: `Utilise un PDF, JPEG ou PNG de 10 MiB maximum.` }, { status: 400 });
+  if (!isSafeDocumentFile(file)) return NextResponse.json({ error: `Utilisez un PDF, JPEG ou PNG de 10 MiB maximum.` }, { status: 400 });
 
   const id = crypto.randomUUID();
   const storagePath = `${user.id}/${id}/${safeFilename(file.name)}`;
