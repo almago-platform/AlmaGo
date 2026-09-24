@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { SwitchAccountButton } from "@/components/auth/SwitchAccountButton";
 
 export const metadata: Metadata = {
   robots: {
@@ -60,12 +61,7 @@ export default async function UnauthorizedPage() {
             >
               Retour à mon espace
             </Link>
-            <Link
-              href="/login"
-              className="inline-flex items-center justify-center rounded-lg border border-slate-300 bg-white px-5 py-3 font-bold text-slate-900 shadow-sm transition hover:border-[var(--brand)] hover:text-[var(--brand)]"
-            >
-              Changer de compte
-            </Link>
+            <SwitchAccountButton />
           </div>
         </section>
       </div>
