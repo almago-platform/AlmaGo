@@ -331,3 +331,28 @@ test("shared student access helper requires the explicit student role", () => {
   assert.match(access, /role === "student"/);
   assert.match(access, /isStudent: Boolean\(user && role === "student"\)/);
 });
+
+
+test("every admin API enforces the admin role", () => {
+  const adminRoutes = [
+    "src/app/api/admin/applications/[id]/status/route.ts",
+    "src/app/api/admin/documents/[id]/review/route.ts",
+    "src/app/api/admin/orientation/[id]/route.ts",
+    "src/app/api/admin/orientation/route.ts",
+    "src/app/api/admin/programs/[id]/route.ts",
+    "src/app/api/admin/programs/route.ts",
+    "src/app/api/admin/universities/[id]/route.ts",
+    "src/app/api/admin/universities/route.ts",
+  ];
+
+  assert.match(access, /export async function getAdminUser/);
+  assert.match(access, /role === "admin"/);
+
+  for (const path of adminRoutes) {
+    const source = read(path);
+    assert.match(source, /getAdminUser/);
+    assert.match(source, /if \(!isAdmin\)/);
+    assert.match(source, /Accès non autorisé/);
+    assert.match(source, /status: 403/);
+  }
+});
