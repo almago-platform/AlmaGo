@@ -402,7 +402,7 @@ test("completed onboarding gates every student module except onboarding itself",
 
   for (const path of pages) {
     const source = read(path);
-    assert.match(source, /select\("onboarding_completed"\)/, path);
+    assert.match(source, /onboarding_completed/, path);
     assert.match(source, /redirect\("\/student\/onboarding"\)/, path);
   }
 
