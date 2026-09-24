@@ -109,8 +109,8 @@ export function AppShell({
           </div>
         ) : (
           <div className="mx-4 mt-5 rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--brand-soft)]/65 p-4">
-            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Pilotage équipe</p>
-            <p className="mt-2 text-sm font-bold text-slate-900">Priorités opérationnelles</p>
+            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Suivi de l’équipe</p>
+            <p className="mt-2 text-sm font-bold text-slate-900">Priorités du jour</p>
             <p className="mt-1 text-xs leading-5 text-slate-600">
               Traitez d’abord les blocages dossier, puis maintenez le catalogue.
             </p>
@@ -314,7 +314,7 @@ export function AppShell({
               <div>
                 <p className="text-xs font-bold uppercase tracking-[0.15em] text-[var(--brand)]">{currentItem.label}</p>
                 <p className="mt-1 text-sm text-slate-600">
-                  {currentItem.helper || "Pilotage opérationnel AlmaGo"}
+                  {currentItem.helper || "Suivi des opérations AlmaGo"}
                 </p>
               </div>
               <div className="rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-3.5 py-2 text-xs font-semibold text-slate-600">
