@@ -44,27 +44,36 @@ function programValidationError(body: Record<string, unknown>) {
 
 function payload(body: Record<string, unknown>) {
   const intakeTerms = typeof body.intake_terms === "string" ? body.intake_terms.split(",").map(item => item.trim()).filter(Boolean).slice(0, 5) : [];
+  const optionalText = (value: unknown) =>
+    typeof value === "string" && value.trim() ? value.trim() : null;
   const numberValue = (value: unknown) => {
     if (typeof value === "number" && Number.isFinite(value)) return value;
     if (typeof value === "string" && value.trim()) return Number(value);
     return null;
   };
   const data = {
-    university_id: body.university_id, name: typeof body.name === "string" ? body.name.trim().slice(0, 180) : "",
+    university_id: body.university_id,
+    name: typeof body.name === "string" ? body.name.trim().slice(0, 180) : "",
     degree_level: body.degree_level as (typeof degreeLevels)[number],
-    field: typeof body.field === "string" ? body.field.trim() : null, teaching_language: typeof (body.teaching_language ?? body.language) === "string" ? String(body.teaching_language ?? body.language).trim() : null,
-    intake_terms: intakeTerms, duration: typeof body.duration === "string" ? body.duration.trim() : null, nc_requirement: typeof body.nc_requirement === "string" ? body.nc_requirement.trim() : null,
-    german_level_required: typeof body.german_level_required === "string" ? body.german_level_required.trim() : null, english_level_required: typeof body.english_level_required === "string" ? body.english_level_required.trim() : null,
-    diploma_required: typeof body.diploma_required === "string" ? body.diploma_required.trim() : null, indicative_average: numberValue(body.indicative_average),
-    studienkolleg_required: body.studienkolleg_required as boolean, testas_required: body.testas_required as boolean, uni_assist_required: body.uni_assist_required as boolean,
-    application_fee_notes: typeof body.application_fee_notes === "string" ? body.application_fee_notes.trim() : null,
+    field: optionalText(body.field),
+    teaching_language: optionalText(body.teaching_language ?? body.language),
+    intake_terms: intakeTerms,
+    duration: optionalText(body.duration),
+    nc_requirement: optionalText(body.nc_requirement),
+    german_level_required: optionalText(body.german_level_required),
+    english_level_required: optionalText(body.english_level_required),
+    diploma_required: optionalText(body.diploma_required),
+    indicative_average: numberValue(body.indicative_average),
+    studienkolleg_required: body.studienkolleg_required as boolean,
+    testas_required: body.testas_required as boolean,
+    uni_assist_required: body.uni_assist_required as boolean,
+    application_fee_notes: optionalText(body.application_fee_notes),
     winter_deadline: typeof body.winter_deadline === "string" && body.winter_deadline.trim() ? body.winter_deadline.trim() : null,
     summer_deadline: typeof body.summer_deadline === "string" && body.summer_deadline.trim() ? body.summer_deadline.trim() : null,
-    application_url: typeof (body.application_url ?? body.official_url) === "string" && String(body.application_url ?? body.official_url).trim()
-      ? String(body.application_url ?? body.official_url).trim()
-      : null,
-    source_url: typeof body.source_url === "string" && body.source_url.trim() ? body.source_url.trim() : null,
-    almago_notes: typeof body.almago_notes === "string" ? body.almago_notes.trim() : null, is_active: body.is_active as boolean,
+    application_url: optionalText(body.application_url ?? body.official_url),
+    source_url: optionalText(body.source_url),
+    almago_notes: optionalText(body.almago_notes),
+    is_active: body.is_active as boolean,
   };
 
   return body.mark_verified === true
