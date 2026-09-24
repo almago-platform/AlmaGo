@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { degreeLevels } from "@/lib/phase4";
-import { hasVerifiedProgramSource, isHttpSourceUrl } from "@/lib/source-verification";
+import { hasVerifiedProgramSource, isHttpSourceUrl, isPublishableProgram } from "@/lib/source-verification";
 
 type Program = {
   id: string;
@@ -139,6 +139,7 @@ export function AdminProgramsPanel({
   const [togglingId, setTogglingId] = useState<string | null>(null);
 
   const activePrograms = items.filter((program) => program.is_active);
+  const publishablePrograms = items.filter(isPublishableProgram);
   const missingSourceCount = activePrograms.filter(
     (program) => !programSourceUrl(program),
   ).length;
@@ -474,10 +475,10 @@ export function AdminProgramsPanel({
       <section aria-labelledby="program-catalogue-title">
         <div className="mb-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <QualityCard
-            title="Programmes actifs"
-            value={activePrograms.length}
-            detail="Fiches actuellement utilisées dans le catalogue"
-            tone="neutral"
+            title="Programmes publiables"
+            value={publishablePrograms.length}
+            detail="Programme actif, université active et source vérifiée"
+            tone={publishablePrograms.length ? "success" : "neutral"}
           />
           <QualityCard
             title="Source à compléter"
