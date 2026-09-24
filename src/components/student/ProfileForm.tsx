@@ -69,7 +69,7 @@ export function ProfileForm({ profile }: { profile: Record<string, unknown> }) {
       {data.language_certificate === "other" && <TextInput label="Autre certificat" value={String(data.language_certificate_other)} onChange={(value) => set("language_certificate_other", value)} />}
     </ProfileSection>
 
-    <ProfileSection badge="Projet" title="Projet en Allemagne" description="Ces éléments guident les recommandations de programmes et les prochaines démarches.">
+    <ProfileSection badge="Projet" title="Projet en Allemagne" description="Ces éléments aident à préparer les pistes de programmes et les prochaines démarches.">
       <SelectInput label="Niveau visé" required value={String(data.target_degree)} onChange={(value) => set("target_degree", value)} options={degreeOptions} />
       <SelectInput label="Domaine souhaité" required value={String(data.target_field)} onChange={(value) => set("target_field", value)} options={studyFieldOptions} />
       <SelectInput label="Langue d’études souhaitée" required value={String(data.study_language)} onChange={(value) => set("study_language", value)} options={studyLanguageOptions} />
