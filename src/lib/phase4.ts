@@ -120,6 +120,15 @@ export function daysUntilDeadline(deadline: string, now = new Date()) {
   return Math.round((targetUtc - todayUtc) / 86_400_000);
 }
 
+export function studentHistoryDisplayMessage(message: string | null | undefined) {
+  if (!message) return "Mise à jour du dossier.";
+
+  return message
+    .replace("AlmaGo a approuvé ton document", "AlmaGo a validé votre document")
+    .replace("AlmaGo a rejeté ton document", "AlmaGo a demandé une correction pour votre document")
+    .replace("AlmaGo te demande de remplacer ton document", "AlmaGo vous demande de remplacer votre document");
+}
+
 export function applicationEventDisplayMessage(
   eventType: string,
   message: string | null | undefined,
