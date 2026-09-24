@@ -48,8 +48,8 @@ export async function POST(request: Request) {
     source_url: typeof body.source_url === "string" && body.source_url.trim() ? body.source_url.trim() : null,
     logo_url: typeof body.logo_url === "string" && body.logo_url.trim() ? body.logo_url.trim() : null,
     description: typeof body.description === "string" ? body.description.trim() : null,
-    is_public: body.is_public !== false, tuition_notes: typeof body.tuition_notes === "string" ? body.tuition_notes.trim() : null,
-    is_active: body.is_active !== false,
+    is_public: body.is_public as boolean, tuition_notes: typeof body.tuition_notes === "string" ? body.tuition_notes.trim() : null,
+    is_active: body.is_active as boolean,
     ...(body.mark_verified === true ? { verified_at: new Date().toISOString() } : {}),
   }).select("id").single();
   if (error) return NextResponse.json({ error: "Impossible de créer l’université." }, { status: 500 });
