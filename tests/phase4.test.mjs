@@ -69,3 +69,15 @@ test("deadline countdown follows the same Berlin calendar day", () => {
   assert.equal(daysUntilDeadline("2026-09-23", afterBerlinMidnight), -1);
   assert.equal(daysUntilDeadline("2026-02-30", afterBerlinMidnight), null);
 });
+
+
+test("deadline countdown stays calendar-based across Berlin DST changes", () => {
+  // Passage à l’heure d’été : 29 mars 2026.
+  assert.equal(daysUntilDeadline("2026-03-30", new Date("2026-03-28T22:30:00Z")), 2);
+  assert.equal(daysUntilDeadline("2026-03-30", new Date("2026-03-29T22:30:00Z")), 0);
+  assert.equal(isPastDeadline("2026-03-29", new Date("2026-03-29T22:30:00Z")), true);
+
+  // Retour à l’heure d’hiver : 25 octobre 2026.
+  assert.equal(daysUntilDeadline("2026-10-26", new Date("2026-10-24T22:30:00Z")), 1);
+  assert.equal(daysUntilDeadline("2026-10-26", new Date("2026-10-25T23:30:00Z")), 0);
+});
