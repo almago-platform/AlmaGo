@@ -121,6 +121,8 @@ test("application deadline follows only an unambiguous recorded intake", () => {
   assert.equal(deadlineForIntake({ ...program, summer_deadline: null }, "Summer"), null);
   assert.equal(deadlineForIntake(program, null), null);
   assert.equal(deadlineForIntake(program, "À confirmer"), null);
+  assert.equal(deadlineForIntake(program, "Winter / Summer"), null);
+  assert.equal(deadlineForIntake(program, "Winter, Sommersemester"), null);
   assert.match(studentApplicationsRoute, /deadlineForIntake\(program, intake\)/);
 });
 
