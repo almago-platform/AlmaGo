@@ -13,6 +13,8 @@ type University = {
   bundesland: string | null;
   university_type: string;
   website_url: string | null;
+  source_url: string | null;
+  verified_at: string | null;
   logo_url: string | null;
   description: string | null;
   is_public: boolean;
@@ -26,6 +28,8 @@ type UniversityForm = {
   bundesland: string;
   university_type: string;
   website_url: string;
+  source_url: string;
+  mark_verified: boolean;
   logo_url: string;
   description: string;
   is_public: boolean;
@@ -44,6 +48,8 @@ const empty: UniversityForm = {
   bundesland: "",
   university_type: "Universität",
   website_url: "",
+  source_url: "",
+  mark_verified: false,
   logo_url: "",
   description: "",
   is_public: true,
@@ -51,20 +57,40 @@ const empty: UniversityForm = {
   is_active: true,
 };
 
+function formatVerificationDate(value: string) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "date inconnue";
+
+  return new Intl.DateTimeFormat("fr-FR", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  }).format(date);
+}
+
 export function AdminUniversitiesPanel({ universities }: { universities: University[] }) {
   const [items] = useState(universities);
   const [form, setForm] = useState<UniversityForm>(empty);
   const [editing, setEditing] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [type, setType] = useState("all");
+  const [quality, setQuality] = useState("all");
   const [notice, setNotice] = useState<Notice | null>(null);
   const [busy, setBusy] = useState(false);
   const [togglingId, setTogglingId] = useState<string | null>(null);
+
+  const activeUniversities = items.filter((university) => university.is_active);
+  const missingSourceCount = activeUniversities.filter(
+    (university) => !university.source_url && !university.website_url,
+  ).length;
+  const missingVerificationCount = activeUniversities.filter((university) => !university.verified_at).length;
 
   const filtered = useMemo(() => {
     const normalized = query.trim().toLocaleLowerCase("fr");
     return items.filter((university) => {
       if (type !== "all" && university.university_type !== type) return false;
+      if (quality === "missing_source" && (university.source_url || university.website_url)) return false;
+      if (quality === "missing_verification" && university.verified_at) return false;
       if (!normalized) return true;
       return [
         university.name,
@@ -77,7 +103,7 @@ export function AdminUniversitiesPanel({ universities }: { universities: Univers
         .toLocaleLowerCase("fr")
         .includes(normalized);
     });
-  }, [items, query, type]);
+  }, [items, query, type, quality]);
 
   function change(key: keyof UniversityForm, value: string | boolean) {
     setForm((current) => ({ ...current, [key]: value }));
@@ -96,6 +122,8 @@ export function AdminUniversitiesPanel({ universities }: { universities: Univers
       bundesland: university.bundesland || "",
       university_type: university.university_type,
       website_url: university.website_url || "",
+      source_url: university.source_url || "",
+      mark_verified: false,
       logo_url: university.logo_url || "",
       description: university.description || "",
       is_public: university.is_public,
@@ -275,6 +303,26 @@ export function AdminUniversitiesPanel({ universities }: { universities: Univers
                 />
               </label>
               <label className="block text-sm font-medium text-slate-700">
+                Source officielle des informations
+                <input
+                  value={form.source_url}
+                  onChange={(event) => change("source_url", event.target.value)}
+                  placeholder="https://..."
+                  className="field"
+                />
+                <span className="mt-1 block text-xs leading-5 text-slate-500">
+                  Utilisez une page officielle pertinente lorsque les informations de la fiche vont au-delà du simple site d’accueil.
+                </span>
+              </label>
+              <ToggleField
+                label="J’ai vérifié les informations auprès de cette source aujourd’hui"
+                checked={form.mark_verified}
+                onChange={(checked) => change("mark_verified", checked)}
+              />
+              <p className="text-xs leading-5 text-slate-500">
+                Cette confirmation met à jour la date de vérification. Une modification simple de la fiche ne change pas cette date.
+              </p>
+              <label className="block text-sm font-medium text-slate-700">
                 URL du logo
                 <input
                   value={form.logo_url}
@@ -333,6 +381,21 @@ export function AdminUniversitiesPanel({ universities }: { universities: Univers
       </Card>
 
       <section aria-labelledby="university-catalogue-title">
+        <div className="mb-5 grid gap-4 sm:grid-cols-2">
+          <QualityCard
+            title="Source à compléter"
+            value={missingSourceCount}
+            detail="Établissements actifs sans source officielle enregistrée"
+            tone={missingSourceCount ? "warning" : "success"}
+          />
+          <QualityCard
+            title="Vérification à compléter"
+            value={missingVerificationCount}
+            detail="Établissements actifs sans date de vérification enregistrée"
+            tone={missingVerificationCount ? "warning" : "success"}
+          />
+        </div>
+
         <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Catalogue</p>
@@ -347,7 +410,7 @@ export function AdminUniversitiesPanel({ universities }: { universities: Univers
         </div>
 
         <Card className="mb-5 shadow-none">
-          <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_14rem]">
+          <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_14rem_16rem]">
             <label className="block text-sm font-medium text-slate-700">
               Rechercher
               <input
@@ -364,6 +427,14 @@ export function AdminUniversitiesPanel({ universities }: { universities: Univers
                 {universityTypes.map((value) => (
                   <option key={value} value={value}>{value}</option>
                 ))}
+              </select>
+            </label>
+            <label className="block text-sm font-medium text-slate-700">
+              Qualité de la fiche
+              <select value={quality} onChange={(event) => setQuality(event.target.value)} className="field">
+                <option value="all">Toutes les fiches</option>
+                <option value="missing_source">Source officielle à compléter</option>
+                <option value="missing_verification">Date de vérification à compléter</option>
               </select>
             </label>
           </div>
@@ -383,6 +454,12 @@ export function AdminUniversitiesPanel({ universities }: { universities: Univers
                     <Badge variant="neutral">{university.university_type}</Badge>
                     <Badge variant={university.is_public ? "info" : "neutral"}>
                       {university.is_public ? "Public" : "Privé"}
+                    </Badge>
+                    <Badge variant={university.source_url || university.website_url ? "info" : "warning"}>
+                      {university.source_url || university.website_url ? "Source officielle enregistrée" : "Source officielle à compléter"}
+                    </Badge>
+                    <Badge variant={university.verified_at ? "success" : "warning"}>
+                      {university.verified_at ? `Vérifié le ${formatVerificationDate(university.verified_at)}` : "Vérification à compléter"}
                     </Badge>
                   </div>
                   <h3
@@ -404,9 +481,9 @@ export function AdminUniversitiesPanel({ universities }: { universities: Univers
                 {university.description || "Aucune description enregistrée."}
               </p>
 
-              {university.website_url && (
+              {(university.source_url || university.website_url) && (
                 <a
-                  href={university.website_url}
+                  href={university.source_url || university.website_url || "#"}
                   target="_blank"
                   rel="noreferrer"
                   className="mt-4 inline-flex text-sm font-semibold text-[var(--brand)] underline decoration-[var(--brand-border)] underline-offset-4 hover:text-[var(--brand-hover)]"
@@ -447,6 +524,34 @@ export function AdminUniversitiesPanel({ universities }: { universities: Univers
         )}
       </section>
     </div>
+  );
+}
+
+function QualityCard({
+  title,
+  value,
+  detail,
+  tone,
+}: {
+  title: string;
+  value: number;
+  detail: string;
+  tone: "success" | "warning";
+}) {
+  return (
+    <Card as="article" className="shadow-none">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="text-sm font-bold text-slate-800">{title}</p>
+          <p className="mt-2 text-3xl font-bold tracking-tight text-slate-950">{value}</p>
+        </div>
+        <span
+          aria-hidden="true"
+          className={`mt-1 h-2.5 w-2.5 rounded-full ${tone === "warning" ? "bg-amber-500" : "bg-emerald-600"}`}
+        />
+      </div>
+      <p className="mt-2 text-xs leading-5 text-slate-500">{detail}</p>
+    </Card>
   );
 }
 
