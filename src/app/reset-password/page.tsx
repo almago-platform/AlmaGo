@@ -32,7 +32,7 @@ export default function ResetPasswordPage() {
               Choisissez un nouveau mot de passe pour retrouver votre espace.
             </h1>
             <p className="mt-5 text-base leading-7 text-slate-600">
-              Cette étape sécurise l&apos;accès à votre compte. Après validation, vous serez redirigé vers l&apos;espace associé à votre rôle.
+              Cette étape sécurise l&apos;accès à votre compte. Après validation, vous serez redirigé vers votre espace AlmaGo.
             </p>
           </div>
 
