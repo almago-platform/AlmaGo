@@ -65,7 +65,7 @@ export function HomeFooter() {
           <FooterColumn
             title="Parcours"
             links={[
-              ["Comment ça marche", "/#parcours"],
+              ["Parcours Allemagne", "/parcours-allemagne"],
               ["Comprendre les démarches", "/comprendre-les-demarches"],
               ["Selon votre pays de diplôme", "/selon-votre-pays"],
               ["Votre espace", "/#espace"],
