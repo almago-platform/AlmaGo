@@ -174,3 +174,13 @@ test("programme routes validate dates and indicative averages before database wr
   assert.match(programUpdate, /programValidationError\(body\)/);
   assert.doesNotMatch(programUpdate, /degreeLevels\.includes\(body\.degree_level/);
 });
+
+
+test("catalogue payloads normalize blank URLs and deadline whitespace", () => {
+  assert.match(programCreate, /body\.winter_deadline\.trim\(\) \? body\.winter_deadline\.trim\(\) : null/);
+  assert.match(programCreate, /body\.summer_deadline\.trim\(\) \? body\.summer_deadline\.trim\(\) : null/);
+  assert.match(programCreate, /body\.source_url\.trim\(\) \? body\.source_url\.trim\(\) : null/);
+  assert.match(universityCreate, /body\.website_url\.trim\(\) \? body\.website_url\.trim\(\) : null/);
+  assert.match(universityCreate, /body\.source_url\.trim\(\) \? body\.source_url\.trim\(\) : null/);
+  assert.match(universityUpdate, /body\.website_url\.trim\(\) \? body\.website_url\.trim\(\) : null/);
+});
