@@ -94,6 +94,9 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     [existing.source_url, existing.application_url],
     [data.source_url, data.application_url],
   );
+  const currentAverage = existing.indicative_average == null ? null : Number(existing.indicative_average);
+  const nextAverage = data.indicative_average == null ? null : Number(data.indicative_average);
+
   const verificationContentChanged =
     sourceChanged ||
     existing.university_id !== data.university_id ||
@@ -107,7 +110,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     existing.german_level_required !== data.german_level_required ||
     existing.english_level_required !== data.english_level_required ||
     existing.diploma_required !== data.diploma_required ||
-    Number(existing.indicative_average ?? NaN) !== Number(data.indicative_average ?? NaN) ||
+    currentAverage !== nextAverage ||
     existing.studienkolleg_required !== data.studienkolleg_required ||
     existing.testas_required !== data.testas_required ||
     existing.uni_assist_required !== data.uni_assist_required ||
