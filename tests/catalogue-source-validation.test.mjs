@@ -71,7 +71,7 @@ test("catalogue update routes invalidate stale verification dates when source ev
 
 test("programme active-state toggle stays partial and can quarantine malformed legacy entries", () => {
   assert.match(programUpdate, /typeof body\.is_active === "boolean"/);
-  assert.match(programUpdate, /!\("name" in body\)/);
+  assert.match(programUpdate, /Object\.keys\(body\)\.every\(\(key\) => key === "is_active"\)/);
   assert.match(programUpdate, /\.update\(\{ is_active: body\.is_active \}\)/);
   assert.match(programUpdate, /Impossible de modifier l’état du programme/);
   assert.match(programAdminPanel, /body: JSON\.stringify\(\{ is_active: !program\.is_active \}\)/);
@@ -81,7 +81,7 @@ test("programme active-state toggle stays partial and can quarantine malformed l
 
 test("university active-state toggle stays partial and does not overwrite catalogue fields", () => {
   assert.match(universityUpdate, /typeof body\.is_active === "boolean"/);
-  assert.match(universityUpdate, /!\("name" in body\)/);
+  assert.match(universityUpdate, /Object\.keys\(body\)\.every\(\(key\) => key === "is_active"\)/);
   assert.match(universityUpdate, /\.update\(\{ is_active: body\.is_active \}\)/);
   assert.match(universityUpdate, /Impossible de modifier l’état de l’université/);
 });
