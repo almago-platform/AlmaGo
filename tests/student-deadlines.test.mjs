@@ -114,3 +114,11 @@ test("deadline center enforces student role and completed onboarding", () => {
   assert.match(page, /redirect\("\/student\/onboarding"\)/);
   assert.doesNotMatch(page, /createClient\(\)/);
 });
+
+
+test("deadline branch student dashboard uses the shared student role guard", () => {
+  assert.match(dashboard, /getStudentUser\(\)/);
+  assert.match(dashboard, /if \(!user\) redirect\("\/login"\)/);
+  assert.match(dashboard, /if \(!isStudent\) redirect\("\/unauthorized"\)/);
+  assert.doesNotMatch(dashboard, /auth\.getUser\(\)/);
+});
