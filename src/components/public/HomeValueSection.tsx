@@ -16,7 +16,7 @@ const valueItems = [
   {
     number: "03",
     title: "Votre orientation organisée",
-    description: "Les programmes et recommandations sont présentés avec des critères compréhensibles et vérifiables.",
+    description: "Les programmes et pistes d’orientation sont présentés avec des critères compréhensibles et vérifiables.",
     icon: "orientation",
   },
   {
