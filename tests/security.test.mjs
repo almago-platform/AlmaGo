@@ -253,3 +253,15 @@ test("new accounts receive the student role before entering the student space", 
   assert.match(initialSchema, /values \(new\.id, 'student'\)/);
   assert.match(initialSchema, /for each row execute procedure public\.handle_new_user\(\)/);
 });
+
+
+test("authenticated E2E role journey stays structurally intact", () => {
+  const source = read("tests/e2e/authenticated.spec.mjs");
+
+  assert.equal((source.match(/import \{ test, expect \} from "@playwright\/test";/g) || []).length, 1);
+  assert.match(source, /const areaPattern = new RegExp/);
+  assert.match(source, /allowedStudentApi\.status\(\)\)\.toBe\(400\)/);
+  assert.match(source, /deniedStudentApi\.status\(\)\)\.toBe\(403\)/);
+  assert.match(source, /page\.goto\("\/student"/);
+  assert.match(source, /page\.goto\("\/admin"/);
+});
