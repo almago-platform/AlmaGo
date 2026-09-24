@@ -5,7 +5,12 @@ import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminProgramsPage() {
+export default async function AdminProgramsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ quality?: string }>;
+}) {
+  const { quality } = await searchParams;
   const supabase = await createClient();
   const [{ data: programs, error: programsError }, { data: universities, error: universitiesError }] = await Promise.all([
     supabase.from("programs").select("*, universities(name,city)").order("name"),
@@ -54,7 +59,7 @@ export default async function AdminProgramsPage() {
         </Card>
       </div>
 
-      <AdminProgramsPanel programs={programRows} universities={universities || []} />
+      <AdminProgramsPanel programs={programRows} universities={universities || []} initialQuality={quality} />
     </main>
   );
 }
