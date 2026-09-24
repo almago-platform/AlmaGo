@@ -7,7 +7,7 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { StudentJourneyOverview, type StudentJourneyStage } from "@/components/student/StudentJourneyOverview";
 import { createClient } from "@/lib/supabase/server";
-import { applicationEventDisplayMessage, formatDeadline, isActiveApplication, isPastDeadline, nextActiveDeadline } from "@/lib/phase4";
+import { applicationEventDisplayMessage, formatDeadline, isActiveApplication, isPastDeadline, nextActiveDeadline, studentHistoryDisplayMessage } from "@/lib/phase4";
 
 export const dynamic = "force-dynamic";
 
@@ -71,7 +71,7 @@ export default async function StudentEntry() {
     ...documentHistory.map((event) => ({
       id: `document-${event.id}`,
       kind: "Document" as const,
-      message: event.message,
+      message: studentHistoryDisplayMessage(event.message),
       created_at: event.created_at,
       href: "/student/documents",
       context: null,
