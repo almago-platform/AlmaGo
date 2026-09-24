@@ -31,6 +31,9 @@ export async function POST(request: Request) {
   if (!body) return NextResponse.json({ error: "Données invalides." }, { status: 400 });
   const data = payload(body);
   if (!data.name || typeof data.university_id !== "string") return NextResponse.json({ error: "Université et nom du programme obligatoires." }, { status: 400 });
+  if (body.mark_verified === true && !data.source_url && !data.application_url) {
+    return NextResponse.json({ error: "Ajoutez une source officielle avant de confirmer la vérification." }, { status: 400 });
+  }
   const { data: created, error } = await supabase.from("programs").insert(data).select("id").single();
   if (error) return NextResponse.json({ error: "Impossible de créer le programme." }, { status: 500 });
   return NextResponse.json({ ok: true, id: created.id }, { status: 201 });
