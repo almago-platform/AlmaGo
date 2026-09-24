@@ -79,6 +79,15 @@ test("student application creation rejects unverified programme recommendations"
   assert.match(studentApplicationsRoute, /Cette piste doit être vérifiée avant de pouvoir créer une candidature/);
 });
 
+test("student application creation prevents duplicate rows when intake is unknown", () => {
+  assert.match(studentApplicationsRoute, /existingApplicationQuery/);
+  assert.match(studentApplicationsRoute, /intake === null/);
+  assert.match(studentApplicationsRoute, /\.is\("intake", null\)/);
+  assert.match(studentApplicationsRoute, /\.eq\("intake", intake\)/);
+  assert.match(studentApplicationsRoute, /Une candidature existe déjà pour ce programme/);
+  assert.match(studentApplicationsRoute, /status: 409/);
+});
+
 test("admin publication verifies programme evidence before recommendation upsert", () => {
   const checkPosition = adminOrientationRoute.indexOf('from("programs")');
   const upsertPosition = adminOrientationRoute.indexOf('from("program_recommendations").upsert');
