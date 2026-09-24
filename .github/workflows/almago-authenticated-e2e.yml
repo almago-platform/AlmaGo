@@ -13,6 +13,9 @@ on:
     paths:
       - "src/app/admin/**"
       - "src/app/student/**"
+      - "src/app/api/admin/**"
+      - "src/app/api/student/**"
+      - "src/app/api/documents/**"
       - "src/app/login/**"
       - "src/components/auth/**"
       - "src/components/student/**"
