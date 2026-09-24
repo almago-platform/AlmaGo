@@ -222,7 +222,7 @@ export default async function AdminEntry() {
             value={catalogueQualityIssues}
             detail={
               catalogueQualityIssues
-                ? `${catalogueSourceGaps} source${catalogueSourceGaps > 1 ? "s" : ""} à compléter · ${catalogueVerificationGaps} date${catalogueVerificationGaps > 1 ? "s" : ""} à renseigner · ${programParentGaps} université${programParentGaps > 1 ? "s" : ""} parente${programParentGaps > 1 ? "s" : ""} inactive${programParentGaps > 1 ? "s" : ""}`
+                ? `${catalogueSourceGaps} source${catalogueSourceGaps > 1 ? "s" : ""} à compléter · ${catalogueVerificationGaps} date${catalogueVerificationGaps > 1 ? "s" : ""} à renseigner · ${programParentGaps} programme${programParentGaps > 1 ? "s" : ""} lié${programParentGaps > 1 ? "s" : ""} à une université inactive`
                 : `${catalogue} fiches actives sans anomalie de publication visible`
             }
             tone={catalogueQualityIssues ? "warning" : "neutral"}
