@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getAdminUser } from "@/lib/auth/access";
 import { universityTypes } from "@/lib/phase4";
-import { isHttpSourceUrl } from "@/lib/source-verification";
+import { isHttpSourceUrl, sourceUrlsChanged } from "@/lib/source-verification";
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { supabase, user, isAdmin } = await getAdminUser();
@@ -40,6 +40,24 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
       { status: 400 },
     );
   }
+  const { data: existing, error: existingError } = await supabase
+    .from("universities")
+    .select("website_url,source_url")
+    .eq("id", id)
+    .maybeSingle();
+
+  if (existingError) {
+    return NextResponse.json({ error: "Impossible de vérifier la source actuelle de l’université." }, { status: 500 });
+  }
+  if (!existing) return NextResponse.json({ error: "Université introuvable." }, { status: 404 });
+
+  const sourceChanged = sourceUrlsChanged(
+    [existing.website_url, existing.source_url],
+    [websiteUrl, sourceUrl],
+  );
+  const verificationPatch =
+    body.mark_verified === true || !sourceChanged ? {} : { verified_at: null };
+
   const { error } = await supabase.from("universities").update({
     name: body.name.trim().slice(0, 180), city: typeof body.city === "string" ? body.city.trim() : null,
     bundesland: typeof body.bundesland === "string" ? body.bundesland.trim() : null,
@@ -51,6 +69,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     is_public: body.is_public !== false, tuition_notes: typeof body.tuition_notes === "string" ? body.tuition_notes.trim() : null,
     is_active: body.is_active !== false,
     ...(body.mark_verified === true ? { verified_at: new Date().toISOString() } : {}),
+    ...verificationPatch,
   }).eq("id", id);
   if (error) return NextResponse.json({ error: "Impossible de modifier l’université." }, { status: 500 });
   return NextResponse.json({ ok: true });
