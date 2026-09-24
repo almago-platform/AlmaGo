@@ -62,14 +62,21 @@ test("source verification accepts only real http(s) URLs with a recorded verific
     verified_at: "2026-09-24T12:00:00Z",
     source_url: "https://www.example.edu/programme",
     application_url: null,
+    universities: { is_active: true },
   };
   assert.equal(isPublishableProgram(verifiedProgram), true);
   assert.equal(isPublishableProgram({ ...verifiedProgram, is_active: false }), false);
+  assert.equal(
+    isPublishableProgram({ ...verifiedProgram, universities: { is_active: false } }),
+    false,
+  );
 });
 
 test("students only receive recommendations backed by verified source evidence", () => {
+  assert.match(studentPage, /universities\(name,city,bundesland,is_active\)/);
   assert.match(studentPage, /isPublishableProgram/);
   assert.match(studentPage, /recommendations=\{visibleRecommendations\}/);
+  assert.match(studentDashboard, /universities\(name,is_active\)/);
   assert.match(studentDashboard, /source_url,application_url,verified_at/);
   assert.match(studentDashboard, /isPublishableProgram/);
 });
@@ -84,9 +91,9 @@ test("student orientation links ignore malformed legacy sources and fall back to
 });
 
 test("student application creation rejects unverified programme recommendations", () => {
-  assert.match(studentApplicationsRoute, /source_url,application_url,verified_at,is_active/);
+  assert.match(studentApplicationsRoute, /source_url,application_url,verified_at,is_active,universities\(is_active\)/);
   assert.match(studentApplicationsRoute, /isPublishableProgram\(program\)/);
-  assert.match(studentApplicationsRoute, /Cette piste doit être vérifiée avant de pouvoir créer une candidature/);
+  assert.match(studentApplicationsRoute, /Cette piste n’est plus disponible pour créer une candidature/);
 });
 
 test("student application creation prevents duplicate rows when intake is unknown", () => {
@@ -132,9 +139,9 @@ test("admin publication verifies programme evidence before recommendation upsert
 
   assert.ok(checkPosition >= 0);
   assert.ok(upsertPosition > checkPosition);
-  assert.match(adminOrientationRoute, /is_active,source_url,application_url,verified_at/);
+  assert.match(adminOrientationRoute, /is_active,source_url,application_url,verified_at,universities\(is_active\)/);
   assert.match(adminOrientationRoute, /isPublishableProgram\(program\)/);
-  assert.match(adminOrientationRoute, /Vérifiez la source officielle du programme avant de publier cette piste/);
+  assert.match(adminOrientationRoute, /Le programme et son université doivent être actifs/);
 });
 
 test("republishing an archived orientation explicitly restores student visibility", () => {
@@ -146,14 +153,14 @@ test("republishing an archived orientation explicitly restores student visibilit
 });
 
 test("admin selector offers only publishable programmes while inactive historical recommendations stay identifiable", () => {
-  assert.match(adminOrientationPage, /source_url,application_url,verified_at,is_active/);
+  assert.match(adminOrientationPage, /source_url,application_url,verified_at,is_active,universities\(name,city,is_active\)/);
   const programsQuery = adminOrientationPage.slice(
     adminOrientationPage.indexOf('.from("programs")'),
     adminOrientationPage.indexOf('.from("program_recommendations")'),
   );
   assert.doesNotMatch(programsQuery, /\.eq\("is_active", true\)/);
   assert.match(adminOrientationPanel, /programs\.filter\(isPublishableProgram\)\.map/);
-  assert.match(adminOrientationPanel, /Seuls les programmes disposant d’une source officielle et d’une date de vérification/);
+  assert.match(adminOrientationPanel, /programmes actifs, rattachés à une université active/);
   assert.match(adminOrientationPanel, /visible\.map\(\(recommendation\)/);
   assert.match(adminOrientationPanel, /const publishable = isPublishableProgram\(program\)/);
   assert.match(adminOrientationPanel, /Masquée à l’étudiant/);
