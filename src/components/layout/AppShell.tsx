@@ -40,12 +40,12 @@ const studentItems: NavItem[] = [
 ];
 
 const adminItems: NavItem[] = [
-  { label: "Vue d’ensemble", href: "/admin", icon: icons.dashboard },
-  { label: "Universités", href: "/admin/universities", icon: icons.universities },
-  { label: "Programmes", href: "/admin/programs", icon: icons.programs },
-  { label: "Orientation", href: "/admin/orientation", icon: icons.orientation },
-  { label: "Candidatures", href: "/admin/applications", icon: icons.applications },
-  { label: "Documents", href: "/admin/documents", icon: icons.documents },
+  { label: "Vue d’ensemble", href: "/admin", icon: icons.dashboard, helper: "Priorités de l’équipe" },
+  { label: "Documents", href: "/admin/documents", icon: icons.documents, helper: "Pièces à vérifier" },
+  { label: "Candidatures", href: "/admin/applications", icon: icons.applications, helper: "Dossiers et échéances" },
+  { label: "Orientation", href: "/admin/orientation", icon: icons.orientation, helper: "Recommandations étudiants" },
+  { label: "Universités", href: "/admin/universities", icon: icons.universities, helper: "Catalogue établissements" },
+  { label: "Programmes", href: "/admin/programs", icon: icons.programs, helper: "Catalogue formations" },
 ];
 
 function isActive(pathname: string, href: string) {
@@ -99,12 +99,20 @@ export function AppShell({
           </Link>
         </div>
 
-        {role === "student" && (
+        {role === "student" ? (
           <div className="mx-4 mt-5 rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--brand-soft)]/65 p-4">
             <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Votre parcours Allemagne</p>
             <p className="mt-2 text-sm font-bold text-slate-900">Bonjour {studentName}</p>
             <p className="mt-1 text-xs leading-5 text-slate-600">
               Retrouvez ici ce qui est prêt, ce qui reste à vérifier et votre prochaine action.
+            </p>
+          </div>
+        ) : (
+          <div className="mx-4 mt-5 rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--brand-soft)]/65 p-4">
+            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Pilotage équipe</p>
+            <p className="mt-2 text-sm font-bold text-slate-900">Priorités opérationnelles</p>
+            <p className="mt-1 text-xs leading-5 text-slate-600">
+              Traitez d’abord les blocages dossier, puis maintenez le catalogue.
             </p>
           </div>
         )}
@@ -127,7 +135,7 @@ export function AppShell({
                 </span>
                 <span className="min-w-0">
                   <span className="block text-sm font-semibold [overflow-wrap:anywhere]">{item.label}</span>
-                  {role === "student" && item.helper && (
+                  {item.helper && (
                     <span className={`mt-0.5 block text-[11px] leading-4 ${active ? "text-[var(--brand)]/75" : "text-slate-400"}`}>
                       {item.helper}
                     </span>
@@ -140,9 +148,13 @@ export function AppShell({
         </nav>
 
         <div className="border-t border-[var(--border)] bg-white/75 p-4">
-          {role === "student" && (
+          {role === "student" ? (
             <p className="mb-3 px-1 text-[11px] leading-4 text-slate-500">
               AlmaGo organise votre dossier. Les décisions officielles restent celles des organismes compétents.
+            </p>
+          ) : (
+            <p className="mb-3 px-1 text-[11px] leading-4 text-slate-500">
+              Les actions d’administration peuvent modifier ce qui est visible dans l’espace étudiant.
             </p>
           )}
           <Button type="button" onClick={signOut} variant="secondary" className="w-full justify-start">
@@ -232,44 +244,84 @@ export function AppShell({
             </div>
           </>
         ) : (
-          <header className="sticky top-0 z-30 border-b border-[var(--border)] bg-white/95 shadow-[0_8px_24px_-22px_rgba(15,23,42,0.35)] backdrop-blur lg:hidden">
-            <div className="flex h-16 items-center justify-between gap-2 px-3 min-[360px]:px-4">
-              <Link href="/admin" className="flex items-center gap-2.5" aria-label="Accueil AlmaGo">
-                <span className="grid h-9 w-9 place-items-center rounded-[var(--radius-control)] bg-[var(--brand)] text-sm font-bold text-white">A</span>
-                <span>
-                  <span className="block text-base font-bold leading-none text-slate-950">AlmaGo</span>
-                  <span className="mt-1 block text-[11px] font-medium text-slate-500">Administration</span>
-                </span>
-              </Link>
-              <Button
-                type="button"
-                onClick={signOut}
-                variant="secondary"
-                aria-label="Se déconnecter"
-                className="min-h-10 shrink-0 px-2.5 py-2 text-xs min-[360px]:min-h-11 min-[360px]:px-3 min-[360px]:text-sm"
-              >
-                <span className="min-[360px]:hidden">Quitter</span>
-                <span className="hidden min-[360px]:inline">Déconnexion</span>
-              </Button>
-            </div>
+          <>
+            <header className="sticky top-0 z-30 border-b border-[var(--border)] bg-white/95 pt-[env(safe-area-inset-top)] shadow-[0_8px_24px_-22px_rgba(15,23,42,0.35)] backdrop-blur lg:hidden">
+              <div className="flex min-h-16 items-center justify-between gap-3 px-3 py-2.5 min-[360px]:px-4">
+                <Link href="/admin" onClick={() => setMobileMenuOpen(false)} className="flex min-w-0 items-center gap-2.5" aria-label="Accueil AlmaGo">
+                  <span className="relative grid h-9 w-9 shrink-0 place-items-center rounded-[var(--radius-control)] bg-[var(--brand)] text-sm font-bold text-white">
+                    A
+                    <span aria-hidden="true" className="absolute -bottom-1 -right-1 h-2.5 w-2.5 rounded-full border-2 border-white bg-[var(--accent)]" />
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block text-sm font-bold leading-4 text-slate-950">AlmaGo</span>
+                    <span className="mt-0.5 block truncate text-[11px] font-medium text-slate-500">{currentItem.label}</span>
+                  </span>
+                </Link>
 
-            <nav className="mobile-nav-scroll flex snap-x snap-mandatory gap-1 overflow-x-auto overscroll-x-contain border-t border-slate-100 px-3 py-2 scroll-px-3" aria-label="Navigation administration">
-              {adminItems.map((item) => {
-                const active = isActive(pathname, item.href);
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    aria-current={active ? "page" : undefined}
-                    className={`flex min-h-11 max-w-[11rem] shrink-0 snap-start items-center gap-2 whitespace-nowrap rounded-[var(--radius-control)] px-3 py-2 text-sm font-medium transition-colors duration-150 ${active ? "bg-[var(--brand-soft)] text-[var(--brand)]" : "text-slate-600 hover:bg-slate-50 hover:text-slate-950"}`}
-                  >
-                    {item.icon}
-                    {item.label}
-                  </Link>
-                );
-              })}
-            </nav>
-          </header>
+                <button
+                  type="button"
+                  onClick={() => setMobileMenuOpen((open) => !open)}
+                  aria-expanded={mobileMenuOpen}
+                  aria-controls="admin-mobile-menu"
+                  aria-label={mobileMenuOpen ? "Fermer le menu administration" : "Ouvrir le menu administration"}
+                  className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-[var(--radius-control)] border border-[var(--border)] bg-white px-2.5 text-sm font-bold text-slate-700 shadow-sm transition-colors hover:border-[var(--brand-border)] hover:text-[var(--brand)] min-[340px]:px-3"
+                >
+                  {mobileMenuOpen ? icons.close : icons.menu}
+                  <span className="hidden min-[340px]:inline">{mobileMenuOpen ? "Fermer" : "Menu"}</span>
+                </button>
+              </div>
+
+              {mobileMenuOpen && (
+                <div id="admin-mobile-menu" className="max-h-[calc(100svh-4rem)] overflow-y-auto overscroll-contain border-t border-[var(--border)] bg-[#fbfbfd] px-3 py-4 min-[360px]:px-4">
+                  <div className="mb-4 rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--brand-soft)]/65 p-3.5">
+                    <p className="text-xs font-bold text-slate-900">Espace administration</p>
+                    <p className="mt-1 text-xs leading-5 text-slate-600">Choisissez la file de travail ou la partie du catalogue à gérer.</p>
+                  </div>
+
+                  <nav className="grid gap-2 sm:grid-cols-2" aria-label="Navigation administration mobile">
+                    {adminItems.map((item) => {
+                      const active = isActive(pathname, item.href);
+                      return (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          onClick={() => setMobileMenuOpen(false)}
+                          aria-current={active ? "page" : undefined}
+                          className={`flex min-h-14 items-center gap-3 rounded-[var(--radius-control)] border px-3.5 py-2.5 transition-colors ${active ? "border-[var(--brand-border)] bg-white text-[var(--brand)] shadow-sm" : "border-transparent bg-white/65 text-slate-700 hover:border-[var(--border)] hover:bg-white"}`}
+                        >
+                          <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-[var(--radius-control)] ${active ? "bg-[var(--brand-soft)] text-[var(--accent-strong)]" : "bg-slate-100 text-slate-500"}`}>
+                            {item.icon}
+                          </span>
+                          <span className="min-w-0">
+                            <span className="block text-sm font-semibold [overflow-wrap:anywhere]">{item.label}</span>
+                            {item.helper && <span className="mt-0.5 block text-[11px] leading-4 text-slate-500">{item.helper}</span>}
+                          </span>
+                        </Link>
+                      );
+                    })}
+                  </nav>
+
+                  <div className="mt-4 border-t border-[var(--border)] pt-4">
+                    <Button type="button" onClick={signOut} variant="secondary" className="w-full justify-center">
+                      Déconnexion
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </header>
+
+            <div className="hidden min-h-[4.75rem] items-center justify-between gap-6 border-b border-[var(--border)] bg-white/85 px-6 backdrop-blur lg:flex xl:px-8">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-[0.15em] text-[var(--brand)]">{currentItem.label}</p>
+                <p className="mt-1 text-sm text-slate-600">
+                  {currentItem.helper || "Pilotage opérationnel AlmaGo"}
+                </p>
+              </div>
+              <div className="rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-3.5 py-2 text-xs font-semibold text-slate-600">
+                Espace équipe
+              </div>
+            </div>
+          </>
         )}
 
         <div id="main-content" tabIndex={-1} className="min-h-screen">
