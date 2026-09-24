@@ -17,7 +17,8 @@ test("student notifications reuse the existing notification table", () => {
 
 test("notification read updates stay scoped to the authenticated user", () => {
   for (const route of [oneRoute, allRoute]) {
-    assert.match(route, /getAuthenticatedUser/);
+    assert.match(route, /getStudentUser/);
+    assert.match(route, /if \(!isStudent\)/);
     assert.match(route, /eq\("user_id", user\.id\)/);
     assert.match(route, /update\(\{ read_at: readAt \}\)/);
     assert.doesNotMatch(route, /service_role|SUPABASE_SECRET|secret key/i);
@@ -35,4 +36,15 @@ test("notification links stay inside the existing student dossier surfaces", () 
   assert.match(panel, /\/student\/applications/);
   assert.match(panel, /\/student\/orientation/);
   assert.match(panel, /return "\/student"/);
+});
+
+
+test("student notification routes modify only read_at", () => {
+  for (const route of [oneRoute, allRoute]) {
+    assert.match(route, /update\(\{ read_at: readAt \}\)/);
+    assert.doesNotMatch(route, /update\(\{[^}]*title/);
+    assert.doesNotMatch(route, /update\(\{[^}]*body/);
+    assert.doesNotMatch(route, /update\(\{[^}]*type/);
+    assert.doesNotMatch(route, /update\(\{[^}]*metadata/);
+  }
 });
