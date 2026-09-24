@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getAdminUser } from "@/lib/auth/access";
 import { degreeLevels } from "@/lib/phase4";
 import { isHttpSourceUrl } from "@/lib/source-verification";
+import { isUuid } from "@/lib/identifiers";
 
 function isValidDateOnly(value: string) {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
@@ -80,7 +81,7 @@ export async function POST(request: Request) {
   const validationError = programValidationError(body);
   if (validationError) return NextResponse.json({ error: validationError }, { status: 400 });
   const data = payload(body);
-  if (!data.name || typeof data.university_id !== "string") return NextResponse.json({ error: "Université et nom du programme obligatoires." }, { status: 400 });
+  if (!data.name || !isUuid(data.university_id)) return NextResponse.json({ error: "Université et nom du programme obligatoires." }, { status: 400 });
 
   const { data: targetUniversity, error: targetUniversityError } = await supabase
     .from("universities")
