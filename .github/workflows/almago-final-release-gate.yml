@@ -273,12 +273,20 @@ jobs:
               ref: sha,
             });
             const vercel = combined.statuses.find(status => status.context === "Vercel");
-            if (!vercel || vercel.state !== "success") {
+            const vercelDescription = String(vercel?.description || "");
+            const ignoredOrCancelled = /ignored build step|cancelled|canceled/i.test(vercelDescription);
+            if (!vercel || vercel.state !== "success" || ignoredOrCancelled) {
               core.summary
                 .addHeading("AlmaGo final release gate")
-                .addRaw("BLOCKED — Vercel is not successful for exact main SHA " + sha + ".")
+                .addRaw(
+                  "BLOCKED — Vercel does not show a completed successful deployment for exact main SHA " +
+                  sha +
+                  (vercelDescription ? " (" + vercelDescription + ")." : "."),
+                )
                 .write();
-              core.setFailed("Vercel must be successful for exact main SHA " + sha + ".");
+              core.setFailed(
+                "Vercel must report a completed successful deployment for exact main SHA " + sha + ".",
+              );
               return;
             }
 
