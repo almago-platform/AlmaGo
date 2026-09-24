@@ -37,7 +37,7 @@ export function HomeFooter() {
   return (
     <footer className="bg-[#171c55] text-white">
       <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-        <div className="grid gap-9 sm:grid-cols-2 lg:grid-cols-[1.3fr_0.9fr_0.9fr_0.9fr]">
+        <div className="grid gap-9 sm:grid-cols-2 xl:grid-cols-[1.3fr_0.9fr_1fr_0.8fr_0.8fr]">
           <div className="max-w-sm">
             <Link href="/" className="inline-flex items-center gap-3" aria-label="AlmaGo accueil">
               <span className="relative grid h-10 w-10 place-items-center rounded-[var(--radius-control)] bg-white text-sm font-bold text-[var(--brand)]">
@@ -55,15 +55,20 @@ export function HomeFooter() {
           </div>
 
           <FooterColumn
+            title="AlmaGo"
+            links={[
+              ["À propos d’AlmaGo", "/a-propos"],
+              ["Notre rôle", "/#role"],
+              ["Confiance et transparence", "/confiance"],
+            ]}
+          />
+          <FooterColumn
             title="Parcours"
             links={[
               ["Comment ça marche", "/#parcours"],
-              ["À propos d’AlmaGo", "/a-propos"],
-              ["Notre rôle", "/#role"],
               ["Comprendre les démarches", "/comprendre-les-demarches"],
               ["Selon votre pays de diplôme", "/selon-votre-pays"],
               ["Votre espace", "/#espace"],
-              ["Confiance et transparence", "/confiance"],
             ]}
           />
           <FooterColumn
