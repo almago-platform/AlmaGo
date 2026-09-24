@@ -38,3 +38,11 @@ test("unchanged application edits become no-ops", () => {
   assert.match(route, /currentApplication\.student_notes === studentNote/);
   assert.match(route, /return NextResponse\.json\(\{ ok: true \}\)/);
 });
+
+
+test("note-only updates detect concurrent status changes", () => {
+  assert.match(route, /\.eq\("status", requestedStatus\)/);
+  assert.match(route, /Le statut de cette candidature a changé/);
+  assert.match(route, /status: 409/);
+  assert.match(route, /const \{ data: stillExists, error: existenceError \}/);
+});
