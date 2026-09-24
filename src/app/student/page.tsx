@@ -84,12 +84,12 @@ export default async function StudentEntry() {
 
   const completed = checklist.filter((item) => item.status === "completed").length;
   const progression = checklist.length ? Math.round((completed / checklist.length) * 100) : 0;
-  const actionableChecklist = checklist.filter((item) => ["waiting_student", "todo", "in_progress", "not_started"].includes(item.status));
-  const waitingAlmaGo = checklist.filter((item) => item.status === "waiting_almago");
-  const nextItem = actionableChecklist.find((item) => item.status === "waiting_student") || actionableChecklist[0];
+  const openChecklist = checklist.filter((item) => item.status === "todo");
+  const nextItem = openChecklist[0];
 
   const approvedDocuments = studentDocuments.filter((document) => document.status === "approved").length;
   const documentsNeedingAction = studentDocuments.filter((document) => ["rejected", "replace_required"].includes(document.status)).length;
+  const documentsUnderReview = studentDocuments.filter((document) => ["pending", "reviewed"].includes(document.status)).length;
 
   const activeApplications = studentApplications.filter((application) => isActiveApplication(application.status));
   const nextApplication = nextActiveDeadline(activeApplications);
@@ -97,8 +97,8 @@ export default async function StudentEntry() {
   const actionableApplications = activeApplications.filter((application) => Boolean(application.next_action));
   const actionableApplication = actionableApplications[0];
 
-  const studentActionCount = actionableChecklist.length + documentsNeedingAction + actionableApplications.length;
-  const hasActionRequired = studentActionCount > 0;
+  const hasStudentActionRequired = documentsNeedingAction > 0;
+  const hasRecordedNextStep = Boolean(actionableApplication?.next_action || nextItem);
 
   const nextAction = documentsNeedingAction
     ? {
@@ -112,27 +112,29 @@ export default async function StudentEntry() {
           label: "Voir ma candidature",
           detail: actionableApplication.next_action,
           href: "/student/applications",
-          owner: "À faire par vous",
+          owner: "Prochaine action enregistrée",
         }
       : nextItem
         ? {
             label: "Continuer mes démarches",
             detail: nextItem.title,
             href: "/student/checklist",
-            owner: "À faire par vous",
+            owner: "Étape enregistrée",
           }
         : {
             label: "Voir mes démarches",
             detail: "Aucune action prioritaire n’est enregistrée pour le moment. Vous pouvez consulter les étapes connues de votre dossier.",
             href: "/student/checklist",
-            owner: waitingAlmaGo.length ? "En cours chez AlmaGo" : "Aucune action demandée",
+            owner: documentsUnderReview ? "Document en vérification chez AlmaGo" : "Aucune action demandée",
           };
 
-  const welcomeMessage = hasActionRequired
-    ? `Vous avez ${studentActionCount} action${studentActionCount > 1 ? "s" : ""} à traiter. Commencez par la plus importante ci-dessous.`
-    : waitingAlmaGo.length
-      ? `Aucune action n’est demandée de votre côté actuellement. AlmaGo suit ${waitingAlmaGo.length} étape${waitingAlmaGo.length > 1 ? "s" : ""} de votre dossier.`
-      : "Aucune action prioritaire n’est enregistrée actuellement. Vous pouvez consulter les différentes parties de votre dossier ci-dessous.";
+  const welcomeMessage = hasStudentActionRequired
+    ? `${documentsNeedingAction} document${documentsNeedingAction > 1 ? "s demandent" : " demande"} une correction de votre part. Commencez par les pièces signalées ci-dessous.`
+    : hasRecordedNextStep
+      ? "Une prochaine étape est enregistrée dans votre dossier. Consultez-la ci-dessous pour connaître le détail disponible."
+      : documentsUnderReview
+        ? `${documentsUnderReview} document${documentsUnderReview > 1 ? "s sont" : " est"} actuellement en vérification chez AlmaGo. Aucune correction n’est demandée de votre côté pour ces pièces.`
+        : "Aucune action prioritaire n’est enregistrée actuellement. Vous pouvez consulter les différentes parties de votre dossier ci-dessous.";
 
   const journeyStages: StudentJourneyStage[] = [
     {
@@ -192,8 +194,8 @@ export default async function StudentEntry() {
         </div>
 
         <div className="flex flex-wrap gap-2">
-          <StatusPill label="À faire par vous" value={studentActionCount} tone={studentActionCount ? "warning" : "neutral"} />
-          <StatusPill label="En cours chez AlmaGo" value={waitingAlmaGo.length} tone="info" />
+          <StatusPill label="À corriger par vous" value={documentsNeedingAction} tone={documentsNeedingAction ? "warning" : "neutral"} />
+          <StatusPill label="Chez AlmaGo" value={documentsUnderReview} tone="info" />
         </div>
       </section>
 
@@ -203,18 +205,24 @@ export default async function StudentEntry() {
           <div className="pl-2 sm:pl-3">
             <div className="flex flex-wrap items-center gap-3">
               <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Où en est votre dossier ?</p>
-              <Badge variant={hasActionRequired ? "warning" : waitingAlmaGo.length ? "info" : "neutral"}>
-                {hasActionRequired ? "Action à faire" : waitingAlmaGo.length ? "Suivi en cours" : "Aucune action prioritaire"}
+              <Badge variant={hasStudentActionRequired ? "warning" : hasRecordedNextStep || documentsUnderReview ? "info" : "neutral"}>
+                {hasStudentActionRequired
+                  ? "Correction demandée"
+                  : hasRecordedNextStep
+                    ? "Étape enregistrée"
+                    : documentsUnderReview
+                      ? "En vérification"
+                      : "Aucune action prioritaire"}
               </Badge>
             </div>
 
             <h2 className="mt-5 text-2xl font-bold tracking-[-0.03em] text-slate-950 sm:text-3xl">
-              {hasActionRequired ? "Votre prochaine étape" : "Votre dossier est à jour pour le moment"}
+              {hasStudentActionRequired || hasRecordedNextStep ? "Votre prochaine étape" : "Votre dossier est à jour pour le moment"}
             </h2>
             <p className="mt-3 max-w-2xl text-base leading-7 text-slate-700">{nextAction.detail}</p>
 
             <div className="mt-5 inline-flex items-center gap-2 rounded-full bg-[var(--surface-muted)] px-3 py-2 text-xs font-bold text-slate-600">
-              <span aria-hidden="true" className={`h-2 w-2 rounded-full ${hasActionRequired ? "bg-[var(--accent)]" : "bg-[var(--brand)]"}`} />
+              <span aria-hidden="true" className={`h-2 w-2 rounded-full ${hasStudentActionRequired ? "bg-[var(--accent)]" : "bg-[var(--brand)]"}`} />
               {nextAction.owner}
             </div>
 
