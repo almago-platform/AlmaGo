@@ -432,3 +432,23 @@ test("every sensitive student page loader enforces the student role", () => {
     assert.doesNotMatch(source, /auth\.getUser\(\)/, path);
   }
 });
+
+
+test("every sensitive admin page loader enforces the admin role", () => {
+  const pages = [
+    "src/app/admin/applications/page.tsx",
+    "src/app/admin/documents/page.tsx",
+    "src/app/admin/orientation/page.tsx",
+    "src/app/admin/page.tsx",
+    "src/app/admin/programs/page.tsx",
+    "src/app/admin/universities/page.tsx",
+  ];
+
+  for (const path of pages) {
+    const source = read(path);
+    assert.match(source, /getAdminUser\(\)/, path);
+    assert.match(source, /if \(!user\) redirect\("\/login"\)/, path);
+    assert.match(source, /if \(!isAdmin\) redirect\("\/unauthorized"\)/, path);
+    assert.doesNotMatch(source, /createClient\(\)/, path);
+  }
+});
