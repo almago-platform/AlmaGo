@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import test from "node:test";
 
 const studentPage = readFileSync("src/app/student/orientation/page.tsx", "utf8");
+const studentDashboard = readFileSync("src/app/student/page.tsx", "utf8");
 const studentApplicationsRoute = readFileSync("src/app/api/student/applications/route.ts", "utf8");
 const adminOrientationRoute = readFileSync("src/app/api/admin/orientation/route.ts", "utf8");
 const adminOrientationPage = readFileSync("src/app/admin/orientation/page.tsx", "utf8");
@@ -12,6 +13,9 @@ test("students only receive recommendations backed by verified source evidence",
   assert.match(studentPage, /program\?\.verified_at/);
   assert.match(studentPage, /program\?\.source_url \|\| program\?\.application_url/);
   assert.match(studentPage, /recommendations=\{visibleRecommendations\}/);
+  assert.match(studentDashboard, /source_url,application_url,verified_at/);
+  assert.match(studentDashboard, /const studentRecommendations = \(recommendations \|\| \[\]\)\.filter/);
+  assert.match(studentDashboard, /program\?\.verified_at/);
 });
 
 test("student application creation rejects unverified programme recommendations", () => {
