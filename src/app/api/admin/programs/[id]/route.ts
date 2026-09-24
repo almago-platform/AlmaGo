@@ -9,6 +9,17 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   if (!isAdmin) return NextResponse.json({ error: "Accès non autorisé." }, { status: 403 });
   const body = await request.json().catch(() => null) as Record<string, unknown> | null;
   if (!body) return NextResponse.json({ error: "Données invalides." }, { status: 400 });
+  const { id } = await params;
+
+  if (typeof body.is_active === "boolean" && !("name" in body)) {
+    const { error } = await supabase
+      .from("programs")
+      .update({ is_active: body.is_active })
+      .eq("id", id);
+    if (error) return NextResponse.json({ error: "Impossible de modifier l’état du programme." }, { status: 500 });
+    return NextResponse.json({ ok: true });
+  }
+
   const data = programPayload(body);
   if (!data.name || typeof data.university_id !== "string") return NextResponse.json({ error: "Université et nom du programme obligatoires." }, { status: 400 });
   const programmeUrls = [data.source_url, data.application_url].filter(
@@ -30,7 +41,6 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
       { status: 400 },
     );
   }
-  const { id } = await params;
   const { data: existing, error: existingError } = await supabase
     .from("programs")
     .select("source_url,application_url")
