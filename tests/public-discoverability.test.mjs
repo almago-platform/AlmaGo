@@ -10,7 +10,7 @@ const loginPage = readFileSync("src/app/login/page.tsx", "utf8");
 const signupPage = readFileSync("src/app/signup/page.tsx", "utf8");
 
 test("sitemap contains only public informational routes", () => {
-  for (const route of ["/", "/aide", "/a-propos", "/confiance", "/comprendre-les-demarches", "/selon-votre-pays", "/sources-officielles"]) {
+  for (const route of ["/", "/aide", "/accessibilite", "/a-propos", "/confiance", "/comprendre-les-demarches", "/selon-votre-pays", "/sources-officielles"]) {
     assert.ok(sitemap.includes('"' + route + '"'), route + " should appear in sitemap");
   }
 
