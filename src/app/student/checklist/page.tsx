@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/Badge";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Card } from "@/components/ui/Card";
 import { ProgressBar } from "@/components/ui/ProgressBar";
-import { createClient } from "@/lib/supabase/server";
+import { getStudentUser } from "@/lib/auth/access";
 
 const labels: Record<string, string> = {
   not_started: "À faire par vous",
@@ -27,12 +27,9 @@ const badgeVariants = {
 export const dynamic = "force-dynamic";
 
 export default async function ChecklistPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
+  const { supabase, user, isStudent } = await getStudentUser();
   if (!user) redirect("/login");
+  if (!isStudent) redirect("/unauthorized");
 
   const { data: profile, error: profileError } = await supabase
     .from("profiles")
