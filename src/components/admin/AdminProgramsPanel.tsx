@@ -99,13 +99,22 @@ export function AdminProgramsPanel({
   const [editing, setEditing] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [level, setLevel] = useState("all");
+  const [quality, setQuality] = useState("all");
   const [notice, setNotice] = useState<Notice | null>(null);
   const [busy, setBusy] = useState(false);
+
+  const activePrograms = items.filter((program) => program.is_active);
+  const missingSourceCount = activePrograms.filter((program) => !program.application_url).length;
+  const missingDeadlineCount = activePrograms.filter(
+    (program) => !program.winter_deadline && !program.summer_deadline,
+  ).length;
 
   const filtered = useMemo(() => {
     const normalized = query.trim().toLocaleLowerCase("fr");
     return items.filter((program) => {
       if (level !== "all" && program.degree_level !== level) return false;
+      if (quality === "missing_source" && program.application_url) return false;
+      if (quality === "missing_deadline" && (program.winter_deadline || program.summer_deadline)) return false;
       if (!normalized) return true;
       return [program.name, program.field, universityName(program)]
         .filter(Boolean)
@@ -113,7 +122,7 @@ export function AdminProgramsPanel({
         .toLocaleLowerCase("fr")
         .includes(normalized);
     });
-  }, [items, query, level]);
+  }, [items, query, level, quality]);
 
   function change(key: keyof ProgramForm, value: string | boolean) {
     setForm((current) => ({ ...current, [key]: value }));
@@ -366,6 +375,27 @@ export function AdminProgramsPanel({
       </Card>
 
       <section aria-labelledby="program-catalogue-title">
+        <div className="mb-5 grid gap-4 sm:grid-cols-3">
+          <QualityCard
+            title="Programmes actifs"
+            value={activePrograms.length}
+            detail="Fiches actuellement utilisées dans le catalogue"
+            tone="neutral"
+          />
+          <QualityCard
+            title="Source à compléter"
+            value={missingSourceCount}
+            detail="Programmes actifs sans lien officiel enregistré"
+            tone={missingSourceCount ? "warning" : "success"}
+          />
+          <QualityCard
+            title="Échéance à compléter"
+            value={missingDeadlineCount}
+            detail="Programmes actifs sans échéance hiver ni été"
+            tone={missingDeadlineCount ? "warning" : "success"}
+          />
+        </div>
+
         <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Catalogue</p>
@@ -376,7 +406,7 @@ export function AdminProgramsPanel({
         </div>
 
         <Card className="mb-5 shadow-none">
-          <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_14rem]">
+          <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_14rem_16rem]">
             <label className="block text-sm font-medium text-slate-700">
               Rechercher
               <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Programme, domaine ou université" className="field" />
@@ -386,6 +416,14 @@ export function AdminProgramsPanel({
               <select value={level} onChange={(event) => setLevel(event.target.value)} className="field">
                 <option value="all">Tous les niveaux</option>
                 {degreeLevels.map((value) => <option key={value}>{value}</option>)}
+              </select>
+            </label>
+            <label className="block text-sm font-medium text-slate-700">
+              Qualité de la fiche
+              <select value={quality} onChange={(event) => setQuality(event.target.value)} className="field">
+                <option value="all">Toutes les fiches</option>
+                <option value="missing_source">Source officielle à compléter</option>
+                <option value="missing_deadline">Échéance à compléter</option>
               </select>
             </label>
           </div>
@@ -436,6 +474,40 @@ export function AdminProgramsPanel({
         )}
       </section>
     </div>
+  );
+}
+
+function QualityCard({
+  title,
+  value,
+  detail,
+  tone,
+}: {
+  title: string;
+  value: number;
+  detail: string;
+  tone: "success" | "warning" | "neutral";
+}) {
+  return (
+    <Card as="article" className="shadow-none">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="text-sm font-bold text-slate-800">{title}</p>
+          <p className="mt-2 text-3xl font-bold tracking-tight text-slate-950">{value}</p>
+        </div>
+        <span
+          aria-hidden="true"
+          className={`mt-1 h-2.5 w-2.5 rounded-full ${
+            tone === "warning"
+              ? "bg-amber-500"
+              : tone === "success"
+                ? "bg-emerald-600"
+                : "bg-slate-300"
+          }`}
+        />
+      </div>
+      <p className="mt-2 text-xs leading-5 text-slate-500">{detail}</p>
+    </Card>
   );
 }
 
