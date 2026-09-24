@@ -18,6 +18,7 @@ const adminOrientationRoute = readFileSync("src/app/api/admin/orientation/route.
 const adminOrientationArchiveRoute = readFileSync("src/app/api/admin/orientation/[id]/route.ts", "utf8");
 const adminOrientationPage = readFileSync("src/app/admin/orientation/page.tsx", "utf8");
 const adminOrientationPanel = readFileSync("src/components/admin/AdminOrientationPanel.tsx", "utf8");
+const studentPanel = readFileSync("src/components/student/StudentOrientationPanel.tsx", "utf8");
 
 test("source verification accepts only real http(s) URLs with a recorded verification date", () => {
   assert.equal(isHttpSourceUrl("https://www.example.edu/programme"), true);
