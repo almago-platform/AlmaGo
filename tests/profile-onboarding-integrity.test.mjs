@@ -50,3 +50,11 @@ test("birth date validation rejects impossible calendar dates", () => {
   assert.match(profileLib, /candidate\.getUTCFullYear\(\) === year/);
   assert.match(profileLib, /La date de naissance doit être une date valide/);
 });
+
+
+test("onboarding load failures never fall through to an empty editable form", () => {
+  assert.match(onboardingPage, /error: profileError/);
+  assert.match(onboardingPage, /if \(profileError\)/);
+  assert.match(onboardingPage, /Profil temporairement indisponible/);
+  assert.match(onboardingPage, /Réessayez avant de saisir de nouvelles données/);
+});
