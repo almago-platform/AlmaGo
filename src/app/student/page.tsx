@@ -364,7 +364,7 @@ export default async function StudentEntry() {
           </div>
 
           <div className="shrink-0">
-            <ButtonLink href="/student/applications" variant="secondary">Voir mes candidatures</ButtonLink>
+            <ButtonLink href="/student/echeances" variant="secondary">Voir toutes mes échéances</ButtonLink>
           </div>
         </div>
       </Card>
