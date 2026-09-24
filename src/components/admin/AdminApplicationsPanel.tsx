@@ -281,9 +281,9 @@ export function AdminApplicationsPanel({ applications }: { applications: any[] }
                     onChange={(event) => changeEdit(application.id, { ...edit, status: event.target.value })}
                     className="field"
                   >
-                    {!applicationStatuses.includes(edit.status as (typeof applicationStatuses)[number]) && (
-                      <option value={edit.status}>
-                        {applicationStatusLabels[edit.status] || edit.status} · historique
+                    {!applicationStatuses.includes(application.status as (typeof applicationStatuses)[number]) && (
+                      <option value={application.status}>
+                        {applicationStatusLabels[application.status] || application.status} · historique
                       </option>
                     )}
                     {applicationStatuses.map((item) => (
