@@ -66,7 +66,6 @@ test("catalogue update routes invalidate stale verification dates when source ev
     assert.match(source, /sourceUrlsChanged/);
     assert.match(source, /sourceChanged/);
     assert.match(source, /verified_at: null/);
-    assert.match(source, /mark_verified === true \|\| !sourceChanged/);
   }
 });
 
@@ -117,4 +116,16 @@ test("programme update blocks reassignment to an inactive university but preserv
   assert.match(programUpdate, /if \(data\.university_id !== existing\.university_id\)/);
   assert.match(programUpdate, /from\("universities"\)/);
   assert.match(programUpdate, /Vous ne pouvez pas rattacher ce programme à une université inactive/);
+});
+
+
+test("programme university reassignment invalidates stale verification", () => {
+  assert.match(programUpdate, /const universityChanged = data\.university_id !== existing\.university_id/);
+  assert.match(programUpdate, /const verificationEvidenceChanged = sourceChanged \|\| universityChanged/);
+  assert.match(programUpdate, /mark_verified === true \|\| !verificationEvidenceChanged/);
+});
+
+
+test("university source changes still invalidate stale verification", () => {
+  assert.match(universityUpdate, /mark_verified === true \|\| !sourceChanged/);
 });
