@@ -41,7 +41,7 @@ export default async function StudentOrientationPage() {
 
 function OrientationUnavailable() {
   return (
-    <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
+    <main className="mx-auto w-full max-w-7xl px-4 py-7 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
       <PageHeader badge="Orientation" title="Programmes recommandés" />
       <Card>
         <div role="alert">
