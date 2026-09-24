@@ -78,6 +78,15 @@ export async function POST(request: Request) {
   if (!isAdmin) return NextResponse.json({ error: "Accès non autorisé." }, { status: 403 });
   const body = await request.json().catch(() => null) as Record<string, unknown> | null;
   if (!body) return NextResponse.json({ error: "Données invalides." }, { status: 400 });
+  for (const key of ["is_active", "studienkolleg_required", "testas_required", "uni_assist_required"] as const) {
+    if (typeof body[key] !== "boolean") {
+      return NextResponse.json(
+        { error: "Les choix structurants du programme doivent être explicitement définis." },
+        { status: 400 },
+      );
+    }
+  }
+
   const validationError = programValidationError(body);
   if (validationError) return NextResponse.json({ error: validationError }, { status: 400 });
   const data = payload(body);
