@@ -68,6 +68,13 @@ test("catalogue update routes invalidate stale verification dates when source ev
   }
 });
 
+test("programme active-state toggle stays partial and can quarantine malformed legacy entries", () => {
+  assert.match(programUpdate, /typeof body\.is_active === "boolean"/);
+  assert.match(programUpdate, /!\("name" in body\)/);
+  assert.match(programUpdate, /\.update\(\{ is_active: body\.is_active \}\)/);
+  assert.match(programUpdate, /Impossible de modifier l’état du programme/);
+});
+
 test("university active-state toggle stays partial and does not overwrite catalogue fields", () => {
   assert.match(universityUpdate, /typeof body\.is_active === "boolean"/);
   assert.match(universityUpdate, /!\("name" in body\)/);
