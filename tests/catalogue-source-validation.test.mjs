@@ -7,6 +7,7 @@ const programCreate = readFileSync("src/app/api/admin/programs/route.ts", "utf8"
 const programUpdate = readFileSync("src/app/api/admin/programs/[id]/route.ts", "utf8");
 const universityCreate = readFileSync("src/app/api/admin/universities/route.ts", "utf8");
 const universityUpdate = readFileSync("src/app/api/admin/universities/[id]/route.ts", "utf8");
+const programAdminPanel = readFileSync("src/components/admin/AdminProgramsPanel.tsx", "utf8");
 
 test("catalogue source helper rejects placeholder and executable schemes", () => {
   for (const value of ["a", "example.edu/programme", "javascript:alert(1)", "data:text/html,test", "ftp://example.edu"]) {
@@ -73,6 +74,9 @@ test("programme active-state toggle stays partial and can quarantine malformed l
   assert.match(programUpdate, /!\("name" in body\)/);
   assert.match(programUpdate, /\.update\(\{ is_active: body\.is_active \}\)/);
   assert.match(programUpdate, /Impossible de modifier l’état du programme/);
+  assert.match(programAdminPanel, /body: JSON\.stringify\(\{ is_active: !program\.is_active \}\)/);
+  assert.match(programAdminPanel, /Désactiver/);
+  assert.match(programAdminPanel, /Réactiver/);
 });
 
 test("university active-state toggle stays partial and does not overwrite catalogue fields", () => {
