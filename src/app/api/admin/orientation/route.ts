@@ -28,7 +28,15 @@ export async function POST(request: Request) {
     );
   }
 
-  const { data, error } = await supabase.from("program_recommendations").upsert({ student_id: body.student_id, program_id: body.program_id, admin_id: user.id, note: typeof body.note === "string" ? body.note.trim().slice(0, 2000) : null, status }, { onConflict: "student_id,program_id" }).select("id").single();
+  const { data, error } = await supabase.from("program_recommendations").upsert({
+    student_id: body.student_id,
+    program_id: body.program_id,
+    admin_id: user.id,
+    note: typeof body.note === "string" ? body.note.trim().slice(0, 2000) : null,
+    status,
+    is_archived: false,
+    archived_at: null,
+  }, { onConflict: "student_id,program_id" }).select("id").single();
   if (error) return NextResponse.json({ error: "Impossible d’enregistrer la recommandation." }, { status: 500 });
   return NextResponse.json({ ok: true, id: data.id });
 }
