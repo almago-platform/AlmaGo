@@ -35,6 +35,34 @@ export function isSafeDocumentFile(file: File) {
   return allowedMimeTypes.includes(file.type as (typeof allowedMimeTypes)[number]) && validExtension && file.size > 0 && file.size <= maxDocumentBytes;
 }
 
+export async function hasSafeDocumentSignature(file: File) {
+  const header = new Uint8Array(await file.slice(0, 8).arrayBuffer());
+
+  if (file.type === "application/pdf") {
+    return header.length >= 5
+      && header[0] === 0x25
+      && header[1] === 0x50
+      && header[2] === 0x44
+      && header[3] === 0x46
+      && header[4] === 0x2d;
+  }
+
+  if (file.type === "image/jpeg") {
+    return header.length >= 3
+      && header[0] === 0xff
+      && header[1] === 0xd8
+      && header[2] === 0xff;
+  }
+
+  if (file.type === "image/png") {
+    const pngSignature = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
+    return header.length >= pngSignature.length
+      && pngSignature.every((byte, index) => header[index] === byte);
+  }
+
+  return false;
+}
+
 export function safeFilename(filename: string) {
   return filename.replace(/[^a-zA-Z0-9._-]/g, "-").replace(/-+/g, "-").slice(0, 120) || "document";
 }

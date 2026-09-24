@@ -81,7 +81,7 @@ const questions = [
       },
       {
         q: "Que faire si une échéance approche ?",
-        a: "Ouvrez la candidature concernée, vérifiez la prochaine action enregistrée puis contrôlez la date sur la source officielle avant d’envoyer un dossier.",
+        a: "Ouvrez « Mes échéances », puis la candidature concernée. Vérifiez la prochaine action enregistrée et contrôlez toujours la date sur la source officielle avant d’envoyer un dossier.",
       },
       {
         q: "Pourquoi certaines dates peuvent-elles changer ?",
@@ -94,7 +94,7 @@ const questions = [
     items: [
       {
         q: "Où retrouver les informations de mon dossier ?",
-        a: "Après connexion, votre espace étudiant réunit votre profil, vos documents, vos démarches, votre orientation et vos candidatures.",
+        a: "Après connexion, votre espace étudiant réunit votre profil, vos documents, vos démarches, vos échéances, votre orientation et vos candidatures.",
       },
       {
         q: "AlmaGo publie-t-il mes documents ?",

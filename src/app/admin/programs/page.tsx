@@ -1,7 +1,8 @@
+import { redirect } from "next/navigation";
 import { AdminProgramsPanel } from "@/components/admin/AdminProgramsPanel";
 import { Card } from "@/components/ui/Card";
 import { PageHeader } from "@/components/ui/PageHeader";
-import { createClient } from "@/lib/supabase/server";
+import { getAdminUser } from "@/lib/auth/access";
 
 export const dynamic = "force-dynamic";
 
@@ -11,10 +12,17 @@ export default async function AdminProgramsPage({
   searchParams: Promise<{ quality?: string }>;
 }) {
   const { quality } = await searchParams;
-  const supabase = await createClient();
+  const { supabase, user, isAdmin } = await getAdminUser();
+  if (!user) redirect("/login");
+  if (!isAdmin) redirect("/unauthorized");
   const [{ data: programs, error: programsError }, { data: universities, error: universitiesError }] = await Promise.all([
-    supabase.from("programs").select("*, universities(name,city)").order("name"),
-    supabase.from("universities").select("id,name").eq("is_active", true).order("name"),
+    supabase
+      .from("programs")
+      .select(
+        "id,university_id,name,degree_level,field,teaching_language,intake_terms,duration,nc_requirement,german_level_required,english_level_required,diploma_required,indicative_average,studienkolleg_required,testas_required,uni_assist_required,application_fee_notes,winter_deadline,summer_deadline,application_url,source_url,verified_at,almago_notes,is_active,universities(name,city,is_active)",
+      )
+      .order("name"),
+    supabase.from("universities").select("id,name,is_active").order("name"),
   ]);
 
   if (programsError || universitiesError) {
@@ -35,6 +43,8 @@ export default async function AdminProgramsPage({
 
   const programRows = programs || [];
   const activePrograms = programRows.filter((program) => program.is_active).length;
+  const universityRows = universities || [];
+  const activeUniversities = universityRows.filter((university) => university.is_active).length;
 
   return (
     <main className="mx-auto w-full max-w-7xl px-4 py-7 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
@@ -55,11 +65,11 @@ export default async function AdminProgramsPage({
         </Card>
         <Card className="shadow-none">
           <p className="text-sm font-bold text-slate-700">Universités actives</p>
-          <p className="mt-2 text-3xl font-bold tracking-tight text-slate-950">{universities?.length || 0}</p>
+          <p className="mt-2 text-3xl font-bold tracking-tight text-slate-950">{activeUniversities}</p>
         </Card>
       </div>
 
-      <AdminProgramsPanel programs={programRows} universities={universities || []} initialQuality={quality} />
+      <AdminProgramsPanel programs={programRows} universities={universityRows} initialQuality={quality} />
     </main>
   );
 }

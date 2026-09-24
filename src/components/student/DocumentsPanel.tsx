@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/Badge";
 import { Button, buttonClassName } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { studentHistoryDisplayMessage } from "@/lib/phase4";
 import {
   categoryLabel,
   documentCategories,
@@ -336,7 +337,7 @@ export function DocumentsPanel({
           ) : (
             history.map((event) => (
               <Card as="article" key={event.id} aria-labelledby={`document-event-title-${event.id}`} className="p-4 shadow-none">
-                <h3 id={`document-event-title-${event.id}`} className="text-sm font-medium text-slate-700">{event.message}</h3>
+                <h3 id={`document-event-title-${event.id}`} className="text-sm font-medium text-slate-700">{studentHistoryDisplayMessage(event.message)}</h3>
                 <time dateTime={event.created_at} className="mt-1 block text-xs text-slate-500">
                   {new Intl.DateTimeFormat("fr-TN", {
                     dateStyle: "medium",

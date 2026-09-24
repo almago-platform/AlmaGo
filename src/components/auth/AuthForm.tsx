@@ -31,7 +31,7 @@ export function AuthForm({ initialMode = "login" }: { initialMode?: Mode }) {
         const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
           redirectTo: `${window.location.origin}/auth/callback?next=/reset-password`,
         });
-        if (resetError) setError(resetError.message);
+        if (resetError) setError("Nous n’arrivons pas à envoyer le lien de réinitialisation pour le moment.");
         else setMessage("Si cette adresse existe, un lien de réinitialisation a été envoyé.");
       } else if (mode === "signup") {
         const { data, error: signUpError } = await supabase.auth.signUp({
@@ -39,16 +39,35 @@ export function AuthForm({ initialMode = "login" }: { initialMode?: Mode }) {
           password,
           options: { data: { full_name: `${firstName} ${lastName}`.trim() } },
         });
-        if (signUpError) setError(signUpError.message);
+        if (signUpError) setError("Nous n’arrivons pas à créer ce compte pour le moment. Vérifiez les informations saisies puis réessayez.");
         else if (data.session) router.push("/student");
-        else setMessage("Vérifie ton adresse email pour continuer.");
+        else setMessage("Vérifiez votre adresse e-mail pour continuer.");
       } else {
-        const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
-        if (signInError) setError("Email ou mot de passe incorrect.");
-        else router.push("/student");
+        const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+        if (signInError) {
+          setError("Email ou mot de passe incorrect.");
+        } else {
+          const { data: role, error: roleError } = await supabase
+            .from("user_roles")
+            .select("role")
+            .eq("user_id", signInData.user.id)
+            .maybeSingle();
+
+          if (roleError || !role) {
+            await supabase.auth.signOut();
+            setError("Nous n’arrivons pas à déterminer l’espace associé à ce compte.");
+          } else if (role.role === "admin") {
+            router.push("/admin");
+          } else if (role.role === "student") {
+            router.push("/student");
+          } else {
+            await supabase.auth.signOut();
+            setError("Ce compte ne dispose pas d’un espace AlmaGo autorisé.");
+          }
+        }
       }
     } catch {
-      setError("Une erreur est survenue. Réessaie.");
+      setError("Une erreur est survenue. Réessayez.");
     } finally {
       setLoading(false);
     }
@@ -62,10 +81,10 @@ export function AuthForm({ initialMode = "login" }: { initialMode?: Mode }) {
         : "Réinitialiser mon accès";
   const subtitle =
     mode === "signup"
-      ? "Ouvre ton espace AlmaGo pour préparer ton dossier Allemagne étape par étape."
+      ? "Ouvrez votre espace AlmaGo pour préparer votre dossier Allemagne étape par étape."
       : mode === "forgot"
-        ? "Indique ton email et nous t'enverrons un lien pour récupérer ton accès."
-        : "Retrouve ton dossier, tes documents, tes recommandations et tes prochaines actions.";
+        ? "Indiquez votre e-mail et nous vous enverrons un lien pour récupérer votre accès."
+        : "Retrouvez votre dossier, vos documents, vos pistes d’orientation et vos prochaines actions.";
 
   return (
     <section className="w-full max-w-xl rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow-card)]">
@@ -131,7 +150,7 @@ export function AuthForm({ initialMode = "login" }: { initialMode?: Mode }) {
 
         {mode === "signup" && (
           <p id="signup-password-hint" className="rounded-[var(--radius-control)] bg-[var(--surface-muted)] px-3 py-2 text-sm text-slate-600">
-            Utilise au moins 8 caractères. Tu recevras ensuite un email de confirmation.
+            Utilisez au moins 8 caractères. Vous recevrez ensuite un e-mail de confirmation.
           </p>
         )}
 
@@ -148,7 +167,11 @@ export function AuthForm({ initialMode = "login" }: { initialMode?: Mode }) {
 
         <button type="submit" disabled={loading} className={buttonClassName("primary", "w-full justify-center py-3 text-base")}>
           {loading
-            ? "Patiente..."
+            ? mode === "login"
+              ? "Connexion…"
+              : mode === "signup"
+                ? "Création…"
+                : "Envoi…"
             : mode === "login"
               ? "Se connecter"
               : mode === "signup"

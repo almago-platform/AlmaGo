@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { universityTypes } from "@/lib/phase4";
+import { hasVerifiedUniversitySource, isHttpSourceUrl } from "@/lib/source-verification";
 
 type University = {
   id: string;
@@ -57,6 +58,12 @@ const empty: UniversityForm = {
   is_active: true,
 };
 
+function universitySourceUrl(university: Pick<University, "source_url" | "website_url">) {
+  if (isHttpSourceUrl(university.source_url)) return university.source_url?.trim() || null;
+  if (isHttpSourceUrl(university.website_url)) return university.website_url?.trim() || null;
+  return null;
+}
+
 function formatVerificationDate(value: string) {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "date inconnue";
@@ -91,16 +98,18 @@ export function AdminUniversitiesPanel({
 
   const activeUniversities = items.filter((university) => university.is_active);
   const missingSourceCount = activeUniversities.filter(
-    (university) => !university.source_url && !university.website_url,
+    (university) => !universitySourceUrl(university),
   ).length;
-  const missingVerificationCount = activeUniversities.filter((university) => !university.verified_at).length;
+  const missingVerificationCount = activeUniversities.filter(
+    (university) => !hasVerifiedUniversitySource(university),
+  ).length;
 
   const filtered = useMemo(() => {
     const normalized = query.trim().toLocaleLowerCase("fr");
     return items.filter((university) => {
       if (type !== "all" && university.university_type !== type) return false;
-      if (quality === "missing_source" && (university.source_url || university.website_url)) return false;
-      if (quality === "missing_verification" && university.verified_at) return false;
+      if (quality === "missing_source" && universitySourceUrl(university)) return false;
+      if (quality === "missing_verification" && hasVerifiedUniversitySource(university)) return false;
       if (!normalized) return true;
       return [
         university.name,
@@ -330,7 +339,7 @@ export function AdminUniversitiesPanel({
                 onChange={(checked) => change("mark_verified", checked)}
               />
               <p className="text-xs leading-5 text-slate-500">
-                Cette confirmation met à jour la date de vérification. Une modification simple de la fiche ne change pas cette date.
+                Cette confirmation met à jour la date de vérification. Si vous changez un lien officiel sans reconfirmer la vérification, l’ancienne date sera retirée.
               </p>
               <label className="block text-sm font-medium text-slate-700">
                 URL du logo
@@ -465,11 +474,13 @@ export function AdminUniversitiesPanel({
                     <Badge variant={university.is_public ? "info" : "neutral"}>
                       {university.is_public ? "Public" : "Privé"}
                     </Badge>
-                    <Badge variant={university.source_url || university.website_url ? "info" : "warning"}>
-                      {university.source_url || university.website_url ? "Source officielle enregistrée" : "Source officielle à compléter"}
+                    <Badge variant={universitySourceUrl(university) ? "info" : "warning"}>
+                      {universitySourceUrl(university) ? "Source officielle valide enregistrée" : "Source officielle à compléter"}
                     </Badge>
-                    <Badge variant={university.verified_at ? "success" : "warning"}>
-                      {university.verified_at ? `Vérifié le ${formatVerificationDate(university.verified_at)}` : "Vérification à compléter"}
+                    <Badge variant={hasVerifiedUniversitySource(university) ? "success" : "warning"}>
+                      {hasVerifiedUniversitySource(university) && university.verified_at
+                        ? `Vérifié le ${formatVerificationDate(university.verified_at)}`
+                        : "Vérification à compléter"}
                     </Badge>
                   </div>
                   <h3
@@ -491,9 +502,9 @@ export function AdminUniversitiesPanel({
                 {university.description || "Aucune description enregistrée."}
               </p>
 
-              {(university.source_url || university.website_url) && (
+              {universitySourceUrl(university) && (
                 <a
-                  href={university.source_url || university.website_url || "#"}
+                  href={universitySourceUrl(university) || "#"}
                   target="_blank"
                   rel="noreferrer"
                   className="mt-4 inline-flex text-sm font-semibold text-[var(--brand)] underline decoration-[var(--brand-border)] underline-offset-4 hover:text-[var(--brand-hover)]"
@@ -502,7 +513,13 @@ export function AdminUniversitiesPanel({
                 </a>
               )}
 
-              <div className="mt-5 flex flex-col gap-2 border-t border-[var(--border)] pt-4 sm:flex-row sm:flex-wrap">
+              <p className="mt-5 text-xs leading-5 text-slate-500">
+                {university.is_active
+                  ? "Désactiver cet établissement rend ses programmes non publiables dans les nouvelles pistes d’orientation, sans supprimer leur historique."
+                  : "Tant que cet établissement reste inactif, ses programmes ne peuvent pas être proposés dans une nouvelle piste d’orientation. Le réactiver peut rendre de nouveau publiables les programmes qui sont encore actifs et vérifiés."}
+              </p>
+
+              <div className="mt-3 flex flex-col gap-2 border-t border-[var(--border)] pt-4 sm:flex-row sm:flex-wrap">
                 <Button type="button" variant="secondary" onClick={() => edit(university)} className="w-full justify-center sm:w-auto">
                   Modifier
                 </Button>

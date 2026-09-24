@@ -19,16 +19,39 @@ export function ResetPasswordForm() {
     setSaving(true);
 
     try {
-      const { error: updateError } = await createClient().auth.updateUser({ password });
+      const supabase = createClient();
+      const { data: userData, error: updateError } = await supabase.auth.updateUser({ password });
 
-      if (updateError) {
-        setError("Le lien est expiré ou invalide. Demande un nouveau lien depuis la page de connexion.");
+      if (updateError || !userData.user) {
+        setError("Le lien est expiré ou invalide. Demandez un nouveau lien depuis la page de connexion.");
       } else {
-        setMessage("Mot de passe mis à jour. Redirection vers ton espace étudiant...");
-        setTimeout(() => router.push("/student"), 700);
+        const { data: role, error: roleError } = await supabase
+          .from("user_roles")
+          .select("role")
+          .eq("user_id", userData.user.id)
+          .maybeSingle();
+
+        if (roleError || !role) {
+          await supabase.auth.signOut();
+          setError("Nous n’arrivons pas à déterminer l’espace associé à ce compte.");
+        } else {
+          const destination = role.role === "admin"
+            ? "/admin"
+            : role.role === "student"
+              ? "/student"
+              : null;
+
+          if (!destination) {
+            await supabase.auth.signOut();
+            setError("Ce compte ne dispose pas d’un espace AlmaGo autorisé.");
+          } else {
+            setMessage("Mot de passe mis à jour. Redirection vers votre espace AlmaGo…");
+            setTimeout(() => router.push(destination), 700);
+          }
+        }
       }
     } catch {
-      setError("Une erreur est survenue. Réessaie dans un instant.");
+      setError("Une erreur est survenue. Réessayez dans un instant.");
     } finally {
       setSaving(false);
     }
@@ -39,7 +62,7 @@ export function ResetPasswordForm() {
       <p className="text-sm font-bold uppercase tracking-[0.18em] text-[var(--accent-strong)]">AlmaGo</p>
       <h1 className="mt-3 text-3xl font-bold tracking-tight text-slate-950">Nouveau mot de passe</h1>
       <p className="mt-3 text-sm leading-6 text-slate-600">
-        Saisis un mot de passe solide pour sécuriser ton accès au dossier.
+        Saisissez un mot de passe solide pour sécuriser votre accès AlmaGo.
       </p>
 
       <form onSubmit={submit} className="mt-7 space-y-5">
@@ -58,7 +81,7 @@ export function ResetPasswordForm() {
         </label>
 
         <p id="reset-password-hint" className="text-sm leading-6 text-slate-600">
-          Utilise au moins 8 caractères. Un mot de passe long et unique protège mieux ton espace.
+          Utilisez au moins 8 caractères. Un mot de passe long et unique protège mieux votre compte.
         </p>
 
         <p

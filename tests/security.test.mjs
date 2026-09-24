@@ -9,18 +9,19 @@ const read = (path) => readFileSync(join(root, path), "utf8");
 const migrationDir = join(root, "supabase", "migrations");
 const migrationFiles = readdirSync(migrationDir).filter((name) => name.endsWith(".sql")).sort();
 const migrations = migrationFiles.map((name) => readFileSync(join(migrationDir, name), "utf8")).join("\n");
+const access = read("src/lib/auth/access.ts");
 
 test("admin and student areas keep server-side authentication guards", () => {
   const adminLayout = read("src/app/admin/layout.tsx");
   const studentLayout = read("src/app/student/layout.tsx");
 
-  assert.match(adminLayout, /auth\.getUser\(\)/);
-  assert.match(adminLayout, /from\("user_roles"\)/);
-  assert.match(adminLayout, /role\?\.role !== "admin"/);
-  assert.match(adminLayout, /redirect\("\/unauthorized"\)/);
+  assert.match(adminLayout, /getAdminUser\(\)/);
+  assert.match(adminLayout, /if \(!user\) redirect\("\/login"\)/);
+  assert.match(adminLayout, /if \(!isAdmin\) redirect\("\/unauthorized"\)/);
 
-  assert.match(studentLayout, /auth\.getUser\(\)/);
+  assert.match(studentLayout, /getStudentUser\(\)/);
   assert.match(studentLayout, /if \(!user\) redirect\("\/login"\)/);
+  assert.match(studentLayout, /if \(!isStudent\) redirect\("\/unauthorized"\)/);
 });
 
 test("browser and server Supabase clients never use a service-role secret", () => {
@@ -93,8 +94,384 @@ test("privileged database functions keep explicit admin checks and hardened exec
   assert.match(migrations, /create or replace function public\.is_admin\(\)[\s\S]+?security invoker/i);
 });
 
+test("committed E2E journeys never mutate the production catalogue", () => {
+  const e2eDir = join(root, "tests", "e2e");
+  const e2eFiles = readdirSync(e2eDir).filter((name) => name.endsWith(".mjs")).sort();
+
+  for (const name of e2eFiles) {
+    const source = read(`tests/e2e/${name}`);
+
+    assert.doesNotMatch(source, /\/api\/admin\/(?:programs|universities)(?:\/|["'`])/i, name);
+    assert.doesNotMatch(
+      source,
+      /\.from\(["'](?:programs|universities)["']\)\.(?:insert|upsert|update|delete)\b/i,
+      name,
+    );
+  }
+});
+
 test("authenticated users cannot write their own role assignment", () => {
   const grants = read("supabase/migrations/0003_phase2_authenticated_grants.sql");
   assert.match(grants, /grant select on table public\.user_roles to authenticated/i);
   assert.doesNotMatch(grants, /grant[^;]*(?:insert|update|delete)[^;]*public\.user_roles/i);
+});
+
+
+test("student notifications do not send unused metadata to the browser", () => {
+  const page = read("src/app/student/notifications/page.tsx");
+  const panel = read("src/components/student/StudentNotificationsPanel.tsx");
+
+  assert.match(page, /select\("id,type,title,body,read_at,created_at"\)/);
+  assert.doesNotMatch(page, /body,metadata,read_at/);
+  assert.doesNotMatch(panel, /metadata:\s*unknown/);
+});
+
+
+test("document review route rejects missing, malformed and non-reviewable targets", () => {
+  const route = read("src/app/api/admin/documents/[id]/review/route.ts");
+
+  assert.match(route, /select\("status"\)/);
+  assert.match(route, /currentDocumentError\?\.code === "22P02"/);
+  assert.match(route, /Identifiant de document invalide/);
+  assert.match(route, /Document introuvable/);
+  assert.match(route, /\["pending", "replace_required"\]\.includes\(currentDocument\.status\)/);
+  assert.match(route, /Ce document n’est plus dans la file de revue active/);
+  assert.match(route, /status: 409/);
+});
+
+
+test("login routing sends each authenticated role to its own space", () => {
+  const authForm = read("src/components/auth/AuthForm.tsx");
+
+  assert.match(authForm, /from\("user_roles"\)/);
+  assert.match(authForm, /role\.role === "admin"/);
+  assert.match(authForm, /router\.push\("\/admin"\)/);
+  assert.match(authForm, /role\.role === "student"/);
+  assert.match(authForm, /router\.push\("\/student"\)/);
+  assert.match(authForm, /supabase\.auth\.signOut\(\)/);
+});
+
+
+test("every student API enforces the student role", () => {
+  const studentRoutes = [
+    "src/app/api/student/applications/route.ts",
+    "src/app/api/student/documents/[id]/route.ts",
+    "src/app/api/student/documents/upload/route.ts",
+    "src/app/api/student/notifications/[id]/route.ts",
+    "src/app/api/student/notifications/read-all/route.ts",
+    "src/app/api/student/onboarding/route.ts",
+    "src/app/api/student/profile/route.ts",
+  ];
+
+  assert.match(access, /export async function getStudentUser/);
+  assert.match(access, /role === "student"/);
+
+  for (const path of studentRoutes) {
+    const source = read(path);
+    assert.match(source, /getStudentUser/);
+    assert.match(source, /if \(!isStudent\)/);
+    assert.match(source, /Accès réservé aux étudiants/);
+    assert.match(source, /status: 403/);
+  }
+});
+
+
+test("auth callback only accepts internal relative next paths", () => {
+  const callback = read("src/app/auth/callback/route.ts");
+
+  assert.match(callback, /requestedNext\?\.startsWith\("\/"\)/);
+  assert.match(callback, /new URL\(requestedNext, url\.origin\)/);
+  assert.match(callback, /candidate\.origin === url\.origin/);
+  assert.match(callback, /let next = "\/student"/);
+  assert.match(callback, /if \(!code\)/);
+  assert.match(callback, /exchangeCodeForSession\(code\)/);
+  assert.match(callback, /if \(error\)/);
+  assert.match(callback, /new URL\("\/login", url\.origin\)/);
+  assert.doesNotMatch(callback, /next\.startsWith\("\/"\) \? next/);
+});
+
+
+test("password reset returns users to the space matching their role", () => {
+  const form = read("src/components/auth/ResetPasswordForm.tsx");
+  const page = read("src/app/reset-password/page.tsx");
+
+  assert.match(form, /from\("user_roles"\)/);
+  assert.match(form, /role\.role === "admin"/);
+  assert.match(form, /\? "\/admin"/);
+  assert.match(form, /role\.role === "student"/);
+  assert.match(form, /\? "\/student"/);
+  assert.match(form, /router\.push\(destination\)/);
+  assert.match(form, /supabase\.auth\.signOut\(\)/);
+  assert.doesNotMatch(form, /router\.push\("\/student"\)/);
+
+  assert.match(page, /export const metadata: Metadata/);
+  assert.match(page, /index:\s*false/);
+  assert.match(page, /follow:\s*false/);
+});
+
+
+test("unauthorized recovery returns each user to their own role space", () => {
+  const page = read("src/app/unauthorized/page.tsx");
+
+  assert.match(page, /getRoleUser\(\)/);
+  assert.match(page, /if \(!user\) redirect\("\/login"\)/);
+  assert.match(page, /role === "admin"/);
+  assert.match(page, /homeHref = "\/admin"/);
+  assert.match(page, /role === "student"/);
+  assert.match(page, /homeHref = "\/student"/);
+  assert.match(page, /href=\{homeHref\}/);
+  assert.match(page, /Cet espace n’est pas accessible avec votre compte/);
+  assert.doesNotMatch(page, /réservé à l&apos;équipe AlmaGo/);
+  assert.match(page, /index:\s*false/);
+});
+
+
+test("shared role lookup preserves admin and student guards", () => {
+  const access = read("src/lib/auth/access.ts");
+
+  assert.match(access, /export async function getRoleUser/);
+  assert.match(access, /from\("user_roles"\)/);
+  assert.match(access, /role: error \? null : data\?\.role \?\? null/);
+  assert.match(access, /export async function getAdminUser/);
+  assert.match(access, /role === "admin"/);
+  assert.match(access, /export async function getStudentUser/);
+  assert.match(access, /role === "student"/);
+});
+
+test("shared document viewing only allows known AlmaGo roles", () => {
+  const route = read("src/app/api/documents/[id]/view/route.ts");
+
+  assert.match(route, /getRoleUser/);
+  assert.match(route, /role !== "student" && role !== "admin"/);
+  assert.match(route, /Accès non autorisé/);
+  assert.match(route, /status: 403/);
+});
+
+
+test("new accounts receive the student role before entering the student space", () => {
+  const initialSchema = read("supabase/migrations/0001_initial_schema.sql");
+
+  assert.match(initialSchema, /create type public\.app_role as enum \('student', 'admin'\)/);
+  assert.match(initialSchema, /insert into public\.user_roles \(user_id, role\)/);
+  assert.match(initialSchema, /values \(new\.id, 'student'\)/);
+  assert.match(initialSchema, /for each row execute procedure public\.handle_new_user\(\)/);
+});
+
+
+test("authenticated E2E role journey stays structurally intact", () => {
+  const source = read("tests/e2e/authenticated.spec.mjs");
+
+  assert.equal((source.match(/import \{ test, expect \} from "@playwright\/test";/g) || []).length, 1);
+  assert.match(source, /const areaPattern = new RegExp/);
+  assert.match(source, /allowedStudentApi\.status\(\)\)\.toBe\(400\)/);
+  assert.match(source, /deniedStudentApi\.status\(\)\)\.toBe\(403\)/);
+  assert.match(source, /page\.goto\("\/student"/);
+  assert.match(source, /page\.goto\("\/admin"/);
+});
+
+
+test("auth UI does not expose raw provider errors", () => {
+  const authForm = read("src/components/auth/AuthForm.tsx");
+
+  assert.doesNotMatch(authForm, /setError\(resetError\.message\)/);
+  assert.doesNotMatch(authForm, /setError\(signUpError\.message\)/);
+  assert.match(authForm, /Nous n’arrivons pas à envoyer le lien de réinitialisation/);
+  assert.match(authForm, /Nous n’arrivons pas à créer ce compte/);
+});
+
+
+test("switching accounts clears the active session first", () => {
+  const button = read("src/components/auth/SwitchAccountButton.tsx");
+  const page = read("src/app/unauthorized/page.tsx");
+
+  assert.match(button, /auth\.signOut\(\)/);
+  assert.match(button, /signOutError/);
+  assert.match(button, /Nous n’arrivons pas à fermer cette session/);
+  assert.match(button, /role="alert"/);
+  assert.match(button, /router\.push\("\/login"\)/);
+  assert.match(button, /router\.refresh\(\)/);
+  assert.match(page, /SwitchAccountButton/);
+  assert.doesNotMatch(page, /href="\/login"[\s\S]*Changer de compte/);
+});
+
+
+test("callback redirect validation compares the effective URL origin", () => {
+  const callback = read("src/app/auth/callback/route.ts");
+
+  assert.match(callback, /candidate\.pathname/);
+  assert.match(callback, /candidate\.search/);
+  assert.match(callback, /candidate\.hash/);
+  assert.doesNotMatch(callback, /requestedNext\.startsWith\("\/\/"\)/);
+});
+
+
+test("document and notification identifiers fail cleanly before database access", () => {
+  const studentDocument = read("src/app/api/student/documents/[id]/route.ts");
+  const notification = read("src/app/api/student/notifications/[id]/route.ts");
+  const documentView = read("src/app/api/documents/[id]/view/route.ts");
+
+  for (const source of [studentDocument, notification, documentView]) {
+    assert.match(source, /isUuid\(id\)/);
+    assert.match(source, /status: 400/);
+  }
+
+  assert.match(studentDocument, /Identifiant de document invalide/);
+  assert.match(studentDocument, /Impossible de vérifier le document/);
+  assert.match(studentDocument, /Document introuvable/);
+
+  assert.match(notification, /Identifiant de notification invalide/);
+
+  assert.match(documentView, /Identifiant de document invalide/);
+  assert.match(documentView, /Impossible de vérifier le document/);
+  assert.match(documentView, /Document introuvable/);
+});
+
+
+test("shared student access helper requires the explicit student role", () => {
+  assert.match(access, /from\("user_roles"\)/);
+  assert.match(access, /role === "student"/);
+  assert.match(access, /isStudent: Boolean\(user && role === "student"\)/);
+});
+
+
+test("every admin API enforces the admin role", () => {
+  const adminRoutes = [
+    "src/app/api/admin/applications/[id]/status/route.ts",
+    "src/app/api/admin/documents/[id]/review/route.ts",
+    "src/app/api/admin/orientation/[id]/route.ts",
+    "src/app/api/admin/orientation/route.ts",
+    "src/app/api/admin/programs/[id]/route.ts",
+    "src/app/api/admin/programs/route.ts",
+    "src/app/api/admin/universities/[id]/route.ts",
+    "src/app/api/admin/universities/route.ts",
+  ];
+
+  assert.match(access, /export async function getAdminUser/);
+  assert.match(access, /role === "admin"/);
+
+  for (const path of adminRoutes) {
+    const source = read(path);
+    assert.match(source, /getAdminUser/);
+    assert.match(source, /if \(!isAdmin\)/);
+    assert.match(source, /Accès non autorisé/);
+    assert.match(source, /status: 403/);
+  }
+});
+
+
+test("profile input mapping excludes onboarding workflow fields", () => {
+  const profile = read("src/lib/student/profile.ts");
+
+  assert.doesNotMatch(profile, /"onboarding_completed"/);
+  assert.doesNotMatch(profile, /"onboarding_completed_at"/);
+  assert.match(profile, /export function profileUpdateFromInput/);
+});
+
+
+test("every sensitive student page enforces the student role itself", () => {
+  const studentPages = [
+    "src/app/student/page.tsx",
+    "src/app/student/applications/page.tsx",
+    "src/app/student/checklist/page.tsx",
+    "src/app/student/documents/page.tsx",
+    "src/app/student/notifications/page.tsx",
+    "src/app/student/onboarding/page.tsx",
+    "src/app/student/orientation/page.tsx",
+    "src/app/student/profile/page.tsx",
+  ];
+
+  for (const path of studentPages) {
+    const source = read(path);
+    assert.match(source, /getStudentUser\(\)/, path);
+    assert.match(source, /if \(!user\) redirect\("\/login"\)/, path);
+    assert.match(source, /if \(!isStudent\) redirect\("\/unauthorized"\)/, path);
+    assert.doesNotMatch(source, /createClient\(\)/, path);
+  }
+});
+
+
+test("completed onboarding gates every student module except onboarding itself", () => {
+  const pages = [
+    "src/app/student/page.tsx",
+    "src/app/student/profile/page.tsx",
+    "src/app/student/checklist/page.tsx",
+    "src/app/student/documents/page.tsx",
+    "src/app/student/applications/page.tsx",
+    "src/app/student/orientation/page.tsx",
+    "src/app/student/notifications/page.tsx",
+  ];
+
+  for (const path of pages) {
+    const source = read(path);
+    assert.match(source, /onboarding_completed/, path);
+    assert.match(source, /redirect\("\/student\/onboarding"\)/, path);
+  }
+
+  const onboarding = read("src/app/student/onboarding/page.tsx");
+  assert.doesNotMatch(onboarding, /if \(!profile\?\.onboarding_completed\) redirect\("\/student\/onboarding"\)/);
+});
+
+
+test("every sensitive student page loader enforces the student role", () => {
+  const pages = [
+    "src/app/student/applications/page.tsx",
+    "src/app/student/checklist/page.tsx",
+    "src/app/student/documents/page.tsx",
+    "src/app/student/notifications/page.tsx",
+    "src/app/student/onboarding/page.tsx",
+    "src/app/student/orientation/page.tsx",
+    "src/app/student/page.tsx",
+    "src/app/student/profile/page.tsx",
+  ];
+
+  for (const path of pages) {
+    const source = read(path);
+    assert.match(source, /getStudentUser\(\)/, path);
+    assert.match(source, /if \(!user\) redirect\("\/login"\)/, path);
+    assert.match(source, /if \(!isStudent\) redirect\("\/unauthorized"\)/, path);
+    assert.doesNotMatch(source, /createClient\(\)/, path);
+    assert.doesNotMatch(source, /auth\.getUser\(\)/, path);
+  }
+});
+
+
+test("every sensitive admin page loader enforces the admin role", () => {
+  const pages = [
+    "src/app/admin/applications/page.tsx",
+    "src/app/admin/documents/page.tsx",
+    "src/app/admin/orientation/page.tsx",
+    "src/app/admin/page.tsx",
+    "src/app/admin/programs/page.tsx",
+    "src/app/admin/universities/page.tsx",
+  ];
+
+  for (const path of pages) {
+    const source = read(path);
+    assert.match(source, /getAdminUser\(\)/, path);
+    assert.match(source, /if \(!user\) redirect\("\/login"\)/, path);
+    assert.match(source, /if \(!isAdmin\) redirect\("\/unauthorized"\)/, path);
+    assert.doesNotMatch(source, /createClient\(\)/, path);
+  }
+});
+
+
+test("every sensitive student page enforces the shared student role guard", () => {
+  const pages = [
+    "src/app/student/page.tsx",
+    "src/app/student/profile/page.tsx",
+    "src/app/student/onboarding/page.tsx",
+    "src/app/student/documents/page.tsx",
+    "src/app/student/checklist/page.tsx",
+    "src/app/student/orientation/page.tsx",
+    "src/app/student/applications/page.tsx",
+    "src/app/student/notifications/page.tsx",
+  ];
+
+  for (const path of pages) {
+    const source = read(path);
+    assert.match(source, /getStudentUser\(\)/, path);
+    assert.match(source, /if \(!user\) redirect\("\/login"\)/, path);
+    assert.match(source, /if \(!isStudent\) redirect\("\/unauthorized"\)/, path);
+    assert.doesNotMatch(source, /auth\.getUser\(\)/, path);
+  }
 });

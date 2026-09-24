@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { getStudentUser } from "@/lib/auth/access";
 import { ProfileForm } from "@/components/student/ProfileForm";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Badge } from "@/components/ui/Badge";
@@ -9,10 +9,16 @@ import { ProgressBar } from "@/components/ui/ProgressBar";
 
 export const dynamic = "force-dynamic";
 export default async function ProfilePage() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { supabase, user, isStudent } = await getStudentUser();
   if (!user) redirect("/login");
-  const { data: profile, error } = await supabase.from("profiles").select("*").eq("id", user.id).maybeSingle();
+  if (!isStudent) redirect("/unauthorized");
+  const { data: profile, error } = await supabase
+    .from("profiles")
+    .select(
+      "first_name,last_name,birth_date,nationality,current_city,phone,last_diploma,bac_track,bac_year,general_average,institution,current_university_studies,current_field,university_semesters,german_level,english_level,french_level,language_certificate,language_certificate_other,target_degree,target_field,study_language,target_intake,preferred_cities,budget_range,onboarding_completed",
+    )
+    .eq("id", user.id)
+    .maybeSingle();
   if (error) {
     return (
       <main className="mx-auto w-full max-w-7xl px-4 py-7 sm:px-6 sm:py-10 lg:px-8 lg:py-12">

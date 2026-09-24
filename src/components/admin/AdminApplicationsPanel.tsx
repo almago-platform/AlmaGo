@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/Card";
 import {
   applicationStatuses,
   applicationStatusLabels,
+  databaseApplicationStatuses,
   formatDeadline,
   isActiveApplication,
   isPastDeadline,
@@ -191,7 +192,7 @@ export function AdminApplicationsPanel({ applications }: { applications: any[] }
             Statut
             <select value={status} onChange={(event) => setStatus(event.target.value)} className="field">
               <option value="all">Tous les statuts</option>
-              {applicationStatuses.map((item) => (
+              {databaseApplicationStatuses.map((item) => (
                 <option key={item} value={item}>
                   {applicationStatusLabels[item]}
                 </option>
@@ -280,6 +281,11 @@ export function AdminApplicationsPanel({ applications }: { applications: any[] }
                     onChange={(event) => changeEdit(application.id, { ...edit, status: event.target.value })}
                     className="field"
                   >
+                    {!applicationStatuses.includes(application.status as (typeof applicationStatuses)[number]) && (
+                      <option value={application.status}>
+                        {applicationStatusLabels[application.status] || application.status} · historique
+                      </option>
+                    )}
                     {applicationStatuses.map((item) => (
                       <option key={item} value={item}>
                         {applicationStatusLabels[item]}

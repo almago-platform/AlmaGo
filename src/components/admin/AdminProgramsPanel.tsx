@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { degreeLevels } from "@/lib/phase4";
+import { hasVerifiedProgramSource, isHttpSourceUrl, isPublishableProgram } from "@/lib/source-verification";
 
 type Program = {
   id: string;
@@ -31,7 +32,7 @@ type Program = {
   verified_at: string | null;
   almago_notes: string | null;
   is_active: boolean;
-  universities: { name: string; city: string } | { name: string; city: string }[] | null;
+  universities: { name: string; city: string; is_active: boolean } | { name: string; city: string; is_active: boolean }[] | null;
 };
 
 type ProgramForm = {
@@ -88,9 +89,19 @@ const empty: ProgramForm = {
   is_active: true,
 };
 
+function programUniversity(program: Program) {
+  return Array.isArray(program.universities) ? program.universities[0] : program.universities;
+}
+
 function universityName(program: Program) {
-  const university = Array.isArray(program.universities) ? program.universities[0] : program.universities;
+  const university = programUniversity(program);
   return university ? `${university.name} · ${university.city}` : "Université";
+}
+
+function programSourceUrl(program: Pick<Program, "source_url" | "application_url">) {
+  if (isHttpSourceUrl(program.source_url)) return program.source_url?.trim() || null;
+  if (isHttpSourceUrl(program.application_url)) return program.application_url?.trim() || null;
+  return null;
 }
 
 function formatVerificationDate(value: string) {
@@ -110,7 +121,7 @@ export function AdminProgramsPanel({
   initialQuality = "all",
 }: {
   programs: Program[];
-  universities: { id: string; name: string }[];
+  universities: { id: string; name: string; is_active: boolean }[];
   initialQuality?: string;
 }) {
   const [items] = useState(programs);
@@ -119,29 +130,37 @@ export function AdminProgramsPanel({
   const [query, setQuery] = useState("");
   const [level, setLevel] = useState("all");
   const [quality, setQuality] = useState(
-    ["all", "missing_source", "missing_verification", "missing_deadline"].includes(initialQuality)
+    ["all", "missing_source", "missing_verification", "missing_deadline", "inactive_university"].includes(initialQuality)
       ? initialQuality
       : "all",
   );
   const [notice, setNotice] = useState<Notice | null>(null);
   const [busy, setBusy] = useState(false);
+  const [togglingId, setTogglingId] = useState<string | null>(null);
 
   const activePrograms = items.filter((program) => program.is_active);
+  const publishablePrograms = items.filter(isPublishableProgram);
   const missingSourceCount = activePrograms.filter(
-    (program) => !program.source_url && !program.application_url,
+    (program) => !programSourceUrl(program),
   ).length;
-  const missingVerificationCount = activePrograms.filter((program) => !program.verified_at).length;
+  const missingVerificationCount = activePrograms.filter(
+    (program) => !hasVerifiedProgramSource(program),
+  ).length;
   const missingDeadlineCount = activePrograms.filter(
     (program) => !program.winter_deadline && !program.summer_deadline,
+  ).length;
+  const inactiveUniversityCount = activePrograms.filter(
+    (program) => programUniversity(program)?.is_active !== true,
   ).length;
 
   const filtered = useMemo(() => {
     const normalized = query.trim().toLocaleLowerCase("fr");
     return items.filter((program) => {
       if (level !== "all" && program.degree_level !== level) return false;
-      if (quality === "missing_source" && (program.source_url || program.application_url)) return false;
-      if (quality === "missing_verification" && program.verified_at) return false;
+      if (quality === "missing_source" && programSourceUrl(program)) return false;
+      if (quality === "missing_verification" && hasVerifiedProgramSource(program)) return false;
       if (quality === "missing_deadline" && (program.winter_deadline || program.summer_deadline)) return false;
+      if (quality === "inactive_university" && programUniversity(program)?.is_active === true) return false;
       if (!normalized) return true;
       return [program.name, program.field, universityName(program)]
         .filter(Boolean)
@@ -233,6 +252,37 @@ export function AdminProgramsPanel({
     }
   }
 
+  async function toggleActive(program: Program) {
+    setTogglingId(program.id);
+    setNotice(null);
+
+    try {
+      const response = await fetch(`/api/admin/programs/${program.id}`, {
+        method: "PATCH",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ is_active: !program.is_active }),
+      });
+      const result = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        setNotice({
+          tone: "error",
+          text: result.error || "Nous n’arrivons pas à modifier l’état de ce programme pour le moment.",
+        });
+        return;
+      }
+
+      window.location.reload();
+    } catch {
+      setNotice({
+        tone: "error",
+        text: "Nous n’arrivons pas à modifier l’état de ce programme pour le moment. Vérifiez votre connexion puis réessayez.",
+      });
+    } finally {
+      setTogglingId(null);
+    }
+  }
+
   return (
     <div className="space-y-7">
       <Card aria-labelledby="admin-program-form-title" className="min-w-0 overflow-hidden">
@@ -269,7 +319,13 @@ export function AdminProgramsPanel({
                   >
                     <option value="">Choisir une université</option>
                     {universities.map((university) => (
-                      <option key={university.id} value={university.id}>{university.name}</option>
+                      <option
+                        key={university.id}
+                        value={university.id}
+                        disabled={!university.is_active && university.id !== form.university_id}
+                      >
+                        {university.name}{university.is_active ? "" : " · inactive"}
+                      </option>
                     ))}
                   </select>
                 </label>
@@ -372,7 +428,7 @@ export function AdminProgramsPanel({
                     onChange={(checked) => change("mark_verified", checked)}
                   />
                   <p className="mt-2 text-xs leading-5 text-slate-500">
-                    Cette confirmation met à jour la date de vérification. Une simple modification de la fiche ne change pas cette date.
+                    Cette confirmation met à jour la date de vérification. Si vous changez un lien officiel sans reconfirmer la vérification, l’ancienne date sera retirée.
                   </p>
                 </div>
                 <label className="block text-sm font-medium text-slate-700 md:col-span-2">
@@ -421,12 +477,12 @@ export function AdminProgramsPanel({
       </Card>
 
       <section aria-labelledby="program-catalogue-title">
-        <div className="mb-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="mb-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
           <QualityCard
-            title="Programmes actifs"
-            value={activePrograms.length}
-            detail="Fiches actuellement utilisées dans le catalogue"
-            tone="neutral"
+            title="Programmes publiables"
+            value={publishablePrograms.length}
+            detail="Programme actif, université active et source vérifiée"
+            tone={publishablePrograms.length ? "success" : "neutral"}
           />
           <QualityCard
             title="Source à compléter"
@@ -445,6 +501,12 @@ export function AdminProgramsPanel({
             value={missingDeadlineCount}
             detail="Programmes actifs sans échéance hiver ni été"
             tone={missingDeadlineCount ? "warning" : "success"}
+          />
+          <QualityCard
+            title="Université inactive"
+            value={inactiveUniversityCount}
+            detail="Programmes actifs actuellement non publiables"
+            tone={inactiveUniversityCount ? "warning" : "success"}
           />
         </div>
 
@@ -477,6 +539,7 @@ export function AdminProgramsPanel({
                 <option value="missing_source">Source officielle à compléter</option>
                 <option value="missing_verification">Date de vérification à compléter</option>
                 <option value="missing_deadline">Échéance à compléter</option>
+                <option value="inactive_university">Université inactive</option>
               </select>
             </label>
           </div>
@@ -490,11 +553,16 @@ export function AdminProgramsPanel({
                   <div className="flex flex-wrap gap-2">
                     <Badge variant="neutral">{program.degree_level}</Badge>
                     <Badge variant={program.is_active ? "success" : "neutral"}>{program.is_active ? "Actif" : "Inactif"}</Badge>
-                    <Badge variant={program.source_url || program.application_url ? "info" : "warning"}>
-                      {program.source_url || program.application_url ? "Source officielle enregistrée" : "Source officielle à compléter"}
+                    {programUniversity(program)?.is_active === false && (
+                      <Badge variant="warning">Université inactive · non publiable</Badge>
+                    )}
+                    <Badge variant={programSourceUrl(program) ? "info" : "warning"}>
+                      {programSourceUrl(program) ? "Source officielle valide enregistrée" : "Source officielle à compléter"}
                     </Badge>
-                    <Badge variant={program.verified_at ? "success" : "warning"}>
-                      {program.verified_at ? `Vérifié le ${formatVerificationDate(program.verified_at)}` : "Vérification à compléter"}
+                    <Badge variant={hasVerifiedProgramSource(program) ? "success" : "warning"}>
+                      {hasVerifiedProgramSource(program) && program.verified_at
+                        ? `Vérifié le ${formatVerificationDate(program.verified_at)}`
+                        : "Vérification à compléter"}
                     </Badge>
                   </div>
                   <h3 id={`admin-program-title-${program.id}`} className="mt-3 text-xl font-bold tracking-[-0.02em] text-slate-950 [overflow-wrap:anywhere]">{program.name}</h3>
@@ -509,14 +577,29 @@ export function AdminProgramsPanel({
                 <Info label="Deadline été" value={program.summer_deadline || "À confirmer"} />
               </dl>
 
-              {(program.source_url || program.application_url) && (
-                <a href={program.source_url || program.application_url || "#"} target="_blank" rel="noreferrer" className="mt-4 inline-flex text-sm font-semibold text-[var(--brand)] underline decoration-[var(--brand-border)] underline-offset-4 hover:text-[var(--brand-hover)]">
+              {programSourceUrl(program) && (
+                <a href={programSourceUrl(program) || "#"} target="_blank" rel="noreferrer" className="mt-4 inline-flex text-sm font-semibold text-[var(--brand)] underline decoration-[var(--brand-border)] underline-offset-4 hover:text-[var(--brand-hover)]">
                   Ouvrir la source officielle
                 </a>
               )}
 
-              <div className="mt-5 border-t border-[var(--border)] pt-4">
-                <Button type="button" variant="secondary" onClick={() => edit(program)} className="w-full justify-center sm:w-auto">Modifier</Button>
+              <div className="mt-5 flex flex-col gap-2 border-t border-[var(--border)] pt-4 sm:flex-row sm:flex-wrap">
+                <Button type="button" variant="secondary" onClick={() => edit(program)} className="w-full justify-center sm:w-auto">
+                  Modifier
+                </Button>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  className="w-full justify-center sm:w-auto"
+                  disabled={togglingId === program.id}
+                  onClick={() => toggleActive(program)}
+                >
+                  {togglingId === program.id
+                    ? "Enregistrement…"
+                    : program.is_active
+                      ? "Désactiver"
+                      : "Réactiver"}
+                </Button>
               </div>
             </Card>
           ))}

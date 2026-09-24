@@ -1,6 +1,25 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { getRoleUser } from "@/lib/auth/access";
+import { SwitchAccountButton } from "@/components/auth/SwitchAccountButton";
 
-export default function UnauthorizedPage() {
+export const metadata: Metadata = {
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
+
+export default async function UnauthorizedPage() {
+  const { user, role } = await getRoleUser();
+
+  if (!user) redirect("/login");
+
+  let homeHref = "/";
+  if (role === "admin") homeHref = "/admin";
+  if (role === "student") homeHref = "/student";
+
   return (
     <main className="min-h-screen bg-slate-50 px-4 py-10 text-slate-950 sm:px-6 lg:px-8">
       <div className="mx-auto flex min-h-[calc(100vh-5rem)] w-full max-w-3xl items-center justify-center">
@@ -21,25 +40,20 @@ export default function UnauthorizedPage() {
             Autorisation requise
           </p>
           <h1 className="mx-auto mt-4 max-w-xl text-3xl font-bold tracking-tight text-slate-950 sm:text-4xl">
-            Cet espace est réservé à l&apos;équipe AlmaGo.
+            Cet espace n’est pas accessible avec votre compte.
           </h1>
           <p className="mx-auto mt-4 max-w-xl text-base leading-7 text-slate-600">
-            Ton compte est bien connecté, mais il ne possède pas les droits nécessaires pour ouvrir cette zone administrative.
+            Votre compte est connecté, mais il ne permet pas d’ouvrir cette zone.
           </p>
 
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
             <Link
-              href="/student"
+              href={homeHref}
               className="inline-flex items-center justify-center rounded-lg bg-[var(--brand)] px-5 py-3 font-bold text-white shadow-sm transition hover:bg-[var(--brand-strong)]"
             >
-              Retour au tableau de bord
+              Retour à mon espace
             </Link>
-            <Link
-              href="/login"
-              className="inline-flex items-center justify-center rounded-lg border border-slate-300 bg-white px-5 py-3 font-bold text-slate-900 shadow-sm transition hover:border-[var(--brand)] hover:text-[var(--brand)]"
-            >
-              Changer de compte
-            </Link>
+            <SwitchAccountButton />
           </div>
         </section>
       </div>

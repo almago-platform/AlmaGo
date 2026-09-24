@@ -12,6 +12,7 @@ const pages = [
   { path: "/student/documents", name: "documents" },
   { path: "/student/orientation", name: "orientation" },
   { path: "/student/checklist", name: "checklist" },
+  { path: "/student/echeances", name: "deadlines" },
   { path: "/student/applications", name: "applications" },
 ];
 
@@ -32,6 +33,11 @@ test.describe("authenticated Student Space quality", () => {
       expect(response, target.path + " should return a response").not.toBeNull();
       expect(response?.ok(), target.path + " should return a successful response").toBeTruthy();
       expect(new URL(page.url()).pathname, target.path + " should stay in the requested student route").toBe(target.path);
+
+      if (target.path === "/student/echeances") {
+        await expect(page.getByRole("heading", { level: 1, name: "Mes échéances" })).toBeVisible();
+        await expect(page.getByText(/ne remplace pas les délais publiés/i)).toBeVisible();
+      }
 
       const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
       expect(overflow, target.path + " must not overflow horizontally").toBeLessThanOrEqual(1);

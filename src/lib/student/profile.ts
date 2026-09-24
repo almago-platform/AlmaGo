@@ -27,6 +27,15 @@ const stringKeys = [
 
 export type ProfileInput = Record<string, unknown>;
 
+function isValidDateOnly(value: string) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const [year, month, day] = value.split("-").map(Number);
+  const candidate = new Date(Date.UTC(year, month - 1, day));
+  return candidate.getUTCFullYear() === year
+    && candidate.getUTCMonth() === month - 1
+    && candidate.getUTCDate() === day;
+}
+
 export function profileUpdateFromInput(input: ProfileInput) {
   const update: Record<string, unknown> = {};
   for (const key of stringKeys) {
@@ -55,7 +64,9 @@ export function profileUpdateFromInput(input: ProfileInput) {
 }
 
 export function validateProfileUpdate(update: Record<string, unknown>) {
-  if (update.birth_date && (typeof update.birth_date !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(update.birth_date))) return "La date de naissance doit être au format AAAA-MM-JJ.";
+  if (update.birth_date && (typeof update.birth_date !== "string" || !isValidDateOnly(update.birth_date))) {
+    return "La date de naissance doit être une date valide au format AAAA-MM-JJ.";
+  }
   if (update.general_average !== null && update.general_average !== undefined && (!Number.isFinite(update.general_average as number) || (update.general_average as number) < 0 || (update.general_average as number) > 20)) {
     return "La moyenne générale doit être comprise entre 0 et 20.";
   }

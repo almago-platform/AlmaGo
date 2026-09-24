@@ -1,7 +1,8 @@
+import { redirect } from "next/navigation";
 import { AdminUniversitiesPanel } from "@/components/admin/AdminUniversitiesPanel";
 import { Card } from "@/components/ui/Card";
 import { PageHeader } from "@/components/ui/PageHeader";
-import { createClient } from "@/lib/supabase/server";
+import { getAdminUser } from "@/lib/auth/access";
 
 export const dynamic = "force-dynamic";
 
@@ -11,8 +12,13 @@ export default async function AdminUniversitiesPage({
   searchParams: Promise<{ quality?: string }>;
 }) {
   const { quality } = await searchParams;
-  const supabase = await createClient();
-  const { data, error } = await supabase.from("universities").select("*").order("name");
+  const { supabase, user, isAdmin } = await getAdminUser();
+  if (!user) redirect("/login");
+  if (!isAdmin) redirect("/unauthorized");
+  const { data, error } = await supabase
+    .from("universities")
+    .select("id,name,city,bundesland,university_type,website_url,source_url,verified_at,logo_url,description,is_public,tuition_notes,is_active")
+    .order("name");
 
   if (error) {
     return (
