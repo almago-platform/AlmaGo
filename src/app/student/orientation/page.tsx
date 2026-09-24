@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/Card";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { StudentOrientationPanel } from "@/components/student/StudentOrientationPanel";
 import { createClient } from "@/lib/supabase/server";
+import { hasVerifiedProgramSource } from "@/lib/source-verification";
 
 export const dynamic = "force-dynamic";
 
@@ -23,10 +24,7 @@ export default async function StudentOrientationPage() {
 
   const visibleRecommendations = (data || []).filter((recommendation) => {
     const program = Array.isArray(recommendation.programs) ? recommendation.programs[0] : recommendation.programs;
-    return Boolean(
-      program?.verified_at &&
-      (program?.source_url || program?.application_url),
-    );
+    return hasVerifiedProgramSource(program);
   });
 
   return (
