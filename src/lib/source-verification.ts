@@ -45,6 +45,15 @@ export function isPublishableProgram(program: {
   source_url?: string | null;
   application_url?: string | null;
   verified_at?: string | null;
+  universities?: { is_active?: boolean | null } | { is_active?: boolean | null }[] | null;
 } | null | undefined) {
-  return program?.is_active === true && hasVerifiedProgramSource(program);
+  const university = Array.isArray(program?.universities)
+    ? program?.universities[0]
+    : program?.universities;
+
+  return (
+    program?.is_active === true &&
+    university?.is_active === true &&
+    hasVerifiedProgramSource(program)
+  );
 }
