@@ -28,13 +28,15 @@ test("catalogue maintenance becomes an actionable admin priority", () => {
 });
 
 test("student dossier blockers still outrank catalogue maintenance", () => {
-  const documentsPosition = adminHome.indexOf("const priority = documents > 0");
-  const applicationsPosition = adminHome.indexOf(": applications > 0");
+  const correctionPosition = adminHome.indexOf("const priority = correctionStudentIds.size > 0");
+  const overduePosition = adminHome.indexOf(": overdueApplications.length > 0");
+  const documentReviewPosition = adminHome.indexOf(": documentsWithAlmaGo.length > 0");
   const cataloguePosition = adminHome.indexOf(": catalogueQualityIssues > 0");
 
-  assert.ok(documentsPosition >= 0);
-  assert.ok(applicationsPosition > documentsPosition);
-  assert.ok(cataloguePosition > applicationsPosition);
+  assert.ok(correctionPosition >= 0);
+  assert.ok(overduePosition > correctionPosition);
+  assert.ok(documentReviewPosition > overduePosition);
+  assert.ok(cataloguePosition > documentReviewPosition);
 });
 
 
@@ -48,8 +50,9 @@ test("admin catalogue quality includes inactive parent universities", () => {
 
 
 test("admin dashboard excludes canonical and legacy terminal applications", () => {
+  assert.match(adminHome, /isActiveApplication/);
   assert.match(
     adminHome,
-    /\(admission,accepted,rejection,rejected,withdrawn\)/,
+    /applications\.filter\(\(application\) =>\s*isActiveApplication\(application\.status\)/s,
   );
 });
