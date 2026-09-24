@@ -516,7 +516,7 @@ export function AdminUniversitiesPanel({
               <p className="mt-5 text-xs leading-5 text-slate-500">
                 {university.is_active
                   ? "Désactiver cet établissement rend ses programmes non publiables dans les nouvelles pistes d’orientation, sans supprimer leur historique."
-                  : "Tant que cet établissement reste inactif, ses programmes ne peuvent pas être proposés dans une nouvelle piste d’orientation."}
+                  : "Tant que cet établissement reste inactif, ses programmes ne peuvent pas être proposés dans une nouvelle piste d’orientation. Le réactiver peut rendre de nouveau publiables les programmes qui sont encore actifs et vérifiés."}
               </p>
 
               <div className="mt-3 flex flex-col gap-2 border-t border-[var(--border)] pt-4 sm:flex-row sm:flex-wrap">
