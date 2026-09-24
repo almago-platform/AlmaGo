@@ -5,6 +5,7 @@ import test from "node:test";
 const onboardingRoute = readFileSync("src/app/api/student/onboarding/route.ts", "utf8");
 const profileRoute = readFileSync("src/app/api/student/profile/route.ts", "utf8");
 const onboardingPage = readFileSync("src/app/student/onboarding/page.tsx", "utf8");
+const profileLib = readFileSync("src/lib/student/profile.ts", "utf8");
 
 test("completed onboarding records consent before persisting the completed profile", () => {
   assert.match(onboardingRoute, /input\.complete === true/);
@@ -40,4 +41,12 @@ test("explicit onboarding consent clears an earlier revocation", () => {
   assert.match(onboardingRoute, /granted_at: consentedAt/);
   assert.match(onboardingRoute, /revoked_at: null/);
   assert.match(onboardingRoute, /onConflict: "user_id,consent_type,policy_version"/);
+});
+
+
+test("birth date validation rejects impossible calendar dates", () => {
+  assert.match(profileLib, /function isValidDateOnly/);
+  assert.match(profileLib, /Date\.UTC\(year, month - 1, day\)/);
+  assert.match(profileLib, /candidate\.getUTCFullYear\(\) === year/);
+  assert.match(profileLib, /La date de naissance doit être une date valide/);
 });
