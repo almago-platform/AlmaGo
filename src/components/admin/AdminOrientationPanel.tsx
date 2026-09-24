@@ -6,16 +6,10 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { recommendationStatuses, recommendationStatusLabels } from "@/lib/phase4";
+import { hasVerifiedProgramSource } from "@/lib/source-verification";
 
 function firstUniversity(program: any) {
   return Array.isArray(program?.universities) ? program.universities[0] : program?.universities;
-}
-
-function isVerifiedProgram(program: any) {
-  return Boolean(
-    program?.verified_at &&
-    (program?.source_url || program?.application_url),
-  );
 }
 
 function recommendationVariant(status: string): "success" | "warning" | "info" | "neutral" {
@@ -194,7 +188,7 @@ export function AdminOrientationPanel({
                 className="field"
               >
                 <option value="">Choisir un programme</option>
-                {programs.filter(isVerifiedProgram).map((program) => {
+                {programs.filter(hasVerifiedProgramSource).map((program) => {
                   const university = firstUniversity(program);
                   return (
                     <option key={program.id} value={program.id}>
