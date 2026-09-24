@@ -6,6 +6,7 @@ import test from "node:test";
 const publicRoots = [
   "src/components/public",
   "src/app/aide",
+  "src/app/accessibilite",
   "src/app/a-propos",
   "src/app/confiance",
   "src/app/comprendre-les-demarches",
