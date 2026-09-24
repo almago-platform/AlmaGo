@@ -22,7 +22,7 @@ export default async function AdminEntry() {
   ] = await Promise.all([
     supabase.from("universities").select("id", { count: "exact", head: true }).eq("is_active", true),
     supabase.from("programs").select("id", { count: "exact", head: true }).eq("is_active", true),
-    supabase.from("applications").select("id", { count: "exact", head: true }).not("status", "in", "(admission,rejection,withdrawn)"),
+    supabase.from("applications").select("id", { count: "exact", head: true }).not("status", "in", "(admission,accepted,rejection,rejected,withdrawn)"),
     supabase.from("documents").select("id", { count: "exact", head: true }).in("status", ["pending", "replace_required"]),
     supabase.from("program_recommendations").select("id", { count: "exact", head: true }).eq("is_archived", false),
     supabase.from("universities").select("id,website_url,source_url,verified_at").eq("is_active", true),
