@@ -67,7 +67,7 @@ export default async function ProfilePage() {
               <ProgressBar value={profileCompletion} label="Champs requis du profil complétés" />
             </div>
             <p className="mt-4 text-sm leading-6 text-slate-600">
-              Ce pourcentage utilise uniquement les {requiredProfileKeys.length} champs marqués comme requis dans ce formulaire. Ce n’est pas un score d’admission.
+              Ce pourcentage utilise uniquement les {requiredProfileKeys.length} champs marqués comme requis dans ce formulaire. Ce n’est pas un indicateur d’admission.
             </p>
           </Card>
 
