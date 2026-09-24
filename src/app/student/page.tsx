@@ -8,6 +8,7 @@ import { ProgressBar } from "@/components/ui/ProgressBar";
 import { StudentJourneyOverview, type StudentJourneyStage } from "@/components/student/StudentJourneyOverview";
 import { createClient } from "@/lib/supabase/server";
 import { formatDeadline, isActiveApplication, isPastDeadline, nextActiveDeadline } from "@/lib/phase4";
+import { hasVerifiedProgramSource } from "@/lib/source-verification";
 
 export const dynamic = "force-dynamic";
 
@@ -51,10 +52,7 @@ export default async function StudentEntry() {
   const studentDocuments = documents || [];
   const studentRecommendations = (recommendations || []).filter((recommendation) => {
     const program = Array.isArray(recommendation.programs) ? recommendation.programs[0] : recommendation.programs;
-    return Boolean(
-      program?.verified_at &&
-      (program?.source_url || program?.application_url),
-    );
+    return hasVerifiedProgramSource(program);
   });
   const studentApplications = applications || [];
   const documentHistory = dossierHistory || [];
