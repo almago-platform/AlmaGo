@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 export function HomeRoleSection() {
   return (
     <section id="role" className="bg-[#fbfaf8] py-16 sm:py-20 lg:py-24" aria-labelledby="role-title">
@@ -59,7 +61,7 @@ export function HomeRoleSection() {
   );
 }
 
-function RoleItem({ children }: Readonly<{ children: React.ReactNode }>) {
+function RoleItem({ children }: Readonly<{ children: ReactNode }>) {
   return (
     <li className="flex gap-3">
       <span aria-hidden="true" className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-[var(--accent)]" />
