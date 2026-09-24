@@ -284,18 +284,35 @@ export function StudentOrientationPanel({
                     Cette piste d’orientation ne garantit ni l’éligibilité finale ni l’admission.
                   </div>
 
-                  <div className="mt-auto flex flex-col gap-2 border-t border-[var(--border)] pt-5 sm:flex-row sm:flex-wrap">
-                    {program.application_url && (
-                      <a
-                        href={program.application_url}
-                        aria-label={`Site officiel de ${program.name} (nouvel onglet)`}
-                        target="_blank"
-                        rel="noreferrer"
-                        className={buttonClassName("secondary", "w-full sm:w-auto")}
-                      >
-                        Vérifier la source officielle
-                      </a>
+                  <div className={`mt-4 rounded-[var(--radius-control)] border p-4 ${
+                    program.application_url
+                      ? "border-[var(--brand-border)] bg-[var(--brand-soft)]/45"
+                      : "border-[var(--border)] bg-[var(--surface-muted)]"
+                  }`}>
+                    <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">Source officielle</p>
+                    {program.application_url ? (
+                      <>
+                        <p className="mt-2 text-sm leading-6 text-slate-700">
+                          Consultez la page officielle avant de vous appuyer sur une condition, une date limite ou une procédure de candidature.
+                        </p>
+                        <a
+                          href={program.application_url}
+                          aria-label={`Consulter la source officielle de ${program.name} (nouvel onglet)`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className={buttonClassName("secondary", "mt-3 w-full sm:w-auto")}
+                        >
+                          Consulter la source officielle
+                        </a>
+                      </>
+                    ) : (
+                      <p className="mt-2 text-sm leading-6 text-slate-600">
+                        Aucun lien officiel n’est enregistré dans AlmaGo pour cette fiche. Vérifiez directement les informations auprès de l’établissement avant toute démarche.
+                      </p>
                     )}
+                  </div>
+
+                  <div className="mt-auto flex flex-col gap-2 border-t border-[var(--border)] pt-5 sm:flex-row sm:flex-wrap">
                     <Button
                       type="button"
                       className="w-full sm:w-auto"
