@@ -243,3 +243,13 @@ test("shared document viewing only allows known AlmaGo roles", () => {
   assert.match(route, /Accès non autorisé/);
   assert.match(route, /status: 403/);
 });
+
+
+test("new accounts receive the student role before entering the student space", () => {
+  const initialSchema = read("supabase/migrations/0001_initial_schema.sql");
+
+  assert.match(initialSchema, /create type public\.app_role as enum \('student', 'admin'\)/);
+  assert.match(initialSchema, /insert into public\.user_roles \(user_id, role\)/);
+  assert.match(initialSchema, /values \(new\.id, 'student'\)/);
+  assert.match(initialSchema, /for each row execute procedure public\.handle_new_user\(\)/);
+});
