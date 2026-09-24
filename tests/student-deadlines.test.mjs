@@ -8,6 +8,7 @@ const dashboard = readFileSync("src/app/student/page.tsx", "utf8");
 const applicationsPage = readFileSync("src/app/student/applications/page.tsx", "utf8");
 const helpPage = readFileSync("src/app/aide/page.tsx", "utf8");
 const phase4 = readFileSync("src/lib/phase4.ts", "utf8");
+const studentQuality = readFileSync("tests/e2e/student-space-quality.spec.mjs", "utf8");
 
 test("deadline center uses only real application deadlines", () => {
   assert.match(page, /from\("applications"\)/);
@@ -45,4 +46,5 @@ test("student navigation and dashboard expose the deadline center", () => {
   assert.match(shell, /overflow-y-auto/);
   assert.match(page, /Besoin d’aide pour une échéance/);
   assert.match(helpPage, /Mes échéances/);
+  assert.match(studentQuality, /path: "\/student\/echeances", name: "deadlines"/);
 });
