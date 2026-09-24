@@ -92,3 +92,12 @@ test("final release gate can only start from main", () => {
     /prerequisites:\s*\n\s*if: github\.ref == 'refs\/heads\/main'/,
   );
 });
+
+
+test("A43 cannot close before A38 is complete", () => {
+  assert.match(authenticatedE2E, /almago-plan-task:A38/);
+  assert.match(authenticatedE2E, /const a38Complete = Boolean/);
+  assert.match(authenticatedE2E, /a38\.state === "closed"/);
+  assert.match(authenticatedE2E, /a38Labels\.has\("almago-plan-done"\)/);
+  assert.match(authenticatedE2E, /A38 is not complete; A43 will remain open/);
+});
