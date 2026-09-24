@@ -32,7 +32,7 @@
 | Admin quality deep links | Implemented | #166 | Admin overview opens the exact catalogue queue/filter that needs attention. |
 | Student notification inbox | Implemented | #167 | Uses the existing `notifications` table; no new push/email engine. |
 | Official sources reference | Implemented | #170 | Public institutional-source page; no affiliation/partnership implied. |
-| Accessibility + professional 404 integration | Implemented; checks rerunning | #172 | Replays the useful public changes from #168/#169 onto the retained V3 chain. |
+| Accessibility + professional 404 integration | Implemented / CI + Browser Quality green | #172 | Replays the useful public changes from #168/#169 onto the retained V3 chain. |
 
 ## Superseded V3 branches
 
@@ -52,6 +52,8 @@ The complete retained V3 merge order is:
 `#142 → #143 → #144 → #145 → #146 → #147 → #148 → #149 → #150 → #151 → #152 → #153 → #155 → #156 → #157 → #159 → #160 → #161 → #162 → #163 → #165 → #166 → #167 → #170 → #172 → #173`
 
 All of these retained PRs were checked as mergeable on 24 September 2026.
+
+PR #172 passed both the canonical AlmaGo PR CI and Browser Quality after the 404 guard false-positive was corrected.
 
 After #163, the retained path is specifically:
 
