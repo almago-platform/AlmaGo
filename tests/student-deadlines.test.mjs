@@ -7,6 +7,7 @@ const shell = readFileSync("src/components/layout/AppShell.tsx", "utf8");
 const dashboard = readFileSync("src/app/student/page.tsx", "utf8");
 const applicationsPage = readFileSync("src/app/student/applications/page.tsx", "utf8");
 const applicationsPanel = readFileSync("src/components/student/StudentApplicationsPanel.tsx", "utf8");
+const adminApplicationsPanel = readFileSync("src/components/admin/AdminApplicationsPanel.tsx", "utf8");
 const documentsPanel = readFileSync("src/components/student/DocumentsPanel.tsx", "utf8");
 const helpPage = readFileSync("src/app/aide/page.tsx", "utf8");
 const phase4 = readFileSync("src/lib/phase4.ts", "utf8");
@@ -82,4 +83,11 @@ test("student application surfaces use the human event formatter", () => {
 test("student document history uses the institutional message formatter", () => {
   assert.match(documentsPanel, /studentHistoryDisplayMessage\(event\.message\)/);
   assert.match(dashboard, /studentHistoryDisplayMessage\(event\.message\)/);
+});
+
+
+test("admin applications preserve legacy states without offering them as new transitions", () => {
+  assert.match(adminApplicationsPanel, /databaseApplicationStatuses\.map/);
+  assert.match(adminApplicationsPanel, /historique/);
+  assert.match(adminApplicationsPanel, /applicationStatuses\.map/);
 });
