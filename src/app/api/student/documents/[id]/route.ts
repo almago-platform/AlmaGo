@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
-import { getAuthenticatedUser } from "@/lib/auth/access";
+import { getStudentUser } from "@/lib/auth/access";
 import { removableDocumentStatuses } from "@/lib/documents";
 
 export async function DELETE(_: Request, { params }: { params: Promise<{ id: string }> }) {
-  const { supabase, user } = await getAuthenticatedUser();
+  const { supabase, user, isStudent } = await getStudentUser();
   if (!user) return NextResponse.json({ error: "Non authentifié." }, { status: 401 });
+  if (!isStudent) return NextResponse.json({ error: "Accès réservé aux étudiants." }, { status: 403 });
   const { id } = await params;
   const { data: document } = await supabase.from("documents").select("id,storage_path,status").eq("id", id).maybeSingle();
   if (!document) return NextResponse.json({ error: "Document introuvable." }, { status: 404 });
