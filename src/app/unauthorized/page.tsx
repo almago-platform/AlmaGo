@@ -47,10 +47,10 @@ export default async function UnauthorizedPage() {
             Autorisation requise
           </p>
           <h1 className="mx-auto mt-4 max-w-xl text-3xl font-bold tracking-tight text-slate-950 sm:text-4xl">
-            Cet espace n’est pas associé à votre rôle.
+            Cet espace n’est pas accessible avec votre compte.
           </h1>
           <p className="mx-auto mt-4 max-w-xl text-base leading-7 text-slate-600">
-            Votre compte est connecté, mais cet espace n’est pas autorisé pour votre rôle AlmaGo.
+            Votre compte est connecté, mais il ne permet pas d’ouvrir cette zone.
           </p>
 
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
