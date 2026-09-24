@@ -217,7 +217,7 @@ test("unauthorized recovery returns each user to their own role space", () => {
   assert.match(page, /role\?\.role === "student"/);
   assert.match(page, /homeHref = "\/student"/);
   assert.match(page, /href=\{homeHref\}/);
-  assert.match(page, /Cet espace n’est pas associé à votre rôle/);
+  assert.match(page, /Cet espace n’est pas accessible avec votre compte/);
   assert.doesNotMatch(page, /réservé à l&apos;équipe AlmaGo/);
   assert.match(page, /index:\s*false/);
 });
