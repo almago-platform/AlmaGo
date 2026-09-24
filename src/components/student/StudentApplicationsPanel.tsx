@@ -123,7 +123,7 @@ export function StudentApplicationsPanel({
               <p className="mt-1 text-sm text-slate-600">{firstProgram(nextDeadlineApplication)?.name || "Programme"}{overdue ? " · Vérifiez cette candidature" : ""}</p>
             )}
           </div>
-          <ButtonLink href="/student/checklist" variant="secondary">Voir mes étapes</ButtonLink>
+          <ButtonLink href="/student/echeances" variant="secondary">Voir mes échéances</ButtonLink>
         </div>
       </Card>
 
@@ -152,9 +152,11 @@ export function StudentApplicationsPanel({
             {applications.map((application) => {
               const program = firstProgram(application);
               const university = firstUniversity(program);
-              const events = [...(application.application_events || [])].sort(
-                (a: any, b: any) => String(a.created_at).localeCompare(String(b.created_at)),
-              );
+              const events = [...(application.application_events || [])]
+                .filter((event: any) => event.visible_to_student === true)
+                .sort(
+                  (a: any, b: any) => String(a.created_at).localeCompare(String(b.created_at)),
+                );
               const active = isActiveApplication(application.status);
               const applicationOverdue = Boolean(application.deadline && isPastDeadline(application.deadline));
               const nextAction = active

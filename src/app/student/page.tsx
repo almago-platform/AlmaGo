@@ -7,7 +7,7 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { StudentJourneyOverview, type StudentJourneyStage } from "@/components/student/StudentJourneyOverview";
 import { getStudentUser } from "@/lib/auth/access";
-import { applicationEventDisplayMessage, formatDeadline, isActiveApplication, isPastDeadline, nextActiveDeadline, studentHistoryDisplayMessage } from "@/lib/phase4";
+import { applicationEventDisplayMessage, daysUntilDeadline, formatDeadline, isActiveApplication, isPastDeadline, nextActiveDeadline, studentHistoryDisplayMessage } from "@/lib/phase4";
 import { isPublishableProgram } from "@/lib/source-verification";
 
 export const dynamic = "force-dynamic";
@@ -36,7 +36,7 @@ export default async function StudentEntry() {
     supabase.from("student_checklist_items").select("title,status").order("created_at"),
     supabase.from("documents").select("id,status"),
     supabase.from("program_recommendations").select("id,programs(name,source_url,application_url,verified_at,is_active,universities(name,is_active))").eq("is_archived", false),
-    supabase.from("applications").select("id,status,deadline,next_action,programs(name),application_events(id,event_type,message,created_at)").order("deadline", { ascending: true, nullsFirst: false }),
+    supabase.from("applications").select("id,status,deadline,next_action,programs(name),application_events(id,event_type,message,visible_to_student,created_at)").order("deadline", { ascending: true, nullsFirst: false }),
     supabase
       .from("student_history")
       .select("id,event_type,message,created_at")
@@ -59,7 +59,9 @@ export default async function StudentEntry() {
 
   const applicationHistory = studentApplications.flatMap((application) => {
     const program = Array.isArray(application.programs) ? application.programs[0] : application.programs;
-    const events = Array.isArray(application.application_events) ? application.application_events : [];
+    const events = Array.isArray(application.application_events)
+      ? application.application_events.filter((event) => event.visible_to_student === true)
+      : [];
 
     return events.map((event) => ({
       id: `application-${event.id}`,
@@ -97,12 +99,18 @@ export default async function StudentEntry() {
 
   const activeApplications = studentApplications.filter((application) => isActiveApplication(application.status));
   const nextApplication = nextActiveDeadline(activeApplications);
-  const deadlineOverdue = nextApplication?.deadline ? isPastDeadline(nextApplication.deadline) : false;
-  const actionableApplications = activeApplications.filter((application) => Boolean(application.next_action));
+  const nextDeadlineDays = nextApplication?.deadline
+    ? daysUntilDeadline(nextApplication.deadline)
+    : null;
+  const deadlineOverdue = nextDeadlineDays !== null && nextDeadlineDays < 0;
+  const deadlineSoon = nextDeadlineDays !== null && nextDeadlineDays >= 0 && nextDeadlineDays <= 7;
+  const actionableApplications = activeApplications.filter((application) => Boolean(application.next_action?.trim()));
   const actionableApplication = actionableApplications[0];
 
   const hasStudentActionRequired = documentsNeedingAction > 0;
-  const hasRecordedNextStep = Boolean(actionableApplication?.next_action || nextItem);
+  const hasDeadlinePriority = deadlineOverdue || deadlineSoon;
+  const hasRecordedNextStep = Boolean(actionableApplication?.next_action?.trim() || nextItem);
+  const hasStudentFacingNextStep = hasStudentActionRequired || hasDeadlinePriority || hasRecordedNextStep;
 
   const nextAction = documentsNeedingAction
     ? {
@@ -111,34 +119,61 @@ export default async function StudentEntry() {
         href: "/student/documents",
         owner: "À faire par vous",
       }
-    : actionableApplication?.next_action
+    : deadlineOverdue && nextApplication?.deadline
       ? {
-          label: "Voir ma candidature",
-          detail: actionableApplication.next_action,
-          href: "/student/applications",
-          owner: "Prochaine action enregistrée",
+          label: "Vérifier mes échéances",
+          detail: `L’échéance enregistrée du ${formatDeadline(nextApplication.deadline)} est dépassée. Vérifiez cette candidature et confirmez la date sur la source officielle disponible.`,
+          href: "/student/echeances",
+          owner: "Échéance à vérifier",
         }
-      : nextItem
+      : deadlineSoon && nextApplication?.deadline
         ? {
-            label: "Continuer mes démarches",
-            detail: nextItem.title,
-            href: "/student/checklist",
-            owner: "Étape enregistrée",
+            label: "Voir mes échéances",
+            detail: nextDeadlineDays === 0
+              ? `Une échéance est enregistrée aujourd’hui (${formatDeadline(nextApplication.deadline)}). Consultez le calendrier du dossier et la source officielle.`
+              : `Une échéance est enregistrée dans ${nextDeadlineDays} jour${nextDeadlineDays > 1 ? "s" : ""} (${formatDeadline(nextApplication.deadline)}). Consultez le calendrier du dossier et la source officielle.`,
+            href: "/student/echeances",
+            owner: "Échéance enregistrée",
           }
-        : {
-            label: "Voir mes démarches",
-            detail: "Aucune action prioritaire n’est enregistrée pour le moment. Vous pouvez consulter les étapes connues de votre dossier.",
-            href: "/student/checklist",
-            owner: documentsUnderReview ? "Document en vérification chez AlmaGo" : "Aucune action demandée",
-          };
+        : actionableApplication?.next_action?.trim()
+          ? {
+              label: "Voir ma candidature",
+              detail: actionableApplication.next_action.trim(),
+              href: "/student/applications",
+              owner: "Prochaine action enregistrée",
+            }
+          : nextItem
+            ? {
+                label: "Continuer mes démarches",
+                detail: nextItem.title,
+                href: "/student/checklist",
+                owner: "Étape enregistrée",
+              }
+            : documentsUnderReview
+              ? {
+                  label: "Voir mes documents",
+                  detail: `${documentsUnderReview} document${documentsUnderReview > 1 ? "s sont" : " est"} actuellement en vérification chez AlmaGo. Aucune correction n’est demandée de votre côté pour ces pièces.`,
+                  href: "/student/documents",
+                  owner: "Chez AlmaGo",
+                }
+              : {
+                  label: "Voir mes démarches",
+                  detail: "Aucune action prioritaire n’est enregistrée pour le moment. Vous pouvez consulter les étapes connues de votre dossier.",
+                  href: "/student/checklist",
+                  owner: "Aucune action demandée",
+                };
 
   const welcomeMessage = hasStudentActionRequired
     ? `${documentsNeedingAction} document${documentsNeedingAction > 1 ? "s demandent" : " demande"} une correction de votre part. Commencez par les pièces signalées ci-dessous.`
-    : hasRecordedNextStep
-      ? "Une prochaine étape est enregistrée dans votre dossier. Consultez-la ci-dessous pour connaître le détail disponible."
-      : documentsUnderReview
-        ? `${documentsUnderReview} document${documentsUnderReview > 1 ? "s sont" : " est"} actuellement en vérification chez AlmaGo. Aucune correction n’est demandée de votre côté pour ces pièces.`
-        : "Aucune action prioritaire n’est enregistrée actuellement. Vous pouvez consulter les différentes parties de votre dossier ci-dessous.";
+    : deadlineOverdue
+      ? "Une échéance enregistrée pour une candidature active est dépassée. Vérifiez le calendrier du dossier et confirmez la date sur la source officielle."
+      : deadlineSoon
+        ? "Une échéance de candidature est proche. Consultez le calendrier du dossier pour voir la date enregistrée et la source officielle disponible."
+        : hasRecordedNextStep
+          ? "Une prochaine étape est enregistrée dans votre dossier. Consultez-la ci-dessous pour connaître le détail disponible."
+          : documentsUnderReview
+            ? `${documentsUnderReview} document${documentsUnderReview > 1 ? "s sont" : " est"} actuellement en vérification chez AlmaGo. Aucune correction n’est demandée de votre côté pour ces pièces.`
+            : "Aucune action prioritaire n’est enregistrée actuellement. Vous pouvez consulter les différentes parties de votre dossier ci-dessous.";
 
   const journeyStages: StudentJourneyStage[] = [
     {
@@ -209,24 +244,28 @@ export default async function StudentEntry() {
           <div className="pl-2 sm:pl-3">
             <div className="flex flex-wrap items-center gap-3">
               <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Où en est votre dossier ?</p>
-              <Badge variant={hasStudentActionRequired ? "warning" : hasRecordedNextStep || documentsUnderReview ? "info" : "neutral"}>
+              <Badge variant={hasStudentActionRequired || deadlineOverdue ? "warning" : hasDeadlinePriority || hasRecordedNextStep || documentsUnderReview ? "info" : "neutral"}>
                 {hasStudentActionRequired
                   ? "Correction demandée"
-                  : hasRecordedNextStep
-                    ? "Étape enregistrée"
-                    : documentsUnderReview
-                      ? "En vérification"
-                      : "Aucune action prioritaire"}
+                  : deadlineOverdue
+                    ? "Échéance dépassée"
+                    : deadlineSoon
+                      ? "Échéance proche"
+                      : hasRecordedNextStep
+                        ? "Étape enregistrée"
+                        : documentsUnderReview
+                          ? "En vérification"
+                          : "Aucune action prioritaire"}
               </Badge>
             </div>
 
             <h2 className="mt-5 text-2xl font-bold tracking-[-0.03em] text-slate-950 sm:text-3xl">
-              {hasStudentActionRequired || hasRecordedNextStep ? "Votre prochaine étape" : "Votre dossier est à jour pour le moment"}
+              {hasStudentFacingNextStep ? "Votre prochaine étape" : documentsUnderReview ? "Votre dossier est en cours de vérification" : "Votre dossier est à jour pour le moment"}
             </h2>
             <p className="mt-3 max-w-2xl text-base leading-7 text-slate-700">{nextAction.detail}</p>
 
             <div className="mt-5 inline-flex items-center gap-2 rounded-full bg-[var(--surface-muted)] px-3 py-2 text-xs font-bold text-slate-600">
-              <span aria-hidden="true" className={`h-2 w-2 rounded-full ${hasStudentActionRequired ? "bg-[var(--accent)]" : "bg-[var(--brand)]"}`} />
+              <span aria-hidden="true" className={`h-2 w-2 rounded-full ${hasStudentActionRequired || deadlineOverdue ? "bg-[var(--accent)]" : "bg-[var(--brand)]"}`} />
               {nextAction.owner}
             </div>
 
