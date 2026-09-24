@@ -4,6 +4,7 @@ import test from "node:test";
 
 const component = readFileSync("src/components/public/PublicBreadcrumbs.tsx", "utf8");
 const publicPages = [
+  "src/app/accessibilite/page.tsx",
   "src/app/aide/page.tsx",
   "src/app/comprendre-les-demarches/page.tsx",
   "src/app/selon-votre-pays/page.tsx",
