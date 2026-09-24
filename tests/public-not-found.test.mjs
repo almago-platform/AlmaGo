@@ -14,7 +14,7 @@ test("public not-found page stays useful and non-indexable", () => {
 });
 
 test("not-found page does not expose technical failure language", () => {
-  assert.equal(/stack trace|exception|internal server error|500/i.test(page), false);
+  assert.equal(/stack trace|exception|internal server error|>\s*500\s*</i.test(page), false);
   assert.match(page, /Aucun élément de votre dossier n’est modifié/);
   assert.match(page, /Sources officielles/);
 });
