@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import { defaultPublicLocale } from "@/lib/public-locales";
 import "./globals.css";
 
 const publicTitle = "AlmaGo | Études en Allemagne";
@@ -26,7 +27,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: "website",
-    locale: "fr_FR",
+    locale: defaultPublicLocale.openGraphLocale,
     siteName: "AlmaGo",
     title: publicTitle,
     description: publicDescription,
@@ -40,7 +41,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="fr" className="h-full antialiased">
+    <html lang={defaultPublicLocale.htmlLang} dir={defaultPublicLocale.direction} className="h-full antialiased">
       <body className="min-h-full">{children}</body>
     </html>
   );
