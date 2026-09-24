@@ -100,6 +100,9 @@ test("admin selector offers only publishable programmes while inactive historica
   assert.match(adminOrientationPanel, /programs\.filter\(isPublishableProgram\)\.map/);
   assert.match(adminOrientationPanel, /Seuls les programmes disposant d’une source officielle et d’une date de vérification/);
   assert.match(adminOrientationPanel, /visible\.map\(\(recommendation\)/);
+  assert.match(adminOrientationPanel, /const publishable = isPublishableProgram\(program\)/);
+  assert.match(adminOrientationPanel, /Masquée à l’étudiant/);
+  assert.match(adminOrientationPanel, /Pistes d’orientation non archivées/);
 });
 
 test("verification guard does not introduce privileged secrets or schema changes", () => {
