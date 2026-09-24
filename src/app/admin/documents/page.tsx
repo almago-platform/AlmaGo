@@ -1,12 +1,15 @@
+import { redirect } from "next/navigation";
 import { AdminDocumentsPanel } from "@/components/admin/AdminDocumentsPanel";
 import { Card } from "@/components/ui/Card";
 import { PageHeader } from "@/components/ui/PageHeader";
-import { createClient } from "@/lib/supabase/server";
+import { getAdminUser } from "@/lib/auth/access";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminDocumentsPage() {
-  const supabase = await createClient();
+  const { supabase, user, isAdmin } = await getAdminUser();
+  if (!user) redirect("/login");
+  if (!isAdmin) redirect("/unauthorized");
   const { data: documents, error } = await supabase
     .from("documents")
     .select("id,student_id,category,original_filename,status,admin_comment,created_at")
