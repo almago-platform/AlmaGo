@@ -206,7 +206,7 @@ export default async function AdminEntry() {
             href="/admin/orientation"
             title="Pistes d’orientation"
             value={orientations}
-            detail="Pistes actives enregistrées"
+            detail="Pistes non archivées enregistrées"
             tone="neutral"
           />
           <AdminSummaryCard
