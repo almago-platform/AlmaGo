@@ -71,7 +71,7 @@ export function HomeValueSection() {
             Un dossier plus clair, du premier document à la candidature.
           </h2>
           <p className="mt-5 max-w-2xl text-base leading-7 text-slate-600 sm:text-lg">
-            AlmaGo ne remplace pas les organismes officiels. La plateforme vous aide à organiser ce que vous préparez, ce qui reste à vérifier et les prochaines actions de votre parcours.
+            AlmaGo ne remplace pas les organismes officiels. Le service vous aide à organiser ce que vous préparez, ce qui reste à vérifier et les prochaines étapes de votre parcours.
           </p>
 
           <div className="mt-8 grid gap-4 sm:grid-cols-2">
