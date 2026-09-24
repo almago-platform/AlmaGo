@@ -96,3 +96,10 @@ test("programme admin preserves inactive university context without allowing new
   assert.match(programAdminPanel, /disabled=\{!university\.is_active && university\.id !== form\.university_id\}/);
   assert.match(programAdminPanel, /Université inactive · non publiable/);
 });
+
+
+test("programme admin quality summary counts only genuinely publishable programmes", () => {
+  assert.match(programAdminPanel, /const publishablePrograms = items\.filter\(isPublishableProgram\)/);
+  assert.match(programAdminPanel, /title="Programmes publiables"/);
+  assert.match(programAdminPanel, /Programme actif, université active et source vérifiée/);
+});
