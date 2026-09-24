@@ -185,6 +185,10 @@ test("auth callback only accepts internal relative next paths", () => {
   assert.match(callback, /requestedNext\?\.startsWith\("\/"\)/);
   assert.match(callback, /!requestedNext\.startsWith\("\/\/"\)/);
   assert.match(callback, /: "\/student"/);
+  assert.match(callback, /if \(!code\)/);
+  assert.match(callback, /exchangeCodeForSession\(code\)/);
+  assert.match(callback, /if \(error\)/);
+  assert.match(callback, /new URL\("\/login", url\.origin\)/);
   assert.doesNotMatch(callback, /next\.startsWith\("\/"\) \? next/);
 });
 
@@ -274,4 +278,16 @@ test("auth UI does not expose raw provider errors", () => {
   assert.doesNotMatch(authForm, /setError\(signUpError\.message\)/);
   assert.match(authForm, /Nous n’arrivons pas à envoyer le lien de réinitialisation/);
   assert.match(authForm, /Nous n’arrivons pas à créer ce compte/);
+});
+
+
+test("switching accounts clears the active session first", () => {
+  const button = read("src/components/auth/SwitchAccountButton.tsx");
+  const page = read("src/app/unauthorized/page.tsx");
+
+  assert.match(button, /auth\.signOut\(\)/);
+  assert.match(button, /router\.push\("\/login"\)/);
+  assert.match(button, /router\.refresh\(\)/);
+  assert.match(page, /SwitchAccountButton/);
+  assert.doesNotMatch(page, /href="\/login"[\s\S]*Changer de compte/);
 });
