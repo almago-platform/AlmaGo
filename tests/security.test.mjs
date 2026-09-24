@@ -21,6 +21,9 @@ test("admin and student areas keep server-side authentication guards", () => {
 
   assert.match(studentLayout, /auth\.getUser\(\)/);
   assert.match(studentLayout, /if \(!user\) redirect\("\/login"\)/);
+  assert.match(studentLayout, /from\("user_roles"\)/);
+  assert.match(studentLayout, /role\?\.role !== "student"/);
+  assert.match(studentLayout, /redirect\("\/unauthorized"\)/);
 });
 
 test("browser and server Supabase clients never use a service-role secret", () => {
@@ -136,4 +139,16 @@ test("document review route rejects missing, malformed and non-reviewable target
   assert.match(route, /\["pending", "replace_required"\]\.includes\(currentDocument\.status\)/);
   assert.match(route, /Ce document n’est plus dans la file de revue active/);
   assert.match(route, /status: 409/);
+});
+
+
+test("login routing sends each authenticated role to its own space", () => {
+  const authForm = read("src/components/auth/AuthForm.tsx");
+
+  assert.match(authForm, /from\("user_roles"\)/);
+  assert.match(authForm, /role\.role === "admin"/);
+  assert.match(authForm, /router\.push\("\/admin"\)/);
+  assert.match(authForm, /role\.role === "student"/);
+  assert.match(authForm, /router\.push\("\/student"\)/);
+  assert.match(authForm, /supabase\.auth\.signOut\(\)/);
 });
