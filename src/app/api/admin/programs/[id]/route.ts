@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getAdminUser } from "@/lib/auth/access";
 import { programPayload, programValidationError } from "@/app/api/admin/programs/route";
 import { isHttpSourceUrl, sourceUrlsChanged } from "@/lib/source-verification";
+import { isUuid } from "@/lib/identifiers";
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { supabase, user, isAdmin } = await getAdminUser();
@@ -10,6 +11,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   const body = await request.json().catch(() => null) as Record<string, unknown> | null;
   if (!body) return NextResponse.json({ error: "Données invalides." }, { status: 400 });
   const { id } = await params;
+  if (!isUuid(id)) return NextResponse.json({ error: "Identifiant de programme invalide." }, { status: 400 });
 
   const isActiveOnlyPatch =
     typeof body.is_active === "boolean" &&
@@ -30,7 +32,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   const validationError = programValidationError(body);
   if (validationError) return NextResponse.json({ error: validationError }, { status: 400 });
   const data = programPayload(body);
-  if (!data.name || typeof data.university_id !== "string") return NextResponse.json({ error: "Université et nom du programme obligatoires." }, { status: 400 });
+  if (!data.name || !isUuid(data.university_id)) return NextResponse.json({ error: "Université et nom du programme obligatoires." }, { status: 400 });
   const programmeUrls = [data.source_url, data.application_url].filter(
     (value): value is string => typeof value === "string" && Boolean(value.trim()),
   );
