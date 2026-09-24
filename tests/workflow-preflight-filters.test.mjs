@@ -4,6 +4,7 @@ import test from "node:test";
 
 const a38 = readFileSync(".github/workflows/almago-a38-human-approval.yml", "utf8");
 const failureWatch = readFileSync(".github/workflows/almago-automation-failure-watch.yml", "utf8");
+const authenticatedE2E = readFileSync(".github/workflows/almago-authenticated-e2e.yml", "utf8");
 
 test("A38 approval gate skips ordinary comments before runner allocation", () => {
   assert.match(a38, /approve-a38:\s*\n\s*if: >-/);
@@ -29,4 +30,14 @@ test("failure watch requests a runner only for failed automation issue branches"
   assert.match(failureWatch, /pr\.head\.ref\.match\(\/\^automation\\\/issue-/);
   assert.match(failureWatch, /pr\.head\.sha !== run\.head_sha/);
   assert.match(failureWatch, /labels\.has\("almago-plan"\)/);
+});
+
+
+test("A43 closes only from authenticated evidence on main", () => {
+  assert.match(
+    authenticatedE2E,
+    /Complete A43 after successful authenticated evidence\s*\n\s*if: success\(\) && github\.ref == 'refs\/heads\/main'/,
+  );
+  assert.match(authenticatedE2E, /almago-a43-evidence:run=/);
+  assert.match(authenticatedE2E, /state_reason: "completed"/);
 });
