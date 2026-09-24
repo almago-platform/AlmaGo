@@ -8,7 +8,7 @@ function payload(body: Record<string, unknown>) {
   const numberValue = (value: unknown) => typeof value === "string" && value.trim() ? Number(value) : null;
   const data = {
     university_id: body.university_id, name: typeof body.name === "string" ? body.name.trim().slice(0, 180) : "",
-    degree_level: degreeLevels.includes(body.degree_level as (typeof degreeLevels)[number]) ? body.degree_level : "Master",
+    degree_level: body.degree_level as (typeof degreeLevels)[number],
     field: typeof body.field === "string" ? body.field.trim() : null, teaching_language: typeof (body.teaching_language ?? body.language) === "string" ? String(body.teaching_language ?? body.language).trim() : null,
     intake_terms: intakeTerms, duration: typeof body.duration === "string" ? body.duration.trim() : null, nc_requirement: typeof body.nc_requirement === "string" ? body.nc_requirement.trim() : null,
     german_level_required: typeof body.german_level_required === "string" ? body.german_level_required.trim() : null, english_level_required: typeof body.english_level_required === "string" ? body.english_level_required.trim() : null,
