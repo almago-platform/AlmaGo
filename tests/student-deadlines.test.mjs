@@ -6,6 +6,7 @@ const page = readFileSync("src/app/student/echeances/page.tsx", "utf8");
 const shell = readFileSync("src/components/layout/AppShell.tsx", "utf8");
 const dashboard = readFileSync("src/app/student/page.tsx", "utf8");
 const applicationsPage = readFileSync("src/app/student/applications/page.tsx", "utf8");
+const helpPage = readFileSync("src/app/aide/page.tsx", "utf8");
 const phase4 = readFileSync("src/lib/phase4.ts", "utf8");
 
 test("deadline center uses only real application deadlines", () => {
@@ -38,4 +39,6 @@ test("student navigation and dashboard expose the deadline center", () => {
   assert.match(dashboard, /Voir toutes mes échéances/);
   assert.match(applicationsPage, /href="\/student\/echeances"/);
   assert.match(shell, /overflow-y-auto/);
+  assert.match(page, /Besoin d’aide pour une échéance/);
+  assert.match(helpPage, /Mes échéances/);
 });
