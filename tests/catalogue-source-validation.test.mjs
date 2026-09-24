@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
-import { isHttpSourceUrl } from "../src/lib/source-verification.ts";
+import { isHttpSourceUrl, sourceUrlsChanged } from "../src/lib/source-verification.ts";
 
 const programCreate = readFileSync("src/app/api/admin/programs/route.ts", "utf8");
 const programUpdate = readFileSync("src/app/api/admin/programs/[id]/route.ts", "utf8");
@@ -14,6 +14,24 @@ test("catalogue source helper rejects placeholder and executable schemes", () =>
   }
   assert.equal(isHttpSourceUrl("https://example.edu/programme"), true);
   assert.equal(isHttpSourceUrl("http://example.edu/programme"), true);
+});
+
+test("source change detection normalizes blanks but invalidates a genuinely changed source", () => {
+  assert.equal(sourceUrlsChanged([null, ""], ["", null]), false);
+  assert.equal(
+    sourceUrlsChanged(
+      ["https://example.edu/programme", null],
+      ["https://example.edu/programme", ""],
+    ),
+    false,
+  );
+  assert.equal(
+    sourceUrlsChanged(
+      ["https://example.edu/programme", null],
+      ["https://example.edu/programme-2027", null],
+    ),
+    true,
+  );
 });
 
 test("programme create and update routes reject malformed non-empty official links", () => {
@@ -40,6 +58,15 @@ test("catalogue validation does not introduce privileged credentials", () => {
   }
 });
 
+
+test("catalogue update routes invalidate stale verification dates when source evidence changes", () => {
+  for (const source of [programUpdate, universityUpdate]) {
+    assert.match(source, /sourceUrlsChanged/);
+    assert.match(source, /sourceChanged/);
+    assert.match(source, /verified_at: null/);
+    assert.match(source, /mark_verified === true \|\| !sourceChanged/);
+  }
+});
 
 test("university active-state toggle stays partial and does not overwrite catalogue fields", () => {
   assert.match(universityUpdate, /typeof body\.is_active === "boolean"/);
