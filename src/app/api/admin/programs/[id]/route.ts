@@ -94,6 +94,8 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     [existing.source_url, existing.application_url],
     [data.source_url, data.application_url],
   );
+  const normalizeText = (value: unknown) =>
+    typeof value === "string" && value.trim() ? value.trim() : null;
   const currentAverage = existing.indicative_average == null ? null : Number(existing.indicative_average);
   const nextAverage = data.indicative_average == null ? null : Number(data.indicative_average);
 
@@ -102,21 +104,21 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     existing.university_id !== data.university_id ||
     existing.name !== data.name ||
     existing.degree_level !== data.degree_level ||
-    existing.field !== data.field ||
-    existing.teaching_language !== data.teaching_language ||
+    normalizeText(existing.field) !== data.field ||
+    normalizeText(existing.teaching_language) !== data.teaching_language ||
     JSON.stringify(existing.intake_terms || []) !== JSON.stringify(data.intake_terms || []) ||
-    existing.duration !== data.duration ||
-    existing.nc_requirement !== data.nc_requirement ||
-    existing.german_level_required !== data.german_level_required ||
-    existing.english_level_required !== data.english_level_required ||
-    existing.diploma_required !== data.diploma_required ||
+    normalizeText(existing.duration) !== data.duration ||
+    normalizeText(existing.nc_requirement) !== data.nc_requirement ||
+    normalizeText(existing.german_level_required) !== data.german_level_required ||
+    normalizeText(existing.english_level_required) !== data.english_level_required ||
+    normalizeText(existing.diploma_required) !== data.diploma_required ||
     currentAverage !== nextAverage ||
     existing.studienkolleg_required !== data.studienkolleg_required ||
     existing.testas_required !== data.testas_required ||
     existing.uni_assist_required !== data.uni_assist_required ||
-    existing.application_fee_notes !== data.application_fee_notes ||
-    existing.winter_deadline !== data.winter_deadline ||
-    existing.summer_deadline !== data.summer_deadline;
+    normalizeText(existing.application_fee_notes) !== data.application_fee_notes ||
+    normalizeText(existing.winter_deadline) !== data.winter_deadline ||
+    normalizeText(existing.summer_deadline) !== data.summer_deadline;
 
   const verificationPatch =
     body.mark_verified === true || !verificationContentChanged ? {} : { verified_at: null };
