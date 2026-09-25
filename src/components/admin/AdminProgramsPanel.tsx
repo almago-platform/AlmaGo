@@ -4,6 +4,13 @@ import { useMemo, useState, type ReactNode } from "react";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import {
+  buildMasterRequirementsDocument,
+  emptyMasterRequirementsForm,
+  masterRequirementsFormFromDocument,
+  type MasterRequirementsFormState,
+} from "@/lib/master-requirements-form";
+import { readMasterRequirementsDocument } from "@/lib/master-requirements-persistence";
 import { degreeLevels } from "@/lib/phase4";
 
 type Program = {
@@ -28,6 +35,7 @@ type Program = {
   summer_deadline: string | null;
   application_url: string | null;
   almago_notes: string | null;
+  requirements: unknown;
   is_active: boolean;
   universities: { name: string; city: string } | { name: string; city: string }[] | null;
 };
@@ -101,6 +109,7 @@ export function AdminProgramsPanel({
   const [level, setLevel] = useState("all");
   const [notice, setNotice] = useState<Notice | null>(null);
   const [busy, setBusy] = useState(false);
+  const [masterForm, setMasterForm] = useState<MasterRequirementsFormState>({ ...emptyMasterRequirementsForm });
 
   const filtered = useMemo(() => {
     const normalized = query.trim().toLocaleLowerCase("fr");
@@ -122,6 +131,11 @@ export function AdminProgramsPanel({
   function resetForm() {
     setEditing(null);
     setForm(empty);
+    setMasterForm({ ...emptyMasterRequirementsForm });
+  }
+
+  function changeMaster(key: keyof MasterRequirementsFormState, value: string) {
+    setMasterForm((current) => ({ ...current, [key]: value, evidence_conflict: false }));
   }
 
   function edit(program: Program) {
@@ -149,22 +163,32 @@ export function AdminProgramsPanel({
       almago_notes: program.almago_notes || "",
       is_active: program.is_active,
     });
+    setMasterForm(masterRequirementsFormFromDocument(readMasterRequirementsDocument(program.requirements)));
     setNotice(null);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   async function save(event: React.FormEvent) {
     event.preventDefault();
-    setBusy(true);
     setNotice(null);
 
+    const master = buildMasterRequirementsDocument(masterForm);
+    if (master.error) {
+      setNotice({ tone: "error", text: master.error });
+      return;
+    }
+
+    setBusy(true);
     try {
       const response = await fetch(
         editing ? `/api/admin/programs/${editing}` : "/api/admin/programs",
         {
           method: editing ? "PATCH" : "POST",
           headers: { "content-type": "application/json" },
-          body: JSON.stringify(form),
+          body: JSON.stringify({
+            ...form,
+            ...(master.document ? { master_requirements: master.document } : {}),
+          }),
         },
       );
       const result = await response.json().catch(() => ({}));
@@ -327,7 +351,82 @@ export function AdminProgramsPanel({
               </div>
             </FormSection>
 
-            <FormSection title="5. Maintenance interne">
+            <FormSection title="5. Exigences Master vérifiées">
+              <p className="mb-4 max-w-3xl text-sm leading-6 text-slate-600">
+                Utilisez cette section uniquement pour des exigences publiées par une source officielle. Les anciens champs du catalogue ne sont jamais convertis automatiquement.
+              </p>
+              {masterForm.evidence_conflict && (
+                <p role="alert" className="mb-4 rounded-[var(--radius-control)] border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
+                  Cette fiche contient plusieurs preuves différentes. Renseignez une preuve commune actualisée avant d’enregistrer une modification.
+                </p>
+              )}
+              <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+                <label className="block text-sm font-medium text-slate-700">
+                  ECTS minimum
+                  <input type="number" min="0.01" step="0.01" value={masterForm.minimum_ects} onChange={(event) => changeMaster("minimum_ects", event.target.value)} placeholder="Ex. 180" className="field" />
+                </label>
+                <label className="block text-sm font-medium text-slate-700">
+                  Note minimale
+                  <input type="number" min="0.01" step="0.01" value={masterForm.minimum_grade} onChange={(event) => changeMaster("minimum_grade", event.target.value)} placeholder="Uniquement si publiée" className="field" />
+                </label>
+                <label className="block text-sm font-medium text-slate-700">
+                  Route de candidature
+                  <select value={masterForm.application_route} onChange={(event) => changeMaster("application_route", event.target.value)} className="field">
+                    <option value="unknown">Non confirmée</option>
+                    <option value="direct">Directe</option>
+                    <option value="uni_assist">uni-assist</option>
+                    <option value="vpd">VPD</option>
+                  </select>
+                </label>
+                <label className="block text-sm font-medium text-slate-700">
+                  Domaine de crédits
+                  <input value={masterForm.subject} onChange={(event) => changeMaster("subject", event.target.value)} placeholder="Ex. Mathématiques" className="field" />
+                </label>
+                <label className="block text-sm font-medium text-slate-700">
+                  ECTS dans ce domaine
+                  <input type="number" min="0.01" step="0.01" value={masterForm.subject_ects} onChange={(event) => changeMaster("subject_ects", event.target.value)} placeholder="Ex. 20" className="field" />
+                </label>
+                <label className="block text-sm font-medium text-slate-700">
+                  Diplôme antérieur requis
+                  <input value={masterForm.prior_degree} onChange={(event) => changeMaster("prior_degree", event.target.value)} placeholder="Texte officiel, sans interprétation" className="field" />
+                </label>
+                <label className="block text-sm font-medium text-slate-700">
+                  Langue
+                  <input value={masterForm.language} onChange={(event) => changeMaster("language", event.target.value)} placeholder="Ex. English" className="field" />
+                </label>
+                <label className="block text-sm font-medium text-slate-700">
+                  Niveau requis
+                  <input value={masterForm.language_level} onChange={(event) => changeMaster("language_level", event.target.value)} placeholder="Ex. C1" className="field" />
+                </label>
+                <label className="block text-sm font-medium text-slate-700">
+                  Intake
+                  <input value={masterForm.intake} onChange={(event) => changeMaster("intake", event.target.value)} placeholder="Ex. Wintersemester" className="field" />
+                </label>
+                <label className="block text-sm font-medium text-slate-700">
+                  Deadline officielle
+                  <input type="date" value={masterForm.deadline} onChange={(event) => changeMaster("deadline", event.target.value)} className="field" />
+                </label>
+              </div>
+              <div className="mt-4 grid gap-3 md:grid-cols-3">
+                <label className="block text-sm font-medium text-slate-700">
+                  Source officielle
+                  <input type="url" value={masterForm.source_url} onChange={(event) => changeMaster("source_url", event.target.value)} placeholder="https://..." className="field" />
+                </label>
+                <label className="block text-sm font-medium text-slate-700">
+                  Vérifié le
+                  <input type="date" value={masterForm.verified_at} onChange={(event) => changeMaster("verified_at", event.target.value)} className="field" />
+                </label>
+                <label className="block text-sm font-medium text-slate-700">
+                  À revoir avant le
+                  <input type="date" value={masterForm.review_due_at} onChange={(event) => changeMaster("review_due_at", event.target.value)} className="field" />
+                </label>
+              </div>
+              <p className="mt-3 text-xs leading-5 text-slate-500">
+                Une exigence n’est enregistrée comme structurée que si sa source HTTPS et ses dates de vérification sont valides. Une valeur vide reste inconnue et n’est jamais transformée en zéro.
+              </p>
+            </FormSection>
+
+            <FormSection title="6. Maintenance interne">
               <div className="mb-3 inline-flex rounded-full border border-[var(--border)] bg-white px-3 py-1.5 text-xs font-bold text-slate-600">Interne à AlmaGo</div>
               <label className="block text-sm font-medium text-slate-700">
                 Notes AlmaGo
