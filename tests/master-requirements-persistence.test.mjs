@@ -81,6 +81,17 @@ test("legacy catalogue flags are never inferred into the new route contract", ()
   );
 });
 
+test("unknown application route strings fail closed", () => {
+  const stored = {
+    [masterRequirementsNamespace]: {
+      schema_version: 1,
+      kind: "master_requirements",
+      application_route: { value: "portal_magic", ...evidence },
+    },
+  };
+  assert.equal(readMasterRequirementProfile(stored), null);
+});
+
 test("non-object legacy requirements can be safely replaced by the namespaced document", () => {
   const merged = mergeMasterRequirementsIntoProgramRequirements("legacy text", profile);
   assert.deepEqual(Object.keys(merged), [masterRequirementsNamespace]);
