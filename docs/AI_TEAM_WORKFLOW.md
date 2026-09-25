@@ -68,19 +68,19 @@ Default forbidden scope unless an issue explicitly overrides it:
 
 Gemini receives one bounded surface at a time.
 
-### Grok — Adversarial hardening and edge-case specialist
+### Claude — Deep engineering, debugging and hardening specialist
 
-Preferred runtime model when launched through GitHub Copilot cloud agent: **Grok 4.7**.
+Preferred runtime model when launched through GitHub Copilot cloud agent: **Claude Opus 5.5**.
 
 Primary scope:
-- adversarial review of state transitions and invariants;
-- edge cases and failure modes;
-- security-oriented application logic review;
-- regression tests;
-- performance or robustness issues that can be demonstrated;
-- small isolated hardening changes when exact writable paths are assigned.
+- deep codebase analysis and root-cause debugging;
+- complex isolated implementation blocks explicitly assigned by the supervisor;
+- integration review across related PRs;
+- state invariants, edge cases and failure modes;
+- regression tests and hardening;
+- performance or robustness issues that can be demonstrated.
 
-Default mode is **review-first / tests-first**. Production-code edits require an explicit writable-path grant in the task.
+Default mode is **understand-first / tests-first**. Production-code edits require an explicit writable-path grant in the task.
 
 Default forbidden scope unless an issue explicitly overrides it:
 - Supabase migrations;
@@ -96,7 +96,7 @@ Use one branch per task:
 
 - `agent/codex/<issue>-<slug>`
 - `agent/gemini/<issue>-<slug>`
-- `agent/grok/<issue>-<slug>`
+- `agent/claude/<issue>-<slug>`
 - `agent/chatgpt/<issue>-<slug>`
 
 Existing historical branches do not need to be renamed.
@@ -124,7 +124,7 @@ Parallel work is allowed only when the writable surfaces are disjoint.
 
 Allowed:
 - Codex implements backend contract while Gemini reviews an already-stable UI surface.
-- Grok writes isolated regression tests while another agent works on unrelated documentation.
+- Claude writes isolated regression tests while another agent works on unrelated documentation.
 - ChatGPT audits PRs and prepares future task contracts while implementation continues.
 
 Not allowed:
@@ -170,14 +170,14 @@ First assignment after this operating model is available on the default branch:
 - perform a bounded UX/accessibility review of a supervisor-selected student-facing surface;
 - produce concrete findings and, only when writable paths are explicitly granted, a small isolated PR.
 
-### Grok
+### Claude
 First assignment after this operating model is available on the default branch:
-- adversarially review a supervisor-selected workflow/state contract;
-- identify reproducible edge cases and missing regression tests;
+- deeply review a supervisor-selected workflow/state contract and its integration chain;
+- identify reproducible edge cases, root causes, and missing regression tests;
 - start review-first and modify production code only when exact paths are granted.
 
 ### ChatGPT
-Continue architecture, task decomposition, collision checks, direct repository work where appropriate, and final review of Codex/Gemini/Grok outputs.
+Continue architecture, task decomposition, collision checks, direct repository work where appropriate, and final review of Codex/Gemini/Claude outputs.
 
 ## Product boundaries that no agent may weaken
 
