@@ -2,7 +2,7 @@
 name: almago-gemini-ux
 description: AlmaGo specialist for bounded student-facing UX, accessibility, responsive behavior, multilingual presentation, and frontend QA. Launch this profile with a Gemini model when the task contract assigns Gemini ownership.
 target: github-copilot
-tools: ["read", "search", "edit", "execute"]
+tools: ["read", "search", "edit", "execute", "github/*"]
 disable-model-invocation: true
 user-invocable: true
 ---
