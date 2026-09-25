@@ -64,6 +64,8 @@ test("RLS remains enabled for every sensitive application table", () => {
     "applications student or admin read",
     "visible application events",
     "admin notes admin only",
+    "student projects own or admin read",
+    "regulatory sources admin write",
   ]) {
     assert.match(migrations, new RegExp(`create\\s+policy\\s+["']${policy}["']`, "i"), policy);
   }
