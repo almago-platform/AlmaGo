@@ -241,6 +241,9 @@ export function AdminApplicationsPanel({ applications }: { applications: any[] }
             edit.status !== application.status ||
             edit.nextAction !== (application.next_action || "") ||
             edit.note !== (application.student_notes || "");
+          const events = [...(application.application_events || [])].sort(
+            (a: any, b: any) => String(b.created_at).localeCompare(String(a.created_at)),
+          );
 
           return (
             <Card
@@ -277,6 +280,49 @@ export function AdminApplicationsPanel({ applications }: { applications: any[] }
                   </span>
                 </div>
               </div>
+
+              <section aria-label="Informations enregistrées" className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                <RecordedFact label="Rentrée" value={application.intake || "À confirmer"} />
+                <RecordedFact label="Envoyée le" value={formatRecordedDate(application.submitted_at)} />
+                <RecordedFact
+                  label="Documents attendus"
+                  value={application.required_documents?.length
+                    ? application.required_documents.join(", ")
+                    : "À confirmer"}
+                />
+                <RecordedFact label="Résultat enregistré" value={application.result || "Aucun résultat enregistré"} />
+              </section>
+
+              <details className="mt-4 rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-4">
+                <summary className="cursor-pointer text-sm font-bold text-slate-900">
+                  Historique enregistré · {events.length} événement{events.length > 1 ? "s" : ""}
+                </summary>
+                <p className="mt-2 text-xs leading-5 text-slate-500">
+                  Cet historique est consultatif ici. Le badge indique si chaque événement est également visible dans l’espace étudiant.
+                </p>
+                {events.length === 0 ? (
+                  <p className="mt-3 text-sm text-slate-600">Aucun événement n’est enregistré pour cette candidature.</p>
+                ) : (
+                  <div className="mt-4 space-y-3">
+                    {events.map((event: any) => (
+                      <div key={event.id} className="rounded-[var(--radius-control)] bg-[var(--surface-muted)] p-3">
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                          <p className="text-sm font-semibold text-slate-900">
+                            {event.event_type === "application_status_changed" ? "Changement de statut" : "Mise à jour du dossier"}
+                          </p>
+                          <Badge variant={event.visible_to_student ? "info" : "neutral"}>
+                            {event.visible_to_student ? "Visible étudiant" : "Interne"}
+                          </Badge>
+                        </div>
+                        {event.message && <p className="mt-1 text-sm leading-6 text-slate-700">{event.message}</p>}
+                        <time dateTime={event.created_at} className="mt-1 block text-xs text-slate-500">
+                          {formatRecordedDate(event.created_at)}
+                        </time>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </details>
 
               <div className="mt-5 rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--brand-soft)]/30 p-4">
                 <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
@@ -426,4 +472,21 @@ function transitionRequirementLabel(requirement: string) {
     return "Confirmez qu’une décision officielle de l’université a été reçue. AlmaGo n’est pas l’auteur de cette décision.";
   }
   return "Vérifiez la condition métier avant de poursuivre.";
+}
+
+
+function RecordedFact({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-muted)] p-3">
+      <p className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">{label}</p>
+      <p className="mt-1 text-sm font-medium leading-5 text-slate-900 [overflow-wrap:anywhere]">{value}</p>
+    </div>
+  );
+}
+
+function formatRecordedDate(value: string | null | undefined) {
+  if (!value) return "Non enregistrée";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "Date invalide";
+  return new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium", timeStyle: "short" }).format(date);
 }
