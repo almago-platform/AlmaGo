@@ -73,12 +73,12 @@ function validEvidence(value: unknown): value is JsonRecord {
   return true;
 }
 
-function validNumericEvidence(value: unknown): value is JsonRecord {
+function validNumericEvidence(value: unknown): value is JsonRecord & { value?: number | null } {
   return validEvidence(value) &&
     (value.value === null || value.value === undefined || typeof value.value === "number");
 }
 
-function validStringEvidence(value: unknown): value is JsonRecord {
+function validStringEvidence(value: unknown): value is JsonRecord & { value?: string | null } {
   return validEvidence(value) &&
     (value.value === null || value.value === undefined || typeof value.value === "string");
 }
