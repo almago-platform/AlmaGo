@@ -1,0 +1,137 @@
+name: AlmaGo A44 Provider Readiness
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "config/telemetry-events.json"
+      - "src/lib/telemetry.ts"
+      - "docs/observability.md"
+      - "tests/telemetry-contract.test.mjs"
+      - ".github/workflows/almago-a44-readiness.yml"
+  issues:
+    types: [closed, reopened]
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: almago-a44-provider-readiness
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Validate telemetry privacy contract
+        run: node --test tests/telemetry-contract.test.mjs
+
+      - name: Check A38 and A43 prerequisites
+        id: prerequisites
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+
+            const issues = await github.paginate(github.rest.issues.listForRepo, {
+              owner,
+              repo,
+              state: "all",
+              per_page: 100,
+            });
+
+            const findPlanTask = (taskId) =>
+              issues.find(item =>
+                !item.pull_request &&
+                String(item.body || "").includes("<!-- almago-plan-task:" + taskId + " -->")
+              );
+
+            const a38 = findPlanTask("A38");
+            const a43 = findPlanTask("A43");
+            const a44 = findPlanTask("A44");
+
+            if (!a44) {
+              core.setFailed("A44 plan issue is missing.");
+              return;
+            }
+
+            const a38Done = a38?.state === "closed";
+            const a43Done = a43?.state === "closed";
+            const ready = Boolean(a38Done && a43Done);
+
+            core.setOutput("ready", ready ? "true" : "false");
+            core.setOutput("a44_issue", String(a44.number));
+
+            if (!ready) {
+              core.notice(
+                "A44 provider readiness is blocked: A38 closed=" +
+                a38Done + ", A43 closed=" + a43Done + "."
+              );
+              return;
+            }
+
+            core.info("A38 and A43 are closed; A44 provider selection may proceed.");
+
+      - name: Publish exact-SHA provider-readiness evidence
+        if: steps.prerequisites.outputs.ready == 'true'
+        uses: actions/github-script@v7
+        env:
+          A44_ISSUE: ${{ steps.prerequisites.outputs.a44_issue }}
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const issueNumber = Number(process.env.A44_ISSUE);
+
+            const { data: repository } = await github.rest.repos.get({ owner, repo });
+            const mainBranch = repository.default_branch || "main";
+            const { data: main } = await github.rest.repos.getBranch({
+              owner,
+              repo,
+              branch: mainBranch,
+            });
+
+            const sha = main.commit.sha;
+            const marker = `<!-- almago-a44-provider-ready:sha=${sha} -->`;
+
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner,
+              repo,
+              issue_number: issueNumber,
+              per_page: 100,
+            });
+
+            if (comments.some(comment => String(comment.body || "").includes(marker))) {
+              core.info("A44 readiness evidence already exists for current main SHA.");
+              return;
+            }
+
+            await github.rest.issues.createComment({
+              owner,
+              repo,
+              issue_number: issueNumber,
+              body: [
+                "A44 PROVIDER READINESS: PREREQUISITES PASSED",
+                "",
+                "Exact main SHA: " + sha,
+                marker,
+                "",
+                "A38 and A43 are closed and the telemetry allow-list contract passes.",
+                "Telemetry remains disabled by default. No provider is connected, no provider secret is read, and A44 is not closed by this workflow.",
+                "Human/provider setup is still required before production activation."
+              ].join("\n"),
+            });
