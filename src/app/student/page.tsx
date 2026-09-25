@@ -217,6 +217,17 @@ export default async function StudentEntry() {
 
       <StudentJourneyOverview stages={journeyStages} />
 
+      <Card className="mt-8 border-[var(--brand-border)] bg-[var(--brand-soft)] shadow-none">
+        <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Projet Allemagne</p>
+            <h2 className="mt-2 text-xl font-bold text-slate-950">Choisissez votre parcours d’accompagnement</h2>
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">Université, préparation allemand + études, Master + langue, ou langue uniquement : précisez votre objectif pour adapter les prochaines étapes.</p>
+          </div>
+          <ButtonLink href="/student/project">Définir mon projet</ButtonLink>
+        </div>
+      </Card>
+
       <section className="mt-10" aria-labelledby="overview-title">
         <div className="mb-5">
           <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Vue d’ensemble</p>
