@@ -8,7 +8,8 @@ const contract = JSON.parse(readFileSync("config/telemetry-events.json", "utf8")
 test("A44 readiness never activates telemetry or a provider", () => {
   assert.equal(contract.defaultMode, "disabled");
   assert.equal(contract.policy, "allowlist-only");
-  assert.doesNotMatch(workflow, /POSTHOG|SENTRY|ANALYTICS_KEY|DSN|provider.*secret/i);
+  assert.doesNotMatch(workflow, /POSTHOG|SENTRY|ANALYTICS_KEY|SENTRY_DSN/i);
+  assert.doesNotMatch(workflow, /secrets\.(?!GITHUB_TOKEN\b)[A-Z0-9_]+/);
   assert.doesNotMatch(workflow, /emitTelemetry\(/);
 });
 
