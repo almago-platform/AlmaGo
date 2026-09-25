@@ -21,10 +21,19 @@ test("known fixture counts are limited to currently active catalogue records", (
 });
 
 test("known fixture filter keeps deactivated historical fixtures reviewable", () => {
-  assert.match(universities, /quality === "known_fixture" && !isKnownCatalogueFixtureName\(university\.name\)/);
-  assert.match(programs, /quality === "known_fixture" && !isKnownCatalogueFixtureName\(program\.name\)/);
-  assert.doesNotMatch(universities, /quality === "known_fixture".*university\.is_active/s);
-  assert.doesNotMatch(programs, /quality === "known_fixture".*program\.is_active/s);
+  const universityFilter = universities.slice(
+    universities.indexOf("const filtered = useMemo"),
+    universities.indexOf("function change"),
+  );
+  const programFilter = programs.slice(
+    programs.indexOf("const filtered = useMemo"),
+    programs.indexOf("function change"),
+  );
+
+  assert.match(universityFilter, /quality === "known_fixture" && !isKnownCatalogueFixtureName\(university\.name\)/);
+  assert.match(programFilter, /quality === "known_fixture" && !isKnownCatalogueFixtureName\(program\.name\)/);
+  assert.doesNotMatch(universityFilter, /university\.is_active/);
+  assert.doesNotMatch(programFilter, /program\.is_active/);
 });
 
 test("cleanup remains an explicit per-record action", () => {
