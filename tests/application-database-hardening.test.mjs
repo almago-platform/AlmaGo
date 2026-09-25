@@ -9,7 +9,7 @@ test("Student inserts remain recommendation-bound and start only at interested",
     /applications\.status::text = 'interested'/,
     /recommendation\.student_id = \(select auth\.uid\(\)\)/,
     /not recommendation\.is_archived/,
-    /recommendation\.status <> 'not_recommended'/,
+    /recommendation\.status in \('recommended', 'possible', 'ambitious', 'missing_requirements'\)/,
   ]) assert.match(migration, pattern);
 });
 test("Student inserts cannot pre-fill Admin or post-submission evidence", () => {
