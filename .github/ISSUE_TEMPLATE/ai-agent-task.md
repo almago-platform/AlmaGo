@@ -1,6 +1,6 @@
 ---
 name: AlmaGo AI agent task
-about: Create a bounded task for Codex, Gemini, Grok, or ChatGPT with explicit ownership and validation.
+about: Create a bounded task for Codex, Gemini, Claude, or ChatGPT with explicit ownership and validation.
 title: "[AGENT] "
 labels: []
 assignees: []
