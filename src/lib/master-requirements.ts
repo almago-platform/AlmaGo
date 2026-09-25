@@ -215,10 +215,12 @@ export function matchMasterRequirements(
 ): MasterRequirementsMatch {
   const criteria: RequirementMatchResult[] = [];
 
-  const ects = resolvePositiveNumber(profile.minimum_ects, now);
-  const ectsRule = unavailable("minimum_ects", ects);
-  if (ectsRule) criteria.push(ectsRule);
-  else if (ects.value !== null) criteria.push(unknown("minimum_ects", ects.value, "Les ECTS totaux de l’étudiant ne sont pas structurés dans le projet."));
+  if (profile.minimum_ects) {
+    const ects = resolvePositiveNumber(profile.minimum_ects, now);
+    const ectsRule = unavailable("minimum_ects", ects);
+    if (ectsRule) criteria.push(ectsRule);
+    else if (ects.value !== null) criteria.push(unknown("minimum_ects", ects.value, "Les ECTS totaux de l’étudiant ne sont pas structurés dans le projet."));
+  }
 
   for (const item of profile.subject_credits || []) {
     const required = resolvePositiveNumber(item, now);
@@ -226,10 +228,12 @@ export function matchMasterRequirements(
     criteria.push(unavailable(name, required) || unknown(name, required.value, "Les crédits par matière de l’étudiant ne sont pas structurés dans le projet."));
   }
 
-  const grade = resolvePositiveNumber(profile.minimum_grade, now);
-  const gradeRule = unavailable("minimum_grade", grade);
-  if (gradeRule) criteria.push(gradeRule);
-  else if (grade.value !== null) criteria.push(unknown("minimum_grade", grade.value, "Aucune note étudiante comparable et normalisée n’est disponible."));
+  if (profile.minimum_grade) {
+    const grade = resolvePositiveNumber(profile.minimum_grade, now);
+    const gradeRule = unavailable("minimum_grade", grade);
+    if (gradeRule) criteria.push(gradeRule);
+    else if (grade.value !== null) criteria.push(unknown("minimum_grade", grade.value, "Aucune note étudiante comparable et normalisée n’est disponible."));
+  }
 
   if (profile.prior_degree) {
     const degree = resolveVerifiedValue(profile.prior_degree, now);
