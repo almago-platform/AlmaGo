@@ -64,7 +64,7 @@ function isNullableString(value: unknown) {
   return value === null || value === undefined || typeof value === "string";
 }
 
-function validEvidence(value: unknown) {
+function validEvidence(value: unknown): value is JsonRecord {
   if (!isRecord(value)) return false;
   if (!isNullableString(value.source_url)) return false;
   if (!isNullableString(value.verified_at)) return false;
@@ -73,12 +73,12 @@ function validEvidence(value: unknown) {
   return true;
 }
 
-function validNumericEvidence(value: unknown) {
+function validNumericEvidence(value: unknown): value is JsonRecord {
   return validEvidence(value) &&
     (value.value === null || value.value === undefined || typeof value.value === "number");
 }
 
-function validStringEvidence(value: unknown) {
+function validStringEvidence(value: unknown): value is JsonRecord {
   return validEvidence(value) &&
     (value.value === null || value.value === undefined || typeof value.value === "string");
 }
