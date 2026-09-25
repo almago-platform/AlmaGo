@@ -36,6 +36,18 @@ function validVerification(value: string | null | undefined, now: Date) {
   return Number.isFinite(timestamp) && timestamp <= now.getTime();
 }
 
+export function programPublicationIssues(
+  program: Pick<ProgramForAcademicMatch, "is_active" | "source_url" | "application_url" | "verified_at">,
+  now: Date = new Date(),
+) {
+  const issues: string[] = [];
+  if (!program.is_active) issues.push("Programme inactif.");
+  if (!validHttpUrl(program.source_url)) issues.push("Source officielle du programme absente ou invalide.");
+  if (!validHttpUrl(program.application_url)) issues.push("Lien de candidature absent ou invalide.");
+  if (!validVerification(program.verified_at, now)) issues.push("Programme non vérifié avec une date valide.");
+  return issues;
+}
+
 function degreeFamily(value: string | null | undefined) {
   const text = normalized(value);
   if (text.includes("master")) return "master";
@@ -80,10 +92,7 @@ export function evaluateAcademicMatch(
   const reasons: string[] = [], manual: string[] = [], preferences: string[] = [];
   const route: ApplicationRoute = program.uni_assist_required ? "uni_assist" : "unknown";
 
-  if (!program.is_active) reasons.push("Programme inactif.");
-  if (!validHttpUrl(program.source_url)) reasons.push("Source officielle du programme absente ou invalide.");
-  if (!validHttpUrl(program.application_url)) reasons.push("Lien de candidature absent ou invalide.");
-  if (!validVerification(program.verified_at, now)) reasons.push("Programme non vérifié avec une date valide.");
+  reasons.push(...programPublicationIssues(program, now));
 
   const targetDegree = degreeFamily(project.target_degree), programDegree = degreeFamily(program.degree_level);
   if (targetDegree && programDegree && targetDegree !== programDegree) reasons.push("Niveau de diplôme incompatible avec le projet.");
