@@ -51,6 +51,8 @@ test("RLS remains enabled for every sensitive application table", () => {
     "consents",
     "admin_notes",
     "technical_logs",
+    "student_projects",
+    "regulatory_sources",
   ]) {
     assert.match(migrations, new RegExp(`['"]${table}['"]`), table);
   }
