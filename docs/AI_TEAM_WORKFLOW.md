@@ -47,7 +47,7 @@ Codex must continue to follow the Codex-specific delivery bridge in `AGENTS.md`.
 
 ### Gemini — Student UX and accessibility specialist
 
-Preferred runtime model when launched through GitHub Copilot cloud agent: **Gemini 3.8 Flash**.
+Preferred runtime model when launched through GitHub Copilot cloud agent: **Gemini 3.5 Flash**.
 
 Primary scope:
 - student-facing UX;
