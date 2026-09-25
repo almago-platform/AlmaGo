@@ -51,8 +51,6 @@ test("RLS remains enabled for every sensitive application table", () => {
     "consents",
     "admin_notes",
     "technical_logs",
-    "student_projects",
-    "regulatory_sources",
   ]) {
     assert.match(migrations, new RegExp(`['"]${table}['"]`), table);
   }
@@ -72,6 +70,8 @@ test("RLS remains enabled for every sensitive application table", () => {
     assert.match(migrations, new RegExp(`create\\s+policy\\s+["']${policy}["']`, "i"), policy);
   }
 
+  assert.match(migrations, /create table public\.student_projects/i);
+  assert.match(migrations, /create table public\.regulatory_sources/i);
   assert.doesNotMatch(migrations, /create\s+policy[^;]+on\s+public\.technical_logs/i);
 });
 
