@@ -4,7 +4,7 @@ import test from "node:test";
 
 const proposal = readFileSync("docs/null-safe-application-uniqueness-proposal.md", "utf8");
 const route = readFileSync("src/app/api/student/applications/route.ts", "utf8");
-const migration = readFileSync("supabase/migrations/0011_phase4_orientation_applications.sql", "utf8");
+const migration = readFileSync("supabase/migrations/0001_initial_schema.sql", "utf8");
 
 test("NULL-safe uniqueness proposal is explicitly non-applied", () => {
   assert.match(proposal, /PROPOSAL — \*\*NOT APPLIED\*\*/);
