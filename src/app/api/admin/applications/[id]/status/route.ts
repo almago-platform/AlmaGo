@@ -87,6 +87,24 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     target_student_note: studentNote || null,
   });
 
-  if (error) return NextResponse.json({ error: "Impossible de mettre à jour la candidature." }, { status: 500 });
+  if (error) {
+    const message = error.message || "";
+    if (message.includes("application_no_status_change")) {
+      return NextResponse.json({ error: "Le statut a déjà changé. Rechargez le dossier avant de continuer." }, { status: 409 });
+    }
+    if (message.includes("application_transition_not_allowed")) {
+      return NextResponse.json({ error: "Cette transition n’est plus autorisée depuis l’état actuel du dossier." }, { status: 409 });
+    }
+    if (message.includes("application_decision_note_required")) {
+      return NextResponse.json(
+        { error: "Ajoutez une note visible indiquant la décision communiquée par l’université." },
+        { status: 400 },
+      );
+    }
+    if (message.includes("application_not_found")) {
+      return NextResponse.json({ error: "Candidature introuvable." }, { status: 404 });
+    }
+    return NextResponse.json({ error: "Impossible de mettre à jour la candidature." }, { status: 500 });
+  }
   return NextResponse.json({ ok: true, status_changed: true });
 }
