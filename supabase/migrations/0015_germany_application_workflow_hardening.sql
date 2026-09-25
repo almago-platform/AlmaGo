@@ -40,7 +40,7 @@ with check (
     where recommendation.student_id = (select auth.uid())
       and recommendation.program_id = applications.program_id
       and not recommendation.is_archived
-      and recommendation.status <> 'not_recommended'
+      and recommendation.status in ('recommended', 'possible', 'ambitious', 'missing_requirements')
       and program.is_active
       and program.source_url ~* '^https?://'
       and program.application_url ~* '^https?://'
