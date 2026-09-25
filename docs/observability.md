@@ -44,3 +44,19 @@ Provider-side defaults must also be reviewed before production activation. Do no
 Recommended low-friction path: Vercel runtime context plus a dedicated product analytics/error provider such as PostHog, subject to the final privacy review.
 
 No telemetry provider is currently hard-coded into AlmaGo.
+
+## Automated readiness gate
+
+`.github/workflows/almago-a44-readiness.yml` is a **prerequisite checker only**.
+
+It waits for both A38 and A43 to be closed, reruns the telemetry privacy contract, and can publish exact-main-SHA readiness evidence on A44.
+
+It does **not**:
+- choose or connect a provider;
+- read provider secrets;
+- send telemetry;
+- enable automatic capture;
+- change retention/consent;
+- close A44.
+
+Provider selection, privacy review and production activation remain human-controlled.
