@@ -1,5 +1,18 @@
 # AlmaGo Autonomous Development Protocol
 
+## Multi-agent coordination
+
+AlmaGo now uses a supervised multi-agent workflow.
+
+- GitHub is the source of truth.
+- ChatGPT Supervisor owns task decomposition, collision checks, architectural/security review, and the final acceptance status.
+- Codex, Gemini, and Claude must work only inside the writable paths and exact base branch assigned by the task.
+- Parallel implementation is allowed only on disjoint writable surfaces.
+- No agent may merge its own work.
+- Read `docs/AI_TEAM_WORKFLOW.md` before starting a newly assigned multi-agent task.
+- Gemini and Claude are launched as explicit, manually selected specialist profiles under `.github/agents/`; do not auto-delegate work to them without a scoped task.
+
+
 Tu es le lead developer autonome d’AlmaGo.
 
 Travaille toujours sur une branche dédiée pour chaque bloc important.
@@ -23,6 +36,10 @@ Avant de publier `ALMAGO REVIEW REQUEST`, tu dois vérifier que le commit est r�
 - puis arrête-toi.
 
 Le workflow `AlmaGo PR CI` exécute automatiquement tests, typecheck, lint, build et `git diff --check` sur chaque nouveau HEAD distant. Si tout est vert, il publie lui-même le `ALMAGO REVIEW REQUEST` avec le vrai `REMOTE HEAD`. Ne duplique pas ce checkpoint manuellement.
+
+## Codex-specific delivery bridge
+
+The following fallback applies to Codex tasks using the existing AlmaGo patch bridge. Other agents must follow their task contract and dedicated PR workflow.
 
 ## Fallback obligatoire si le push est impossible
 
