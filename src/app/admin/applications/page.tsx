@@ -9,7 +9,7 @@ export default async function AdminApplicationsPage() {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("applications")
-    .select("id,student_id,program_id,status,intake,deadline,next_action,student_notes,result,created_at,profiles(first_name,last_name),programs(name,universities(name,city))")
+    .select("id,student_id,program_id,status,intake,deadline,next_action,required_documents,student_notes,result,submitted_at,created_at,profiles(first_name,last_name),programs(name,universities(name,city)),application_events(id,event_type,message,visible_to_student,created_at)")
     .order("deadline", { ascending: true, nullsFirst: false });
 
   if (error) {
