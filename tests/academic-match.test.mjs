@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { evaluateAcademicMatch } from "../src/lib/academic-match.ts";
+import { evaluateAcademicMatch, programPublicationIssues } from "../src/lib/academic-match.ts";
 
 const now = new Date("2026-09-25T12:00:00Z");
 const project = {
@@ -26,10 +26,14 @@ test("verified exact matches are eligible for review without claiming admission"
 });
 
 test("publication safety excludes inactive, unverified or unsafe programs", () => {
+  assert.deepEqual(programPublicationIssues(program, now), []);
   for (const candidate of [
     { ...program, is_active: false }, { ...program, verified_at: null },
     { ...program, source_url: "javascript:alert(1)" }, { ...program, application_url: "a" },
-  ]) assert.equal(evaluateAcademicMatch(project, candidate, now).status, "excluded");
+  ]) {
+    assert.ok(programPublicationIssues(candidate, now).length > 0);
+    assert.equal(evaluateAcademicMatch(project, candidate, now).status, "excluded");
+  }
 });
 
 test("explicit degree, intake and past-deadline mismatches are hard exclusions", () => {
