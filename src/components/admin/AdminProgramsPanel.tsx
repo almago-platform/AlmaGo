@@ -134,8 +134,8 @@ export function AdminProgramsPanel({
     setMasterForm({ ...emptyMasterRequirementsForm });
   }
 
-  function changeMaster(key: keyof MasterRequirementsFormState, value: string) {
-    setMasterForm((current) => ({ ...current, [key]: value, evidence_conflict: false }));
+  function changeMaster(key: Exclude<keyof MasterRequirementsFormState, "evidence_conflict">, value: string) {
+    setMasterForm((current) => ({ ...current, [key]: value, evidence_conflict: false } as MasterRequirementsFormState));
   }
 
   function edit(program: Program) {
