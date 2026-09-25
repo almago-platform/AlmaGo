@@ -4,7 +4,12 @@
 import { Badge } from "@/components/ui/Badge";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Card } from "@/components/ui/Card";
-import { applicationStatusLabels, formatDeadline, isActiveApplication, isPastDeadline, nextActiveDeadline } from "@/lib/phase4";
+import {
+  isSubmittedApplicationStatus,
+  studentApplicationStageLabel,
+  studentApplicationStatusLabel,
+} from "@/lib/application-workflow";
+import { formatDeadline, isActiveApplication, isPastDeadline, nextActiveDeadline } from "@/lib/phase4";
 
 function applicationVariant(status: string): "success" | "warning" | "info" | "neutral" {
   if (status === "admission" || status === "accepted") return "success";
@@ -21,22 +26,6 @@ function firstUniversity(program: any) {
   return Array.isArray(program?.universities) ? program.universities[0] : program?.universities;
 }
 
-const submittedStatuses = new Set(["submitted", "in_review", "waiting_university", "admission", "accepted", "rejection", "rejected"]);
-
-const studentApplicationStatusLabels: Record<string, string> = {
-  interested: "À préparer",
-  documents_missing: "Documents à compléter",
-  preparing: "Préparation en cours",
-  ready_to_submit: "Prête à déposer",
-  submitted: "Déposée",
-  waiting_university: "En attente de l’université",
-  in_review: "En cours d’examen",
-  admission: "Admission enregistrée",
-  accepted: "Admission enregistrée",
-  rejection: "Résultat négatif enregistré",
-  rejected: "Résultat négatif enregistré",
-};
-
 function studentEventLabel(eventType: string) {
   if (eventType === "application_status_changed") return "Statut de candidature mis à jour";
   return "Mise à jour du dossier";
@@ -51,7 +40,7 @@ export function StudentApplicationsPanel({
 }) {
   const actionable = applications.filter((application) => isActiveApplication(application.status) && Boolean(application.next_action));
   const submitted = applications.filter(
-    (application) => Boolean(application.submitted_at) || submittedStatuses.has(application.status),
+    (application) => Boolean(application.submitted_at) || isSubmittedApplicationStatus(application.status),
   );
   const activeApplications = applications.filter((application) => isActiveApplication(application.status));
   const nextDeadlineApplication = nextActiveDeadline(applications);
@@ -186,9 +175,14 @@ export function StudentApplicationsPanel({
                         </span>
                       </div>
                     </div>
-                    <Badge variant={applicationVariant(application.status)}>
-                      {studentApplicationStatusLabels[application.status] || applicationStatusLabels[application.status] || "Statut enregistré"}
-                    </Badge>
+                    <div className="text-right">
+                      <Badge variant={applicationVariant(application.status)}>
+                        {studentApplicationStatusLabel(application.status)}
+                      </Badge>
+                      <p className="mt-2 text-xs text-slate-500">
+                        Étape du suivi : {studentApplicationStageLabel(application.status)}
+                      </p>
+                    </div>
                   </div>
 
                   <section
