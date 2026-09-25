@@ -9,6 +9,9 @@ import {
   readMasterRequirementsDocument,
 } from "../src/lib/master-requirements-persistence.ts";
 
+const adminCreateRoute = readFileSync("src/app/api/admin/programs/route.ts", "utf8");
+const adminEditRoute = readFileSync("src/app/api/admin/programs/[id]/route.ts", "utf8");
+
 const evidence = {
   source_url: "https://example.edu/master",
   verified_at: "2026-09-25T10:00:00Z",
@@ -96,4 +99,18 @@ test("non-object legacy requirements can be safely replaced by the namespaced do
   const merged = mergeMasterRequirementsIntoProgramRequirements("legacy text", profile);
   assert.deepEqual(Object.keys(merged), [masterRequirementsNamespace]);
   assert.equal(readMasterRequirementProfile(merged)?.minimum_grade?.value, 2.5);
+});
+
+
+test("admin program API validates Master requirements through the versioned persistence parser", () => {
+  assert.match(adminCreateRoute, /masterRequirementsNamespace/);
+  assert.match(adminCreateRoute, /readMasterRequirementProfile/);
+  assert.match(adminCreateRoute, /mergeMasterRequirementsIntoProgramRequirements/);
+  assert.match(adminCreateRoute, /Exigences Master invalides ou version non prise en charge/);
+});
+
+test("admin program PATCH preserves existing JSONB before merging Master requirements", () => {
+  assert.match(adminEditRoute, /select\("requirements"\)/);
+  assert.match(adminEditRoute, /programPayload\(body, existingRequirements\)/);
+  assert.match(adminEditRoute, /Programme introuvable/);
 });
