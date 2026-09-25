@@ -83,6 +83,12 @@ function validStringEvidence(value: unknown) {
     (value.value === null || value.value === undefined || typeof value.value === "string");
 }
 
+function validRouteEvidence(value: unknown) {
+  if (!validStringEvidence(value)) return false;
+  if (value.value === null || value.value === undefined) return true;
+  return ["direct", "uni_assist", "vpd", "unknown"].includes(value.value);
+}
+
 function parseDocument(value: unknown): MasterRequirementsDocumentV1 | null {
   if (!isRecord(value)) return null;
   if (value.schema_version !== masterRequirementsSchemaVersion) return null;
@@ -93,7 +99,7 @@ function parseDocument(value: unknown): MasterRequirementsDocumentV1 | null {
   if (value.prior_degree !== undefined && !validStringEvidence(value.prior_degree)) return null;
   if (value.intake !== undefined && !validStringEvidence(value.intake)) return null;
   if (value.deadline !== undefined && !validStringEvidence(value.deadline)) return null;
-  if (value.application_route !== undefined && !validStringEvidence(value.application_route)) return null;
+  if (value.application_route !== undefined && !validRouteEvidence(value.application_route)) return null;
 
   if (value.subject_credits !== undefined) {
     if (!Array.isArray(value.subject_credits)) return null;
