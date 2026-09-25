@@ -6,6 +6,10 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import {
+  allowedApplicationTransitions,
+  transitionRequirements,
+} from "@/lib/application-workflow";
+import {
   applicationStatuses,
   applicationStatusLabels,
   formatDeadline,
@@ -18,6 +22,7 @@ type ApplicationEdit = {
   status: string;
   nextAction: string;
   note: string;
+  transitionConfirmed: boolean;
 };
 
 type Notice = {
@@ -87,7 +92,7 @@ export function AdminApplicationsPanel({ applications }: { applications: any[] }
     setEdits((current) => ({ ...current, [id]: edit }));
   }
 
-  async function update(id: string, nextStatus: string, nextAction: string, note: string) {
+  async function update(id: string, nextStatus: string, nextAction: string, note: string, transitionConfirmed: boolean) {
     if (savingIdsRef.current.has(id)) return;
 
     savingIdsRef.current.add(id);
@@ -102,6 +107,7 @@ export function AdminApplicationsPanel({ applications }: { applications: any[] }
           status: nextStatus,
           next_action: nextAction,
           student_note: note,
+          transition_confirmed: transitionConfirmed,
         }),
       });
       const result = await response.json().catch(() => ({}));
@@ -213,8 +219,18 @@ export function AdminApplicationsPanel({ applications }: { applications: any[] }
             status: application.status,
             nextAction: application.next_action || "",
             note: application.student_notes || "",
+            transitionConfirmed: false,
           };
           const isSaving = busyIds.has(application.id);
+          const allowedTargets = allowedApplicationTransitions(application.status);
+          const statusOptions = [application.status, ...allowedTargets.filter((item) => item !== application.status)];
+          const pendingRequirements = edit.status !== application.status
+            ? transitionRequirements(application.status, edit.status)
+            : [];
+          const needsTransitionConfirmation = pendingRequirements.length > 0;
+          const needsDecisionNote = ["admission", "rejection"].includes(edit.status)
+            && edit.status !== application.status
+            && !edit.note.trim();
           const isOverdue =
             isActiveApplication(application.status) &&
             Boolean(application.deadline) &&
@@ -277,12 +293,16 @@ export function AdminApplicationsPanel({ applications }: { applications: any[] }
                   <select
                     disabled={isSaving}
                     value={edit.status}
-                    onChange={(event) => changeEdit(application.id, { ...edit, status: event.target.value })}
+                    onChange={(event) => changeEdit(application.id, {
+                      ...edit,
+                      status: event.target.value,
+                      transitionConfirmed: false,
+                    })}
                     className="field"
                   >
-                    {applicationStatuses.map((item) => (
+                    {statusOptions.map((item) => (
                       <option key={item} value={item}>
-                        {applicationStatusLabels[item]}
+                        {applicationStatusLabels[item] || item}
                       </option>
                     ))}
                   </select>
@@ -299,6 +319,22 @@ export function AdminApplicationsPanel({ applications }: { applications: any[] }
                   />
                 </label>
                 </div>
+
+              {needsTransitionConfirmation && (
+                <label className="mt-4 flex items-start gap-3 rounded-[var(--radius-control)] border border-amber-200 bg-amber-50/70 p-3 text-sm text-amber-950">
+                  <input
+                    type="checkbox"
+                    checked={edit.transitionConfirmed}
+                    onChange={(event) => changeEdit(application.id, { ...edit, transitionConfirmed: event.target.checked })}
+                    disabled={isSaving}
+                    className="mt-1"
+                  />
+                  <span>
+                    <strong>Confirmation requise.</strong>{" "}
+                    {transitionRequirementLabel(pendingRequirements[0])}
+                  </span>
+                </label>
+              )}
 
               <label className="mt-4 block text-sm font-medium text-slate-700">
                 Note visible par l’étudiant
@@ -318,12 +354,23 @@ export function AdminApplicationsPanel({ applications }: { applications: any[] }
                 </p>
                 <Button
                   type="button"
-                  disabled={isSaving || !isDirty}
-                  onClick={() => update(application.id, edit.status, edit.nextAction, edit.note)}
+                  disabled={isSaving || !isDirty || (needsTransitionConfirmation && !edit.transitionConfirmed) || needsDecisionNote}
+                  onClick={() => update(
+                    application.id,
+                    edit.status,
+                    edit.nextAction,
+                    edit.note,
+                    edit.transitionConfirmed,
+                  )}
                   className="w-full sm:w-auto"
                 >
                   {isSaving ? "Enregistrement…" : "Enregistrer"}
                 </Button>
+                {needsDecisionNote && (
+                  <p className="text-xs leading-5 text-amber-800 sm:text-right">
+                    Une admission ou un refus doit être accompagné d’une note visible précisant la décision communiquée par l’université.
+                  </p>
+                )}
               </div>
             </Card>
           );
@@ -365,4 +412,18 @@ function SummaryCard({
       <p className="mt-3 text-sm leading-6 text-slate-500">{detail}</p>
     </Card>
   );
+}
+
+
+function transitionRequirementLabel(requirement: string) {
+  if (requirement === "documents_complete") {
+    return "Confirmez que les documents nécessaires ont été vérifiés avant de déclarer le dossier prêt à envoyer.";
+  }
+  if (requirement === "submission_confirmed") {
+    return "Confirmez que la candidature a réellement été envoyée à l’établissement ou au service indiqué.";
+  }
+  if (requirement === "university_decision_confirmed") {
+    return "Confirmez qu’une décision officielle de l’université a été reçue. AlmaGo n’est pas l’auteur de cette décision.";
+  }
+  return "Vérifiez la condition métier avant de poursuivre.";
 }
