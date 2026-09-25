@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Button, buttonClassName } from "@/components/ui/Button";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Card } from "@/components/ui/Card";
+import type { MasterRequirementsMatch, RequirementMatchResult } from "@/lib/master-requirements";
 import { formatDeadline, recommendationStatusLabels } from "@/lib/phase4";
 
 type University = { name: string; city: string; bundesland?: string | null };
@@ -29,6 +30,7 @@ type Recommendation = {
   note: string | null;
   student_interest_at: string | null;
   programs: Program | Program[] | null;
+  requirement_match?: MasterRequirementsMatch | null;
 };
 
 type Feedback = { message: string; kind: "success" | "error" } | null;
@@ -61,11 +63,13 @@ export function StudentOrientationPanel({
   applicationProgramIds,
   loadError,
   applicationStateError,
+  criteriaStateError,
 }: {
   recommendations: Recommendation[];
   applicationProgramIds: string[];
   loadError?: string;
   applicationStateError?: string;
+  criteriaStateError?: string;
 }) {
   const [items, setItems] = useState(() =>
     recommendations.map((recommendation) => {
@@ -144,6 +148,15 @@ export function StudentOrientationPanel({
           <div className="mt-3">
             <ButtonLink href="/student/orientation" variant="secondary">Réessayer la vérification</ButtonLink>
           </div>
+        </div>
+      )}
+
+      {criteriaStateError && (
+        <div role="alert" className="rounded-[var(--radius-control)] border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+          <p>{criteriaStateError}</p>
+          <p className="mt-1 leading-6">
+            Les programmes restent visibles. Les comparaisons personnalisées réapparaîtront dès que votre projet pourra être relu.
+          </p>
         </div>
       )}
 
@@ -280,6 +293,8 @@ export function StudentOrientationPanel({
                     </dl>
                   </div>
 
+                  <RequirementAssessment match={recommendation.requirement_match} />
+
                   <div className="mt-5 rounded-[var(--radius-control)] border border-amber-200 bg-amber-50/60 p-3 text-xs leading-5 text-amber-900">
                     Cette recommandation est une piste d’orientation. Elle ne garantit ni l’éligibilité finale ni l’admission.
                   </div>
@@ -338,4 +353,102 @@ function InfoItem({ label, value }: { label: string; value: string }) {
       <dd className="mt-1 text-sm font-medium text-slate-900 [overflow-wrap:anywhere]">{value}</dd>
     </div>
   );
+}
+
+
+function RequirementAssessment({ match }: { match?: MasterRequirementsMatch | null }) {
+  if (!match || (!match.criteria.length && match.application_route === "unknown")) return null;
+
+  const summary = match.has_blocking_mismatch
+    ? { label: "Point à compléter", tone: "warning" as const }
+    : match.needs_manual_review
+      ? { label: "Vérification nécessaire", tone: "info" as const }
+      : match.has_unknowns
+        ? { label: "Informations manquantes", tone: "neutral" as const }
+        : { label: "Critères comparés", tone: "success" as const };
+
+  return (
+    <section className="mt-5 rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-4" aria-label="Comparaison avec votre projet">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">Comparaison avec votre projet</p>
+          <p className="mt-1 text-xs leading-5 text-slate-500">Lecture factuelle des critères vérifiés disponibles. Ce n’est pas une décision d’admission.</p>
+        </div>
+        <Badge variant={summary.tone}>{summary.label}</Badge>
+      </div>
+
+      {match.criteria.length > 0 && (
+        <div className="mt-4 space-y-2">
+          {match.criteria.map((item, index) => (
+            <div key={`${item.criterion}-${index}`} className="rounded-[var(--radius-control)] bg-[var(--surface-muted)] p-3">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <p className="text-sm font-semibold text-slate-900">{criterionLabel(item.criterion)}</p>
+                <Badge variant={criterionTone(item)}>{criterionStatusLabel(item)}</Badge>
+              </div>
+              <p className="mt-1 text-xs leading-5 text-slate-600">{criterionExplanation(item)}</p>
+              {(item.student_value !== null || item.required_value !== null) && (
+                <p className="mt-1 text-xs text-slate-500">
+                  {item.student_value !== null ? `Votre information : ${item.student_value}` : ""}
+                  {item.student_value !== null && item.required_value !== null ? " · " : ""}
+                  {item.required_value !== null ? `Critère publié : ${item.required_value}` : ""}
+                </p>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {match.application_route !== "unknown" && (
+        <div className="mt-3 rounded-[var(--radius-control)] border border-[var(--brand-border)] bg-[var(--brand-soft)]/40 p-3 text-sm">
+          <span className="font-semibold text-slate-900">Mode de candidature : </span>
+          <span className="text-slate-700">{applicationRouteLabel(match.application_route)}</span>
+        </div>
+      )}
+    </section>
+  );
+}
+
+function criterionLabel(criterion: string) {
+  if (criterion === "minimum_ects") return "ECTS minimum";
+  if (criterion === "minimum_grade") return "Note minimale";
+  if (criterion === "prior_degree") return "Diplôme antérieur";
+  if (criterion === "intake") return "Rentrée";
+  if (criterion === "deadline") return "Échéance";
+  if (criterion.startsWith("language:")) return `Langue · ${criterion.slice("language:".length)}`;
+  if (criterion.startsWith("subject_credits:")) return `Crédits · ${criterion.slice("subject_credits:".length)}`;
+  return "Critère du programme";
+}
+
+function criterionStatusLabel(item: RequirementMatchResult) {
+  if (item.criterion === "deadline") {
+    if (item.status === "satisfied") return "Échéance ouverte";
+    if (item.status === "not_satisfied") return "Échéance dépassée";
+  }
+  if (item.status === "satisfied") return "Critère rempli";
+  if (item.status === "not_satisfied") return "À compléter";
+  if (item.status === "needs_manual_review") return "À vérifier";
+  return "Information manquante";
+}
+
+function criterionTone(item: RequirementMatchResult): "success" | "warning" | "info" | "neutral" {
+  if (item.status === "satisfied") return "success";
+  if (item.status === "not_satisfied") return "warning";
+  if (item.status === "needs_manual_review") return "info";
+  return "neutral";
+}
+
+function criterionExplanation(item: RequirementMatchResult) {
+  if (item.criterion === "minimum_ects" && item.status === "unknown") return "Nous n’avons pas encore assez d’informations pour comparer vos ECTS.";
+  if (item.criterion === "minimum_grade" && item.status === "unknown") return "Votre note n’est pas encore disponible dans un format comparable.";
+  if (item.criterion.startsWith("subject_credits:") && item.status === "unknown") return "Vos crédits par matière ne sont pas encore disponibles pour cette comparaison.";
+  if (item.criterion.startsWith("language:") && item.status === "unknown") return "Votre niveau dans cette langue n’est pas encore disponible pour la comparaison.";
+  if (item.criterion === "prior_degree" && item.status === "needs_manual_review") return "La compatibilité de votre diplôme doit être vérifiée avant de conclure.";
+  return item.reason;
+}
+
+function applicationRouteLabel(route: MasterRequirementsMatch["application_route"]) {
+  if (route === "direct") return "candidature directe auprès de l’établissement";
+  if (route === "uni_assist") return "candidature via uni-assist";
+  if (route === "vpd") return "VPD à obtenir avant la candidature";
+  return "à confirmer";
 }
