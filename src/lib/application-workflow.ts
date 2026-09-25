@@ -40,6 +40,23 @@ export const applicationStatusLabels: Record<KnownApplicationStatus, string> = {
   rejected: "Refusée",
 };
 
+export const studentApplicationStatusLabels: Record<KnownApplicationStatus, string> = {
+  interested: "À préparer",
+  preparing: "Préparation en cours",
+  documents_missing: "Documents à compléter",
+  ready_to_submit: "Prête à déposer",
+  submitted: "Déposée",
+  waiting_university: "En attente de l’université",
+  admission: "Admission enregistrée",
+  rejection: "Résultat négatif enregistré",
+  withdrawn: "Suivi retiré",
+  draft: "Brouillon historique",
+  planned: "Planifiée",
+  in_review: "En cours d’examen",
+  accepted: "Admission enregistrée",
+  rejected: "Résultat négatif enregistré",
+};
+
 export const terminalApplicationStatuses = new Set<KnownApplicationStatus>([
   "admission",
   "rejection",
@@ -131,4 +148,29 @@ export function transitionSetsSubmittedAt(from: string, to: string) {
 
 export function isUniversityDecisionStatus(status: string) {
   return status === "admission" || status === "rejection" || status === "accepted" || status === "rejected";
+}
+
+
+export function studentApplicationStatusLabel(status: string) {
+  return studentApplicationStatusLabels[status as KnownApplicationStatus] || "Statut enregistré";
+}
+
+export function studentApplicationStageLabel(status: string) {
+  const normalizedStatus = normalizeApplicationStatus(status);
+  if (normalizedStatus === "interested") return "Intérêt enregistré";
+  if (normalizedStatus === "preparing" || normalizedStatus === "documents_missing") return "Préparation du dossier";
+  if (normalizedStatus === "ready_to_submit") return "Dossier prêt à envoyer";
+  if (normalizedStatus === "submitted") return "Candidature envoyée";
+  if (normalizedStatus === "waiting_university") return "Décision de l’université attendue";
+  if (normalizedStatus === "admission" || normalizedStatus === "rejection") return "Décision de l’université enregistrée";
+  if (normalizedStatus === "withdrawn") return "Suivi terminé";
+  return "Étape à confirmer";
+}
+
+export function isSubmittedApplicationStatus(status: string) {
+  const normalizedStatus = normalizeApplicationStatus(status);
+  return normalizedStatus === "submitted"
+    || normalizedStatus === "waiting_university"
+    || normalizedStatus === "admission"
+    || normalizedStatus === "rejection";
 }
