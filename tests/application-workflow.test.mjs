@@ -14,6 +14,9 @@ import {
   normalizeApplicationStatus,
   transitionRequirements,
   transitionSetsSubmittedAt,
+  isSubmittedApplicationStatus,
+  studentApplicationStageLabel,
+  studentApplicationStatusLabel,
 } from "../src/lib/application-workflow.ts";
 
 test("LOT 3 canonical statuses stay aligned with the existing application surface", () => {
@@ -78,4 +81,22 @@ test("deadline state never manufactures a rejection transition", () => {
   assert.equal(canTransitionApplication("ready_to_submit", "rejection"), false);
   assert.equal(canTransitionApplication("submitted", "rejection"), false);
   assert.equal(canTransitionApplication("waiting_university", "rejection"), true);
+});
+
+
+test("student-facing labels normalize historical states without changing their stored value", () => {
+  assert.equal(studentApplicationStatusLabel("interested"), "À préparer");
+  assert.equal(studentApplicationStatusLabel("accepted"), "Admission enregistrée");
+  assert.equal(studentApplicationStatusLabel("rejected"), "Résultat négatif enregistré");
+  assert.equal(studentApplicationStatusLabel("unknown"), "Statut enregistré");
+  assert.equal(studentApplicationStageLabel("in_review"), "Décision de l’université attendue");
+});
+
+test("submitted summary recognizes canonical and historical post-submission states", () => {
+  for (const status of ["submitted", "waiting_university", "admission", "rejection", "in_review", "accepted", "rejected"]) {
+    assert.equal(isSubmittedApplicationStatus(status), true, status);
+  }
+  for (const status of ["interested", "preparing", "documents_missing", "ready_to_submit", "withdrawn", "draft"]) {
+    assert.equal(isSubmittedApplicationStatus(status), false, status);
+  }
 });
