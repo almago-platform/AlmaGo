@@ -1,8 +1,13 @@
 import { NextResponse } from "next/server";
 import { getAdminUser } from "@/lib/auth/access";
+import {
+  masterRequirementsNamespace,
+  mergeMasterRequirementsIntoProgramRequirements,
+  readMasterRequirementProfile,
+} from "@/lib/master-requirements-persistence";
 import { degreeLevels } from "@/lib/phase4";
 
-function payload(body: Record<string, unknown>) {
+function basePayload(body: Record<string, unknown>) {
   const intakeTerms = typeof body.intake_terms === "string" ? body.intake_terms.split(",").map(item => item.trim()).filter(Boolean).slice(0, 5) : [];
   const numberValue = (value: unknown) => typeof value === "string" && value.trim() ? Number(value) : null;
   return {
@@ -19,17 +24,44 @@ function payload(body: Record<string, unknown>) {
   };
 }
 
+export function programPayload(body: Record<string, unknown>, existingRequirements?: unknown) {
+  const data = basePayload(body);
+  if (!Object.prototype.hasOwnProperty.call(body, "master_requirements")) {
+    return { data, error: null } as const;
+  }
+
+  const profile = readMasterRequirementProfile({
+    [masterRequirementsNamespace]: body.master_requirements,
+  });
+  if (!profile) {
+    return {
+      data: null,
+      error: "Exigences Master invalides ou version non prise en charge.",
+    } as const;
+  }
+
+  return {
+    data: {
+      ...data,
+      requirements: mergeMasterRequirementsIntoProgramRequirements(existingRequirements, profile),
+    },
+    error: null,
+  } as const;
+}
+
 export async function POST(request: Request) {
   const { supabase, user, isAdmin } = await getAdminUser();
   if (!user) return NextResponse.json({ error: "Non authentifié." }, { status: 401 });
   if (!isAdmin) return NextResponse.json({ error: "Accès non autorisé." }, { status: 403 });
   const body = await request.json().catch(() => null) as Record<string, unknown> | null;
   if (!body) return NextResponse.json({ error: "Données invalides." }, { status: 400 });
-  const data = payload(body);
+
+  const parsed = programPayload(body);
+  if (parsed.error) return NextResponse.json({ error: parsed.error }, { status: 400 });
+  const data = parsed.data;
   if (!data.name || typeof data.university_id !== "string") return NextResponse.json({ error: "Université et nom du programme obligatoires." }, { status: 400 });
+
   const { data: created, error } = await supabase.from("programs").insert(data).select("id").single();
   if (error) return NextResponse.json({ error: "Impossible de créer le programme." }, { status: 500 });
   return NextResponse.json({ ok: true, id: created.id }, { status: 201 });
 }
-
-export { payload as programPayload };
