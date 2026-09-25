@@ -6,11 +6,11 @@ AlmaGo now uses a supervised multi-agent workflow.
 
 - GitHub is the source of truth.
 - ChatGPT Supervisor owns task decomposition, collision checks, architectural/security review, and the final acceptance status.
-- Codex, Gemini, and Grok must work only inside the writable paths and exact base branch assigned by the task.
+- Codex, Gemini, and Claude must work only inside the writable paths and exact base branch assigned by the task.
 - Parallel implementation is allowed only on disjoint writable surfaces.
 - No agent may merge its own work.
 - Read `docs/AI_TEAM_WORKFLOW.md` before starting a newly assigned multi-agent task.
-- Gemini and Grok are launched as explicit, manually selected specialist profiles under `.github/agents/`; do not auto-delegate work to them without a scoped task.
+- Gemini and Claude are launched as explicit, manually selected specialist profiles under `.github/agents/`; do not auto-delegate work to them without a scoped task.
 
 
 Tu es le lead developer autonome d’AlmaGo.
