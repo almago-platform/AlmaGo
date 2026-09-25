@@ -1,15 +1,11 @@
 export type ApplicationIntakeFamily = "winter" | "summer";
-
 export type ApplicationIntakeResolution =
   | { status: "resolved"; intake: string; family: ApplicationIntakeFamily; deadline: string | null; reason: string }
   | { status: "needs_manual_review"; intake: null; family: null; deadline: null; reason: string }
   | { status: "deadline_passed"; intake: string; family: ApplicationIntakeFamily; deadline: string; reason: string };
 
 const normalized = (value: string | null | undefined) => (value || "")
-  .normalize("NFD")
-  .replace(/[\u0300-\u036f]/g, "")
-  .trim()
-  .toLowerCase();
+  .normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase();
 
 export function applicationIntakeFamily(value: string | null | undefined): ApplicationIntakeFamily | null {
   const text = normalized(value);
@@ -28,22 +24,14 @@ function validDateOnly(value: string) {
 
 function berlinDateOnly(now: Date) {
   const parts = new Intl.DateTimeFormat("en-GB", {
-    timeZone: "Europe/Berlin",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
+    timeZone: "Europe/Berlin", year: "numeric", month: "2-digit", day: "2-digit",
   }).formatToParts(now);
   const part = (type: string) => parts.find((item) => item.type === type)?.value || "";
   return `${part("year")}-${part("month")}-${part("day")}`;
 }
 
 export function resolveApplicationIntake(
-  input: {
-    target_intake?: string | null;
-    intake_terms?: string[] | null;
-    winter_deadline?: string | null;
-    summer_deadline?: string | null;
-  },
+  input: { target_intake?: string | null; intake_terms?: string[] | null; winter_deadline?: string | null; summer_deadline?: string | null },
   now: Date = new Date(),
 ): ApplicationIntakeResolution {
   const terms = [...new Set((input.intake_terms || []).map((term) => term.trim()).filter(Boolean))];
@@ -51,83 +39,43 @@ export function resolveApplicationIntake(
     .map((term) => ({ term, family: applicationIntakeFamily(term) }))
     .filter((item): item is { term: string; family: ApplicationIntakeFamily } => item.family !== null);
 
-  if (!recognized.length) {
-    return {
-      status: "needs_manual_review",
-      intake: null,
-      family: null,
-      deadline: null,
-      reason: "La rentrée du programme n’est pas suffisamment structurée.",
-    };
-  }
+  const manual = (reason: string): ApplicationIntakeResolution => ({
+    status: "needs_manual_review", intake: null, family: null, deadline: null, reason,
+  });
+
+  if (!recognized.length) return manual("La rentrée du programme n’est pas suffisamment structurée.");
 
   const targetFamily = applicationIntakeFamily(input.target_intake);
-  let candidates = targetFamily
-    ? recognized.filter((item) => item.family === targetFamily)
-    : recognized;
-
+  let candidates = targetFamily ? recognized.filter((item) => item.family === targetFamily) : recognized;
   if (targetFamily && !candidates.length) {
-    return {
-      status: "needs_manual_review",
-      intake: null,
-      family: null,
-      deadline: null,
-      reason: "La rentrée souhaitée ne correspond pas aux rentrées structurées du programme.",
-    };
+    return manual("La rentrée souhaitée ne correspond pas aux rentrées structurées du programme.");
   }
 
   if (candidates.length > 1 && input.target_intake) {
     const exact = candidates.filter((item) => normalized(item.term) === normalized(input.target_intake));
     if (exact.length === 1) candidates = exact;
   }
-
   if (candidates.length !== 1) {
-    return {
-      status: "needs_manual_review",
-      intake: null,
-      family: null,
-      deadline: null,
-      reason: "Plusieurs rentrées sont possibles : la rentrée doit être confirmée avant de créer la candidature.",
-    };
+    return manual("Plusieurs rentrées sont possibles : la rentrée doit être confirmée avant de créer la candidature.");
   }
 
   const selected = candidates[0];
   const deadline = selected.family === "winter" ? input.winter_deadline : input.summer_deadline;
   if (!deadline) {
     return {
-      status: "resolved",
-      intake: selected.term,
-      family: selected.family,
-      deadline: null,
+      status: "resolved", intake: selected.term, family: selected.family, deadline: null,
       reason: "Rentrée déterminée ; deadline officielle encore à confirmer.",
     };
   }
-
-  if (!validDateOnly(deadline)) {
-    return {
-      status: "needs_manual_review",
-      intake: null,
-      family: null,
-      deadline: null,
-      reason: "La deadline enregistrée pour cette rentrée n’est pas exploitable.",
-    };
-  }
-
+  if (!validDateOnly(deadline)) return manual("La deadline enregistrée pour cette rentrée n’est pas exploitable.");
   if (deadline < berlinDateOnly(now)) {
     return {
-      status: "deadline_passed",
-      intake: selected.term,
-      family: selected.family,
-      deadline,
+      status: "deadline_passed", intake: selected.term, family: selected.family, deadline,
       reason: "La deadline enregistrée pour cette rentrée est dépassée.",
     };
   }
-
   return {
-    status: "resolved",
-    intake: selected.term,
-    family: selected.family,
-    deadline,
+    status: "resolved", intake: selected.term, family: selected.family, deadline,
     reason: "Rentrée et deadline cohérentes.",
   };
 }
