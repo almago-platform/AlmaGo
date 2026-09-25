@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { matchMasterRequirements } from "../src/lib/master-requirements-match.ts";
+import { matchMasterRequirements } from "../src/lib/master-requirements.ts";
 
 const now = new Date("2026-09-25T12:00:00Z");
 const evidence = { source_url: "https://example.edu/master", verified_at: "2026-09-24T10:00:00Z", review_due_at: "2026-12-24T10:00:00Z" };
