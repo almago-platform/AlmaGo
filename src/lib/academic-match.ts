@@ -89,7 +89,7 @@ export function evaluateAcademicMatch(
   if (targetDegree && programDegree && targetDegree !== programDegree) reasons.push("Niveau de diplôme incompatible avec le projet.");
 
   const targetIntake = intakeFamily(project.target_intake);
-  const intakes = (program.intake_terms || []).map(intakeFamily).filter((value): value is string => Boolean(value));
+  const intakes = (program.intake_terms || []).map(intakeFamily).filter((value): value is "winter" | "summer" => value !== null);
   if (targetIntake && intakes.length && !intakes.includes(targetIntake)) {
     reasons.push("Rentrée souhaitée non proposée dans les intakes structurés du programme.");
   }
