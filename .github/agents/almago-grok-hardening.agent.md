@@ -2,7 +2,7 @@
 name: almago-grok-hardening
 description: AlmaGo adversarial hardening specialist for state invariants, edge cases, security-oriented logic review, regression tests, and bounded robustness fixes. Launch this profile with a Grok model when the task contract assigns Grok ownership.
 target: github-copilot
-tools: ["read", "search", "edit", "execute"]
+tools: ["read", "search", "edit", "execute", "github/*"]
 disable-model-invocation: true
 user-invocable: true
 ---
