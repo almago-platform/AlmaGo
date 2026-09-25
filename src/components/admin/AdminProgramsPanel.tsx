@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { degreeLevels } from "@/lib/phase4";
-import { hasVerifiedProgramSource, isHttpSourceUrl, isPublishableProgram } from "@/lib/source-verification";
+import { hasVerifiedProgramSource, isHttpSourceUrl, isKnownCatalogueFixtureName, isPublishableProgram } from "@/lib/source-verification";
 
 type Program = {
   id: string;
@@ -130,7 +130,7 @@ export function AdminProgramsPanel({
   const [query, setQuery] = useState("");
   const [level, setLevel] = useState("all");
   const [quality, setQuality] = useState(
-    ["all", "missing_source", "missing_verification", "missing_deadline", "inactive_university"].includes(initialQuality)
+    ["all", "missing_source", "missing_verification", "missing_deadline", "inactive_university", "known_fixture"].includes(initialQuality)
       ? initialQuality
       : "all",
   );
@@ -152,6 +152,9 @@ export function AdminProgramsPanel({
   const inactiveUniversityCount = activePrograms.filter(
     (program) => programUniversity(program)?.is_active !== true,
   ).length;
+  const activeKnownFixtureCount = activePrograms.filter(
+    (program) => isKnownCatalogueFixtureName(program.name),
+  ).length;
 
   const filtered = useMemo(() => {
     const normalized = query.trim().toLocaleLowerCase("fr");
@@ -161,6 +164,7 @@ export function AdminProgramsPanel({
       if (quality === "missing_verification" && hasVerifiedProgramSource(program)) return false;
       if (quality === "missing_deadline" && (program.winter_deadline || program.summer_deadline)) return false;
       if (quality === "inactive_university" && programUniversity(program)?.is_active === true) return false;
+      if (quality === "known_fixture" && !isKnownCatalogueFixtureName(program.name)) return false;
       if (!normalized) return true;
       return [program.name, program.field, universityName(program)]
         .filter(Boolean)
@@ -477,7 +481,7 @@ export function AdminProgramsPanel({
       </Card>
 
       <section aria-labelledby="program-catalogue-title">
-        <div className="mb-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+        <div className="mb-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           <QualityCard
             title="Programmes publiables"
             value={publishablePrograms.length}
@@ -507,6 +511,12 @@ export function AdminProgramsPanel({
             value={inactiveUniversityCount}
             detail="Programmes actifs actuellement non publiables"
             tone={inactiveUniversityCount ? "warning" : "success"}
+          />
+          <QualityCard
+            title="Données de test actives"
+            value={activeKnownFixtureCount}
+            detail="Fiches connues à examiner puis désactiver explicitement"
+            tone={activeKnownFixtureCount ? "warning" : "success"}
           />
         </div>
 
@@ -540,6 +550,7 @@ export function AdminProgramsPanel({
                 <option value="missing_verification">Date de vérification à compléter</option>
                 <option value="missing_deadline">Échéance à compléter</option>
                 <option value="inactive_university">Université inactive</option>
+                <option value="known_fixture">Données de test connues</option>
               </select>
             </label>
           </div>
@@ -552,6 +563,9 @@ export function AdminProgramsPanel({
                 <div className="min-w-0">
                   <div className="flex flex-wrap gap-2">
                     <Badge variant="neutral">{program.degree_level}</Badge>
+                    {isKnownCatalogueFixtureName(program.name) && (
+                      <Badge variant="warning">Donnée de test connue</Badge>
+                    )}
                     <Badge variant={program.is_active ? "success" : "neutral"}>{program.is_active ? "Actif" : "Inactif"}</Badge>
                     {programUniversity(program)?.is_active === false && (
                       <Badge variant="warning">Université inactive · non publiable</Badge>
