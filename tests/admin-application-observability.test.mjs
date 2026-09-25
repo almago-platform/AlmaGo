@@ -25,8 +25,8 @@ test("event visibility is explicit for Admin reviewers", () => {
   assert.match(panel, /event\.visible_to_student/);
 });
 
-test("operational history remains read-only in this microtask", () => {
-  assert.doesNotMatch(panel, /required_documents.*onChange/s);
-  assert.doesNotMatch(panel, /result.*onChange/s);
-  assert.doesNotMatch(panel, /submitted_at.*onChange/s);
+test("operational evidence stays outside the Admin edit contract", () => {
+  const editContract = panel.match(/type ApplicationEdit = \{[\s\S]*?\};/)?.[0] || "";
+  assert.doesNotMatch(editContract, /required_documents|result|submitted_at/);
+  assert.doesNotMatch(panel, /setRequiredDocuments|setResult|setSubmittedAt/);
 });
