@@ -1,106 +1,102 @@
-import Image from "next/image";
 import Link from "next/link";
 
-const trustPoints = [
-  "Dossier centralisé",
-  "Étapes lisibles",
-  "Suivi transparent",
-];
+const steps = [
+  ["01", "Projet", "Objectif académique"],
+  ["02", "Orientation", "Programmes vérifiés"],
+  ["03", "Documents", "Pièces et preuves"],
+  ["04", "Candidatures", "Statuts et échéances"],
+  ["05", "Préparation", "Langue et financement"],
+  ["06", "Démarches", "Prochaine action"],
+] as const;
 
 export function HomeHero() {
   return (
-    <section className="relative overflow-hidden bg-[var(--brand)] text-white">
-      <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(circle_at_18%_18%,rgba(255,255,255,0.08),transparent_18rem),linear-gradient(115deg,rgba(32,38,111,0.18),transparent_48%)]" />
-      <div aria-hidden="true" className="absolute inset-y-0 left-0 w-[55%] opacity-20 [background-image:linear-gradient(rgba(255,255,255,0.08)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.08)_1px,transparent_1px)] [background-size:36px_36px]" />
+    <section className="relative overflow-hidden border-b border-[var(--border)] bg-white">
+      <div aria-hidden="true" className="absolute inset-y-0 right-0 hidden w-[42%] border-l border-[var(--border)] bg-[var(--surface-subtle)] lg:block" />
 
-      <div className="relative mx-auto grid min-h-[39rem] w-full max-w-[96rem] lg:grid-cols-[minmax(0,0.92fr)_minmax(32rem,1.08fr)]">
-        <div className="z-10 flex items-center px-4 py-14 sm:px-6 sm:py-18 lg:px-10 lg:py-20 xl:pl-[max(2rem,calc((100vw-80rem)/2))] xl:pr-14">
-          <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] text-white/90 backdrop-blur">
-              <span aria-hidden="true" className="h-2 w-2 rounded-full bg-[var(--accent)]" />
-              Votre projet d’études en Allemagne, mieux organisé
-            </div>
+      <div className="relative mx-auto grid max-w-7xl gap-12 px-4 py-14 sm:px-6 sm:py-20 lg:grid-cols-[minmax(0,1.02fr)_minmax(26rem,0.98fr)] lg:items-center lg:gap-16 lg:px-8 lg:py-20">
+        <div className="max-w-3xl">
+          <div className="inline-flex items-center gap-2 border-l-2 border-[var(--accent)] pl-3 text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">
+            Parcours d’études en Allemagne
+          </div>
 
-            <h1 className="mt-7 max-w-4xl text-4xl font-bold leading-[1.02] tracking-[-0.045em] text-white sm:text-5xl lg:text-[3.65rem] xl:text-[4.15rem]">
-              Préparez votre dossier d’études en Allemagne avec une vue claire sur chaque étape.
-            </h1>
+          <h1 className="mt-6 max-w-4xl text-4xl font-semibold leading-[1.05] tracking-[-0.045em] text-slate-950 sm:text-5xl lg:text-[3.65rem]">
+            Un dossier clair. Des étapes vérifiables. Une prochaine action visible.
+          </h1>
 
-            <p className="mt-6 max-w-2xl text-base leading-7 text-indigo-100 sm:text-lg sm:leading-8">
-              AlmaGo rassemble votre profil, vos documents, votre orientation, vos démarches et vos candidatures dans un espace structuré pour savoir ce qui est prêt, ce qui reste à vérifier et quelle action faire ensuite.
-            </p>
+          <p className="mt-6 max-w-2xl text-base leading-7 text-slate-600 sm:text-lg sm:leading-8">
+            AlmaGo structure votre projet universitaire, vos preuves, vos candidatures, votre préparation linguistique et vos démarches dans un seul espace. Les informations importantes restent reliées à leur source et à leur statut de vérification.
+          </p>
 
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Link
-                href="/signup"
-                className="inline-flex min-h-12 items-center justify-center rounded-[var(--radius-control)] bg-white px-6 text-base font-bold text-[var(--brand)] shadow-[0_18px_36px_-24px_rgba(0,0,0,0.75)] transition-all duration-150 hover:-translate-y-px hover:bg-slate-50"
-              >
-                Créer mon dossier
-              </Link>
-              <a
-                href="#parcours"
-                className="inline-flex min-h-12 items-center justify-center rounded-[var(--radius-control)] border border-white/30 bg-white/5 px-6 text-base font-bold text-white transition-colors hover:bg-white/10"
-              >
-                Voir comment ça marche
-              </a>
-            </div>
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <Link
+              href="/signup"
+              className="inline-flex min-h-12 items-center justify-center rounded-[var(--radius-control)] bg-[var(--brand)] px-6 text-base font-bold text-white hover:bg-[var(--brand-strong)]"
+            >
+              Commencer mon dossier
+            </Link>
+            <a
+              href="#parcours"
+              className="inline-flex min-h-12 items-center justify-center rounded-[var(--radius-control)] border border-[var(--border-strong)] bg-white px-6 text-base font-bold text-slate-800 hover:border-[var(--brand)] hover:text-[var(--brand)]"
+            >
+              Voir les 6 étapes
+            </a>
+          </div>
 
-            <ul className="mt-8 grid gap-3 text-sm font-semibold text-white/90 sm:grid-cols-3">
-              {trustPoints.map((point) => (
-                <li key={point} className="flex items-center gap-2">
-                  <span aria-hidden="true" className="grid h-6 w-6 place-items-center rounded-full bg-white/12 text-[var(--accent-light)]">
-                    ✓
-                  </span>
-                  <span>{point}</span>
-                </li>
-              ))}
-            </ul>
+          <div className="mt-9 grid max-w-2xl gap-3 border-t border-[var(--border)] pt-5 text-sm text-slate-600 sm:grid-cols-3">
+            <TrustFact title="Sources visibles" text="Les fiches vérifiées indiquent leur provenance." />
+            <TrustFact title="Statuts explicites" text="À faire, en vérification ou terminé." />
+            <TrustFact title="Rôle limité" text="AlmaGo n’accorde ni admission ni visa." />
           </div>
         </div>
 
-        <div className="relative min-h-[31rem] overflow-hidden lg:min-h-[39rem]">
-          <Image
-            src="https://images.unsplash.com/photo-1759852692971-a2abc6799cbd?auto=format&fit=crop&q=88&w=1800"
-            alt="Étudiant souriant avec sac et livres sur un campus"
-            fill
-            priority
-            sizes="(max-width: 1024px) 100vw, 54vw"
-            className="object-cover object-center"
-          />
-          <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-r from-[var(--brand)] via-[rgba(41,48,139,0.22)] to-transparent lg:from-[var(--brand)] lg:via-[rgba(41,48,139,0.08)] lg:to-transparent" />
-          <div aria-hidden="true" className="absolute inset-x-0 bottom-0 h-44 bg-gradient-to-t from-slate-950/55 to-transparent" />
-
-          <div className="absolute inset-x-4 bottom-5 sm:inset-x-6 lg:bottom-8 lg:left-auto lg:right-8 lg:w-[26rem]">
-            <div className="rounded-[var(--radius-panel)] border border-white/70 bg-white/94 p-5 text-slate-950 shadow-[0_28px_70px_-36px_rgba(15,23,42,0.8)] backdrop-blur">
-              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--accent-strong)]">Un seul espace</p>
-              <h2 className="mt-2 text-xl font-bold tracking-tight">Votre projet reste lisible du début à la candidature.</h2>
-              <div className="mt-4 grid grid-cols-2 gap-2 text-sm">
-                <HeroMiniItem label="Profil" />
-                <HeroMiniItem label="Documents" />
-                <HeroMiniItem label="Orientation" />
-                <HeroMiniItem label="Candidatures" />
+        <div className="relative lg:pl-5">
+          <div className="overflow-hidden rounded-[calc(var(--radius-panel)+0.2rem)] border border-[var(--brand-border)] bg-white shadow-[var(--shadow-soft)]">
+            <div className="flex items-center justify-between gap-4 border-b border-[var(--border)] bg-[var(--surface-subtle)] px-5 py-4">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">Votre parcours AlmaGo</p>
+                <p className="mt-1 text-sm font-semibold text-slate-700">Une vue structurée du dossier</p>
               </div>
+              <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-[11px] font-bold text-emerald-800">
+                Sources vérifiées
+              </span>
+            </div>
+
+            <ol className="divide-y divide-[var(--border)]">
+              {steps.map(([number, title, detail], index) => (
+                <li key={number} className="grid grid-cols-[2.6rem_1fr_auto] items-center gap-3 px-5 py-4">
+                  <span className="grid h-8 w-8 place-items-center rounded-full border border-[var(--brand-border)] bg-[var(--brand-soft)] text-xs font-bold text-[var(--brand)]">
+                    {number}
+                  </span>
+                  <div>
+                    <p className="text-sm font-bold text-slate-950">{title}</p>
+                    <p className="mt-0.5 text-xs text-slate-500">{detail}</p>
+                  </div>
+                  <span className={index === 0 ? "text-[11px] font-bold text-[var(--accent-strong)]" : "text-[11px] font-bold text-slate-400"}>
+                    {index === 0 ? "Départ" : "→"}
+                  </span>
+                </li>
+              ))}
+            </ol>
+
+            <div className="border-t border-[var(--border)] bg-[var(--brand)] px-5 py-4 text-white">
+              <p className="text-xs font-bold uppercase tracking-[0.14em] text-white/70">Principe AlmaGo</p>
+              <p className="mt-1 text-sm font-semibold">
+                Vous voyez ce qui est connu, ce qui manque et ce qui doit être vérifié.
+              </p>
             </div>
           </div>
-
-          <a
-            href="https://unsplash.com/photos/a-smiling-student-with-backpack-and-books-walks-outside-dPQBwZ6d-NU"
-            target="_blank"
-            rel="noreferrer"
-            className="absolute bottom-2 right-3 text-[10px] font-medium text-white/75 underline decoration-white/30 underline-offset-2 hover:text-white"
-          >
-            Photo : Oluwaseyi Akinlolu / Unsplash
-          </a>
         </div>
       </div>
     </section>
   );
 }
 
-function HeroMiniItem({ label }: { label: string }) {
+function TrustFact({ title, text }: { title: string; text: string }) {
   return (
-    <div className="flex items-center gap-2 rounded-[var(--radius-control)] bg-[var(--surface-muted)] px-3 py-2.5 font-semibold text-slate-700">
-      <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-[var(--brand)]" />
-      {label}
+    <div>
+      <p className="font-bold text-slate-900">{title}</p>
+      <p className="mt-1 text-xs leading-5 text-slate-500">{text}</p>
     </div>
   );
 }
