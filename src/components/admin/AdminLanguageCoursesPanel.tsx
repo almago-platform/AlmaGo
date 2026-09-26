@@ -61,6 +61,7 @@ export function AdminLanguageCoursesPanel({ courses }: { courses: Course[] }) {
   const [form, setForm] = useState<FormState>(empty);
   const [editing, setEditing] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [revalidatingId, setRevalidatingId] = useState<string | null>(null);
   const [notice, setNotice] = useState<{ tone: "success" | "error"; text: string } | null>(null);
 
   function change<K extends keyof FormState>(key: K, value: FormState[K]) {
@@ -93,6 +94,55 @@ export function AdminLanguageCoursesPanel({ courses }: { courses: Course[] }) {
   function reset() {
     setEditing(null);
     setForm(empty);
+  }
+
+  async function revalidate(course: Course) {
+    if (!course.source_url) {
+      setNotice({ tone: "error", text: "Aucune source officielle n’est enregistrée pour ce cours." });
+      return;
+    }
+    if (!window.confirm("Confirmez que vous avez ouvert la source officielle et vérifié les informations affichées avant de revalider ce cours.")) {
+      return;
+    }
+
+    setRevalidatingId(course.id);
+    setNotice(null);
+    try {
+      const response = await fetch("/api/admin/language-courses", {
+        method: "PATCH",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          id: course.id,
+          title: course.title,
+          provider_name: course.provider_name,
+          city: course.city,
+          language: course.language,
+          purpose: course.purpose,
+          level_from: course.level_from,
+          level_to: course.level_to,
+          hours_per_week: course.hours_per_week,
+          starts_on: course.starts_on,
+          ends_on: course.ends_on,
+          price_cents: course.price_cents,
+          currency: course.currency,
+          source_url: course.source_url,
+          application_url: course.application_url,
+          verified_at: new Date().toISOString(),
+          is_active: course.is_active,
+        }),
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        setNotice({ tone: "error", text: result.error || "Revalidation impossible." });
+        return;
+      }
+      setNotice({ tone: "success", text: "Cours revalidé après contrôle de la source officielle." });
+      window.location.reload();
+    } catch {
+      setNotice({ tone: "error", text: "Revalidation impossible. Vérifiez votre connexion puis réessayez." });
+    } finally {
+      setRevalidatingId(null);
+    }
   }
 
   async function save(event: React.FormEvent) {
@@ -198,7 +248,26 @@ export function AdminLanguageCoursesPanel({ courses }: { courses: Course[] }) {
               {course.verified_at && (
                 <p className="mt-2 text-xs text-slate-500">À revalider avant : {new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium" }).format(new Date(catalogVerificationExpiresAt(course.verified_at) as string))}</p>
               )}
-              <div className="mt-5"><Button type="button" variant="secondary" onClick={() => edit(course)}>Modifier</Button></div>
+              <div className="mt-5 flex flex-wrap gap-3">
+                {course.source_url && (
+                  <a
+                    href={course.source_url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex min-h-11 items-center justify-center rounded-[var(--radius-control)] border border-[var(--border)] bg-white px-4 py-2.5 text-sm font-bold text-slate-700"
+                  >
+                    Ouvrir la source officielle
+                  </a>
+                )}
+                <Button type="button" variant="secondary" onClick={() => edit(course)}>Modifier</Button>
+                <Button
+                  type="button"
+                  onClick={() => revalidate(course)}
+                  disabled={revalidatingId === course.id || !course.source_url}
+                >
+                  {revalidatingId === course.id ? "Revalidation…" : "Source vérifiée aujourd’hui"}
+                </Button>
+              </div>
             </Card>
           ))}
           {!courses.length && <Card className="shadow-none"><p className="text-sm text-slate-600">Aucun cours enregistré.</p></Card>}
