@@ -3,7 +3,7 @@ name: AlmaGo Master Orchestrator
 on:
   workflow_dispatch:
   schedule:
-    - cron: "23 */3 * * *"
+    - cron: "0,10,20,30,40,50 * * * *"
   push:
     branches: [main]
 
