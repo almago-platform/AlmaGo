@@ -1,93 +1,86 @@
+import { HomeIcon } from "./HomeIcons";
+import s from "./Homepage.module.css";
+
 const steps = [
   {
-    number: "01",
-    title: "Définir votre projet",
-    description: "Diplôme, domaine, langue et rentrée visée : le dossier commence par une direction claire.",
+    title: "Poser votre projet",
+    text: "Le diplôme, le domaine, la langue et la rentrée qui donnent une direction à vos recherches.",
+    detail: "Votre point de départ",
   },
   {
-    number: "02",
-    title: "Vérifier votre base académique",
-    description: "Ajoutez les preuves utiles et distinguez ce qui est acquis de ce qui doit encore être vérifié.",
+    title: "Établir votre base académique",
+    text: "Vos diplômes et justificatifs, avec ce qui est acquis et ce qui reste à vérifier.",
+    detail: "Les éléments de votre parcours",
   },
   {
-    number: "03",
     title: "Explorer les programmes",
-    description: "Comparez les pistes enregistrées avec leurs critères, échéances et sources disponibles.",
+    text: "Des pistes à examiner selon votre profil, leurs critères, leurs échéances et leurs sources.",
+    detail: "Des choix à comparer",
+    id: "programmes",
   },
   {
-    number: "04",
     title: "Préparer vos candidatures",
-    description: "Suivez chaque dossier avec son statut, sa prochaine action et ses échéances.",
+    text: "Les pièces, les statuts et la prochaine action de chaque candidature, réunis au même endroit.",
+    detail: "Un suivi pour chaque dossier",
   },
   {
-    number: "05",
     title: "Organiser votre préparation",
-    description: "Langue, financement et assurance restent reliés à votre parcours réel.",
+    text: "Langue, financement et assurance : des besoins à préparer selon votre projet réel.",
+    detail: "Les conditions de votre départ",
   },
   {
-    number: "06",
-    title: "Suivre les démarches suivantes",
-    description: "Votre checklist rassemble ce qui reste à faire et ce qui dépend d’un organisme externe.",
+    title: "Suivre la suite du parcours",
+    text: "Une checklist pour les démarches qui deviennent pertinentes et les réponses encore attendues.",
+    detail: "Le prochain pas, au bon moment",
   },
 ] as const;
 
 export function HomeJourneySection() {
   return (
-    <section id="parcours" className="border-y border-[var(--border)] bg-[#f4f6f8] py-12 sm:py-14 lg:py-16" aria-labelledby="journey-title">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid gap-6 lg:grid-cols-[0.72fr_1.28fr] lg:items-end">
+    <section
+      id="parcours"
+      className={`${s.section} ${s.journey}`}
+      aria-labelledby="journey-title"
+    >
+      <div className={s.container}>
+        <div className={s.sectionHeading}>
           <div>
-            <p className="eyebrow">Le parcours AlmaGo</p>
-            <h2 id="journey-title" className="mt-2 max-w-xl text-3xl font-semibold tracking-[-0.04em] text-slate-950 sm:text-4xl">
-              Six étapes. Une logique visible du début à la suite.
+            <p className={s.eyebrow}>Le parcours, simplement</p>
+            <h2 id="journey-title" className={s.sectionTitle}>
+              Un grand projet.
+              <br />
+              <em>Six étapes pour avancer.</em>
             </h2>
           </div>
-          <p className="max-w-2xl text-base leading-7 text-slate-600 lg:justify-self-end">
-            Chaque étape prépare la suivante. Le but n’est pas de vous donner un score, mais de rendre le dossier lisible et de montrer où votre attention est utile.
+          <p>
+            Vous n’avez pas à tout connaître dès le départ. Commencez par votre
+            projet académique, puis préparez les démarches qui en découlent.
           </p>
         </div>
-
-        <ol className="mt-8 grid gap-3 md:grid-cols-2 xl:grid-cols-3" aria-label="Parcours d’études en Allemagne en six étapes">
-          {steps.map((step, index) => (
-            <li
-              key={step.number}
-              className="group relative overflow-hidden rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-5 sm:p-6"
-            >
-              <div className="flex items-center justify-between gap-4">
-                <span
-                  className={`grid h-10 w-10 place-items-center rounded-full text-xs font-bold ${
-                    index === 0
-                      ? "bg-[var(--brand)] text-white"
-                      : "border border-[var(--brand-border)] bg-[var(--brand-soft)] text-[var(--brand)]"
-                  }`}
-                >
-                  {step.number}
-                </span>
-                <span className="text-xs font-bold uppercase tracking-[0.14em] text-slate-400">
-                  Étape {index + 1}
-                </span>
+        <ol
+          className={s.steps}
+          aria-label="Les six étapes de votre projet d’études"
+        >
+          {steps.map((step, i) => (
+            <li key={step.title} id={"id" in step ? step.id : undefined}>
+              <div className={s.stepNumber}>
+                <span>{String(i + 1).padStart(2, "0")}</span>
+                <HomeIcon name={i === 5 ? "check" : "arrow"} />
               </div>
-
-              <h3 className="mt-5 text-lg font-bold tracking-[-0.02em] text-slate-950">{step.title}</h3>
-              <p className="mt-2 text-sm leading-6 text-slate-600">{step.description}</p>
-
-              <div className="mt-5 flex items-center gap-2 text-xs font-bold text-[var(--brand)]">
-                <span className="h-px flex-1 bg-[var(--brand-border)]" />
-                <span aria-hidden="true">{index < steps.length - 1 ? "→" : "✓"}</span>
-              </div>
+              <h3>{step.title}</h3>
+              <p>{step.text}</p>
+              <span className={s.stepDetail}>{step.detail}</span>
             </li>
           ))}
         </ol>
-
-        <div className="mt-5 grid gap-3 rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--brand)] p-5 text-white sm:grid-cols-[1fr_auto] sm:items-center sm:px-6">
-          <div>
-            <p className="text-sm font-bold">La progression décrit votre préparation, pas vos chances d’admission.</p>
-            <p className="mt-1 text-sm leading-6 text-white/68">
-              Les universités et autorités compétentes conservent les décisions officielles.
-            </p>
-          </div>
-          <a href="#espace" className="text-sm font-bold text-white hover:underline hover:underline-offset-4">
-            Voir l’espace étudiant →
+        <div className={s.journeyFoot}>
+          <span>
+            <HomeIcon name="source" /> Votre préparation avance. Les décisions
+            restent aux organismes compétents.
+          </span>
+          <a href="/signup">
+            Commencer par mon projet
+            <HomeIcon name="arrow" />
           </a>
         </div>
       </div>

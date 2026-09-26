@@ -1,71 +1,60 @@
+import { HomeIcon } from "./HomeIcons";
+import s from "./Homepage.module.css";
+
 const faqs = [
-  {
-    question: "À quoi sert AlmaGo ?",
-    answer:
-      "AlmaGo structure votre projet d’études en Allemagne : projet académique, documents, orientation, candidatures, préparation linguistique, financement et prochaines démarches.",
-  },
-  {
-    question: "Les informations affichées sont-elles officielles ?",
-    answer:
-      "AlmaGo distingue les informations internes du dossier et les données provenant de sources externes. Lorsqu’une fiche est vérifiée, sa source et sa date de contrôle sont conservées. La source officielle reste toujours la référence.",
-  },
-  {
-    question: "AlmaGo décide-t-il de mon admission ou de mon visa ?",
-    answer:
-      "Non. AlmaGo organise, relie et explique les informations de votre dossier. Les décisions d’admission, de visa et de titre de séjour appartiennent aux universités et autorités compétentes.",
-  },
-  {
-    question: "Comment AlmaGo gère-t-il les informations qui changent ?",
-    answer:
-      "Les catalogues vérifiés ont une durée de validité interne. Une fiche arrivée à échéance doit être revalidée avant de rester publiée comme information actuelle.",
-  },
-  {
-    question: "Par où commencer ?",
-    answer:
-      "Créez votre dossier puis définissez votre projet. AlmaGo pourra ensuite vous montrer les éléments connus, ceux qui manquent et la prochaine action utile.",
-  },
+  [
+    "Puis-je commencer sans avoir d’admission ?",
+    "Oui. Commencez par définir votre projet et réunir les documents dont vous disposez. La recherche d’une base académique adaptée vient avant les démarches qui en dépendent.",
+  ],
+  [
+    "Que vais-je retrouver dans mon espace ?",
+    "Votre profil, vos documents, les pistes de programmes et vos candidatures. Le dossier relie aussi la préparation linguistique, le financement, l’assurance et les prochaines démarches selon votre situation.",
+  ],
+  [
+    "AlmaGo envoie-t-il ma candidature à ma place ?",
+    "L’espace vous aide à préparer et suivre vos candidatures. Leur envoi officiel reste à effectuer selon le canal demandé par l’établissement : candidature directe, uni-assist ou autre procédure indiquée.",
+  ],
+  [
+    "Les informations sont-elles toutes officielles ?",
+    "Non. AlmaGo distingue les informations de votre dossier des sources externes. Une fiche vérifiée conserve sa source et sa date de contrôle ; les informations anciennes doivent être revalidées. La source officielle reste la référence.",
+  ],
+  [
+    "AlmaGo garantit-il une admission ou un visa ?",
+    "Non. AlmaGo vous aide à organiser votre préparation, sans garantir de résultat. Les décisions appartiennent aux universités, ambassades et autorités compétentes.",
+  ],
 ] as const;
 
 export function HomeFaqSection() {
   return (
-    <section id="faq" className="bg-white py-12 sm:py-14 lg:py-16" aria-labelledby="faq-title">
-      <div className="mx-auto grid max-w-7xl gap-4 px-4 sm:px-6 lg:grid-cols-[0.68fr_1.32fr] lg:px-8">
-        <div className="rounded-[var(--radius-panel)] bg-[var(--brand-strong)] p-6 text-white sm:p-8">
-          <p className="text-xs font-bold uppercase tracking-[0.18em] text-white/55">Questions fréquentes</p>
-          <h2 id="faq-title" className="mt-3 text-3xl font-semibold tracking-[-0.04em] text-white sm:text-4xl">
-            Comprendre AlmaGo avant de commencer.
+    <section
+      id="faq"
+      className={`${s.section} ${s.faq}`}
+      aria-labelledby="faq-title"
+    >
+      <div className={`${s.container} ${s.faqGrid}`}>
+        <div>
+          <p className={s.eyebrow}>Vos premières questions</p>
+          <h2 id="faq-title" className={s.sectionTitle}>
+            Avant de faire
+            <br />
+            <em>le premier pas.</em>
           </h2>
-          <p className="mt-4 max-w-xl text-sm leading-6 text-white/68">
-            Les réponses essentielles sur le rôle de la plateforme, les sources et les décisions qui restent externes à AlmaGo.
+          <p className={s.lead}>
+            Vous pouvez commencer avec ce que vous savez déjà.
           </p>
-          <a
-            href="/signup"
-            className="mt-7 inline-flex min-h-11 items-center justify-center rounded-[var(--radius-control)] bg-white px-5 text-sm font-bold text-[var(--brand-strong)] hover:bg-[var(--brand-soft)]"
-          >
-            Créer mon dossier
+          <a className={s.textLink} href="#parcours">
+            Revoir les six étapes
+            <HomeIcon name="arrow" />
           </a>
         </div>
-
-        <div className="divide-y divide-[var(--border)] overflow-hidden rounded-[var(--radius-panel)] border border-[var(--border)] bg-white">
-          {faqs.map((faq, index) => (
-            <details key={faq.question} className="group">
-              <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 px-5 py-3.5 font-bold text-slate-950 outline-none transition-colors hover:bg-[var(--surface-subtle)] focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--brand)] sm:px-6">
-                <span className="flex items-center gap-3">
-                  <span className="text-[10px] font-bold tracking-[0.14em] text-[var(--accent-strong)]">
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
-                  <span className="text-sm sm:text-base">{faq.question}</span>
-                </span>
-                <span
-                  aria-hidden="true"
-                  className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-[var(--brand-border)] bg-[var(--brand-soft)] text-lg font-medium text-[var(--brand)] transition-transform group-open:rotate-45"
-                >
-                  +
-                </span>
+        <div className={s.faqList}>
+          {faqs.map(([question, answer], i) => (
+            <details key={question} open={i === 0}>
+              <summary>
+                <span>{question}</span>
+                <HomeIcon name="plus" />
               </summary>
-              <div className="px-5 pb-4 pl-[3.4rem] text-sm leading-6 text-slate-600 sm:px-6 sm:pb-5 sm:pl-[3.7rem]">
-                {faq.answer}
-              </div>
+              <p>{answer}</p>
             </details>
           ))}
         </div>

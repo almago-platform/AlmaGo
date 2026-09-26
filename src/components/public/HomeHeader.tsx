@@ -1,57 +1,95 @@
+"use client";
+
 import Link from "next/link";
+import { useRef, useState } from "react";
+import { HomeIcon } from "./HomeIcons";
+import s from "./Homepage.module.css";
+
+const navigation = [
+  ["Le parcours", "#parcours"],
+  ["L’espace étudiant", "#espace"],
+  ["Nos repères", "#confiance"],
+  ["FAQ", "#faq"],
+] as const;
 
 export function HomeHeader() {
+  const [open, setOpen] = useState(false);
+  const toggle = useRef<HTMLButtonElement>(null);
   return (
-    <header className="sticky top-0 z-50 border-b border-[var(--border)] bg-white/98 backdrop-blur">
-      <div className="border-b border-[var(--border)] bg-[var(--surface-subtle)]">
-        <div className="mx-auto flex min-h-8 max-w-7xl items-center justify-between gap-4 px-4 py-1.5 text-[10px] font-semibold leading-4 text-slate-600 sm:px-6 sm:text-[11px] lg:px-8">
-          <p className="min-w-0">
-            <span className="sm:hidden">Accompagnement indépendant · Décisions : organismes compétents</span>
-            <span className="hidden sm:inline">
-              Accompagnement indépendant · Les décisions officielles restent celles des organismes compétents
-            </span>
-          </p>
-          <a href="#confiance" className="hidden shrink-0 text-[var(--brand)] hover:underline hover:underline-offset-4 sm:inline">
-            Notre cadre de confiance
+    <>
+      <div className={s.utility}>
+        <div className={s.container}>
+          <span>Pour les étudiants internationaux</span>
+          <a href="#confiance">
+            <HomeIcon name="source" /> Plateforme indépendante
           </a>
         </div>
       </div>
-
-      <div className="mx-auto flex min-h-16 w-full max-w-7xl items-center justify-between gap-4 px-4 py-2.5 sm:px-6 lg:px-8">
-        <Link href="/" className="flex min-w-0 items-center gap-3" aria-label="AlmaGo accueil">
-          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-[var(--radius-control)] bg-[var(--brand)] text-sm font-bold text-white">
-            A
-          </span>
-          <span className="min-w-0">
-            <span className="block text-base font-bold leading-5 tracking-[-0.02em] text-slate-950">AlmaGo</span>
-            <span className="hidden text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500 sm:block">
-              Études en Allemagne
+      <header
+        className={s.header}
+        onKeyDown={(event) => {
+          if (event.key === "Escape" && open) {
+            setOpen(false);
+            toggle.current?.focus();
+          }
+        }}
+      >
+        <div className={`${s.container} ${s.headerInner}`}>
+          <Link href="/" className={s.logo} aria-label="AlmaGo accueil">
+            <span className={s.logoMark}>A</span>
+            <span>
+              AlmaGo<span className={s.logoSubtitle}>Études en Allemagne</span>
             </span>
-          </span>
-        </Link>
-
-        <nav className="hidden items-center gap-7 text-sm font-semibold text-slate-600 lg:flex" aria-label="Navigation principale">
-          <a className="hover:text-[var(--brand)]" href="#parcours">Parcours</a>
-          <a className="hover:text-[var(--brand)]" href="#espace">Espace étudiant</a>
-          <a className="hover:text-[var(--brand)]" href="#confiance">Confiance & sources</a>
-          <a className="hover:text-[var(--brand)]" href="#faq">FAQ</a>
-        </nav>
-
-        <div className="flex shrink-0 items-center gap-2">
-          <Link
-            href="/login"
-            className="hidden min-h-10 items-center justify-center rounded-[var(--radius-control)] px-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-[var(--brand)] sm:inline-flex"
-          >
-            Connexion
           </Link>
-          <Link
-            href="/signup"
-            className="inline-flex min-h-10 items-center justify-center rounded-[var(--radius-control)] bg-[var(--brand)] px-4 text-sm font-bold text-white hover:bg-[var(--brand-strong)]"
-          >
-            Créer mon dossier
-          </Link>
+          <nav className={s.desktopNav} aria-label="Navigation principale">
+            {navigation.map(([label, href]) => (
+              <a key={href} href={href}>
+                {label}
+              </a>
+            ))}
+          </nav>
+          <div className={s.headerActions}>
+            <Link className={s.login} href="/login">
+              Connexion
+            </Link>
+            <Link className={`${s.button} ${s.headerCta}`} href="/signup">
+              Créer mon dossier
+              <HomeIcon name="arrow" />
+            </Link>
+            <button
+              ref={toggle}
+              className={s.menuToggle}
+              aria-expanded={open}
+              aria-controls="home-mobile-menu"
+              aria-label={open ? "Fermer le menu" : "Ouvrir le menu"}
+              onClick={() => setOpen(!open)}
+            >
+              <HomeIcon name={open ? "close" : "menu"} />
+            </button>
+          </div>
         </div>
-      </div>
-    </header>
+        <nav
+          id="home-mobile-menu"
+          className={s.mobileNav}
+          aria-label="Navigation mobile"
+          hidden={!open}
+        >
+          {navigation.map(([label, href]) => (
+            <a key={href} href={href} onClick={() => setOpen(false)}>
+              {label}
+              <HomeIcon name="arrow" />
+            </a>
+          ))}
+          <Link href="/login" onClick={() => setOpen(false)}>
+            Se connecter
+            <HomeIcon name="arrow" />
+          </Link>
+          <Link className={s.mobileSignup} href="/signup">
+            Créer mon dossier
+            <HomeIcon name="arrow" />
+          </Link>
+        </nav>
+      </header>
+    </>
   );
 }
