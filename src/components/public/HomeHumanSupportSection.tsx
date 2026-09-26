@@ -41,7 +41,7 @@ export function HomeHumanSupportSection() {
           <h2 id="human-support-title" className="mt-3 max-w-2xl text-3xl font-semibold tracking-[-0.04em] text-slate-950 sm:text-4xl lg:text-[2.8rem]">
             Vous n’avez pas à garder tout le parcours dans votre tête.
           </h2>
-          <p className="mt-5 max-w-2xl text-base leading-7 text-slate-650 sm:text-lg sm:leading-8">
+          <p className="mt-5 max-w-2xl text-base leading-7 text-slate-600 sm:text-lg sm:leading-8">
             Étudier en Allemagne implique des décisions, des documents, des délais et plusieurs interlocuteurs. AlmaGo transforme ce parcours en étapes lisibles pour que vous sachiez où vous en êtes et ce qui mérite votre attention maintenant.
           </p>
 
