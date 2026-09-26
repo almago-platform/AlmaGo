@@ -23,6 +23,25 @@ type StudentDocument = {
 };
 
 type HistoryEvent = { id: string; message: string; created_at: string };
+
+type StudentEvidence = {
+  id: string;
+  type: string;
+  institution: string | null;
+  evidence_date: string | null;
+  origin: string;
+  verification_status: string;
+  document_id: string | null;
+  document_status: string | null;
+  verified_at: string | null;
+  assessment: {
+    status: string;
+    basis: string;
+    can_support_pathway_decision: boolean;
+    reason: string;
+  };
+};
+
 type Feedback = { message: string; kind: "success" | "error" } | null;
 
 function statusVariant(status: string): "success" | "warning" | "info" | "neutral" {
@@ -37,14 +56,50 @@ function formatFileSize(sizeBytes: number) {
   return `${Math.ceil(sizeBytes / 1024)} Ko`;
 }
 
+function evidenceTypeLabel(type: string) {
+  return ({
+    definitive_admission: "Admission définitive",
+    conditional_admission: "Admission conditionnelle",
+    bewerberbestaetigung: "Bewerberbestätigung",
+    admissible_university_correspondence: "Correspondance universitaire admissible",
+  } as Record<string, string>)[type] || "Preuve académique";
+}
+
+function evidenceStatusLabel(status: string) {
+  return ({
+    received: "Reçue",
+    needs_review: "À vérifier",
+    accepted_for_pathway: "Acceptée comme preuve de parcours",
+    replace_required: "À remplacer",
+  } as Record<string, string>)[status] || "État à confirmer";
+}
+
+function evidenceStatusVariant(status: string): "success" | "warning" | "info" | "neutral" {
+  if (status === "accepted_for_pathway") return "success";
+  if (status === "replace_required") return "warning";
+  if (status === "received" || status === "needs_review") return "info";
+  return "neutral";
+}
+
+function formatEvidenceDate(value: string | null) {
+  if (!value) return "Date à confirmer";
+  const date = new Date(`${value}T12:00:00Z`);
+  if (Number.isNaN(date.getTime())) return "Date à confirmer";
+  return new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium" }).format(date);
+}
+
 export function DocumentsPanel({
   documents,
   history,
   historyLoadError = false,
+  evidence,
+  evidenceLoadError = false,
 }: {
   documents: StudentDocument[];
   history: HistoryEvent[];
   historyLoadError?: boolean;
+  evidence: StudentEvidence[];
+  evidenceLoadError?: boolean;
 }) {
   const router = useRouter();
   const fileInput = useRef<HTMLInputElement>(null);
@@ -163,6 +218,76 @@ export function DocumentsPanel({
           <SummaryCard id="documents-summary-review" title="En vérification" value={reviewCount} badge="Chez AlmaGo" tone="info" />
           <SummaryCard id="documents-summary-correction" title="À corriger" value={correctionCount} badge={correctionCount ? "Action requise" : "Rien à signaler"} tone={correctionCount ? "warning" : "neutral"} />
         </section>
+      </section>
+
+      <section aria-labelledby="academic-evidence-title">
+        <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">
+              Preuves académiques
+            </p>
+            <h2 id="academic-evidence-title" className="mt-1 text-2xl font-semibold tracking-tight text-slate-950">
+              Ce que vos documents prouvent dans votre parcours
+            </h2>
+          </div>
+          <Badge variant="neutral">{evidence.length} classification{evidence.length > 1 ? "s" : ""}</Badge>
+        </div>
+
+        <Card className="mt-4 border-[var(--brand-border)] bg-[var(--brand-soft)]/35 shadow-none">
+          <p className="text-sm leading-6 text-slate-700">
+            Le statut d’un fichier et son statut comme preuve académique sont deux choses différentes. Un document peut être approuvé sans être encore accepté comme preuve de parcours. Cette classification ne constitue ni une admission ni une décision de visa.
+          </p>
+        </Card>
+
+        {evidenceLoadError ? (
+          <Card className="mt-4">
+            <p role="alert" className="text-sm text-red-800">
+              Les classifications académiques sont temporairement indisponibles. Vos fichiers restent accessibles normalement.
+            </p>
+          </Card>
+        ) : evidence.length === 0 ? (
+          <Card className="mt-4 border-dashed shadow-none">
+            <h3 className="font-bold text-slate-950">Aucune preuve académique n’est encore classée.</h3>
+            <p className="mt-2 text-sm leading-6 text-slate-600">
+              Lorsqu’une pièce académique sera examinée pour votre parcours, son état apparaîtra ici séparément du statut du fichier.
+            </p>
+          </Card>
+        ) : (
+          <div className="mt-4 grid gap-4 lg:grid-cols-2">
+            {evidence.map((item) => (
+              <Card as="article" key={item.id} aria-labelledby={`academic-evidence-title-${item.id}`} className="shadow-none">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <Badge variant={evidenceStatusVariant(item.verification_status)}>
+                    {evidenceStatusLabel(item.verification_status)}
+                  </Badge>
+                  {item.document_status && (
+                    <span className="text-xs font-semibold text-slate-500">
+                      Fichier : {statusLabel(item.document_status)}
+                    </span>
+                  )}
+                </div>
+
+                <h3 id={`academic-evidence-title-${item.id}`} className="mt-4 text-lg font-bold text-slate-950">
+                  {evidenceTypeLabel(item.type)}
+                </h3>
+                <dl className="mt-3 grid gap-3 sm:grid-cols-2">
+                  <div>
+                    <dt className="text-xs font-semibold uppercase tracking-[0.1em] text-slate-500">Établissement</dt>
+                    <dd className="mt-1 text-sm text-slate-800">{item.institution || "À confirmer"}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-xs font-semibold uppercase tracking-[0.1em] text-slate-500">Date de la preuve</dt>
+                    <dd className="mt-1 text-sm text-slate-800">{formatEvidenceDate(item.evidence_date)}</dd>
+                  </div>
+                </dl>
+
+                <div className="mt-4 rounded-[var(--radius-control)] bg-[var(--surface-muted)] p-3">
+                  <p className="text-sm leading-6 text-slate-700">{item.assessment.reason}</p>
+                </div>
+              </Card>
+            ))}
+          </div>
+        )}
       </section>
 
       <Card aria-labelledby="document-upload-title" className="overflow-hidden shadow-none">
