@@ -54,7 +54,10 @@ test("students can read only their records and only Admin can manage classificat
     migration,
     /academic evidence admin manage[\s\S]*?for all to authenticated[\s\S]*?using \(\(select public\.is_admin\(\)\)\)[\s\S]*?with check \(\(select public\.is_admin\(\)\)\)/,
   );
-  assert.doesNotMatch(migration, /for (?:insert|update|delete)[\s\S]*?student_id = \(select auth\.uid\(\)\)/);
+  assert.doesNotMatch(
+    migration,
+    /create policy[^;]*for (?:insert|update|delete)[^;]*student_id = \(select auth\.uid\(\)\)/i,
+  );
 });
 
 test("pathway acceptance fails closed at the database boundary", () => {
