@@ -6,24 +6,28 @@ const items = [
     title: "Mon parcours",
     text: "Comprendre les 6 étapes",
     icon: "route",
+    primary: false,
   },
   {
     href: "#espace",
     title: "Espace étudiant",
     text: "Voir le dossier AlmaGo",
     icon: "dashboard",
+    primary: false,
   },
   {
     href: "#confiance",
     title: "Sources & confiance",
     text: "Comprendre ce qui est vérifié",
     icon: "source",
+    primary: false,
   },
   {
     href: "#faq",
     title: "Questions fréquentes",
     text: "Trouver une réponse rapidement",
     icon: "faq",
+    primary: false,
   },
   {
     href: "/signup",
