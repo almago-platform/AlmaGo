@@ -10,7 +10,7 @@ const migrationDir = join(root, "supabase", "migrations");
 const migrationFiles = readdirSync(migrationDir).filter((name) => name.endsWith(".sql")).sort();
 const migrations = migrationFiles.map((name) => readFileSync(join(migrationDir, name), "utf8")).join("\n");
 
-test("admin and student areas keep server-side authentication guards", () => {
+test("admin and student areas keep server-side authentication and role guards", () => {
   const adminLayout = read("src/app/admin/layout.tsx");
   const studentLayout = read("src/app/student/layout.tsx");
 
@@ -21,6 +21,11 @@ test("admin and student areas keep server-side authentication guards", () => {
 
   assert.match(studentLayout, /auth\.getUser\(\)/);
   assert.match(studentLayout, /if \(!user\) redirect\("\/login"\)/);
+  assert.match(studentLayout, /from\("user_roles"\)/);
+  assert.match(studentLayout, /role\?\.role === "admin"/);
+  assert.match(studentLayout, /redirect\("\/admin"\)/);
+  assert.match(studentLayout, /role\?\.role !== "student"/);
+  assert.match(studentLayout, /redirect\("\/unauthorized"\)/);
 });
 
 test("browser and server Supabase clients never use a service-role secret", () => {
