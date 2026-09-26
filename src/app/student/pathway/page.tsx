@@ -190,8 +190,9 @@ export default async function StudentPathwayPage() {
         actions={<ButtonLink href="/student/project" variant="secondary">Modifier mon projet</ButtonLink>}
       />
 
-      <Card className="mt-7 border-[var(--brand-border)] bg-[var(--brand-soft)] shadow-none">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+      <Card className="mt-7 relative overflow-hidden border-[var(--brand-border)] bg-white shadow-none">
+        <div aria-hidden="true" className="absolute inset-y-0 left-0 w-1 bg-[var(--brand)]" />
+        <div className="flex flex-col gap-5 pl-2 lg:flex-row lg:items-start lg:justify-between sm:pl-3">
           <div className="max-w-3xl">
             <div className="flex flex-wrap items-center gap-3">
               <Badge variant={statusVariant(decision.status)}>{statusLabel(decision.status)}</Badge>
@@ -201,7 +202,7 @@ export default async function StudentPathwayPage() {
                 </span>
               )}
             </div>
-            <h2 className="mt-4 text-2xl font-bold tracking-[-0.03em] text-slate-950">
+            <h2 className="mt-4 text-2xl font-semibold tracking-[-0.03em] text-slate-950">
               {routeInfo?.title || "Parcours à préciser"}
             </h2>
             <p className="mt-3 text-sm leading-6 text-slate-700">
@@ -228,7 +229,7 @@ export default async function StudentPathwayPage() {
           </h2>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <div className="overflow-hidden rounded-[var(--radius-panel)] border border-[var(--border)] bg-white divide-y divide-[var(--border)]">
           <PathwayCard
             number="1"
             title="Projet académique"
@@ -328,7 +329,7 @@ export default async function StudentPathwayPage() {
         </div>
 
         {relevantRegulatorySources.length ? (
-          <div className="grid gap-4 lg:grid-cols-2">
+          <div className="overflow-hidden rounded-[var(--radius-panel)] border border-[var(--border)] bg-white divide-y divide-[var(--border)]">
             {relevantRegulatorySources.map((source) => (
               <RegulatorySourceCard key={source.topic + source.source_url} source={source} />
             ))}
@@ -358,7 +359,7 @@ export default async function StudentPathwayPage() {
           </dl>
         </Card>
 
-        <Card className="bg-[#fbfbfd] shadow-none">
+        <Card className="bg-[var(--surface-subtle)] shadow-none">
           <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">Prochaine action</p>
           <h2 className="mt-2 text-xl font-bold text-slate-950">{nextAction.title}</h2>
           <p className="mt-3 text-sm leading-6 text-slate-600">{nextAction.description}</p>
@@ -489,29 +490,29 @@ function PathwayCard({
   linkLabel: string;
   tone: "done" | "attention" | "neutral";
 }) {
-  const toneClass =
+  const statusClass =
     tone === "done"
-      ? "border-emerald-200 bg-emerald-50/45"
+      ? "border-emerald-200 bg-emerald-50 text-emerald-800"
       : tone === "attention"
-        ? "border-amber-200 bg-amber-50/45"
-        : "border-[var(--border)] bg-white";
+        ? "border-amber-200 bg-amber-50 text-amber-900"
+        : "border-[var(--border)] bg-[var(--surface-subtle)] text-slate-700";
 
   return (
-    <Card className={"shadow-none " + toneClass}>
-      <div className="flex items-start gap-3">
-        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[var(--brand)] text-sm font-bold text-white">
-          {number}
+    <div className="grid gap-4 p-5 sm:grid-cols-[2.75rem_minmax(9rem,0.72fr)_minmax(0,1.28fr)_auto] sm:items-center sm:p-6">
+      <span className="grid h-9 w-9 place-items-center rounded-full border border-[var(--brand-border)] bg-[var(--brand-soft)] text-xs font-bold text-[var(--brand)]">
+        {number}
+      </span>
+      <div>
+        <p className="text-sm font-bold text-slate-950">{title}</p>
+        <span className={`mt-2 inline-flex rounded-full border px-2.5 py-1 text-[11px] font-bold ${statusClass}`}>
+          {state}
         </span>
-        <div className="min-w-0">
-          <p className="text-sm font-bold text-slate-950">{title}</p>
-          <p className="mt-1 text-sm font-semibold text-[var(--brand)]">{state}</p>
-        </div>
       </div>
-      <p className="mt-4 text-sm leading-6 text-slate-600">{detail}</p>
-      <div className="mt-5">
+      <p className="text-sm leading-6 text-slate-600">{detail}</p>
+      <div className="justify-self-start sm:justify-self-end">
         <ButtonLink href={href} variant="secondary">{linkLabel}</ButtonLink>
       </div>
-    </Card>
+    </div>
   );
 }
 
@@ -549,36 +550,36 @@ function RegulatorySourceCard({
   };
 }) {
   return (
-    <Card className="shadow-none">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <p className="text-xs font-bold uppercase tracking-[0.14em] text-slate-500">{source.authority}</p>
-          <h3 className="mt-2 text-lg font-bold text-slate-950">{source.title}</h3>
-        </div>
+    <article className="grid gap-4 p-5 sm:p-6 lg:grid-cols-[minmax(10rem,0.55fr)_minmax(0,1.45fr)_auto] lg:items-start">
+      <div>
         <Badge variant="success">Vérifiée</Badge>
-      </div>
-      <p className="mt-4 text-sm leading-6 text-slate-600">{source.summary}</p>
-      {source.amount !== null && source.currency && (
-        <p className="mt-3 text-sm font-semibold text-slate-800">
-          Montant publié : {new Intl.NumberFormat("fr-FR", { style: "currency", currency: source.currency }).format(source.amount)}
-          {source.periodicity === "monthly" ? " / mois" : source.periodicity === "yearly" ? " / an" : ""}
+        <p className="mt-3 text-xs font-bold uppercase tracking-[0.14em] text-slate-500">{source.authority}</p>
+        <p className="mt-1 text-xs text-slate-500">
+          Contrôlée le {formatSourceDate(source.checked_on)}
         </p>
-      )}
-      <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-xs text-slate-500">
-        <span>Contrôlée le {formatSourceDate(source.checked_on)}</span>
-        <span>À revoir avant le {formatSourceDate(source.review_due_at)}</span>
       </div>
-      <div className="mt-5">
-        <a
-          href={source.source_url}
-          target="_blank"
-          rel="noreferrer"
-          className="inline-flex min-h-11 items-center justify-center rounded-[var(--radius-control)] border border-[var(--border)] bg-white px-4 py-2.5 text-sm font-bold text-slate-700 hover:border-[var(--brand-border)] hover:text-[var(--brand)]"
-        >
-          Ouvrir la source officielle
-        </a>
+
+      <div>
+        <h3 className="text-base font-bold text-slate-950">{source.title}</h3>
+        <p className="mt-2 text-sm leading-6 text-slate-600">{source.summary}</p>
+        {source.amount !== null && source.currency && (
+          <p className="mt-3 text-sm font-semibold text-slate-800">
+            Montant publié : {new Intl.NumberFormat("fr-FR", { style: "currency", currency: source.currency }).format(source.amount)}
+            {source.periodicity === "monthly" ? " / mois" : source.periodicity === "yearly" ? " / an" : ""}
+          </p>
+        )}
+        <p className="mt-3 text-xs text-slate-500">À revoir avant le {formatSourceDate(source.review_due_at)}</p>
       </div>
-    </Card>
+
+      <a
+        href={source.source_url}
+        target="_blank"
+        rel="noreferrer"
+        className="inline-flex min-h-11 items-center justify-center rounded-[var(--radius-control)] border border-[var(--border-strong)] bg-white px-4 py-2.5 text-sm font-bold text-slate-700 hover:border-[var(--brand)] hover:text-[var(--brand)]"
+      >
+        Source officielle
+      </a>
+    </article>
   );
 }
 

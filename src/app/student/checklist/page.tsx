@@ -205,7 +205,7 @@ export default async function ChecklistPage() {
           </p>
         </div>
 
-        <div className="grid gap-4 lg:grid-cols-2">
+        <div className="overflow-hidden rounded-[var(--radius-panel)] border border-[var(--border)] bg-white divide-y divide-[var(--border)]">
           {personalizedItems.map((item) => (
             <PersonalizedChecklistCard key={item.key} item={item} />
           ))}
@@ -213,13 +213,13 @@ export default async function ChecklistPage() {
       </section>
 
       <div className="grid gap-5 lg:grid-cols-[1.15fr_0.85fr]">
-        <Card aria-labelledby="checklist-progress-title" className="relative overflow-hidden border-[var(--brand-border)] bg-white shadow-[0_24px_55px_-38px_rgba(41,48,139,0.5)]">
-          <div aria-hidden="true" className="absolute inset-y-0 left-0 w-1.5 bg-[var(--brand)]" />
+        <Card aria-labelledby="checklist-progress-title" className="relative overflow-hidden border-[var(--brand-border)] bg-white shadow-none">
+          <div aria-hidden="true" className="absolute inset-y-0 left-0 w-1 bg-[var(--brand)]" />
           <div className="pl-2 sm:pl-3">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
                 <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Votre progression</p>
-                <h2 id="checklist-progress-title" className="mt-3 text-2xl font-bold tracking-[-0.03em] text-slate-950 sm:text-3xl">Démarches enregistrées dans votre dossier</h2>
+                <h2 id="checklist-progress-title" className="mt-3 text-2xl font-semibold tracking-[-0.03em] text-slate-950 sm:text-3xl">Démarches enregistrées dans votre dossier</h2>
               </div>
               <Badge variant={checklistItems.length > 0 && progression === 100 ? "success" : "info"}>
                 {checklistItems.length ? `${completedCount}/${checklistItems.length} terminées` : "Aucune étape"}
@@ -253,7 +253,7 @@ export default async function ChecklistPage() {
             <>
               <h2 id="checklist-next-action-title" className="mt-5 text-2xl font-bold tracking-[-0.03em] text-slate-950">{nextItem.title}</h2>
               {nextItem.description && <p className="mt-3 text-sm leading-6 text-slate-700">{nextItem.description}</p>}
-              <div className="mt-5 inline-flex items-center gap-2 rounded-full bg-white px-3 py-2 text-xs font-bold text-amber-900 ring-1 ring-amber-200">
+              <div className="mt-5 inline-flex items-center gap-2 rounded-[var(--radius-control)] border border-amber-200 bg-white px-3 py-2 text-xs font-bold text-amber-900">
                 <span aria-hidden="true" className="h-2 w-2 rounded-full bg-[var(--accent)]" />
                 {labels[nextItem.status] || "À faire par vous"}
               </div>
@@ -385,15 +385,15 @@ function PersonalizedChecklistCard({ item }: { item: GermanyChecklistItem }) {
         : "À faire par vous";
 
   return (
-    <Card as="article" className={item.status === "todo" ? "border-amber-200 bg-amber-50/25 shadow-none" : item.status === "waiting_almago" ? "border-blue-200 bg-blue-50/20 shadow-none" : "shadow-none"}>
-      <div className="flex flex-wrap items-center justify-between gap-3">
+    <article className="grid gap-4 p-5 sm:grid-cols-[9rem_minmax(12rem,0.7fr)_minmax(0,1.3fr)] sm:items-start sm:p-6">
+      <div>
         <Badge variant={variant}>{statusLabel}</Badge>
-        <span className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">
+        <p className="mt-2 text-[11px] font-bold uppercase tracking-[0.12em] text-slate-500">
           Responsable : {item.owner === "student" ? "vous" : "AlmaGo"}
-        </span>
+        </p>
       </div>
-      <h3 className="mt-4 text-lg font-bold text-slate-950">{item.title}</h3>
-      <p className="mt-2 text-sm leading-6 text-slate-600">{item.explanation}</p>
-    </Card>
+      <h3 className="text-base font-bold text-slate-950">{item.title}</h3>
+      <p className="text-sm leading-6 text-slate-600">{item.explanation}</p>
+    </article>
   );
 }
