@@ -2,93 +2,72 @@ const steps = [
   {
     number: "01",
     title: "Définir votre projet",
-    description: "Clarifiez le niveau d’études, le domaine, la langue et vos priorités pour l’Allemagne.",
+    description: "Précisez le diplôme visé, le domaine, la langue et le pays depuis lequel vous préparez vos démarches.",
   },
   {
     number: "02",
-    title: "Vérifier les conditions",
-    description: "Repérez les critères à contrôler pour chaque programme et gardez les sources officielles à portée de main.",
+    title: "Vérifier votre base académique",
+    description: "Ajoutez les preuves utiles et distinguez admission définitive, base préparatoire ou recherche de place.",
   },
   {
     number: "03",
-    title: "Préparer vos documents",
-    description: "Centralisez les pièces utiles et suivez ce qui est reçu, vérifié ou à corriger dans AlmaGo.",
+    title: "Explorer les programmes",
+    description: "Consultez des programmes enregistrés avec leurs critères, échéances et sources officielles disponibles.",
   },
   {
     number: "04",
-    title: "Comparer vos options",
-    description: "Organisez les programmes qui vous intéressent et comparez les critères enregistrés de façon lisible.",
+    title: "Préparer vos candidatures",
+    description: "Suivez les dossiers, les échéances et les prochaines actions sans confondre suivi interne et décision universitaire.",
   },
   {
     number: "05",
-    title: "Suivre vos candidatures",
-    description: "Gardez l’échéance, le statut, la prochaine action et l’historique de chaque candidature au même endroit.",
+    title: "Organiser la préparation",
+    description: "Choisissez explicitement un cours vérifié si votre parcours l’exige et consultez les options de financement ou d’assurance.",
   },
   {
     number: "06",
-    title: "Préparer les démarches suivantes",
-    description: "Une fois la candidature avancée, rassemblez les prochaines étapes à préparer sans confondre suivi et décision officielle.",
+    title: "Suivre les démarches suivantes",
+    description: "Votre checklist rassemble les étapes calculées à partir des faits actuellement enregistrés dans votre dossier.",
   },
 ] as const;
 
 export function HomeJourneySection() {
   return (
-    <section id="parcours" className="relative overflow-hidden bg-white py-16 sm:py-20 lg:py-24" aria-labelledby="journey-title">
-      <div aria-hidden="true" className="absolute inset-x-0 top-0 h-px bg-[var(--border)]" />
+    <section id="parcours" className="bg-white py-16 sm:py-20 lg:py-24" aria-labelledby="journey-title">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid gap-8 lg:grid-cols-[0.72fr_1.28fr] lg:items-end">
+        <div className="grid gap-7 lg:grid-cols-[0.72fr_1.28fr] lg:items-end">
           <div>
-            <p className="eyebrow">Votre parcours Allemagne</p>
-            <h2 id="journey-title" className="mt-3 max-w-2xl text-3xl font-bold tracking-[-0.035em] text-slate-950 sm:text-4xl lg:text-[2.8rem]">
-              Votre projet d’études en 6 étapes claires.
+            <p className="eyebrow">Le parcours</p>
+            <h2 id="journey-title" className="mt-3 max-w-2xl text-3xl font-semibold tracking-[-0.035em] text-slate-950 sm:text-4xl">
+              Six étapes, dans un ordre compréhensible.
             </h2>
           </div>
-
-          <div className="max-w-2xl lg:justify-self-end">
-            <p className="text-base leading-7 text-slate-600 sm:text-lg">
-              Une vue simple du parcours pour comprendre où vous en êtes et ce qui vient ensuite. AlmaGo organise et suit les informations ; les décisions d’admission et de visa appartiennent toujours aux organismes compétents.
-            </p>
-          </div>
+          <p className="max-w-2xl text-base leading-7 text-slate-600 lg:justify-self-end">
+            Comme dans une procédure administrative bien conçue, chaque étape explique son objectif et prépare la suivante. AlmaGo évite les scores opaques et affiche les faits connus du dossier.
+          </p>
         </div>
 
-        <ol className="relative mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-3" aria-label="Parcours d’études en Allemagne en six étapes">
+        <ol className="mt-10 border-y border-[var(--border)]" aria-label="Parcours d’études en Allemagne en six étapes">
           {steps.map((step, index) => (
-            <li key={step.number} className="relative">
-              <article className="professional-hover group h-full rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[var(--shadow-card)] sm:p-6">
-                <div className="flex items-center gap-4">
-                  <span className="relative grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[var(--brand)] text-sm font-bold text-white shadow-[0_10px_24px_-16px_rgba(41,48,139,0.95)]">
-                    {step.number}
-                  </span>
-                  <div aria-hidden="true" className="h-px flex-1 bg-[var(--border)] group-hover:bg-[var(--brand-border)]" />
-                  <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-slate-500">
-                    Étape {index + 1}
-                  </span>
-                </div>
-
-                <h3 className="mt-5 text-xl font-bold tracking-tight text-slate-950">{step.title}</h3>
-                <p className="mt-3 text-sm leading-6 text-slate-600">{step.description}</p>
-
-                <div className="mt-5 flex items-center gap-2 text-xs font-semibold text-[var(--brand)]">
-                  <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-[var(--accent)]" />
-                  <span>Suivi structuré dans AlmaGo</span>
-                </div>
-              </article>
+            <li
+              key={step.number}
+              className="grid gap-3 border-b border-[var(--border)] py-5 last:border-b-0 sm:grid-cols-[4.5rem_minmax(12rem,0.72fr)_minmax(0,1.28fr)_2rem] sm:items-center sm:gap-5"
+            >
+              <span className="text-sm font-bold tracking-[0.14em] text-[var(--accent-strong)]">{step.number}</span>
+              <h3 className="text-base font-bold text-slate-950">{step.title}</h3>
+              <p className="text-sm leading-6 text-slate-600">{step.description}</p>
+              <span aria-hidden="true" className="hidden text-right text-slate-300 sm:block">{index < steps.length - 1 ? "↓" : "✓"}</span>
             </li>
           ))}
         </ol>
 
-        <div className="mt-8 rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--brand-soft)]/55 px-5 py-4 sm:flex sm:items-center sm:justify-between sm:gap-6 sm:px-6">
+        <div className="mt-6 flex flex-col justify-between gap-4 rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--brand-soft)] px-5 py-4 sm:flex-row sm:items-center sm:px-6">
           <div>
-            <p className="text-sm font-bold text-[var(--brand)]">Une progression lisible, pas une promesse artificielle.</p>
-            <p className="mt-1 text-sm leading-6 text-slate-700">
-              Les étapes montrent ce qui est préparé dans votre dossier. Elles ne représentent ni une probabilité d’admission ni une décision officielle.
-            </p>
+            <p className="text-sm font-bold text-[var(--brand)]">La progression décrit le dossier, pas vos chances d’admission.</p>
+            <p className="mt-1 text-sm leading-6 text-slate-600">Les décisions finales appartiennent aux universités et aux autorités compétentes.</p>
           </div>
-          <a
-            href="#espace"
-            className="mt-4 inline-flex min-h-11 shrink-0 items-center justify-center rounded-[var(--radius-control)] border border-[var(--brand-border)] bg-white px-4 text-sm font-bold text-[var(--brand)] transition-colors hover:border-[var(--brand)] hover:bg-white sm:mt-0"
-          >
-            Voir l’espace AlmaGo
+          <a href="#espace" className="text-sm font-bold text-[var(--brand)] hover:underline hover:underline-offset-4">
+            Voir l’espace étudiant →
           </a>
         </div>
       </div>
