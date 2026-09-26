@@ -11,6 +11,7 @@ const links = [
   ["Mon orientation", "/student/orientation"],
   ["Mes démarches", "/student/checklist"],
   ["Mes candidatures", "/student/applications"],
+  ["Cours de langue", "/student/language-courses"],
 ] as const;
 
 function isActive(pathname: string, href: string) {

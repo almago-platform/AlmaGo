@@ -6,6 +6,11 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import {
+  allowedApplicationTransitions,
+  studentApplicationStageLabel,
+  transitionRequirements,
+} from "@/lib/application-workflow";
+import {
   applicationStatuses,
   applicationStatusLabels,
   formatDeadline,
@@ -18,6 +23,7 @@ type ApplicationEdit = {
   status: string;
   nextAction: string;
   note: string;
+  transitionConfirmed: boolean;
 };
 
 type Notice = {
@@ -87,7 +93,7 @@ export function AdminApplicationsPanel({ applications }: { applications: any[] }
     setEdits((current) => ({ ...current, [id]: edit }));
   }
 
-  async function update(id: string, nextStatus: string, nextAction: string, note: string) {
+  async function update(id: string, nextStatus: string, nextAction: string, note: string, transitionConfirmed: boolean) {
     if (savingIdsRef.current.has(id)) return;
 
     savingIdsRef.current.add(id);
@@ -102,6 +108,7 @@ export function AdminApplicationsPanel({ applications }: { applications: any[] }
           status: nextStatus,
           next_action: nextAction,
           student_note: note,
+          transition_confirmed: transitionConfirmed,
         }),
       });
       const result = await response.json().catch(() => ({}));
@@ -213,8 +220,18 @@ export function AdminApplicationsPanel({ applications }: { applications: any[] }
             status: application.status,
             nextAction: application.next_action || "",
             note: application.student_notes || "",
+            transitionConfirmed: false,
           };
           const isSaving = busyIds.has(application.id);
+          const allowedTargets = allowedApplicationTransitions(application.status);
+          const statusOptions = [application.status, ...allowedTargets.filter((item) => item !== application.status)];
+          const pendingRequirements = edit.status !== application.status
+            ? transitionRequirements(application.status, edit.status)
+            : [];
+          const needsTransitionConfirmation = pendingRequirements.length > 0;
+          const needsDecisionNote = ["admission", "rejection"].includes(edit.status)
+            && edit.status !== application.status
+            && !edit.note.trim();
           const isOverdue =
             isActiveApplication(application.status) &&
             Boolean(application.deadline) &&
@@ -225,6 +242,9 @@ export function AdminApplicationsPanel({ applications }: { applications: any[] }
             edit.status !== application.status ||
             edit.nextAction !== (application.next_action || "") ||
             edit.note !== (application.student_notes || "");
+          const events = [...(application.application_events || [])].sort(
+            (a: any, b: any) => String(b.created_at).localeCompare(String(a.created_at)),
+          );
 
           return (
             <Card
@@ -250,8 +270,13 @@ export function AdminApplicationsPanel({ applications }: { applications: any[] }
                     {university?.name || "Université"}{university?.city ? ` · ${university.city}` : ""}
                   </p>
                   <p className="mt-2 text-xs font-semibold text-slate-500">
-                    Échéance {formatDeadline(application.deadline)}
+                    Étape actuelle · {studentApplicationStageLabel(application.status)}
                   </p>
+                  {application.deadline && (
+                    <p className="mt-1 text-xs font-semibold text-slate-500">
+                      Échéance {formatDeadline(application.deadline)}
+                    </p>
+                  )}
                 </div>
                 <div className="flex flex-wrap gap-2 sm:justify-end">
                   {isOverdue && <Badge variant="warning">Échéance dépassée</Badge>}
@@ -261,6 +286,71 @@ export function AdminApplicationsPanel({ applications }: { applications: any[] }
                   </span>
                 </div>
               </div>
+
+              {application.next_action ? (
+                <section
+                  aria-label="Prochaine action enregistrée"
+                  className="mt-5 rounded-[var(--radius-control)] border border-[var(--brand-border)] bg-[var(--brand-soft)]/25 p-4"
+                >
+                  <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--brand)]">
+                    Prochaine action enregistrée
+                  </p>
+                  <p className="mt-2 text-sm leading-6 text-slate-800 [overflow-wrap:anywhere]">
+                    {application.next_action}
+                  </p>
+                </section>
+              ) : isActiveApplication(application.status) ? (
+                <p className="mt-5 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-muted)] p-3 text-sm text-slate-600">
+                  Aucune prochaine action n’est enregistrée pour ce dossier actif.
+                </p>
+              ) : null}
+
+              <section aria-label="Informations enregistrées" className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+                <RecordedFact label="Étape actuelle" value={studentApplicationStageLabel(application.status)} />
+                <RecordedFact label="Rentrée" value={application.intake || "À confirmer"} />
+                <RecordedFact label="Envoyée le" value={formatRecordedDate(application.submitted_at)} />
+                <RecordedFact
+                  label="Documents attendus"
+                  value={application.required_documents?.length
+                    ? application.required_documents.join(", ")
+                    : "À confirmer"}
+                />
+                <RecordedFact label="Résultat enregistré" value={application.result || "Aucun résultat enregistré"} />
+              </section>
+
+              <details
+                className="mt-4 rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-4"
+                aria-label={`Historique de ${program?.name || "la candidature"}`}
+              >
+                <summary className="cursor-pointer text-sm font-bold text-slate-900">
+                  Historique enregistré · {events.length} événement{events.length > 1 ? "s" : ""}
+                </summary>
+                <p className="mt-2 text-xs leading-5 text-slate-500">
+                  Cet historique est consultatif ici. Le badge indique si chaque événement est également visible dans l’espace étudiant.
+                </p>
+                {events.length === 0 ? (
+                  <p className="mt-3 text-sm text-slate-600">Aucun événement n’est enregistré pour cette candidature.</p>
+                ) : (
+                  <div className="mt-4 space-y-3">
+                    {events.map((event: any) => (
+                      <div key={event.id} className="rounded-[var(--radius-control)] bg-[var(--surface-muted)] p-3">
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                          <p className="text-sm font-semibold text-slate-900">
+                            {event.event_type === "application_status_changed" ? "Changement de statut" : "Mise à jour du dossier"}
+                          </p>
+                          <Badge variant={event.visible_to_student ? "info" : "neutral"}>
+                            {event.visible_to_student ? "Visible étudiant" : "Interne"}
+                          </Badge>
+                        </div>
+                        {event.message && <p className="mt-1 text-sm leading-6 text-slate-700">{event.message}</p>}
+                        <time dateTime={event.created_at} className="mt-1 block text-xs text-slate-500">
+                          {formatRecordedDate(event.created_at)}
+                        </time>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </details>
 
               <div className="mt-5 rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--brand-soft)]/30 p-4">
                 <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
@@ -277,12 +367,16 @@ export function AdminApplicationsPanel({ applications }: { applications: any[] }
                   <select
                     disabled={isSaving}
                     value={edit.status}
-                    onChange={(event) => changeEdit(application.id, { ...edit, status: event.target.value })}
+                    onChange={(event) => changeEdit(application.id, {
+                      ...edit,
+                      status: event.target.value,
+                      transitionConfirmed: false,
+                    })}
                     className="field"
                   >
-                    {applicationStatuses.map((item) => (
+                    {statusOptions.map((item) => (
                       <option key={item} value={item}>
-                        {applicationStatusLabels[item]}
+                        {applicationStatusLabels[item] || item}
                       </option>
                     ))}
                   </select>
@@ -299,6 +393,22 @@ export function AdminApplicationsPanel({ applications }: { applications: any[] }
                   />
                 </label>
                 </div>
+
+              {needsTransitionConfirmation && (
+                <label className="mt-4 flex items-start gap-3 rounded-[var(--radius-control)] border border-amber-200 bg-amber-50/70 p-3 text-sm text-amber-950">
+                  <input
+                    type="checkbox"
+                    checked={edit.transitionConfirmed}
+                    onChange={(event) => changeEdit(application.id, { ...edit, transitionConfirmed: event.target.checked })}
+                    disabled={isSaving}
+                    className="mt-1"
+                  />
+                  <span>
+                    <strong>Confirmation requise.</strong>{" "}
+                    {transitionRequirementLabel(pendingRequirements[0])}
+                  </span>
+                </label>
+              )}
 
               <label className="mt-4 block text-sm font-medium text-slate-700">
                 Note visible par l’étudiant
@@ -318,12 +428,23 @@ export function AdminApplicationsPanel({ applications }: { applications: any[] }
                 </p>
                 <Button
                   type="button"
-                  disabled={isSaving || !isDirty}
-                  onClick={() => update(application.id, edit.status, edit.nextAction, edit.note)}
+                  disabled={isSaving || !isDirty || (needsTransitionConfirmation && !edit.transitionConfirmed) || needsDecisionNote}
+                  onClick={() => update(
+                    application.id,
+                    edit.status,
+                    edit.nextAction,
+                    edit.note,
+                    edit.transitionConfirmed,
+                  )}
                   className="w-full sm:w-auto"
                 >
                   {isSaving ? "Enregistrement…" : "Enregistrer"}
                 </Button>
+                {needsDecisionNote && (
+                  <p className="text-xs leading-5 text-amber-800 sm:text-right">
+                    Une admission ou un refus doit être accompagné d’une note visible précisant la décision communiquée par l’université.
+                  </p>
+                )}
               </div>
             </Card>
           );
@@ -365,4 +486,35 @@ function SummaryCard({
       <p className="mt-3 text-sm leading-6 text-slate-500">{detail}</p>
     </Card>
   );
+}
+
+
+function transitionRequirementLabel(requirement: string) {
+  if (requirement === "documents_complete") {
+    return "Confirmez que les documents nécessaires ont été vérifiés avant de déclarer le dossier prêt à envoyer.";
+  }
+  if (requirement === "submission_confirmed") {
+    return "Confirmez que la candidature a réellement été envoyée à l’établissement ou au service indiqué.";
+  }
+  if (requirement === "university_decision_confirmed") {
+    return "Confirmez qu’une décision officielle de l’université a été reçue. AlmaGo n’est pas l’auteur de cette décision.";
+  }
+  return "Vérifiez la condition métier avant de poursuivre.";
+}
+
+
+function RecordedFact({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-muted)] p-3">
+      <p className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">{label}</p>
+      <p className="mt-1 text-sm font-medium leading-5 text-slate-900 [overflow-wrap:anywhere]">{value}</p>
+    </div>
+  );
+}
+
+function formatRecordedDate(value: string | null | undefined) {
+  if (!value) return "Non enregistrée";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "Date invalide";
+  return new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium", timeStyle: "short" }).format(date);
 }
