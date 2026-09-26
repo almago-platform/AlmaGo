@@ -138,6 +138,7 @@ export default async function StudentEntry() {
     {
       label: "Démarches suivantes",
       detail: activeApplications.length ? "À suivre selon vos dossiers actifs" : "À venir selon votre parcours",
+      href: "/student/pathway",
       tone: activeApplications.length ? "active" : "neutral",
     },
   ];
@@ -224,7 +225,10 @@ export default async function StudentEntry() {
             <h2 className="mt-2 text-xl font-bold text-slate-950">Choisissez votre parcours d’accompagnement</h2>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">Université, préparation allemand + études, Master + langue, ou langue uniquement : précisez votre objectif pour adapter les prochaines étapes.</p>
           </div>
-          <ButtonLink href="/student/project">Définir mon projet</ButtonLink>
+          <div className="flex flex-wrap gap-3">
+            <ButtonLink href="/student/pathway">Voir mon parcours</ButtonLink>
+            <ButtonLink href="/student/project" variant="secondary">Définir mon projet</ButtonLink>
+          </div>
         </div>
       </Card>
 
