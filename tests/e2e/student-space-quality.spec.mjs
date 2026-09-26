@@ -13,6 +13,10 @@ const pages = [
   { path: "/student/orientation", name: "orientation" },
   { path: "/student/checklist", name: "checklist" },
   { path: "/student/applications", name: "applications" },
+  { path: "/student/project", name: "project" },
+  { path: "/student/pathway", name: "pathway" },
+  { path: "/student/language-courses", name: "language-courses" },
+  { path: "/student/finance-insurance", name: "finance-insurance" },
 ];
 
 mkdirSync("artifacts/auth-e2e/screenshots", { recursive: true });

@@ -38,6 +38,7 @@ const studentItems: NavItem[] = [
   { label: "Mes documents", href: "/student/documents", icon: icons.documents, helper: "Pièces et statuts" },
   { label: "Mon orientation", href: "/student/orientation", icon: icons.orientation, helper: "Programmes proposés" },
   { label: "Cours de langue", href: "/student/language-courses", icon: icons.programs, helper: "Préparation linguistique" },
+  { label: "Financement & assurance", href: "/student/finance-insurance", icon: icons.applications, helper: "Options factuelles vérifiées" },
   { label: "Mes démarches", href: "/student/checklist", icon: icons.checklist, helper: "Étapes du dossier" },
   { label: "Mes candidatures", href: "/student/applications", icon: icons.applications, helper: "Suivi et échéances" },
 ];
@@ -121,7 +122,7 @@ export function AppShell({
         )}
 
         <nav
-          className="flex-1 space-y-1 px-4 py-5 before:mb-3 before:block before:px-3.5 before:text-[10px] before:font-bold before:uppercase before:tracking-[0.18em] before:text-slate-400 before:content-['Navigation']"
+          className="flex-1 space-y-1 overflow-y-auto px-4 py-5 before:mb-3 before:block before:px-3.5 before:text-[10px] before:font-bold before:uppercase before:tracking-[0.18em] before:text-slate-400 before:content-['Navigation']"
           aria-label={role === "admin" ? "Navigation administration" : "Navigation étudiant"}
         >
           {items.map((item) => {
