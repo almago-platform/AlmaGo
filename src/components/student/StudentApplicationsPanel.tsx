@@ -130,13 +130,13 @@ export function StudentApplicationsPanel({
       )}
 
       <section aria-label="Priorité candidature" className="grid gap-5 lg:grid-cols-[1.08fr_0.92fr]">
-        <Card className="relative overflow-hidden border-[var(--brand-border)] bg-white shadow-[0_24px_55px_-38px_rgba(41,48,139,0.5)]">
-          <div aria-hidden="true" className="absolute inset-y-0 left-0 w-1.5 bg-[var(--brand)]" />
+        <Card className="relative overflow-hidden border-[var(--brand-border)] bg-white shadow-none">
+          <div aria-hidden="true" className="absolute inset-y-0 left-0 w-1 bg-[var(--brand)]" />
           <div className="pl-2 sm:pl-3">
             <Badge variant={loadError ? "neutral" : actionable.length ? "warning" : "info"}>
               {loadError ? "Indisponible" : actionable.length ? "Action à faire" : "Suivi en cours"}
             </Badge>
-            <h2 className="mt-5 text-2xl font-bold tracking-[-0.03em] text-slate-950 sm:text-3xl">
+            <h2 className="mt-5 text-2xl font-semibold tracking-[-0.03em] text-slate-950 sm:text-3xl">
               {actionable.length ? "Votre prochaine action" : "Vos candidatures sont suivies"}
             </h2>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-600">
@@ -149,7 +149,7 @@ export function StudentApplicationsPanel({
                     : "Aucune candidature n’est encore enregistrée. Consultez vos recommandations pour choisir un programme à suivre."}
             </p>
             {priorityApplication && (
-              <div className="mt-5 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-muted)]/55 p-4">
+              <div className="mt-5 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4">
                 <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">Candidature suivie</p>
                 <p className="mt-2 font-bold text-slate-950">{priorityProgram?.name || "Programme"}</p>
                 <p className="mt-1 text-sm text-slate-600">
@@ -205,7 +205,7 @@ export function StudentApplicationsPanel({
           <div className="mb-4 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Vos dossiers suivis</p>
-              <h2 id="applications-list-title" className="mt-1 text-2xl font-bold tracking-[-0.03em] text-slate-950">Mes candidatures</h2>
+              <h2 id="applications-list-title" className="mt-1 text-2xl font-semibold tracking-[-0.03em] text-slate-950">Mes candidatures</h2>
               <p className="mt-1 text-sm leading-6 text-slate-600">{applications.length} candidature{applications.length > 1 ? "s" : ""} enregistrée{applications.length > 1 ? "s" : ""} dans votre espace.</p>
             </div>
           </div>
@@ -231,7 +231,7 @@ export function StudentApplicationsPanel({
                   as="article"
                   key={application.id}
                   aria-labelledby={`student-application-title-${application.id}`}
-                  className={active && application.next_action ? "border-amber-300 bg-amber-50/30" : ""}
+                  className={active && application.next_action ? "border-amber-300 bg-amber-50/20 shadow-none" : "shadow-none"}
                 >
                   <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
                     <div className="min-w-0">
@@ -241,8 +241,8 @@ export function StudentApplicationsPanel({
                       </p>
                       <h3 id={`student-application-title-${application.id}`} className="mt-3 text-xl font-bold tracking-[-0.02em] text-slate-950 [overflow-wrap:anywhere]">{program?.name || "Programme"}</h3>
                       <div className="mt-2 flex flex-wrap gap-2 text-xs font-semibold text-slate-600">
-                        {program?.degree_level && <span className="rounded-full bg-slate-100 px-3 py-1.5">{program.degree_level}</span>}
-                        <span className="rounded-full bg-slate-100 px-3 py-1.5">{application.intake_term || "Semestre à confirmer"}</span>
+                        {program?.degree_level && <span className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-2.5 py-1.5">{program.degree_level}</span>}
+                        <span className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-2.5 py-1.5">{application.intake_term || "Semestre à confirmer"}</span>
                         <span className={`rounded-full px-3 py-1.5 ${applicationOverdue ? "bg-amber-100 text-amber-900" : "bg-slate-100"}`}>
                           Échéance {formatDeadline(application.deadline)}
                         </span>
