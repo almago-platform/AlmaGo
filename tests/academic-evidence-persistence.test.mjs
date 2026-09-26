@@ -54,7 +54,10 @@ test("students can read only their records and only Admin can manage classificat
     migration,
     /academic evidence admin manage[\s\S]*?for all to authenticated[\s\S]*?using \(\(select public\.is_admin\(\)\)\)[\s\S]*?with check \(\(select public\.is_admin\(\)\)\)/,
   );
-  assert.doesNotMatch(migration, /for (?:insert|update|delete)[\s\S]*?student_id = \(select auth\.uid\(\)\)/);
+  assert.doesNotMatch(
+    migration,
+    /create policy[^;]*for (?:insert|update|delete)[^;]*student_id = \(select auth\.uid\(\)\)/i,
+  );
 });
 
 test("pathway acceptance fails closed at the database boundary", () => {
@@ -109,4 +112,20 @@ test("the acceptance trigger re-validates on every column update, not only verif
 test("the migration does not rewrite uploaded objects or existing document review statuses", () => {
   assert.doesNotMatch(migration, /storage\.objects|storage_path|original_filename|update public\.documents/);
   assert.doesNotMatch(migration, /alter type public\.document_status|drop type public\.document_status/);
+});
+
+
+test("accepted evidence locks the linked document strongly enough to serialize status downgrades", () => {
+  const enforcement = migration.match(
+    /create or replace function private\.enforce_academic_evidence\(\)([\s\S]*?)revoke execute on function private\.enforce_academic_evidence\(\)/,
+  );
+  assert.ok(enforcement, "expected academic evidence enforcement function");
+  assert.match(
+    enforcement[1],
+    /from public\.documents[\s\S]*?where id = new\.document_id and student_id = new\.student_id[\s\S]*?for update;/,
+  );
+  assert.doesNotMatch(enforcement[1], /for key share;/i);
+  assert.match(migration, /create trigger documents_invalidate_academic_evidence/);
+  assert.match(migration, /linked_document\.status::text <> 'approved'/);
+  // Static contract only: live concurrent Postgres behavior is validated separately.
 });
