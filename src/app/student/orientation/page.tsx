@@ -2,6 +2,7 @@ import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Card } from "@/components/ui/Card";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { StudentOrientationPanel } from "@/components/student/StudentOrientationPanel";
+import { StudentGuidancePanel } from "@/components/student/StudentGuidancePanel";
 import { matchMasterRequirements } from "@/lib/master-requirements";
 import { readMasterRequirementProfile } from "@/lib/master-requirements-persistence";
 import { createClient } from "@/lib/supabase/server";
@@ -57,6 +58,22 @@ export default async function StudentOrientationPage() {
         title="Programmes recommandés"
         description="Comparez les pistes préparées pour votre dossier, comprenez pourquoi elles apparaissent et vérifiez les critères importants avant de décider. Une recommandation reste une piste de travail, pas une garantie d’admission."
         actions={<ButtonLink href="/student/applications" variant="secondary">Mes candidatures</ButtonLink>}
+      />
+
+      <StudentGuidancePanel
+        eyebrow="Votre repère orientation"
+        title="Une recommandation est un point de départ pour comparer, pas une décision à votre place."
+        description="Prenez le temps de regarder les critères, la langue, l’échéance et la source de chaque programme. AlmaGo rassemble ces éléments pour rendre la comparaison plus simple et plus transparente."
+        points={[
+          "Comprendre pourquoi une piste apparaît dans votre dossier.",
+          "Comparer les critères importants avant de vous engager.",
+          "Décider ensuite si cette piste mérite une candidature.",
+        ]}
+        image={{
+          src: "https://images.unsplash.com/photo-1758270704787-615782711641?auto=format&fit=crop&w=1200&q=82",
+          alt: "Groupe d’étudiants échangeant dans un amphithéâtre universitaire.",
+          credit: "Photo : Vitaly Gariev / Unsplash",
+        }}
       />
 
       <StudentOrientationPanel
