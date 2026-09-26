@@ -65,6 +65,7 @@ export function AdminFinanceInsurancePanel({ options }: { options: Option[] }) {
   const [editing, setEditing] = useState<string | null>(null);
   const [filter, setFilter] = useState<FinanceInsuranceKind | "all">("all");
   const [busy, setBusy] = useState(false);
+  const [revalidatingId, setRevalidatingId] = useState<string | null>(null);
   const [notice, setNotice] = useState<{ tone: "success" | "error"; text: string } | null>(null);
 
   const visible = useMemo(
@@ -97,6 +98,45 @@ export function AdminFinanceInsurancePanel({ options }: { options: Option[] }) {
   function reset() {
     setEditing(null);
     setForm(empty);
+  }
+
+  async function revalidate(option: Option) {
+    if (!window.confirm("Confirmez que vous avez ouvert la source officielle et vérifié les informations affichées avant de revalider cette fiche.")) {
+      return;
+    }
+
+    setRevalidatingId(option.id);
+    setNotice(null);
+    try {
+      const response = await fetch("/api/admin/finance-insurance", {
+        method: "PATCH",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          id: option.id,
+          provider_name: option.provider_name,
+          product_name: option.product_name,
+          kind: option.kind,
+          description: option.description,
+          official_source_url: option.official_source_url,
+          application_url: option.application_url,
+          price_notes: option.price_notes,
+          eligibility_notes: option.eligibility_notes,
+          verified_at: new Date().toISOString(),
+          is_active: option.is_active,
+        }),
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        setNotice({ tone: "error", text: result.error || "Revalidation impossible." });
+        return;
+      }
+      setNotice({ tone: "success", text: "Fiche revalidée après contrôle de la source officielle." });
+      window.location.reload();
+    } catch {
+      setNotice({ tone: "error", text: "Revalidation impossible. Vérifiez votre connexion puis réessayez." });
+    } finally {
+      setRevalidatingId(null);
+    }
   }
 
   async function save(event: React.FormEvent) {
@@ -204,7 +244,24 @@ export function AdminFinanceInsurancePanel({ options }: { options: Option[] }) {
               {option.verified_at && (
                 <p className="mt-2 text-xs text-slate-500">À revalider avant : {new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium" }).format(new Date(catalogVerificationExpiresAt(option.verified_at) as string))}</p>
               )}
-              <div className="mt-5"><Button type="button" variant="secondary" onClick={() => edit(option)}>Modifier</Button></div>
+              <div className="mt-5 flex flex-wrap gap-3">
+                <a
+                  href={option.official_source_url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex min-h-11 items-center justify-center rounded-[var(--radius-control)] border border-[var(--border)] bg-white px-4 py-2.5 text-sm font-bold text-slate-700"
+                >
+                  Ouvrir la source officielle
+                </a>
+                <Button type="button" variant="secondary" onClick={() => edit(option)}>Modifier</Button>
+                <Button
+                  type="button"
+                  onClick={() => revalidate(option)}
+                  disabled={revalidatingId === option.id}
+                >
+                  {revalidatingId === option.id ? "Revalidation…" : "Source vérifiée aujourd’hui"}
+                </Button>
+              </div>
             </Card>
           ))}
           {!visible.length && <Card className="shadow-none"><p className="text-sm text-slate-600">Aucune option dans cette catégorie.</p></Card>}
