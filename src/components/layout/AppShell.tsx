@@ -50,6 +50,8 @@ const adminItems: NavItem[] = [
   { label: "Orientation", href: "/admin/orientation", icon: icons.orientation, helper: "Recommandations étudiants" },
   { label: "Universités", href: "/admin/universities", icon: icons.universities, helper: "Catalogue établissements" },
   { label: "Programmes", href: "/admin/programs", icon: icons.programs, helper: "Catalogue formations" },
+  { label: "Cours de langue", href: "/admin/language-courses", icon: icons.programs, helper: "Catalogue vérifié" },
+  { label: "Finance & assurance", href: "/admin/finance-insurance", icon: icons.applications, helper: "Options factuelles" },
 ];
 
 function isActive(pathname: string, href: string) {

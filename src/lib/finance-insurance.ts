@@ -116,6 +116,9 @@ export function parseFinanceInsuranceAdminInput(body: unknown): FinanceInsurance
   if ([productName, description, applicationUrl, priceNotes, eligibilityNotes, verifiedAt].includes(undefined)) {
     return { ok: false, error: "A bounded finance or insurance value is invalid." };
   }
+  if (input.is_active && verifiedAt === null) {
+    return { ok: false, error: "An active finance or insurance option requires a dated verification." };
+  }
 
   return {
     ok: true,
