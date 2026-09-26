@@ -5,10 +5,15 @@ import test from "node:test";
 const page = readFileSync("src/app/student/language-courses/page.tsx", "utf8");
 const panel = readFileSync("src/components/student/StudentLanguageCoursesPanel.tsx", "utf8");
 const nav = readFileSync("src/components/student/StudentNav.tsx", "utf8");
+const appShell = readFileSync("src/components/layout/AppShell.tsx", "utf8");
 
 test("Student navigation exposes the verified language-course surface", () => {
   assert.match(nav, /Cours de langue/);
   assert.match(nav, /\/student\/language-courses/);
+  assert.match(appShell, /Cours de langue/);
+  assert.match(appShell, /\/student\/language-courses/);
+  assert.match(appShell, /Mon projet/);
+  assert.match(appShell, /\/student\/project/);
   assert.match(page, /Cours de langue vérifiés/);
 });
 
