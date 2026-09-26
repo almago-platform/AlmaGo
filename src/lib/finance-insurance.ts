@@ -1,3 +1,5 @@
+import { isCatalogVerificationCurrent } from "@/lib/catalog-freshness";
+
 export const financeInsuranceKinds = [
   "blocked_account_provider",
   "health_insurance_provider",
@@ -144,8 +146,7 @@ export function isPublishableFinanceInsuranceOption(
   if (!(asOf instanceof Date) || Number.isNaN(asOf.getTime())) return false;
   if (!option.is_active || !httpUrl(option.official_source_url)) return false;
   if (option.application_url !== null && !httpUrl(option.application_url)) return false;
-  if (!option.verified_at || Number.isNaN(Date.parse(option.verified_at))) return false;
-  return new Date(option.verified_at).getTime() <= asOf.getTime();
+  return isCatalogVerificationCurrent(option.verified_at, asOf);
 }
 
 export function parseFinanceInsuranceFilters(body: unknown): FinanceInsuranceParseResult<FinanceInsuranceFilters> {

@@ -9,6 +9,7 @@ import {
 } from "@/lib/academic-evidence";
 import { isPublishableLanguageCourse } from "@/lib/language-courses";
 import { isPublishableFinanceInsuranceOption } from "@/lib/finance-insurance";
+import { catalogVerificationCutoff } from "@/lib/catalog-freshness";
 import {
   determineRegulatoryPath,
   type RegulatoryPathDecision,
@@ -52,6 +53,9 @@ export default async function StudentPathwayPage() {
   if (!user) redirect("/login");
 
   const now = new Date();
+  const catalogueCutoff = catalogVerificationCutoff(now);
+  if (!catalogueCutoff) return <PathwayUnavailable />;
+
   const [
     projectResult,
     documentsResult,
@@ -79,12 +83,14 @@ export default async function StudentPathwayPage() {
       .select("title,provider_name,language,purpose,source_url,application_url,verified_at,is_active")
       .eq("purpose", "study_preparation")
       .eq("is_active", true)
-      .lte("verified_at", now.toISOString()),
+      .lte("verified_at", now.toISOString())
+      .gt("verified_at", catalogueCutoff),
     supabase
       .from("finance_insurance_catalog")
       .select("id,provider_name,product_name,kind,description,official_source_url,application_url,price_notes,eligibility_notes,verified_at,is_active")
       .eq("is_active", true)
-      .lte("verified_at", now.toISOString()),
+      .lte("verified_at", now.toISOString())
+      .gt("verified_at", catalogueCutoff),
     supabase
       .from("student_checklist_items")
       .select("id,status")

@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { languageCourseLevels, type LanguageCourseLevel, type LanguageCoursePurpose } from "@/lib/language-courses";
+import { catalogVerificationExpiresAt, isCatalogVerificationCurrent } from "@/lib/catalog-freshness";
 
 type Course = {
   id: string;
@@ -189,9 +190,14 @@ export function AdminLanguageCoursesPanel({ courses }: { courses: Course[] }) {
             <Card key={course.id} className="shadow-none">
               <div className="flex items-start justify-between gap-4">
                 <div><p className="text-lg font-bold text-slate-950">{course.title}</p><p className="mt-1 text-sm text-slate-600">{course.provider_name}{course.city ? " · " + course.city : ""}</p></div>
-                <Badge variant={course.is_active ? "success" : "neutral"}>{course.is_active ? "Publié" : "Brouillon"}</Badge>
+                <Badge variant={course.is_active && isCatalogVerificationCurrent(course.verified_at) ? "success" : course.is_active ? "warning" : "neutral"}>
+                  {course.is_active && isCatalogVerificationCurrent(course.verified_at) ? "Publié" : course.is_active ? "À revalider" : "Brouillon"}
+                </Badge>
               </div>
               <p className="mt-3 text-sm font-semibold text-[var(--brand)]">{course.purpose === "study_preparation" ? "Préparation aux études" : "Cours de langue autonome"}</p>
+              {course.verified_at && (
+                <p className="mt-2 text-xs text-slate-500">À revalider avant : {new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium" }).format(new Date(catalogVerificationExpiresAt(course.verified_at) as string))}</p>
+              )}
               <div className="mt-5"><Button type="button" variant="secondary" onClick={() => edit(course)}>Modifier</Button></div>
             </Card>
           ))}

@@ -1,3 +1,5 @@
+import { catalogVerificationCutoff, isCatalogVerificationCurrent } from "@/lib/catalog-freshness";
+
 export const languageCoursePurposes = [
   "study_preparation",
   "standalone_language",
@@ -245,8 +247,7 @@ export function isPublishableLanguageCourse(
   if (!httpUrl(course.source_url)) return false;
   if (course.application_url && !httpUrl(course.application_url)) return false;
 
-  const verifiedAt = course.verified_at ? Date.parse(course.verified_at) : Number.NaN;
-  return Number.isFinite(verifiedAt) && verifiedAt <= now.getTime();
+  return isCatalogVerificationCurrent(course.verified_at, now);
 }
 
 export function parseLanguageCourseFilters(
@@ -295,6 +296,7 @@ type LanguageCourseQuery = {
   eq(column: string, value: string | boolean): LanguageCourseQuery;
   ilike(column: string, value: string): LanguageCourseQuery;
   lte(column: string, value: string): LanguageCourseQuery;
+  gt(column: string, value: string): LanguageCourseQuery;
   order(column: string, options: { ascending: boolean }): LanguageCourseQuery;
 };
 
@@ -307,9 +309,13 @@ export function publishableLanguageCoursesQuery(
   if (!parsed.ok) return null;
 
   const filters = parsed.value;
+  const cutoff = catalogVerificationCutoff(now);
+  if (!cutoff) return null;
+
   let scoped = query
     .eq("is_active", true)
-    .lte("verified_at", now.toISOString());
+    .lte("verified_at", now.toISOString())
+    .gt("verified_at", cutoff);
 
   if (filters.purpose) scoped = scoped.eq("purpose", filters.purpose);
   if (filters.city) scoped = scoped.ilike("city", filters.city);

@@ -69,6 +69,7 @@ test("active publication fails closed without valid official verification", () =
   assert.equal(isPublishableLanguageCourse({ ...valid, is_active: false }, now), false);
   assert.equal(isPublishableLanguageCourse({ ...valid, verified_at: null }, now), false);
   assert.equal(isPublishableLanguageCourse({ ...valid, verified_at: "2026-09-27T10:00:00Z" }, now), false);
+  assert.equal(isPublishableLanguageCourse({ ...valid, verified_at: "2026-08-20T10:00:00Z" }, now), false);
   assert.equal(isPublishableLanguageCourse({ ...valid, source_url: "javascript:alert(1)" }, now), false);
 
   assert.equal(parseLanguageCoursePayload({ ...valid, source_url: "javascript:alert(1)" }).ok, false);
@@ -110,6 +111,7 @@ test("publishable query applies only factual catalogue filters", () => {
     eq(column, value) { calls.push(["eq", column, value]); return this; },
     ilike(column, value) { calls.push(["ilike", column, value]); return this; },
     lte(column, value) { calls.push(["lte", column, value]); return this; },
+    gt(column, value) { calls.push(["gt", column, value]); return this; },
     order(column, options) { calls.push(["order", column, options]); return this; },
   };
 
@@ -126,6 +128,7 @@ test("publishable query applies only factual catalogue filters", () => {
   assert.deepEqual(calls, [
     ["eq", "is_active", true],
     ["lte", "verified_at", now.toISOString()],
+    ["gt", "verified_at", "2026-08-27T10:00:00.000Z"],
     ["eq", "purpose", "study_preparation"],
     ["ilike", "city", "Berlin"],
     ["ilike", "language", "Deutsch"],
