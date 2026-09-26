@@ -145,10 +145,10 @@ export default async function StudentEntry() {
 
   return (
     <main className="mx-auto w-full max-w-7xl px-4 py-7 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
-      <section className="mb-8 grid gap-5 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
+      <section className="mb-8 grid gap-5 border-b border-[var(--border)] pb-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
         <div className="max-w-3xl">
           <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Mon dossier</p>
-          <h1 className="mt-3 text-3xl font-bold tracking-[-0.04em] text-slate-950 sm:text-4xl">
+          <h1 className="mt-3 text-3xl font-semibold tracking-[-0.04em] text-slate-950 sm:text-4xl">
             Bonjour {profile.first_name || "étudiant"}, voici votre dossier.
           </h1>
           <p className="mt-4 max-w-2xl text-base leading-7 text-slate-600">
@@ -163,8 +163,8 @@ export default async function StudentEntry() {
       </section>
 
       <section className="grid gap-5 lg:grid-cols-[minmax(0,1.5fr)_minmax(18rem,0.82fr)]" aria-label="Priorités du dossier">
-        <Card className="relative overflow-hidden border-[var(--brand-border)] bg-white shadow-[0_24px_55px_-38px_rgba(41,48,139,0.5)]">
-          <div aria-hidden="true" className="absolute inset-y-0 left-0 w-1.5 bg-[var(--brand)]" />
+        <Card className="relative overflow-hidden border-[var(--brand-border)] bg-white shadow-none">
+          <div aria-hidden="true" className="absolute inset-y-0 left-0 w-1 bg-[var(--brand)]" />
           <div className="pl-2 sm:pl-3">
             <div className="flex flex-wrap items-center gap-3">
               <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Ce qui compte maintenant</p>
@@ -173,7 +173,7 @@ export default async function StudentEntry() {
               </Badge>
             </div>
 
-            <h2 className="mt-5 text-2xl font-bold tracking-[-0.03em] text-slate-950 sm:text-3xl">
+            <h2 className="mt-5 text-2xl font-semibold tracking-[-0.03em] text-slate-950 sm:text-3xl">
               {hasActionRequired ? "Votre prochaine action" : "Votre dossier est à jour pour le moment"}
             </h2>
             <p className="mt-3 max-w-2xl text-base leading-7 text-slate-700">{nextAction.detail}</p>
@@ -189,7 +189,7 @@ export default async function StudentEntry() {
           </div>
         </Card>
 
-        <Card className="bg-[#fbfbfd] shadow-none">
+        <Card className="bg-[var(--surface-subtle)] shadow-none">
           <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">Préparation du dossier</p>
           <h2 className="mt-2 text-xl font-bold text-slate-950">Démarches enregistrées</h2>
 
@@ -218,7 +218,7 @@ export default async function StudentEntry() {
 
       <StudentJourneyOverview stages={journeyStages} />
 
-      <Card className="mt-8 border-[var(--brand-border)] bg-[var(--brand-soft)] shadow-none">
+      <Card className="mt-8 border-[var(--brand-border)] bg-[var(--brand-soft)]/70 shadow-none">
         <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Projet Allemagne</p>
@@ -309,7 +309,7 @@ function StatusPill({
         : "border-[var(--border)] bg-white text-slate-700";
 
   return (
-    <div className={`inline-flex min-h-11 items-center gap-2 rounded-full border px-3.5 py-2 text-sm font-semibold ${toneClass}`}>
+    <div className={`inline-flex min-h-11 items-center gap-2 rounded-[var(--radius-control)] border px-3.5 py-2 text-sm font-semibold ${toneClass}`}>
       <span className="text-lg font-bold">{value}</span>
       <span>{label}</span>
     </div>
