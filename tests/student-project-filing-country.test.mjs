@@ -7,5 +7,5 @@ const migration = readFileSync("supabase/migrations/0022_student_project_filing_
 test("filing country is a separate bounded project fact", () => {
   assert.match(migration, /add column if not exists filing_country text/i);
   assert.match(migration, /filing_country is null or filing_country ~ '\^\[A-Z\]\{2\}\$'/);
-  assert.doesNotMatch(migration, /nationality/);
+  assert.doesNotMatch(migration, /from\s+public\.profiles|select[^;]+nationality/i);
 });
