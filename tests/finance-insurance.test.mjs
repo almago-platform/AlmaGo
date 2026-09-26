@@ -68,6 +68,11 @@ test("unknown optional facts remain null without estimates", () => {
   });
 });
 
+test("admin parser refuses to publish an option without dated verification", () => {
+  assert.equal(parseFinanceInsuranceAdminInput({ ...valid, is_active: true, verified_at: null }).ok, false);
+  assert.equal(parseFinanceInsuranceAdminInput({ ...valid, is_active: false, verified_at: null }).ok, true);
+});
+
 test("publication is fail-closed for activity, verification time, and URLs", () => {
   assert.equal(isPublishableFinanceInsuranceOption(valid, asOf), true);
   assert.equal(isPublishableFinanceInsuranceOption({ ...valid, is_active: false }, asOf), false);
