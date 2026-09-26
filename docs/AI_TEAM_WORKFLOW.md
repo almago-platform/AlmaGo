@@ -1,10 +1,10 @@
 # AlmaGo — Multi-Agent Operating Model
 
-**Reference date:** 2026-09-25
+**Reference date:** 2026-09-26
 
 ## Goal
 
-Use several coding models in parallel without letting them edit the same surface or merge unreviewed work.
+Use several coding models in parallel as sustained, bounded work blocks that maximize visible product progress without letting agents edit the same surface or merge unreviewed work.
 
 GitHub is the source of truth. Every implementation task must have an explicit issue/task contract, a dedicated branch, a dedicated pull request, validation evidence, and a supervisor review.
 
@@ -16,7 +16,7 @@ ChatGPT is the orchestration and final review layer for agent work.
 
 Responsibilities:
 - maintain the product and technical plan;
-- split work into small, non-overlapping tasks;
+- define large enough bounded work blocks with ordered internal checkpoints on non-overlapping writable surfaces;
 - define the exact base branch and owned paths for each task;
 - detect collisions between open PRs before assigning work;
 - work directly on architecture, documentation, audits, small isolated fixes, and integration tasks when useful;
@@ -66,11 +66,11 @@ Default forbidden scope unless an issue explicitly overrides it:
 - broad backend/domain refactors;
 - files already owned by another open implementation PR.
 
-Gemini receives one bounded surface at a time.
+Gemini receives one bounded frontend block at a time. A block may span several related student-facing files when every writable path is explicit and does not overlap another active implementation block.
 
 ### Claude — Deep engineering, debugging and hardening specialist
 
-Preferred runtime model when launched through GitHub Copilot cloud agent: **Claude Opus 5.5**.
+Preferred runtime model when launched through GitHub Copilot cloud agent: **Claude Sonnet 5** when available in the selector.
 
 Primary scope:
 - deep codebase analysis and root-cause debugging;
@@ -89,6 +89,39 @@ Default forbidden scope unless an issue explicitly overrides it:
 - secrets;
 - broad refactors;
 - overlapping files with another active implementation task.
+
+## Block execution mode
+
+The default unit of work is a **block**, not an isolated micro-task, whenever scope can be bounded safely.
+
+A production block should normally:
+- contain several ordered checkpoints that form one coherent outcome;
+- keep exact writable paths and an exact base SHA/branch;
+- continue automatically from checkpoint to checkpoint without another user prompt;
+- include implementation, focused regression coverage, and integration validation when they belong to the same bounded surface;
+- favor visible vertical progress over audit-only output;
+- stop early only for a real blocker, scope collision, moved base, or explicit safety boundary.
+
+Audit-only work is appropriate when production edits would be unsafe or ownership is not granted. Otherwise, a deep-engineering block should prefer the sequence **understand → test → bounded fix → validate** when the contract explicitly authorizes those paths.
+
+### Continuous / overnight utilization
+
+The user should be able to launch a large block once and let the agent work through its internal checkpoints for several hours.
+
+The supervisor should:
+- keep the next dependency-safe block prepared before the active wave completes;
+- review new PR HEADs and CI as soon as they are available;
+- issue `APPROVED`, `REVISE`, or `BLOCKED` without requiring the user to relay reports;
+- reuse an existing agent session for revision when supported;
+- maintain an integration/preview checkpoint so approved work becomes visible in the product quickly.
+
+Do not assume a brand-new GitHub Copilot cloud-agent session can start unattended unless an actual launch mechanism is available. If a new session needs a manual launch, prepare the complete next block in advance so the user's intervention is a single launch action.
+
+### Integration / preview rule
+
+Large feature chains should periodically converge into a dedicated integration/preview state. The purpose is to let the team evaluate real student-visible behavior together instead of accumulating a long stack of isolated PRs.
+
+Integration issues discovered at this checkpoint become bounded fixes. They do not automatically trigger another broad audit cycle.
 
 ## Branch naming
 
@@ -145,7 +178,7 @@ Each agent PR must include:
 - known limitations;
 - explicit statement that no out-of-scope files were intentionally changed.
 
-The agent stops after opening/updating its PR and publishing the required evidence.
+The agent stops only after the **entire assigned block** is complete, then opens/updates its PR and publishes the required evidence. Internal checkpoints are not stop points unless the contract explicitly says so.
 
 ## Review gate
 
@@ -160,24 +193,32 @@ The supervisor checks:
 
 A PR is not considered accepted until the supervisor publishes a canonical review outcome.
 
-## Current allocation — 2026-09-25
+## Current allocation — 2026-09-26
+
+### Active sprint
+
+Parent sprint: **#248 — Germany visible progress**.
+
+- **Codex #245** — LOT 3 workflow reliability block, checkpoints C1 → C2 → C3.
+- **Gemini #246** — visible student experience block, checkpoints G1 → G2 → G3.
+- **Claude #247** — LOT 4 evidence hardening block, checkpoints H1 → H2 → H3.
+- **Supervisor #249** — Germany integration/preview checkpoint after the three agent blocks are accepted.
 
 ### Codex
-Continue to own the active Germany implementation chain #214 → #233. Do not duplicate these changes elsewhere.
+
+Own backend/domain/database-safe implementation and workflow reliability. Prefer a complete functional block with tests over a sequence of tiny bug-fix prompts.
 
 ### Gemini
-First assignment after this operating model is available on the default branch:
-- perform a bounded UX/accessibility review of a supervisor-selected student-facing surface;
-- produce concrete findings and, only when writable paths are explicitly granted, a small isolated PR.
+
+Own coherent student-facing UX blocks: orientation, application progress, journey clarity, responsive behavior, accessibility, and copy. Changes remain inside explicitly granted frontend/test paths.
 
 ### Claude
-First assignment after this operating model is available on the default branch:
-- deeply review a supervisor-selected workflow/state contract and its integration chain;
-- identify reproducible edge cases, root causes, and missing regression tests;
-- start review-first and modify production code only when exact paths are granted.
 
-### ChatGPT
-Continue architecture, task decomposition, collision checks, direct repository work where appropriate, and final review of Codex/Gemini/Claude outputs.
+Own deep hardening blocks: invariants, edge cases, regression coverage, root-cause debugging, and integration-readiness review. Production edits remain opt-in through explicit writable paths.
+
+### ChatGPT Supervisor
+
+Own block planning, collision checks, exact-base verification, review, integration, and preparation of the next wave before the current one finishes.
 
 ## Product boundaries that no agent may weaken
 
