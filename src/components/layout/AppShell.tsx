@@ -32,9 +32,11 @@ const icons = {
 
 const studentItems: NavItem[] = [
   { label: "Mon dossier", href: "/student", icon: icons.dashboard, helper: "Vue d’ensemble" },
+  { label: "Mon projet", href: "/student/project", icon: icons.universities, helper: "Parcours Allemagne" },
   { label: "Mon profil", href: "/student/profile", icon: icons.profile, helper: "Mes informations" },
   { label: "Mes documents", href: "/student/documents", icon: icons.documents, helper: "Pièces et statuts" },
   { label: "Mon orientation", href: "/student/orientation", icon: icons.orientation, helper: "Programmes proposés" },
+  { label: "Cours de langue", href: "/student/language-courses", icon: icons.programs, helper: "Préparation linguistique" },
   { label: "Mes démarches", href: "/student/checklist", icon: icons.checklist, helper: "Étapes du dossier" },
   { label: "Mes candidatures", href: "/student/applications", icon: icons.applications, helper: "Suivi et échéances" },
 ];
