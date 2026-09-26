@@ -63,3 +63,24 @@ test("Admin API maps transactional conflicts without exposing raw database error
   assert.match(route, /status: 409/);
   assert.doesNotMatch(route, /error\.message[^\n]*NextResponse\.json/);
 });
+
+
+test("database intake normalization stays aligned with TypeScript semantics", () => {
+  assert.match(migration, /create or replace function private\.application_intake_family[\s\S]*?as \$fn\$[\s\S]*?\$fn\$;/i);
+  assert.match(migration, /translate\(lower\(btrim\(value\)\), 'éèêë', 'eeee'\)/);
+  assert.match(migration, /text like '%ete%'/);
+  assert.match(migration, /text ~ '\(\^\|\[\[:space:\]\]\)ws\(\[\[:space:\]\]\|\$\)'/);
+  assert.match(migration, /text ~ '\(\^\|\[\[:space:\]\]\)ss\(\[\[:space:\]\]\|\$\)'/);
+});
+
+test("Admin metadata-only updates use the same bounded database error mapping as transitions", () => {
+  assert.match(route, /function applicationDatabaseErrorResponse/);
+  assert.match(route, /if \(updateError\) \{[\s\S]*applicationDatabaseErrorResponse\([\s\S]*updateError/);
+  assert.match(route, /if \(error\) \{[\s\S]*applicationDatabaseErrorResponse\([\s\S]*error/);
+  for (const token of [
+    "application_no_status_change",
+    "application_transition_not_allowed",
+    "application_decision_note_required",
+    "application_not_found",
+  ]) assert.match(route, new RegExp(token));
+});

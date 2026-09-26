@@ -6,6 +6,7 @@ import {
 } from "../src/lib/phase4.ts";
 import {
   applicationStatuses,
+  applicationStatusLabels,
   historicalApplicationStatuses,
   allowedApplicationTransitions,
   canTransitionApplication,
@@ -99,4 +100,32 @@ test("submitted summary recognizes canonical and historical post-submission stat
   for (const status of ["interested", "preparing", "documents_missing", "ready_to_submit", "withdrawn", "draft"]) {
     assert.equal(isSubmittedApplicationStatus(status), false, status);
   }
+});
+
+
+test("canonical and historical status namespaces stay disjoint and fully labelled", () => {
+  const canonical = new Set(applicationStatuses);
+  for (const status of historicalApplicationStatuses) {
+    assert.equal(canonical.has(status), false, status);
+  }
+
+  for (const status of [...applicationStatuses, ...historicalApplicationStatuses]) {
+    assert.equal(typeof applicationStatusLabels[status], "string", status);
+    assert.notEqual(applicationStatusLabels[status].trim(), "", status);
+  }
+});
+
+test("historical aliases never create a canonical no-op transition", () => {
+  assert.equal(canTransitionApplication("draft", "interested"), false);
+  assert.equal(canTransitionApplication("planned", "preparing"), false);
+  assert.equal(canTransitionApplication("in_review", "waiting_university"), false);
+  assert.equal(canTransitionApplication("accepted", "admission"), false);
+  assert.equal(canTransitionApplication("rejected", "rejection"), false);
+});
+
+test("decision-note requirement is limited to real university decision transitions", () => {
+  assert.deepEqual(transitionRequirements("waiting_university", "admission"), ["university_decision_confirmed"]);
+  assert.deepEqual(transitionRequirements("waiting_university", "rejection"), ["university_decision_confirmed"]);
+  assert.deepEqual(transitionRequirements("accepted", "admission"), []);
+  assert.deepEqual(transitionRequirements("rejected", "rejection"), []);
 });

@@ -40,3 +40,13 @@ test("required transitions are blocked in the UI until explicit confirmation", (
   assert.match(panel, /Confirmation requise/);
   assert.match(panel, /needsTransitionConfirmation && !edit\.transitionConfirmed/);
 });
+
+
+test("metadata-only database conflicts are translated instead of leaking as generic 500s", () => {
+  assert.match(route, /function applicationDatabaseErrorResponse/);
+  assert.match(route, /application_decision_note_required/);
+  assert.match(route, /application_transition_not_allowed/);
+  assert.match(route, /application_no_status_change/);
+  assert.match(route, /application_not_found/);
+  assert.match(route, /updateError,[\s\S]*Impossible de mettre à jour le suivi de la candidature/);
+});
