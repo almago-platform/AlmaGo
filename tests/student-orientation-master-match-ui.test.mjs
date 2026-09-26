@@ -34,3 +34,27 @@ test("orientation keeps a recovery state when the student project cannot be read
   assert.match(page, /criteriaStateError=/);
   assert.match(panel, /comparaisons personnalisées réapparaîtront/);
 });
+
+test("StudentApplicationsPanel has enhanced progress tracking and mobile layout", () => {
+  const applicationsPanel = readFileSync("src/components/student/StudentApplicationsPanel.tsx", "utf8");
+  assert.match(applicationsPanel, /ApplicationStepper/);
+  assert.match(applicationsPanel, /"Intérêt"/);
+  assert.match(applicationsPanel, /"Préparation"/);
+  assert.match(applicationsPanel, /"Prêt"/);
+  assert.match(applicationsPanel, /"Envoyé"/);
+  assert.match(applicationsPanel, /"Décision"/);
+  assert.match(applicationsPanel, /text-left sm:text-right flex flex-col items-start sm:items-end/);
+  assert.match(applicationsPanel, /Suivi des candidatures indisponible/);
+});
+
+test("StudentJourneyOverview calculates progress and shows visual badges", () => {
+  const journeyOverview = readFileSync("src/components/student/StudentJourneyOverview.tsx", "utf8");
+  assert.match(journeyOverview, /completedStages\.length/);
+  assert.match(journeyOverview, /progressPercent/);
+  assert.match(journeyOverview, /Terminé/);
+  assert.match(journeyOverview, /En cours/);
+  assert.match(journeyOverview, /À venir/);
+  assert.match(journeyOverview, /Accéder/);
+  assert.doesNotMatch(journeyOverview, /intelligence artificielle/i);
+  assert.doesNotMatch(journeyOverview, /garantie/i);
+});
