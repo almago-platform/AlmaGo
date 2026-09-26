@@ -7,11 +7,11 @@ const previewMetrics = [
 
 export function HomeProductPreview() {
   return (
-    <section id="espace" className="border-y border-[var(--border)] bg-[var(--surface-muted)] py-16 sm:py-20 lg:py-24" aria-labelledby="product-preview-title">
+    <section id="espace" className="border-y border-[var(--border)] bg-[var(--surface-subtle)] py-16 sm:py-20 lg:py-24" aria-labelledby="product-preview-title">
       <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[0.72fr_1.28fr] lg:items-center lg:gap-14 lg:px-8">
         <div>
           <p className="eyebrow">Votre espace AlmaGo</p>
-          <h2 id="product-preview-title" className="mt-3 max-w-xl text-3xl font-bold tracking-[-0.035em] text-slate-950 sm:text-4xl lg:text-[2.8rem]">
+          <h2 id="product-preview-title" className="mt-3 max-w-xl text-3xl font-semibold tracking-[-0.035em] text-slate-950 sm:text-4xl lg:text-[2.8rem]">
             Votre dossier, en un coup d’œil.
           </h2>
           <p className="mt-5 max-w-xl text-base leading-7 text-slate-600 sm:text-lg">
@@ -25,7 +25,7 @@ export function HomeProductPreview() {
           </ul>
         </div>
 
-        <div className="overflow-hidden rounded-[calc(var(--radius-panel)+0.2rem)] border border-[var(--brand-border)] bg-white shadow-[0_24px_60px_-38px_rgba(15,23,42,0.45)] md:hidden">
+        <div className="overflow-hidden rounded-[calc(var(--radius-panel)+0.2rem)] border border-[var(--brand-border)] bg-white shadow-none md:hidden">
           <div className="flex items-center justify-between gap-3 border-b border-[var(--border)] px-4 py-3">
             <div className="flex items-center gap-2">
               <span className="grid h-8 w-8 place-items-center rounded-[var(--radius-control)] bg-[var(--brand)] text-xs font-bold text-white">A</span>
@@ -34,24 +34,24 @@ export function HomeProductPreview() {
                 <p className="text-[9px] font-bold uppercase tracking-[0.14em] text-slate-500">Espace étudiant</p>
               </div>
             </div>
-            <span className="rounded-full bg-[var(--brand-soft)] px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.13em] text-[var(--brand)]">
+            <span className="rounded-[var(--radius-control)] bg-[var(--brand-soft)] px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.13em] text-[var(--brand)]">
               Exemple
             </span>
           </div>
 
-          <div className="bg-[#fcfcfd] p-4">
+          <div className="bg-[var(--surface-subtle)] p-4">
             <div>
               <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-[var(--brand)]">Votre dossier</p>
               <h3 className="mt-1 text-xl font-bold tracking-tight text-slate-950">Ce qui compte maintenant</h3>
               <p className="mt-1 text-sm leading-6 text-slate-600">Une vue compacte des prochaines actions et éléments enregistrés.</p>
             </div>
 
-            <div className="relative mt-4 overflow-hidden rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-white p-4 shadow-sm">
+            <div className="relative mt-4 overflow-hidden rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-white p-4 shadow-none">
               <div aria-hidden="true" className="absolute inset-y-0 left-0 w-1 bg-[var(--brand)]" />
               <div className="pl-2">
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--brand)]">À suivre maintenant</span>
-                  <span className="rounded-full bg-amber-50 px-2 py-1 text-[10px] font-bold text-amber-800">Action à faire</span>
+                  <span className="rounded-[var(--radius-control)] border border-amber-200 bg-amber-50 px-2 py-1 text-[10px] font-bold text-amber-800">Action à faire</span>
                 </div>
                 <p className="mt-3 text-base font-bold text-slate-950">Votre prochaine étape</p>
                 <p className="mt-1 text-sm leading-6 text-slate-600">L’action prioritaire enregistrée apparaît ici avec son contexte.</p>
@@ -87,20 +87,19 @@ export function HomeProductPreview() {
           </div>
         </div>
 
-        <div className="hidden md:block overflow-hidden rounded-[calc(var(--radius-panel)+0.3rem)] border border-[var(--brand-border)] bg-white shadow-[0_34px_80px_-44px_rgba(15,23,42,0.52)]">
+        <div className="hidden md:block overflow-hidden rounded-[calc(var(--radius-panel)+0.3rem)] border border-[var(--brand-border)] bg-white shadow-none">
           <div className="flex items-center justify-between gap-4 border-b border-[var(--border)] bg-white px-4 py-3 sm:px-5">
-            <div className="flex items-center gap-2">
-              <span aria-hidden="true" className="h-2.5 w-2.5 rounded-full bg-slate-300" />
-              <span aria-hidden="true" className="h-2.5 w-2.5 rounded-full bg-slate-300" />
-              <span aria-hidden="true" className="h-2.5 w-2.5 rounded-full bg-slate-300" />
+            <div>
+              <p className="text-xs font-bold text-slate-950">Aperçu de l’espace étudiant</p>
+              <p className="mt-0.5 text-[10px] text-slate-500">Exemple de structure, sans données réelles</p>
             </div>
-            <span className="rounded-full bg-[var(--brand-soft)] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.15em] text-[var(--brand)]">
-              Aperçu d’exemple
+            <span className="rounded-[var(--radius-control)] bg-[var(--brand-soft)] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.15em] text-[var(--brand)]">
+              Démonstration
             </span>
           </div>
 
           <div className="grid min-h-[34rem] sm:grid-cols-[10.5rem_1fr]">
-            <aside className="hidden border-r border-[var(--border)] bg-[#fbfbfd] p-4 sm:block" aria-label="Navigation illustrative AlmaGo">
+            <aside className="hidden border-r border-[var(--border)] bg-white p-4 sm:block" aria-label="Navigation illustrative AlmaGo">
               <div className="flex items-center gap-2.5 px-2 py-2">
                 <span className="grid h-8 w-8 place-items-center rounded-[var(--radius-control)] bg-[var(--brand)] text-xs font-bold text-white">A</span>
                 <span className="text-sm font-bold text-slate-950">AlmaGo</span>
@@ -114,25 +113,25 @@ export function HomeProductPreview() {
               </div>
             </aside>
 
-            <div className="bg-[#fcfcfd] p-4 sm:p-5 lg:p-6">
+            <div className="bg-[var(--surface-subtle)] p-4 sm:p-5 lg:p-6">
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div>
                   <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Espace étudiant</p>
                   <h3 className="mt-1 text-xl font-bold tracking-tight text-slate-950 sm:text-2xl">Votre dossier</h3>
                   <p className="mt-1 text-xs leading-5 text-slate-500">Démarches, documents et candidatures réunis au même endroit.</p>
                 </div>
-                <span className="rounded-full border border-[var(--border)] bg-white px-3 py-1 text-[10px] font-bold text-slate-600">
+                <span className="rounded-[var(--radius-control)] border border-[var(--border)] bg-white px-3 py-1 text-[10px] font-bold text-slate-600">
                   Exemple visuel
                 </span>
               </div>
 
               <div className="mt-5 grid gap-3 lg:grid-cols-[1.35fr_0.85fr]">
-                <div className="relative overflow-hidden rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-white p-4 shadow-sm">
+                <div className="relative overflow-hidden rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-white p-4 shadow-none">
                   <div aria-hidden="true" className="absolute inset-y-0 left-0 w-1 bg-[var(--brand)]" />
                   <div className="pl-2">
                     <div className="flex flex-wrap items-center gap-2">
                       <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-[var(--brand)]">À suivre maintenant</span>
-                      <span className="rounded-full bg-amber-50 px-2 py-1 text-[10px] font-bold text-amber-800">Action à faire</span>
+                      <span className="rounded-[var(--radius-control)] border border-amber-200 bg-amber-50 px-2 py-1 text-[10px] font-bold text-amber-800">Action à faire</span>
                     </div>
                     <p className="mt-4 text-lg font-bold text-slate-950">Votre prochaine étape</p>
                     <p className="mt-2 text-xs leading-5 text-slate-600">
@@ -144,7 +143,7 @@ export function HomeProductPreview() {
                   </div>
                 </div>
 
-                <div className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-4 shadow-sm">
+                <div className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-4 shadow-none">
                   <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-slate-500">Préparation</p>
                   <p className="mt-2 text-sm font-bold text-slate-950">Étapes du dossier</p>
                   <div className="mt-5 flex items-end justify-between gap-3">
@@ -174,7 +173,7 @@ export function HomeProductPreview() {
 
               <div className="mt-5 flex flex-col justify-between gap-3 rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-4 sm:flex-row sm:items-center">
                 <div>
-                  <span className="rounded-full bg-slate-100 px-2 py-1 text-[10px] font-bold text-slate-600">Prochaine échéance</span>
+                  <span className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-2 py-1 text-[10px] font-bold text-slate-600">Prochaine échéance</span>
                   <p className="mt-2 text-sm font-bold text-slate-950">Une date enregistrée apparaît ici</p>
                   <p className="mt-1 text-[11px] leading-5 text-slate-500">Avec la prochaine action associée lorsqu’elle est connue.</p>
                 </div>
@@ -199,7 +198,7 @@ export function HomeProductPreview() {
 function PreviewBenefit({ title, text }: { title: string; text: string }) {
   return (
     <li className="flex gap-3">
-      <span aria-hidden="true" className="mt-1 grid h-6 w-6 shrink-0 place-items-center rounded-full bg-[var(--brand-soft)] text-xs font-bold text-[var(--brand)]">✓</span>
+      <span aria-hidden="true" className="mt-1 grid h-6 w-6 shrink-0 place-items-center rounded-[var(--radius-control)] bg-[var(--brand-soft)] text-xs font-bold text-[var(--brand)]">✓</span>
       <div>
         <p className="text-sm font-bold text-slate-950">{title}</p>
         <p className="mt-1 text-sm leading-6 text-slate-600">{text}</p>

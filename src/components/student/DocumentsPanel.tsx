@@ -176,13 +176,13 @@ export function DocumentsPanel({
   return (
     <div className="space-y-8">
       <section aria-label="Priorité documentaire" className="grid gap-5 lg:grid-cols-[minmax(0,1.45fr)_minmax(18rem,0.85fr)]">
-        <Card className={`relative overflow-hidden shadow-[0_24px_55px_-38px_rgba(41,48,139,0.5)] ${correctionCount ? "border-amber-300 bg-amber-50/25" : "border-[var(--brand-border)] bg-white"}`}>
+        <Card className={`relative overflow-hidden shadow-none ${correctionCount ? "border-amber-300 bg-amber-50/25" : "border-[var(--brand-border)] bg-white"}`}>
           <div aria-hidden="true" className="absolute inset-y-0 left-0 w-1 bg-[var(--brand)]" />
           <div className="pl-2">
           <Badge variant={correctionCount ? "warning" : reviewCount ? "info" : "neutral"}>
             {correctionCount ? "Correction demandée" : reviewCount ? "En attente de vérification" : "Dossier documentaire"}
           </Badge>
-          <h2 className="mt-5 text-2xl font-bold tracking-[-0.03em] text-slate-950 sm:text-3xl">
+          <h2 className="mt-5 text-2xl font-semibold tracking-[-0.03em] text-slate-950 sm:text-3xl">
             {correctionCount ? "Une action est nécessaire sur vos documents" : reviewCount ? "Vos documents sont en cours de vérification" : "Votre dossier documentaire"}
           </h2>
           <p className="mt-3 text-base leading-7 text-slate-700">
@@ -195,7 +195,7 @@ export function DocumentsPanel({
                   : "Vous n’avez encore ajouté aucun document. Lorsque votre dossier nécessitera une pièce, vous pourrez la déposer ci-dessous."}
           </p>
           {priorityDocument && (
-            <div className="mt-6 rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-4 shadow-sm">
+            <div className="mt-6 rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4 shadow-none">
               <div className="flex flex-wrap items-center gap-2">
                 <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">Document suivi</p>
                 <Badge variant={statusVariant(priorityDocument.status)}>{statusLabel(priorityDocument.status)}</Badge>
@@ -233,7 +233,7 @@ export function DocumentsPanel({
           <Badge variant="neutral">{evidence.length} classification{evidence.length > 1 ? "s" : ""}</Badge>
         </div>
 
-        <Card className="mt-4 border-[var(--brand-border)] bg-[var(--brand-soft)]/35 shadow-none">
+        <Card className="mt-4 border-[var(--brand-border)] bg-[var(--brand-soft)]/55 shadow-none">
           <p className="text-sm leading-6 text-slate-700">
             Le statut d’un fichier et son statut comme preuve académique sont deux choses différentes. Un document peut être approuvé sans être encore accepté comme preuve de parcours. Cette classification ne constitue ni une admission ni une décision de visa.
           </p>
@@ -281,7 +281,7 @@ export function DocumentsPanel({
                   </div>
                 </dl>
 
-                <div className="mt-4 rounded-[var(--radius-control)] bg-[var(--surface-muted)] p-3">
+                <div className="mt-4 rounded-[var(--radius-control)] bg-[var(--surface-subtle)] p-3">
                   <p className="text-sm leading-6 text-slate-700">{item.assessment.reason}</p>
                 </div>
               </Card>
@@ -294,7 +294,7 @@ export function DocumentsPanel({
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
           <div>
             <Badge variant="neutral">Nouveau fichier</Badge>
-            <h2 id="document-upload-title" className="mt-3 text-xl font-bold text-slate-950">Ajouter un document</h2>
+            <h2 id="document-upload-title" className="mt-3 text-xl font-semibold text-slate-950">Ajouter un document</h2>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
               Trois étapes simples. PDF, JPEG ou PNG · 10 MiB maximum. Les fichiers sont conservés dans un espace privé.
             </p>
@@ -303,7 +303,7 @@ export function DocumentsPanel({
 
         <form onSubmit={upload} className="mt-6">
           <div className="grid gap-4 lg:grid-cols-[0.8fr_1fr_auto] lg:items-end">
-            <label className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-muted)]/45 p-4 text-sm font-medium text-slate-700">
+            <label className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)]/45 p-4 text-sm font-medium text-slate-700">
               <span className="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-[var(--brand)]">
                 <span className="grid h-6 w-6 place-items-center rounded-full bg-[var(--brand)] text-[10px] text-white">1</span>
                 Choisir le type
@@ -321,7 +321,7 @@ export function DocumentsPanel({
               </select>
             </label>
 
-            <label className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-muted)]/45 p-4 text-sm font-medium text-slate-700">
+            <label className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)]/45 p-4 text-sm font-medium text-slate-700">
               <span className="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-[var(--brand)]">
                 <span className="grid h-6 w-6 place-items-center rounded-full bg-[var(--brand)] text-[10px] text-white">2</span>
                 Choisir le fichier
@@ -388,7 +388,7 @@ export function DocumentsPanel({
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
                       <Badge variant={statusVariant(document.status)}>{statusLabel(document.status)}</Badge>
-                      <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">{categoryLabel(document.category)}</span>
+                      <span className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-2.5 py-1 text-xs font-semibold text-slate-600">{categoryLabel(document.category)}</span>
                     </div>
                     <h3 id={`student-document-title-${document.id}`} className="mt-3 [overflow-wrap:anywhere] text-lg font-semibold text-slate-950">{document.original_filename}</h3>
                     <p className="mt-1 text-sm text-slate-500">
@@ -398,7 +398,7 @@ export function DocumentsPanel({
                       </time>
                     </p>
                     {document.admin_comment && (
-                      <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4">
+                      <div className="mt-4 rounded-[var(--radius-control)] border border-amber-200 bg-amber-50 p-4">
                         <h4 className="text-sm font-semibold text-amber-950">Message pour ce document</h4>
                         <p className="mt-1 text-sm leading-6 text-amber-900">{document.admin_comment}</p>
                         <p className="mt-2 text-xs leading-5 text-amber-800">

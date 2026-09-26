@@ -81,7 +81,7 @@ export function ProfileForm({ profile }: { profile: Record<string, unknown> }) {
     {error && <p role="alert" className="rounded-[var(--radius-control)] border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error}</p>}
     {status && <p role="status" className="rounded-[var(--radius-control)] border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-700">{status}</p>}
 
-    <div className="student-sticky-actions sticky bottom-0 -mx-5 border-t border-[var(--border)] bg-[var(--surface)]/95 px-5 py-4 backdrop-blur sm:-mx-6 sm:px-6">
+    <div className="student-sticky-actions sticky bottom-0 -mx-5 border-t border-[var(--border)] bg-white/98 px-5 py-4 sm:-mx-6 sm:px-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-sm leading-6 text-slate-500">Enregistrez vos modifications avant de quitter cette page.</p>
         <Button type="submit" disabled={saving} className="w-full sm:w-auto">{saving ? "Enregistrement…" : "Enregistrer les modifications"}</Button>
@@ -95,7 +95,7 @@ function ProfileSection({ badge, title, description, children }: { badge: string
     <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-4 sm:p-5">
       <div className="mb-5 border-b border-[var(--border)] pb-4">
         <Badge variant="neutral">{badge}</Badge>
-        <h2 className="mt-3 text-xl font-bold tracking-[-0.02em] text-slate-950">{title}</h2>
+        <h2 className="mt-3 text-xl font-semibold tracking-[-0.02em] text-slate-950">{title}</h2>
         <p className="mt-1 text-sm leading-6 text-slate-600">{description}</p>
       </div>
       <div className="grid gap-4 sm:grid-cols-2">{children}</div>
