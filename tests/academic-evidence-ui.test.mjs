@@ -55,7 +55,7 @@ test("Admin evidence acceptance and replacement require explicit confirmation", 
 
 test("Admin evidence write uses only the bounded backend contract and connected student/document context", () => {
   const writeBody = adminPanel.match(
-    /body: JSON\.stringify\(\{([\s\S]*?)\}\),/,
+    /fetch\("\/api\/admin\/academic-evidence"[\s\S]*?body: JSON\.stringify\(\{([\s\S]*?)\}\),/,
   )?.[1] || "";
   assert.match(adminPanel, /fetch\("\/api\/admin\/academic-evidence"/);
   assert.match(writeBody, /student_id: document\.student_id/);
