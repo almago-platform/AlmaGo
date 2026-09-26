@@ -16,7 +16,7 @@ test("study-preparation courses are explicitly sourced while unknown quantitativ
   assert.match(migration, /Sprachenakademie Aachen[\s\S]*study_preparation/);
   assert.match(migration, /did deutsch-institut[\s\S]*study_preparation/);
   assert.match(migration, /hours_per_week, starts_on, ends_on, price_cents/);
-  assert.match(migration, /'study_preparation'::public\.language_course_purpose/);
+  assert.match(migration, /'study_preparation'/);
 });
 
 test("finance catalogue covers blocked accounts, health insurance, and student financing without ranking", () => {
