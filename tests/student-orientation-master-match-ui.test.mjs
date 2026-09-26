@@ -18,7 +18,7 @@ test("technical requirements JSON is not forwarded to the student panel", () => 
 
 test("student UI exposes only human criterion states", () => {
   assert.match(panel, /Critère rempli/);
-  assert.match(panel, /À compléter/);
+  assert.match(panel, /Écart potentiel/);
   assert.match(panel, /Information manquante/);
   assert.match(panel, /À vérifier/);
   assert.match(panel, /Ce n’est pas une décision d’admission/);
