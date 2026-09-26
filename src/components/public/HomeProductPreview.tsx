@@ -7,18 +7,18 @@ const previewMetrics = [
 
 export function HomeProductPreview() {
   return (
-    <section id="espace" className="border-y border-[var(--border)] bg-[var(--surface-subtle)] py-16 sm:py-20 lg:py-24" aria-labelledby="product-preview-title">
-      <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[0.72fr_1.28fr] lg:items-center lg:gap-14 lg:px-8">
+    <section id="espace" className="border-b border-[var(--border)] bg-[#f4f6f8] py-12 sm:py-14 lg:py-16" aria-labelledby="product-preview-title">
+      <div className="mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 lg:grid-cols-[0.68fr_1.32fr] lg:items-center lg:gap-10 lg:px-8">
         <div>
           <p className="eyebrow">Votre espace AlmaGo</p>
           <h2 id="product-preview-title" className="mt-3 max-w-xl text-3xl font-semibold tracking-[-0.035em] text-slate-950 sm:text-4xl lg:text-[2.8rem]">
             Votre dossier, en un coup d’œil.
           </h2>
-          <p className="mt-5 max-w-xl text-base leading-7 text-slate-600 sm:text-lg">
+          <p className="mt-4 max-w-xl text-base leading-7 text-slate-600">
             L’espace étudiant est construit autour d’une question simple : qu’est-ce qui est enregistré dans mon dossier, et quelle action est utile maintenant ?
           </p>
 
-          <ul className="mt-7 space-y-4">
+          <ul className="mt-6 space-y-3">
             <PreviewBenefit title="Une prochaine action visible" text="Le dashboard met en avant l’action enregistrée comme prioritaire dans votre dossier." />
             <PreviewBenefit title="Une progression expliquée" text="Le suivi concerne les étapes enregistrées ; il n’est jamais présenté comme une probabilité d’admission." />
             <PreviewBenefit title="Vos informations reliées" text="Documents, recommandations, candidatures et échéances restent accessibles depuis le même espace." />
