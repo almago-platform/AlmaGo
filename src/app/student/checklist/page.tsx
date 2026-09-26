@@ -89,6 +89,9 @@ export default async function ChecklistPage() {
 
   let selectedCourse: {
     id: string;
+    title: string;
+    provider_name: string;
+    language: string;
     purpose: "study_preparation" | "standalone_language";
     source_url: string | null;
     application_url: string | null;
@@ -99,7 +102,7 @@ export default async function ChecklistPage() {
   if (selectionResult.data?.language_course_id) {
     const { data, error } = await supabase
       .from("language_courses")
-      .select("id,purpose,source_url,application_url,verified_at,is_active")
+      .select("id,title,provider_name,language,purpose,source_url,application_url,verified_at,is_active")
       .eq("id", selectionResult.data.language_course_id)
       .maybeSingle();
     if (error) return <ChecklistUnavailable />;
