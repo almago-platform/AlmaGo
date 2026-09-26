@@ -5,6 +5,10 @@ import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Card } from "@/components/ui/Card";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { createClient } from "@/lib/supabase/server";
+import { summarizeAcademicEvidence, type AcademicEvidenceRecord } from "@/lib/academic-evidence";
+import { buildGermanyChecklist, type GermanyChecklistItem } from "@/lib/germany-checklist";
+import { isPublishableLanguageCourse } from "@/lib/language-courses";
+import { determineRegulatoryPath } from "@/lib/regulatory-path-engine";
 
 const labels: Record<string, string> = {
   not_started: "À faire par vous",
@@ -43,14 +47,113 @@ export default async function ChecklistPage() {
   if (profileError) return <ChecklistUnavailable />;
   if (!profile?.onboarding_completed) redirect("/student/onboarding");
 
-  const { data: items, error } = await supabase
-    .from("student_checklist_items")
-    .select("id,title,description,status,completed_at,checklist_templates(category,sort_order)")
-    .order("created_at");
+  const now = new Date();
+  const [
+    itemsResult,
+    projectResult,
+    documentsResult,
+    evidenceResult,
+    selectionResult,
+  ] = await Promise.all([
+    supabase
+      .from("student_checklist_items")
+      .select("id,title,description,status,completed_at,checklist_templates(category,sort_order)")
+      .order("created_at"),
+    supabase
+      .from("student_projects")
+      .select("path")
+      .eq("student_id", user.id)
+      .maybeSingle(),
+    supabase
+      .from("documents")
+      .select("id,status")
+      .eq("student_id", user.id),
+    supabase
+      .from("academic_evidence")
+      .select("evidence_type,institution,evidence_date,origin,verification_status,document_id,verified_at")
+      .eq("student_id", user.id),
+    supabase
+      .from("student_language_course_selections")
+      .select("language_course_id")
+      .eq("student_id", user.id)
+      .maybeSingle(),
+  ]);
 
-  if (error) return <ChecklistUnavailable />;
+  if (
+    itemsResult.error
+    || projectResult.error
+    || documentsResult.error
+    || evidenceResult.error
+    || selectionResult.error
+  ) return <ChecklistUnavailable />;
 
-  const checklistItems = items || [];
+  let selectedCourse: {
+    id: string;
+    purpose: "study_preparation" | "standalone_language";
+    source_url: string | null;
+    application_url: string | null;
+    verified_at: string | null;
+    is_active: boolean;
+  } | null = null;
+
+  if (selectionResult.data?.language_course_id) {
+    const { data, error } = await supabase
+      .from("language_courses")
+      .select("id,purpose,source_url,application_url,verified_at,is_active")
+      .eq("id", selectionResult.data.language_course_id)
+      .maybeSingle();
+    if (error) return <ChecklistUnavailable />;
+    selectedCourse = data as typeof selectedCourse;
+  }
+
+  const documentStatusById = new Map(
+    (documentsResult.data || []).map((document) => [document.id, document.status]),
+  );
+  const evidence = (evidenceResult.data || []).map((item) => ({
+    type: item.evidence_type,
+    institution: item.institution,
+    evidence_date: item.evidence_date,
+    origin: item.origin,
+    verification_status: item.verification_status,
+    document_id: item.document_id,
+    document_status: item.document_id
+      ? documentStatusById.get(item.document_id) || null
+      : null,
+    verified_at: item.verified_at,
+  })) as AcademicEvidenceRecord[];
+  const evidenceSummary = summarizeAcademicEvidence(evidence, now);
+
+  const selectedCoursePublishable = Boolean(
+    selectedCourse && isPublishableLanguageCourse(selectedCourse, now),
+  );
+  const hasPublishableStudyPreparationCourse = Boolean(
+    selectedCoursePublishable && selectedCourse?.purpose === "study_preparation",
+  );
+  const hasPublishableStandaloneLanguageCourse = Boolean(
+    selectedCoursePublishable && selectedCourse?.purpose === "standalone_language",
+  );
+
+  const regulatoryDecision = determineRegulatoryPath({
+    project_path: projectResult.data?.path || null,
+    accepted_definitive_admission: evidenceSummary.accepted_definitive_admission,
+    accepted_preparatory_basis: evidenceSummary.accepted_preparatory_basis,
+    has_publishable_study_preparation_course: hasPublishableStudyPreparationCourse,
+    has_pending_academic_review: evidenceSummary.has_pending_review,
+    has_replacement_required: evidenceSummary.has_replacement_required,
+  });
+
+  const personalizedItems = buildGermanyChecklist({
+    project_path: projectResult.data?.path || null,
+    decision: regulatoryDecision,
+    accepted_definitive_admission: evidenceSummary.accepted_definitive_admission,
+    accepted_preparatory_basis: evidenceSummary.accepted_preparatory_basis,
+    has_publishable_study_preparation_course: hasPublishableStudyPreparationCourse,
+    has_publishable_standalone_language_course: hasPublishableStandaloneLanguageCourse,
+    has_pending_academic_review: evidenceSummary.has_pending_review,
+    has_replacement_required: evidenceSummary.has_replacement_required,
+  });
+
+  const checklistItems = itemsResult.data || [];
   const completedCount = checklistItems.filter((item) => item.status === "completed").length;
   const progression = checklistItems.length ? Math.round((completedCount / checklistItems.length) * 100) : 0;
   const actionableItems = checklistItems.filter((item) =>
@@ -78,6 +181,24 @@ export default async function ChecklistPage() {
         description="Voyez en un coup d’œil ce qui est à faire par vous, ce qu’AlmaGo suit et les étapes déjà terminées dans votre dossier."
         actions={<ButtonLink href="/student/documents" variant="secondary">Voir mes documents</ButtonLink>}
       />
+
+      <section className="mb-8" aria-labelledby="germany-plan-title">
+        <div className="mb-5">
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Plan Allemagne personnalisé</p>
+          <h2 id="germany-plan-title" className="mt-2 text-2xl font-bold tracking-[-0.03em] text-slate-950">
+            Étapes calculées à partir de votre dossier
+          </h2>
+          <p className="mt-2 max-w-4xl text-sm leading-6 text-slate-600">
+            Ces étapes sont générées uniquement à partir des faits actuellement enregistrés : projet, preuves académiques vérifiées et cours explicitement sélectionné. Elles n’inventent ni admission, ni délai, ni éligibilité de visa.
+          </p>
+        </div>
+
+        <div className="grid gap-4 lg:grid-cols-2">
+          {personalizedItems.map((item) => (
+            <PersonalizedChecklistCard key={item.key} item={item} />
+          ))}
+        </div>
+      </section>
 
       <div className="grid gap-5 lg:grid-cols-[1.15fr_0.85fr]">
         <Card aria-labelledby="checklist-progress-title" className="relative overflow-hidden border-[var(--brand-border)] bg-white shadow-[0_24px_55px_-38px_rgba(41,48,139,0.5)]">
@@ -233,5 +354,34 @@ function ChecklistUnavailable() {
         </div>
       </Card>
     </main>
+  );
+}
+
+
+function PersonalizedChecklistCard({ item }: { item: GermanyChecklistItem }) {
+  const variant =
+    item.status === "completed"
+      ? "success"
+      : item.status === "waiting_almago"
+        ? "info"
+        : "warning";
+  const statusLabel =
+    item.status === "completed"
+      ? "Terminé"
+      : item.status === "waiting_almago"
+        ? "Suivi par AlmaGo"
+        : "À faire par vous";
+
+  return (
+    <Card as="article" className={item.status === "todo" ? "border-amber-200 bg-amber-50/25 shadow-none" : item.status === "waiting_almago" ? "border-blue-200 bg-blue-50/20 shadow-none" : "shadow-none"}>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <Badge variant={variant}>{statusLabel}</Badge>
+        <span className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">
+          Responsable : {item.owner === "student" ? "vous" : "AlmaGo"}
+        </span>
+      </div>
+      <h3 className="mt-4 text-lg font-bold text-slate-950">{item.title}</h3>
+      <p className="mt-2 text-sm leading-6 text-slate-600">{item.explanation}</p>
+    </Card>
   );
 }
