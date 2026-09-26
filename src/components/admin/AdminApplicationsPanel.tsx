@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import {
   allowedApplicationTransitions,
+  studentApplicationStageLabel,
   transitionRequirements,
 } from "@/lib/application-workflow";
 import {
@@ -269,8 +270,13 @@ export function AdminApplicationsPanel({ applications }: { applications: any[] }
                     {university?.name || "Université"}{university?.city ? ` · ${university.city}` : ""}
                   </p>
                   <p className="mt-2 text-xs font-semibold text-slate-500">
-                    Échéance {formatDeadline(application.deadline)}
+                    Étape actuelle · {studentApplicationStageLabel(application.status)}
                   </p>
+                  {application.deadline && (
+                    <p className="mt-1 text-xs font-semibold text-slate-500">
+                      Échéance {formatDeadline(application.deadline)}
+                    </p>
+                  )}
                 </div>
                 <div className="flex flex-wrap gap-2 sm:justify-end">
                   {isOverdue && <Badge variant="warning">Échéance dépassée</Badge>}
@@ -281,7 +287,26 @@ export function AdminApplicationsPanel({ applications }: { applications: any[] }
                 </div>
               </div>
 
-              <section aria-label="Informations enregistrées" className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+              {application.next_action ? (
+                <section
+                  aria-label="Prochaine action enregistrée"
+                  className="mt-5 rounded-[var(--radius-control)] border border-[var(--brand-border)] bg-[var(--brand-soft)]/25 p-4"
+                >
+                  <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--brand)]">
+                    Prochaine action enregistrée
+                  </p>
+                  <p className="mt-2 text-sm leading-6 text-slate-800 [overflow-wrap:anywhere]">
+                    {application.next_action}
+                  </p>
+                </section>
+              ) : isActiveApplication(application.status) ? (
+                <p className="mt-5 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-muted)] p-3 text-sm text-slate-600">
+                  Aucune prochaine action n’est enregistrée pour ce dossier actif.
+                </p>
+              ) : null}
+
+              <section aria-label="Informations enregistrées" className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+                <RecordedFact label="Étape actuelle" value={studentApplicationStageLabel(application.status)} />
                 <RecordedFact label="Rentrée" value={application.intake || "À confirmer"} />
                 <RecordedFact label="Envoyée le" value={formatRecordedDate(application.submitted_at)} />
                 <RecordedFact
@@ -293,7 +318,10 @@ export function AdminApplicationsPanel({ applications }: { applications: any[] }
                 <RecordedFact label="Résultat enregistré" value={application.result || "Aucun résultat enregistré"} />
               </section>
 
-              <details className="mt-4 rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-4">
+              <details
+                className="mt-4 rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-4"
+                aria-label={`Historique de ${program?.name || "la candidature"}`}
+              >
                 <summary className="cursor-pointer text-sm font-bold text-slate-900">
                   Historique enregistré · {events.length} événement{events.length > 1 ? "s" : ""}
                 </summary>
