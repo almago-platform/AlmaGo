@@ -3,39 +3,47 @@ import { ResetPasswordForm } from "@/components/auth/ResetPasswordForm";
 
 export default function ResetPasswordPage() {
   return (
-    <main className="min-h-screen bg-slate-50 px-4 py-10 text-slate-950 sm:px-6 lg:px-8">
+    <main className="min-h-screen bg-[var(--background)] px-4 py-10 text-slate-950 sm:px-6 lg:px-8">
       <div className="mx-auto grid min-h-[calc(100vh-5rem)] w-full max-w-6xl items-center gap-10 lg:grid-cols-[0.9fr_1.1fr]">
-        <section className="hidden rounded-2xl border border-slate-200 bg-white p-8 shadow-sm lg:block">
-          <Link href="/" className="inline-flex items-center gap-3" aria-label="Retour à l'accueil AlmaGo">
-            <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--brand)] text-lg font-bold text-white shadow-sm">
-              A
-            </span>
-            <span>
-              <span className="block text-lg font-bold tracking-tight">AlmaGo</span>
-              <span className="block text-xs font-medium uppercase tracking-[0.18em] text-slate-500">
-                Sécurité du compte
+        <section className="hidden overflow-hidden rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-white shadow-none lg:block">
+          <div className="border-b border-[var(--border)] bg-[var(--surface-subtle)] p-7">
+            <Link href="/" className="inline-flex items-center gap-3" aria-label="Retour à l'accueil AlmaGo">
+              <span className="grid h-9 w-9 place-items-center rounded-[var(--radius-control)] bg-[var(--brand)] text-sm font-bold text-white">
+                A
               </span>
-            </span>
-          </Link>
-
-          <div className="mt-12">
-            <p className="text-sm font-bold uppercase tracking-[0.16em] text-[var(--accent-strong)]">Réinitialisation</p>
-            <h1 className="mt-3 text-4xl font-bold tracking-tight text-slate-950">
-              Choisis un nouveau mot de passe pour retrouver ton espace.
-            </h1>
-            <p className="mt-5 text-base leading-7 text-slate-600">
-              Cette étape sécurise l&apos;accès à ton dossier étudiant. Après validation, tu seras redirigé vers ton tableau de bord.
-            </p>
+              <span>
+                <span className="block text-base font-bold tracking-tight text-slate-950">AlmaGo</span>
+                <span className="block text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">
+                  Sécurité du compte
+                </span>
+              </span>
+            </Link>
           </div>
 
-          <div className="mt-10 grid gap-4">
-            <div className="rounded-xl border border-slate-200 p-4">
-              <p className="text-sm font-semibold text-slate-500">Conseil sécurité</p>
-              <p className="mt-1 font-bold text-slate-950">Utilise au moins 8 caractères et évite un mot de passe déjà utilisé.</p>
-            </div>
-            <div className="rounded-xl border border-slate-200 p-4">
-              <p className="text-sm font-semibold text-slate-500">Accès dossier</p>
-              <p className="mt-1 font-bold text-slate-950">Le changement concerne seulement ton compte, pas tes données de dossier.</p>
+          <div className="p-7">
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--accent-strong)]">Réinitialisation</p>
+            <h1 className="mt-4 max-w-xl text-3xl font-semibold leading-[1.08] tracking-[-0.035em] text-slate-950">
+              Choisissez un nouveau mot de passe pour retrouver votre espace.
+            </h1>
+            <p className="mt-4 text-base leading-7 text-slate-600">
+              Cette étape sécurise l&apos;accès à votre dossier étudiant. Après validation, vous serez redirigé vers votre tableau de bord.
+            </p>
+
+            <div className="mt-7 divide-y divide-[var(--border)] border-y border-[var(--border)]">
+              <div className="grid grid-cols-[2.5rem_1fr] gap-3 py-4">
+                <span className="text-xs font-bold tracking-[0.14em] text-[var(--accent-strong)]">01</span>
+                <div>
+                  <p className="text-sm font-bold text-slate-950">Conseil sécurité</p>
+                  <p className="mt-1 text-sm leading-6 text-slate-600">Utilisez au moins 8 caractères et évitez un mot de passe déjà utilisé.</p>
+                </div>
+              </div>
+              <div className="grid grid-cols-[2.5rem_1fr] gap-3 py-4">
+                <span className="text-xs font-bold tracking-[0.14em] text-[var(--accent-strong)]">02</span>
+                <div>
+                  <p className="text-sm font-bold text-slate-950">Accès au dossier</p>
+                  <p className="mt-1 text-sm leading-6 text-slate-600">Le changement concerne seulement votre compte, pas les données enregistrées dans votre dossier.</p>
+                </div>
+              </div>
             </div>
           </div>
         </section>

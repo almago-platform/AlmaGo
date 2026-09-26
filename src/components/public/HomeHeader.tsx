@@ -4,9 +4,12 @@ export function HomeHeader() {
   return (
     <header className="sticky top-0 z-50 border-b border-[var(--border)] bg-white/98 backdrop-blur">
       <div className="border-b border-[var(--border)] bg-[var(--surface-subtle)]">
-        <div className="mx-auto flex min-h-8 max-w-7xl items-center justify-between gap-4 px-4 py-1.5 text-[11px] font-semibold text-slate-600 sm:px-6 lg:px-8">
-          <p className="truncate">
-            Accompagnement indépendant · Les décisions officielles restent celles des organismes compétents
+        <div className="mx-auto flex min-h-8 max-w-7xl items-center justify-between gap-4 px-4 py-1.5 text-[10px] font-semibold leading-4 text-slate-600 sm:px-6 sm:text-[11px] lg:px-8">
+          <p className="min-w-0">
+            <span className="sm:hidden">Accompagnement indépendant · Décisions : organismes compétents</span>
+            <span className="hidden sm:inline">
+              Accompagnement indépendant · Les décisions officielles restent celles des organismes compétents
+            </span>
           </p>
           <a href="#confiance" className="hidden shrink-0 text-[var(--brand)] hover:underline hover:underline-offset-4 sm:inline">
             Notre cadre de confiance

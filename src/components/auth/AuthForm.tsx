@@ -41,14 +41,14 @@ export function AuthForm({ initialMode = "login" }: { initialMode?: Mode }) {
         });
         if (signUpError) setError(signUpError.message);
         else if (data.session) router.push("/student");
-        else setMessage("Vérifie ton adresse email pour continuer.");
+        else setMessage("Vérifiez votre adresse email pour continuer.");
       } else {
         const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
         if (signInError) setError("Email ou mot de passe incorrect.");
         else router.push("/student");
       }
     } catch {
-      setError("Une erreur est survenue. Réessaie.");
+      setError("Une erreur est survenue. Réessayez.");
     } finally {
       setLoading(false);
     }
@@ -62,10 +62,10 @@ export function AuthForm({ initialMode = "login" }: { initialMode?: Mode }) {
         : "Réinitialiser mon accès";
   const subtitle =
     mode === "signup"
-      ? "Ouvre ton espace AlmaGo pour préparer ton dossier Allemagne étape par étape."
+      ? "Ouvrez votre espace AlmaGo pour préparer votre dossier Allemagne étape par étape."
       : mode === "forgot"
-        ? "Indique ton email et nous t'enverrons un lien pour récupérer ton accès."
-        : "Retrouve ton dossier, tes documents, tes recommandations et tes prochaines actions.";
+        ? "Indiquez votre email et nous vous enverrons un lien pour récupérer votre accès."
+        : "Retrouvez votre dossier, vos documents, vos recommandations et vos prochaines actions.";
 
   return (
     <section className="w-full max-w-xl rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] shadow-none">
@@ -131,7 +131,7 @@ export function AuthForm({ initialMode = "login" }: { initialMode?: Mode }) {
 
         {mode === "signup" && (
           <p id="signup-password-hint" className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-3 py-2 text-sm text-slate-600">
-            Utilise au moins 8 caractères. Tu recevras ensuite un email de confirmation.
+            Utilisez au moins 8 caractères. Vous recevrez ensuite un email de confirmation.
           </p>
         )}
 
@@ -148,7 +148,7 @@ export function AuthForm({ initialMode = "login" }: { initialMode?: Mode }) {
 
         <button type="submit" disabled={loading} className={buttonClassName("primary", "w-full justify-center py-3 text-base")}>
           {loading
-            ? "Patiente..."
+            ? "Patientez..."
             : mode === "login"
               ? "Se connecter"
               : mode === "signup"
