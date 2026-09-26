@@ -2,71 +2,91 @@ const steps = [
   {
     number: "01",
     title: "Définir votre projet",
-    description: "Précisez le diplôme visé, le domaine, la langue et le pays depuis lequel vous préparez vos démarches.",
+    description: "Diplôme, domaine, langue et rentrée visée : le dossier commence par une direction claire.",
   },
   {
     number: "02",
     title: "Vérifier votre base académique",
-    description: "Ajoutez les preuves utiles et distinguez admission définitive, base préparatoire ou recherche de place.",
+    description: "Ajoutez les preuves utiles et distinguez ce qui est acquis de ce qui doit encore être vérifié.",
   },
   {
     number: "03",
     title: "Explorer les programmes",
-    description: "Consultez des programmes enregistrés avec leurs critères, échéances et sources officielles disponibles.",
+    description: "Comparez les pistes enregistrées avec leurs critères, échéances et sources disponibles.",
   },
   {
     number: "04",
     title: "Préparer vos candidatures",
-    description: "Suivez les dossiers, les échéances et les prochaines actions sans confondre suivi interne et décision universitaire.",
+    description: "Suivez chaque dossier avec son statut, sa prochaine action et ses échéances.",
   },
   {
     number: "05",
-    title: "Organiser la préparation",
-    description: "Choisissez explicitement un cours vérifié si votre parcours l’exige et consultez les options de financement ou d’assurance.",
+    title: "Organiser votre préparation",
+    description: "Langue, financement et assurance restent reliés à votre parcours réel.",
   },
   {
     number: "06",
     title: "Suivre les démarches suivantes",
-    description: "Votre checklist rassemble les étapes calculées à partir des faits actuellement enregistrés dans votre dossier.",
+    description: "Votre checklist rassemble ce qui reste à faire et ce qui dépend d’un organisme externe.",
   },
 ] as const;
 
 export function HomeJourneySection() {
   return (
-    <section id="parcours" className="bg-white py-16 sm:py-20 lg:py-24" aria-labelledby="journey-title">
+    <section id="parcours" className="border-y border-[var(--border)] bg-[#f4f6f8] py-12 sm:py-14 lg:py-16" aria-labelledby="journey-title">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid gap-7 lg:grid-cols-[0.72fr_1.28fr] lg:items-end">
+        <div className="grid gap-6 lg:grid-cols-[0.72fr_1.28fr] lg:items-end">
           <div>
-            <p className="eyebrow">Le parcours</p>
-            <h2 id="journey-title" className="mt-3 max-w-2xl text-3xl font-semibold tracking-[-0.035em] text-slate-950 sm:text-4xl">
-              Six étapes, dans un ordre compréhensible.
+            <p className="eyebrow">Le parcours AlmaGo</p>
+            <h2 id="journey-title" className="mt-2 max-w-xl text-3xl font-semibold tracking-[-0.04em] text-slate-950 sm:text-4xl">
+              Six étapes. Une logique visible du début à la suite.
             </h2>
           </div>
           <p className="max-w-2xl text-base leading-7 text-slate-600 lg:justify-self-end">
-            Comme dans une procédure administrative bien conçue, chaque étape explique son objectif et prépare la suivante. AlmaGo évite les scores opaques et affiche les faits connus du dossier.
+            Chaque étape prépare la suivante. Le but n’est pas de vous donner un score, mais de rendre le dossier lisible et de montrer où votre attention est utile.
           </p>
         </div>
 
-        <ol className="mt-10 border-y border-[var(--border)]" aria-label="Parcours d’études en Allemagne en six étapes">
+        <ol className="mt-8 grid gap-3 md:grid-cols-2 xl:grid-cols-3" aria-label="Parcours d’études en Allemagne en six étapes">
           {steps.map((step, index) => (
             <li
               key={step.number}
-              className="grid gap-3 border-b border-[var(--border)] py-5 last:border-b-0 sm:grid-cols-[4.5rem_minmax(12rem,0.72fr)_minmax(0,1.28fr)_2rem] sm:items-center sm:gap-5"
+              className="group relative overflow-hidden rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-5 sm:p-6"
             >
-              <span className="text-sm font-bold tracking-[0.14em] text-[var(--accent-strong)]">{step.number}</span>
-              <h3 className="text-base font-bold text-slate-950">{step.title}</h3>
-              <p className="text-sm leading-6 text-slate-600">{step.description}</p>
-              <span aria-hidden="true" className="hidden text-right text-slate-300 sm:block">{index < steps.length - 1 ? "↓" : "✓"}</span>
+              <div className="flex items-center justify-between gap-4">
+                <span
+                  className={`grid h-10 w-10 place-items-center rounded-full text-xs font-bold ${
+                    index === 0
+                      ? "bg-[var(--brand)] text-white"
+                      : "border border-[var(--brand-border)] bg-[var(--brand-soft)] text-[var(--brand)]"
+                  }`}
+                >
+                  {step.number}
+                </span>
+                <span className="text-xs font-bold uppercase tracking-[0.14em] text-slate-400">
+                  Étape {index + 1}
+                </span>
+              </div>
+
+              <h3 className="mt-5 text-lg font-bold tracking-[-0.02em] text-slate-950">{step.title}</h3>
+              <p className="mt-2 text-sm leading-6 text-slate-600">{step.description}</p>
+
+              <div className="mt-5 flex items-center gap-2 text-xs font-bold text-[var(--brand)]">
+                <span className="h-px flex-1 bg-[var(--brand-border)]" />
+                <span aria-hidden="true">{index < steps.length - 1 ? "→" : "✓"}</span>
+              </div>
             </li>
           ))}
         </ol>
 
-        <div className="mt-6 flex flex-col justify-between gap-4 rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--brand-soft)] px-5 py-4 sm:flex-row sm:items-center sm:px-6">
+        <div className="mt-5 grid gap-3 rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--brand)] p-5 text-white sm:grid-cols-[1fr_auto] sm:items-center sm:px-6">
           <div>
-            <p className="text-sm font-bold text-[var(--brand)]">La progression décrit le dossier, pas vos chances d’admission.</p>
-            <p className="mt-1 text-sm leading-6 text-slate-600">Les décisions finales appartiennent aux universités et aux autorités compétentes.</p>
+            <p className="text-sm font-bold">La progression décrit votre préparation, pas vos chances d’admission.</p>
+            <p className="mt-1 text-sm leading-6 text-white/68">
+              Les universités et autorités compétentes conservent les décisions officielles.
+            </p>
           </div>
-          <a href="#espace" className="text-sm font-bold text-[var(--brand)] hover:underline hover:underline-offset-4">
+          <a href="#espace" className="text-sm font-bold text-white hover:underline hover:underline-offset-4">
             Voir l’espace étudiant →
           </a>
         </div>

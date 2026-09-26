@@ -1,55 +1,67 @@
 const trustItems = [
   {
-    title: "Source",
+    title: "Source visible",
     description: "Une information vérifiée indique sa provenance et, lorsque nécessaire, sa date de contrôle.",
+    mark: "S",
   },
   {
-    title: "Statut",
-    description: "Un élément est présenté comme fait confirmé, piste à examiner, action requise ou information en attente.",
+    title: "Statut compréhensible",
+    description: "Fait confirmé, piste à examiner, action requise ou information en attente : le statut reste explicite.",
+    mark: "✓",
   },
   {
-    title: "Responsabilité",
-    description: "La plateforme distingue ce qui dépend de l’étudiant, ce qui est suivi par AlmaGo et ce qui relève d’un organisme externe.",
+    title: "Responsabilité claire",
+    description: "Le produit distingue votre action, le suivi AlmaGo et ce qui relève d’un organisme externe.",
+    mark: "R",
   },
   {
-    title: "Expiration",
-    description: "Les catalogues vérifiés ne restent pas valides indéfiniment : les fiches doivent être revalidées.",
+    title: "Information revalidée",
+    description: "Les catalogues vérifiés ne restent pas valides indéfiniment : une information ancienne doit être recontrôlée.",
+    mark: "↻",
   },
 ] as const;
 
 export function HomeTrustSection() {
   return (
-    <section id="confiance" className="border-y border-[var(--border)] bg-[var(--surface-subtle)] py-16 sm:py-20 lg:py-24" aria-labelledby="trust-title">
+    <section id="confiance" className="border-y border-[var(--border)] bg-[#f4f6f8] py-12 sm:py-14 lg:py-16" aria-labelledby="trust-title">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid gap-9 lg:grid-cols-[0.78fr_1.22fr] lg:gap-14">
+        <div className="grid gap-6 lg:grid-cols-[0.82fr_1.18fr] lg:items-end">
           <div>
             <p className="eyebrow">Confiance & provenance</p>
-            <h2 id="trust-title" className="mt-3 text-3xl font-semibold tracking-[-0.035em] text-slate-950 sm:text-4xl">
-              La fiabilité doit être visible dans l’interface.
+            <h2 id="trust-title" className="mt-2 max-w-xl text-3xl font-semibold tracking-[-0.04em] text-slate-950 sm:text-4xl">
+              Le sérieux doit se voir, pas seulement se déclarer.
             </h2>
-            <p className="mt-5 text-base leading-7 text-slate-600">
-              AlmaGo ne cherche pas à paraître officiel. La plateforme montre au contraire clairement son rôle, la provenance de ses informations et les limites de ce qu’elle peut conclure.
+          </div>
+          <div className="lg:justify-self-end">
+            <p className="max-w-2xl text-base leading-7 text-slate-600">
+              AlmaGo montre son rôle, ses sources et ses limites directement dans l’interface. La source officielle reste toujours la référence.
             </p>
-
-            <div className="mt-7 border-l-2 border-[var(--accent)] pl-5">
-              <p className="text-sm font-bold text-slate-950">La source officielle reste la référence.</p>
-              <p className="mt-2 text-sm leading-6 text-slate-600">
-                Pour une admission, un délai, une règle consulaire ou une condition de financement, l’établissement ou l’autorité compétente garde la décision finale.
-              </p>
-            </div>
+            <p className="mt-3 border-l-2 border-[var(--accent)] pl-4 text-sm font-bold text-slate-800">
+              Admission, visa et titre de séjour : décisions des organismes compétents.
+            </p>
           </div>
+        </div>
 
-          <div className="overflow-hidden rounded-[var(--radius-panel)] border border-[var(--border)] bg-white">
-            {trustItems.map((item, index) => (
-              <article key={item.title} className="grid gap-3 border-b border-[var(--border)] p-5 last:border-b-0 sm:grid-cols-[3rem_10rem_1fr] sm:items-start sm:gap-5 sm:p-6">
-                <span className="grid h-9 w-9 place-items-center rounded-full bg-[var(--brand-soft)] text-xs font-bold text-[var(--brand)]">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-                <h3 className="text-sm font-bold text-slate-950">{item.title}</h3>
-                <p className="text-sm leading-6 text-slate-600">{item.description}</p>
-              </article>
-            ))}
-          </div>
+        <div className="mt-8 grid gap-3 md:grid-cols-2">
+          {trustItems.map((item, index) => (
+            <article
+              key={item.title}
+              className="grid gap-4 rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-5 sm:grid-cols-[3rem_1fr] sm:p-6"
+            >
+              <span className="grid h-11 w-11 place-items-center rounded-full bg-[var(--brand-soft)] text-sm font-bold text-[var(--brand)]">
+                {item.mark}
+              </span>
+              <div>
+                <div className="flex items-center justify-between gap-3">
+                  <h3 className="text-base font-bold text-slate-950">{item.title}</h3>
+                  <span className="text-[10px] font-bold tracking-[0.14em] text-slate-400">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+                </div>
+                <p className="mt-2 text-sm leading-6 text-slate-600">{item.description}</p>
+              </div>
+            </article>
+          ))}
         </div>
       </div>
     </section>
