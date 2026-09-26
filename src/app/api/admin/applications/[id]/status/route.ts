@@ -9,6 +9,35 @@ import {
 const cleanText = (value: unknown, max: number) =>
   typeof value === "string" ? value.trim().slice(0, max) : "";
 
+function applicationDatabaseErrorResponse(
+  error: { message?: string | null },
+  fallback: string,
+) {
+  const message = error.message || "";
+  if (message.includes("application_no_status_change")) {
+    return NextResponse.json(
+      { error: "Le statut a déjà changé. Rechargez le dossier avant de continuer." },
+      { status: 409 },
+    );
+  }
+  if (message.includes("application_transition_not_allowed")) {
+    return NextResponse.json(
+      { error: "Cette transition n’est plus autorisée depuis l’état actuel du dossier." },
+      { status: 409 },
+    );
+  }
+  if (message.includes("application_decision_note_required")) {
+    return NextResponse.json(
+      { error: "Ajoutez une note visible indiquant la décision communiquée par l’université." },
+      { status: 400 },
+    );
+  }
+  if (message.includes("application_not_found")) {
+    return NextResponse.json({ error: "Candidature introuvable." }, { status: 404 });
+  }
+  return NextResponse.json({ error: fallback }, { status: 500 });
+}
+
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { supabase, user, isAdmin } = await getAdminUser();
   if (!user) return NextResponse.json({ error: "Non authentifié." }, { status: 401 });
@@ -53,7 +82,10 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       .eq("id", id);
 
     if (updateError) {
-      return NextResponse.json({ error: "Impossible de mettre à jour le suivi de la candidature." }, { status: 500 });
+      return applicationDatabaseErrorResponse(
+        updateError,
+        "Impossible de mettre à jour le suivi de la candidature.",
+      );
     }
     return NextResponse.json({ ok: true, status_changed: false });
   }
@@ -88,23 +120,10 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   });
 
   if (error) {
-    const message = error.message || "";
-    if (message.includes("application_no_status_change")) {
-      return NextResponse.json({ error: "Le statut a déjà changé. Rechargez le dossier avant de continuer." }, { status: 409 });
-    }
-    if (message.includes("application_transition_not_allowed")) {
-      return NextResponse.json({ error: "Cette transition n’est plus autorisée depuis l’état actuel du dossier." }, { status: 409 });
-    }
-    if (message.includes("application_decision_note_required")) {
-      return NextResponse.json(
-        { error: "Ajoutez une note visible indiquant la décision communiquée par l’université." },
-        { status: 400 },
-      );
-    }
-    if (message.includes("application_not_found")) {
-      return NextResponse.json({ error: "Candidature introuvable." }, { status: 404 });
-    }
-    return NextResponse.json({ error: "Impossible de mettre à jour la candidature." }, { status: 500 });
+    return applicationDatabaseErrorResponse(
+      error,
+      "Impossible de mettre à jour la candidature.",
+    );
   }
   return NextResponse.json({ ok: true, status_changed: true });
 }
