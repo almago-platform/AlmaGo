@@ -7,14 +7,25 @@ language sql
 immutable
 security invoker
 set search_path = ''
-as $$
+as $
+  with normalized as (
+    select translate(lower(btrim(value)), 'éèêë', 'eeee') as text
+  )
   select case
     when value is null or btrim(value) = '' then null
-    when lower(value) like '%winter%' or lower(value) like '%hiver%' or lower(btrim(value)) = 'ws' then 'winter'
-    when lower(value) like '%summer%' or lower(value) like '%sommer%' or lower(value) like '%été%' or lower(btrim(value)) = 'ss' then 'summer'
+    when text like '%winter%'
+      or text like '%hiver%'
+      or text ~ '(^|[[:space:]])ws([[:space:]]|$)'
+      then 'winter'
+    when text like '%summer%'
+      or text like '%sommer%'
+      or text like '%ete%'
+      or text ~ '(^|[[:space:]])ss([[:space:]]|$)'
+      then 'summer'
     else null
-  end;
-$$;
+  end
+  from normalized;
+$;
 
 revoke execute on function private.application_intake_family(text) from public, anon;
 grant execute on function private.application_intake_family(text) to authenticated;
