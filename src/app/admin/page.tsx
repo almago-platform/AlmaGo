@@ -4,11 +4,25 @@ import { Badge } from "@/components/ui/Badge";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Card } from "@/components/ui/Card";
 import { PageHeader } from "@/components/ui/PageHeader";
+import { catalogVerificationCutoff } from "@/lib/catalog-freshness";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminEntry() {
   const supabase = await createClient();
+
+  const now = new Date();
+  const staleCutoff = catalogVerificationCutoff(now);
+  const dueSoonCutoff = new Date(now.getTime() - 23 * 24 * 60 * 60 * 1000).toISOString();
+
+  if (!staleCutoff) {
+    return (
+      <main className="mx-auto w-full max-w-7xl px-4 py-7 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
+        <PageHeader badge="Administration" title="Vue d’ensemble" />
+        <Card><div role="alert"><h2 className="text-xl font-bold text-slate-950">Vue d’ensemble temporairement indisponible</h2></div></Card>
+      </main>
+    );
+  }
 
   const [
     { count: universityCount, error: universitiesError },
@@ -16,15 +30,26 @@ export default async function AdminEntry() {
     { count: applicationCount, error: applicationsError },
     { count: documentsToReview, error: documentsError },
     { count: orientationCount, error: orientationError },
+    { count: staleLanguageCount, error: staleLanguageError },
+    { count: dueLanguageCount, error: dueLanguageError },
+    { count: staleFinanceCount, error: staleFinanceError },
+    { count: dueFinanceCount, error: dueFinanceError },
   ] = await Promise.all([
     supabase.from("universities").select("id", { count: "exact", head: true }).eq("is_active", true),
     supabase.from("programs").select("id", { count: "exact", head: true }).eq("is_active", true),
     supabase.from("applications").select("id", { count: "exact", head: true }).not("status", "in", "(admission,rejection,withdrawn)"),
     supabase.from("documents").select("id", { count: "exact", head: true }).in("status", ["pending", "replace_required"]),
     supabase.from("program_recommendations").select("id", { count: "exact", head: true }).eq("is_archived", false),
+    supabase.from("language_courses").select("id", { count: "exact", head: true }).eq("is_active", true).lte("verified_at", staleCutoff),
+    supabase.from("language_courses").select("id", { count: "exact", head: true }).eq("is_active", true).gt("verified_at", staleCutoff).lte("verified_at", dueSoonCutoff),
+    supabase.from("finance_insurance_catalog").select("id", { count: "exact", head: true }).eq("is_active", true).lte("verified_at", staleCutoff),
+    supabase.from("finance_insurance_catalog").select("id", { count: "exact", head: true }).eq("is_active", true).gt("verified_at", staleCutoff).lte("verified_at", dueSoonCutoff),
   ]);
 
-  if (universitiesError || programsError || applicationsError || documentsError || orientationError) {
+  if (
+    universitiesError || programsError || applicationsError || documentsError || orientationError
+    || staleLanguageError || dueLanguageError || staleFinanceError || dueFinanceError
+  ) {
     return (
       <main className="mx-auto w-full max-w-7xl px-4 py-7 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
         <PageHeader badge="Administration" title="Vue d’ensemble" />
@@ -47,6 +72,12 @@ export default async function AdminEntry() {
   const applications = applicationCount || 0;
   const orientations = orientationCount || 0;
   const catalogue = (universityCount || 0) + (programCount || 0);
+  const staleLanguage = staleLanguageCount || 0;
+  const dueLanguage = dueLanguageCount || 0;
+  const staleFinance = staleFinanceCount || 0;
+  const dueFinance = dueFinanceCount || 0;
+  const staleCatalogue = staleLanguage + staleFinance;
+  const dueCatalogue = dueLanguage + dueFinance;
 
   const priority = documents > 0
     ? {
@@ -64,7 +95,15 @@ export default async function AdminEntry() {
           href: "/admin/applications",
           action: "Suivre les candidatures",
         }
-      : {
+      : staleCatalogue > 0
+        ? {
+            badge: "Catalogue à revalider",
+            title: `${staleCatalogue} fiche${staleCatalogue > 1 ? "s" : ""} vérifiée${staleCatalogue > 1 ? "s" : ""} a${staleCatalogue > 1 ? "ont" : ""} expiré`,
+            description: "Ces fiches ne sont plus publiées aux étudiants. Revalidez leur source officielle avant de les remettre dans le catalogue visible.",
+            href: staleLanguage > 0 ? "/admin/language-courses" : "/admin/finance-insurance",
+            action: "Revalider le catalogue",
+          }
+        : {
           badge: "File prioritaire à jour",
           title: "Aucun blocage dossier prioritaire n’est visible",
           description: "Les documents et candidatures ne signalent pas de charge prioritaire dans cette vue. Vous pouvez poursuivre l’orientation ou la maintenance du catalogue.",
@@ -90,7 +129,7 @@ export default async function AdminEntry() {
         <Card className="relative overflow-hidden border-[var(--brand-border)] bg-white shadow-[0_24px_55px_-38px_rgba(41,48,139,0.5)]">
           <div aria-hidden="true" className="absolute inset-y-0 left-0 w-1.5 bg-[var(--brand)]" />
           <div className="pl-2 sm:pl-3">
-            <Badge variant={documents > 0 ? "warning" : applications > 0 ? "info" : "success"}>{priority.badge}</Badge>
+            <Badge variant={documents > 0 || staleCatalogue > 0 ? "warning" : applications > 0 ? "info" : "success"}>{priority.badge}</Badge>
             <p className="mt-5 text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">À traiter maintenant</p>
             <h2 className="mt-2 max-w-3xl text-2xl font-bold tracking-[-0.03em] text-slate-950 sm:text-3xl">
               {priority.title}
@@ -161,6 +200,27 @@ export default async function AdminEntry() {
         </div>
       </section>
 
+      <section className="mt-8" aria-labelledby="catalogue-health-title">
+        <div className="mb-5">
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Fraîcheur des sources</p>
+          <h2 id="catalogue-health-title" className="mt-2 text-2xl font-bold tracking-[-0.03em] text-slate-950">
+            Révalidations du catalogue Allemagne
+          </h2>
+          <p className="mt-2 text-sm leading-6 text-slate-600">
+            Une vérification catalogue expire automatiquement après 30 jours. Les fiches expirées restent visibles ici pour l’équipe, mais disparaissent de l’espace étudiant.
+          </p>
+        </div>
+
+        <div className="grid gap-4 md:grid-cols-2">
+          <CatalogHealthCard href="/admin/language-courses" title="Cours de langue" stale={staleLanguage} dueSoon={dueLanguage} />
+          <CatalogHealthCard href="/admin/finance-insurance" title="Finance & assurance" stale={staleFinance} dueSoon={dueFinance} />
+        </div>
+
+        {staleCatalogue === 0 && dueCatalogue === 0 && (
+          <p className="mt-4 text-sm font-semibold text-emerald-700">Aucune revalidation n’est requise dans les 7 prochains jours.</p>
+        )}
+      </section>
+
       <Card className="mt-8 border-[var(--border)] bg-white shadow-none">
         <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
           <div>
@@ -215,6 +275,40 @@ function AdminSummaryCard({
         </span>
       </div>
       <p className="mt-3 text-sm leading-6 text-slate-600">{detail}</p>
+    </Link>
+  );
+}
+
+
+function CatalogHealthCard({
+  href,
+  title,
+  stale,
+  dueSoon,
+}: {
+  href: string;
+  title: string;
+  stale: number;
+  dueSoon: number;
+}) {
+  return (
+    <Link
+      href={href}
+      className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-5 shadow-[var(--shadow-card)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] focus-visible:ring-offset-2"
+    >
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h3 className="text-lg font-bold text-slate-950">{title}</h3>
+          <p className="mt-2 text-sm leading-6 text-slate-600">
+            {stale ? `${stale} fiche${stale > 1 ? "s" : ""} expirée${stale > 1 ? "s" : ""}` : "Aucune fiche expirée"}
+            {" · "}
+            {dueSoon ? `${dueSoon} à revoir sous 7 jours` : "aucune échéance sous 7 jours"}
+          </p>
+        </div>
+        <Badge variant={stale ? "warning" : dueSoon ? "info" : "success"}>
+          {stale ? "Action requise" : dueSoon ? "À planifier" : "À jour"}
+        </Badge>
+      </div>
     </Link>
   );
 }
