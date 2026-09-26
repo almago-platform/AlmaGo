@@ -41,6 +41,7 @@ function item(
   return { key, title, owner, status, source_facts, explanation };
 }
 
+// Deterministic by construction: fixed rule order, no ranking and no external calls.
 export function buildGermanyChecklist(input: GermanyChecklistInput): GermanyChecklistItem[] {
   const items: GermanyChecklistItem[] = [];
 
