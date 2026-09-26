@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { PreferredCitiesPicker, SearchableDatalistInput, SelectInput, TextInput } from "@/components/student/ProfileControls";
@@ -82,6 +83,14 @@ const steps = [
   { id: 5, title: "Validation", description: "Vérification finale" },
 ];
 
+const stepGuidance = [
+  "Ces informations permettent de rattacher correctement les prochaines étapes à votre dossier.",
+  "Votre parcours académique aide à distinguer ce qui est déjà acquis de ce qui devra encore être vérifié.",
+  "Vos langues influencent les programmes accessibles et les éventuelles étapes de préparation.",
+  "Votre objectif donne une direction au dossier : diplôme, domaine, langue et rentrée visée.",
+  "Cette dernière vérification vous permet de confirmer un dossier cohérent avant de continuer.",
+] as const;
+
 function mergeProfile(profile: Record<string, unknown>): FormData {
   const merged: FormData = { ...initial };
 
@@ -160,10 +169,30 @@ export function OnboardingForm({ profile }: { profile: Record<string, unknown> }
           <p className="mt-4 text-sm leading-6 text-slate-600">
             Renseignez les informations essentielles pour organiser votre dossier et votre projet d’études en Allemagne.
           </p>
-          <div className="mt-6 rounded-[var(--radius-control)] border border-[var(--brand-border)] bg-[var(--brand-soft)]/55 p-4">
+
+          <figure className="mt-6 overflow-hidden rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface-subtle)]">
+            <Image
+              src="https://images.unsplash.com/photo-1778735940467-1335c201966d?auto=format&fit=crop&w=1000&q=82"
+              alt="Étudiant concentré travaillant avec un ordinateur et un carnet dans une bibliothèque."
+              width={1000}
+              height={720}
+              className="h-36 w-full object-cover sm:h-40"
+              sizes="(min-width: 1024px) 22rem, 100vw"
+            />
+            <figcaption className="px-4 py-3 text-xs leading-5 text-slate-500">
+              Un dossier solide se construit progressivement : vous n’avez pas besoin de tout compléter en une seule fois.
+            </figcaption>
+          </figure>
+
+          <div className="mt-5 rounded-[var(--radius-control)] border border-[var(--brand-border)] bg-[var(--brand-soft)]/55 p-4">
             <p className="text-sm font-semibold text-[var(--brand)]">Étape actuelle</p>
             <p className="mt-2 text-xl font-bold">{currentStep.title}</p>
             <p className="mt-1 text-sm text-slate-600">{currentStep.description}</p>
+          </div>
+
+          <div className="mt-4 border-l-2 border-[var(--accent)] pl-4">
+            <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--accent-strong)]">Pourquoi cette étape compte</p>
+            <p className="mt-2 text-sm leading-6 text-slate-600">{stepGuidance[step - 1]}</p>
           </div>
         </Card>
 
