@@ -12,6 +12,8 @@ test("student pathway wires real project, evidence and language-course facts int
   assert.match(page, /from\("language_courses"\)/);
   assert.match(page, /from\("finance_insurance_catalog"\)/);
   assert.match(page, /from\("student_checklist_items"\)/);
+  assert.match(page, /from\("regulatory_sources"\)/);
+  assert.match(page, /isRegulatoryRuleCurrent\(source, now\)/);
   assert.match(page, /summarizeAcademicEvidence\(evidence, now\)/);
   assert.match(page, /isPublishableLanguageCourse\(course, now\)/);
   assert.match(page, /determineRegulatoryPath\(facts\)/);
@@ -33,6 +35,7 @@ test("pathway fails closed when a required data source cannot be loaded", () => 
   assert.match(page, /coursesResult\.error/);
   assert.match(page, /financeResult\.error/);
   assert.match(page, /checklistResult\.error/);
+  assert.match(page, /regulatorySourcesResult\.error/);
   assert.match(page, /AlmaGo ne propose aucun parcours par défaut/);
 });
 
@@ -56,4 +59,14 @@ test("the real student shell and dashboard expose the pathway page", () => {
   assert.match(shell, /\/student\/finance-insurance/);
   assert.match(dashboard, /Voir mon parcours/);
   assert.match(dashboard, /\/student\/pathway/);
+});
+
+
+test("pathway exposes only current official regulatory sources and fails closed on stale data", () => {
+  assert.match(page, /Sources officielles/);
+  assert.match(page, /Règles vérifiées pour ce parcours/);
+  assert.match(page, /Revalidation requise/);
+  assert.match(page, /AlmaGo n’affiche donc pas de règle par défaut/);
+  assert.match(page, /Ouvrir la source officielle/);
+  assert.doesNotMatch(page, /source\.verification_status === "verified" && source\.verified_at/);
 });

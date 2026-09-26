@@ -14,6 +14,7 @@ import {
   type RegulatoryPathDecision,
   type RegulatoryRoute,
 } from "@/lib/regulatory-path-engine";
+import { isRegulatoryRuleCurrent } from "@/lib/regulatory";
 import { projectPathOptions } from "@/lib/student/project";
 import { createClient } from "@/lib/supabase/server";
 
@@ -58,6 +59,7 @@ export default async function StudentPathwayPage() {
     coursesResult,
     financeResult,
     checklistResult,
+    regulatorySourcesResult,
   ] = await Promise.all([
     supabase
       .from("student_projects")
@@ -87,6 +89,11 @@ export default async function StudentPathwayPage() {
       .from("student_checklist_items")
       .select("id,status")
       .eq("student_id", user.id),
+    supabase
+      .from("regulatory_sources")
+      .select("authority,title,source_url,topic,checked_on,summary,amount,currency,periodicity,verification_status,verified_at,review_due_at,is_active")
+      .eq("is_active", true)
+      .order("authority"),
   ]);
 
   if (
@@ -96,6 +103,7 @@ export default async function StudentPathwayPage() {
     || coursesResult.error
     || financeResult.error
     || checklistResult.error
+    || regulatorySourcesResult.error
   ) {
     return <PathwayUnavailable />;
   }
@@ -140,6 +148,12 @@ export default async function StudentPathwayPage() {
   };
 
   const decision = determineRegulatoryPath(facts);
+  const currentRegulatorySources = (regulatorySourcesResult.data || []).filter((source) =>
+    isRegulatoryRuleCurrent(source, now),
+  );
+  const relevantRegulatorySources = currentRegulatorySources.filter((source) =>
+    regulatoryTopicsForRoute(decision.route).includes(source.topic),
+  );
   const project = projectPathOptions.find(
     (option) => option.value === projectResult.data?.path,
   );
@@ -274,6 +288,33 @@ export default async function StudentPathwayPage() {
             tone={checklistItems.length > 0 && completedChecklistItems === checklistItems.length ? "done" : "neutral"}
           />
         </div>
+      </section>
+
+      <section className="mt-8" aria-labelledby="official-sources-title">
+        <div className="mb-5">
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Sources officielles</p>
+          <h2 id="official-sources-title" className="mt-2 text-2xl font-bold tracking-[-0.03em] text-slate-950">
+            Règles vérifiées pour ce parcours
+          </h2>
+          <p className="mt-2 max-w-4xl text-sm leading-6 text-slate-600">
+            AlmaGo n’utilise ici que des sources marquées comme vérifiées et encore dans leur période de revue. Les règles affichées restent à confirmer sur la source officielle au moment du dépôt.
+          </p>
+        </div>
+
+        {relevantRegulatorySources.length ? (
+          <div className="grid gap-4 lg:grid-cols-2">
+            {relevantRegulatorySources.map((source) => (
+              <RegulatorySourceCard key={source.topic + source.source_url} source={source} />
+            ))}
+          </div>
+        ) : (
+          <Card className="border-amber-200 bg-amber-50/40 shadow-none">
+            <Badge variant="warning">Revalidation requise</Badge>
+            <p className="mt-3 text-sm leading-6 text-slate-700">
+              Aucune source réglementaire actuellement vérifiée n’est disponible pour ce parcours. AlmaGo n’affiche donc pas de règle par défaut.
+            </p>
+          </Card>
+        )}
       </section>
 
       <section className="mt-8 grid gap-5 lg:grid-cols-[minmax(0,1.25fr)_minmax(18rem,0.75fr)]">
@@ -445,6 +486,72 @@ function PathwayCard({
       </div>
     </Card>
   );
+}
+
+function regulatoryTopicsForRoute(route: RegulatoryRoute | null) {
+  if (route === "STUDIUM") return ["study_visa", "study_visa_financing", "university_admission"];
+  if (route === "STUDIENVORBEREITUNG") return ["study_preparation_tunisia", "study_visa_financing", "university_admission"];
+  if (route === "STUDIENPLATZSUCHE") return ["study_place_search", "university_admission"];
+  if (route === "SPRACHKURS") return ["standalone_language_tunisia"];
+  return ["study_visa", "study_preparation_tunisia", "study_place_search", "standalone_language_tunisia", "university_admission"];
+}
+
+function RegulatorySourceCard({
+  source,
+}: {
+  source: {
+    authority: string;
+    title: string;
+    source_url: string;
+    topic: string;
+    checked_on: string;
+    summary: string;
+    amount: number | null;
+    currency: string | null;
+    periodicity: string | null;
+    verified_at: string | null;
+    review_due_at: string | null;
+  };
+}) {
+  return (
+    <Card className="shadow-none">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-[0.14em] text-slate-500">{source.authority}</p>
+          <h3 className="mt-2 text-lg font-bold text-slate-950">{source.title}</h3>
+        </div>
+        <Badge variant="success">Vérifiée</Badge>
+      </div>
+      <p className="mt-4 text-sm leading-6 text-slate-600">{source.summary}</p>
+      {source.amount !== null && source.currency && (
+        <p className="mt-3 text-sm font-semibold text-slate-800">
+          Montant publié : {new Intl.NumberFormat("fr-FR", { style: "currency", currency: source.currency }).format(source.amount)}
+          {source.periodicity === "monthly" ? " / mois" : source.periodicity === "yearly" ? " / an" : ""}
+        </p>
+      )}
+      <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-xs text-slate-500">
+        <span>Contrôlée le {formatSourceDate(source.checked_on)}</span>
+        <span>À revoir avant le {formatSourceDate(source.review_due_at)}</span>
+      </div>
+      <div className="mt-5">
+        <a
+          href={source.source_url}
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex min-h-11 items-center justify-center rounded-[var(--radius-control)] border border-[var(--border)] bg-white px-4 py-2.5 text-sm font-bold text-slate-700 hover:border-[var(--brand-border)] hover:text-[var(--brand)]"
+        >
+          Ouvrir la source officielle
+        </a>
+      </div>
+    </Card>
+  );
+}
+
+function formatSourceDate(value: string | null) {
+  if (!value) return "—";
+  const timestamp = Date.parse(value);
+  if (!Number.isFinite(timestamp)) return "—";
+  return new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium", timeZone: "UTC" }).format(new Date(timestamp));
 }
 
 function FactRow({ label, value }: { label: string; value: string }) {
