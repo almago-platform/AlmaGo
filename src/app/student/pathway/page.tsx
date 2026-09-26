@@ -64,6 +64,7 @@ export default async function StudentPathwayPage() {
     financeResult,
     checklistResult,
     regulatorySourcesResult,
+    languageSelectionResult,
   ] = await Promise.all([
     supabase
       .from("student_projects")
@@ -80,8 +81,7 @@ export default async function StudentPathwayPage() {
       .eq("student_id", user.id),
     supabase
       .from("language_courses")
-      .select("title,provider_name,language,purpose,source_url,application_url,verified_at,is_active")
-      .eq("purpose", "study_preparation")
+      .select("id,title,provider_name,language,purpose,source_url,application_url,verified_at,is_active")
       .eq("is_active", true)
       .lte("verified_at", now.toISOString())
       .gt("verified_at", catalogueCutoff),
@@ -100,6 +100,11 @@ export default async function StudentPathwayPage() {
       .select("authority,title,source_url,topic,jurisdiction,origin_country,destination_country,checked_on,summary,amount,currency,periodicity,verification_status,verified_at,review_due_at,is_active")
       .eq("is_active", true)
       .order("authority"),
+    supabase
+      .from("student_language_course_selections")
+      .select("language_course_id")
+      .eq("student_id", user.id)
+      .maybeSingle(),
   ]);
 
   if (
@@ -110,6 +115,7 @@ export default async function StudentPathwayPage() {
     || financeResult.error
     || checklistResult.error
     || regulatorySourcesResult.error
+    || languageSelectionResult.error
   ) {
     return <PathwayUnavailable />;
   }
@@ -132,10 +138,14 @@ export default async function StudentPathwayPage() {
   })) as AcademicEvidenceRecord[];
 
   const evidenceSummary = summarizeAcademicEvidence(evidence, now);
-  const hasPublishableStudyPreparationCourse = (coursesResult.data || []).some(
-    (course) =>
-      course.purpose === "study_preparation"
-      && isPublishableLanguageCourse(course, now),
+  const selectedLanguageCourseId = languageSelectionResult.data?.language_course_id || null;
+  const selectedLanguageCourse = selectedLanguageCourseId
+    ? (coursesResult.data || []).find((course) => course.id === selectedLanguageCourseId) || null
+    : null;
+  const hasPublishableStudyPreparationCourse = Boolean(
+    selectedLanguageCourse
+    && selectedLanguageCourse.purpose === "study_preparation"
+    && isPublishableLanguageCourse(selectedLanguageCourse, now),
   );
 
   const publishableFinanceOptions = (financeResult.data || []).filter((option) =>
@@ -250,13 +260,13 @@ export default async function StudentPathwayPage() {
           <PathwayCard
             number="3"
             title="Préparation linguistique"
-            state={hasPublishableStudyPreparationCourse ? "Catalogue vérifié disponible" : "À vérifier"}
-            detail={hasPublishableStudyPreparationCourse
-              ? "Au moins un cours de préparation aux études vérifié est publié dans le catalogue. Il faut encore vérifier lequel correspond à votre situation."
-              : "Aucun cours de préparation aux études vérifié n’est actuellement disponible dans les données visibles."}
+            state={selectedLanguageCourse ? "Cours sélectionné" : "Aucun cours sélectionné"}
+            detail={selectedLanguageCourse
+              ? `${selectedLanguageCourse.provider_name} · ${selectedLanguageCourse.title} · ${selectedLanguageCourse.purpose === "study_preparation" ? "Préparation aux études" : "Cours de langue autonome"}`
+              : "Choisissez explicitement une fiche vérifiée dans le catalogue. AlmaGo ne sélectionne aucun cours à votre place."}
             href="/student/language-courses"
             linkLabel="Voir les cours"
-            tone={hasPublishableStudyPreparationCourse ? "done" : "neutral"}
+            tone={selectedLanguageCourse ? "done" : "neutral"}
           />
 
           <PathwayCard
