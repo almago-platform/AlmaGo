@@ -2,6 +2,7 @@ import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Card } from "@/components/ui/Card";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { StudentApplicationsPanel } from "@/components/student/StudentApplicationsPanel";
+import { StudentGuidancePanel } from "@/components/student/StudentGuidancePanel";
 import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -24,6 +25,17 @@ export default async function StudentApplicationsPage() {
         title="Mes candidatures"
         description="Retrouvez chaque dossier, son échéance, sa prochaine action et l’historique visible du suivi enregistré dans AlmaGo."
         actions={<ButtonLink href="/student/orientation" variant="secondary">Voir les recommandations</ButtonLink>}
+      />
+
+      <StudentGuidancePanel
+        eyebrow="Suivre sans se perdre"
+        title="Traitez chaque candidature comme un dossier avec une prochaine action claire."
+        description="Vous n’avez pas besoin de mémoriser tous les statuts et toutes les dates. AlmaGo les rassemble pour que vous puissiez reprendre chaque candidature là où elle en est."
+        points={[
+          "Identifier le statut actuellement enregistré.",
+          "Regarder la prochaine action et l’échéance associée.",
+          "Consulter l’historique avant de poursuivre le dossier.",
+        ]}
       />
 
       <StudentApplicationsPanel applications={data || []} />

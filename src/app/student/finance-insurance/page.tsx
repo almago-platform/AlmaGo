@@ -2,6 +2,7 @@ import { Badge } from "@/components/ui/Badge";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Card } from "@/components/ui/Card";
 import { PageHeader } from "@/components/ui/PageHeader";
+import { StudentGuidancePanel } from "@/components/student/StudentGuidancePanel";
 import {
   financeInsuranceKinds,
   isPublishableFinanceInsuranceOption,
@@ -58,12 +59,16 @@ export default async function StudentFinanceInsurancePage() {
         actions={<ButtonLink href="/student/pathway" variant="secondary">Retour à mon parcours</ButtonLink>}
       />
 
-      <Card className="mt-7 border-[var(--brand-border)] bg-[var(--brand-soft)]/55 shadow-none">
-        <h2 className="text-lg font-bold text-slate-950">Comment lire ce catalogue ?</h2>
-        <p className="mt-2 max-w-4xl text-sm leading-6 text-slate-700">
-          Les prix, conditions et règles peuvent changer. Utilisez toujours le lien officiel affiché pour vérifier l’information avant toute démarche ou paiement. Une option absente n’est pas considérée comme refusée ; elle n’est simplement pas publiée dans AlmaGo.
-        </p>
-      </Card>
+      <StudentGuidancePanel
+        eyebrow="Avant toute démarche ou paiement"
+        title="Comparez les informations, puis revenez toujours à la source officielle."
+        description="Les prix, conditions et règles peuvent changer. AlmaGo organise les options publiées sans les classer et sans décider si elles sont adaptées ou obligatoires pour votre dossier."
+        points={[
+          "Regarder la date de vérification et la source officielle.",
+          "Relire les conditions directement chez le fournisseur.",
+          "Confirmer les exigences de séjour auprès des autorités compétentes.",
+        ]}
+      />
 
       <div className="mt-8 space-y-8">
         {financeInsuranceKinds.map((kind) => {
