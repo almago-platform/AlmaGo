@@ -13,14 +13,14 @@ export function TextInput({ label, value, onChange, type = "text", required = fa
 
 export function SelectInput({ label, value, onChange, options, required = false }: { label: string; value: string; onChange: (value: string) => void; options: readonly SelectOption[]; required?: boolean }) {
   const hasLegacyValue = value !== "" && !options.some((option) => option.value === value);
-  return <label className="block text-sm font-medium leading-6 text-slate-700"><FieldLabel label={label} required={required} /><select required={required} value={value} onChange={(event) => onChange(event.target.value)} className="field"><option value="">Choisir…</option>{hasLegacyValue && <option value={value}>{value} — à mettre à jour</option>}{options.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select>{hasLegacyValue && <span className="mt-1 block text-xs font-normal text-amber-700">Choisis une valeur de la liste avant d’enregistrer.</span>}</label>;
+  return <label className="block text-sm font-medium leading-6 text-slate-700"><FieldLabel label={label} required={required} /><select required={required} value={value} onChange={(event) => onChange(event.target.value)} className="field"><option value="">Choisir…</option>{hasLegacyValue && <option value={value}>{value} — à mettre à jour</option>}{options.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select>{hasLegacyValue && <span className="mt-1 block text-xs font-normal text-amber-700">Choisissez une valeur de la liste avant d’enregistrer.</span>}</label>;
 }
 
 /** Native datalist keeps a compact, keyboard-friendly nationality search. Server validation accepts only its values. */
 export function SearchableDatalistInput({ label, value, onChange, options, required = false }: { label: string; value: string; onChange: (value: string) => void; options: readonly SelectOption[]; required?: boolean }) {
   const id = useId();
   const hasLegacyValue = value !== "" && !options.some((option) => option.value === value);
-  return <label className="block text-sm font-medium leading-6 text-slate-700"><FieldLabel label={label} required={required} /><input required={required} list={id} value={value} onChange={(event) => onChange(event.target.value)} placeholder="Rechercher une nationalité" className="field" /><datalist id={id}>{options.map((option) => <option key={option.value} value={option.value} />)}</datalist>{hasLegacyValue && <span className="mt-1 block text-xs font-normal text-amber-700">Choisis une valeur proposée avant d’enregistrer.</span>}</label>;
+  return <label className="block text-sm font-medium leading-6 text-slate-700"><FieldLabel label={label} required={required} /><input required={required} list={id} value={value} onChange={(event) => onChange(event.target.value)} placeholder="Rechercher une nationalité" className="field" /><datalist id={id}>{options.map((option) => <option key={option.value} value={option.value} />)}</datalist>{hasLegacyValue && <span className="mt-1 block text-xs font-normal text-amber-700">Choisissez une valeur proposée avant d’enregistrer.</span>}</label>;
 }
 
 export function PreferredCitiesPicker({ value, onChange }: { value: string[]; onChange: (value: string[]) => void }) {
