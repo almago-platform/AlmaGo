@@ -73,7 +73,7 @@ begin
     select * into linked_document
     from public.documents
     where id = new.document_id and student_id = new.student_id
-    for key share;
+    for update;
 
     if not found or linked_document.status::text <> 'approved' then
       raise exception 'academic_evidence_document_not_approved';
