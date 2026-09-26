@@ -10,7 +10,7 @@ export default async function StudentProjectPage() {
   if (!user) redirect("/login");
 
   const { data: project } = await supabase.from("student_projects")
-    .select("path,target_degree,target_field,target_intake,preferred_cities,current_german_level,target_german_level,current_diploma,diploma_country,preferred_study_language,monthly_budget,budget_currency,actual_objective,notes")
+    .select("path,target_degree,target_field,target_intake,preferred_cities,current_german_level,target_german_level,current_diploma,diploma_country,filing_country,preferred_study_language,monthly_budget,budget_currency,actual_objective,notes")
     .eq("student_id", user.id)
     .maybeSingle();
 

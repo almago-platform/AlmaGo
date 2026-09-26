@@ -30,6 +30,7 @@ test("complete project input is normalized and currency cannot be client-control
     path: "master_and_language",
     current_diploma: " Licence informatique ",
     diploma_country: " tn ",
+    filing_country: " tn ",
     target_degree: "Master",
     target_field: "Computer Science",
     preferred_study_language: "anglais",
@@ -40,15 +41,20 @@ test("complete project input is normalized and currency cannot be client-control
 
   assert.equal(result.data?.current_diploma, "Licence informatique");
   assert.equal(result.data?.diploma_country, "TN");
+  assert.equal(result.data?.filing_country, "TN");
   assert.equal(result.data?.monthly_budget, 1250.5);
   assert.equal(result.data?.budget_currency, "EUR");
   assert.equal(result.data?.actual_objective, "Trouver un Master adapté puis préparer les démarches nécessaires.");
 });
 
-test("invalid diploma countries and budgets are rejected", () => {
+test("invalid diploma countries, filing countries and budgets are rejected", () => {
   assert.match(
     parseStudentProject({ path: "university_search", diploma_country: "Tunisia" }).error ?? "",
     /deux lettres/,
+  );
+  assert.match(
+    parseStudentProject({ path: "university_search", filing_country: "Tunisia" }).error ?? "",
+    /pays de dépôt/,
   );
   assert.match(
     parseStudentProject({ path: "university_search", monthly_budget: "-1" }).error ?? "",
