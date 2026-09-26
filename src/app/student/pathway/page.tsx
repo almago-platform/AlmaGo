@@ -8,6 +8,7 @@ import {
   type AcademicEvidenceRecord,
 } from "@/lib/academic-evidence";
 import { isPublishableLanguageCourse } from "@/lib/language-courses";
+import { isPublishableFinanceInsuranceOption } from "@/lib/finance-insurance";
 import {
   determineRegulatoryPath,
   type RegulatoryPathDecision,
@@ -55,6 +56,8 @@ export default async function StudentPathwayPage() {
     documentsResult,
     evidenceResult,
     coursesResult,
+    financeResult,
+    checklistResult,
   ] = await Promise.all([
     supabase
       .from("student_projects")
@@ -75,6 +78,15 @@ export default async function StudentPathwayPage() {
       .eq("purpose", "study_preparation")
       .eq("is_active", true)
       .lte("verified_at", now.toISOString()),
+    supabase
+      .from("finance_insurance_catalog")
+      .select("id,provider_name,product_name,kind,description,official_source_url,application_url,price_notes,eligibility_notes,verified_at,is_active")
+      .eq("is_active", true)
+      .lte("verified_at", now.toISOString()),
+    supabase
+      .from("student_checklist_items")
+      .select("id,status")
+      .eq("student_id", user.id),
   ]);
 
   if (
@@ -82,6 +94,8 @@ export default async function StudentPathwayPage() {
     || documentsResult.error
     || evidenceResult.error
     || coursesResult.error
+    || financeResult.error
+    || checklistResult.error
   ) {
     return <PathwayUnavailable />;
   }
@@ -110,6 +124,12 @@ export default async function StudentPathwayPage() {
       && isPublishableLanguageCourse(course, now),
   );
 
+  const publishableFinanceOptions = (financeResult.data || []).filter((option) =>
+    isPublishableFinanceInsuranceOption(option, now),
+  );
+  const checklistItems = checklistResult.data || [];
+  const completedChecklistItems = checklistItems.filter((item) => item.status === "completed").length;
+
   const facts = {
     project_path: projectResult.data?.path || null,
     accepted_definitive_admission: evidenceSummary.accepted_definitive_admission,
@@ -130,7 +150,7 @@ export default async function StudentPathwayPage() {
     <main className="mx-auto w-full max-w-7xl px-4 py-7 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
       <PageHeader
         badge="Parcours Allemagne"
-        title="Admission, préparation et parcours de séjour"
+        title="Admission, préparation, séjour et dossier final"
         description="AlmaGo relie votre projet, vos preuves académiques et les cours vérifiés pour montrer où en est votre dossier. Cette vue organise les faits enregistrés ; elle ne constitue ni une décision d’admission ni une décision de visa ou de titre de séjour."
         actions={<ButtonLink href="/student/project" variant="secondary">Modifier mon projet</ButtonLink>}
       />
@@ -173,7 +193,7 @@ export default async function StudentPathwayPage() {
           </h2>
         </div>
 
-        <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-4">
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           <PathwayCard
             number="1"
             title="Projet académique"
@@ -228,6 +248,30 @@ export default async function StudentPathwayPage() {
             href={nextAction.href}
             linkLabel={nextAction.label}
             tone={decision.status === "confirmed_basis" ? "done" : decision.status === "blocked" ? "attention" : "neutral"}
+          />
+
+          <PathwayCard
+            number="5"
+            title="Financement & assurance"
+            state={publishableFinanceOptions.length ? `${publishableFinanceOptions.length} option${publishableFinanceOptions.length > 1 ? "s" : ""} vérifiée${publishableFinanceOptions.length > 1 ? "s" : ""}` : "Catalogue à compléter"}
+            detail={publishableFinanceOptions.length
+              ? "Consultez les options publiées avec leur source officielle. AlmaGo ne les classe pas et ne déduit pas votre éligibilité."
+              : "Aucune option vérifiée n’est actuellement publiée. Aucun fournisseur n’est proposé par défaut."}
+            href="/student/finance-insurance"
+            linkLabel="Voir les options"
+            tone={publishableFinanceOptions.length ? "done" : "neutral"}
+          />
+
+          <PathwayCard
+            number="6"
+            title="Démarches finales"
+            state={checklistItems.length ? `${completedChecklistItems}/${checklistItems.length} terminées` : "Aucune étape enregistrée"}
+            detail={checklistItems.length
+              ? "La checklist regroupe les actions opérationnelles réellement enregistrées dans votre dossier."
+              : "Les démarches apparaîtront ici lorsqu’elles seront enregistrées dans votre dossier."}
+            href="/student/checklist"
+            linkLabel="Voir mes démarches"
+            tone={checklistItems.length > 0 && completedChecklistItems === checklistItems.length ? "done" : "neutral"}
           />
         </div>
       </section>

@@ -10,6 +10,8 @@ test("student pathway wires real project, evidence and language-course facts int
   assert.match(page, /from\("student_projects"\)/);
   assert.match(page, /from\("academic_evidence"\)/);
   assert.match(page, /from\("language_courses"\)/);
+  assert.match(page, /from\("finance_insurance_catalog"\)/);
+  assert.match(page, /from\("student_checklist_items"\)/);
   assert.match(page, /summarizeAcademicEvidence\(evidence, now\)/);
   assert.match(page, /isPublishableLanguageCourse\(course, now\)/);
   assert.match(page, /determineRegulatoryPath\(facts\)/);
@@ -29,6 +31,8 @@ test("pathway fails closed when a required data source cannot be loaded", () => 
   assert.match(page, /documentsResult\.error/);
   assert.match(page, /evidenceResult\.error/);
   assert.match(page, /coursesResult\.error/);
+  assert.match(page, /financeResult\.error/);
+  assert.match(page, /checklistResult\.error/);
   assert.match(page, /AlmaGo ne propose aucun parcours par défaut/);
 });
 
@@ -39,6 +43,7 @@ test("next actions remain bounded to existing student surfaces", () => {
     "/student/language-courses",
     "/student/orientation",
     "/student/checklist",
+    "/student/finance-insurance",
   ]) {
     assert.match(page, new RegExp(href.replaceAll("/", "\\/")));
   }
@@ -47,6 +52,8 @@ test("next actions remain bounded to existing student surfaces", () => {
 test("the real student shell and dashboard expose the pathway page", () => {
   assert.match(shell, /Mon parcours/);
   assert.match(shell, /\/student\/pathway/);
+  assert.match(shell, /Financement & assurance/);
+  assert.match(shell, /\/student\/finance-insurance/);
   assert.match(dashboard, /Voir mon parcours/);
   assert.match(dashboard, /\/student\/pathway/);
 });
