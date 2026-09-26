@@ -226,7 +226,7 @@ export function StudentLanguageCoursesPanel() {
 
   return (
     <div className="mt-8 space-y-6">
-      <Card className="border-[var(--brand-border)] bg-[var(--brand-soft)]/40 shadow-none">
+      <Card className="border-[var(--brand-border)] bg-[var(--brand-soft)]/55 shadow-none">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <h2 className="text-lg font-bold text-slate-950">Votre choix actuel</h2>
@@ -252,7 +252,7 @@ export function StudentLanguageCoursesPanel() {
         {selectionError && <p className="mt-3 text-sm font-semibold text-red-700" role="alert">{selectionError}</p>}
       </Card>
 
-      <Card className="border-[var(--brand-border)] bg-[var(--brand-soft)]/40 shadow-none">
+      <Card className="border-[var(--brand-border)] bg-[var(--brand-soft)]/55 shadow-none">
         <h2 className="text-lg font-bold text-slate-950">Comment lire ce catalogue ?</h2>
         <p className="mt-2 max-w-4xl text-sm leading-6 text-slate-700">
           Les informations affichées proviennent de fiches vérifiées dans AlmaGo. Un cours intensif n’est pas automatiquement une préparation universitaire. La présence d’un cours ici ne constitue ni une décision d’admission ni une décision de visa.
@@ -333,7 +333,7 @@ export function StudentLanguageCoursesPanel() {
         <div className="mb-4 flex flex-col justify-between gap-2 sm:flex-row sm:items-end">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">Catalogue vérifié</p>
-            <h2 id="language-course-results-title" className="mt-1 text-2xl font-bold text-slate-950">
+            <h2 id="language-course-results-title" className="mt-1 text-2xl font-semibold text-slate-950">
               Cours disponibles
             </h2>
           </div>
@@ -369,12 +369,12 @@ export function StudentLanguageCoursesPanel() {
         )}
 
         {!loading && !error && courses.length > 0 && (
-          <div className="grid gap-5 lg:grid-cols-2">
+          <div className="space-y-4">
             {courses.map((course) => {
               const start = formatDate(course.starts_on);
               const end = formatDate(course.ends_on);
               return (
-                <Card as="article" key={course.id} className="flex h-full flex-col justify-between">
+                <Card as="article" key={course.id} className="shadow-none">
                   <div>
                     <div className="flex flex-wrap items-start justify-between gap-3">
                       <div className="min-w-0">
@@ -417,7 +417,7 @@ export function StudentLanguageCoursesPanel() {
                         href={course.source_url}
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-flex min-h-11 items-center justify-center rounded-[var(--radius-control)] border border-[var(--border)] px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)]"
+                        className="inline-flex min-h-11 items-center justify-center rounded-[var(--radius-control)] border border-[var(--border-strong)] bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:border-[var(--brand)] hover:text-[var(--brand)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)]"
                       >
                         Voir la source officielle
                       </a>
@@ -438,7 +438,7 @@ export function StudentLanguageCoursesPanel() {
                         href={course.application_url}
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-flex min-h-11 items-center justify-center rounded-[var(--radius-control)] bg-[var(--brand)] px-4 py-2 text-sm font-semibold text-white hover:opacity-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] focus-visible:ring-offset-2"
+                        className="inline-flex min-h-11 items-center justify-center rounded-[var(--radius-control)] border border-[var(--border-strong)] bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:border-[var(--brand)] hover:text-[var(--brand)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)]"
                       >
                         Voir le lien d’inscription
                       </a>

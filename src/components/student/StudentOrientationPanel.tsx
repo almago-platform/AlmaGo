@@ -172,14 +172,14 @@ export function StudentOrientationPanel({
       )}
 
       <section aria-label="Synthèse orientation" className="grid gap-5 lg:grid-cols-[1.15fr_0.85fr]">
-        <Card className="relative overflow-hidden border-[var(--brand-border)] bg-white shadow-[0_24px_55px_-38px_rgba(41,48,139,0.5)]">
-          <div aria-hidden="true" className="absolute inset-y-0 left-0 w-1.5 bg-[var(--brand)]" />
+        <Card className="relative overflow-hidden border-[var(--brand-border)] bg-white shadow-none">
+          <div aria-hidden="true" className="absolute inset-y-0 left-0 w-1 bg-[var(--brand)]" />
           <div className="pl-2 sm:pl-3">
             <div className="flex flex-wrap items-center gap-3">
               <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Votre orientation</p>
               <Badge variant={items.length ? "info" : "neutral"}>{items.length ? "Pistes disponibles" : "Aucune piste publiée"}</Badge>
             </div>
-            <h2 className="mt-4 text-2xl font-bold tracking-[-0.03em] text-slate-950">Comparez avant de décider.</h2>
+            <h2 className="mt-4 text-2xl font-semibold tracking-[-0.03em] text-slate-950">Comparez avant de décider.</h2>
             <p className="mt-3 text-sm leading-6 text-slate-600">
               {applicationStateError
                 ? "Vos recommandations restent visibles, mais nous ne pouvons pas confirmer l’état de vos intérêts enregistrés pour le moment."
@@ -190,7 +190,7 @@ export function StudentOrientationPanel({
                     : "Aucune recommandation n’est publiée pour le moment. Vérifiez que votre profil contient les informations utiles à l’orientation."}
             </p>
             {nextProgram && (
-              <div className="mt-6 rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface-muted)]/55 p-4">
+              <div className="mt-6 rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4">
                 <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--accent-strong)]">À regarder maintenant</p>
                 <p className="mt-2 font-bold text-slate-950">{nextProgram.name}</p>
                 <p className="mt-1 text-sm text-slate-600">{nextProgram.degree_level} · {nextProgram.field || "Domaine à préciser"}</p>
@@ -223,13 +223,13 @@ export function StudentOrientationPanel({
           <div className="mb-4 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Vos pistes</p>
-              <h2 id="recommended-programs-title" className="mt-1 text-2xl font-bold tracking-[-0.03em] text-slate-950">Programmes à comparer</h2>
+              <h2 id="recommended-programs-title" className="mt-1 text-2xl font-semibold tracking-[-0.03em] text-slate-950">Programmes à comparer</h2>
               <p className="mt-1 text-sm leading-6 text-slate-600">Chaque fiche reprend uniquement les critères enregistrés dans AlmaGo. Vérifiez toujours les informations importantes auprès de la source officielle.</p>
             </div>
             <ButtonLink href="/student/applications" variant="secondary">Mes candidatures</ButtonLink>
           </div>
 
-          <div className="grid gap-5 lg:grid-cols-2">
+          <div className="space-y-4">
             {items.map((recommendation) => {
               const program = firstProgram(recommendation);
               const university = firstUniversity(program);
@@ -241,7 +241,7 @@ export function StudentOrientationPanel({
                   as="article"
                   key={recommendation.id}
                   aria-labelledby={`student-recommendation-title-${recommendation.id}`}
-                  className={`flex h-full flex-col transition-shadow duration-150 hover:shadow-[var(--shadow-soft)] ${recommendation.student_interest_at ? "border-[var(--brand-border)] bg-[var(--brand-soft)]" : ""}`}
+                  className={`shadow-none ${recommendation.student_interest_at ? "border-[var(--brand-border)] bg-[var(--brand-soft)]/55" : ""}`}
                 >
                   <div className="flex flex-col gap-4">
                     <div className="flex flex-wrap items-start justify-between gap-3">
@@ -260,9 +260,9 @@ export function StudentOrientationPanel({
                         {program.name}
                       </h3>
                       <div className="mt-3 flex flex-wrap gap-2 text-xs font-semibold text-slate-600">
-                        <span className="rounded-full bg-slate-100 px-3 py-1.5">{program.degree_level}</span>
-                        <span className="rounded-full bg-slate-100 px-3 py-1.5">{program.field || "Domaine à préciser"}</span>
-                        {program.teaching_language && <span className="rounded-full bg-slate-100 px-3 py-1.5">{program.teaching_language}</span>}
+                        <span className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-2.5 py-1.5">{program.degree_level}</span>
+                        <span className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-2.5 py-1.5">{program.field || "Domaine à préciser"}</span>
+                        {program.teaching_language && <span className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-2.5 py-1.5">{program.teaching_language}</span>}
                       </div>
                     </div>
                   </div>
