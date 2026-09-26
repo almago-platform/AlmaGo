@@ -4,6 +4,10 @@ import { DocumentsPanel } from "@/components/student/DocumentsPanel";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Card } from "@/components/ui/Card";
 import { createClient } from "@/lib/supabase/server";
+import {
+  toStudentAcademicEvidenceView,
+  type AcademicEvidenceStoreRow,
+} from "@/lib/academic-evidence-store";
 
 export const dynamic = "force-dynamic";
 
@@ -24,7 +28,7 @@ export default async function StudentDocumentsPage() {
   if (profileError) return <DocumentsUnavailable />;
   if (!profile?.onboarding_completed) redirect("/student/onboarding");
 
-  const [documentsResult, historyResult] = await Promise.all([
+  const [documentsResult, historyResult, evidenceResult] = await Promise.all([
     supabase
       .from("documents")
       .select("id,category,original_filename,size_bytes,status,admin_comment,created_at")
@@ -35,9 +39,25 @@ export default async function StudentDocumentsPage() {
       .like("event_type", "document_%")
       .order("created_at", { ascending: false })
       .limit(10),
+    supabase
+      .from("academic_evidence")
+      .select("id,student_id,evidence_type,institution,evidence_date,origin,verification_status,document_id,verified_at,created_at,updated_at")
+      .order("updated_at", { ascending: false }),
   ]);
 
   if (documentsResult.error) return <DocumentsUnavailable />;
+
+  const documentStatusById = new Map(
+    (documentsResult.data || []).map((document) => [document.id, document.status]),
+  );
+  const evidence = (evidenceResult.data || []).map((row) =>
+    toStudentAcademicEvidenceView({
+      ...row,
+      document_status: row.document_id
+        ? documentStatusById.get(row.document_id) || null
+        : null,
+    } as AcademicEvidenceStoreRow),
+  );
 
   return (
     <main className="mx-auto w-full max-w-7xl px-4 py-7 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
@@ -50,6 +70,8 @@ export default async function StudentDocumentsPage() {
         documents={documentsResult.data || []}
         history={historyResult.data || []}
         historyLoadError={Boolean(historyResult.error)}
+        evidence={evidence}
+        evidenceLoadError={Boolean(evidenceResult.error)}
       />
     </main>
   );

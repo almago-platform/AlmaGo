@@ -2,18 +2,28 @@ import { AdminDocumentsPanel } from "@/components/admin/AdminDocumentsPanel";
 import { Card } from "@/components/ui/Card";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { createClient } from "@/lib/supabase/server";
+import {
+  toAdminAcademicEvidenceView,
+  type AcademicEvidenceStoreRow,
+} from "@/lib/academic-evidence-store";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminDocumentsPage() {
   const supabase = await createClient();
-  const { data: documents, error } = await supabase
-    .from("documents")
-    .select("id,category,original_filename,status,admin_comment,created_at,profiles(first_name,last_name)")
-    .in("status", ["pending", "replace_required"])
-    .order("created_at", { ascending: true });
+  const [documentsResult, evidenceResult] = await Promise.all([
+    supabase
+      .from("documents")
+      .select("id,student_id,category,original_filename,status,admin_comment,created_at,profiles(first_name,last_name)")
+      .in("status", ["pending", "replace_required", "approved"])
+      .order("created_at", { ascending: true }),
+    supabase
+      .from("academic_evidence")
+      .select("id,student_id,evidence_type,institution,evidence_date,origin,verification_status,document_id,verified_at,created_at,updated_at")
+      .order("updated_at", { ascending: false }),
+  ]);
 
-  if (error) {
+  if (documentsResult.error) {
     return (
       <main className="mx-auto w-full max-w-7xl px-4 py-7 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
         <PageHeader badge="Administration" title="Revue des documents" />
@@ -36,7 +46,17 @@ export default async function AdminDocumentsPage() {
         title="Revue des documents"
         description="Traitez les pièces en attente, consultez le contexte du dossier et gardez explicite tout message qui sera visible par l’étudiant."
       />
-      <AdminDocumentsPanel documents={documents || []} />
+      <AdminDocumentsPanel
+        documents={documentsResult.data || []}
+        evidence={(evidenceResult.data || []).map((row) => {
+          const document = (documentsResult.data || []).find((item) => item.id === row.document_id);
+          return toAdminAcademicEvidenceView({
+            ...row,
+            document_status: document?.status || null,
+          } as AcademicEvidenceStoreRow);
+        })}
+        evidenceLoadError={Boolean(evidenceResult.error)}
+      />
     </main>
   );
 }
