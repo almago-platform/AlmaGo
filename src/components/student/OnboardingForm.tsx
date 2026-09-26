@@ -47,6 +47,33 @@ const initial: FormData = {
   budget_range: "",
 };
 
+const scalarKeys = [
+  "first_name",
+  "last_name",
+  "birth_date",
+  "nationality",
+  "current_city",
+  "phone",
+  "last_diploma",
+  "bac_track",
+  "bac_year",
+  "general_average",
+  "institution",
+  "current_university_studies",
+  "current_field",
+  "university_semesters",
+  "german_level",
+  "english_level",
+  "french_level",
+  "language_certificate",
+  "language_certificate_other",
+  "target_degree",
+  "target_field",
+  "study_language",
+  "target_intake",
+  "budget_range",
+] as const;
+
 const steps = [
   { id: 1, title: "Identité", description: "Vos informations principales" },
   { id: 2, title: "Parcours", description: "Votre parcours académique" },
@@ -55,12 +82,19 @@ const steps = [
   { id: 5, title: "Validation", description: "Vérification finale" },
 ];
 
-function mergeProfile(profile: Partial<FormData>): FormData {
-  return {
-    ...initial,
-    ...profile,
-    preferred_cities: Array.isArray(profile.preferred_cities) ? profile.preferred_cities : [],
-  };
+function mergeProfile(profile: Record<string, unknown>): FormData {
+  const merged: FormData = { ...initial };
+
+  for (const key of scalarKeys) {
+    const value = profile[key];
+    if (value != null) merged[key] = String(value);
+  }
+
+  merged.preferred_cities = Array.isArray(profile.preferred_cities)
+    ? profile.preferred_cities.filter((city): city is string => typeof city === "string")
+    : [];
+
+  return merged;
 }
 
 function valueOrDash(value: string | string[] | undefined) {
@@ -68,7 +102,7 @@ function valueOrDash(value: string | string[] | undefined) {
   return value && value.trim() ? value : "-";
 }
 
-export function OnboardingForm({ profile }: { profile: Partial<FormData> }) {
+export function OnboardingForm({ profile }: { profile: Record<string, unknown> }) {
   const [step, setStep] = useState(1);
   const [data, setData] = useState(() => mergeProfile(profile));
   const [consent, setConsent] = useState(false);
