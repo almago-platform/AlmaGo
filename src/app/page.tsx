@@ -1,6 +1,6 @@
 import { HomeHeader } from "@/components/public/HomeHeader";
 import { HomeHero } from "@/components/public/HomeHero";
-import { HomeValueSection } from "@/components/public/HomeValueSection";
+import { HomeValueSection } from "@/components/public/HomeValueSection";\nimport { HomeHumanSupportSection } from "@/components/public/HomeHumanSupportSection";
 import { HomeJourneySection } from "@/components/public/HomeJourneySection";
 import { HomeProductPreview } from "@/components/public/HomeProductPreview";
 import { HomeTrustSection } from "@/components/public/HomeTrustSection";
