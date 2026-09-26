@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { StudentProjectForm } from "@/components/student/StudentProjectForm";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -14,12 +15,12 @@ export default async function StudentProjectPage() {
     .eq("student_id", user.id)
     .maybeSingle();
 
-  return <main className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6 sm:py-12">
-    <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Mon projet Allemagne</p>
-    <h1 className="mt-3 text-3xl font-bold tracking-[-0.04em] text-slate-950 sm:text-4xl">Définissons votre point de départ</h1>
-    <p className="mt-4 max-w-3xl text-base leading-7 text-slate-600">
-      Décrivez votre situation et votre objectif avec vos propres mots. AlmaGo utilise ces informations pour organiser les prochaines étapes sans vous demander de choisir vous-même une catégorie juridique de visa.
-    </p>
+  return <main className="mx-auto w-full max-w-6xl px-4 py-7 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
+    <PageHeader
+      badge="Mon projet"
+      title="Définissons votre point de départ"
+      description="Décrivez votre situation et votre objectif avec vos propres mots. AlmaGo utilise ces informations pour organiser les prochaines étapes sans vous demander de choisir vous-même une catégorie juridique de visa."
+    />
     <StudentProjectForm project={project as Parameters<typeof StudentProjectForm>[0]["project"]} />
   </main>;
 }

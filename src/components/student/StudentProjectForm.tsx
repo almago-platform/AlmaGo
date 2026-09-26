@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { Button } from "@/components/ui/Button";
 import { projectPathOptions, type ProjectPath } from "@/lib/student/project";
 
 type Project = {
@@ -71,12 +72,12 @@ export function StudentProjectForm({ project }: { project: Project }) {
   return (
     <form onSubmit={submit} className="mt-8 space-y-8">
       <fieldset>
-        <legend className="text-lg font-bold text-slate-950">Quel accompagnement recherchez-vous ?</legend>
+        <legend className="text-lg font-semibold text-slate-950">Quel accompagnement recherchez-vous ?</legend>
         <div className="mt-4 grid gap-4 md:grid-cols-2">
           {projectPathOptions.map((option) => (
             <label
               key={option.value}
-              className={`cursor-pointer rounded-2xl border p-5 transition ${selected === option.value ? "border-[var(--brand)] bg-[var(--brand-soft)] ring-2 ring-[var(--brand-border)]" : "border-slate-200 bg-white hover:border-slate-300"}`}
+              className={`cursor-pointer rounded-[var(--radius-panel)] border p-5 transition ${selected === option.value ? "border-[var(--brand)] bg-[var(--brand-soft)] ring-1 ring-[var(--brand-border)]" : "border-slate-200 bg-white hover:border-slate-300"}`}
             >
               <input
                 className="sr-only"
@@ -93,7 +94,7 @@ export function StudentProjectForm({ project }: { project: Project }) {
         </div>
       </fieldset>
 
-      <div className="grid gap-5 rounded-2xl border border-slate-200 bg-white p-5 sm:grid-cols-2 sm:p-6">
+      <div className="grid gap-5 rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-5 sm:grid-cols-2 sm:p-6">
         <Field label="Diplôme actuel" name="current_diploma" defaultValue={project?.current_diploma} placeholder="Ex. Licence en informatique" maxLength={160} />
         <Field label="Pays du diplôme" name="diploma_country" defaultValue={project?.diploma_country} placeholder="Ex. TN" hint="Code pays à 2 lettres, par exemple TN, FR ou DE." maxLength={2} />
         <Field
@@ -114,7 +115,7 @@ export function StudentProjectForm({ project }: { project: Project }) {
 
         <label>
           <span className="text-sm font-bold text-slate-800">Budget mensuel prévu</span>
-          <div className="mt-2 flex overflow-hidden rounded-xl border border-slate-300 bg-white">
+          <div className="mt-2 flex overflow-hidden rounded-[var(--radius-control)] border border-slate-300 bg-white">
             <input
               name="monthly_budget"
               type="number"
@@ -138,7 +139,7 @@ export function StudentProjectForm({ project }: { project: Project }) {
             defaultValue={project?.actual_objective ?? ""}
             rows={4}
             placeholder="Expliquez ce que vous souhaitez réellement faire en Allemagne."
-            className="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-950"
+            className="field mt-2 min-h-28 resize-y"
           />
         </label>
 
@@ -149,15 +150,15 @@ export function StudentProjectForm({ project }: { project: Project }) {
             maxLength={2000}
             defaultValue={project?.notes ?? ""}
             rows={4}
-            className="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-950"
+            className="field mt-2 min-h-28 resize-y"
           />
         </label>
       </div>
 
       <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
-        <button disabled={status === "saving"} className="rounded-xl bg-[var(--brand)] px-5 py-3 font-bold text-white disabled:opacity-60">
+        <Button type="submit" disabled={status === "saving"}>
           {status === "saving" ? "Enregistrement…" : "Enregistrer mon projet"}
-        </button>
+        </Button>
         <p aria-live="polite" className={`text-sm font-semibold ${status === "error" ? "text-red-700" : "text-emerald-700"}`}>{message}</p>
       </div>
     </form>
@@ -187,7 +188,7 @@ function Field({
         defaultValue={defaultValue ?? ""}
         placeholder={placeholder}
         maxLength={maxLength}
-        className="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-950"
+        className="field mt-2"
       />
       {hint && <span className="mt-1 block text-xs text-slate-500">{hint}</span>}
     </label>
