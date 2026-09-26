@@ -54,14 +54,14 @@ test("Admin evidence acceptance and replacement require explicit confirmation", 
 });
 
 test("Admin evidence write uses only the bounded backend contract and connected student/document context", () => {
-  const writeBody = adminPanel.match(
-    /fetch\("\/api\/admin\/academic-evidence"[\s\S]*?body: JSON\.stringify\(\{([\s\S]*?)\}\),/,
-  )?.[1] || "";
-  assert.match(adminPanel, /fetch\("\/api\/admin\/academic-evidence"/);
-  assert.match(writeBody, /student_id: document\.student_id/);
-  assert.match(writeBody, /origin: "official_document"/);
-  assert.match(writeBody, /document_id: document\.id/);
-  assert.doesNotMatch(writeBody, /verified_by|verified_at:/);
+  const saveEvidence = adminPanel.match(
+    /async function saveEvidence\([\s\S]*?\n  \}\n\n  return \(\n    <div>/,
+  )?.[0] || "";
+  assert.match(saveEvidence, /fetch\("\/api\/admin\/academic-evidence"/);
+  assert.match(saveEvidence, /student_id: document\.student_id/);
+  assert.match(saveEvidence, /origin: "official_document"/);
+  assert.match(saveEvidence, /document_id: document\.id/);
+  assert.doesNotMatch(saveEvidence, /verified_by|verified_at:/);
 });
 
 test("evidence load failures do not block ordinary document review surfaces", () => {
