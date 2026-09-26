@@ -216,6 +216,25 @@ export default async function StudentEntry() {
         </Card>
       </section>
 
+      <Card className="mt-5 border-[#ded7cd] bg-[#f7f4ef] shadow-none">
+        <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--accent-strong)]">Votre repère AlmaGo</p>
+            <h2 className="mt-2 max-w-3xl text-xl font-bold tracking-[-0.02em] text-slate-950 sm:text-2xl">
+              Vous gardez les décisions. AlmaGo garde les étapes lisibles.
+            </h2>
+            <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
+              Quand le parcours devient complexe, revenez ici : nous mettons en évidence ce qui est enregistré, ce qui manque et la prochaine action utile, sans remplacer les décisions des universités ou des autorités.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2 lg:max-w-xs lg:justify-end">
+            <span className="rounded-full border border-[#ded7cd] bg-white px-3 py-1.5 text-xs font-bold text-slate-700">Comprendre</span>
+            <span className="rounded-full border border-[#ded7cd] bg-white px-3 py-1.5 text-xs font-bold text-slate-700">Préparer</span>
+            <span className="rounded-full border border-[#ded7cd] bg-white px-3 py-1.5 text-xs font-bold text-slate-700">Vérifier</span>
+          </div>
+        </div>
+      </Card>
+
       <StudentJourneyOverview stages={journeyStages} />
 
       <Card className="mt-8 border-[var(--brand-border)] bg-[var(--brand-soft)]/70 shadow-none">
