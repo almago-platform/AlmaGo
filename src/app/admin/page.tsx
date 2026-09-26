@@ -98,7 +98,7 @@ export default async function AdminEntry() {
       : staleCatalogue > 0
         ? {
             badge: "Catalogue à revalider",
-            title: `${staleCatalogue} fiche${staleCatalogue > 1 ? "s" : ""} vérifiée${staleCatalogue > 1 ? "s" : ""} a${staleCatalogue > 1 ? "ont" : ""} expiré`,
+            title: staleCatalogue > 1 ? `${staleCatalogue} fiches vérifiées ont expiré` : "1 fiche vérifiée a expiré",
             description: "Ces fiches ne sont plus publiées aux étudiants. Revalidez leur source officielle avant de les remettre dans le catalogue visible.",
             href: staleLanguage > 0 ? "/admin/language-courses" : "/admin/finance-insurance",
             action: "Revalider le catalogue",
@@ -129,7 +129,7 @@ export default async function AdminEntry() {
         <Card className="relative overflow-hidden border-[var(--brand-border)] bg-white shadow-[0_24px_55px_-38px_rgba(41,48,139,0.5)]">
           <div aria-hidden="true" className="absolute inset-y-0 left-0 w-1.5 bg-[var(--brand)]" />
           <div className="pl-2 sm:pl-3">
-            <Badge variant={documents > 0 || staleCatalogue > 0 ? "warning" : applications > 0 ? "info" : "success"}>{priority.badge}</Badge>
+            <Badge variant={documents > 0 ? "warning" : applications > 0 ? "info" : staleCatalogue > 0 ? "warning" : "success"}>{priority.badge}</Badge>
             <p className="mt-5 text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">À traiter maintenant</p>
             <h2 className="mt-2 max-w-3xl text-2xl font-bold tracking-[-0.03em] text-slate-950 sm:text-3xl">
               {priority.title}
