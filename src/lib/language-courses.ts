@@ -1,5 +1,3 @@
-import { catalogVerificationCutoff, isCatalogVerificationCurrent } from "@/lib/catalog-freshness";
-
 export const languageCoursePurposes = [
   "study_preparation",
   "standalone_language",
@@ -59,6 +57,17 @@ export type LanguageCourseFilterResult =
 const MAX_TEXT = 180;
 const MAX_URL = 2048;
 const MAX_PRICE_CENTS = 100_000_000;
+const CATALOG_VERIFICATION_MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000;
+
+function verificationCutoff(now: Date) {
+  return new Date(now.getTime() - CATALOG_VERIFICATION_MAX_AGE_MS).toISOString();
+}
+
+function verificationCurrent(verifiedAt: string | null, now: Date) {
+  if (!verifiedAt || Number.isNaN(Date.parse(verifiedAt))) return false;
+  const timestamp = Date.parse(verifiedAt);
+  return timestamp <= now.getTime() && timestamp > now.getTime() - CATALOG_VERIFICATION_MAX_AGE_MS;
+}
 
 const payloadKeys = new Set([
   "title",
@@ -247,7 +256,7 @@ export function isPublishableLanguageCourse(
   if (!httpUrl(course.source_url)) return false;
   if (course.application_url && !httpUrl(course.application_url)) return false;
 
-  return isCatalogVerificationCurrent(course.verified_at, now);
+  return verificationCurrent(course.verified_at, now);
 }
 
 export function parseLanguageCourseFilters(
@@ -309,8 +318,8 @@ export function publishableLanguageCoursesQuery(
   if (!parsed.ok) return null;
 
   const filters = parsed.value;
-  const cutoff = catalogVerificationCutoff(now);
-  if (!cutoff) return null;
+  if (!(now instanceof Date) || Number.isNaN(now.getTime())) return null;
+  const cutoff = verificationCutoff(now);
 
   let scoped = query
     .eq("is_active", true)

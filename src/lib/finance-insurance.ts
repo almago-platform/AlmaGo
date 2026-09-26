@@ -1,5 +1,3 @@
-import { isCatalogVerificationCurrent } from "@/lib/catalog-freshness";
-
 export const financeInsuranceKinds = [
   "blocked_account_provider",
   "health_insurance_provider",
@@ -39,6 +37,13 @@ const MAX_NAME = 180;
 const MAX_DESCRIPTION = 4000;
 const MAX_NOTES = 2000;
 const MAX_URL = 2048;
+const CATALOG_VERIFICATION_MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000;
+
+function verificationCurrent(verifiedAt: string | null, asOf: Date) {
+  if (!verifiedAt || Number.isNaN(Date.parse(verifiedAt))) return false;
+  const timestamp = Date.parse(verifiedAt);
+  return timestamp <= asOf.getTime() && timestamp > asOf.getTime() - CATALOG_VERIFICATION_MAX_AGE_MS;
+}
 const adminFields = new Set([
   "provider_name",
   "product_name",
@@ -146,7 +151,7 @@ export function isPublishableFinanceInsuranceOption(
   if (!(asOf instanceof Date) || Number.isNaN(asOf.getTime())) return false;
   if (!option.is_active || !httpUrl(option.official_source_url)) return false;
   if (option.application_url !== null && !httpUrl(option.application_url)) return false;
-  return isCatalogVerificationCurrent(option.verified_at, asOf);
+  return verificationCurrent(option.verified_at, asOf);
 }
 
 export function parseFinanceInsuranceFilters(body: unknown): FinanceInsuranceParseResult<FinanceInsuranceFilters> {
