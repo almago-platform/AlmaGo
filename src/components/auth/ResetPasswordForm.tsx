@@ -22,28 +22,30 @@ export function ResetPasswordForm() {
       const { error: updateError } = await createClient().auth.updateUser({ password });
 
       if (updateError) {
-        setError("Le lien est expiré ou invalide. Demande un nouveau lien depuis la page de connexion.");
+        setError("Le lien est expiré ou invalide. Demandez un nouveau lien depuis la page de connexion.");
       } else {
-        setMessage("Mot de passe mis à jour. Redirection vers ton espace étudiant...");
+        setMessage("Mot de passe mis à jour. Redirection vers votre espace étudiant...");
         setTimeout(() => router.push("/student"), 700);
       }
     } catch {
-      setError("Une erreur est survenue. Réessaie dans un instant.");
+      setError("Une erreur est survenue. Réessayez dans un instant.");
     } finally {
       setSaving(false);
     }
   }
 
   return (
-    <section className="w-full rounded-2xl border border-slate-200 bg-white p-6 shadow-xl sm:p-8">
-      <p className="text-sm font-bold uppercase tracking-[0.18em] text-[var(--accent-strong)]">AlmaGo</p>
-      <h1 className="mt-3 text-3xl font-bold tracking-tight text-slate-950">Nouveau mot de passe</h1>
-      <p className="mt-3 text-sm leading-6 text-slate-600">
-        Saisis un mot de passe solide pour sécuriser ton accès au dossier.
-      </p>
+    <section className="w-full rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] shadow-none">
+      <div className="border-b border-[var(--border)] px-6 py-6 sm:px-8">
+        <p className="text-sm font-bold uppercase tracking-[0.18em] text-[var(--accent-strong)]">AlmaGo</p>
+        <h1 className="mt-3 text-3xl font-semibold tracking-[-0.035em] text-slate-950">Nouveau mot de passe</h1>
+        <p className="mt-3 text-sm leading-6 text-slate-600">
+          Saisissez un mot de passe solide pour sécuriser votre accès au dossier.
+        </p>
+      </div>
 
-      <form onSubmit={submit} className="mt-7 space-y-5">
-        <label className="block text-sm font-medium text-slate-700">
+      <form onSubmit={submit} className="space-y-5 px-6 py-6 sm:px-8">
+        <label className="block text-sm font-semibold text-slate-700">
           Nouveau mot de passe
           <input
             required
@@ -57,15 +59,15 @@ export function ResetPasswordForm() {
           />
         </label>
 
-        <p id="reset-password-hint" className="text-sm leading-6 text-slate-600">
-          Utilise au moins 8 caractères. Un mot de passe long et unique protège mieux ton espace.
+        <p id="reset-password-hint" className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-3 py-2 text-sm leading-6 text-slate-600">
+          Utilisez au moins 8 caractères. Un mot de passe long et unique protège mieux votre espace.
         </p>
 
         <p
           role="alert"
           className={
             error
-              ? "rounded-lg border border-red-100 bg-red-50 px-4 py-3 text-sm font-medium text-red-700"
+              ? "rounded-[var(--radius-control)] border border-red-100 bg-red-50 px-4 py-3 text-sm font-medium text-red-700"
               : "sr-only"
           }
         >
@@ -76,7 +78,7 @@ export function ResetPasswordForm() {
           role="status"
           className={
             message
-              ? "rounded-lg border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-800"
+              ? "rounded-[var(--radius-control)] border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-800"
               : "sr-only"
           }
         >
