@@ -45,6 +45,11 @@ test("StudentApplicationsPanel has enhanced progress tracking and mobile layout"
   assert.match(applicationsPanel, /"Décision"/);
   assert.match(applicationsPanel, /text-left sm:text-right flex flex-col items-start sm:items-end/);
   assert.match(applicationsPanel, /Suivi des candidatures indisponible/);
+
+  // Corrected withdrawal behavior: withdrawn should be handled separately and not mapped to progress index 4
+  assert.match(applicationsPanel, /normalizedStatus === "withdrawn"/);
+  assert.match(applicationsPanel, /Le suivi de cette candidature a été retiré\./);
+  assert.doesNotMatch(applicationsPanel, /"withdrawn"\].*currentIndex/);
 });
 
 test("StudentJourneyOverview calculates progress and shows visual badges", () => {
@@ -57,4 +62,17 @@ test("StudentJourneyOverview calculates progress and shows visual badges", () =>
   assert.match(journeyOverview, /Accéder/);
   assert.doesNotMatch(journeyOverview, /intelligence artificielle/i);
   assert.doesNotMatch(journeyOverview, /garantie/i);
+
+  // No pseudo-precise numeric percentage completion displayed to user
+  assert.doesNotMatch(journeyOverview, /whitespace-nowrap.*progressPercent/);
+});
+
+test("StudentOrientationPanel has explicit unknown route and unique comparison landmarks", () => {
+  const panelContent = readFileSync("src/components/student/StudentOrientationPanel.tsx", "utf8");
+
+  // Explicit unknown application route mapped to "à confirmer"
+  assert.match(panelContent, /à confirmer/);
+
+  // Unique and differentiated comparison landmarks per program
+  assert.match(panelContent, /aria-label=\{\`Comparaison avec votre projet - \$\{programName\}\`\}/);
 });

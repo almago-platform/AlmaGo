@@ -293,7 +293,7 @@ export function StudentOrientationPanel({
                     </dl>
                   </div>
 
-                  <RequirementAssessment match={recommendation.requirement_match} />
+                  <RequirementAssessment match={recommendation.requirement_match} programName={program.name} />
 
                   <div className="mt-5 rounded-[var(--radius-control)] border border-amber-200 bg-amber-50/60 p-3 text-xs leading-5 text-amber-900">
                     Cette recommandation est une piste d’orientation. Elle ne garantit ni l’éligibilité finale ni l’admission.
@@ -356,7 +356,7 @@ function InfoItem({ label, value }: { label: string; value: string }) {
 }
 
 
-function RequirementAssessment({ match }: { match?: MasterRequirementsMatch | null }) {
+function RequirementAssessment({ match, programName }: { match?: MasterRequirementsMatch | null; programName: string }) {
   if (!match) return null;
 
   const summary = match.has_blocking_mismatch
@@ -368,7 +368,7 @@ function RequirementAssessment({ match }: { match?: MasterRequirementsMatch | nu
         : { label: "Critères comparés", tone: "success" as const };
 
   return (
-    <section className="mt-5 rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-4" aria-label="Comparaison avec votre projet">
+    <section className="mt-5 rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-4" aria-label={`Comparaison avec votre projet - ${programName}`}>
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
           <h4 className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">Comparaison avec votre projet</h4>

@@ -41,8 +41,7 @@ export function StudentJourneyOverview({ stages }: { stages: StudentJourneyStage
                   style={{ width: `${progressPercent}%` }}
                 />
               </div>
-              <span className="text-xs font-bold text-slate-600 whitespace-nowrap">{progressPercent}%</span>
-              <span className="sr-only">Progression globale : {progressPercent}%</span>
+              <span className="sr-only">Progression du parcours</span>
             </div>
           </div>
         </div>

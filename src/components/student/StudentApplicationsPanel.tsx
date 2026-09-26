@@ -35,13 +35,22 @@ function studentEventLabel(eventType: string) {
 function ApplicationStepper({ status }: { status: string }) {
   const normalizedStatus = normalizeApplicationStatus(status);
   
+  if (normalizedStatus === "withdrawn") {
+    return (
+      <div className="mt-4 mb-2 rounded-[var(--radius-control)] bg-slate-100/60 border border-slate-200/80 p-3 text-xs text-slate-600 flex items-center justify-between">
+        <span className="font-medium text-slate-700">Le suivi de cette candidature a été retiré.</span>
+        <Badge variant="neutral">Suivi retiré</Badge>
+      </div>
+    );
+  }
+
   // Define 5 key phases of the application journey
   const stages = [
     { label: "Intérêt", active: true },
     { label: "Préparation", active: ["preparing", "documents_missing"].includes(normalizedStatus || "") },
     { label: "Prêt", active: normalizedStatus === "ready_to_submit" },
     { label: "Envoyé", active: ["submitted", "waiting_university"].includes(normalizedStatus || "") },
-    { label: "Décision", active: ["admission", "rejection", "withdrawn"].includes(normalizedStatus || "") },
+    { label: "Décision", active: ["admission", "rejection"].includes(normalizedStatus || "") },
   ];
 
   // Let's determine the current index
@@ -49,7 +58,7 @@ function ApplicationStepper({ status }: { status: string }) {
   if (["preparing", "documents_missing"].includes(normalizedStatus || "")) currentIndex = 1;
   else if (normalizedStatus === "ready_to_submit") currentIndex = 2;
   else if (["submitted", "waiting_university"].includes(normalizedStatus || "")) currentIndex = 3;
-  else if (["admission", "rejection", "withdrawn"].includes(normalizedStatus || "")) currentIndex = 4;
+  else if (["admission", "rejection"].includes(normalizedStatus || "")) currentIndex = 4;
 
   return (
     <div className="mt-5 mb-2" aria-hidden="true">
