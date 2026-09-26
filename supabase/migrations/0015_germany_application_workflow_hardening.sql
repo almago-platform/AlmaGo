@@ -7,7 +7,7 @@ language sql
 immutable
 security invoker
 set search_path = ''
-as $
+as $fn$
   with normalized as (
     select translate(lower(btrim(value)), 'éèêë', 'eeee') as text
   )
@@ -25,7 +25,7 @@ as $
     else null
   end
   from normalized;
-$;
+$fn$;
 
 revoke execute on function private.application_intake_family(text) from public, anon;
 grant execute on function private.application_intake_family(text) to authenticated;
