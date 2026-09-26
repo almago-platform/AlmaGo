@@ -126,9 +126,9 @@ jobs:
       CI: "true"
       NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
       NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
-      ALMAGO_E2E_STUDENT_EMAIL: ${{ secrets.ALMAGO_E2E_STUDENT_EMAIL }}
+      ALMAGO_E2E_STUDENT_EMAIL: ${{ vars.ALMAGO_E2E_STUDENT_EMAIL || 'phase3.student.a@almago.test' }}
       ALMAGO_E2E_STUDENT_PASSWORD: ${{ secrets.ALMAGO_E2E_STUDENT_PASSWORD }}
-      ALMAGO_E2E_ADMIN_EMAIL: ${{ secrets.ALMAGO_E2E_ADMIN_EMAIL }}
+      ALMAGO_E2E_ADMIN_EMAIL: ${{ vars.ALMAGO_E2E_ADMIN_EMAIL || 'phase3.admin@almago.test' }}
       ALMAGO_E2E_ADMIN_PASSWORD: ${{ secrets.ALMAGO_E2E_ADMIN_PASSWORD }}
     steps:
       - uses: actions/checkout@v4
@@ -145,6 +145,27 @@ jobs:
         run: |
           for name in NEXT_PUBLIC_SUPABASE_URL NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ALMAGO_E2E_STUDENT_EMAIL ALMAGO_E2E_STUDENT_PASSWORD ALMAGO_E2E_ADMIN_EMAIL ALMAGO_E2E_ADMIN_PASSWORD; do
             if [ -z "${!name}" ]; then echo "::error::$name is required for final release"; exit 1; fi
+          done
+
+      - name: Require distinct test-only identities
+        shell: bash
+        run: |
+          student_email="$(printf '%s' "$ALMAGO_E2E_STUDENT_EMAIL" | tr '[:upper:]' '[:lower:]')"
+          admin_email="$(printf '%s' "$ALMAGO_E2E_ADMIN_EMAIL" | tr '[:upper:]' '[:lower:]')"
+
+          if [ "$student_email" = "$admin_email" ]; then
+            echo "::error::Student and admin E2E accounts must be different."
+            exit 1
+          fi
+
+          for email in "$student_email" "$admin_email"; do
+            case "$email" in
+              *e2e*|*test*) ;;
+              *)
+                echo "::error::Final-release E2E emails must be dedicated test identities containing 'e2e' or 'test'."
+                exit 1
+                ;;
+            esac
           done
 
       - name: Install application dependencies

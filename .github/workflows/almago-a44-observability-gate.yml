@@ -1,0 +1,196 @@
+name: AlmaGo A44 Observability Gate
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: "Type VERIFY after the production provider is connected and reviewed"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: almago-a44-observability-gate
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      ALMAGO_OBSERVABILITY_ENABLED: ${{ vars.ALMAGO_OBSERVABILITY_ENABLED }}
+      ALMAGO_OBSERVABILITY_PROVIDER: ${{ vars.ALMAGO_OBSERVABILITY_PROVIDER }}
+    steps:
+      - name: Verify explicit activation and prerequisites
+        uses: actions/github-script@v7
+        env:
+          CONFIRMATION: ${{ inputs.confirmation }}
+          OBS_ENABLED: ${{ env.ALMAGO_OBSERVABILITY_ENABLED }}
+          OBS_PROVIDER: ${{ env.ALMAGO_OBSERVABILITY_PROVIDER }}
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            if (process.env.CONFIRMATION !== "VERIFY") {
+              core.setFailed('Confirmation must be exactly "VERIFY".');
+              return;
+            }
+
+            if (process.env.OBS_ENABLED !== "true") {
+              core.setFailed("ALMAGO_OBSERVABILITY_ENABLED must be exactly true.");
+              return;
+            }
+
+            if (!String(process.env.OBS_PROVIDER || "").trim()) {
+              core.setFailed("ALMAGO_OBSERVABILITY_PROVIDER must be configured.");
+              return;
+            }
+
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const issues = await github.paginate(github.rest.issues.listForRepo, {
+              owner,
+              repo,
+              state: "all",
+              labels: "almago-plan",
+              per_page: 100,
+            });
+
+            const taskId = issue =>
+              String(issue.body || "").match(/<!--\s*almago-plan-task:(A\d{2})\s*-->/)?.[1];
+
+            const complete = id => {
+              const issue = issues.find(item => !item.pull_request && taskId(item) === id);
+              if (!issue) return false;
+              const labels = new Set(
+                (issue.labels || []).map(label => typeof label === "string" ? label : label.name),
+              );
+              return issue.state === "closed" || labels.has("almago-plan-done");
+            };
+
+            const missing = ["A38", "A43"].filter(id => !complete(id));
+            if (missing.length) {
+              core.setFailed("A44 cannot be verified before: " + missing.join(", "));
+              return;
+            }
+
+            core.info(
+              "A44 configuration detected for provider: " +
+              String(process.env.OBS_PROVIDER).trim(),
+            );
+
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Require provider verification evidence
+        shell: bash
+        run: |
+          if ! grep -Fxq "A44_PROVIDER_VERIFIED: true" docs/A44_PROVIDER_VERIFICATION.md; then
+            echo "::error::docs/A44_PROVIDER_VERIFICATION.md is not explicitly verified yet."
+            exit 1
+          fi
+
+          blocker='\\[À REMPLIR\\]|\\[DÉSACTIVÉE / DÉCRIRE\\]|\\[DÉSACTIVÉ / DÉCRIRE\\]|\\[OUI / N/A \\+ MOTIF\\]|\\[PASS / DÉCRIRE\\]'
+          if grep -En "$blocker" docs/A44_PROVIDER_VERIFICATION.md; then
+            echo "::error::Provider verification evidence still contains unresolved placeholders."
+            exit 1
+          fi
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Verify telemetry privacy contract
+        run: |
+          node --test tests/telemetry-contract.test.mjs
+          node --test tests/telemetry-boundary.test.mjs
+
+      - name: Close A44 with exact-SHA evidence
+        uses: actions/github-script@v7
+        env:
+          OBS_PROVIDER: ${{ env.ALMAGO_OBSERVABILITY_PROVIDER }}
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const provider = String(process.env.OBS_PROVIDER || "").trim();
+
+            const issues = await github.paginate(github.rest.issues.listForRepo, {
+              owner,
+              repo,
+              state: "open",
+              labels: "almago-plan",
+              per_page: 100,
+            });
+
+            const issue = issues.find(item =>
+              !item.pull_request &&
+              String(item.body || "").includes("<!-- almago-plan-task:A44 -->")
+            );
+
+            if (!issue) {
+              core.info("A44 is already closed or not materialized.");
+              return;
+            }
+
+            const marker =
+              `<!-- almago-a44-evidence:run=${context.runId};sha=${context.sha} -->`;
+
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner,
+              repo,
+              issue_number: issue.number,
+              per_page: 100,
+            });
+
+            if (!comments.some(comment => String(comment.body || "").includes(marker))) {
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: issue.number,
+                body: [
+                  "A44 OBSERVABILITY GATE: PASS",
+                  "",
+                  "Provider: " + provider,
+                  "Run: " + context.serverUrl + "/" + owner + "/" + repo + "/actions/runs/" + context.runId,
+                  "SHA: " + context.sha,
+                  marker,
+                  "",
+                  "A38 and A43 are complete, the provider verification file is explicitly approved, repository observability variables are enabled, and the telemetry allow-list/privacy-boundary tests pass.",
+                  "",
+                  "This workflow does not expose or inspect provider secrets."
+                ].join("\n"),
+              });
+            }
+
+            await github.rest.issues.addLabels({
+              owner,
+              repo,
+              issue_number: issue.number,
+              labels: ["almago-plan-done"],
+            });
+
+            for (const label of ["almago-human-required", "almago-ai-blocked"]) {
+              await github.rest.issues.removeLabel({
+                owner,
+                repo,
+                issue_number: issue.number,
+                name: label,
+              }).catch(() => null);
+            }
+
+            await github.rest.issues.update({
+              owner,
+              repo,
+              issue_number: issue.number,
+              state: "closed",
+              state_reason: "completed",
+            });
+
+            core.info("A44 closed after explicit observability verification.");
