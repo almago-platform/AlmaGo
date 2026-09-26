@@ -61,12 +61,12 @@ export default async function ProfilePage() {
 
       <div className="grid gap-5 lg:grid-cols-[minmax(15rem,0.35fr)_minmax(0,1fr)] lg:gap-6">
         <aside className="space-y-4 lg:sticky lg:top-6 lg:self-start" aria-label="Repères du profil">
-          <Card className="border-[var(--brand-border)] bg-white shadow-[0_20px_45px_-34px_rgba(41,48,139,0.45)]">
+          <Card className="border-[var(--brand-border)] bg-white shadow-none">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <Badge variant={profileCompletion === 100 ? "success" : "info"}>Profil étudiant</Badge>
               <span className="text-sm font-bold text-[var(--brand)]">{profileCompletion}%</span>
             </div>
-            <h2 className="mt-4 text-xl font-bold tracking-[-0.02em] text-slate-950">Profil complété</h2>
+            <h2 className="mt-4 text-xl font-semibold tracking-[-0.02em] text-slate-950">Profil complété</h2>
             <div className="mt-4">
               <ProgressBar value={profileCompletion} label="Champs requis du profil complétés" />
             </div>
@@ -77,7 +77,7 @@ export default async function ProfilePage() {
 
           <Card className="shadow-none">
             <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Pourquoi ces informations ?</p>
-            <h2 className="mt-3 text-lg font-bold text-slate-950">Un dossier plus cohérent</h2>
+            <h2 className="mt-3 text-lg font-semibold text-slate-950">Un dossier plus cohérent</h2>
             <p className="mt-2 text-sm leading-6 text-slate-600">
               Ces données permettent à AlmaGo d’organiser votre dossier et de présenter des pistes cohérentes avec les informations enregistrées.
             </p>

@@ -120,16 +120,16 @@ export function OnboardingForm({ profile }: { profile: Partial<FormData> }) {
   return (
     <section className="mx-auto grid w-full max-w-6xl gap-6 lg:grid-cols-[0.36fr_1fr]">
       <aside className="space-y-4">
-        <Card className="bg-slate-950 text-white shadow-xl max-lg:shadow-none">
-          <p className="text-sm font-bold uppercase tracking-[0.18em] text-[var(--accent-light)]">AlmaGo</p>
-          <h1 className="mt-4 text-2xl font-bold tracking-tight min-[390px]:text-3xl">Préparez votre dossier étudiant</h1>
-          <p className="mt-4 text-sm leading-6 text-slate-200">
+        <Card className="border-[var(--brand-border)] bg-white text-slate-950 shadow-none">
+          <p className="text-sm font-bold uppercase tracking-[0.18em] text-[var(--accent-strong)]">AlmaGo</p>
+          <h1 className="mt-4 text-2xl font-semibold tracking-[-0.03em] min-[390px]:text-3xl">Préparez votre dossier étudiant</h1>
+          <p className="mt-4 text-sm leading-6 text-slate-600">
             Renseignez les informations essentielles pour organiser votre dossier et votre projet d’études en Allemagne.
           </p>
-          <div className="mt-6 rounded-xl bg-white/10 p-4">
-            <p className="text-sm font-semibold text-[var(--accent-light)]">Étape actuelle</p>
+          <div className="mt-6 rounded-[var(--radius-control)] border border-[var(--brand-border)] bg-[var(--brand-soft)]/55 p-4">
+            <p className="text-sm font-semibold text-[var(--brand)]">Étape actuelle</p>
             <p className="mt-2 text-xl font-bold">{currentStep.title}</p>
-            <p className="mt-1 text-sm text-slate-300">{currentStep.description}</p>
+            <p className="mt-1 text-sm text-slate-600">{currentStep.description}</p>
           </div>
         </Card>
 
@@ -159,15 +159,15 @@ export function OnboardingForm({ profile }: { profile: Partial<FormData> }) {
         </Card>
       </aside>
 
-      <Card as="section" className="sm:p-8">
+      <Card as="section" className="shadow-none sm:p-8">
         <div className="mb-8">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div>
               <p className="text-sm font-bold uppercase tracking-[0.18em] text-[var(--accent-strong)]">Étape {step} sur 5</p>
-              <h2 className="mt-2 text-3xl font-bold tracking-tight text-slate-950">{currentStep.title}</h2>
+              <h2 className="mt-2 text-3xl font-semibold tracking-[-0.035em] text-slate-950">{currentStep.title}</h2>
               <p className="mt-2 text-sm leading-6 text-slate-600">{currentStep.description}</p>
             </div>
-            <span className="rounded-full border border-[var(--brand-border)] bg-[var(--brand-soft)] px-4 py-2 text-sm font-bold text-[var(--brand)]">
+            <span className="rounded-[var(--radius-control)] border border-[var(--brand-border)] bg-[var(--brand-soft)] px-3 py-2 text-sm font-bold text-[var(--brand)]">
               {progress}
             </span>
           </div>
@@ -179,7 +179,7 @@ export function OnboardingForm({ profile }: { profile: Partial<FormData> }) {
 
         {step === 1 && (
           <div className="space-y-5">
-            <h3 className="text-xl font-bold text-slate-950">Informations personnelles</h3>
+            <h3 className="text-xl font-semibold text-slate-950">Informations personnelles</h3>
             <div className="grid gap-4 sm:grid-cols-2">
               <TextInput label="Prénom" required value={String(data.first_name)} onChange={(v) => set("first_name", v)} />
               <TextInput label="Nom" required value={String(data.last_name)} onChange={(v) => set("last_name", v)} />
@@ -193,7 +193,7 @@ export function OnboardingForm({ profile }: { profile: Partial<FormData> }) {
 
         {step === 2 && (
           <div className="space-y-5">
-            <h3 className="text-xl font-bold text-slate-950">Parcours académique</h3>
+            <h3 className="text-xl font-semibold text-slate-950">Parcours académique</h3>
             <div className="grid gap-4 sm:grid-cols-2">
               <SelectInput label="Dernier diplôme" value={String(data.last_diploma)} onChange={(v) => set("last_diploma", v)} options={diplomaOptions} />
               <SelectInput label="Type / section du Bac tunisien" value={String(data.bac_track)} onChange={(v) => set("bac_track", v)} options={tunisianBacTrackOptions} />
@@ -209,7 +209,7 @@ export function OnboardingForm({ profile }: { profile: Partial<FormData> }) {
 
         {step === 3 && (
           <div className="space-y-5">
-            <h3 className="text-xl font-bold text-slate-950">Langues</h3>
+            <h3 className="text-xl font-semibold text-slate-950">Langues</h3>
             <div className="grid gap-4 sm:grid-cols-2">
               <SelectInput label="Allemand" value={String(data.german_level)} onChange={(v) => set("german_level", v)} options={languageLevelOptions} />
               <SelectInput label="Anglais" value={String(data.english_level)} onChange={(v) => set("english_level", v)} options={languageLevelOptions} />
@@ -224,7 +224,7 @@ export function OnboardingForm({ profile }: { profile: Partial<FormData> }) {
 
         {step === 4 && (
           <div className="space-y-5">
-            <h3 className="text-xl font-bold text-slate-950">Projet en Allemagne</h3>
+            <h3 className="text-xl font-semibold text-slate-950">Projet en Allemagne</h3>
             <div className="grid gap-4 sm:grid-cols-2">
               <SelectInput label="Niveau visé" required value={String(data.target_degree)} onChange={(v) => set("target_degree", v)} options={degreeOptions} />
               <SelectInput label="Domaine souhaité" required value={String(data.target_field)} onChange={(v) => set("target_field", v)} options={studyFieldOptions} />
@@ -239,12 +239,12 @@ export function OnboardingForm({ profile }: { profile: Partial<FormData> }) {
         {step === 5 && (
           <div className="space-y-6">
             <div>
-              <h3 className="text-xl font-bold text-slate-950">Confirmez votre profil</h3>
+              <h3 className="text-xl font-semibold text-slate-950">Confirmez votre profil</h3>
               <p className="mt-2 text-sm leading-6 text-slate-600">
                 Vérifiez les informations principales avant d’accéder à votre espace AlmaGo.
               </p>
             </div>
-            <dl className="overflow-hidden rounded-2xl border border-slate-200">
+            <dl className="overflow-hidden rounded-[var(--radius-panel)] border border-[var(--border)]">
               {[
                 ["Nom", `${valueOrDash(data.first_name)} ${valueOrDash(data.last_name)}`],
                 ["Parcours", `${valueOrDash(data.last_diploma)} · ${valueOrDash(data.institution)}`],
@@ -258,7 +258,7 @@ export function OnboardingForm({ profile }: { profile: Partial<FormData> }) {
                 </div>
               ))}
             </dl>
-            <label className="flex gap-3 rounded-2xl border border-[var(--brand-border)] bg-[var(--brand-soft)] p-4 text-sm leading-6 text-slate-700">
+            <label className="flex gap-3 rounded-[var(--radius-control)] border border-[var(--brand-border)] bg-[var(--brand-soft)]/55 p-4 text-sm leading-6 text-slate-700">
               <input
                 type="checkbox"
                 checked={consent}
@@ -274,7 +274,7 @@ export function OnboardingForm({ profile }: { profile: Partial<FormData> }) {
         )}
 
         {error && (
-          <p role="alert" className="mt-6 rounded-lg border border-red-100 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
+          <p role="alert" className="mt-6 rounded-[var(--radius-control)] border border-red-100 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
             {error}
           </p>
         )}
