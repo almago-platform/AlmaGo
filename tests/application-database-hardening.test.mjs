@@ -66,7 +66,7 @@ test("Admin API maps transactional conflicts without exposing raw database error
 
 
 test("database intake normalization stays aligned with TypeScript semantics", () => {
-  assert.match(migration, /create or replace function private\.application_intake_family[\s\S]*?as \$\$[\s\S]*?\$\$;/i);
+  assert.match(migration, /create or replace function private\.application_intake_family[\s\S]*?as \$fn\$[\s\S]*?\$fn\$;/i);
   assert.match(migration, /translate\(lower\(btrim\(value\)\), 'éèêë', 'eeee'\)/);
   assert.match(migration, /text like '%ete%'/);
   assert.match(migration, /text ~ '\(\^\|\[\[:space:\]\]\)ws\(\[\[:space:\]\]\|\$\)'/);
