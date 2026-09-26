@@ -1,70 +1,64 @@
-import Image from "next/image";
-
 const supportSteps = [
   {
-    title: "Comprendre ce qui compte",
-    text: "Chaque étape explique son objectif, les informations utiles et ce qui reste à vérifier.",
+    title: "Comprendre",
+    text: "Pourquoi cette étape compte et quelles informations sont réellement utiles.",
   },
   {
-    title: "Préparer sans se disperser",
-    text: "Votre projet, vos documents, vos candidatures et vos démarches restent reliés dans le même parcours.",
+    title: "Préparer",
+    text: "Ce qui doit être rassemblé, vérifié ou décidé avant de continuer.",
   },
   {
-    title: "Savoir quoi faire ensuite",
-    text: "AlmaGo met en avant la prochaine action enregistrée et distingue clairement votre action du suivi AlmaGo.",
+    title: "Avancer",
+    text: "La prochaine action visible, sans perdre le fil entre deux démarches.",
   },
 ] as const;
 
 export function HomeHumanSupportSection() {
   return (
-    <section className="border-y border-[var(--border)] bg-[#f7f4ef] py-16 sm:py-20 lg:py-24" aria-labelledby="human-support-title">
-      <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[minmax(22rem,0.88fr)_minmax(0,1.12fr)] lg:items-center lg:gap-16 lg:px-8">
-        <figure className="relative overflow-hidden rounded-[calc(var(--radius-panel)+0.35rem)] border border-[#ded7cd] bg-white">
-          <Image
-            src="https://images.unsplash.com/photo-1778735940467-1335c201966d?auto=format&fit=crop&w=1400&q=82"
-            alt="Étudiant travaillant à une table de bibliothèque avec un ordinateur et des notes."
-            width={1400}
-            height={1000}
-            className="h-[22rem] w-full object-cover sm:h-[28rem] lg:h-[31rem]"
-            sizes="(min-width: 1024px) 42vw, 100vw"
-          />
-          <figcaption className="absolute inset-x-4 bottom-4 rounded-[var(--radius-panel)] border border-white/70 bg-white/92 p-4 shadow-[var(--shadow-soft)] backdrop-blur">
-            <p className="text-xs font-bold uppercase tracking-[0.15em] text-[var(--accent-strong)]">Votre projet reste le vôtre</p>
-            <p className="mt-1 text-sm leading-6 text-slate-700">
-              AlmaGo vous aide à organiser les informations et à garder une prochaine étape visible.
-            </p>
-          </figcaption>
-        </figure>
+    <section className="bg-white py-12 sm:py-14 lg:py-16" aria-labelledby="human-support-title">
+      <div className="mx-auto grid max-w-7xl gap-4 px-4 sm:px-6 lg:grid-cols-[0.92fr_1.08fr] lg:px-8">
+        <div className="relative overflow-hidden rounded-[var(--radius-panel)] bg-[var(--brand-strong)] p-7 text-white sm:p-9 lg:p-10">
+          <div aria-hidden="true" className="absolute -right-16 -top-16 h-52 w-52 rounded-full border-[34px] border-[var(--accent)]/20" />
+          <div aria-hidden="true" className="absolute bottom-8 right-10 h-3 w-3 rounded-full bg-[var(--accent)]" />
 
-        <div>
-          <p className="eyebrow">Un accompagnement qui reste humain</p>
-          <h2 id="human-support-title" className="mt-3 max-w-2xl text-3xl font-semibold tracking-[-0.04em] text-slate-950 sm:text-4xl lg:text-[2.8rem]">
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-white/55">Un accompagnement qui reste humain</p>
+          <h2 id="human-support-title" className="mt-3 max-w-xl text-3xl font-semibold leading-tight tracking-[-0.04em] text-white sm:text-4xl">
             Vous n’avez pas à garder tout le parcours dans votre tête.
           </h2>
-          <p className="mt-5 max-w-2xl text-base leading-7 text-slate-600 sm:text-lg sm:leading-8">
-            Étudier en Allemagne implique des décisions, des documents, des délais et plusieurs interlocuteurs. AlmaGo transforme ce parcours en étapes lisibles pour que vous sachiez où vous en êtes et ce qui mérite votre attention maintenant.
+          <p className="mt-5 max-w-xl text-base leading-7 text-white/72">
+            AlmaGo transforme un projet complexe en repères simples : où vous en êtes, ce qui manque et ce qui mérite votre attention maintenant.
           </p>
 
-          <div className="mt-8 border-y border-[#ded7cd]">
+          <div className="mt-8 border-t border-white/15 pt-5">
+            <p className="text-sm font-bold text-white">Votre projet reste le vôtre.</p>
+            <p className="mt-1 max-w-lg text-sm leading-6 text-white/62">
+              AlmaGo organise et explique. Les admissions, visas et validations officielles restent du ressort des organismes compétents.
+            </p>
+          </div>
+        </div>
+
+        <div className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[#f7f4ef] p-6 sm:p-8 lg:p-9">
+          <p className="eyebrow">Comment AlmaGo vous guide</p>
+          <div className="mt-5 divide-y divide-[#ded7cd]">
             {supportSteps.map((item, index) => (
-              <div key={item.title} className="grid gap-3 border-b border-[#ded7cd] py-5 last:border-b-0 sm:grid-cols-[2.5rem_1fr]">
-                <span className="grid h-8 w-8 place-items-center rounded-full bg-[var(--brand)] text-xs font-bold text-white">
+              <div key={item.title} className="grid gap-4 py-5 first:pt-0 last:pb-0 sm:grid-cols-[3rem_1fr]">
+                <span className="grid h-10 w-10 place-items-center rounded-full bg-white text-sm font-bold text-[var(--brand)] shadow-sm">
                   {index + 1}
                 </span>
                 <div>
-                  <h3 className="font-bold text-slate-950">{item.title}</h3>
+                  <h3 className="text-xl font-bold tracking-[-0.02em] text-slate-950">{item.title}</h3>
                   <p className="mt-1 text-sm leading-6 text-slate-600">{item.text}</p>
                 </div>
               </div>
             ))}
           </div>
 
-          <div className="mt-7 border-l-2 border-[var(--accent)] pl-4">
-            <p className="text-sm font-bold text-slate-900">AlmaGo organise et explique. Les organismes compétents décident.</p>
-            <p className="mt-1 text-sm leading-6 text-slate-600">
-              Les admissions, visas et validations officielles restent du ressort des universités et autorités concernées.
-            </p>
-          </div>
+          <a
+            href="#espace"
+            className="mt-7 inline-flex min-h-11 items-center justify-center rounded-[var(--radius-control)] bg-[var(--brand)] px-5 text-sm font-bold text-white hover:bg-[var(--brand-strong)]"
+          >
+            Voir comment le dossier vous accompagne
+          </a>
         </div>
       </div>
     </section>
