@@ -7,7 +7,6 @@ import { ProgressBar } from "@/components/ui/ProgressBar";
 import { createClient } from "@/lib/supabase/server";
 import { summarizeAcademicEvidence, type AcademicEvidenceRecord } from "@/lib/academic-evidence";
 import { buildGermanyChecklist, type GermanyChecklistItem } from "@/lib/germany-checklist";
-import { isPublishableLanguageCourse } from "@/lib/language-courses";
 import { determineRegulatoryPath } from "@/lib/regulatory-path-engine";
 
 const labels: Record<string, string> = {
@@ -106,7 +105,19 @@ export default async function ChecklistPage() {
       .eq("id", selectionResult.data.language_course_id)
       .maybeSingle();
     if (error) return <ChecklistUnavailable />;
-    selectedCourse = data as typeof selectedCourse;
+    selectedCourse = data
+      ? {
+          id: data.id,
+          title: data.title,
+          provider_name: data.provider_name,
+          language: data.language,
+          purpose: data.purpose as "study_preparation" | "standalone_language",
+          source_url: data.source_url,
+          application_url: data.application_url,
+          verified_at: data.verified_at,
+          is_active: data.is_active,
+        }
+      : null;
   }
 
   const documentStatusById = new Map(
@@ -126,15 +137,13 @@ export default async function ChecklistPage() {
   })) as AcademicEvidenceRecord[];
   const evidenceSummary = summarizeAcademicEvidence(evidence, now);
 
-  const selectedCoursePublishable = Boolean(
-    selectedCourse && isPublishableLanguageCourse(selectedCourse, now),
-  );
-  const hasPublishableStudyPreparationCourse = Boolean(
-    selectedCoursePublishable && selectedCourse?.purpose === "study_preparation",
-  );
-  const hasPublishableStandaloneLanguageCourse = Boolean(
-    selectedCoursePublishable && selectedCourse?.purpose === "standalone_language",
-  );
+  // Student RLS on language_courses exposes only active, currently verified,
+  // source-valid catalogue rows. A stale/non-publishable selected course therefore
+  // resolves to null here and fails closed.
+  const hasPublishableStudyPreparationCourse =
+    selectedCourse?.purpose === "study_preparation";
+  const hasPublishableStandaloneLanguageCourse =
+    selectedCourse?.purpose === "standalone_language";
 
   const regulatoryDecision = determineRegulatoryPath({
     project_path: projectResult.data?.path || null,
