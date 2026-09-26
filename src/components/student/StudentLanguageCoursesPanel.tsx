@@ -86,6 +86,45 @@ export function StudentLanguageCoursesPanel() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
+  const [selectionPublishable, setSelectionPublishable] = useState(true);
+  const [selectionLoading, setSelectionLoading] = useState(true);
+  const [selectionError, setSelectionError] = useState("");
+  const [selectionBusy, setSelectionBusy] = useState<string | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    const controller = new AbortController();
+
+    async function loadSelection() {
+      setSelectionLoading(true);
+      setSelectionError("");
+      try {
+        const response = await fetch("/api/student/language-course-selection", { signal: controller.signal });
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok) {
+          if (active) setSelectionError(result.error || "Impossible de charger votre choix de cours.");
+          return;
+        }
+        if (active) {
+          setSelectedCourseId(result.selection?.language_course_id || null);
+          setSelectionPublishable(result.selection ? result.selection.publishable === true : true);
+        }
+      } catch (selectionLoadError) {
+        if (active && !(selectionLoadError instanceof DOMException && selectionLoadError.name === "AbortError")) {
+          setSelectionError("Impossible de charger votre choix de cours.");
+        }
+      } finally {
+        if (active) setSelectionLoading(false);
+      }
+    }
+
+    void loadSelection();
+    return () => {
+      active = false;
+      controller.abort();
+    };
+  }, []);
 
   useEffect(() => {
     let active = true;
@@ -133,6 +172,48 @@ export function StudentLanguageCoursesPanel() {
     };
   }, [filters]);
 
+  async function selectCourse(courseId: string) {
+    setSelectionBusy(courseId);
+    setSelectionError("");
+    try {
+      const response = await fetch("/api/student/language-course-selection", {
+        method: "PUT",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ language_course_id: courseId }),
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        setSelectionError(result.error || "Impossible d’enregistrer ce choix.");
+        return;
+      }
+      setSelectedCourseId(courseId);
+      setSelectionPublishable(true);
+    } catch {
+      setSelectionError("Impossible d’enregistrer ce choix.");
+    } finally {
+      setSelectionBusy(null);
+    }
+  }
+
+  async function clearSelection() {
+    setSelectionBusy("clear");
+    setSelectionError("");
+    try {
+      const response = await fetch("/api/student/language-course-selection", { method: "DELETE" });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        setSelectionError(result.error || "Impossible de retirer ce choix.");
+        return;
+      }
+      setSelectedCourseId(null);
+      setSelectionPublishable(true);
+    } catch {
+      setSelectionError("Impossible de retirer ce choix.");
+    } finally {
+      setSelectionBusy(null);
+    }
+  }
+
   function applyFilters(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setFilters(draftFilters);
@@ -145,6 +226,32 @@ export function StudentLanguageCoursesPanel() {
 
   return (
     <div className="mt-8 space-y-6">
+      <Card className="border-[var(--brand-border)] bg-[var(--brand-soft)]/40 shadow-none">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <h2 className="text-lg font-bold text-slate-950">Votre choix actuel</h2>
+            <p className="mt-2 max-w-4xl text-sm leading-6 text-slate-700">
+              {selectionLoading
+                ? "Chargement de votre choix…"
+                : selectedCourseId && selectionPublishable
+                  ? "Un cours vérifié est associé à votre projet. Vous pouvez le remplacer en choisissant une autre fiche ci-dessous."
+                  : selectedCourseId
+                    ? "Votre ancien choix n’est plus publiable et doit être revalidé. Choisissez une autre fiche vérifiée ou retirez ce choix."
+                    : "Aucun cours n’est encore associé à votre projet."}
+            </p>
+            <p className="mt-2 text-xs leading-5 text-slate-500">
+              Ce choix enregistre votre intention. Il ne constitue ni une décision d’admission, ni une validation de pertinence, ni une décision de visa.
+            </p>
+          </div>
+          {selectedCourseId && (
+            <Button type="button" variant="secondary" onClick={clearSelection} disabled={selectionBusy === "clear"}>
+              {selectionBusy === "clear" ? "Retrait…" : "Retirer mon choix"}
+            </Button>
+          )}
+        </div>
+        {selectionError && <p className="mt-3 text-sm font-semibold text-red-700" role="alert">{selectionError}</p>}
+      </Card>
+
       <Card className="border-[var(--brand-border)] bg-[var(--brand-soft)]/40 shadow-none">
         <h2 className="text-lg font-bold text-slate-950">Comment lire ce catalogue ?</h2>
         <p className="mt-2 max-w-4xl text-sm leading-6 text-slate-700">
@@ -315,6 +422,17 @@ export function StudentLanguageCoursesPanel() {
                         Voir la source officielle
                       </a>
                     )}
+                    <Button
+                      type="button"
+                      onClick={() => selectCourse(course.id)}
+                      disabled={selectionBusy === course.id || selectedCourseId === course.id}
+                    >
+                      {selectedCourseId === course.id
+                        ? "Cours sélectionné"
+                        : selectionBusy === course.id
+                          ? "Enregistrement…"
+                          : "Choisir pour mon projet"}
+                    </Button>
                     {course.application_url && (
                       <a
                         href={course.application_url}
