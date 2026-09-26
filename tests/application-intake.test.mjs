@@ -10,8 +10,12 @@ const resolve = (extra = {}) => resolveApplicationIntake({
 }, now);
 
 test("intake families recognize supported semester wording", () => {
-  for (const value of ["Wintersemester", "Hiver 2027", "WS"]) assert.equal(applicationIntakeFamily(value), "winter");
-  for (const value of ["Sommersemester", "Été 2027", "SS"]) assert.equal(applicationIntakeFamily(value), "summer");
+  for (const value of ["Wintersemester", "Hiver 2027", "WS", "WS 2027", "Prépa WS 2027"]) {
+    assert.equal(applicationIntakeFamily(value), "winter");
+  }
+  for (const value of ["Sommersemester", "Été 2027", "SS", "SS 2027", "Prépa Été 2027"]) {
+    assert.equal(applicationIntakeFamily(value), "summer");
+  }
   assert.equal(applicationIntakeFamily("rolling"), null);
 });
 
