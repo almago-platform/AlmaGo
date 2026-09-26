@@ -18,9 +18,6 @@ export async function PUT(request: Request) {
     if (!update.first_name || !update.last_name || !update.nationality || !update.target_degree || !update.target_field || !update.study_language || !update.target_intake) {
       return NextResponse.json({ error: "Complète les champs obligatoires avant de valider." }, { status: 400 });
     }
-    update.onboarding_completed = true;
-    update.onboarding_completed_at = new Date().toISOString();
-    update.full_name = `${update.first_name} ${update.last_name}`;
   }
 
   const { error } = await supabase.from("profiles").upsert({ id: user.id, ...update }, { onConflict: "id" });
@@ -31,9 +28,19 @@ export async function PUT(request: Request) {
       user_id: user.id,
       consent_type: "profile_processing",
       policy_version: "v1",
+      granted_at: new Date().toISOString(),
+      revoked_at: null,
       metadata: { source: "student_onboarding" },
     }, { onConflict: "user_id,consent_type,policy_version" });
     if (consentError) return NextResponse.json({ error: "Le consentement n’a pas pu être enregistré." }, { status: 500 });
+
+    const { error: completionError } = await supabase.rpc("complete_student_onboarding");
+    if (completionError) {
+      return NextResponse.json(
+        { error: "Le profil est enregistré, mais la validation finale de l’onboarding a échoué." },
+        { status: 500 },
+      );
+    }
   }
   return NextResponse.json({ ok: true, completed: input.complete === true });
 }
