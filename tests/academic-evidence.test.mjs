@@ -104,3 +104,17 @@ test("no evidence means no accepted academic basis without inventing one", () =>
     accepted_evidence_count: 0,
   });
 });
+
+test("a logically inconsistent accepted_for_pathway record without an approved document still fails closed", () => {
+  // Defense in depth: the database trigger should already prevent this shape,
+  // but the assessment must never assume the record it receives is consistent.
+  for (const inconsistent of [
+    { ...base, document_id: null },
+    { ...base, document_status: "rejected" },
+    { ...base, document_status: null },
+  ]) {
+    const result = assessAcademicEvidence(inconsistent, now);
+    assert.equal(result.status, "needs_review");
+    assert.equal(result.can_support_pathway_decision, false);
+  }
+});
