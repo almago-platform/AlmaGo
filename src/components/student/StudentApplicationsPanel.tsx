@@ -8,6 +8,7 @@ import {
   isSubmittedApplicationStatus,
   studentApplicationStageLabel,
   studentApplicationStatusLabel,
+  normalizeApplicationStatus,
 } from "@/lib/application-workflow";
 import { formatDeadline, isActiveApplication, isPastDeadline, nextActiveDeadline } from "@/lib/phase4";
 
@@ -31,6 +32,71 @@ function studentEventLabel(eventType: string) {
   return "Mise à jour du dossier";
 }
 
+function ApplicationStepper({ status }: { status: string }) {
+  const normalizedStatus = normalizeApplicationStatus(status);
+  
+  if (normalizedStatus === "withdrawn") {
+    return (
+      <div className="mt-4 mb-2 rounded-[var(--radius-control)] bg-slate-100/60 border border-slate-200/80 p-3 text-xs text-slate-600 flex items-center justify-between">
+        <span className="font-medium text-slate-700">Le suivi de cette candidature a été retiré.</span>
+        <Badge variant="neutral">Suivi retiré</Badge>
+      </div>
+    );
+  }
+
+  // Define 5 key phases of the application journey
+  const stages = [
+    { label: "Intérêt", active: true },
+    { label: "Préparation", active: ["preparing", "documents_missing"].includes(normalizedStatus || "") },
+    { label: "Prêt", active: normalizedStatus === "ready_to_submit" },
+    { label: "Envoyé", active: ["submitted", "waiting_university"].includes(normalizedStatus || "") },
+    { label: "Décision", active: ["admission", "rejection"].includes(normalizedStatus || "") },
+  ];
+
+  // Let's determine the current index
+  let currentIndex = 0;
+  if (["preparing", "documents_missing"].includes(normalizedStatus || "")) currentIndex = 1;
+  else if (normalizedStatus === "ready_to_submit") currentIndex = 2;
+  else if (["submitted", "waiting_university"].includes(normalizedStatus || "")) currentIndex = 3;
+  else if (["admission", "rejection"].includes(normalizedStatus || "")) currentIndex = 4;
+
+  return (
+    <div className="mt-5 mb-2" aria-hidden="true">
+      <div className="relative flex items-center justify-between">
+        {/* Background line */}
+        <div className="absolute left-0 right-0 top-1/2 h-0.5 -translate-y-1/2 bg-slate-100" />
+        {/* Active line */}
+        <div 
+          className="absolute left-0 top-1/2 h-0.5 -translate-y-1/2 bg-[var(--brand)] transition-all duration-300"
+          style={{ width: `${(currentIndex / 4) * 100}%` }}
+        />
+        {stages.map((stage, idx) => {
+          const isDone = idx < currentIndex;
+          const isActive = idx === currentIndex;
+          return (
+            <div key={stage.label} className="relative flex flex-col items-center">
+              <span 
+                className={`grid h-6 w-6 place-items-center rounded-full text-[10px] font-bold border transition-all duration-150 ${
+                  isDone 
+                    ? "bg-[var(--brand)] border-[var(--brand)] text-white"
+                    : isActive
+                      ? "bg-white border-[var(--brand)] text-[var(--brand)] ring-2 ring-[var(--brand-soft)]"
+                      : "bg-white border-slate-200 text-slate-400"
+                }`}
+              >
+                {isDone ? "✓" : idx + 1}
+              </span>
+              <span className={`mt-1.5 text-[10px] font-semibold hidden sm:block ${isActive ? "text-slate-900 font-bold" : "text-slate-500"}`}>
+                {stage.label}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 export function StudentApplicationsPanel({
   applications,
   loadError,
@@ -51,9 +117,16 @@ export function StudentApplicationsPanel({
   return (
     <div className="space-y-8">
       {loadError && (
-        <div role="alert" className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-800">
-          {loadError}
-        </div>
+        <Card className="border-red-200 bg-red-50/50">
+          <div role="alert">
+            <h2 className="text-lg font-semibold text-red-950">Suivi des candidatures indisponible</h2>
+            <p className="mt-2 text-sm leading-6 text-red-800">{loadError}</p>
+          </div>
+          <div className="mt-5 flex flex-col gap-3 sm:flex-row">
+            <ButtonLink href="/student/applications">Réessayer le chargement</ButtonLink>
+            <ButtonLink href="/student" variant="secondary">Retour à mon dossier</ButtonLink>
+          </div>
+        </Card>
       )}
 
       <section aria-label="Priorité candidature" className="grid gap-5 lg:grid-cols-[1.08fr_0.92fr]">
@@ -175,7 +248,7 @@ export function StudentApplicationsPanel({
                         </span>
                       </div>
                     </div>
-                    <div className="text-right">
+                    <div className="text-left sm:text-right flex flex-col items-start sm:items-end">
                       <Badge variant={applicationVariant(application.status)}>
                         {studentApplicationStatusLabel(application.status)}
                       </Badge>
@@ -184,6 +257,8 @@ export function StudentApplicationsPanel({
                       </p>
                     </div>
                   </div>
+
+                  <ApplicationStepper status={application.status} />
 
                   <section
                     aria-label="Prochaine action"
