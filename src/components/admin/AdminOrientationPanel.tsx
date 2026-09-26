@@ -222,7 +222,7 @@ export function AdminOrientationPanel({
                 className="field min-h-28 resize-y"
               />
             </label>
-            <div className="mt-3 rounded-[var(--radius-control)] border border-[var(--brand-border)] bg-[var(--brand-soft)]/40 p-3">
+            <div className="mt-3 rounded-[var(--radius-control)] border border-[var(--brand-border)] bg-[var(--brand-soft)]/55 p-3">
               <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">Visible dans l’orientation étudiant</p>
               <p className="mt-1 text-xs leading-5 text-slate-600">
                 La justification doit rester factuelle et fondée sur les informations vérifiées dans le dossier. Elle ne doit jamais présenter une admission comme acquise.
@@ -258,7 +258,7 @@ export function AdminOrientationPanel({
         <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Suivi publié</p>
-            <h2 id="admin-recommendations-title" className="mt-1 text-2xl font-bold tracking-[-0.03em] text-slate-950">
+            <h2 id="admin-recommendations-title" className="mt-1 text-2xl font-semibold tracking-[-0.03em] text-slate-950">
               Recommandations actives
             </h2>
             <p className="mt-1 text-sm leading-6 text-slate-600">

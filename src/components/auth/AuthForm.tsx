@@ -68,10 +68,10 @@ export function AuthForm({ initialMode = "login" }: { initialMode?: Mode }) {
         : "Retrouve ton dossier, tes documents, tes recommandations et tes prochaines actions.";
 
   return (
-    <section className="w-full max-w-xl rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow-card)]">
+    <section className="w-full max-w-xl rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] shadow-none">
       <div className="border-b border-[var(--border)] px-6 py-6 sm:px-8">
         <p className="text-sm font-bold uppercase tracking-[0.18em] text-[var(--accent-strong)]">AlmaGo</p>
-        <h1 className="mt-3 text-3xl font-bold tracking-tight text-slate-950">{title}</h1>
+        <h1 className="mt-3 text-3xl font-semibold tracking-[-0.035em] text-slate-950">{title}</h1>
         <p className="mt-3 text-base leading-7 text-slate-600">{subtitle}</p>
       </div>
 
@@ -130,7 +130,7 @@ export function AuthForm({ initialMode = "login" }: { initialMode?: Mode }) {
         )}
 
         {mode === "signup" && (
-          <p id="signup-password-hint" className="rounded-[var(--radius-control)] bg-[var(--surface-muted)] px-3 py-2 text-sm text-slate-600">
+          <p id="signup-password-hint" className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-3 py-2 text-sm text-slate-600">
             Utilise au moins 8 caractères. Tu recevras ensuite un email de confirmation.
           </p>
         )}
@@ -157,7 +157,7 @@ export function AuthForm({ initialMode = "login" }: { initialMode?: Mode }) {
         </button>
       </form>
 
-      <div className="flex flex-col gap-3 border-t border-[var(--border)] bg-[var(--surface-muted)] px-6 py-5 text-sm font-semibold text-[var(--brand)] sm:flex-row sm:items-center sm:justify-between sm:px-8">
+      <div className="flex flex-col gap-3 border-t border-[var(--border)] bg-[var(--surface-subtle)] px-6 py-5 text-sm font-semibold text-[var(--brand)] sm:flex-row sm:items-center sm:justify-between sm:px-8">
         <button
           type="button"
           className="min-h-11 rounded-[var(--radius-control)] px-1 text-left transition-colors hover:text-[var(--brand-strong)] focus-visible:outline-none"

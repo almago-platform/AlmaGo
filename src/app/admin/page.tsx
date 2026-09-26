@@ -126,12 +126,12 @@ export default async function AdminEntry() {
       />
 
       <section aria-label="Priorité opérationnelle" className="grid gap-5 lg:grid-cols-[minmax(0,1.45fr)_minmax(18rem,0.75fr)]">
-        <Card className="relative overflow-hidden border-[var(--brand-border)] bg-white shadow-[0_24px_55px_-38px_rgba(41,48,139,0.5)]">
-          <div aria-hidden="true" className="absolute inset-y-0 left-0 w-1.5 bg-[var(--brand)]" />
+        <Card className="relative overflow-hidden border-[var(--brand-border)] bg-white shadow-none">
+          <div aria-hidden="true" className="absolute inset-y-0 left-0 w-1 bg-[var(--brand)]" />
           <div className="pl-2 sm:pl-3">
             <Badge variant={documents > 0 ? "warning" : applications > 0 ? "info" : staleCatalogue > 0 ? "warning" : "success"}>{priority.badge}</Badge>
             <p className="mt-5 text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">À traiter maintenant</p>
-            <h2 className="mt-2 max-w-3xl text-2xl font-bold tracking-[-0.03em] text-slate-950 sm:text-3xl">
+            <h2 className="mt-2 max-w-3xl text-2xl font-semibold tracking-[-0.03em] text-slate-950 sm:text-3xl">
               {priority.title}
             </h2>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-600">{priority.description}</p>
@@ -141,7 +141,7 @@ export default async function AdminEntry() {
           </div>
         </Card>
 
-        <Card className="bg-[#fbfbfd] shadow-none">
+        <Card className="bg-[var(--surface-subtle)] shadow-none">
           <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">Ordre de traitement</p>
           <ol className="mt-5 space-y-4 text-sm leading-6 text-slate-600">
             <li className="flex gap-3">
@@ -163,7 +163,7 @@ export default async function AdminEntry() {
       <section className="mt-9" aria-labelledby="admin-overview-title">
         <div className="mb-5">
           <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Files de travail</p>
-          <h2 id="admin-overview-title" className="mt-2 text-2xl font-bold tracking-[-0.03em] text-slate-950">
+          <h2 id="admin-overview-title" className="mt-2 text-2xl font-semibold tracking-[-0.03em] text-slate-950">
             État opérationnel AlmaGo
           </h2>
         </div>
@@ -203,7 +203,7 @@ export default async function AdminEntry() {
       <section className="mt-8" aria-labelledby="catalogue-health-title">
         <div className="mb-5">
           <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Fraîcheur des sources</p>
-          <h2 id="catalogue-health-title" className="mt-2 text-2xl font-bold tracking-[-0.03em] text-slate-950">
+          <h2 id="catalogue-health-title" className="mt-2 text-2xl font-semibold tracking-[-0.03em] text-slate-950">
             Révalidations du catalogue Allemagne
           </h2>
           <p className="mt-2 text-sm leading-6 text-slate-600">
@@ -254,16 +254,16 @@ function AdminSummaryCard({
     <Link
       href={href}
       aria-label={`Ouvrir ${title}`}
-      className="professional-hover group rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-5 shadow-[var(--shadow-card)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] focus-visible:ring-offset-2"
+      className="professional-hover group rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-5 shadow-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] focus-visible:ring-offset-2"
     >
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-sm font-bold text-slate-800">{title}</p>
-          <p className="mt-3 text-3xl font-bold tracking-tight text-slate-950">{value}</p>
+          <p className="mt-3 text-3xl font-semibold tracking-tight text-slate-950">{value}</p>
         </div>
         <span
           aria-hidden="true"
-          className={`grid h-9 w-9 place-items-center rounded-full text-sm transition-transform group-hover:translate-x-0.5 ${
+          className={`grid h-8 w-8 place-items-center rounded-[var(--radius-control)] text-sm ${
             tone === "warning"
               ? "bg-amber-50 text-amber-800"
               : tone === "info"
@@ -294,7 +294,7 @@ function CatalogHealthCard({
   return (
     <Link
       href={href}
-      className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-5 shadow-[var(--shadow-card)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] focus-visible:ring-offset-2"
+      className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-5 shadow-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] focus-visible:ring-offset-2"
     >
       <div className="flex items-start justify-between gap-4">
         <div>

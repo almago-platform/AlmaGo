@@ -279,7 +279,7 @@ export function AdminDocumentsPanel({
                 as="article"
                 key={document.id}
                 aria-labelledby={`admin-document-title-${document.id}`}
-                className={`min-w-0 overflow-hidden ${isReplacement ? "border-amber-300 bg-amber-50/20" : "border-[var(--border)] bg-white"}`}
+                className={`min-w-0 overflow-hidden shadow-none ${isReplacement ? "border-amber-300 bg-amber-50/20" : "border-[var(--border)] bg-white"}`}
               >
                 <div className="flex flex-col justify-between gap-5 lg:flex-row lg:items-start">
                   <div className="min-w-0">
@@ -301,9 +301,9 @@ export function AdminDocumentsPanel({
                     </h2>
 
                     <div className="mt-3 flex flex-wrap gap-2 text-xs font-semibold text-slate-600">
-                      <span className="rounded-full bg-slate-100 px-3 py-1.5">{categoryLabel(document.category)}</span>
-                      <span className="rounded-full bg-slate-100 px-3 py-1.5">{statusLabel(document.status)}</span>
-                      <span className="rounded-full bg-slate-100 px-3 py-1.5">Envoyé le {formatCreatedAt(document.created_at)}</span>
+                      <span className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-2.5 py-1.5">{categoryLabel(document.category)}</span>
+                      <span className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-2.5 py-1.5">{statusLabel(document.status)}</span>
+                      <span className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-2.5 py-1.5">Envoyé le {formatCreatedAt(document.created_at)}</span>
                     </div>
                   </div>
 
@@ -319,13 +319,13 @@ export function AdminDocumentsPanel({
                 </div>
 
                 {document.admin_comment && (
-                  <div className="mt-5 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-muted)]/60 p-4">
+                  <div className="mt-5 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4">
                     <p className="text-xs font-bold uppercase tracking-[0.14em] text-slate-500">Message actuellement enregistré</p>
                     <p className="mt-2 text-sm leading-6 text-slate-700 [overflow-wrap:anywhere]">{document.admin_comment}</p>
                   </div>
                 )}
 
-                <div className="mt-5 rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--brand-soft)]/35 p-4">
+                <div className="mt-5 rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--brand-soft)]/55 p-4">
                   <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                       <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">Visible par l’étudiant</p>
@@ -353,7 +353,7 @@ export function AdminDocumentsPanel({
 
                 <section
                   aria-labelledby={`academic-evidence-admin-${document.id}`}
-                  className="mt-5 rounded-[var(--radius-panel)] border border-slate-200 bg-slate-50/70 p-4"
+                  className="mt-5 rounded-[var(--radius-panel)] border border-slate-200 bg-[var(--surface-subtle)] p-4"
                 >
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                     <div>
@@ -547,7 +547,7 @@ function QueueSummary({
   return (
     <Card className={`shadow-none ${tone === "warning" && value ? "border-amber-200 bg-amber-50/35" : ""}`}>
       <p className="text-sm font-bold text-slate-700">{label}</p>
-      <p className="mt-2 text-3xl font-bold tracking-tight text-slate-950">{value}</p>
+      <p className="mt-2 text-3xl font-semibold tracking-tight text-slate-950">{value}</p>
       <p className="mt-2 text-sm leading-6 text-slate-500">{detail}</p>
     </Card>
   );
