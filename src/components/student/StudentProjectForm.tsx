@@ -13,6 +13,7 @@ type Project = {
   target_german_level: string | null;
   current_diploma: string | null;
   diploma_country: string | null;
+  filing_country: string | null;
   preferred_study_language: string | null;
   monthly_budget: number | null;
   budget_currency: string;
@@ -48,6 +49,7 @@ export function StudentProjectForm({ project }: { project: Project }) {
         target_german_level: form.get("target_german_level"),
         current_diploma: form.get("current_diploma"),
         diploma_country: form.get("diploma_country"),
+        filing_country: form.get("filing_country"),
         preferred_study_language: form.get("preferred_study_language"),
         monthly_budget: form.get("monthly_budget"),
         actual_objective: form.get("actual_objective"),
@@ -94,6 +96,14 @@ export function StudentProjectForm({ project }: { project: Project }) {
       <div className="grid gap-5 rounded-2xl border border-slate-200 bg-white p-5 sm:grid-cols-2 sm:p-6">
         <Field label="Diplôme actuel" name="current_diploma" defaultValue={project?.current_diploma} placeholder="Ex. Licence en informatique" maxLength={160} />
         <Field label="Pays du diplôme" name="diploma_country" defaultValue={project?.diploma_country} placeholder="Ex. TN" hint="Code pays à 2 lettres, par exemple TN, FR ou DE." maxLength={2} />
+        <Field
+          label="Pays de résidence / dépôt"
+          name="filing_country"
+          defaultValue={project?.filing_country}
+          placeholder="Ex. TN"
+          hint="Pays depuis lequel vous prévoyez de déposer vos démarches. AlmaGo ne le déduit pas de votre nationalité."
+          maxLength={2}
+        />
         <Field label="Diplôme visé" name="target_degree" defaultValue={project?.target_degree} placeholder="Ex. Master" maxLength={120} />
         <Field label="Domaine visé" name="target_field" defaultValue={project?.target_field} placeholder="Ex. Informatique" maxLength={160} />
         <Field label="Rentrée souhaitée" name="target_intake" defaultValue={project?.target_intake} placeholder="Ex. Hiver 2027" maxLength={80} />

@@ -63,7 +63,7 @@ export default async function StudentPathwayPage() {
   ] = await Promise.all([
     supabase
       .from("student_projects")
-      .select("path,target_degree,target_field,target_intake,current_german_level,target_german_level")
+      .select("path,target_degree,target_field,target_intake,current_german_level,target_german_level,filing_country")
       .eq("student_id", user.id)
       .maybeSingle(),
     supabase
@@ -91,7 +91,7 @@ export default async function StudentPathwayPage() {
       .eq("student_id", user.id),
     supabase
       .from("regulatory_sources")
-      .select("authority,title,source_url,topic,checked_on,summary,amount,currency,periodicity,verification_status,verified_at,review_due_at,is_active")
+      .select("authority,title,source_url,topic,jurisdiction,origin_country,destination_country,checked_on,summary,amount,currency,periodicity,verification_status,verified_at,review_due_at,is_active")
       .eq("is_active", true)
       .order("authority"),
   ]);
@@ -151,9 +151,14 @@ export default async function StudentPathwayPage() {
   const currentRegulatorySources = (regulatorySourcesResult.data || []).filter((source) =>
     isRegulatoryRuleCurrent(source, now),
   );
+  const filingCountry = projectResult.data?.filing_country || null;
   const relevantRegulatorySources = currentRegulatorySources.filter((source) =>
-    regulatoryTopicsForRoute(decision.route).includes(source.topic),
+    regulatoryTopicsForRoute(decision.route).includes(source.topic)
+    && regulatorySourceMatchesFilingCountry(source.origin_country, filingCountry),
   );
+  const needsFilingCountry =
+    (decision.route === "STUDIENVORBEREITUNG" || decision.route === "SPRACHKURS")
+    && !filingCountry;
   const project = projectPathOptions.find(
     (option) => option.value === projectResult.data?.path,
   );
@@ -299,6 +304,11 @@ export default async function StudentPathwayPage() {
           <p className="mt-2 max-w-4xl text-sm leading-6 text-slate-600">
             AlmaGo n’utilise ici que des sources marquées comme vérifiées et encore dans leur période de revue. Les règles affichées restent à confirmer sur la source officielle au moment du dépôt.
           </p>
+          {needsFilingCountry && (
+            <div className="mt-4 rounded-[var(--radius-control)] border border-amber-200 bg-amber-50/60 p-4 text-sm leading-6 text-amber-900">
+              Indiquez votre pays de résidence / dépôt dans « Mon projet » pour afficher les règles de la mission allemande compétente. AlmaGo ne déduit pas ce pays de votre nationalité.
+            </div>
+          )}
         </div>
 
         {relevantRegulatorySources.length ? (
@@ -323,6 +333,7 @@ export default async function StudentPathwayPage() {
           <h2 className="mt-2 text-xl font-bold text-slate-950">Faits utilisés par AlmaGo</h2>
           <dl className="mt-5 divide-y divide-slate-100">
             <FactRow label="Projet défini" value={facts.project_path ? "Oui" : "Non"} />
+            <FactRow label="Pays de résidence / dépôt" value={filingCountry || "À renseigner"} />
             <FactRow label="Admission définitive acceptée" value={facts.accepted_definitive_admission ? "Oui" : "Non"} />
             <FactRow label="Base préparatoire acceptée" value={facts.accepted_preparatory_basis ? "Oui" : "Non"} />
             <FactRow label="Cours de préparation vérifié publié" value={facts.has_publishable_study_preparation_course ? "Oui" : "Non"} />
@@ -488,6 +499,11 @@ function PathwayCard({
   );
 }
 
+function regulatorySourceMatchesFilingCountry(originCountry: string | null, filingCountry: string | null) {
+  if (!originCountry) return true;
+  return Boolean(filingCountry && originCountry.toUpperCase() === filingCountry.toUpperCase());
+}
+
 function regulatoryTopicsForRoute(route: RegulatoryRoute | null) {
   if (route === "STUDIUM") return ["study_visa", "study_visa_financing", "university_admission"];
   if (route === "STUDIENVORBEREITUNG") return ["study_preparation_tunisia", "study_visa_financing", "university_admission"];
@@ -504,6 +520,9 @@ function RegulatorySourceCard({
     title: string;
     source_url: string;
     topic: string;
+    jurisdiction: string;
+    origin_country: string | null;
+    destination_country: string | null;
     checked_on: string;
     summary: string;
     amount: number | null;

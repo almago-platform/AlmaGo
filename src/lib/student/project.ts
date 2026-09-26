@@ -28,6 +28,7 @@ export type StudentProjectInput = {
   target_german_level?: unknown;
   current_diploma?: unknown;
   diploma_country?: unknown;
+  filing_country?: unknown;
   preferred_study_language?: unknown;
   monthly_budget?: unknown;
   budget_currency?: unknown;
@@ -89,6 +90,11 @@ export function parseStudentProject(input: StudentProjectInput) {
     return { error: "Le pays du diplôme doit utiliser un code pays à deux lettres." } as const;
   }
 
+  const filingCountry = countryCode(input.filing_country);
+  if (filingCountry === INVALID) {
+    return { error: "Le pays de dépôt doit utiliser un code pays à deux lettres." } as const;
+  }
+
   const monthlyBudget = budgetAmount(input.monthly_budget);
   if (monthlyBudget === INVALID) {
     return { error: "Le budget mensuel doit être compris entre 0 et 100000 EUR." } as const;
@@ -114,6 +120,7 @@ export function parseStudentProject(input: StudentProjectInput) {
       target_german_level: targetGermanLevel as string | null,
       current_diploma: currentDiploma as string | null,
       diploma_country: diplomaCountry,
+      filing_country: filingCountry,
       preferred_study_language: preferredStudyLanguage as string | null,
       monthly_budget: monthlyBudget,
       budget_currency: "EUR" as const,

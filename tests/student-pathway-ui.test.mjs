@@ -14,6 +14,8 @@ test("student pathway wires real project, evidence and language-course facts int
   assert.match(page, /from\("student_checklist_items"\)/);
   assert.match(page, /from\("regulatory_sources"\)/);
   assert.match(page, /isRegulatoryRuleCurrent\(source, now\)/);
+  assert.match(page, /filing_country/);
+  assert.match(page, /regulatorySourceMatchesFilingCountry/);
   assert.match(page, /summarizeAcademicEvidence\(evidence, now\)/);
   assert.match(page, /isPublishableLanguageCourse\(course, now\)/);
   assert.match(page, /determineRegulatoryPath\(facts\)/);
@@ -69,4 +71,12 @@ test("pathway exposes only current official regulatory sources and fails closed 
   assert.match(page, /AlmaGo n’affiche donc pas de règle par défaut/);
   assert.match(page, /Ouvrir la source officielle/);
   assert.doesNotMatch(page, /source\.verification_status === "verified" && source\.verified_at/);
+});
+
+
+test("country-specific regulatory sources are never inferred from nationality", () => {
+  assert.match(page, /Pays de résidence \/ dépôt/);
+  assert.match(page, /AlmaGo ne déduit pas ce pays de votre nationalité/);
+  assert.match(page, /originCountry\.toUpperCase\(\) === filingCountry\.toUpperCase\(\)/);
+  assert.doesNotMatch(page, /nationality|nationalité.*===|Tunisienne/i);
 });
