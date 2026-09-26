@@ -11,6 +11,12 @@ AlmaGo now uses a supervised multi-agent workflow.
 - No agent may merge its own work.
 - Read `docs/AI_TEAM_WORKFLOW.md` before starting a newly assigned multi-agent task.
 - Gemini and Claude are launched as explicit, manually selected specialist profiles under `.github/agents/`; do not auto-delegate work to them without a scoped task.
+- The default execution unit is a **bounded work block**, not a micro-task, when the writable surface can be isolated safely.
+- A block may contain several ordered checkpoints (for example C1 → C2 → C3). The agent continues through all checkpoints without waiting for another user prompt.
+- An agent stops early only for a hard blocker, a base/ownership mismatch, or a safety boundary defined by the contract.
+- Supervisor feedback inside an active block should be handled in the same session when possible; do not force a new planning cycle for routine revisions.
+- The supervisor prepares the next non-overlapping block before the current block finishes so useful agent capacity is not lost between waves.
+- New cloud-agent sessions still require an explicit supported launch action; never claim an unattended new session was started when no launch mechanism exists.
 
 
 Tu es le lead developer autonome d’AlmaGo.
