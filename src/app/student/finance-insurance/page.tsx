@@ -8,6 +8,7 @@ import {
   type FinanceInsuranceKind,
   type FinanceInsuranceOption,
 } from "@/lib/finance-insurance";
+import { catalogVerificationCutoff, catalogVerificationExpiresAt } from "@/lib/catalog-freshness";
 import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -30,11 +31,15 @@ const kindDetails: Record<FinanceInsuranceKind, { title: string; description: st
 export default async function StudentFinanceInsurancePage() {
   const supabase = await createClient();
   const now = new Date();
+  const cutoff = catalogVerificationCutoff(now);
+  if (!cutoff) return <CatalogueUnavailable />;
+
   const { data, error } = await supabase
     .from("finance_insurance_catalog")
     .select("id,provider_name,product_name,kind,description,official_source_url,application_url,price_notes,eligibility_notes,verified_at,is_active")
     .eq("is_active", true)
     .lte("verified_at", now.toISOString())
+    .gt("verified_at", cutoff)
     .order("kind", { ascending: true })
     .order("provider_name", { ascending: true });
 
@@ -117,6 +122,7 @@ function OptionCard({ option }: { option: FinanceInsuranceOption }) {
         <Fact label="Prix / frais" value={option.price_notes || "À confirmer sur la source officielle"} />
         <Fact label="Conditions publiées" value={option.eligibility_notes || "À confirmer auprès du fournisseur"} />
         <Fact label="Dernière vérification" value={formatVerifiedAt(option.verified_at)} />
+        <Fact label="À revalider avant" value={formatVerifiedAt(catalogVerificationExpiresAt(option.verified_at))} />
       </dl>
 
       <div className="mt-5 flex flex-wrap gap-3">

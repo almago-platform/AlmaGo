@@ -36,3 +36,11 @@ test("real admin shell exposes both Germany catalogues", () => {
   assert.match(shell, /\/admin\/language-courses/);
   assert.match(shell, /\/admin\/finance-insurance/);
 });
+
+
+test("admin catalogues visibly flag stale active records for revalidation", () => {
+  assert.match(financePanel, /isCatalogVerificationCurrent/);
+  assert.match(financePanel, /À revalider/);
+  assert.match(languagePanel, /isCatalogVerificationCurrent/);
+  assert.match(languagePanel, /À revalider/);
+});

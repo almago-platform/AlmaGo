@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { financeInsuranceKinds, type FinanceInsuranceKind } from "@/lib/finance-insurance";
+import { catalogVerificationExpiresAt, isCatalogVerificationCurrent } from "@/lib/catalog-freshness";
 
 type Option = {
   id: string;
@@ -195,9 +196,14 @@ export function AdminFinanceInsurancePanel({ options }: { options: Option[] }) {
                   <p className="text-lg font-bold text-slate-950">{option.provider_name}</p>
                   <p className="mt-1 text-sm text-slate-600">{option.product_name || kindLabels[option.kind]}</p>
                 </div>
-                <Badge variant={option.is_active ? "success" : "neutral"}>{option.is_active ? "Publié" : "Brouillon"}</Badge>
+                <Badge variant={option.is_active && isCatalogVerificationCurrent(option.verified_at) ? "success" : option.is_active ? "warning" : "neutral"}>
+                  {option.is_active && isCatalogVerificationCurrent(option.verified_at) ? "Publié" : option.is_active ? "À revalider" : "Brouillon"}
+                </Badge>
               </div>
               <p className="mt-4 text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">{kindLabels[option.kind]}</p>
+              {option.verified_at && (
+                <p className="mt-2 text-xs text-slate-500">À revalider avant : {new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium" }).format(new Date(catalogVerificationExpiresAt(option.verified_at) as string))}</p>
+              )}
               <div className="mt-5"><Button type="button" variant="secondary" onClick={() => edit(option)}>Modifier</Button></div>
             </Card>
           ))}

@@ -78,6 +78,7 @@ test("publication is fail-closed for activity, verification time, and URLs", () 
   assert.equal(isPublishableFinanceInsuranceOption({ ...valid, is_active: false }, asOf), false);
   assert.equal(isPublishableFinanceInsuranceOption({ ...valid, verified_at: null }, asOf), false);
   assert.equal(isPublishableFinanceInsuranceOption({ ...valid, verified_at: "2026-10-01T00:00:00.000Z" }, asOf), false);
+  assert.equal(isPublishableFinanceInsuranceOption({ ...valid, verified_at: "2026-08-20T10:00:00.000Z" }, asOf), false);
   assert.equal(isPublishableFinanceInsuranceOption({ ...valid, official_source_url: "not-a-url" }, asOf), false);
   assert.equal(isPublishableFinanceInsuranceOption({ ...valid, application_url: "file:///tmp/form" }, asOf), false);
 });

@@ -57,6 +57,17 @@ export type LanguageCourseFilterResult =
 const MAX_TEXT = 180;
 const MAX_URL = 2048;
 const MAX_PRICE_CENTS = 100_000_000;
+const CATALOG_VERIFICATION_MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000;
+
+function verificationCutoff(now: Date) {
+  return new Date(now.getTime() - CATALOG_VERIFICATION_MAX_AGE_MS).toISOString();
+}
+
+function verificationCurrent(verifiedAt: string | null, now: Date) {
+  if (!verifiedAt || Number.isNaN(Date.parse(verifiedAt))) return false;
+  const timestamp = Date.parse(verifiedAt);
+  return timestamp <= now.getTime() && timestamp > now.getTime() - CATALOG_VERIFICATION_MAX_AGE_MS;
+}
 
 const payloadKeys = new Set([
   "title",
@@ -245,8 +256,7 @@ export function isPublishableLanguageCourse(
   if (!httpUrl(course.source_url)) return false;
   if (course.application_url && !httpUrl(course.application_url)) return false;
 
-  const verifiedAt = course.verified_at ? Date.parse(course.verified_at) : Number.NaN;
-  return Number.isFinite(verifiedAt) && verifiedAt <= now.getTime();
+  return verificationCurrent(course.verified_at, now);
 }
 
 export function parseLanguageCourseFilters(
@@ -295,6 +305,7 @@ type LanguageCourseQuery = {
   eq(column: string, value: string | boolean): LanguageCourseQuery;
   ilike(column: string, value: string): LanguageCourseQuery;
   lte(column: string, value: string): LanguageCourseQuery;
+  gt(column: string, value: string): LanguageCourseQuery;
   order(column: string, options: { ascending: boolean }): LanguageCourseQuery;
 };
 
@@ -307,9 +318,13 @@ export function publishableLanguageCoursesQuery(
   if (!parsed.ok) return null;
 
   const filters = parsed.value;
+  if (!(now instanceof Date) || Number.isNaN(now.getTime())) return null;
+  const cutoff = verificationCutoff(now);
+
   let scoped = query
     .eq("is_active", true)
-    .lte("verified_at", now.toISOString());
+    .lte("verified_at", now.toISOString())
+    .gt("verified_at", cutoff);
 
   if (filters.purpose) scoped = scoped.eq("purpose", filters.purpose);
   if (filters.city) scoped = scoped.ilike("city", filters.city);

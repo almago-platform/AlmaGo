@@ -4,6 +4,7 @@ import { FormEvent, useEffect, useState } from "react";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { catalogVerificationExpiresAt } from "@/lib/catalog-freshness";
 
 type Course = {
   id: string;
@@ -299,6 +300,7 @@ export function StudentLanguageCoursesPanel() {
 
                     <p className="mt-4 text-xs leading-5 text-slate-500">
                       Dernière vérification enregistrée : {formatVerification(course.verified_at)}
+                      {" · "}à revalider avant : {formatVerification(catalogVerificationExpiresAt(course.verified_at))}
                     </p>
                   </div>
 
