@@ -1,6 +1,6 @@
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Card } from "@/components/ui/Card";
-import { PageHeader } from "@/components/ui/PageHeader";
+import { StudentJourneyHeader } from "@/components/student/StudentJourneyHeader";
 import { StudentApplicationsPanel } from "@/components/student/StudentApplicationsPanel";
 import { StudentGuidancePanel } from "@/components/student/StudentGuidancePanel";
 import { createClient } from "@/lib/supabase/server";
@@ -19,9 +19,10 @@ export default async function StudentApplicationsPage() {
   }
 
   return (
-    <main className="mx-auto w-full max-w-7xl px-4 py-7 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
-      <PageHeader
-        badge="Candidatures"
+    <main className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 sm:py-7 lg:px-8 lg:py-9">
+      <StudentJourneyHeader
+        current="applications"
+        eyebrow="Mon dossier"
         title="Mes candidatures"
         description="Retrouvez chaque dossier, son échéance, sa prochaine action et l’historique visible du suivi enregistré dans AlmaGo."
         actions={<ButtonLink href="/student/orientation" variant="secondary">Voir les recommandations</ButtonLink>}
@@ -45,8 +46,8 @@ export default async function StudentApplicationsPage() {
 
 function ApplicationsUnavailable() {
   return (
-    <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
-      <PageHeader badge="Candidatures" title="Suivi des candidatures" />
+    <main className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 sm:py-7 lg:px-8 lg:py-9">
+      <StudentJourneyHeader current="applications" eyebrow="Mon dossier" title="Mes candidatures" />
       <Card>
         <div role="alert">
           <h2 className="text-xl font-semibold text-slate-950">Candidatures temporairement indisponibles</h2>
