@@ -1,6 +1,6 @@
 import { AdminLanguageCoursesPanel } from "@/components/admin/AdminLanguageCoursesPanel";
-import { Card } from "@/components/ui/Card";
-import { PageHeader } from "@/components/ui/PageHeader";
+import { AdminLoadError } from "@/components/admin/AdminLoadError";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -14,19 +14,23 @@ export default async function AdminLanguageCoursesPage() {
 
   if (error) {
     return (
-      <main className="mx-auto w-full max-w-7xl px-4 py-7 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
-        <PageHeader badge="Catalogue Allemagne" title="Cours de langue" />
-        <Card><div role="alert"><h2 className="text-xl font-bold text-slate-950">Catalogue temporairement indisponible</h2><p className="mt-2 text-sm text-slate-600">Aucune donnée n’a été modifiée.</p></div></Card>
+      <main className="mx-auto w-full max-w-[92rem] px-4 py-5 sm:px-6 sm:py-6 xl:px-8">
+        <AdminPageHeader section="Catalogue Allemagne" title="Cours de langue" description="Catalogue sourcé des préparations linguistiques et séjours de langue." />
+        <AdminLoadError
+          title="Le catalogue des cours est temporairement indisponible"
+          description="Nous n’arrivons pas à charger les cours de langue pour le moment."
+          retryHref="/admin/language-courses"
+        />
       </main>
     );
   }
 
   return (
-    <main className="mx-auto w-full max-w-7xl px-4 py-7 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
-      <PageHeader
-        badge="Catalogue Allemagne"
+    <main className="mx-auto w-full max-w-[92rem] px-4 py-5 sm:px-6 sm:py-6 xl:px-8">
+      <AdminPageHeader
+        section="Catalogue Allemagne"
         title="Cours de langue"
-        description="Maintenez uniquement des cours sourcés et datés. Distinguez explicitement la préparation aux études d’un séjour linguistique autonome."
+        description="Maintenez uniquement des cours sourcés et datés. Les éléments publiés doivent rester distingués entre préparation aux études et séjour linguistique autonome."
       />
       <AdminLanguageCoursesPanel courses={data || []} />
     </main>
