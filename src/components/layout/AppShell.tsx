@@ -44,6 +44,12 @@ const studentItems: NavItem[] = [
   { label: "Mes candidatures", href: "/student/applications", icon: icons.applications, helper: "Suivi et échéances" },
 ];
 
+const studentGroups = [
+  { label: "Dossier", items: [studentItems[0], studentItems[1], studentItems[3]] },
+  { label: "Parcours", items: [studentItems[2], studentItems[4], studentItems[5], studentItems[8], studentItems[9]] },
+  { label: "Ressources", items: [studentItems[6], studentItems[7]] },
+];
+
 const adminItems: NavItem[] = [
   { label: "Vue d’ensemble", href: "/admin", icon: icons.dashboard, helper: "Priorités de l’équipe" },
   { label: "Documents", href: "/admin/documents", icon: icons.documents, helper: "Pièces à vérifier" },
@@ -152,24 +158,33 @@ export function AppShell({
               ))}
             </div>
           ) : (
-            studentItems.map((item) => {
-              const active = isActive(pathname, item.href);
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  aria-current={active ? "page" : undefined}
-                  className={`group relative flex min-h-11 items-center gap-3 rounded-[var(--radius-control)] px-3 py-2 transition-colors duration-150 ${active ? "bg-[var(--brand-soft)] text-[var(--brand)] ring-1 ring-[var(--brand-border)]" : "text-[var(--muted)] hover:bg-[var(--surface-subtle)] hover:text-[var(--foreground)]"}`}
-                >
-                  <span className={`grid h-7 w-7 shrink-0 place-items-center rounded-[var(--radius-control)] ${active ? "bg-[var(--brand-soft)] text-[var(--accent-strong)]" : "bg-transparent text-[var(--muted)]"}`}>{item.icon}</span>
-                  <span className="min-w-0">
-                    <span className="block text-sm font-semibold [overflow-wrap:anywhere]">{item.label}</span>
-                    {item.helper && <span className="mt-0.5 block text-[11px] leading-4 text-[var(--muted)]">{item.helper}</span>}
-                  </span>
-                  {active && <span aria-hidden="true" className="absolute inset-y-2 left-0 w-0.5 rounded-r-full bg-[var(--accent)]" />}
-                </Link>
-              );
-            })
+            <div className="space-y-4">
+              {studentGroups.map((group) => (
+                <div key={group.label}>
+                  <p className="mb-1.5 px-3 text-[9px] font-bold uppercase tracking-[0.16em] text-[var(--muted)]">{group.label}</p>
+                  <div className="space-y-1">
+                    {group.items.map((item) => {
+                      const active = isActive(pathname, item.href);
+                      return (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          aria-current={active ? "page" : undefined}
+                          className={`group relative flex min-h-10 items-center gap-2.5 rounded-[var(--radius-control)] px-2.5 py-1.5 transition-colors duration-150 ${active ? "bg-[var(--brand-soft)] text-[var(--brand)] ring-1 ring-[var(--brand-border)]" : "text-[var(--muted)] hover:bg-[var(--surface-subtle)] hover:text-[var(--foreground)]"}`}
+                        >
+                          <span className={`grid h-7 w-7 shrink-0 place-items-center rounded-[var(--radius-control)] ${active ? "text-[var(--accent-strong)]" : "text-[var(--muted)]"}`}>{item.icon}</span>
+                          <span className="min-w-0">
+                            <span className="block text-[0.82rem] font-semibold [overflow-wrap:anywhere]">{item.label}</span>
+                            {item.helper && <span className="mt-0.5 block text-[10px] leading-3.5 text-[var(--muted)]">{item.helper}</span>}
+                          </span>
+                          {active && <span aria-hidden="true" className="absolute inset-y-2 left-0 w-0.5 rounded-r-full bg-[var(--accent)]" />}
+                        </Link>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
           )}
         </nav>
 
@@ -222,27 +237,34 @@ export function AppShell({
                     <p className="mt-1 text-xs leading-5 text-[var(--muted)]">Choisissez la partie de votre dossier que vous souhaitez consulter.</p>
                   </div>
 
-                  <nav className="grid gap-2 sm:grid-cols-2" aria-label="Navigation étudiant mobile">
-                    {studentItems.map((item) => {
-                      const active = isActive(pathname, item.href);
-                      return (
-                        <Link
-                          key={item.href}
-                          href={item.href}
-                          onClick={() => setMobileMenuOpen(false)}
-                          aria-current={active ? "page" : undefined}
-                          className={`flex min-h-14 items-center gap-3 rounded-[var(--radius-control)] border px-3.5 py-2.5 transition-colors ${active ? "border-[var(--brand-border)] bg-[var(--surface)] text-[var(--brand)] shadow-sm" : "border-transparent bg-[#fffdf8]/80 text-[var(--foreground)] hover:border-[var(--border)] hover:bg-[var(--surface)]"}`}
-                        >
-                          <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-[var(--radius-control)] ${active ? "bg-[var(--brand-soft)] text-[var(--accent-strong)]" : "bg-[var(--surface-muted)] text-[var(--muted)]"}`}>
-                            {item.icon}
-                          </span>
-                          <span className="min-w-0">
-                            <span className="block text-sm font-semibold [overflow-wrap:anywhere]">{item.label}</span>
-                            {item.helper && <span className="mt-0.5 block text-[11px] text-[var(--muted)]">{item.helper}</span>}
-                          </span>
-                        </Link>
-                      );
-                    })}
+                  <nav className="space-y-4" aria-label="Navigation étudiant mobile">
+                    {studentGroups.map((group) => (
+                      <section key={group.label} aria-label={group.label}>
+                        <p className="mb-2 px-1 text-[10px] font-bold uppercase tracking-[0.15em] text-[var(--muted)]">{group.label}</p>
+                        <div className="grid gap-2 sm:grid-cols-2">
+                          {group.items.map((item) => {
+                            const active = isActive(pathname, item.href);
+                            return (
+                              <Link
+                                key={item.href}
+                                href={item.href}
+                                onClick={() => setMobileMenuOpen(false)}
+                                aria-current={active ? "page" : undefined}
+                                className={`flex min-h-14 items-center gap-3 rounded-[var(--radius-control)] border px-3.5 py-2.5 transition-colors ${active ? "border-[var(--brand-border)] bg-[var(--surface)] text-[var(--brand)] shadow-sm" : "border-transparent bg-[#fffdf8]/80 text-[var(--foreground)] hover:border-[var(--border)] hover:bg-[var(--surface)]"}`}
+                              >
+                                <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-[var(--radius-control)] ${active ? "bg-[var(--brand-soft)] text-[var(--accent-strong)]" : "bg-[var(--surface-muted)] text-[var(--muted)]"}`}>
+                                  {item.icon}
+                                </span>
+                                <span className="min-w-0">
+                                  <span className="block text-sm font-semibold [overflow-wrap:anywhere]">{item.label}</span>
+                                  {item.helper && <span className="mt-0.5 block text-[11px] text-[var(--muted)]">{item.helper}</span>}
+                                </span>
+                              </Link>
+                            );
+                          })}
+                        </div>
+                      </section>
+                    ))}
                   </nav>
 
                   <div className="mt-4 border-t border-[var(--border)] pt-4">

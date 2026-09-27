@@ -45,7 +45,7 @@ export function ResetPasswordForm() {
         </p>
       </div>
 
-      <form onSubmit={submit} className="space-y-5 px-6 py-6 sm:px-8">
+      <form onSubmit={submit} aria-busy={saving} className="space-y-5 px-6 py-6 sm:px-8">
         <label className="block text-sm font-semibold text-[var(--foreground)]">
           Nouveau mot de passe
           <input
@@ -56,7 +56,7 @@ export function ResetPasswordForm() {
             aria-describedby="reset-password-hint"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="field mt-2"
+            className="field mt-2 min-h-12"
           />
         </label>
 
@@ -86,7 +86,7 @@ export function ResetPasswordForm() {
           {message}
         </p>
 
-        <Button type="submit" disabled={saving} className="w-full justify-center">
+        <Button type="submit" disabled={saving} className="min-h-12 w-full justify-center">
           {saving ? "Enregistrement..." : "Enregistrer le mot de passe"}
         </Button>
       </form>

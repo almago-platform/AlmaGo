@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { BrandLogo } from "@/components/brand/BrandLogo";
+import { ButtonLink } from "@/components/ui/ButtonLink";
 
 export default function UnauthorizedPage() {
   return (
-    <main className="min-h-screen bg-[var(--background)] px-4 py-10 text-[var(--foreground)] sm:px-6 lg:px-8">
+    <main className="min-h-screen bg-[linear-gradient(180deg,#fffdf8_0%,#f7f4ec_55%,#f1ece4_100%)] px-4 py-8 text-[var(--foreground)] sm:px-6 lg:px-8">
       <div className="mx-auto flex min-h-[calc(100vh-5rem)] w-full max-w-3xl items-center justify-center">
-        <section className="w-full rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-8 text-center shadow-sm sm:p-10">
-          <Link href="/" className="mx-auto inline-flex items-center" aria-label="Retour à l'accueil AlmaGo">
+        <section className="w-full rounded-[1rem] border border-[var(--border)] bg-[var(--surface)] p-7 text-center shadow-[0_24px_70px_-54px_rgba(28,33,36,0.45)] sm:p-10">
+          <Link href="/" className="mx-auto inline-flex min-h-11 items-center" aria-label="Retour à l'accueil AlmaGo">
             <BrandLogo className="h-auto w-48" />
           </Link>
 
@@ -14,25 +15,15 @@ export default function UnauthorizedPage() {
             Autorisation requise
           </p>
           <h1 className="mx-auto mt-4 max-w-xl text-3xl font-bold tracking-tight text-slate-950 sm:text-4xl">
-            Cet espace est réservé à l&apos;équipe AlmaGo.
+            Cet espace n’est pas disponible pour ce compte.
           </h1>
           <p className="mx-auto mt-4 max-w-xl text-base leading-7 text-[var(--muted)]">
-            Ton compte est bien connecté, mais il ne possède pas les droits nécessaires pour ouvrir cette zone administrative.
+            Votre compte est bien connecté, mais le rôle associé ne permet pas d’ouvrir cette page. Rien n’a été modifié dans votre dossier.
           </p>
 
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-            <Link
-              href="/student"
-              className="inline-flex items-center justify-center rounded-lg bg-[var(--brand)] px-5 py-3 font-bold text-white shadow-sm transition hover:bg-[var(--brand-strong)]"
-            >
-              Retour au tableau de bord
-            </Link>
-            <Link
-              href="/login"
-              className="inline-flex items-center justify-center rounded-lg border border-[var(--border-strong)] bg-[var(--surface)] px-5 py-3 font-bold text-[var(--foreground)] shadow-sm transition hover:border-[var(--brand)] hover:text-[var(--brand)]"
-            >
-              Changer de compte
-            </Link>
+            <ButtonLink href="/student">Retour à mon dossier</ButtonLink>
+            <ButtonLink href="/login" variant="secondary">Changer de compte</ButtonLink>
           </div>
         </section>
       </div>

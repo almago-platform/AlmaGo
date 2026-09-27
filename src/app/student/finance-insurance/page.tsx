@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/Badge";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Card } from "@/components/ui/Card";
-import { PageHeader } from "@/components/ui/PageHeader";
+import { StudentResourceHeader } from "@/components/student/StudentResourceHeader";
 import { StudentGuidancePanel } from "@/components/student/StudentGuidancePanel";
 import {
   financeInsuranceKinds,
@@ -51,9 +51,9 @@ export default async function StudentFinanceInsurancePage() {
   ) as FinanceInsuranceOption[];
 
   return (
-    <main className="mx-auto w-full max-w-7xl px-4 py-7 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
-      <PageHeader
-        badge="Projet Allemagne"
+    <main className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 sm:py-7 lg:px-8 lg:py-9">
+      <StudentResourceHeader
+        current="finance"
         title="Financement et assurance"
         description="Consultez uniquement les options factuelles enregistrées avec une source officielle et une vérification datée. AlmaGo ne classe pas les fournisseurs et ne déduit ni votre éligibilité ni une exigence de visa à partir de ce catalogue."
         actions={<ButtonLink href="/student/pathway" variant="secondary">Retour à mon parcours</ButtonLink>}
@@ -173,8 +173,8 @@ function formatVerifiedAt(value: string | null) {
 
 function CatalogueUnavailable() {
   return (
-    <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
-      <PageHeader badge="Projet Allemagne" title="Financement et assurance" />
+    <main className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 sm:py-7 lg:px-8 lg:py-9">
+      <StudentResourceHeader current="finance" title="Financement et assurance" description="Les options vérifiées sont temporairement indisponibles." />
       <Card>
         <div role="alert">
           <h2 className="text-xl font-semibold text-slate-950">Catalogue temporairement indisponible</h2>
