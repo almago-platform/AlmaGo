@@ -15,7 +15,7 @@ const items = [
     icon: "route",
   },
   {
-    href: "#espace",
+    href: "#parcours",
     title: "Préparer mes documents",
     detail: "Listes et suivi",
     icon: "document",
