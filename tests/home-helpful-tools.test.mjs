@@ -25,7 +25,8 @@ test("helpful tools use dedicated large visual icons", () => {
 
 test("navigation now targets the helpful-tools section", () => {
   assert.match(header, /\["Nos repères", "#outils"\]/);
-  assert.match(header, /Voir les outils utiles/);
+  assert.doesNotMatch(header, /Voir les outils utiles/);
+  assert.doesNotMatch(header, /plateforme indépendante/);
   assert.match(section, /id="outils"/);
 });
 
