@@ -9,7 +9,7 @@ export default async function AdminApplicationsPage() {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("applications")
-    .select("id,student_id,program_id,status,intake,deadline,next_action,required_documents,student_notes,result,submitted_at,created_at,profiles(first_name,last_name),programs(name,universities(name,city)),application_events(id,event_type,message,visible_to_student,created_at)")
+    .select("id,student_id,program_id,status,intake,deadline,next_action,required_documents,student_notes,result,submitted_at,created_at,programs(name,universities(name,city)),application_events(id,event_type,message,visible_to_student,created_at)")
     .order("deadline", { ascending: true, nullsFirst: false });
 
   if (error) {
@@ -29,6 +29,18 @@ export default async function AdminApplicationsPage() {
     );
   }
 
+  const rawApplications = data || [];
+  const studentIds = [...new Set(rawApplications.map((application) => application.student_id))];
+  const profilesResult = studentIds.length
+    ? await supabase.from("profiles").select("id,first_name,last_name").in("id", studentIds)
+    : { data: [], error: null };
+
+  const profileById = new Map((profilesResult.data || []).map((profile) => [profile.id, profile]));
+  const applications = rawApplications.map((application) => ({
+    ...application,
+    profiles: profileById.get(application.student_id) || null,
+  }));
+
   return (
     <main className="mx-auto w-full max-w-[92rem] px-4 py-5 sm:px-6 sm:py-6 xl:px-8">
       <AdminPageHeader
@@ -36,7 +48,12 @@ export default async function AdminApplicationsPage() {
         title="Candidatures"
         description="Traitez les dossiers actifs, surveillez les échéances et gardez clairement identifiés les champs qui alimentent l’espace étudiant."
       />
-      <AdminApplicationsPanel applications={data || []} />
+      {profilesResult.error && (
+        <p role="status" className="mb-4 rounded-[var(--radius-control)] border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+          Les candidatures sont chargées, mais certains noms d’étudiants peuvent être indisponibles temporairement.
+        </p>
+      )}
+      <AdminApplicationsPanel applications={applications} />
     </main>
   );
 }
