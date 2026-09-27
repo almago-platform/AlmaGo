@@ -11,6 +11,9 @@ test("merged branch cleanup is manual and dry-run by default", () => {
   assert.match(workflow, /workflow_dispatch:/);
   assert.match(workflow, /dry_run:/);
   assert.match(workflow, /default:\s*true/);
+  assert.match(workflow, /confirm_delete:/);
+  assert.match(workflow, /DELETE_MERGED_BRANCHES/);
+  assert.match(workflow, /if \(!dryRun && confirmation !== "DELETE_MERGED_BRANCHES"\)/);
   assert.doesNotMatch(workflow, /\n\s{2}push:/);
 });
 
