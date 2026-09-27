@@ -12,7 +12,7 @@ const content = {
     title: "Reprenez votre parcours là où vous l’avez laissé.",
     description:
       "Votre projet, vos documents, vos candidatures et vos prochaines actions restent réunis dans un dossier structuré.",
-    image: "https://images.pexels.com/photos/6684514/pexels-photo-6684514.jpeg",
+    image: "https://images.pexels.com/photos/6684514/pexels-photo-6684514.jpeg?auto=compress&cs=tinysrgb&w=1200",
     alt: "Des étudiants travaillent ensemble dans une bibliothèque universitaire.",
     badge: "Votre dossier reste organisé",
     points: [
@@ -26,7 +26,7 @@ const content = {
     title: "Créez votre espace. Construisez ensuite votre projet, étape par étape.",
     description:
       "Le compte est seulement le point de départ : vous définissez ensuite votre projet académique, vos documents et vos prochaines démarches.",
-    image: "https://images.pexels.com/photos/7973208/pexels-photo-7973208.jpeg",
+    image: "https://images.pexels.com/photos/7973208/pexels-photo-7973208.jpeg?auto=compress&cs=tinysrgb&w=1200",
     alt: "Des étudiants relisent ensemble des documents devant un bâtiment universitaire.",
     badge: "Étudier en Allemagne, avec un cap clair",
     points: [

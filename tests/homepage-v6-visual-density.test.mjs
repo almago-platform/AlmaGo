@@ -9,24 +9,24 @@ const band = readFileSync("src/components/public/HomePhotoBand.tsx", "utf8");
 const journey = readFileSync("src/components/public/HomeJourneySection.tsx", "utf8");
 const css = readFileSync("src/components/public/Homepage.module.css", "utf8");
 
-test("V6 adds a photographic story between product and journey", () => {
+test("photographic story remains between quick access and journey", () => {
   assert.match(page, /HomePhotoBand/);
-  assert.match(page, /<HomeProductPreview \/>[\s\S]*<HomePhotoBand \/>[\s\S]*<HomeJourneySection \/>/);
+  assert.match(page, /<HomeQuickAccess \/>[\s\S]*<HomePhotoBand \/>[\s\S]*<HomeJourneySection \/>/);
   assert.match(band, /6684514/);
   assert.match(band, /5965674/);
   assert.match(band, /5553958/);
 });
 
-test("V6 uses a high-resolution campus hero without claiming a German location", () => {
-  assert.match(hero, /31070782/);
+test("current hero uses a high-resolution campus image without claiming a German location", () => {
+  assert.match(hero, /7972313/);
   assert.match(hero, /quality=\{90\}/);
   assert.doesNotMatch(hero, /Germany|Deutschland|Allemagne.*campus/i);
 });
 
-test("V6 quick access exposes six unique actions", () => {
+test("current quick access exposes five unique actions", () => {
   const titles = [...quick.matchAll(/title: "([^"]+)"/g)].map((match) => match[1]);
-  assert.equal(titles.length, 6);
-  assert.equal(new Set(titles).size, 6);
+  assert.equal(titles.length, 5);
+  assert.equal(new Set(titles).size, 5);
   assert.match(quick, /key=\{item\.title\}/);
 });
 
