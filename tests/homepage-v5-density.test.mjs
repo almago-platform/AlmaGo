@@ -7,7 +7,7 @@ const css = readFileSync("src/components/public/Homepage.module.css", "utf8");
 const config = readFileSync("next.config.ts", "utf8");
 
 test("homepage keeps a high-resolution campus hero source", () => {
-  assert.match(hero, /photos\/7972313\/pexels-photo-7972313\.jpeg"/);
+  assert.match(hero, /photos\/7972313\/pexels-photo-7972313\.jpeg\?auto=compress&cs=tinysrgb&w=1920"/);
   assert.doesNotMatch(hero, /w=1600/);
   assert.match(hero, /quality=\{90\}/);
   assert.match(config, /qualities:\s*\[75, 90\]/);
