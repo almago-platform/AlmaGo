@@ -1,78 +1,67 @@
 import { HomeIcon } from "./HomeIcons";
 import s from "./Homepage.module.css";
 
+const tools = [
+  {
+    href: "/signup",
+    icon: "certificate",
+    title: "Évaluer mon point de départ",
+    text: "Diplôme, domaine, langue et rentrée : posez les bases de votre projet avant de chercher.",
+    cta: "Commencer mon dossier",
+  },
+  {
+    href: "#programmes",
+    icon: "university",
+    title: "Explorer les programmes",
+    text: "Comparez des pistes selon votre profil, leurs critères, leurs échéances et leurs sources.",
+    cta: "Voir les programmes",
+  },
+  {
+    href: "#faq",
+    icon: "globe",
+    title: "Trouver les bons repères",
+    text: "Identifiez où confirmer une information et quel organisme est responsable de la décision.",
+    cta: "Consulter les repères",
+  },
+] as const;
+
 export function HomeTrustSection() {
   return (
     <section
-      id="confiance"
-      className={`${s.section} ${s.trust}`}
-      aria-labelledby="trust-title"
+      id="outils"
+      className={`${s.section} ${s.helpfulTools}`}
+      aria-labelledby="helpful-tools-title"
     >
-      <div className={`${s.container} ${s.trustGrid}`}>
-        <div>
-          <p className={s.eyebrow}>La confiance se construit</p>
-          <h2 id="trust-title" className={s.sectionTitle}>
-            Des sources visibles.
-            <br />
-            <em>Des rôles clairs.</em>
-          </h2>
-          <p className={s.lead}>
-            Comprendre d’où vient une information est aussi important que
-            l’information elle-même.
+      <div className={s.container}>
+        <div className={s.helpfulToolsHeading}>
+          <p className={s.eyebrow}>Pour avancer plus simplement</p>
+          <h2 id="helpful-tools-title">Outils utiles</h2>
+          <p>
+            Trois points d’entrée pour clarifier votre projet, explorer vos
+            options et savoir où vérifier les informations importantes.
           </p>
-          <div className={s.trustStatement}>
-            <HomeIcon name="source" />
-            <p>
-              <strong>AlmaGo est une plateforme indépendante.</strong> Elle
-              organise votre dossier. Elle ne représente ni une université, ni
-              uni-assist, ni une ambassade. Les admissions, visas et titres de
-              séjour sont décidés par les organismes compétents.
-            </p>
-          </div>
         </div>
-        <div className={s.sourceCard}>
-          <div className={s.sourceCardTop}>
-            <HomeIcon name="document" />
-            <span>Les repères d’une information</span>
-          </div>
-          <dl>
-            <div>
-              <dt>Sa provenance</dt>
-              <dd>
-                Une source identifiable, à consulter pour confirmer les
-                exigences.
-              </dd>
-            </div>
-            <div>
-              <dt>Sa date de contrôle</dt>
-              <dd>
-                Lorsqu’une fiche est vérifiée, la date permet de situer
-                l’information.
-              </dd>
-            </div>
-            <div>
-              <dt>Son statut</dt>
-              <dd>
-                Une piste, un élément confirmé ou une information à revalider.
-              </dd>
-            </div>
-            <div>
-              <dt>Qui décide</dt>
-              <dd>
-                L’organisme responsable de la règle ou de la décision
-                officielle.
-              </dd>
-            </div>
-          </dl>
-          <div className={s.sourceLinks}>
-            <p>Retrouver une source officielle</p>
-            <a href="https://www.uni-assist.de/en/">
-              uni-assist
-              <HomeIcon name="external" />
+
+        <div className={s.helpfulToolsGrid}>
+          {tools.map((tool) => (
+            <a className={s.helpfulToolCard} href={tool.href} key={tool.title}>
+              <span className={s.helpfulToolIcon} aria-hidden="true">
+                <HomeIcon name={tool.icon} />
+              </span>
+              <h3>{tool.title}</h3>
+              <p>{tool.text}</p>
+              <span className={s.helpfulToolAction}>
+                {tool.cta}
+                <HomeIcon name="arrow" />
+              </span>
             </a>
-            <span>Référence externe, sans affiliation à AlmaGo.</span>
-          </div>
+          ))}
         </div>
+
+        <p className={s.helpfulToolsNote}>
+          AlmaGo organise votre préparation. Les admissions, visas et autres
+          décisions officielles restent aux organismes compétents.
+        </p>
       </div>
     </section>
   );

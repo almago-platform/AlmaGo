@@ -9,7 +9,7 @@ import s from "./Homepage.module.css";
 const navigation = [
   ["Le parcours", "#parcours"],
   ["L’espace étudiant", "#espace"],
-  ["Nos repères", "#confiance"],
+  ["Nos repères", "#outils"],
   ["FAQ", "#faq"],
 ] as const;
 
@@ -24,7 +24,7 @@ export function HomeHeader() {
             <HomeIcon name="source" /> AlmaGo est une plateforme indépendante
             qui vous guide dans votre projet d’études en Allemagne.
           </span>
-          <a href="#confiance">Comprendre notre rôle</a>
+          <a href="#outils">Voir les outils utiles</a>
         </div>
       </div>
       <header
