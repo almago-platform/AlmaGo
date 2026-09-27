@@ -43,6 +43,7 @@ jobs:
             const defaultBranch = repository.default_branch || "main";
             const dryRun = String(process.env.DRY_RUN).toLowerCase() !== "false";
             const confirmation = String(process.env.CONFIRM_DELETE || "");
+            const maxDeletePerRun = 20;
 
             if (!dryRun && confirmation !== "DELETE_MERGED_BRANCHES") {
               core.setFailed(
@@ -113,7 +114,6 @@ jobs:
             }
 
             const eligible = [];
-            const planned = [];
             const deleted = [];
             const skippedProtected = [];
             const skippedChanged = [];
@@ -155,29 +155,62 @@ jobs:
                 continue;
               }
 
-              const candidate = `${branch} @ ${currentSha}`;
-              eligible.push(candidate);
-
-              if (dryRun) {
-                planned.push(candidate);
-                continue;
-              }
-
-              await github.rest.git.deleteRef({
-                owner,
-                repo,
-                ref: `heads/${branch}`,
-              });
-              deleted.push(candidate);
+              eligible.push({ branch, sha: currentSha });
             }
+
+            if (!dryRun && eligible.length > maxDeletePerRun) {
+              core.setFailed(
+                `Refusing to delete ${eligible.length} branches in one run; maximum is ${maxDeletePerRun}. Narrow the eligible set before retrying.`,
+              );
+              return;
+            }
+
+            if (!dryRun) {
+              for (const candidate of eligible) {
+                let freshRef;
+                try {
+                  freshRef = await github.rest.git.getRef({
+                    owner,
+                    repo,
+                    ref: `heads/${candidate.branch}`,
+                  });
+                } catch (error) {
+                  if (error.status === 404) {
+                    throw new Error(
+                      `Branch disappeared during deletion preflight: ${candidate.branch}`,
+                    );
+                  }
+                  throw error;
+                }
+
+                const freshSha = freshRef.data.object.sha;
+                if (freshSha !== candidate.sha) {
+                  throw new Error(
+                    `Branch tip changed during deletion preflight: ${candidate.branch} expected ${candidate.sha}, got ${freshSha}`,
+                  );
+                }
+
+                await github.rest.git.deleteRef({
+                  owner,
+                  repo,
+                  ref: `heads/${candidate.branch}`,
+                });
+                deleted.push(`${candidate.branch} @ ${candidate.sha}`);
+              }
+            }
+
+            const eligibleSummary = eligible.map(
+              ({ branch, sha }) => `${branch} @ ${sha}`,
+            );
 
             await core.summary
               .addHeading("AlmaGo merged branch cleanup")
               .addRaw(`Mode: ${dryRun ? "DRY RUN" : "DELETE"}\n\n`)
-              .addRaw("Eligible in this run: " + eligible.length + "\n")
-              .addList(eligible.length ? eligible : ["None."])
-              .addRaw("\nPlanned only (dry run): " + planned.length + "\n")
-              .addList(planned.length ? planned : ["None."])
+              .addRaw("Eligible in this run: " + eligibleSummary.length + "\n")
+              .addList(eligibleSummary.length ? eligibleSummary : ["None."])
+              .addRaw(
+                "\nPer-run deletion cap: " + maxDeletePerRun + "\n",
+              )
               .addRaw("\nDeleted: " + deleted.length + "\n")
               .addList(deleted.length ? deleted : ["None."])
               .addRaw(
