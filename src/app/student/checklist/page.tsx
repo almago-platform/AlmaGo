@@ -1,4 +1,4 @@
-import { PageHeader } from "@/components/ui/PageHeader";
+import { StudentJourneyHeader } from "@/components/student/StudentJourneyHeader";
 import { redirect } from "next/navigation";
 import { Badge } from "@/components/ui/Badge";
 import { ButtonLink } from "@/components/ui/ButtonLink";
@@ -186,9 +186,10 @@ export default async function ChecklistPage() {
   }
 
   return (
-    <main className="mx-auto w-full max-w-7xl px-4 py-7 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
-      <PageHeader
-        badge="Mes démarches"
+    <main className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 sm:py-7 lg:px-8 lg:py-9">
+      <StudentJourneyHeader
+        current="checklist"
+        eyebrow="Mon dossier"
         title="Mes démarches"
         description="Voyez en un coup d’œil ce qui est à faire par vous, ce qu’AlmaGo suit et les étapes déjà terminées dans votre dossier."
         actions={<ButtonLink href="/student/documents" variant="secondary">Voir mes documents</ButtonLink>}
@@ -353,8 +354,8 @@ function SummaryCard({ title, value, badge, tone }: { title: string; value: numb
 
 function ChecklistUnavailable() {
   return (
-    <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
-      <PageHeader badge="Mes démarches" title="Mes démarches" />
+    <main className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 sm:py-7 lg:px-8 lg:py-9">
+      <StudentJourneyHeader current="checklist" eyebrow="Mon dossier" title="Mes démarches" />
       <Card>
         <div role="alert">
           <h2 className="text-xl font-semibold text-slate-950">Démarches temporairement indisponibles</h2>

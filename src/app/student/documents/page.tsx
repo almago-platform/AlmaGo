@@ -1,4 +1,4 @@
-import { PageHeader } from "@/components/ui/PageHeader";
+import { StudentJourneyHeader } from "@/components/student/StudentJourneyHeader";
 import { redirect } from "next/navigation";
 import { DocumentsPanel } from "@/components/student/DocumentsPanel";
 import { ButtonLink } from "@/components/ui/ButtonLink";
@@ -60,9 +60,10 @@ export default async function StudentDocumentsPage() {
   );
 
   return (
-    <main className="mx-auto w-full max-w-7xl px-4 py-7 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
-      <PageHeader
-        badge="Documents"
+    <main className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 sm:py-7 lg:px-8 lg:py-9">
+      <StudentJourneyHeader
+        current="documents"
+        eyebrow="Mon dossier"
         title="Vos documents"
         description="Voyez immédiatement ce qui est validé, ce qui est en vérification et ce qui demande une action de votre part."
       />
@@ -79,8 +80,8 @@ export default async function StudentDocumentsPage() {
 
 function DocumentsUnavailable() {
   return (
-    <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:py-12">
-      <PageHeader badge="Documents" title="Vos documents" />
+    <main className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 sm:py-7 lg:px-8 lg:py-9">
+      <StudentJourneyHeader current="documents" eyebrow="Mon dossier" title="Vos documents" />
       <Card>
         <div role="alert">
           <h2 className="text-xl font-semibold text-slate-950">Documents temporairement indisponibles</h2>

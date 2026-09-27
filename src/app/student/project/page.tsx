@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { StudentProjectForm } from "@/components/student/StudentProjectForm";
-import { PageHeader } from "@/components/ui/PageHeader";
+import { StudentJourneyHeader } from "@/components/student/StudentJourneyHeader";
 import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -15,9 +15,10 @@ export default async function StudentProjectPage() {
     .eq("student_id", user.id)
     .maybeSingle();
 
-  return <main className="mx-auto w-full max-w-6xl px-4 py-7 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
-    <PageHeader
-      badge="Mon projet"
+  return <main className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 sm:py-7 lg:px-8 lg:py-9">
+    <StudentJourneyHeader
+      current="project"
+      eyebrow="Mon dossier"
       title="Définissons votre point de départ"
       description="Décrivez votre situation et votre objectif avec vos propres mots. AlmaGo utilise ces informations pour organiser les prochaines étapes sans vous demander de choisir vous-même une catégorie juridique de visa."
     />
