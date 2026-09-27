@@ -39,14 +39,14 @@ export function ResetPasswordForm() {
     <section className="w-full rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] shadow-none">
       <div className="border-b border-[var(--border)] px-6 py-6 sm:px-8">
         <BrandLogo className="h-auto w-36" />
-        <h1 className="mt-3 text-3xl font-semibold tracking-[-0.035em] text-slate-950">Nouveau mot de passe</h1>
-        <p className="mt-3 text-sm leading-6 text-slate-600">
+        <h1 className="editorial-accent mt-3 text-3xl text-[var(--foreground)]">Nouveau mot de passe</h1>
+        <p className="mt-3 text-sm leading-6 text-[var(--muted)]">
           Saisissez un mot de passe solide pour sécuriser votre accès au dossier.
         </p>
       </div>
 
       <form onSubmit={submit} className="space-y-5 px-6 py-6 sm:px-8">
-        <label className="block text-sm font-semibold text-slate-700">
+        <label className="block text-sm font-semibold text-[var(--foreground)]">
           Nouveau mot de passe
           <input
             required
@@ -60,7 +60,7 @@ export function ResetPasswordForm() {
           />
         </label>
 
-        <p id="reset-password-hint" className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-3 py-2 text-sm leading-6 text-slate-600">
+        <p id="reset-password-hint" className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-3 py-2 text-sm leading-6 text-[var(--muted)]">
           Utilisez au moins 8 caractères. Un mot de passe long et unique protège mieux votre espace.
         </p>
 
