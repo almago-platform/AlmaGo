@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+/* Work V4 shared application palette: public, auth, student and admin. */
+
 :root {
   --background: #f7f6f0;
   --foreground: #173f36;
