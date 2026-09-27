@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
 import { resolveApplicationIntake } from "@/lib/application-intake";
-import { createClient } from "@/lib/supabase/server";
+import { getStudentUser } from "@/lib/auth/access";
 
 export async function POST(request: Request) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { supabase, user, isStudent } = await getStudentUser();
   if (!user) return NextResponse.json({ error: "Non authentifié." }, { status: 401 });
+  if (!isStudent) return NextResponse.json({ error: "Accès étudiant requis." }, { status: 403 });
 
   const body = await request.json().catch(() => null) as Record<string, unknown> | null;
   if (!body || typeof body.recommendation_id !== "string") {
