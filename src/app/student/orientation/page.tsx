@@ -1,6 +1,6 @@
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Card } from "@/components/ui/Card";
-import { PageHeader } from "@/components/ui/PageHeader";
+import { StudentJourneyHeader } from "@/components/student/StudentJourneyHeader";
 import { StudentOrientationPanel } from "@/components/student/StudentOrientationPanel";
 import { StudentGuidancePanel } from "@/components/student/StudentGuidancePanel";
 import { matchMasterRequirements } from "@/lib/master-requirements";
@@ -52,9 +52,10 @@ export default async function StudentOrientationPage() {
   });
 
   return (
-    <main className="mx-auto w-full max-w-7xl px-4 py-7 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
-      <PageHeader
-        badge="Orientation"
+    <main className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 sm:py-7 lg:px-8 lg:py-9">
+      <StudentJourneyHeader
+        current="orientation"
+        eyebrow="Mon dossier"
         title="Programmes recommandés"
         description="Comparez les pistes préparées pour votre dossier, comprenez pourquoi elles apparaissent et vérifiez les critères importants avant de décider. Une recommandation reste une piste de travail, pas une garantie d’admission."
         actions={<ButtonLink href="/student/applications" variant="secondary">Mes candidatures</ButtonLink>}
@@ -88,8 +89,8 @@ export default async function StudentOrientationPage() {
 
 function OrientationUnavailable() {
   return (
-    <main className="mx-auto w-full max-w-7xl px-4 py-7 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
-      <PageHeader badge="Orientation" title="Programmes recommandés" />
+    <main className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 sm:py-7 lg:px-8 lg:py-9">
+      <StudentJourneyHeader current="orientation" eyebrow="Mon dossier" title="Programmes recommandés" />
       <Card>
         <div role="alert">
           <h2 className="text-xl font-semibold text-slate-950">Orientation temporairement indisponible</h2>
