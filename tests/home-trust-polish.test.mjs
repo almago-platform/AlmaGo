@@ -2,21 +2,23 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
 
-const trust = readFileSync("src/components/public/HomeTrustSection.tsx", "utf8");
+const tools = readFileSync("src/components/public/HomeTrustSection.tsx", "utf8");
+const closing = readFileSync("src/components/public/HomeClosing.tsx", "utf8");
 const css = readFileSync("src/components/public/Homepage.module.css", "utf8");
 
-test("trust section keeps AlmaGo independence and external-source framing", () => {
-  assert.match(trust, /AlmaGo est une plateforme indépendante/);
-  assert.match(trust, /Référence externe, sans affiliation à AlmaGo/);
-  assert.match(trust, /https:\/\/www\.uni-assist\.de\/en\//);
+test("public trust framing keeps AlmaGo independent and official decisions external", () => {
+  assert.match(closing, /Plateforme indépendante/);
+  assert.match(closing, /uni-assist · source externe/);
+  assert.match(closing, /Les admissions, visas et autres décisions officielles appartiennent/);
+  assert.match(tools, /savoir où vérifier les informations importantes/);
 });
 
-test("trust section uses compact aligned desktop layout", () => {
-  assert.match(css, /\.trust\.section\s*\{[\s\S]*padding-block:\s*58px 62px/);
-  assert.match(css, /\.trustGrid\s*\{[\s\S]*grid-template-columns:\s*minmax\(0, 0\.92fr\) minmax\(0, 1\.08fr\)/);
-  assert.match(css, /\.sourceCard\s*\{[\s\S]*padding:\s*24px 28px 25px/);
+test("helpful tools use the current three-column desktop layout", () => {
+  assert.match(css, /\.helpfulTools\.section\s*\{[\s\S]*padding-block:\s*66px 58px/);
+  assert.match(css, /\.helpfulToolsGrid\s*\{[\s\S]*grid-template-columns:\s*repeat\(3, minmax\(0, 1fr\)\)/);
+  assert.match(css, /\.helpfulToolCard\s*\{[\s\S]*align-items:\s*center/);
 });
 
-test("trust section retains responsive one-column behavior", () => {
-  assert.match(css, /@media \(max-width: 899px\)[\s\S]*\.trustGrid\s*\{[\s\S]*grid-template-columns:\s*1fr/);
+test("helpful tools retain responsive one-column behavior on phones", () => {
+  assert.match(css, /@media \(max-width: 599px\)[\s\S]*\.helpfulToolsGrid\s*\{[\s\S]*grid-template-columns:\s*1fr/);
 });
