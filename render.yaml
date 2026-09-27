@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: almago
+    runtime: node
+    region: frankfurt
+    plan: 1c-2g
+    buildCommand: npm ci && npm run build
+    startCommand: npm start -- -p $PORT -H 0.0.0.0
+    healthCheckPath: /api/health
+    autoDeployTrigger: commit
+    maxShutdownDelaySeconds: 30
+    renderSubdomainPolicy: enabled
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NODE_VERSION
+        value: "22.22.0"
+      - key: NEXT_PUBLIC_SUPABASE_URL
+        sync: false
+      - key: NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+        sync: false
