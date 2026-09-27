@@ -1,6 +1,11 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { BrandLogo } from "@/components/brand/BrandLogo";
 import { ButtonLink } from "@/components/ui/ButtonLink";
+
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+};
 
 export default function UnauthorizedPage() {
   return (
