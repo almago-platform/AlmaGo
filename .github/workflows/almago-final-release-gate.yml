@@ -46,6 +46,22 @@ jobs:
               branch: mainBranch,
             });
             const mainSha = mainRef.commit.sha;
+
+            if (mainRef.protected !== true) {
+              core.summary
+                .addHeading("AlmaGo final release gate")
+                .addRaw(
+                  "BLOCKED — the default branch " +
+                  mainBranch +
+                  " is not protected. Resolve repository-hardening issue #336 before release readiness."
+                )
+                .write();
+              core.setFailed(
+                "A45 requires protected main before RELEASE GATE: READY can be published."
+              );
+              return;
+            }
+
             core.setOutput("main_sha", mainSha);
 
             const allIssues = await github.paginate(github.rest.issues.listForRepo, {
