@@ -23,6 +23,6 @@ test("Tunisia preparation and standalone language facts remain separated", () =>
 });
 
 test("migration stores factual route support without guaranteeing a visa", () => {
-  assert.doesNotMatch(migration, /visa guaranteed|eligible for a visa|automatic visa|approval guaranteed/i);
+  assert.doesNotMatch(migration, /visa (?:is )?guaranteed|eligible for a visa|automatic visa (?:approval|grant)|approval (?:is )?guaranteed/i);
   assert.match(migration, /not as an automatic visa entitlement/);
 });
