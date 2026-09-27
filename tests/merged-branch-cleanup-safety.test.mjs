@@ -34,8 +34,17 @@ test("merged branch cleanup requires the current tip to equal a merged PR head",
   );
 });
 
+test("merged branch cleanup requires an explicit branch@sha manifest for deletion", () => {
+  assert.match(workflow, /branch_specs:/);
+  assert.match(workflow, /const requested = new Map\(\)/);
+  assert.match(workflow, /\^\(\.\+\)@\(\[0-9a-fA-F\]\{40\}\)\$/);
+  assert.match(workflow, /Deletion mode requires at least one explicit branch@sha entry/);
+  assert.match(workflow, /Requested branch_specs failed validation/);
+});
+
 test("merged branch cleanup caps destructive batches and rechecks every tip", () => {
   assert.match(workflow, /const maxDeletePerRun = 20/);
+  assert.match(workflow, /requested\.size > maxDeletePerRun/);
   assert.match(workflow, /eligible\.length > maxDeletePerRun/);
   assert.match(workflow, /const freshSha = freshRef\.data\.object\.sha/);
   assert.match(workflow, /if \(freshSha !== candidate\.sha\)/);
