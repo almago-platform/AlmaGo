@@ -37,8 +37,8 @@ export function HomeHero() {
               Créer mon dossier
               <HomeIcon name="arrow" />
             </Link>
-            <a className={s.heroTextLink} href="#espace">
-              Découvrir l’espace étudiant
+            <a className={s.heroTextLink} href="#parcours">
+              Comprendre le parcours
               <HomeIcon name="arrow" />
             </a>
           </div>
