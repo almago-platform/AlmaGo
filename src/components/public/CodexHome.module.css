@@ -186,6 +186,7 @@
 }
 .logo {
   display: inline-flex;
+  min-height: 44px;
   align-items: center;
   gap: 10px;
   font-size: 26px;
@@ -282,7 +283,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  min-height: 38px;
+  min-height: 44px;
   color: #eef2ff;
   font-size: 11px;
   font-weight: 550;
@@ -1824,7 +1825,7 @@
   }
   .independent {
     font-size: 10px;
-    min-height: 36px;
+    min-height: 44px;
     padding-inline: 10px;
     gap: 6px;
   }
@@ -1911,7 +1912,7 @@
     display: none;
   }
   .heroCardBody > a {
-    min-width: 36px;
+    min-width: 44px;
     border: 0;
   }
   .heroCardBody > a > svg {
