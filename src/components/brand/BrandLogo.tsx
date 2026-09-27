@@ -1,3 +1,4 @@
+// AlmaGo Brand Identity V2 — canonical website logo renderer.
 import Image from "next/image";
 
 type BrandLogoProps = {
