@@ -1,23 +1,20 @@
 import { NextResponse } from "next/server";
-import { getAuthenticatedUser } from "@/lib/auth/access";
+import { getStudentUser } from "@/lib/auth/access";
 import { isPublishableLanguageCourse } from "@/lib/language-courses";
 import { parseLanguageCourseSelectionInput } from "@/lib/language-course-selection";
 
 const fields = "id,title,provider_name,city,language,purpose,level_from,level_to,hours_per_week,starts_on,ends_on,price_cents,currency,source_url,application_url,verified_at,is_active";
 
-async function requireStudent() {
-  const { supabase, user } = await getAuthenticatedUser();
-  if (!user) return { supabase, user: null, response: NextResponse.json({ error: "Non authentifié." }, { status: 401 }) };
-  const { data: role, error } = await supabase.from("user_roles").select("role").eq("user_id", user.id).maybeSingle();
-  if (error || role?.role !== "student") {
-    return { supabase, user: null, response: NextResponse.json({ error: "Accès étudiant requis." }, { status: 403 }) };
-  }
-  return { supabase, user, response: null };
+function accessError(auth: Awaited<ReturnType<typeof getStudentUser>>) {
+  if (!auth.user) return NextResponse.json({ error: "Non authentifié." }, { status: 401 });
+  if (!auth.isStudent) return NextResponse.json({ error: "Accès étudiant requis." }, { status: 403 });
+  return null;
 }
 
 export async function GET() {
-  const auth = await requireStudent();
-  if (!auth.user) return auth.response;
+  const auth = await getStudentUser();
+  const denied = accessError(auth);
+  if (denied || !auth.user) return denied!;
 
   const { data: selection, error } = await auth.supabase
     .from("student_language_course_selections")
@@ -54,8 +51,9 @@ export async function GET() {
 }
 
 export async function PUT(request: Request) {
-  const auth = await requireStudent();
-  if (!auth.user) return auth.response;
+  const auth = await getStudentUser();
+  const denied = accessError(auth);
+  if (denied || !auth.user) return denied!;
 
   const parsed = parseLanguageCourseSelectionInput(await request.json().catch(() => null));
   if (!parsed.ok) return NextResponse.json({ error: parsed.error }, { status: 400 });
@@ -97,8 +95,9 @@ export async function PUT(request: Request) {
 }
 
 export async function DELETE() {
-  const auth = await requireStudent();
-  if (!auth.user) return auth.response;
+  const auth = await getStudentUser();
+  const denied = accessError(auth);
+  if (denied || !auth.user) return denied!;
 
   const { error } = await auth.supabase
     .from("student_language_course_selections")
