@@ -4,139 +4,105 @@ Date: 27 September 2026
 Review base: `main@0a37fd411880744596ca3b2ed68086591e311deb`  
 Mode: evidence only; no branch deletion.
 
-## Why this appendix exists
+## Post-archive state
 
-The first cleanup appendix proves 103 branch tips exactly match the head SHA of a merged pull request.
-
-This pass closes the remaining classification gap and adds one important safety rule: **a branch can be unsafe to delete even when it is not the head of an open PR, because an open PR may use it as its base**.
-
-## Exact branch partition
+The legacy V3 pull-request chain was closed without merge after the first version of this appendix was written.
 
 Current repository state:
 
 - total branches: **193**;
-- distinct branches used as heads by open PRs: **40**;
-- `main`: **1**;
-- non-main branches that are not open-PR heads: **152**.
+- open PRs: **13**;
+- distinct open-PR heads: **13**;
+- non-main branches that are not open-PR heads: **179**.
 
-Those 152 branches partition exactly as follows:
+Those 179 branches now partition exactly as follows:
 
 | Category | Count | Meaning |
 | --- | ---: | --- |
-| Current tip exactly equals a merged PR head | 103 | Strong cleanup evidence, subject to operational-reference exclusions |
+| Current tip exactly equals a merged PR head | 103 | Strong cleanup evidence, subject to operational/archive exclusions |
 | Branch name has merged-PR history but current tip moved after merge | 2 | Current tip is **not** proven integrated |
-| Closed-unmerged PR history, no merged PR for that branch name | 40 | Preserve until supersession/value is reviewed |
+| Closed-unmerged PR history, no merged PR for that branch name | 67 | Preserve until supersession/extraction/value is reviewed |
 | No PR history found for the branch name | 7 | Requires direct-purpose review |
-| **Total** | **152** | Complete non-main/non-open-head partition |
+| **Total** | **179** | Complete non-main/non-open-head partition |
 
-The earlier phrase “153 branches have no open PR” counts `main` as a branch that is not an open-PR head. For destructive cleanup, the useful non-main population is **152**, not 153.
+The increase from 40 to 67 closed-unmerged-history branches is primarily the result of the V3 archive pass.
 
-## Active-base safety rule
+## Open-PR base safety rule
 
-Open PRs currently use **28 non-main base branches**.
+Deletion preflight must exclude both:
 
-Most are also heads of another open PR in the legacy stacked V3 chain and were already excluded from cleanup by the open-head rule.
+- branches that are heads of open PRs;
+- branches that are bases of open PRs.
 
-One branch is especially important because it is **not** an open-PR head but **is** still an active open-PR base:
+Current non-main open-PR base set:
 
-- `release/v3-validation-20260925` → base of open PR **#213**.
+- `test/prebuild-contract-repair-final` — base of #403.
 
-Therefore `release/v3-validation-20260925` must not be deleted while #213 remains open, even though the branch has no open PR of its own.
+The former example `release/v3-validation-20260925` is no longer an active open-PR base because #213 is now closed.
 
-**Improved deletion preflight:** exclude both open-PR head branches **and open-PR base branches**.
+It should still be retained while issue #418 uses #213/the legacy integration tree as extraction reference material.
 
-## Two branches whose tips moved after an earlier merge
+## Two post-merge moved-tip branches
 
-These names have merged-PR history, but their current branch tips no longer equal the recorded merged head SHA:
+These names have merged-PR history, but their current tips moved after the recorded merge:
 
 | Branch | Latest merged PR | Merged head | Current tip | Treatment |
 | --- | ---: | --- | --- | --- |
 | `feat/germany-lot3-database-hardening` | #266 | `ff7a18530155` | `c76b6f52582e` | REVIEW CURRENT TIP |
 | `feat/v3-student-deadline-priority-20260924` | #192 | `99d52cf53f38` | `a65473397103` | REVIEW CURRENT TIP |
 
-Do not classify either branch as integrated merely from the historical merge. Their post-merge commits need a separate compare/reachability check.
+Do not classify either branch as integrated solely from the historical merge.
 
-## Forty branches with closed-unmerged PR history
+## V3 closed-unmerged branch hold
 
-These branches are not open PR heads and have no merged PR under the same branch name, but they do have closed-unmerged PR history.
+The closed V3 PR archive moved many V3 branch heads into the closed-unmerged-history category.
 
-This is **not deletion evidence** by itself. A closed-unmerged PR may have been superseded, abandoned, extracted elsewhere, or intentionally preserved.
+At least **35** currently retained branches are V3-related or directly tied to that archive history.
 
-| Branch | Closed PR |
-| --- | ---: |
-| `agent/chatgpt/sandbox-01-autopilot-doc` | #285 |
-| `automation/almago-failure-watch-20260923` | #33 |
-| `chore/a44-observability-gate-20260924` | #140 |
-| `copilot/almago-platformalmago246` | #250 |
-| `copilot/codex-diagnose-github-actions-startup-failure` | #287 |
-| `copilot/codex-reconcile-germany-lot0-8` | #290 |
-| `copilot/gemini-audit-germany-student-ux` | #238 |
-| `copilot/gemini-audit-student-matching-ux` | #240 |
-| `design/homepage-v2-h3-six-step-20260923` | #107 |
-| `docs/almago-v3-trust-guidance-plan-20260924` | #141 |
-| `docs/v3-implementation-status-20260924` | #158 |
-| `docs/v3-null-safe-application-uniqueness-20260925` | #202 |
-| `experiment/homepage-v4-work-challenger` | #329 |
-| `feat/germany-foundations-hardening` | #218 |
-| `feat/germany-lot0-lot1` | #214 |
-| `feat/germany-lot2-academic-prefilter` | #219 |
-| `feat/germany-lot2-admin-master-requirements-api` | #222 |
-| `feat/germany-lot2-admin-master-requirements-ui` | #223 |
-| `feat/germany-lot2-master-requirements-contract` | #220 |
-| `feat/germany-lot2-master-requirements-matching` | #224 |
-| `feat/germany-lot2-master-requirements-persistence` | #221 |
-| `feat/germany-lot2-safe-publication-gate` | #226 |
-| `feat/germany-lot2-student-master-match-ui` | #225 |
-| `feat/germany-lot3-admin-application-observability` | #231 |
-| `feat/germany-lot3-application-transition-preflight` | #228 |
-| `feat/germany-lot3-application-workflow-contract` | #227 |
-| `feat/germany-lot3-safe-application-intake` | #229 |
-| `feat/germany-lot3-student-workflow-alignment` | #230 |
-| `feat/germany-lot4-academic-evidence-contract` | #233 |
-| `feat/germany-wave2-lot7-8` | #288 |
-| `feat/v3-accessibility-page-20260924` | #168 |
-| `feat/v3-admin-quality-overview-20260924` | #164 |
-| `feat/v3-public-not-found-20260924` | #169 |
-| `feat/v3-trust-center-20260924` | #154 |
-| `fix/a45-e2e-email-defaults-20260924` | #139 |
-| `fix/actions-preflight-filters-20260924` | #184 |
-| `fix/baseline-test-contract-drift` | #331 |
-| `fix/noindex-private-auth` | #333 |
-| `fix/security-response-headers` | #335 |
-| `fix/v3-catalogue-fixture-cleanup-ui-20260924` | #195 |
+They remain evidence sources for issue #418.
 
-Recommended next pass for this set: label each branch as **superseded**, **feature source**, **incident evidence**, or **intentional experiment/archive** before any deletion.
+**Do not bulk-delete the V3 branch family until #418 has resolved the extract/decline decision for retained features.**
+
+Closing a stale PR container is not evidence that its branch has no remaining reference value.
 
 ## Seven branches with no PR history under the same branch name
 
 | Branch | Immediate treatment |
 | --- | --- |
 | `archive/homepage-v3-chatgpt-2026-09-27` | INTENTIONAL ARCHIVE — retain unless owner explicitly retires it |
-| `automation/master-plan-orchestrator-20260923` | AUTOMATION-NAMED — review automation/tooling references before deletion |
+| `automation/master-plan-orchestrator-20260923` | AUTOMATION-NAMED — review tooling references before deletion |
 | `backup/homepage-before-v2-20260923` | INTENTIONAL BACKUP — owner decision required |
 | `copilot/almago-platformalma-go245` | ORPHAN CANDIDATE — inspect tip/purpose before deletion |
-| `feat/germany-lot4-academic-evidence-persistence` | FEATURE/STACK CANDIDATE — inspect ancestry and extraction history |
+| `feat/germany-lot4-academic-evidence-persistence` | FEATURE/STACK CANDIDATE — inspect ancestry/extraction history |
 | `fix/autonomous-pr-gates-20260923` | INFRASTRUCTURE CANDIDATE — inspect workflow history before deletion |
-| `release/v3-validation-20260925` | **ACTIVE BASE OF #213 — DO NOT DELETE** |
+| `release/v3-validation-20260925` | V3 ARCHIVE/REFERENCE — retain while #418 is unresolved |
 
-A current-main code search found no literal references to the six non-active-base branch names above. That absence reduces one risk but does **not** prove that external automation, GitHub configuration or human workflow does not depend on them.
+A current-main code search found no literal references to the six non-V3-reference branch names above. That reduces one risk but does not prove that external automation, GitHub configuration or human workflow does not depend on them.
 
-## Strong-candidate count after active-base exclusion
+## Strong cleanup set
 
-The 103 exact merged-tip branches remain the strongest evidence-backed cleanup set, but deletion still requires the exclusions already documented for archive/experiment/automation references.
+The **103 exact merged-tip branches** remain the strongest evidence-backed cleanup candidates.
 
-The remainder should not be bulk-deleted.
+Even those require a fresh pre-delete check for:
+
+1. not `main`;
+2. not an open-PR head;
+3. not an open-PR base;
+4. not referenced by active automation/workflow/configuration;
+5. not an intentional archive/backup/experiment;
+6. no owner retention decision;
+7. unchanged tip since the evidence pass.
 
 ## Destructive cleanup preflight
 
-Before deleting any branch, verify all of the following at deletion time:
+Before deleting any branch:
 
-1. branch is not `main`;
-2. branch is not the head of an open PR;
-3. branch is not the base of an open PR;
-4. branch is not referenced by active automation/workflow/configuration;
-5. branch is not a deliberate archive, backup or experiment that the owner wants to retain;
-6. branch tip is proven integrated or intentionally superseded;
-7. the evidence is refreshed immediately before deletion because branch/PR state can change.
+1. refresh branch and PR state;
+2. confirm the branch tip;
+3. confirm open-head and open-base exclusions;
+4. confirm archive/automation exclusions;
+5. delete only in a small batch;
+6. recount branches after the batch;
+7. stop if state changed unexpectedly.
 
-No branch was deleted while producing this appendix.
+No branch was deleted while producing or refreshing this appendix.
