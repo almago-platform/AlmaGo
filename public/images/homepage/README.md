@@ -7,7 +7,7 @@ Pexels license: https://www.pexels.com/license/
 
 | Use | Pexels ID | Photographer / contributor | Source page |
 | --- | --- | --- | --- |
-| Hero campus life | 31070782 | DΛVΞ GΛRCIΛ | https://www.pexels.com/photo/university-campus-scene-in-coral-gables-fl-31070782/ |
+| Hero group study | 7972313 | George Pak | https://www.pexels.com/photo/a-group-of-students-studying-7972313/ |
 | Photo band — prepare | 6684514 | Andy Barbour | https://www.pexels.com/photo/a-college-student-using-a-laptop-6684514/ |
 | Photo band — compare | 5965674 | Charlotte May | https://www.pexels.com/photo/diverse-students-with-laptop-and-documents-5965674/ |
 | Photo band — advance | 5553958 | Armin Rimoldi | https://www.pexels.com/photo/multiethnic-students-standing-near-gates-of-university-building-5553958/ |
@@ -20,7 +20,7 @@ Pexels license: https://www.pexels.com/license/
 
 ## Delivery
 
-The page uses remote Pexels originals through Next Image. The hero uses quality 90 and responsive sizes; all supporting photographs are lazy-loaded by Next Image with responsive sizing. CSS cropping is used for layout, without generative modification.
+The page uses remote Pexels originals through Next Image. The V7 hero uses the Pexels 7972313 university-student study photograph at quality 90 as a full-width visual, with CSS gradients for text readability. Supporting photographs are lazy-loaded by Next Image with responsive sizing. CSS cropping is used for layout, without generative modification.
 
 ## Editorial rules
 
