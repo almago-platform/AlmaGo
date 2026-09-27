@@ -17,7 +17,7 @@ test("student pathway wires real project, evidence and language-course facts int
   assert.match(page, /filing_country/);
   assert.match(page, /regulatorySourceMatchesFilingCountry/);
   assert.match(page, /summarizeAcademicEvidence\(evidence, now\)/);
-  assert.match(page, /isPublishableLanguageCourse\(course, now\)/);
+  assert.match(page, /isPublishableLanguageCourse\(selectedLanguageCourse, now\)/);
   assert.match(page, /catalogVerificationCutoff\(now\)/);
   assert.match(page, /\.gt\("verified_at", catalogueCutoff\)/);
   assert.match(page, /determineRegulatoryPath\(facts\)/);
