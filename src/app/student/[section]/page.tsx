@@ -17,9 +17,9 @@ export default async function StudentSection({
   const label = labels[section] || "Espace étudiant";
 
   return (
-    <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
-      <Card className="border-dashed bg-white/70 text-center">
-        <h1 className="text-2xl font-bold tracking-[-0.03em] text-slate-950">{label}</h1>
+    <main className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 sm:py-7 lg:px-8 lg:py-9">
+      <Card className="border-dashed bg-white/80 py-8 text-center shadow-none sm:py-10">
+        <p className="text-[0.68rem] font-bold uppercase tracking-[0.15em] text-[var(--brand)]">Espace étudiant</p>\n        <h1 className="editorial-accent mt-2 text-3xl leading-tight text-[var(--foreground)]">{label}</h1>
         <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-slate-600">
           Cette adresse ne correspond pas à une page active de votre espace. Rien n’a été modifié dans votre dossier.
         </p>
