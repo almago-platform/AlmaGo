@@ -3480,3 +3480,100 @@
     text-align: left;
   }
 }
+
+
+/* Homepage density pass — tools + FAQ */
+.helpfulTools.section {
+  padding-block: 50px 38px;
+}
+.helpfulToolsHeading {
+  margin-bottom: 28px;
+}
+.helpfulToolsHeading > p:last-child {
+  margin-top: 12px;
+}
+.helpfulToolsGrid {
+  gap: 18px;
+}
+.helpfulToolCard {
+  padding: 4px 18px 14px;
+}
+.helpfulToolIcon {
+  width: 132px;
+  height: 132px;
+  margin-bottom: 18px;
+}
+.helpfulToolIcon svg {
+  width: 68px;
+  height: 68px;
+}
+.helpfulToolCard > p {
+  margin-top: 10px;
+}
+.helpfulToolAction {
+  margin-top: 13px;
+}
+.helpfulToolsNote {
+  display: none;
+}
+
+.faq.section {
+  padding-block: 50px 56px;
+}
+.faq {
+  background: #f7f4ec;
+  border-top: 1px solid #e2ddd3;
+}
+.faqGrid {
+  grid-template-columns: minmax(0, 0.78fr) minmax(0, 1.22fr);
+  gap: 58px;
+  align-items: start;
+}
+.faq .sectionTitle {
+  font-size: clamp(38px, 3.3vw, 50px);
+}
+.faq .lead {
+  margin-top: 18px;
+}
+.faq .textLink {
+  margin-top: 18px;
+}
+.faqList summary {
+  min-height: 60px;
+  padding: 16px 0;
+}
+.faqList details > p {
+  padding-bottom: 18px;
+  line-height: 1.75;
+}
+
+@media (max-width: 899px) {
+  .helpfulTools.section {
+    padding-block: 46px 34px;
+  }
+  .helpfulToolsHeading {
+    margin-bottom: 24px;
+  }
+  .faq.section {
+    padding-block: 44px 48px;
+  }
+  .faqGrid {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+}
+
+@media (max-width: 599px) {
+  .helpfulTools.section {
+    padding-block: 40px 30px;
+  }
+  .helpfulToolsHeading {
+    margin-bottom: 22px;
+  }
+  .faq.section {
+    padding-block: 38px 42px;
+  }
+  .faqGrid {
+    gap: 22px;
+  }
+}
