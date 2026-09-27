@@ -10,6 +10,14 @@ on:
         required: false
         default: false
         type: boolean
+      target:
+        description: "Authenticated E2E target"
+        required: false
+        default: render
+        type: choice
+        options:
+          - render
+          - local
   push:
     branches: [main]
     paths:
@@ -96,6 +104,7 @@ jobs:
       ALMAGO_E2E_ADMIN_EMAIL: ${{ vars.ALMAGO_E2E_ADMIN_EMAIL || 'phase3.admin@almago.test' }}
       ALMAGO_E2E_ADMIN_PASSWORD: ${{ secrets.ALMAGO_E2E_ADMIN_PASSWORD }}
       CI: "true"
+      ALMAGO_E2E_TARGET: ${{ inputs.target || 'local' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -144,7 +153,17 @@ jobs:
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
 
-      - name: Build and start AlmaGo
+      - name: Configure authenticated E2E target
+        shell: bash
+        run: |
+          if [ "$ALMAGO_E2E_TARGET" = "render" ]; then
+            echo "ALMAGO_BASE_URL=https://almago-dev.onrender.com" >> "$GITHUB_ENV"
+          else
+            echo "ALMAGO_BASE_URL=http://127.0.0.1:3000" >> "$GITHUB_ENV"
+          fi
+
+      - name: Build and start AlmaGo locally
+        if: env.ALMAGO_E2E_TARGET != 'render'
         shell: bash
         run: |
           mkdir -p artifacts/auth-e2e
@@ -155,6 +174,21 @@ jobs:
             sleep 2
           done
           cat artifacts/auth-e2e/server.log
+          exit 1
+
+      - name: Wake and verify Render target
+        if: env.ALMAGO_E2E_TARGET == 'render'
+        shell: bash
+        run: |
+          mkdir -p artifacts/auth-e2e
+          for i in {1..60}; do
+            if curl --fail --silent --max-time 10 "$ALMAGO_BASE_URL/api/health" > artifacts/auth-e2e/render-health.json; then
+              cat artifacts/auth-e2e/render-health.json
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "::error::Render target did not become healthy in time."
           exit 1
 
       - name: Run student/admin isolation journeys
@@ -169,6 +203,8 @@ jobs:
       - name: Complete A43 after successful authenticated evidence
         if: success()
         uses: actions/github-script@v7
+        env:
+          A43_TARGET: ${{ env.ALMAGO_E2E_TARGET }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -207,6 +243,7 @@ jobs:
                   "",
                   "Run: " + context.serverUrl + "/" + owner + "/" + repo + "/actions/runs/" + context.runId,
                   "SHA: " + context.sha,
+                  "Target: " + process.env.A43_TARGET,
                   marker,
                   "",
                   "Dedicated student/admin identities passed the authenticated isolation journeys plus the Student Space and Admin Space responsive/accessibility quality matrices."
