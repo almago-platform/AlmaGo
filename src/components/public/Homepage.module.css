@@ -3695,3 +3695,693 @@
     grid-template-columns: 1fr;
   }
 }
+
+
+/* Public Mobile Final — 360 / 390 / 430 */
+@media (max-width: 767px) {
+  .home {
+    overflow-x: clip;
+  }
+
+  .container {
+    width: calc(100% - 32px);
+  }
+
+  .header {
+    background: rgba(255, 253, 248, 0.98);
+  }
+
+  .headerInner {
+    min-height: 64px;
+    gap: 10px;
+  }
+
+  .logoImage {
+    width: 132px;
+  }
+
+  .headerActions {
+    gap: 8px;
+  }
+
+  .login,
+  .headerCta {
+    display: none;
+  }
+
+  .menuToggle {
+    display: flex;
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+    background: #fffdf8;
+  }
+
+  .mobileNav:not([hidden]) {
+    display: grid;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    padding: 8px 16px 16px;
+    border-top: 1px solid #e2ddd3;
+    border-bottom: 1px solid #e2ddd3;
+    background: #fffdf8;
+    box-shadow: 0 18px 30px -22px rgba(28, 33, 36, 0.38);
+    max-height: calc(100dvh - 64px);
+    overflow-y: auto;
+  }
+
+  .mobileNav a {
+    min-height: 52px;
+    padding: 12px 4px;
+    font-size: 14px;
+  }
+
+  .mobileNav .mobileSignup {
+    justify-content: space-between;
+    min-height: 52px;
+    margin-top: 8px;
+    padding: 12px 14px;
+    border: 0;
+    border-radius: 7px;
+    background: #db0423;
+    color: white;
+    font-weight: 700;
+  }
+
+  .home [id],
+  #parcours,
+  #programmes,
+  #outils,
+  #faq {
+    scroll-margin-top: 74px;
+  }
+
+  /* Hero */
+  .hero {
+    min-height: 0;
+    padding: 0;
+  }
+
+  .heroBackdrop img {
+    object-position: 58% center;
+  }
+
+  .heroShade {
+    background:
+      linear-gradient(180deg, rgba(19, 24, 27, 0.9) 0%, rgba(19, 24, 27, 0.78) 56%, rgba(19, 24, 27, 0.66) 100%),
+      linear-gradient(90deg, rgba(19, 24, 27, 0.28), rgba(19, 24, 27, 0.06));
+  }
+
+  .heroImmersiveInner {
+    display: block;
+    min-height: 0;
+    padding-block: 30px 24px;
+  }
+
+  .hero .heroCopy {
+    width: 100%;
+    max-width: none;
+  }
+
+  .hero .eyebrow {
+    margin-bottom: 13px;
+    font-size: 8px;
+  }
+
+  .hero h1 {
+    font-size: clamp(42px, 12.2vw, 52px);
+    line-height: 1.01;
+    letter-spacing: -0.055em;
+  }
+
+  .hero h1 em {
+    font-size: 0.84em;
+    white-space: normal;
+  }
+
+  .heroLead {
+    max-width: 430px;
+    margin-top: 18px;
+    font-size: 15px;
+    line-height: 1.65;
+  }
+
+  .heroActions {
+    display: grid;
+    gap: 8px;
+    margin-top: 20px;
+  }
+
+  .heroActions .button {
+    width: 100%;
+    min-height: 52px;
+    justify-content: space-between;
+    padding-inline: 18px;
+  }
+
+  .heroTextLink {
+    width: 100%;
+    min-height: 44px;
+    justify-content: center;
+    font-size: 12px;
+  }
+
+  .heroProof {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 5px;
+    margin-top: 13px;
+    font-size: 10px;
+  }
+
+  .heroProof span {
+    min-height: 27px;
+  }
+
+  .hero .heroDossier {
+    position: relative;
+    inset: auto;
+    width: 100%;
+    margin-top: 22px;
+    padding: 14px 15px 4px;
+    border-radius: 9px;
+    background: rgba(255, 253, 248, 0.98);
+    box-shadow: 0 18px 34px -24px rgba(0, 0, 0, 0.72);
+  }
+
+  .miniHead {
+    margin-bottom: 3px;
+  }
+
+  .miniHead > span:first-child {
+    font-size: 11px;
+  }
+
+  .sample {
+    font-size: 8px;
+  }
+
+  .miniRow {
+    min-height: 56px;
+    padding-block: 9px;
+  }
+
+  .miniRow strong {
+    font-size: 11px;
+  }
+
+  .miniRow > div > span {
+    font-size: 9px;
+  }
+
+  .miniStatus {
+    display: none;
+  }
+
+  /* Quick access */
+  .quickImmersive {
+    width: 100%;
+  }
+
+  .quickLinks {
+    grid-template-columns: 1fr;
+  }
+
+  .quickLinks a {
+    min-height: 66px;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 42px 10px 16px;
+    border-left: 0;
+    border-top: 1px solid #e2ddd3;
+  }
+
+  .quickLinks a:first-child {
+    border-top: 0;
+  }
+
+  .quickLinks a > svg:first-child {
+    width: 22px;
+    height: 22px;
+  }
+
+  .quickCopy {
+    gap: 1px;
+  }
+
+  .quickCopy strong {
+    font-size: 12px;
+  }
+
+  .quickCopy small {
+    font-size: 10px;
+  }
+
+  .quickArrow,
+  .quickLinks a:nth-child(even) .quickArrow {
+    top: 50%;
+    right: 16px;
+    width: 14px;
+    transform: translateY(-50%);
+  }
+
+  /* Visual pathway */
+  .photoBand {
+    padding-block: 42px 44px;
+  }
+
+  .photoBandLayout {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .photoBandHeading .eyebrow {
+    margin-bottom: 12px;
+  }
+
+  .photoBandTitle {
+    font-size: 34px;
+    line-height: 1.08;
+  }
+
+  .photoBandHeading > p:last-child {
+    margin-top: 14px;
+    font-size: 13px;
+    line-height: 1.65;
+  }
+
+  .photoBandGrid {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    margin-right: -16px;
+    padding: 0 16px 8px 0;
+  }
+
+  .photoBandGrid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .photoCard {
+    flex: 0 0 min(82vw, 330px);
+    scroll-snap-align: start;
+  }
+
+  .photoCardMedia {
+    aspect-ratio: 4 / 3;
+  }
+
+  .photoCardBody {
+    min-height: 68px;
+    margin: -22px 9px 0;
+    padding: 12px;
+  }
+
+  .photoCardBody strong {
+    font-size: 12px;
+  }
+
+  /* Journey */
+  .journey.section {
+    padding-block: 46px;
+  }
+
+  .sectionHeading {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .sectionHeading > p {
+    max-width: none;
+    font-size: 13px;
+    line-height: 1.65;
+  }
+
+  .sectionTitle {
+    font-size: 34px;
+  }
+
+  .steps {
+    grid-template-columns: 1fr;
+    gap: 14px;
+    margin-top: 24px;
+  }
+
+  .stepCard {
+    border-radius: 10px;
+  }
+
+  .stepMedia {
+    aspect-ratio: 16 / 9;
+  }
+
+  .stepIndex {
+    width: 42px;
+    height: 42px;
+    left: 13px;
+    bottom: 12px;
+    font-size: 18px;
+  }
+
+  .stepBody {
+    padding: 15px 15px 17px;
+  }
+
+  .stepTopline {
+    margin-bottom: 8px;
+  }
+
+  .stepCard h3 {
+    font-size: 16px;
+  }
+
+  .stepCard p {
+    font-size: 13px;
+    line-height: 1.65;
+  }
+
+  .journeyFoot {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 24px;
+    padding-top: 18px;
+    font-size: 10px;
+  }
+
+  .journeyFoot > span {
+    align-items: flex-start;
+    line-height: 1.55;
+  }
+
+  .journeyFoot a {
+    width: 100%;
+    min-height: 48px;
+    justify-content: space-between;
+    padding: 0 2px;
+  }
+
+  /* Helpful tools */
+  .helpfulTools.section {
+    padding-block: 40px 32px;
+  }
+
+  .helpfulToolsHeading {
+    margin-bottom: 22px;
+    text-align: left;
+  }
+
+  .helpfulToolsHeading .eyebrow {
+    justify-content: flex-start;
+  }
+
+  .helpfulToolsHeading h2 {
+    font-size: 34px;
+  }
+
+  .helpfulToolsHeading > p:last-child {
+    margin: 10px 0 0;
+    font-size: 13px;
+    line-height: 1.65;
+  }
+
+  .helpfulToolsGrid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .helpfulToolCard {
+    display: grid;
+    grid-template-columns: 72px minmax(0, 1fr);
+    gap: 3px 14px;
+    align-items: center;
+    padding: 13px;
+    border: 1px solid #e2ddd3;
+    border-radius: 10px;
+    text-align: left;
+    background: #fffdf8;
+  }
+
+  .helpfulToolIcon {
+    grid-row: 1 / span 3;
+    width: 72px;
+    height: 72px;
+    margin: 0;
+  }
+
+  .helpfulToolIcon svg {
+    width: 38px;
+    height: 38px;
+  }
+
+  .helpfulToolCard h3 {
+    max-width: none;
+    font-size: 13px;
+    line-height: 1.28;
+  }
+
+  .helpfulToolCard > p {
+    max-width: none;
+    margin-top: 2px;
+    font-size: 11px;
+    line-height: 1.5;
+  }
+
+  .helpfulToolAction {
+    min-height: 32px;
+    margin-top: 2px;
+    font-size: 9px;
+  }
+
+  /* FAQ */
+  .faq.section {
+    padding-block: 38px 42px;
+  }
+
+  .faqGrid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .faqIntro {
+    position: static;
+  }
+
+  .faq .sectionTitle {
+    font-size: 34px;
+  }
+
+  .faq .lead {
+    max-width: none;
+    margin-top: 12px;
+    font-size: 13px;
+  }
+
+  .faq .textLink {
+    margin-top: 10px;
+  }
+
+  .faqList {
+    padding-inline: 14px;
+    border-radius: 8px;
+  }
+
+  .faqList summary {
+    min-height: 56px;
+    gap: 14px;
+    padding: 14px 0;
+    font-size: 13px;
+    line-height: 1.35;
+  }
+
+  .faqList summary svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .faqList details > p {
+    padding: 0 28px 16px 0;
+    font-size: 12px;
+    line-height: 1.65;
+  }
+
+  /* Closing CTA */
+  .finalCta {
+    padding-block: 40px;
+  }
+
+  .finalInner {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .finalCta h2 {
+    font-size: 34px;
+  }
+
+  .finalCta h2 + p {
+    margin-top: 13px;
+    font-size: 13px;
+  }
+
+  .finalProof {
+    display: grid;
+    gap: 6px;
+    margin-top: 16px;
+    font-size: 10px;
+  }
+
+  .finalActions {
+    min-width: 0;
+    text-align: left;
+  }
+
+  .finalActions .button {
+    width: 100%;
+    min-width: 0;
+    min-height: 52px;
+    justify-content: space-between;
+  }
+
+  .finalActions p {
+    margin-top: 9px;
+    text-align: center;
+  }
+
+  /* Footer */
+  .footer {
+    padding: 36px 0 18px;
+  }
+
+  .footerLogoImage {
+    width: 160px;
+  }
+
+  .footerGrid {
+    grid-template-columns: 1fr 1fr;
+    gap: 26px 18px;
+  }
+
+  .footerBrand {
+    grid-column: 1 / -1;
+    max-width: none;
+  }
+
+  .footerBrand > p {
+    max-width: 330px;
+    margin-top: 13px;
+    font-size: 11px;
+  }
+
+  .footerGrid > :last-child {
+    grid-column: auto;
+  }
+
+  .footer nav h2 {
+    font-size: 9px;
+  }
+
+  .footer li a {
+    min-height: 38px;
+    font-size: 11px;
+  }
+
+  .footerBottom {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 7px;
+    margin-top: 24px;
+    padding-top: 16px;
+  }
+
+  .footerBottom p:last-child {
+    max-width: none;
+    text-align: left;
+    line-height: 1.55;
+  }
+
+  .photoCredit {
+    font-size: 8px;
+    line-height: 1.55;
+  }
+}
+
+@media (max-width: 430px) {
+  .container {
+    width: calc(100% - 28px);
+  }
+
+  .hero h1 {
+    font-size: clamp(40px, 11.6vw, 48px);
+  }
+
+  .heroLead {
+    font-size: 14px;
+  }
+
+  .photoCard {
+    flex-basis: 86vw;
+  }
+}
+
+@media (max-width: 390px) {
+  .logoImage {
+    width: 124px;
+  }
+
+  .heroImmersiveInner {
+    padding-top: 26px;
+  }
+
+  .hero h1 {
+    font-size: 41px;
+  }
+
+  .hero .heroDossier {
+    padding-inline: 12px;
+  }
+
+  .miniRow {
+    gap: 9px;
+  }
+
+  .photoBandTitle,
+  .sectionTitle,
+  .helpfulToolsHeading h2,
+  .faq .sectionTitle,
+  .finalCta h2 {
+    font-size: 32px;
+  }
+
+  .footerGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 359px) {
+  .container {
+    width: calc(100% - 24px);
+  }
+
+  .logoImage {
+    width: 116px;
+  }
+
+  .hero h1 {
+    font-size: 38px;
+  }
+
+  .heroProof {
+    font-size: 9px;
+  }
+
+  .mobileNav:not([hidden]) {
+    padding-inline: 12px;
+  }
+}
