@@ -99,6 +99,64 @@ The following current-main or release-chain PRs remain outside cleanup scope:
 
 Where two active PRs touch the same workflow or documentation, resolve that overlap in their own release block rather than through repository hygiene.
 
+
+## Bounded feature-parity pass for #143 and #144
+
+A focused current-main comparison was completed after the initial classification.
+
+### #143 — what is actually unique
+
+Compared with its own base branch, #143 introduces only five public-surface changes:
+
+- homepage insertion of `HomeRoleSection`;
+- a new `HomeRoleSection.tsx`;
+- small navigation/footer/trust copy changes in `HomeHeader`, `HomeClosing` and `HomeTrustSection`.
+
+Its dedicated role section explains four boundaries:
+
+1. AlmaGo organizes the dossier and next actions;
+2. an orientation suggestion is not an admission or eligibility decision;
+3. universities/authorities keep their own decision authority;
+4. official sources remain the reference for requirements, deadlines and formalities.
+
+Current `main` already preserves most of this semantic contract elsewhere:
+
+- the homepage FAQ says AlmaGo does not guarantee admission or visa;
+- the FAQ states the official source remains the reference;
+- the footer states AlmaGo is an independent platform and that admissions/visas/official decisions belong to competent bodies;
+- the current student dashboard says the student keeps decisions and AlmaGo keeps the steps readable.
+
+What current `main` does **not** preserve is the same standalone, detailed public `HomeRoleSection` presentation.
+
+Refined classification: **SEMANTIC CORE MOSTLY SUPERSEDED; STANDALONE PUBLIC ROLE EXPLANATION OPTIONAL TO EXTRACT**.
+
+Do not merge #143. If a dedicated public role block is still desired, reimplement it against the current homepage composition rather than reviving the old component/style system.
+
+### #144 — what is actually unique
+
+Compared with #143, #144 contains exactly two files:
+
+- `src/app/student/checklist/page.tsx`;
+- `src/app/student/page.tsx`.
+
+Its unique copy intent is to make responsibility clearer by replacing or emphasizing labels such as:
+
+- `Suivi par AlmaGo` → `En cours chez AlmaGo`;
+- dashboard pills `À faire par vous` and `En cours chez AlmaGo`;
+- a stronger `Où en est votre dossier ?` / next-step framing.
+
+Current `main` already expresses the same responsibility model in the redesigned student experience:
+
+- checklist items explicitly show `Responsable : vous`;
+- waiting items explicitly show `Responsable : AlmaGo`;
+- the dashboard separates `À traiter` from `Suivi AlmaGo`;
+- the next action carries an explicit owner label;
+- the hero copy centers “Voici ce qui compte maintenant.”
+
+Refined classification: **FUNCTIONALLY SUPERSEDED BY CURRENT STUDENT V2 COPY AND RESPONSIBILITY UI**.
+
+No copy extraction is required before closing #144, provided the owner accepts `Suivi AlmaGo` / `Responsable : AlmaGo` as the current terminology.
+
 ## Branch-cleanup interpretation
 
 The current count of 153 branches without open PRs is only a discovery set, not a deletion list.
