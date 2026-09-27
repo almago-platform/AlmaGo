@@ -4,7 +4,7 @@ Le système AlmaGo est conçu pour réduire l’intervention propriétaire, mais
 
 ## État actuel
 
-Master Plan : **41/45 — 91 %**.
+Master Plan : **41/45 — 91 %** *(compteur historique du plan A01–A45, pas un score de readiness lancement)*.
 
 Chaîne de release :
 
@@ -41,7 +41,7 @@ Les e-mails test sont déjà définis par défaut dans le workflow. Aucune varia
 
 Le workflow ne pourra toutefois produire une vraie preuve tant que #286 empêche le runner GitHub d’exécuter ses étapes.
 
-Draft #405 prépare un mode de preuve authentifiée contre Render, avec réveil et contrôle de `/api/health`.
+PR #424 intègre la preuve authentifiée contre Render avec réveil `/api/health`, tout en conservant les garde-fous main-only/A38.
 
 ### Render
 
@@ -55,17 +55,17 @@ Dans le dashboard Render :
 
 Le service est Free et peut afficher un écran de réveil après inactivité. Un éventuel plan payant est une décision séparée.
 
-### Catalogue production
+### Catalogue production — terminé
 
-Le dernier audit lecture seule indique encore une opération protégée :
+#176 est clôturée. Le journal de clôture indique :
 
-- archiver 1 recommandation test ;
-- désactiver 7 programmes test ;
-- désactiver 8 universités test ;
+- 1 recommandation test archivée ;
+- 7 programmes test désactivés ;
+- 8 universités test désactivées ;
 - aucun DELETE ;
-- refaire ensuite un audit lecture seule.
+- post-contrôle : 0 fixture active.
 
-Ne pas exécuter cette écriture sans validation explicite.
+**Ne pas rejouer cette opération depuis ce document.**
 
 ### A44 — observabilité
 
@@ -91,7 +91,7 @@ Ne pas exiger le check GitHub Actions cassé tant que #286 n’est pas résolu.
 
 ### A45
 
-Draft #407 prépare la recette finale Render et exige que le service live rapporte le SHA exact de `main` avant de publier `RELEASE GATE: READY`.
+PR #430 prépare la recette finale Render et exige que le service live rapporte le SHA exact de `main` avant de publier `RELEASE GATE: READY`.
 
 ## Ce qui n’est pas requis maintenant
 
