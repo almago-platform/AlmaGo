@@ -73,7 +73,7 @@ export function HomeFooter() {
           <FooterColumn
             title="Préparer"
             links={[
-              ["L’espace étudiant", "#espace"],
+              ["L’espace étudiant", "/login"],
               ["Explorer les programmes", "#programmes"],
               ["Créer mon dossier", "/signup"],
             ]}
