@@ -13,11 +13,11 @@ export function PageHeader({
   actions?: ReactNode;
 }) {
   return (
-    <header className="mb-7 flex flex-col gap-5 border-b border-[var(--border)] pb-5 sm:mb-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
+    <header className="mb-7 flex flex-col gap-5 border-b border-[var(--border)] pb-6 sm:mb-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
       <div className="min-w-0 max-w-3xl">
         {badge && <Badge variant="neutral">{badge}</Badge>}
         <h1
-          className={`${badge ? "mt-4" : ""} break-words font-semibold tracking-[-0.03em] text-slate-950`}
+          className={`${badge ? "mt-4" : ""} break-words font-semibold tracking-[-0.03em] text-[var(--foreground)]`}
           style={{ fontSize: "var(--text-page-title)", lineHeight: "var(--page-leading)" }}
         >
           {title}

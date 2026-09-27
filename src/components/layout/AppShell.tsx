@@ -88,15 +88,15 @@ export function AppShell({
         Aller au contenu
       </a>
 
-      <aside className="hidden lg:fixed lg:inset-y-0 lg:z-40 lg:flex lg:w-[17.25rem] lg:flex-col lg:border-r lg:border-[var(--border)] lg:bg-white">
+      <aside className="hidden lg:fixed lg:inset-y-0 lg:z-40 lg:flex lg:w-[17.25rem] lg:flex-col lg:border-r lg:border-[var(--border)] lg:bg-[var(--surface)]">
         <div className="flex min-h-20 items-center border-b border-[var(--border)] px-5">
           <Link href={role === "admin" ? "/admin" : "/student"} className="flex items-center gap-3" aria-label="Accueil AlmaGo">
             <span className="grid h-9 w-9 place-items-center rounded-[var(--radius-control)] bg-[var(--brand)] text-sm font-bold text-white">
               A
             </span>
             <span>
-              <span className="block text-base font-bold tracking-tight text-slate-950">AlmaGo</span>
-              <span className="block text-[11px] font-medium leading-4 text-slate-500">
+              <span className="block text-base font-bold tracking-tight text-[var(--foreground)]">AlmaGo</span>
+              <span className="block text-[11px] font-medium leading-4 text-[var(--muted)]">
                 {role === "admin" ? "Espace administration" : "Votre espace étudiant"}
               </span>
             </span>
@@ -105,20 +105,20 @@ export function AppShell({
 
         {role === "student" ? (
           <div className="mx-5 border-b border-[var(--border)] py-4">
-            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400">Dossier étudiant</p>
-            <p className="mt-1 text-sm font-bold text-slate-900">{studentName}</p>
-            <p className="mt-1 text-[11px] leading-4 text-slate-500">Projet d’études en Allemagne</p>
+            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#7b8a82]">Dossier étudiant</p>
+            <p className="mt-1 text-sm font-bold text-[var(--foreground)]">{studentName}</p>
+            <p className="mt-1 text-[11px] leading-4 text-[var(--muted)]">Projet d’études en Allemagne</p>
           </div>
         ) : (
           <div className="mx-5 border-b border-[var(--border)] py-4">
-            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400">Administration</p>
-            <p className="mt-1 text-sm font-bold text-slate-900">Pilotage opérationnel</p>
-            <p className="mt-1 text-[11px] leading-4 text-slate-500">Dossiers, catalogues et revalidations</p>
+            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#7b8a82]">Administration</p>
+            <p className="mt-1 text-sm font-bold text-[var(--foreground)]">Pilotage opérationnel</p>
+            <p className="mt-1 text-[11px] leading-4 text-[var(--muted)]">Dossiers, catalogues et revalidations</p>
           </div>
         )}
 
         <nav
-          className="flex-1 space-y-1 overflow-y-auto px-3 py-4 before:mb-3 before:block before:px-3 before:text-[10px] before:font-bold before:uppercase before:tracking-[0.16em] before:text-slate-400 before:content-['Navigation']"
+          className="flex-1 space-y-1 overflow-y-auto px-3 py-4 before:mb-3 before:block before:px-3 before:text-[10px] before:font-bold before:uppercase before:tracking-[0.16em] before:text-[#7b8a82] before:content-['Navigation']"
           aria-label={role === "admin" ? "Navigation administration" : "Navigation étudiant"}
         >
           {items.map((item) => {
@@ -128,15 +128,15 @@ export function AppShell({
                 key={item.href}
                 href={item.href}
                 aria-current={active ? "page" : undefined}
-                className={`group relative flex min-h-11 items-center gap-3 rounded-[var(--radius-control)] px-3 py-2 transition-colors duration-150 ${active ? "bg-[var(--brand-soft)] text-[var(--brand)] ring-1 ring-[var(--brand-border)]" : "text-slate-600 hover:bg-[var(--surface-subtle)] hover:text-slate-950"}`}
+                className={`group relative flex min-h-11 items-center gap-3 rounded-[var(--radius-control)] px-3 py-2 transition-colors duration-150 ${active ? "bg-[var(--brand-soft)] text-[var(--brand)] ring-1 ring-[var(--brand-border)]" : "text-[var(--muted)] hover:bg-[var(--surface-subtle)] hover:text-[var(--foreground)]"}`}
               >
-                <span className={`grid h-7 w-7 shrink-0 place-items-center rounded-[var(--radius-control)] ${active ? "bg-[var(--brand-soft)] text-[var(--accent-strong)]" : "bg-transparent text-slate-400 group-hover:text-slate-600"}`}>
+                <span className={`grid h-7 w-7 shrink-0 place-items-center rounded-[var(--radius-control)] ${active ? "bg-[var(--brand-soft)] text-[var(--accent-strong)]" : "bg-transparent text-[#7b8a82] group-hover:text-[var(--muted)]"}`}>
                   {item.icon}
                 </span>
                 <span className="min-w-0">
                   <span className="block text-sm font-semibold [overflow-wrap:anywhere]">{item.label}</span>
                   {item.helper && (
-                    <span className={`mt-0.5 block text-[11px] leading-4 ${active ? "text-[var(--brand)]/75" : "text-slate-400"}`}>
+                    <span className={`mt-0.5 block text-[11px] leading-4 ${active ? "text-[var(--brand)]/75" : "text-[#7b8a82]"}`}>
                       {item.helper}
                     </span>
                   )}
@@ -149,11 +149,11 @@ export function AppShell({
 
         <div className="border-t border-[var(--border)] bg-[var(--surface-subtle)] p-4">
           {role === "student" ? (
-            <p className="mb-3 px-1 text-[11px] leading-4 text-slate-500">
+            <p className="mb-3 px-1 text-[11px] leading-4 text-[var(--muted)]">
               AlmaGo organise votre dossier. Les décisions officielles restent celles des organismes compétents.
             </p>
           ) : (
-            <p className="mb-3 px-1 text-[11px] leading-4 text-slate-500">
+            <p className="mb-3 px-1 text-[11px] leading-4 text-[var(--muted)]">
               Les actions d’administration peuvent modifier ce qui est visible dans l’espace étudiant.
             </p>
           )}
@@ -166,16 +166,16 @@ export function AppShell({
       <div className="lg:pl-[17.25rem]">
         {role === "student" ? (
           <>
-            <header className="sticky top-0 z-30 border-b border-[var(--border)] bg-white/95 pt-[env(safe-area-inset-top)] shadow-[0_8px_24px_-22px_rgba(15,23,42,0.35)] backdrop-blur lg:hidden">
+            <header className="sticky top-0 z-30 border-b border-[var(--border)] bg-[#fffefa]/95 pt-[env(safe-area-inset-top)] shadow-[0_8px_24px_-22px_rgba(23,63,54,0.28)] backdrop-blur lg:hidden">
               <div className="flex min-h-16 items-center justify-between gap-3 px-3 py-2.5 min-[360px]:px-4">
                 <Link href="/student" onClick={() => setMobileMenuOpen(false)} className="flex min-w-0 items-center gap-2.5" aria-label="Accueil AlmaGo">
                   <span className="relative grid h-9 w-9 shrink-0 place-items-center rounded-[var(--radius-control)] bg-[var(--brand)] text-sm font-bold text-white">
                     A
-                    <span aria-hidden="true" className="absolute -bottom-1 -right-1 h-2.5 w-2.5 rounded-full border-2 border-white bg-[var(--accent)]" />
+                    <span aria-hidden="true" className="absolute -bottom-1 -right-1 h-2.5 w-2.5 rounded-full border-2 border-[#fffefa] bg-[var(--accent)]" />
                   </span>
                   <span className="min-w-0">
-                    <span className="block text-sm font-bold leading-4 text-slate-950">AlmaGo</span>
-                    <span className="mt-0.5 block truncate text-[11px] font-medium text-slate-500">{currentItem.label}</span>
+                    <span className="block text-sm font-bold leading-4 text-[var(--foreground)]">AlmaGo</span>
+                    <span className="mt-0.5 block truncate text-[11px] font-medium text-[var(--muted)]">{currentItem.label}</span>
                   </span>
                 </Link>
 
@@ -185,7 +185,7 @@ export function AppShell({
                   aria-expanded={mobileMenuOpen}
                   aria-controls="student-mobile-menu"
                   aria-label={mobileMenuOpen ? "Fermer le menu étudiant" : "Ouvrir le menu étudiant"}
-                  className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-[var(--radius-control)] border border-[var(--border)] bg-white px-2.5 text-sm font-bold text-slate-700 shadow-sm transition-colors hover:border-[var(--brand-border)] hover:text-[var(--brand)] min-[340px]:px-3"
+                  className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface)] px-2.5 text-sm font-bold text-[var(--foreground)] shadow-sm transition-colors hover:border-[var(--brand-border)] hover:text-[var(--brand)] min-[340px]:px-3"
                 >
                   {mobileMenuOpen ? icons.close : icons.menu}
                   <span className="hidden min-[340px]:inline">{mobileMenuOpen ? "Fermer" : "Menu"}</span>
@@ -193,10 +193,10 @@ export function AppShell({
               </div>
 
               {mobileMenuOpen && (
-                <div id="student-mobile-menu" className="max-h-[calc(100svh-4rem)] overflow-y-auto overscroll-contain border-t border-[var(--border)] bg-[#fbfbfd] px-3 py-4 min-[360px]:px-4">
+                <div id="student-mobile-menu" className="max-h-[calc(100svh-4rem)] overflow-y-auto overscroll-contain border-t border-[var(--border)] bg-[var(--surface-subtle)] px-3 py-4 min-[360px]:px-4">
                   <div className="mb-4 rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--brand-soft)]/65 p-3.5">
-                    <p className="text-xs font-bold text-slate-900">Bonjour {studentName}</p>
-                    <p className="mt-1 text-xs leading-5 text-slate-600">Choisissez la partie de votre dossier que vous souhaitez consulter.</p>
+                    <p className="text-xs font-bold text-[var(--foreground)]">Bonjour {studentName}</p>
+                    <p className="mt-1 text-xs leading-5 text-[var(--muted)]">Choisissez la partie de votre dossier que vous souhaitez consulter.</p>
                   </div>
 
                   <nav className="grid gap-2 sm:grid-cols-2" aria-label="Navigation étudiant mobile">
@@ -208,14 +208,14 @@ export function AppShell({
                           href={item.href}
                           onClick={() => setMobileMenuOpen(false)}
                           aria-current={active ? "page" : undefined}
-                          className={`flex min-h-14 items-center gap-3 rounded-[var(--radius-control)] border px-3.5 py-2.5 transition-colors ${active ? "border-[var(--brand-border)] bg-white text-[var(--brand)] shadow-sm" : "border-transparent bg-white/65 text-slate-700 hover:border-[var(--border)] hover:bg-white"}`}
+                          className={`flex min-h-14 items-center gap-3 rounded-[var(--radius-control)] border px-3.5 py-2.5 transition-colors ${active ? "border-[var(--brand-border)] bg-[var(--surface)] text-[var(--brand)] shadow-sm" : "border-transparent bg-[#fffefa]/80 text-[var(--foreground)] hover:border-[var(--border)] hover:bg-[var(--surface)]"}`}
                         >
-                          <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-[var(--radius-control)] ${active ? "bg-[var(--brand-soft)] text-[var(--accent-strong)]" : "bg-slate-100 text-slate-500"}`}>
+                          <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-[var(--radius-control)] ${active ? "bg-[var(--brand-soft)] text-[var(--accent-strong)]" : "bg-[var(--surface-muted)] text-[var(--muted)]"}`}>
                             {item.icon}
                           </span>
                           <span className="min-w-0">
                             <span className="block text-sm font-semibold [overflow-wrap:anywhere]">{item.label}</span>
-                            {item.helper && <span className="mt-0.5 block text-[11px] text-slate-500">{item.helper}</span>}
+                            {item.helper && <span className="mt-0.5 block text-[11px] text-[var(--muted)]">{item.helper}</span>}
                           </span>
                         </Link>
                       );
@@ -231,30 +231,30 @@ export function AppShell({
               )}
             </header>
 
-            <div className="hidden min-h-[4.5rem] items-center justify-between gap-6 border-b border-[var(--border)] bg-white px-6 lg:flex xl:px-8">
+            <div className="hidden min-h-[4.5rem] items-center justify-between gap-6 border-b border-[var(--border)] bg-[var(--surface)] px-6 lg:flex xl:px-8">
               <div>
                 <p className="text-xs font-bold uppercase tracking-[0.15em] text-[var(--brand)]">{currentItem.label}</p>
-                <p className="mt-1 text-sm text-slate-600">
+                <p className="mt-1 text-sm text-[var(--muted)]">
                   Bonjour {studentName}. Voici ce qui compte aujourd’hui pour votre projet d’études.
                 </p>
               </div>
-              <div className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-3 py-2 text-xs font-semibold text-slate-600">
+              <div className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-3 py-2 text-xs font-semibold text-[var(--muted)]">
                 Dossier personnel
               </div>
             </div>
           </>
         ) : (
           <>
-            <header className="sticky top-0 z-30 border-b border-[var(--border)] bg-white/95 pt-[env(safe-area-inset-top)] shadow-[0_8px_24px_-22px_rgba(15,23,42,0.35)] backdrop-blur lg:hidden">
+            <header className="sticky top-0 z-30 border-b border-[var(--border)] bg-[#fffefa]/95 pt-[env(safe-area-inset-top)] shadow-[0_8px_24px_-22px_rgba(23,63,54,0.28)] backdrop-blur lg:hidden">
               <div className="flex min-h-16 items-center justify-between gap-3 px-3 py-2.5 min-[360px]:px-4">
                 <Link href="/admin" onClick={() => setMobileMenuOpen(false)} className="flex min-w-0 items-center gap-2.5" aria-label="Accueil AlmaGo">
                   <span className="relative grid h-9 w-9 shrink-0 place-items-center rounded-[var(--radius-control)] bg-[var(--brand)] text-sm font-bold text-white">
                     A
-                    <span aria-hidden="true" className="absolute -bottom-1 -right-1 h-2.5 w-2.5 rounded-full border-2 border-white bg-[var(--accent)]" />
+                    <span aria-hidden="true" className="absolute -bottom-1 -right-1 h-2.5 w-2.5 rounded-full border-2 border-[#fffefa] bg-[var(--accent)]" />
                   </span>
                   <span className="min-w-0">
-                    <span className="block text-sm font-bold leading-4 text-slate-950">AlmaGo</span>
-                    <span className="mt-0.5 block truncate text-[11px] font-medium text-slate-500">{currentItem.label}</span>
+                    <span className="block text-sm font-bold leading-4 text-[var(--foreground)]">AlmaGo</span>
+                    <span className="mt-0.5 block truncate text-[11px] font-medium text-[var(--muted)]">{currentItem.label}</span>
                   </span>
                 </Link>
 
@@ -264,7 +264,7 @@ export function AppShell({
                   aria-expanded={mobileMenuOpen}
                   aria-controls="admin-mobile-menu"
                   aria-label={mobileMenuOpen ? "Fermer le menu administration" : "Ouvrir le menu administration"}
-                  className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-[var(--radius-control)] border border-[var(--border)] bg-white px-2.5 text-sm font-bold text-slate-700 shadow-sm transition-colors hover:border-[var(--brand-border)] hover:text-[var(--brand)] min-[340px]:px-3"
+                  className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface)] px-2.5 text-sm font-bold text-[var(--foreground)] shadow-sm transition-colors hover:border-[var(--brand-border)] hover:text-[var(--brand)] min-[340px]:px-3"
                 >
                   {mobileMenuOpen ? icons.close : icons.menu}
                   <span className="hidden min-[340px]:inline">{mobileMenuOpen ? "Fermer" : "Menu"}</span>
@@ -272,10 +272,10 @@ export function AppShell({
               </div>
 
               {mobileMenuOpen && (
-                <div id="admin-mobile-menu" className="max-h-[calc(100svh-4rem)] overflow-y-auto overscroll-contain border-t border-[var(--border)] bg-[#fbfbfd] px-3 py-4 min-[360px]:px-4">
+                <div id="admin-mobile-menu" className="max-h-[calc(100svh-4rem)] overflow-y-auto overscroll-contain border-t border-[var(--border)] bg-[var(--surface-subtle)] px-3 py-4 min-[360px]:px-4">
                   <div className="mb-4 rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--brand-soft)]/65 p-3.5">
-                    <p className="text-xs font-bold text-slate-900">Espace administration</p>
-                    <p className="mt-1 text-xs leading-5 text-slate-600">Choisissez la file de travail ou la partie du catalogue à gérer.</p>
+                    <p className="text-xs font-bold text-[var(--foreground)]">Espace administration</p>
+                    <p className="mt-1 text-xs leading-5 text-[var(--muted)]">Choisissez la file de travail ou la partie du catalogue à gérer.</p>
                   </div>
 
                   <nav className="grid gap-2 sm:grid-cols-2" aria-label="Navigation administration mobile">
@@ -287,14 +287,14 @@ export function AppShell({
                           href={item.href}
                           onClick={() => setMobileMenuOpen(false)}
                           aria-current={active ? "page" : undefined}
-                          className={`flex min-h-14 items-center gap-3 rounded-[var(--radius-control)] border px-3.5 py-2.5 transition-colors ${active ? "border-[var(--brand-border)] bg-white text-[var(--brand)] shadow-sm" : "border-transparent bg-white/65 text-slate-700 hover:border-[var(--border)] hover:bg-white"}`}
+                          className={`flex min-h-14 items-center gap-3 rounded-[var(--radius-control)] border px-3.5 py-2.5 transition-colors ${active ? "border-[var(--brand-border)] bg-[var(--surface)] text-[var(--brand)] shadow-sm" : "border-transparent bg-[#fffefa]/80 text-[var(--foreground)] hover:border-[var(--border)] hover:bg-[var(--surface)]"}`}
                         >
-                          <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-[var(--radius-control)] ${active ? "bg-[var(--brand-soft)] text-[var(--accent-strong)]" : "bg-slate-100 text-slate-500"}`}>
+                          <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-[var(--radius-control)] ${active ? "bg-[var(--brand-soft)] text-[var(--accent-strong)]" : "bg-[var(--surface-muted)] text-[var(--muted)]"}`}>
                             {item.icon}
                           </span>
                           <span className="min-w-0">
                             <span className="block text-sm font-semibold [overflow-wrap:anywhere]">{item.label}</span>
-                            {item.helper && <span className="mt-0.5 block text-[11px] leading-4 text-slate-500">{item.helper}</span>}
+                            {item.helper && <span className="mt-0.5 block text-[11px] leading-4 text-[var(--muted)]">{item.helper}</span>}
                           </span>
                         </Link>
                       );
@@ -310,14 +310,14 @@ export function AppShell({
               )}
             </header>
 
-            <div className="hidden min-h-[4.75rem] items-center justify-between gap-6 border-b border-[var(--border)] bg-white/85 px-6 backdrop-blur lg:flex xl:px-8">
+            <div className="hidden min-h-[4.75rem] items-center justify-between gap-6 border-b border-[var(--border)] bg-[#fffefa]/95 px-6 backdrop-blur lg:flex xl:px-8">
               <div>
                 <p className="text-xs font-bold uppercase tracking-[0.15em] text-[var(--brand)]">{currentItem.label}</p>
-                <p className="mt-1 text-sm text-slate-600">
+                <p className="mt-1 text-sm text-[var(--muted)]">
                   {currentItem.helper || "Pilotage opérationnel AlmaGo"}
                 </p>
               </div>
-              <div className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-3 py-2 text-xs font-semibold text-slate-600">
+              <div className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-3 py-2 text-xs font-semibold text-[var(--muted)]">
                 Espace équipe
               </div>
             </div>

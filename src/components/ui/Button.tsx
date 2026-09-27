@@ -1,8 +1,8 @@
 import type { ButtonHTMLAttributes } from "react";
 
 export const buttonVariants = {
-  primary: "border border-transparent bg-[var(--brand)] text-white shadow-sm hover:bg-[var(--brand-strong)] active:bg-[var(--brand-strong)] disabled:bg-[var(--brand)] disabled:text-white",
-  secondary: "border border-[var(--border-strong)] bg-white text-slate-800 shadow-none hover:border-[var(--brand)] hover:text-[var(--brand)] active:bg-slate-50 disabled:border-[var(--border)] disabled:bg-white disabled:text-slate-500",
+  primary: "border border-transparent bg-[var(--brand)] text-white shadow-none hover:bg-[var(--brand-strong)] active:bg-[var(--brand-strong)] disabled:bg-[var(--brand)] disabled:text-white",
+  secondary: "border border-[var(--border-strong)] bg-[var(--surface)] text-[var(--foreground)] shadow-none hover:border-[var(--brand)] hover:bg-[var(--brand-soft)] hover:text-[var(--brand)] active:bg-[var(--surface-muted)] disabled:border-[var(--border)] disabled:bg-[var(--surface)] disabled:text-[var(--muted)]",
 };
 
 export type ButtonVariant = keyof typeof buttonVariants;

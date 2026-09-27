@@ -1,55 +1,58 @@
-import { HomeSymbol } from "./HomeSymbol";
-import s from "./CodexHome.module.css";
-const questions = [
+import { HomeIcon } from "./HomeIcons";
+import s from "./Homepage.module.css";
+
+const faqs = [
   [
-    "Puis-je commencer sans avoir choisi d’université ?",
-    "Oui. Commencez par votre diplôme visé, votre domaine et vos besoins linguistiques. Vous pourrez ensuite examiner les programmes et préciser votre projet.",
+    "Puis-je commencer sans avoir d’admission ?",
+    "Oui. Commencez par définir votre projet et réunir les documents dont vous disposez. La recherche d’une base académique adaptée vient avant les démarches qui en dépendent.",
   ],
   [
-    "Qu’est-ce que je retrouve dans mon dossier ?",
-    "Votre projet académique, vos documents, vos pistes de programmes, vos candidatures et les actions utiles à votre préparation. Les informations sont reliées pour vous aider à garder le fil.",
+    "Que vais-je retrouver dans mon espace ?",
+    "Votre profil, vos documents, les pistes de programmes et vos candidatures. Le dossier relie aussi la préparation linguistique, le financement, l’assurance et les prochaines démarches selon votre situation.",
   ],
   [
-    "AlmaGo envoie-t-il mes candidatures ?",
-    "Le dossier AlmaGo organise votre préparation et votre suivi. Il ne remplace pas les démarches demandées sur les portails des universités ou de leurs organismes de candidature.",
+    "AlmaGo envoie-t-il ma candidature à ma place ?",
+    "L’espace vous aide à préparer et suivre vos candidatures. Leur envoi officiel reste à effectuer selon le canal demandé par l’établissement : candidature directe, uni-assist ou autre procédure indiquée.",
   ],
   [
-    "Comment vérifier une information ?",
-    "Consultez sa source, son statut et sa date de contrôle lorsqu’elle est indiquée. Confirmez toujours une exigence ou une échéance auprès de l’organisme responsable.",
+    "Les informations sont-elles toutes officielles ?",
+    "Non. AlmaGo distingue les informations de votre dossier des sources externes. Une fiche vérifiée conserve sa source et sa date de contrôle ; les informations anciennes doivent être revalidées. La source officielle reste la référence.",
   ],
   [
     "AlmaGo garantit-il une admission ou un visa ?",
-    "Non. AlmaGo vous aide à structurer votre dossier, sans garantir de résultat. Les décisions appartiennent aux universités, ambassades et autorités compétentes.",
+    "Non. AlmaGo vous aide à organiser votre préparation, sans garantir de résultat. Les décisions appartiennent aux universités, ambassades et autorités compétentes.",
   ],
 ] as const;
+
 export function HomeFaqSection() {
   return (
     <section
       id="faq"
-      className={[s.section, s.faq].join(" ")}
+      className={`${s.section} ${s.faq}`}
       aria-labelledby="faq-title"
     >
-      <div className={[s.container, s.faqGrid].join(" ")}>
+      <div className={`${s.container} ${s.faqGrid}`}>
         <div>
-          <p className={s.eyebrow}>Avant de vous lancer</p>
-          <h2 id="faq-title" className={s.title}>
-            Des questions ?<br />
-            <span>C’est normal.</span>
+          <p className={s.eyebrow}>Vos premières questions</p>
+          <h2 id="faq-title" className={s.sectionTitle}>
+            Avant de faire
+            <br />
+            <em>le premier pas.</em>
           </h2>
           <p className={s.lead}>
-            Quelques réponses pour commencer avec des repères clairs.
+            Vous pouvez commencer avec ce que vous savez déjà.
           </p>
           <a className={s.textLink} href="#parcours">
-            Revoir le parcours
-            <HomeSymbol name="arrow" />
+            Revoir les six étapes
+            <HomeIcon name="arrow" />
           </a>
         </div>
         <div className={s.faqList}>
-          {questions.map(([question, answer], index) => (
-            <details key={question} open={index === 0}>
+          {faqs.map(([question, answer], i) => (
+            <details key={question} open={i === 0}>
               <summary>
                 <span>{question}</span>
-                <HomeSymbol name="plus" />
+                <HomeIcon name="plus" />
               </summary>
               <p>{answer}</p>
             </details>

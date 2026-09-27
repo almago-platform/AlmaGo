@@ -6,12 +6,12 @@ import { HomeJourneySection } from "@/components/public/HomeJourneySection";
 import { HomeTrustSection } from "@/components/public/HomeTrustSection";
 import { HomeFaqSection } from "@/components/public/HomeFaqSection";
 import { HomeFinalCta, HomeFooter } from "@/components/public/HomeClosing";
-import s from "@/components/public/CodexHome.module.css";
+import s from "@/components/public/Homepage.module.css";
 
 export default function Home() {
   return (
     <div className={s.home}>
-      <a className={s.skip} href="#main-content">
+      <a className={s.skipLink} href="#main-content">
         Aller au contenu
       </a>
       <HomeHeader />

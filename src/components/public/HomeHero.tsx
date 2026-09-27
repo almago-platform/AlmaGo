@@ -1,95 +1,86 @@
 import Image from "next/image";
 import Link from "next/link";
-import { HomeSymbol } from "./HomeSymbol";
-import s from "./CodexHome.module.css";
+import { HomeIcon } from "./HomeIcons";
+import s from "./Homepage.module.css";
+
 export function HomeHero() {
   return (
-    <section className={s.hero} aria-labelledby="hero-title">
-      <div className={s.heroInner}>
+    <section className={s.hero} aria-labelledby="home-title">
+      <div className={`${s.container} ${s.heroGrid}`}>
         <div className={s.heroCopy}>
-          <a href="#confiance" className={s.independent}>
-            <span aria-hidden="true" />
-            AlmaGo · plateforme indépendante
-            <HomeSymbol name="external" />
-          </a>
-          <h1 id="hero-title">
-            Vos études en
+          <p className={s.eyebrow}>
+            <span className={s.dot} /> Votre projet. Votre avenir.
+          </p>
+          <h1 id="home-title">
+            Étudier en <br />
+            Allemagne,
             <br />
-            Allemagne.<span>La suite au clair.</span>
+            <em>avec un cap clair.</em>
           </h1>
           <p className={s.heroLead}>
-            Un espace pour organiser votre projet d’études, réunir vos documents
-            et préparer vos candidatures. Avec une prochaine étape toujours
-            identifiable.
+            Programmes, documents, candidatures : AlmaGo rassemble votre projet
+            dans un seul espace et vous aide à savoir quoi faire ensuite.
           </p>
           <div className={s.heroActions}>
-            <Link
-              href="/signup"
-              className={[s.button, s.apricotButton].join(" ")}
-            >
+            <Link className={s.button} href="/signup">
               Créer mon dossier
-              <HomeSymbol name="arrow" />
+              <HomeIcon name="arrow" />
             </Link>
-            <a className={s.heroLink} href="#espace">
-              Explorer l’espace étudiant
-              <HomeSymbol name="arrow" />
+            <a className={s.textLink} href="#espace">
+              Découvrir l’espace étudiant
+              <HomeIcon name="arrow" />
             </a>
           </div>
-          <p className={s.heroNote}>
-            <HomeSymbol name="check" />
-            Commencez avec ce que vous savez déjà.
-          </p>
+          <div className={s.heroProof}>
+            <span>
+              <HomeIcon name="check" /> Un dossier structuré
+            </span>
+            <span>
+              <HomeIcon name="check" /> Des sources identifiées
+            </span>
+          </div>
         </div>
         <div className={s.heroVisual}>
           <figure className={s.heroPhoto}>
             <Image
-              src="/images/homepage/codex-campus.webp"
-              alt="Trois étudiants réunis autour d’un ordinateur à une table en extérieur."
+              src="/images/homepage/study-library.webp"
+              alt="Deux étudiants concentrés sur leur travail à une table de bibliothèque, éclairée par la lumière du jour."
               fill
               priority
-              sizes="(max-width: 767px) calc(100vw - 64px), (max-width: 1100px) 43vw, 540px"
+              sizes="(min-width: 1280px) 560px, (min-width: 900px) 46vw, (min-width: 600px) 75vw, 100vw"
             />
-            <figcaption>Le début d’un nouveau chapitre.</figcaption>
+            <figcaption>Une nouvelle étape commence ici.</figcaption>
           </figure>
-          <div className={s.heroCard}>
-            <div className={s.heroCardTop}>
+          <div className={s.heroDossier}>
+            <div className={s.miniHead}>
               <span>
-                <HomeSymbol name="folder" />
-                Mon projet d’études
+                <HomeIcon name="folder" /> Votre projet prend forme
               </span>
-              <span className={s.exampleLabel}>Exemple</span>
+              <span className={s.sample}>Exemple</span>
             </div>
-            <div className={s.heroCardBody}>
-              <span className={s.actionMark}>
-                <HomeSymbol name="document" />
+            <div className={s.miniRow}>
+              <span className={s.miniCheck}>
+                <HomeIcon name="check" />
               </span>
               <div>
-                <span className={s.smallLabel}>La prochaine étape</span>
-                <strong>Rassembler mes documents</strong>
-                <span className={s.heroCardSub}>
-                  Un point de départ concret.
-                </span>
+                <strong>Votre projet d’études</strong>
+                <span>Une direction définie</span>
               </div>
-              <a href="#espace" aria-label="Découvrir l’exemple de dossier">
-                <HomeSymbol name="arrow" />
-              </a>
+              <span className={s.miniStatus}>Renseigné</span>
+            </div>
+            <div className={s.miniRow}>
+              <span className={s.miniNext}>02</span>
+              <div>
+                <strong>Vos documents</strong>
+                <span>La prochaine étape à préparer</span>
+              </div>
+              <HomeIcon name="arrow" />
             </div>
           </div>
-          <span className={s.visualTag}>
-            <HomeSymbol name="pin" />
-            Votre projet, votre direction.
+          <span className={s.heroSideNote} aria-hidden="true">
+            D’un projet à un parcours.
           </span>
         </div>
-      </div>
-      <div className={s.heroBottom}>
-        <span>Pour les étudiants internationaux</span>
-        <span>
-          Projet académique
-          <HomeSymbol name="arrow" />
-          Candidatures
-          <HomeSymbol name="arrow" />
-          Préparation
-        </span>
       </div>
     </section>
   );

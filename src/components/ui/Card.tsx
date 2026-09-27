@@ -11,7 +11,7 @@ export function Card({ as: Component = "section", children, className = "", "ari
   return (
     <Component
       aria-labelledby={labelledBy}
-      className={`rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[var(--shadow-card)] transition-[border-color,box-shadow] duration-150 sm:p-6 ${className}`}
+      className={`rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 shadow-none transition-[border-color,background-color] duration-150 sm:p-6 ${className}`}
     >
       {children}
     </Component>

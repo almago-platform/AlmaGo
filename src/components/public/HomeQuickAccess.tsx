@@ -1,52 +1,34 @@
-import { HomeSymbol, type SymbolName } from "./HomeSymbol";
-import s from "./CodexHome.module.css";
-const links: {
-  name: string;
-  detail: string;
-  href: string;
-  icon: SymbolName;
-}[] = [
-  {
-    name: "Votre espace",
-    detail: "Voir le dossier en pratique",
-    href: "#espace",
-    icon: "folder",
-  },
-  {
-    name: "Votre parcours",
-    detail: "Comprendre les six étapes",
-    href: "#parcours",
-    icon: "route",
-  },
-  {
-    name: "Des repères fiables",
-    detail: "Sources et responsabilités",
-    href: "#confiance",
-    icon: "shield",
-  },
-  {
-    name: "Vos questions",
-    detail: "Les réponses pour commencer",
-    href: "#faq",
-    icon: "book",
-  },
-];
+import { HomeIcon } from "./HomeIcons";
+import s from "./Homepage.module.css";
+
+const items = [
+  { href: "#parcours", title: "Comprendre les étapes", icon: "route" },
+  { href: "#espace", title: "Découvrir mon dossier", icon: "folder" },
+  { href: "#programmes", title: "Repérer les programmes", icon: "book" },
+  { href: "#confiance", title: "Identifier les sources", icon: "source" },
+] as const;
+
 export function HomeQuickAccess() {
   return (
-    <nav
-      className={[s.container, s.quick].join(" ")}
-      aria-label="Accès rapides"
-    >
-      {links.map((link) => (
-        <a key={link.href} href={link.href}>
-          <HomeSymbol name={link.icon} />
-          <span>
-            <strong>{link.name}</strong>
-            <span>{link.detail}</span>
-          </span>
-          <HomeSymbol name="arrow" className={s.quickArrow} />
-        </a>
-      ))}
-    </nav>
+    <section className={s.quick} aria-labelledby="quick-title">
+      <div className={`${s.container} ${s.quickInner}`}>
+        <div className={s.quickIntro}>
+          <p className={s.eyebrow}>À votre rythme</p>
+          <h2 id="quick-title">
+            Par où <br />
+            commencer ?
+          </h2>
+        </div>
+        <nav aria-label="Accès rapide" className={s.quickLinks}>
+          {items.map((item) => (
+            <a href={item.href} key={item.href}>
+              <HomeIcon name={item.icon} />
+              <span>{item.title}</span>
+              <HomeIcon name="arrow" className={s.quickArrow} />
+            </a>
+          ))}
+        </nav>
+      </div>
+    </section>
   );
 }

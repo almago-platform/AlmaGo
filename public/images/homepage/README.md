@@ -1,10 +1,12 @@
-# Codex V4 — photography
+# Homepage Work V4 photograph
 
-- Asset: codex-campus.webp (1125 × 750, 81,572 bytes).
-- Photographer: George Pak.
-- Source: https://www.pexels.com/photo/students-studying-on-laptop-outdoors-together-7972949/
-- Original download: https://images.pexels.com/photos/7972949/pexels-photo-7972949.jpeg?auto=compress&dpr=1&h=750&w=1260
-- License: Pexels License, https://www.pexels.com/license/ — inspected 27 September 2026. Website use and modification allowed; no endorsement by identifiable people or brands may be implied.
-- Processing: WebP encoding (quality 85), metadata stripped. No generated or composited imagery.
-- Usage: illustrative study scene. No claim about location in Germany, customer status, institutional affiliation or testimonial. Attribution is also present in the homepage footer.
-- Rendering: local Next Image, responsive sizes and priority for the hero; no runtime dependency on a stock-photo host.
+- File: `study-library.webp` (1349 × 900, 96,146 bytes)
+- Photographer: Mikhail Nilov
+- Original: https://www.pexels.com/photo/college-students-studying-in-a-library-7777713/
+- Download: https://images.pexels.com/photos/7777713/pexels-photo-7777713.jpeg?auto=compress&dpr=1&h=900&w=1600
+- License reviewed 2026-09-27: https://www.pexels.com/license/
+- Pexels permits website use and modification; attribution is voluntary and included in the homepage footer.
+- No endorsement, AlmaGo customer relationship, institutional partnership or German location is asserted.
+- The file was converted to WebP without generative edits. The homepage uses responsive Next Image delivery and CSS cropping, with the hero image prioritized.
+
+Chosen for its natural light, quiet academic setting, candid-looking concentration and warm neutral tones. It illustrates preparation rather than success, official approval or a personal adviser.
