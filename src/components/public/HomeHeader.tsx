@@ -74,7 +74,7 @@ export function HomeHeader() {
             Se connecter
             <HomeIcon name="arrow" />
           </Link>
-          <Link className={s.mobileSignup} href="/signup">
+          <Link className={s.mobileSignup} href="/signup" onClick={() => setOpen(false)}>
             Créer mon dossier
             <HomeIcon name="arrow" />
           </Link>
