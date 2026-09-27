@@ -5,7 +5,9 @@ const items = [
   { href: "#parcours", title: "Comprendre les étapes", icon: "route" },
   { href: "#espace", title: "Découvrir mon dossier", icon: "folder" },
   { href: "#programmes", title: "Repérer les programmes", icon: "book" },
-  { href: "#confiance", title: "Identifier les sources", icon: "source" },
+  { href: "#espace", title: "Préparer mes documents", icon: "document" },
+  { href: "#confiance", title: "Vérifier les sources", icon: "source" },
+  { href: "/signup", title: "Commencer mon projet", icon: "check" },
 ] as const;
 
 export function HomeQuickAccess() {
@@ -21,7 +23,7 @@ export function HomeQuickAccess() {
         </div>
         <nav aria-label="Accès rapide" className={s.quickLinks}>
           {items.map((item) => (
-            <a href={item.href} key={item.href}>
+            <a href={item.href} key={item.title}>
               <HomeIcon name={item.icon} />
               <span>{item.title}</span>
               <HomeIcon name="arrow" className={s.quickArrow} />

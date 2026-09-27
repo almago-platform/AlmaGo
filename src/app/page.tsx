@@ -3,6 +3,7 @@ import { HomeHero } from "@/components/public/HomeHero";
 import { HomeQuickAccess } from "@/components/public/HomeQuickAccess";
 import { HomeProductPreview } from "@/components/public/HomeProductPreview";
 import { HomeJourneySection } from "@/components/public/HomeJourneySection";
+import { HomePhotoBand } from "@/components/public/HomePhotoBand";
 import { HomeTrustSection } from "@/components/public/HomeTrustSection";
 import { HomeFaqSection } from "@/components/public/HomeFaqSection";
 import { HomeFinalCta, HomeFooter } from "@/components/public/HomeClosing";
@@ -19,6 +20,7 @@ export default function Home() {
         <HomeHero />
         <HomeQuickAccess />
         <HomeProductPreview />
+        <HomePhotoBand />
         <HomeJourneySection />
         <HomeTrustSection />
         <HomeFaqSection />

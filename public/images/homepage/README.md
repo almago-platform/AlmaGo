@@ -1,19 +1,29 @@
-# Homepage Brand V2.1 photography
+# AlmaGo homepage photography — V6
 
-## Current hero
+All homepage photographs are illustrative stock photography from Pexels. They do not depict AlmaGo users, AlmaGo partners, German institutions, or guaranteed outcomes.
 
-- Remote image ID: Pexels #7683694
-- Photographer: RDNE Stock project
-- Page: https://www.pexels.com/photo/college-students-in-a-university-campus-7683694/
-- Delivery: https://images.pexels.com/photos/7683694/pexels-photo-7683694.jpeg?auto=compress&cs=tinysrgb&w=1600
-- Original dimensions reported by Pexels: 6169 × 4113
-- License reviewed 2026-09-27: https://www.pexels.com/license/
-- Pexels marks the asset free to use.
-- No endorsement, AlmaGo customer relationship, institutional partnership or German location is asserted.
-- The homepage uses responsive Next Image delivery and CSS cropping; no generative edit is applied.
+License reviewed: 2026-09-27  
+Pexels license: https://www.pexels.com/license/
 
-Chosen because the scene is clearly university-contextual, human and outdoors, with a modern campus environment rather than a generic interior.
+| Use | Pexels ID | Photographer / contributor | Source page |
+| --- | --- | --- | --- |
+| Hero campus life | 31070782 | DΛVΞ GΛRCIΛ | https://www.pexels.com/photo/university-campus-scene-in-coral-gables-fl-31070782/ |
+| Photo band — prepare | 6684514 | Andy Barbour | https://www.pexels.com/photo/a-college-student-using-a-laptop-6684514/ |
+| Photo band — compare | 5965674 | Charlotte May | https://www.pexels.com/photo/diverse-students-with-laptop-and-documents-5965674/ |
+| Photo band — advance | 5553958 | Armin Rimoldi | https://www.pexels.com/photo/multiethnic-students-standing-near-gates-of-university-building-5553958/ |
+| Journey 01 — project | 7973208 | George Pak | https://www.pexels.com/photo/people-holding-a-document-sitting-near-the-concrete-building-7973208/ |
+| Journey 02 — academic base | 6207367 | Skylar Kang | https://www.pexels.com/photo/papers-with-pen-on-table-in-classroom-6207367/ |
+| Journey 03 — programs | 31039023 | DΛVΞ GΛRCIΛ | https://www.pexels.com/photo/university-students-at-modern-campus-entrance-31039023/ |
+| Journey 04 — applications | 5306450 | Antoni Shkraba | https://www.pexels.com/photo/students-doing-their-classwork-together-5306450/ |
+| Journey 05 — preparation | 5940705 | Kampus Production | https://www.pexels.com/photo/young-students-preparing-for-exams-using-laptops-in-library-5940705/ |
+| Journey 06 — follow-up | 7972361 | George Pak | https://www.pexels.com/photo/a-man-and-a-woman-waving-to-each-other-7972361/ |
 
-## Previous Work V4 asset
+## Delivery
 
-The former local `study-library.webp` remains in repository history and can be restored if needed.
+The page uses remote Pexels originals through Next Image. The hero uses quality 90 and responsive sizes; all supporting photographs are lazy-loaded by Next Image with responsive sizing. CSS cropping is used for layout, without generative modification.
+
+## Editorial rules
+
+- Do not claim the locations are in Germany unless the source explicitly says so and the page needs that context.
+- Do not present photographed people as AlmaGo users, customers, successful applicants, or visa recipients.
+- Photography supports the themes of preparation, study, documents, comparison, and campus life; it must not imply an official decision or guarantee.
