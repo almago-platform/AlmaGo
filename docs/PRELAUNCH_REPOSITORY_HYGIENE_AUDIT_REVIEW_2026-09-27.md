@@ -350,7 +350,7 @@ No current application page imports the component.
 
 Classification: **RUNTIME-UNUSED, TEST-HISTORICAL CLEANUP CANDIDATE**.
 
-Do not delete it in the hygiene audit itself. A bounded cleanup PR should first update/remove only the historical tests that still treat the retired product-preview composition as a source contract, then remove the component if no active PR depends on it.
+Do not delete it in the hygiene audit itself. Two of the historical tests that reference it (`homepage-v6-visual-density.test.mjs` and `homepage-v7-immersive.test.mjs`) are currently modified by active draft #399. Therefore cleanup must wait until #399 is resolved, then a bounded follow-up can update/remove only the remaining retired product-preview contracts and delete the component if no active PR depends on it.
 
 ## Recommended execution order
 
