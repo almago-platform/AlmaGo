@@ -8,6 +8,11 @@ on:
         required: true
         default: true
         type: boolean
+      confirm_delete:
+        description: "Required only for deletion mode: type DELETE_MERGED_BRANCHES"
+        required: false
+        default: ""
+        type: string
 
 permissions:
   contents: write
@@ -26,6 +31,7 @@ jobs:
         uses: actions/github-script@v7
         env:
           DRY_RUN: ${{ inputs.dry_run }}
+          CONFIRM_DELETE: ${{ inputs.confirm_delete }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -36,6 +42,14 @@ jobs:
               (await github.rest.repos.get({ owner, repo })).data;
             const defaultBranch = repository.default_branch || "main";
             const dryRun = String(process.env.DRY_RUN).toLowerCase() !== "false";
+            const confirmation = String(process.env.CONFIRM_DELETE || "");
+
+            if (!dryRun && confirmation !== "DELETE_MERGED_BRANCHES") {
+              core.setFailed(
+                "Deletion mode requires confirm_delete=DELETE_MERGED_BRANCHES.",
+              );
+              return;
+            }
 
             const allowedPrefixes = [
               "codex/",
