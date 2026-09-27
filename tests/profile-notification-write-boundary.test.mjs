@@ -6,12 +6,17 @@ const migration = readFileSync("supabase/migrations/0029_profile_notification_wr
 const profileRoute = readFileSync("src/app/api/student/profile/route.ts", "utf8");
 const onboardingRoute = readFileSync("src/app/api/student/onboarding/route.ts", "utf8");
 
+const profileUpdateGrant =
+  migration.match(/grant update \([^;]*\) on table public\.profiles to authenticated;/i)?.[0] || "";
+
 test("direct profile writes cannot change workflow or maintenance columns", () => {
   assert.match(migration, /revoke insert, update on table public\.profiles from authenticated/i);
-  assert.doesNotMatch(migration, /grant update \([\s\S]*onboarding_completed/i);
-  assert.doesNotMatch(migration, /grant update \([\s\S]*created_at/i);
-  assert.doesNotMatch(migration, /grant update \([\s\S]*updated_at/i);
-  assert.doesNotMatch(migration, /grant update \([\s\S]*full_name/i);
+  assert.ok(profileUpdateGrant, "expected a restricted profile UPDATE grant");
+  assert.match(profileUpdateGrant, /first_name/i);
+  assert.doesNotMatch(profileUpdateGrant, /onboarding_completed/i);
+  assert.doesNotMatch(profileUpdateGrant, /created_at/i);
+  assert.doesNotMatch(profileUpdateGrant, /updated_at/i);
+  assert.doesNotMatch(profileUpdateGrant, /full_name/i);
 });
 
 test("notifications are student-writable only through read_at", () => {
