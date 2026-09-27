@@ -272,6 +272,26 @@ Unused components are candidates only after two checks:
 
 Do not delete components solely because they are absent from the current homepage composition if they are still used by authenticated/admin surfaces or an active migration/release branch.
 
+
+## Unused-code evidence
+
+A targeted current-main search found one strong public-component cleanup candidate:
+
+### `HomeProductPreview.tsx`
+
+Current references to `HomeProductPreview` are limited to:
+
+- the component file itself;
+- `tests/homepage-v6-visual-density.test.mjs`;
+- `tests/homepage-v7-1-product-showcase.test.mjs`;
+- `tests/homepage-v7-immersive.test.mjs`.
+
+No current application page imports the component.
+
+Classification: **RUNTIME-UNUSED, TEST-HISTORICAL CLEANUP CANDIDATE**.
+
+Do not delete it in the hygiene audit itself. A bounded cleanup PR should first update/remove only the historical tests that still treat the retired product-preview composition as a source contract, then remove the component if no active PR depends on it.
+
 ## Recommended execution order
 
 1. Preserve the original audit as the immutable snapshot of `main@9635315...`.
