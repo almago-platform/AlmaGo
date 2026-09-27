@@ -3150,3 +3150,125 @@
     font-size: 8px;
   }
 }
+
+
+/* Homepage trust section polish */
+.trust.section {
+  padding-block: 58px 62px;
+}
+.trustGrid {
+  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+  gap: 58px;
+  align-items: start;
+}
+.trustGrid > div:first-child {
+  padding-top: 8px;
+}
+.trust .sectionTitle {
+  font-size: clamp(40px, 3.7vw, 55px);
+}
+.trust .lead {
+  max-width: 540px;
+  margin-top: 18px;
+  font-size: 15px;
+  line-height: 1.7;
+}
+.trustStatement {
+  margin-top: 23px;
+  padding-top: 20px;
+}
+.trustStatement p {
+  max-width: 650px;
+  font-size: 12px;
+  line-height: 1.72;
+}
+.sourceCard {
+  padding: 24px 28px 25px;
+  border-radius: 8px;
+  background: #f1ece4;
+  box-shadow: 0 18px 42px -34px rgba(28, 33, 36, 0.26);
+}
+.sourceCardTop {
+  margin-bottom: 14px;
+  font-size: 14px;
+}
+.sourceCard dl > div {
+  grid-template-columns: 145px 1fr;
+  gap: 20px;
+  padding: 14px 0;
+}
+.sourceCard dt {
+  color: #1c2124;
+  font-size: 12px;
+  font-weight: 700;
+}
+.sourceCard dd {
+  color: #555b5f;
+  line-height: 1.65;
+}
+.sourceLinks {
+  margin-top: 14px;
+  padding-top: 14px;
+}
+.sourceLinks p {
+  color: #6b6f72;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+.sourceLinks a {
+  gap: 10px;
+  min-height: 38px;
+  color: #1c2124;
+  font-size: 16px;
+  font-weight: 750;
+  text-decoration-thickness: 1.5px;
+}
+.sourceLinks a:hover {
+  color: #db0423;
+}
+.sourceLinks svg {
+  width: 16px;
+  height: 16px;
+}
+.sourceLinks > span {
+  margin-top: 2px;
+  color: #6b6f72;
+  font-size: 9px;
+}
+
+@media (max-width: 899px) {
+  .trust.section {
+    padding-block: 52px;
+  }
+  .trustGrid {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  .trustGrid > div:first-child {
+    padding-top: 0;
+  }
+  .sourceCard {
+    padding: 22px;
+  }
+}
+
+@media (max-width: 599px) {
+  .trust.section {
+    padding-block: 44px;
+  }
+  .trust .sectionTitle {
+    font-size: 35px;
+  }
+  .sourceCard {
+    padding: 18px;
+  }
+  .sourceCard dl > div {
+    grid-template-columns: 1fr;
+    gap: 5px;
+    padding: 13px 0;
+  }
+  .sourceCard dd {
+    font-size: 11px;
+  }
+}
