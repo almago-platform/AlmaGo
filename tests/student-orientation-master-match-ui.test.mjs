@@ -59,7 +59,7 @@ test("StudentJourneyOverview calculates progress and shows visual badges", () =>
   assert.match(journeyOverview, /Terminé/);
   assert.match(journeyOverview, /En cours/);
   assert.match(journeyOverview, /À venir/);
-  assert.match(journeyOverview, /Accéder/);
+  assert.match(journeyOverview, /Ouvrir →/);
   assert.doesNotMatch(journeyOverview, /intelligence artificielle/i);
   assert.doesNotMatch(journeyOverview, /garantie/i);
 
