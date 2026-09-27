@@ -55,12 +55,13 @@ export function HomeProductPreview() {
           </h2>
           <p className={s.lead}>
             Votre projet ne devrait pas se perdre entre une note, un e-mail et
-            un document.
+            un document. AlmaGo rassemble l’essentiel et met la prochaine
+            action en évidence.
           </p>
-          <ol className={s.benefits}>
+          <ol className={s.productBenefits}>
             {benefits.map(([n, title, text]) => (
               <li key={n}>
-                <span>{n}</span>
+                <span className={s.productBenefitNumber}>{n}</span>
                 <div>
                   <h3>{title}</h3>
                   <p>{text}</p>
@@ -68,8 +69,25 @@ export function HomeProductPreview() {
               </li>
             ))}
           </ol>
+          <div className={s.productAssurance}>
+            <HomeIcon name="source" />
+            <span>
+              Votre espace organise la préparation. Les décisions officielles
+              restent aux organismes compétents.
+            </span>
+          </div>
         </div>
-        <div className={s.productFrame}>
+
+        <div className={s.productStage}>
+          <div className={s.productStageHead}>
+            <div>
+              <span className={s.productStageKicker}>Démonstration interactive</span>
+              <strong>Votre dossier, en un coup d’œil.</strong>
+            </div>
+            <span className={s.productStageBadge}>Données fictives</span>
+          </div>
+
+          <div className={s.productFrame}>
           <div className={s.previewTop}>
             <div>
               <span className={s.previewLogo}><BrandLogo symbolOnly className={s.previewLogoImage} /></span>
@@ -249,6 +267,19 @@ export function HomeProductPreview() {
             Aperçu illustratif · Données fictives · Votre dossier dépend de
             votre situation.
           </p>
+          </div>
+
+          <div className={s.productStageFoot}>
+            <span>
+              <HomeIcon name="check" /> Projet
+            </span>
+            <span>
+              <HomeIcon name="document" /> Documents
+            </span>
+            <span>
+              <HomeIcon name="route" /> Candidatures
+            </span>
+          </div>
         </div>
       </div>
     </section>
