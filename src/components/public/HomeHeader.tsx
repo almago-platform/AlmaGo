@@ -8,7 +8,7 @@ import s from "./Homepage.module.css";
 
 const navigation = [
   ["Le parcours", "#parcours"],
-  ["L’espace étudiant", "#espace"],
+  ["L’espace étudiant", "/login"],
   ["Nos repères", "#outils"],
   ["FAQ", "#faq"],
 ] as const;
