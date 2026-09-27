@@ -65,14 +65,16 @@ Action completed during the audit: **#287 was closed without merge** after confi
 
 ### #285 — Copilot Autopilot sandbox note
 
-Current state:
+Action completed during the audit: **#285 was closed without merge** and #284 was closed as completed. Its only content was a five-line non-production sandbox note; the PR/issue/branch history already preserves the validation evidence. No branch was deleted.
+
+Previous state:
 
 - one documentation file only;
 - 66 commits behind `main`;
 - purpose was a bounded SANDBOX-01 validation artifact;
 - the real Autopilot/release infrastructure has since moved substantially.
 
-Recommendation: **close without merge** unless the sandbox note is still wanted as historical documentation. If historical value is desired, move the five-line note into an archive/history document rather than keeping a live PR.
+Result: no merge was needed. The branch is retained pending the later explicit branch-cleanup pass.
 
 ### #184 — old Actions/release hardening stack
 
@@ -109,6 +111,8 @@ Representative comparisons against current `main`:
 - #172/#213: roughly 609 ahead / 82 behind.
 
 The chain includes public guidance, help, trust, programme comparison, source visibility, student history/notifications, catalogue quality and accessibility work.
+
+A current-main route/component scan is important here: `main` does **not** currently expose route files matching the old help/about/trust/source/guidance/comparison/notification/history/deadline/country-guide names. The only directly matching retained public component found in that scan is `src/components/public/HomeTrustSection.tsx`. Therefore the V3 chain is structurally stale but **not proven functionally superseded**.
 
 Recommendation:
 
