@@ -1,20 +1,20 @@
 import Link from "next/link";
 import { AuthForm } from "@/components/auth/AuthForm";
 import { AuthStoryPanel } from "@/components/auth/AuthStoryPanel";
+import { BrandLogo } from "@/components/brand/BrandLogo";
 
 export default function SignupPage() {
   return (
-    <main className="min-h-screen bg-[var(--background)] px-4 py-8 text-slate-950 sm:px-6 sm:py-10 lg:px-8">
+    <main className="min-h-screen bg-[var(--background)] px-4 py-8 text-[var(--foreground)] sm:px-6 sm:py-10 lg:px-8">
       <div className="mx-auto grid min-h-[calc(100vh-4rem)] w-full max-w-6xl items-center gap-10 lg:grid-cols-[0.92fr_1.08fr]">
         <AuthStoryPanel mode="signup" />
 
         <section className="mx-auto w-full max-w-xl">
           <div className="mb-6 flex items-center justify-between lg:hidden">
-            <Link href="/" className="inline-flex items-center gap-2 text-sm font-bold text-[var(--brand)]">
-              <span className="grid h-8 w-8 place-items-center rounded-[var(--radius-control)] bg-[var(--brand)] text-xs text-white">A</span>
-              AlmaGo
+            <Link href="/" className="inline-flex items-center" aria-label="AlmaGo accueil">
+              <BrandLogo className="h-auto w-32" />
             </Link>
-            <Link href="/login" className="text-sm font-semibold text-slate-600 hover:text-[var(--brand)]">
+            <Link href="/login" className="text-sm font-semibold text-[var(--muted)] hover:text-[var(--brand)]">
               Connexion
             </Link>
           </div>
