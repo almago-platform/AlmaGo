@@ -49,10 +49,16 @@ const adminItems: NavItem[] = [
   { label: "Documents", href: "/admin/documents", icon: icons.documents, helper: "Pièces à vérifier" },
   { label: "Candidatures", href: "/admin/applications", icon: icons.applications, helper: "Dossiers et échéances" },
   { label: "Orientation", href: "/admin/orientation", icon: icons.orientation, helper: "Recommandations étudiants" },
-  { label: "Universités", href: "/admin/universities", icon: icons.universities, helper: "Catalogue établissements" },
-  { label: "Programmes", href: "/admin/programs", icon: icons.programs, helper: "Catalogue formations" },
-  { label: "Cours de langue", href: "/admin/language-courses", icon: icons.programs, helper: "Catalogue vérifié" },
+  { label: "Universités", href: "/admin/universities", icon: icons.universities, helper: "Établissements" },
+  { label: "Programmes", href: "/admin/programs", icon: icons.programs, helper: "Formations" },
+  { label: "Cours de langue", href: "/admin/language-courses", icon: icons.programs, helper: "Préparation linguistique" },
   { label: "Finance & assurance", href: "/admin/finance-insurance", icon: icons.applications, helper: "Options factuelles" },
+];
+
+const adminGroups = [
+  { label: "Pilotage", items: adminItems.slice(0, 1) },
+  { label: "Opérations", items: adminItems.slice(1, 4) },
+  { label: "Catalogue Allemagne", items: adminItems.slice(4) },
 ];
 
 function isActive(pathname: string, href: string) {
@@ -89,7 +95,7 @@ export function AppShell({
         Aller au contenu
       </a>
 
-      <aside className="hidden lg:fixed lg:inset-y-0 lg:z-40 lg:flex lg:w-[17.25rem] lg:flex-col lg:border-r lg:border-[var(--border)] lg:bg-[var(--surface)]">
+      <aside className="hidden lg:fixed lg:inset-y-0 lg:z-40 lg:flex lg:w-[15.5rem] lg:flex-col lg:border-r lg:border-[var(--border)] lg:bg-[var(--surface)]">
         <div className="flex min-h-20 items-center border-b border-[var(--border)] px-5">
           <Link href={role === "admin" ? "/admin" : "/student"} className="flex items-center" aria-label="Accueil AlmaGo">
             <BrandLogo className="h-auto w-[9.5rem]" />
@@ -111,33 +117,60 @@ export function AppShell({
         )}
 
         <nav
-          className="flex-1 space-y-1 overflow-y-auto px-3 py-4 before:mb-3 before:block before:px-3 before:text-[10px] before:font-bold before:uppercase before:tracking-[0.16em] before:text-[var(--muted)] before:content-['Navigation']"
+          className="flex-1 space-y-1 overflow-y-auto px-3 py-4"
           aria-label={role === "admin" ? "Navigation administration" : "Navigation étudiant"}
         >
-          {items.map((item) => {
-            const active = isActive(pathname, item.href);
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                aria-current={active ? "page" : undefined}
-                className={`group relative flex min-h-11 items-center gap-3 rounded-[var(--radius-control)] px-3 py-2 transition-colors duration-150 ${active ? "bg-[var(--brand-soft)] text-[var(--brand)] ring-1 ring-[var(--brand-border)]" : "text-[var(--muted)] hover:bg-[var(--surface-subtle)] hover:text-[var(--foreground)]"}`}
-              >
-                <span className={`grid h-7 w-7 shrink-0 place-items-center rounded-[var(--radius-control)] ${active ? "bg-[var(--brand-soft)] text-[var(--accent-strong)]" : "bg-transparent text-[var(--muted)] group-hover:text-[var(--muted)]"}`}>
-                  {item.icon}
-                </span>
-                <span className="min-w-0">
-                  <span className="block text-sm font-semibold [overflow-wrap:anywhere]">{item.label}</span>
-                  {item.helper && (
-                    <span className={`mt-0.5 block text-[11px] leading-4 ${active ? "text-[var(--brand)]/75" : "text-[var(--muted)]"}`}>
-                      {item.helper}
-                    </span>
-                  )}
-                </span>
-                {active && <span aria-hidden="true" className="absolute inset-y-2 left-0 w-0.5 rounded-r-full bg-[var(--accent)]" />}
-              </Link>
-            );
-          })}
+          <p className="mb-3 px-3 text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--muted)]">
+            {role === "admin" ? "Espace de travail" : "Navigation"}
+          </p>
+          {role === "admin" ? (
+            <div className="space-y-4">
+              {adminGroups.map((group) => (
+                <div key={group.label}>
+                  <p className="mb-1.5 px-3 text-[9px] font-bold uppercase tracking-[0.16em] text-[var(--muted)]">{group.label}</p>
+                  <div className="space-y-1">
+                    {group.items.map((item) => {
+                      const active = isActive(pathname, item.href);
+                      return (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          aria-current={active ? "page" : undefined}
+                          className={`group relative flex min-h-10 items-center gap-2.5 rounded-[var(--radius-control)] px-2.5 py-1.5 transition-colors duration-150 ${active ? "bg-[var(--brand-soft)] text-[var(--brand)] ring-1 ring-[var(--brand-border)]" : "text-[var(--muted)] hover:bg-[var(--surface-subtle)] hover:text-[var(--foreground)]"}`}
+                        >
+                          <span className={`grid h-7 w-7 shrink-0 place-items-center rounded-[var(--radius-control)] ${active ? "text-[var(--accent-strong)]" : "text-[var(--muted)]"}`}>{item.icon}</span>
+                          <span className="min-w-0">
+                            <span className="block text-[0.82rem] font-semibold [overflow-wrap:anywhere]">{item.label}</span>
+                            {item.helper && <span className="mt-0.5 block text-[10px] leading-3.5 text-[var(--muted)]">{item.helper}</span>}
+                          </span>
+                          {active && <span aria-hidden="true" className="absolute inset-y-2 left-0 w-0.5 rounded-r-full bg-[var(--accent)]" />}
+                        </Link>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            studentItems.map((item) => {
+              const active = isActive(pathname, item.href);
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  aria-current={active ? "page" : undefined}
+                  className={`group relative flex min-h-11 items-center gap-3 rounded-[var(--radius-control)] px-3 py-2 transition-colors duration-150 ${active ? "bg-[var(--brand-soft)] text-[var(--brand)] ring-1 ring-[var(--brand-border)]" : "text-[var(--muted)] hover:bg-[var(--surface-subtle)] hover:text-[var(--foreground)]"}`}
+                >
+                  <span className={`grid h-7 w-7 shrink-0 place-items-center rounded-[var(--radius-control)] ${active ? "bg-[var(--brand-soft)] text-[var(--accent-strong)]" : "bg-transparent text-[var(--muted)]"}`}>{item.icon}</span>
+                  <span className="min-w-0">
+                    <span className="block text-sm font-semibold [overflow-wrap:anywhere]">{item.label}</span>
+                    {item.helper && <span className="mt-0.5 block text-[11px] leading-4 text-[var(--muted)]">{item.helper}</span>}
+                  </span>
+                  {active && <span aria-hidden="true" className="absolute inset-y-2 left-0 w-0.5 rounded-r-full bg-[var(--accent)]" />}
+                </Link>
+              );
+            })
+          )}
         </nav>
 
         <div className="border-t border-[var(--border)] bg-[var(--surface-subtle)] p-4">
@@ -156,7 +189,7 @@ export function AppShell({
         </div>
       </aside>
 
-      <div className="lg:pl-[17.25rem]">
+      <div className="lg:pl-[15.5rem]">
         {role === "student" ? (
           <>
             <header className="sticky top-0 z-30 border-b border-[var(--border)] bg-[#fffdf8]/95 pt-[env(safe-area-inset-top)] shadow-[0_8px_24px_-22px_rgba(28,33,36,0.24)] backdrop-blur lg:hidden">

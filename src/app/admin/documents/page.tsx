@@ -1,6 +1,6 @@
 import { AdminDocumentsPanel } from "@/components/admin/AdminDocumentsPanel";
-import { Card } from "@/components/ui/Card";
-import { PageHeader } from "@/components/ui/PageHeader";
+import { AdminLoadError } from "@/components/admin/AdminLoadError";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { createClient } from "@/lib/supabase/server";
 import {
   toAdminAcademicEvidenceView,
@@ -14,7 +14,7 @@ export default async function AdminDocumentsPage() {
   const [documentsResult, evidenceResult] = await Promise.all([
     supabase
       .from("documents")
-      .select("id,student_id,category,original_filename,status,admin_comment,created_at,profiles(first_name,last_name)")
+      .select("id,student_id,category,original_filename,status,admin_comment,created_at")
       .in("status", ["pending", "replace_required", "approved"])
       .order("created_at", { ascending: true }),
     supabase
@@ -25,37 +25,50 @@ export default async function AdminDocumentsPage() {
 
   if (documentsResult.error) {
     return (
-      <main className="mx-auto w-full max-w-7xl px-4 py-7 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
-        <PageHeader badge="Administration" title="Revue des documents" />
-        <Card>
-          <div role="alert">
-            <h2 className="text-xl font-bold text-slate-950">File documentaire temporairement indisponible</h2>
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
-              Nous n’arrivons pas à charger les documents à traiter pour le moment. Rien n’a été modifié.
-            </p>
-          </div>
-        </Card>
+      <main className="mx-auto w-full max-w-[92rem] px-4 py-5 sm:px-6 sm:py-6 xl:px-8">
+        <AdminPageHeader
+          section="Opérations"
+          title="Documents"
+          description="File de vérification des pièces qui peuvent bloquer ou ralentir le dossier étudiant."
+        />
+        <AdminLoadError
+          title="La file documentaire est temporairement indisponible"
+          description="Nous n’arrivons pas à charger les documents à traiter pour le moment."
+          retryHref="/admin/documents"
+        />
       </main>
     );
   }
 
+  const rawDocuments = documentsResult.data || [];
+  const studentIds = [...new Set(rawDocuments.map((document) => document.student_id))];
+  const profilesResult = studentIds.length
+    ? await supabase.from("profiles").select("id,first_name,last_name").in("id", studentIds)
+    : { data: [], error: null };
+
+  const profileById = new Map((profilesResult.data || []).map((profile) => [profile.id, profile]));
+  const documents = rawDocuments.map((document) => ({
+    ...document,
+    profiles: profileById.get(document.student_id) || null,
+  }));
+
   return (
-    <main className="mx-auto w-full max-w-7xl px-4 py-7 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
-      <PageHeader
-        badge="Administration"
-        title="Revue des documents"
+    <main className="mx-auto w-full max-w-[92rem] px-4 py-5 sm:px-6 sm:py-6 xl:px-8">
+      <AdminPageHeader
+        section="Opérations"
+        title="Documents"
         description="Traitez les pièces en attente, consultez le contexte du dossier et gardez explicite tout message qui sera visible par l’étudiant."
       />
       <AdminDocumentsPanel
-        documents={documentsResult.data || []}
+        documents={documents}
         evidence={(evidenceResult.data || []).map((row) => {
-          const document = (documentsResult.data || []).find((item) => item.id === row.document_id);
+          const document = rawDocuments.find((item) => item.id === row.document_id);
           return toAdminAcademicEvidenceView({
             ...row,
             document_status: document?.status || null,
           } as AcademicEvidenceStoreRow);
         })}
-        evidenceLoadError={Boolean(evidenceResult.error)}
+        evidenceLoadError={Boolean(evidenceResult.error || profilesResult.error)}
       />
     </main>
   );

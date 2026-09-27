@@ -63,6 +63,7 @@ function toLocalInput(value: string | null) {
 export function AdminFinanceInsurancePanel({ options }: { options: Option[] }) {
   const [form, setForm] = useState<FormState>(empty);
   const [editing, setEditing] = useState<string | null>(null);
+  const [formOpen, setFormOpen] = useState(false);
   const [filter, setFilter] = useState<FinanceInsuranceKind | "all">("all");
   const [busy, setBusy] = useState(false);
   const [revalidatingId, setRevalidatingId] = useState<string | null>(null);
@@ -79,6 +80,7 @@ export function AdminFinanceInsurancePanel({ options }: { options: Option[] }) {
 
   function edit(option: Option) {
     setEditing(option.id);
+    setFormOpen(true);
     setForm({
       provider_name: option.provider_name,
       product_name: option.product_name || "",
@@ -98,6 +100,7 @@ export function AdminFinanceInsurancePanel({ options }: { options: Option[] }) {
   function reset() {
     setEditing(null);
     setForm(empty);
+    setFormOpen(false);
   }
 
   async function revalidate(option: Option) {
@@ -176,7 +179,16 @@ export function AdminFinanceInsurancePanel({ options }: { options: Option[] }) {
   }
 
   return (
-    <div className="space-y-7">
+    <div className="space-y-6">
+      <div className="flex flex-col gap-3 rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <p className="text-sm font-bold text-[var(--foreground)]">Catalogue finance & assurance</p>
+          <p className="mt-1 text-xs leading-5 text-[var(--muted)]">Contrôlez les sources et les dates de vérification avant d’ajouter une option.</p>
+        </div>
+        <Button type="button" onClick={() => { reset(); setFormOpen(true); }} className="w-full justify-center sm:w-auto">+ Ajouter une option</Button>
+      </div>
+
+      {formOpen && (
       <Card>
         <form onSubmit={save} className="space-y-5">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
@@ -216,6 +228,7 @@ export function AdminFinanceInsurancePanel({ options }: { options: Option[] }) {
           {notice && <p role={notice.tone === "error" ? "alert" : "status"} className={notice.tone === "error" ? "text-sm font-semibold text-red-700" : "text-sm font-semibold text-emerald-700"}>{notice.text}</p>}
         </form>
       </Card>
+      )}
 
       <section>
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3">

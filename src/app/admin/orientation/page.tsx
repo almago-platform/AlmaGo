@@ -1,6 +1,6 @@
 import { AdminOrientationPanel } from "@/components/admin/AdminOrientationPanel";
-import { Card } from "@/components/ui/Card";
-import { PageHeader } from "@/components/ui/PageHeader";
+import { AdminLoadError } from "@/components/admin/AdminLoadError";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -29,25 +29,22 @@ export default async function AdminOrientationPage() {
 
   if (studentsError || programsError || recommendationsError) {
     return (
-      <main className="mx-auto w-full max-w-7xl px-4 py-7 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
-        <PageHeader badge="Équipe AlmaGo" title="Orientation des étudiants" />
-        <Card>
-          <div role="alert">
-            <h2 className="text-xl font-bold text-slate-950">Orientation temporairement indisponible</h2>
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
-              Nous n’arrivons pas à charger les profils, programmes ou recommandations pour le moment. Rien n’a été modifié.
-            </p>
-          </div>
-        </Card>
+      <main className="mx-auto w-full max-w-[92rem] px-4 py-5 sm:px-6 sm:py-6 xl:px-8">
+        <AdminPageHeader section="Opérations" title="Orientation" description="Préparation et publication des recommandations étudiantes." />
+        <AdminLoadError
+          title="L’orientation est temporairement indisponible"
+          description="Nous n’arrivons pas à charger les profils, programmes ou recommandations pour le moment."
+          retryHref="/admin/orientation"
+        />
       </main>
     );
   }
 
   return (
-    <main className="mx-auto w-full max-w-7xl px-4 py-7 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
-      <PageHeader
-        badge="Équipe AlmaGo"
-        title="Orientation des étudiants"
+    <main className="mx-auto w-full max-w-[92rem] px-4 py-5 sm:px-6 sm:py-6 xl:px-8">
+      <AdminPageHeader
+        section="Opérations"
+        title="Orientation"
         description="Préparez une recommandation à partir du profil enregistré, documentez les éléments vérifiés et gardez explicite la frontière entre orientation et décision d’admission."
       />
       <AdminOrientationPanel

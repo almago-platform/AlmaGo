@@ -1,6 +1,6 @@
 import { AdminFinanceInsurancePanel } from "@/components/admin/AdminFinanceInsurancePanel";
-import { Card } from "@/components/ui/Card";
-import { PageHeader } from "@/components/ui/PageHeader";
+import { AdminLoadError } from "@/components/admin/AdminLoadError";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -15,27 +15,25 @@ export default async function AdminFinanceInsurancePage() {
 
   if (error) {
     return (
-      <main className="mx-auto w-full max-w-7xl px-4 py-7 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
-        <PageHeader badge="Catalogue Allemagne" title="Financement et assurance" />
-        <Card>
-          <div role="alert">
-            <h2 className="text-xl font-bold text-slate-950">Catalogue temporairement indisponible</h2>
-            <p className="mt-2 text-sm leading-6 text-slate-600">Aucune donnée n’a été modifiée.</p>
-          </div>
-        </Card>
+      <main className="mx-auto w-full max-w-[92rem] px-4 py-5 sm:px-6 sm:py-6 xl:px-8">
+        <AdminPageHeader section="Catalogue Allemagne" title="Finance & assurance" description="Options factuelles vérifiées utilisées dans le parcours étudiant." />
+        <AdminLoadError
+          title="Le catalogue finance & assurance est temporairement indisponible"
+          description="Nous n’arrivons pas à charger les options pour le moment."
+          retryHref="/admin/finance-insurance"
+        />
       </main>
     );
   }
 
-  const options = data || [];
   return (
-    <main className="mx-auto w-full max-w-7xl px-4 py-7 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
-      <PageHeader
-        badge="Catalogue Allemagne"
-        title="Financement et assurance"
-        description="Publiez uniquement des informations factuelles appuyées par une source officielle. AlmaGo ne doit ni classer les fournisseurs ni déduire l’éligibilité d’un étudiant."
+    <main className="mx-auto w-full max-w-[92rem] px-4 py-5 sm:px-6 sm:py-6 xl:px-8">
+      <AdminPageHeader
+        section="Catalogue Allemagne"
+        title="Finance & assurance"
+        description="Publiez uniquement des informations factuelles appuyées par une source officielle. AlmaGo ne classe pas les fournisseurs et ne déduit pas l’éligibilité d’un étudiant."
       />
-      <AdminFinanceInsurancePanel options={options} />
+      <AdminFinanceInsurancePanel options={data || []} />
     </main>
   );
 }
