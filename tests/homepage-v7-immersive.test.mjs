@@ -28,7 +28,7 @@ test("V7 keeps copy and product proof integrated inside the hero", () => {
 });
 
 test("current homepage places quick access and the visual pathway immediately after the hero", () => {
-  assert.match(page, /<HomeHero \/>[\s\S]*<HomeQuickAccess \/>[\s\S]*<HomePhotoBand \/>[\s\S]*<HomeProductPreview \/>/);
+  assert.match(page, /<HomeHero \/>[\s\S]*<HomeQuickAccess \/>[\s\S]*<HomePhotoBand \/>[\s\S]*<HomeJourneySection \/>/);
   const titles = [...quick.matchAll(/title: "([^"]+)"/g)].map((match) => match[1]);
   assert.equal(titles.length, 5);
   assert.equal(new Set(titles).size, 5);
@@ -43,10 +43,11 @@ test("V7 follow-up section uses three visual academic cards", () => {
   assert.match(css, /\.photoBandLayout\s*\{[\s\S]*grid-template-columns/);
 });
 
-test("V7 clarifies independent-platform positioning in the top strip", () => {
-  assert.match(header, /plateforme indépendante/);
-  assert.match(header, /Comprendre notre rôle/);
-  assert.match(css, /\.utility\s*\{[\s\S]*background:\s*#f1ece4/);
+test("current public framing keeps independence visible without a legacy utility strip", () => {
+  const closing = readFileSync("src/components/public/HomeClosing.tsx", "utf8");
+  assert.match(closing, /Plateforme indépendante/);
+  assert.match(closing, /Les admissions, visas et autres décisions officielles appartiennent/);
+  assert.doesNotMatch(header, /Comprendre notre rôle/);
 });
 
 test("V7 retains responsive hero and card behavior", () => {
