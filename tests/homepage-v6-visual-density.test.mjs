@@ -11,7 +11,7 @@ const css = readFileSync("src/components/public/Homepage.module.css", "utf8");
 
 test("photographic story remains between quick access and journey", () => {
   assert.match(page, /HomePhotoBand/);
-  assert.match(page, /<HomeProductPreview \/>[\s\S]*<HomePhotoBand \/>[\s\S]*<HomeJourneySection \/>/);
+  assert.match(page, /<HomeQuickAccess \/>[\s\S]*<HomePhotoBand \/>[\s\S]*<HomeJourneySection \/>/);
   assert.match(band, /6684514/);
   assert.match(band, /5965674/);
   assert.match(band, /5553958/);
