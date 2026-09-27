@@ -3,9 +3,13 @@
 import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { PreferredCitiesPicker, SearchableDatalistInput, SelectInput, TextInput } from "@/components/student/ProfileControls";
+import {
+  PreferredCitiesPicker,
+  SearchableDatalistInput,
+  SelectInput,
+  TextInput,
+} from "@/components/student/ProfileControls";
 import { Button } from "@/components/ui/Button";
-import { Card } from "@/components/ui/Card";
 import {
   budgetOptions,
   certificateOptions,
@@ -81,14 +85,14 @@ const steps = [
   { id: 3, title: "Langues", description: "Vos niveaux et certificats" },
   { id: 4, title: "Projet", description: "Votre projet d’études" },
   { id: 5, title: "Validation", description: "Vérification finale" },
-];
+] as const;
 
 const stepGuidance = [
-  "Ces informations permettent de rattacher correctement les prochaines étapes à votre dossier.",
-  "Votre parcours académique aide à distinguer ce qui est déjà acquis de ce qui devra encore être vérifié.",
-  "Vos langues influencent les programmes accessibles et les éventuelles étapes de préparation.",
-  "Votre objectif donne une direction au dossier : diplôme, domaine, langue et rentrée visée.",
-  "Cette dernière vérification vous permet de confirmer un dossier cohérent avant de continuer.",
+  "Nous commençons par les informations nécessaires pour identifier correctement votre dossier.",
+  "Votre parcours académique permet ensuite de distinguer ce qui est acquis de ce qui devra être vérifié.",
+  "Vos niveaux de langue servent à repérer les programmes accessibles et les éventuelles étapes de préparation.",
+  "Votre objectif académique donne une direction concrète à la recherche de programmes et aux démarches qui suivent.",
+  "Relisez les informations essentielles avant d’ouvrir votre espace étudiant.",
 ] as const;
 
 function mergeProfile(profile: Record<string, unknown>): FormData {
@@ -107,8 +111,8 @@ function mergeProfile(profile: Record<string, unknown>): FormData {
 }
 
 function valueOrDash(value: string | string[] | undefined) {
-  if (Array.isArray(value)) return value.length ? value.join(", ") : "-";
-  return value && value.trim() ? value : "-";
+  if (Array.isArray(value)) return value.length ? value.join(", ") : "—";
+  return value && value.trim() ? value : "—";
 }
 
 export function OnboardingForm({ profile }: { profile: Record<string, unknown> }) {
@@ -119,7 +123,8 @@ export function OnboardingForm({ profile }: { profile: Record<string, unknown> }
   const [saving, setSaving] = useState(false);
   const router = useRouter();
 
-  const set = (key: string, value: string | string[]) => setData((current) => ({ ...current, [key]: value }));
+  const set = (key: string, value: string | string[]) =>
+    setData((current) => ({ ...current, [key]: value }));
 
   async function save(nextStep: number) {
     setError("");
@@ -144,14 +149,22 @@ export function OnboardingForm({ profile }: { profile: Record<string, unknown> }
       const result = await response.json().catch(() => ({}));
 
       if (!response.ok) {
-        setError(result.error || "Nous n’arrivons pas à enregistrer cette étape pour le moment. Réessayez dans quelques instants.");
+        setError(
+          result.error ||
+            "Nous n’arrivons pas à enregistrer cette étape pour le moment. Réessayez dans quelques instants.",
+        );
         return;
       }
 
       if (nextStep === 6) router.push("/student");
-      else setStep(nextStep);
+      else {
+        setStep(nextStep);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
     } catch {
-      setError("Nous n’arrivons pas à enregistrer cette étape pour le moment. Vérifiez votre connexion puis réessayez.");
+      setError(
+        "Nous n’arrivons pas à enregistrer cette étape pour le moment. Vérifiez votre connexion puis réessayez.",
+      );
     } finally {
       setSaving(false);
     }
@@ -161,196 +174,277 @@ export function OnboardingForm({ profile }: { profile: Record<string, unknown> }
   const currentStep = steps[step - 1];
 
   return (
-    <section className="mx-auto grid w-full max-w-6xl gap-6 lg:grid-cols-[0.36fr_1fr]">
-      <aside className="space-y-4">
-        <Card className="border-[var(--brand-border)] bg-white text-slate-950 shadow-none">
-          <p className="text-sm font-bold uppercase tracking-[0.18em] text-[var(--accent-strong)]">AlmaGo</p>
-          <h1 className="mt-4 text-2xl font-semibold tracking-[-0.03em] min-[390px]:text-3xl">Préparez votre dossier étudiant</h1>
-          <p className="mt-4 text-sm leading-6 text-slate-600">
-            Renseignez les informations essentielles pour organiser votre dossier et votre projet d’études en Allemagne.
-          </p>
-
-          <figure className="mt-6 overflow-hidden rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface-subtle)]">
+    <section className="grid w-full gap-5 lg:grid-cols-[0.78fr_1.22fr] lg:gap-7">
+      <aside className="lg:sticky lg:top-6 lg:self-start">
+        <div className="overflow-hidden rounded-[1rem] border border-[var(--border)] bg-[var(--surface)] shadow-[0_24px_70px_-58px_rgba(28,33,36,0.55)]">
+          <div className="relative h-40 overflow-hidden sm:h-48 lg:h-56">
             <Image
-              src="https://images.unsplash.com/photo-1778735940467-1335c201966d?auto=format&fit=crop&w=1000&q=82"
-              alt="Étudiant concentré travaillant avec un ordinateur et un carnet dans une bibliothèque."
-              width={1000}
-              height={720}
-              className="h-36 w-full object-cover sm:h-40"
-              sizes="(min-width: 1024px) 22rem, 100vw"
+              src="https://images.pexels.com/photos/7973208/pexels-photo-7973208.jpeg"
+              alt="Des étudiants relisent ensemble des documents devant un bâtiment universitaire."
+              fill
+              priority
+              sizes="(min-width: 1024px) 34vw, 100vw"
+              className="object-cover"
             />
-            <figcaption className="px-4 py-3 text-xs leading-5 text-slate-500">
-              Un dossier solide se construit progressivement : vous n’avez pas besoin de tout compléter en une seule fois.
-            </figcaption>
-          </figure>
-
-          <div className="mt-5 rounded-[var(--radius-control)] border border-[var(--brand-border)] bg-[var(--brand-soft)]/55 p-4">
-            <p className="text-sm font-semibold text-[var(--brand)]">Étape actuelle</p>
-            <p className="mt-2 text-xl font-bold">{currentStep.title}</p>
-            <p className="mt-1 text-sm text-slate-600">{currentStep.description}</p>
+            <div className="absolute inset-0 bg-gradient-to-t from-[rgba(28,33,36,0.66)] via-[rgba(28,33,36,0.08)] to-transparent" />
+            <div className="absolute inset-x-5 bottom-4 text-white sm:inset-x-6">
+              <p className="text-[0.66rem] font-bold uppercase tracking-[0.15em] text-[#fff0bf]">
+                Votre dossier AlmaGo
+              </p>
+              <h1 className="editorial-accent mt-1 max-w-md text-2xl leading-[1.08] sm:text-[1.8rem]">
+                Donnez une direction claire à votre projet.
+              </h1>
+            </div>
           </div>
 
-          <div className="mt-4 border-l-2 border-[var(--accent)] pl-4">
-            <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--accent-strong)]">Pourquoi cette étape compte</p>
-            <p className="mt-2 text-sm leading-6 text-slate-600">{stepGuidance[step - 1]}</p>
-          </div>
-        </Card>
+          <div className="p-5 sm:p-6">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <p className="text-[0.68rem] font-bold uppercase tracking-[0.13em] text-[var(--brand)]">
+                  Étape actuelle
+                </p>
+                <p className="mt-1 text-xl font-bold text-[var(--foreground)]">{currentStep.title}</p>
+              </div>
+              <span className="rounded-full border border-[var(--brand-border)] bg-[var(--brand-soft)] px-3 py-1.5 text-xs font-bold text-[var(--brand)]">
+                {step}/5
+              </span>
+            </div>
 
-        <Card className="hidden shadow-none lg:block">
-          <h2 className="text-sm font-bold uppercase tracking-[0.16em] text-[var(--accent-strong)]">Progression</h2>
-          <ol className="mt-5 space-y-3">
-            {steps.map((item) => {
-              const active = item.id === step;
-              const done = item.id < step;
-              return (
-                <li key={item.id} className="flex gap-3">
-                  <span
-                    className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-sm font-bold ${
-                      active || done ? "bg-[var(--brand)] text-white" : "bg-slate-100 text-slate-500"
+            <p className="mt-3 text-sm leading-6 text-[var(--muted)]">{stepGuidance[step - 1]}</p>
+
+            <div className="mt-5 grid gap-2">
+              <div className="flex items-center justify-between text-xs font-semibold text-[var(--muted)]">
+                <span>Progression</span>
+                <span>{progress}</span>
+              </div>
+              <div className="h-2 overflow-hidden rounded-full bg-[var(--surface-subtle)]">
+                <div
+                  className="h-full rounded-full bg-[var(--brand)] transition-[width] duration-300"
+                  style={{ width: progress }}
+                />
+              </div>
+            </div>
+
+            <ol className="mobile-nav-scroll mt-5 flex gap-2 overflow-x-auto pb-1 lg:grid lg:overflow-visible">
+              {steps.map((item) => {
+                const active = item.id === step;
+                const done = item.id < step;
+                return (
+                  <li
+                    key={item.id}
+                    className={`min-w-[10.5rem] rounded-[var(--radius-control)] border px-3 py-2.5 lg:min-w-0 ${
+                      active
+                        ? "border-[var(--brand-border)] bg-[var(--brand-soft)]"
+                        : done
+                          ? "border-[var(--border)] bg-[var(--surface-subtle)]"
+                          : "border-[var(--border)] bg-[var(--surface)]"
                     }`}
                   >
-                    {item.id}
-                  </span>
-                  <span>
-                    <span className="block text-sm font-bold text-slate-950">{item.title}</span>
-                    <span className="block text-xs leading-5 text-slate-500">{item.description}</span>
-                  </span>
-                </li>
-              );
-            })}
-          </ol>
-        </Card>
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={`grid h-7 w-7 shrink-0 place-items-center rounded-full text-xs font-bold ${
+                          active || done
+                            ? "bg-[var(--brand)] text-white"
+                            : "bg-[var(--surface-muted)] text-[var(--muted)]"
+                        }`}
+                      >
+                        {done ? "✓" : item.id}
+                      </span>
+                      <div className="min-w-0">
+                        <p className="text-sm font-bold text-[var(--foreground)]">{item.title}</p>
+                        <p className="mt-0.5 truncate text-[0.68rem] text-[var(--muted)]">{item.description}</p>
+                      </div>
+                    </div>
+                  </li>
+                );
+              })}
+            </ol>
+
+            <p className="mt-5 border-t border-[var(--border)] pt-4 text-xs leading-5 text-[var(--muted)]">
+              Les champs marqués d’un * sont obligatoires. Les autres peuvent être complétés ou modifiés plus tard.
+            </p>
+          </div>
+        </div>
       </aside>
 
-      <Card as="section" className="shadow-none sm:p-8">
-        <div className="mb-8">
+      <section className="overflow-hidden rounded-[1rem] border border-[var(--border)] bg-[var(--surface)] shadow-[0_24px_70px_-58px_rgba(28,33,36,0.55)]">
+        <div className="border-b border-[var(--border)] px-5 py-5 sm:px-7 sm:py-6">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div>
-              <p className="text-sm font-bold uppercase tracking-[0.18em] text-[var(--accent-strong)]">Étape {step} sur 5</p>
-              <h2 className="mt-2 text-3xl font-semibold tracking-[-0.035em] text-slate-950">{currentStep.title}</h2>
-              <p className="mt-2 text-sm leading-6 text-slate-600">{currentStep.description}</p>
+              <p className="text-[0.68rem] font-bold uppercase tracking-[0.14em] text-[var(--brand)]">
+                Étape {step} sur 5
+              </p>
+              <h2 className="editorial-accent mt-2 text-[2rem] leading-[1.05] text-[var(--foreground)] sm:text-[2.3rem]">
+                {currentStep.title}
+              </h2>
+              <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{currentStep.description}</p>
             </div>
-            <span className="rounded-[var(--radius-control)] border border-[var(--brand-border)] bg-[var(--brand-soft)] px-3 py-2 text-sm font-bold text-[var(--brand)]">
-              {progress}
+            <span className="self-start rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-3 py-2 text-xs font-semibold text-[var(--muted)]">
+              Enregistré à chaque étape
             </span>
           </div>
-          <div className="mt-5 h-2 overflow-hidden rounded-full bg-slate-100">
-            <div className="h-full rounded-full bg-[var(--brand)] transition-all" style={{ width: progress }} />
-          </div>
-          <p className="mt-3 text-sm text-slate-500">Vos réponses sont enregistrées à chaque étape validée.</p>
         </div>
 
-        {step === 1 && (
-          <div className="space-y-5">
-            <h3 className="text-xl font-semibold text-slate-950">Informations personnelles</h3>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <TextInput label="Prénom" required value={String(data.first_name)} onChange={(v) => set("first_name", v)} />
-              <TextInput label="Nom" required value={String(data.last_name)} onChange={(v) => set("last_name", v)} />
-              <TextInput label="Date de naissance" type="date" value={String(data.birth_date)} onChange={(v) => set("birth_date", v)} />
-              <SearchableDatalistInput label="Nationalité" required value={String(data.nationality)} onChange={(v) => set("nationality", v)} options={nationalityOptions} />
-              <TextInput label="Ville actuelle" value={String(data.current_city)} onChange={(v) => set("current_city", v)} />
-              <TextInput label="Téléphone" value={String(data.phone)} onChange={(v) => set("phone", v)} />
-            </div>
-          </div>
-        )}
-
-        {step === 2 && (
-          <div className="space-y-5">
-            <h3 className="text-xl font-semibold text-slate-950">Parcours académique</h3>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <SelectInput label="Dernier diplôme" value={String(data.last_diploma)} onChange={(v) => set("last_diploma", v)} options={diplomaOptions} />
-              <SelectInput label="Type / section du Bac tunisien" value={String(data.bac_track)} onChange={(v) => set("bac_track", v)} options={tunisianBacTrackOptions} />
-              <TextInput label="Année du Bac" type="number" value={String(data.bac_year)} onChange={(v) => set("bac_year", v)} />
-              <TextInput label="Moyenne générale" type="number" placeholder="Ex. 14,50" value={String(data.general_average)} onChange={(v) => set("general_average", v)} />
-              <TextInput label="Établissement" value={String(data.institution)} onChange={(v) => set("institution", v)} />
-              <TextInput label="Études universitaires actuelles" value={String(data.current_university_studies)} onChange={(v) => set("current_university_studies", v)} />
-              <TextInput label="Domaine actuel" value={String(data.current_field)} onChange={(v) => set("current_field", v)} />
-              <TextInput label="Nombre de semestres" type="number" value={String(data.university_semesters)} onChange={(v) => set("university_semesters", v)} />
-            </div>
-          </div>
-        )}
-
-        {step === 3 && (
-          <div className="space-y-5">
-            <h3 className="text-xl font-semibold text-slate-950">Langues</h3>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <SelectInput label="Allemand" value={String(data.german_level)} onChange={(v) => set("german_level", v)} options={languageLevelOptions} />
-              <SelectInput label="Anglais" value={String(data.english_level)} onChange={(v) => set("english_level", v)} options={languageLevelOptions} />
-              <SelectInput label="Français" value={String(data.french_level)} onChange={(v) => set("french_level", v)} options={languageLevelOptions} />
-              <SelectInput label="Certificat de langue" value={String(data.language_certificate)} onChange={(v) => set("language_certificate", v)} options={certificateOptions} />
-            </div>
-            {data.language_certificate === "other" && (
-              <TextInput label="Autre certificat" value={String(data.language_certificate_other)} onChange={(v) => set("language_certificate_other", v)} />
-            )}
-          </div>
-        )}
-
-        {step === 4 && (
-          <div className="space-y-5">
-            <h3 className="text-xl font-semibold text-slate-950">Projet en Allemagne</h3>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <SelectInput label="Niveau visé" required value={String(data.target_degree)} onChange={(v) => set("target_degree", v)} options={degreeOptions} />
-              <SelectInput label="Domaine souhaité" required value={String(data.target_field)} onChange={(v) => set("target_field", v)} options={studyFieldOptions} />
-              <SelectInput label="Langue d'études souhaitée" required value={String(data.study_language)} onChange={(v) => set("study_language", v)} options={studyLanguageOptions} />
-              <TextInput label="Semestre / rentrée souhaitée" required value={String(data.target_intake)} onChange={(v) => set("target_intake", v)} placeholder="Ex. hiver 2027" />
-              <PreferredCitiesPicker value={Array.isArray(data.preferred_cities) ? data.preferred_cities : []} onChange={(v) => set("preferred_cities", v)} />
-              <SelectInput label="Budget indicatif" value={String(data.budget_range)} onChange={(v) => set("budget_range", v)} options={budgetOptions} />
-            </div>
-          </div>
-        )}
-
-        {step === 5 && (
-          <div className="space-y-6">
-            <div>
-              <h3 className="text-xl font-semibold text-slate-950">Confirmez votre profil</h3>
-              <p className="mt-2 text-sm leading-6 text-slate-600">
-                Vérifiez les informations principales avant d’accéder à votre espace AlmaGo.
-              </p>
-            </div>
-            <dl className="overflow-hidden rounded-[var(--radius-panel)] border border-[var(--border)]">
-              {[
-                ["Nom", `${valueOrDash(data.first_name)} ${valueOrDash(data.last_name)}`],
-                ["Parcours", `${valueOrDash(data.last_diploma)} · ${valueOrDash(data.institution)}`],
-                ["Langues", `DE ${valueOrDash(data.german_level)} · EN ${valueOrDash(data.english_level)} · FR ${valueOrDash(data.french_level)}`],
-                ["Projet", `${valueOrDash(data.target_degree)} · ${valueOrDash(data.target_field)}`],
-                ["Rentrée", `${valueOrDash(data.target_intake)} · ${valueOrDash(data.study_language)}`],
-              ].map(([label, value]) => (
-                <div key={label} className="grid gap-2 border-b border-slate-100 p-4 text-sm last:border-b-0 sm:grid-cols-3">
-                  <dt className="font-bold text-slate-500">{label}</dt>
-                  <dd className="sm:col-span-2 text-slate-950">{value}</dd>
-                </div>
-              ))}
-            </dl>
-            <label className="flex gap-3 rounded-[var(--radius-control)] border border-[var(--brand-border)] bg-[var(--brand-soft)]/55 p-4 text-sm leading-6 text-slate-700">
-              <input
-                type="checkbox"
-                checked={consent}
-                onChange={(event) => setConsent(event.target.checked)}
-                className="mt-1 h-4 w-4 accent-[var(--brand)]"
+        <div className="px-5 py-5 sm:px-7 sm:py-6">
+          {step === 1 && (
+            <div className="space-y-5">
+              <SectionIntro
+                title="Informations personnelles"
+                text="Commençons par les informations qui permettent d’identifier votre dossier."
               />
-              <span>
-                J&apos;accepte que les informations fournies soient utilisées pour traiter mon dossier AlmaGo.
-                <span className="font-bold text-[var(--brand)]"> Obligatoire.</span>
-              </span>
-            </label>
-          </div>
-        )}
+              <div className="grid gap-4 sm:grid-cols-2">
+                <TextInput label="Prénom" required value={String(data.first_name)} onChange={(v) => set("first_name", v)} />
+                <TextInput label="Nom" required value={String(data.last_name)} onChange={(v) => set("last_name", v)} />
+                <TextInput label="Date de naissance" type="date" value={String(data.birth_date)} onChange={(v) => set("birth_date", v)} />
+                <SearchableDatalistInput label="Nationalité" required value={String(data.nationality)} onChange={(v) => set("nationality", v)} options={nationalityOptions} />
+                <TextInput label="Ville actuelle" value={String(data.current_city)} onChange={(v) => set("current_city", v)} />
+                <TextInput label="Téléphone" value={String(data.phone)} onChange={(v) => set("phone", v)} />
+              </div>
+            </div>
+          )}
 
-        {error && (
-          <p role="alert" className="mt-6 rounded-[var(--radius-control)] border border-red-100 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
-            {error}
-          </p>
-        )}
+          {step === 2 && (
+            <div className="space-y-5">
+              <SectionIntro
+                title="Parcours académique"
+                text="Ajoutez ce que vous savez déjà. Les pièces justificatives pourront être rattachées ensuite."
+              />
+              <div className="grid gap-4 sm:grid-cols-2">
+                <SelectInput label="Dernier diplôme" value={String(data.last_diploma)} onChange={(v) => set("last_diploma", v)} options={diplomaOptions} />
+                <SelectInput label="Type / section du Bac tunisien" value={String(data.bac_track)} onChange={(v) => set("bac_track", v)} options={tunisianBacTrackOptions} />
+                <TextInput label="Année du Bac" type="number" value={String(data.bac_year)} onChange={(v) => set("bac_year", v)} />
+                <TextInput label="Moyenne générale" type="number" placeholder="Ex. 14,50" value={String(data.general_average)} onChange={(v) => set("general_average", v)} />
+                <TextInput label="Établissement" value={String(data.institution)} onChange={(v) => set("institution", v)} />
+                <TextInput label="Études universitaires actuelles" value={String(data.current_university_studies)} onChange={(v) => set("current_university_studies", v)} />
+                <TextInput label="Domaine actuel" value={String(data.current_field)} onChange={(v) => set("current_field", v)} />
+                <TextInput label="Nombre de semestres" type="number" value={String(data.university_semesters)} onChange={(v) => set("university_semesters", v)} />
+              </div>
+            </div>
+          )}
 
-        <div className="mt-8 flex flex-col-reverse justify-between gap-3 border-t border-slate-100 pt-6 sm:flex-row">
-          <Button type="button" disabled={saving || step === 1} onClick={() => setStep(step - 1)} variant="secondary">
-            Retour
-          </Button>
-          <Button type="button" disabled={saving} onClick={() => save(step + 1)} className="justify-center">
-            {saving ? "Enregistrement..." : step === 5 ? "Confirmer mon profil" : "Continuer"}
-          </Button>
+          {step === 3 && (
+            <div className="space-y-5">
+              <SectionIntro
+                title="Langues"
+                text="Indiquez vos niveaux actuels. Ils servent à repérer les exigences à vérifier pour chaque programme."
+              />
+              <div className="grid gap-4 sm:grid-cols-2">
+                <SelectInput label="Allemand" value={String(data.german_level)} onChange={(v) => set("german_level", v)} options={languageLevelOptions} />
+                <SelectInput label="Anglais" value={String(data.english_level)} onChange={(v) => set("english_level", v)} options={languageLevelOptions} />
+                <SelectInput label="Français" value={String(data.french_level)} onChange={(v) => set("french_level", v)} options={languageLevelOptions} />
+                <SelectInput label="Certificat de langue" value={String(data.language_certificate)} onChange={(v) => set("language_certificate", v)} options={certificateOptions} />
+              </div>
+              {data.language_certificate === "other" && (
+                <TextInput label="Autre certificat" value={String(data.language_certificate_other)} onChange={(v) => set("language_certificate_other", v)} />
+              )}
+            </div>
+          )}
+
+          {step === 4 && (
+            <div className="space-y-5">
+              <SectionIntro
+                title="Votre projet en Allemagne"
+                text="Ces quatre informations obligatoires donnent une direction aux recherches et aux prochaines démarches."
+              />
+              <div className="grid gap-4 sm:grid-cols-2">
+                <SelectInput label="Niveau visé" required value={String(data.target_degree)} onChange={(v) => set("target_degree", v)} options={degreeOptions} />
+                <SelectInput label="Domaine souhaité" required value={String(data.target_field)} onChange={(v) => set("target_field", v)} options={studyFieldOptions} />
+                <SelectInput label="Langue d'études souhaitée" required value={String(data.study_language)} onChange={(v) => set("study_language", v)} options={studyLanguageOptions} />
+                <TextInput label="Semestre / rentrée souhaitée" required value={String(data.target_intake)} onChange={(v) => set("target_intake", v)} placeholder="Ex. hiver 2027" />
+                <PreferredCitiesPicker value={Array.isArray(data.preferred_cities) ? data.preferred_cities : []} onChange={(v) => set("preferred_cities", v)} />
+                <SelectInput label="Budget indicatif" value={String(data.budget_range)} onChange={(v) => set("budget_range", v)} options={budgetOptions} />
+              </div>
+            </div>
+          )}
+
+          {step === 5 && (
+            <div className="space-y-6">
+              <SectionIntro
+                title="Confirmez votre profil"
+                text="Relisez les informations principales avant d’accéder à votre espace AlmaGo."
+              />
+
+              <dl className="overflow-hidden rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)]">
+                {[
+                  ["Nom", `${valueOrDash(data.first_name)} ${valueOrDash(data.last_name)}`],
+                  ["Parcours", `${valueOrDash(data.last_diploma)} · ${valueOrDash(data.institution)}`],
+                  ["Langues", `DE ${valueOrDash(data.german_level)} · EN ${valueOrDash(data.english_level)} · FR ${valueOrDash(data.french_level)}`],
+                  ["Projet", `${valueOrDash(data.target_degree)} · ${valueOrDash(data.target_field)}`],
+                  ["Rentrée", `${valueOrDash(data.target_intake)} · ${valueOrDash(data.study_language)}`],
+                ].map(([label, value]) => (
+                  <div
+                    key={label}
+                    className="grid gap-1.5 border-b border-[var(--border)] px-4 py-3.5 text-sm last:border-b-0 sm:grid-cols-[8rem_1fr] sm:gap-4"
+                  >
+                    <dt className="font-bold text-[var(--muted)]">{label}</dt>
+                    <dd className="text-[var(--foreground)]">{value}</dd>
+                  </div>
+                ))}
+              </dl>
+
+              <label className="flex gap-3 rounded-[var(--radius-control)] border border-[var(--brand-border)] bg-[var(--brand-soft)]/55 p-4 text-sm leading-6 text-[var(--foreground)]">
+                <input
+                  type="checkbox"
+                  checked={consent}
+                  onChange={(event) => setConsent(event.target.checked)}
+                  className="mt-1 h-5 w-5 shrink-0 accent-[var(--brand)]"
+                />
+                <span>
+                  J&apos;accepte que les informations fournies soient utilisées pour traiter mon dossier AlmaGo.
+                  <span className="font-bold text-[var(--brand)]"> Obligatoire.</span>
+                </span>
+              </label>
+
+              <div className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4">
+                <p className="text-sm font-bold text-[var(--foreground)]">Après validation</p>
+                <p className="mt-1 text-xs leading-5 text-[var(--muted)]">
+                  Vous accéderez à votre tableau de bord. Vous pourrez ensuite compléter les documents, explorer les programmes et suivre vos démarches.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {error && (
+            <p
+              role="alert"
+              className="mt-6 rounded-[var(--radius-control)] border border-red-100 bg-red-50 px-4 py-3 text-sm font-medium text-red-700"
+            >
+              {error}
+            </p>
+          )}
         </div>
-      </Card>
+
+        <div className="border-t border-[var(--border)] bg-[var(--surface-subtle)] px-5 py-4 sm:px-7">
+          <div className="flex flex-col-reverse gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <Button
+              type="button"
+              disabled={saving || step === 1}
+              onClick={() => setStep(step - 1)}
+              variant="secondary"
+              className="w-full sm:w-auto"
+            >
+              Retour
+            </Button>
+            <Button
+              type="button"
+              disabled={saving}
+              onClick={() => save(step + 1)}
+              className="w-full justify-center sm:min-w-44 sm:w-auto"
+            >
+              {saving ? "Enregistrement..." : step === 5 ? "Confirmer et ouvrir mon espace" : "Continuer"}
+            </Button>
+          </div>
+        </div>
+      </section>
     </section>
+  );
+}
+
+function SectionIntro({ title, text }: { title: string; text: string }) {
+  return (
+    <div className="border-b border-[var(--border)] pb-4">
+      <h3 className="text-lg font-bold text-[var(--foreground)] sm:text-xl">{title}</h3>
+      <p className="mt-1.5 max-w-2xl text-sm leading-6 text-[var(--muted)]">{text}</p>
+    </div>
   );
 }
