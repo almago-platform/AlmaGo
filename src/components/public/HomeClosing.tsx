@@ -7,18 +7,30 @@ export function HomeFinalCta() {
   return (
     <section className={s.finalCta} aria-labelledby="final-title">
       <div className={`${s.container} ${s.finalInner}`}>
-        <div>
-          <p className={s.eyebrow}>À vous d’écrire la suite</p>
+        <div className={s.finalCopy}>
+          <p className={s.eyebrow}>Votre prochaine étape</p>
           <h2 id="final-title">
-            Votre projet mérite
+            Votre projet commence
             <br />
-            <em>un point de départ clair.</em>
+            <em>par une direction claire.</em>
           </h2>
           <p>
-            Un dossier pour rassembler vos idées, vos documents et votre
-            prochaine étape.
+            Créez votre dossier, rassemblez vos documents et gardez la
+            prochaine action visible au même endroit.
           </p>
+          <div className={s.finalProof} aria-label="Ce que votre dossier rassemble">
+            <span>
+              <HomeIcon name="check" /> Projet académique
+            </span>
+            <span>
+              <HomeIcon name="check" /> Documents
+            </span>
+            <span>
+              <HomeIcon name="check" /> Prochaines actions
+            </span>
+          </div>
         </div>
+
         <div className={s.finalActions}>
           <Link className={s.button} href="/signup">
             Créer mon dossier
@@ -43,46 +55,51 @@ export function HomeFooter() {
               <BrandLogo variant="reverse" className={s.footerLogoImage} />
             </Link>
             <p>
-              Un espace pour votre projet.
-              <br />
-              Des repères pour avancer.
+              Votre projet d’études, organisé de la première question à la
+              prochaine action.
             </p>
+            <span className={s.footerIndependence}>Plateforme indépendante</span>
           </div>
+
           <FooterColumn
-            title="Découvrir"
+            title="Parcours"
             links={[
-              ["Le parcours en six étapes", "#parcours"],
-              ["L’espace étudiant", "#espace"],
-              ["Explorer les programmes", "#programmes"],
+              ["Les six étapes", "#parcours"],
+              ["Outils utiles", "#outils"],
+              ["Questions fréquentes", "#faq"],
             ]}
           />
+
           <FooterColumn
-            title="Comprendre"
+            title="Préparer"
             links={[
-              ["Sources et responsabilités", "#confiance"],
-              ["Questions fréquentes", "#faq"],
+              ["L’espace étudiant", "#espace"],
+              ["Explorer les programmes", "#programmes"],
+              ["Créer mon dossier", "/signup"],
+            ]}
+          />
+
+          <FooterColumn
+            title="Repères"
+            links={[
+              ["Me connecter", "/login"],
               ["uni-assist · source externe", "https://www.uni-assist.de/en/"],
             ]}
           />
-          <FooterColumn
-            title="Mon espace"
-            links={[
-              ["Créer mon dossier", "/signup"],
-              ["Me connecter", "/login"],
-            ]}
-          />
         </div>
+
         <div className={s.footerBottom}>
-          <p>© AlmaGo · Plateforme indépendante</p>
+          <p>© AlmaGo</p>
           <p>
-            Les décisions officielles appartiennent aux organismes compétents.
+            Les admissions, visas et autres décisions officielles appartiennent
+            aux organismes compétents.
           </p>
         </div>
+
         <p className={s.photoCredit}>
           Photographies d’illustration :{" "}
-          <a href="https://www.pexels.com/license/">Pexels</a>. Les sources et
-          crédits sont documentés dans le dépôt. Les personnes représentées ne
-          sont pas présentées comme utilisatrices d’AlmaGo.
+          <a href="https://www.pexels.com/license/">Pexels</a>. Les personnes
+          représentées ne sont pas présentées comme utilisatrices d’AlmaGo.
         </p>
       </div>
     </footer>
