@@ -46,14 +46,14 @@ export function HomeHero() {
         <div className={s.heroVisual}>
           <figure className={s.heroPhoto}>
             <Image
-              src="https://images.pexels.com/photos/7683694/pexels-photo-7683694.jpeg"
-              alt="Un groupe d’étudiants échange devant un bâtiment universitaire moderne."
+              src="https://images.pexels.com/photos/31070782/pexels-photo-31070782.jpeg"
+              alt="Des étudiants étudient et échangent en extérieur sur un campus universitaire."
               fill
               priority
               sizes="(min-width: 1400px) 760px, (min-width: 900px) 58vw, (min-width: 600px) 82vw, 100vw"
               quality={90}
             />
-            <figcaption>Votre projet. Une direction claire.</figcaption>
+            <figcaption>Étudier, comparer, préparer — avec un fil clair.</figcaption>
           </figure>
           <div className={s.heroDossier}>
             <div className={s.miniHead}>
