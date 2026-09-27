@@ -27,7 +27,7 @@ test("V7 keeps copy and product proof integrated inside the hero", () => {
   assert.match(css, /\.hero \.heroDossier\s*\{[\s\S]*position:\s*absolute/);
 });
 
-test("V7 places dense quick access and the visual pathway immediately after the hero", () => {
+test("current homepage places quick access and the visual pathway immediately after the hero", () => {
   assert.match(page, /<HomeHero \/>[\s\S]*<HomeQuickAccess \/>[\s\S]*<HomePhotoBand \/>[\s\S]*<HomeProductPreview \/>/);
   const titles = [...quick.matchAll(/title: "([^"]+)"/g)].map((match) => match[1]);
   assert.equal(titles.length, 5);
