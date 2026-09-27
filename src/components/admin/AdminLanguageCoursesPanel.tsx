@@ -60,6 +60,7 @@ function localDateTime(value: string | null) {
 export function AdminLanguageCoursesPanel({ courses }: { courses: Course[] }) {
   const [form, setForm] = useState<FormState>(empty);
   const [editing, setEditing] = useState<string | null>(null);
+  const [formOpen, setFormOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [revalidatingId, setRevalidatingId] = useState<string | null>(null);
   const [notice, setNotice] = useState<{ tone: "success" | "error"; text: string } | null>(null);
@@ -70,6 +71,7 @@ export function AdminLanguageCoursesPanel({ courses }: { courses: Course[] }) {
 
   function edit(course: Course) {
     setEditing(course.id);
+    setFormOpen(true);
     setForm({
       title: course.title,
       provider_name: course.provider_name,
@@ -94,6 +96,7 @@ export function AdminLanguageCoursesPanel({ courses }: { courses: Course[] }) {
   function reset() {
     setEditing(null);
     setForm(empty);
+    setFormOpen(false);
   }
 
   async function revalidate(course: Course) {
@@ -198,7 +201,16 @@ export function AdminLanguageCoursesPanel({ courses }: { courses: Course[] }) {
   }
 
   return (
-    <div className="space-y-7">
+    <div className="space-y-6">
+      <div className="flex flex-col gap-3 rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <p className="text-sm font-bold text-[var(--foreground)]">Catalogue des cours</p>
+          <p className="mt-1 text-xs leading-5 text-[var(--muted)]">Contrôlez d’abord les fiches publiées et celles à revalider.</p>
+        </div>
+        <Button type="button" onClick={() => { reset(); setFormOpen(true); }} className="w-full justify-center sm:w-auto">+ Ajouter un cours</Button>
+      </div>
+
+      {formOpen && (
       <Card>
         <form onSubmit={save} className="space-y-5">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
@@ -232,6 +244,7 @@ export function AdminLanguageCoursesPanel({ courses }: { courses: Course[] }) {
           {notice && <p role={notice.tone === "error" ? "alert" : "status"} className={notice.tone === "error" ? "text-sm font-semibold text-red-700" : "text-sm font-semibold text-emerald-700"}>{notice.text}</p>}
         </form>
       </Card>
+      )}
 
       <section>
         <h2 className="mb-4 text-2xl font-bold text-slate-950">{courses.length} cours enregistré{courses.length > 1 ? "s" : ""}</h2>
