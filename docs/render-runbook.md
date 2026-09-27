@@ -77,6 +77,15 @@ Track this operational fix in GitHub issue #389:
 
 Until that is fixed, do not describe auto-deploy as proven even though the service setting says it is enabled.
 
+
+## Remote image timeout incident
+
+On 27 September 2026 at 19:19:33 UTC, the live Render service emitted three concurrent `TimeoutError: The operation was aborted due to timeout` entries while serving the self-hosted Next.js application.
+
+The public/authenticated entry surfaces use remote Pexels images through `next/image`. On self-hosted Next.js, the image optimizer fetches remote upstream assets at request time and aborts slow upstream responses. Track the AlmaGo mitigation in #402 / draft PR #403.
+
+The mitigation deliberately keeps `next/image` proxying and reduces the upstream Pexels payload size. Do not switch the whole application to unoptimized third-party images as a quick workaround without separately reviewing performance and privacy implications.
+
 ## Free-plan cold start
 
 The current service is on Render Free and can display Render's wake-up screen after inactivity before Next.js becomes ready. This is acceptable for development/recette, but it is a launch-quality decision for the owner before public traffic.
