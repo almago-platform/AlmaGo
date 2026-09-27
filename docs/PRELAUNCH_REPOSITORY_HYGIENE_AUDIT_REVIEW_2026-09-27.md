@@ -295,6 +295,24 @@ However, even these are still not deleted by this audit. A separate destructive 
 
 The two branches whose tips moved after a historical merge must be reviewed separately; their current tips are not proven integrated by the older merge record.
 
+
+### Strong branch-cleanup subset
+
+The exact merged-tip evidence can be narrowed further without deleting anything.
+
+After excluding:
+
+- current open-PR head branches;
+- current open-PR base branches;
+- explicit `archive/`, `backup/` and `experiment/` branches;
+- explicit `release/` and `integration/` branches;
+
+**101 branches** remain in the strongest routine-cleanup bucket.
+
+No current open PR uses any of those 101 branches as its base or head.
+
+This still does not authorize deletion: automation references and deliberate owner-retained references should be checked immediately before any destructive branch cleanup.
+
 ## Documentation cleanup refinement
 
 Historical design/status documents should not be deleted merely because they are old. Prefer one of:
