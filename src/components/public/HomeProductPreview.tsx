@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState, type KeyboardEvent } from "react";
+import { BrandLogo } from "@/components/brand/BrandLogo";
 import { HomeIcon, type HomeIconName } from "./HomeIcons";
 import s from "./Homepage.module.css";
 
@@ -71,7 +72,7 @@ export function HomeProductPreview() {
         <div className={s.productFrame}>
           <div className={s.previewTop}>
             <div>
-              <span className={s.previewLogo}>A</span>
+              <span className={s.previewLogo}><BrandLogo symbolOnly className={s.previewLogoImage} /></span>
               <strong>Votre espace AlmaGo</strong>
             </div>
             <span className={s.sample}>Démonstration</span>

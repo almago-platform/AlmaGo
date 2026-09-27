@@ -4,6 +4,7 @@ import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { buttonClassName } from "@/components/ui/Button";
+import { BrandLogo } from "@/components/brand/BrandLogo";
 
 type Mode = "login" | "signup" | "forgot";
 
@@ -70,15 +71,15 @@ export function AuthForm({ initialMode = "login" }: { initialMode?: Mode }) {
   return (
     <section className="w-full max-w-xl rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] shadow-none">
       <div className="border-b border-[var(--border)] px-6 py-6 sm:px-8">
-        <p className="text-sm font-bold uppercase tracking-[0.18em] text-[var(--accent-strong)]">AlmaGo</p>
-        <h1 className="mt-3 text-3xl font-semibold tracking-[-0.035em] text-slate-950">{title}</h1>
-        <p className="mt-3 text-base leading-7 text-slate-600">{subtitle}</p>
+        <BrandLogo className="h-auto w-36" />
+        <h1 className="editorial-accent mt-3 text-3xl text-[var(--foreground)]">{title}</h1>
+        <p className="mt-3 text-base leading-7 text-[var(--muted)]">{subtitle}</p>
       </div>
 
       <form onSubmit={submit} className="space-y-5 px-6 py-6 sm:px-8">
         {mode === "signup" && (
           <div className="grid gap-4 sm:grid-cols-2">
-            <label className="block text-sm font-semibold text-slate-700">
+            <label className="block text-sm font-semibold text-[var(--foreground)]">
               Prénom
               <input
                 required
@@ -88,7 +89,7 @@ export function AuthForm({ initialMode = "login" }: { initialMode?: Mode }) {
                 className="field mt-2"
               />
             </label>
-            <label className="block text-sm font-semibold text-slate-700">
+            <label className="block text-sm font-semibold text-[var(--foreground)]">
               Nom
               <input
                 required
@@ -101,7 +102,7 @@ export function AuthForm({ initialMode = "login" }: { initialMode?: Mode }) {
           </div>
         )}
 
-        <label className="block text-sm font-semibold text-slate-700">
+        <label className="block text-sm font-semibold text-[var(--foreground)]">
           Email
           <input
             required
@@ -114,7 +115,7 @@ export function AuthForm({ initialMode = "login" }: { initialMode?: Mode }) {
         </label>
 
         {mode !== "forgot" && (
-          <label className="block text-sm font-semibold text-slate-700">
+          <label className="block text-sm font-semibold text-[var(--foreground)]">
             Mot de passe
             <input
               required
@@ -130,7 +131,7 @@ export function AuthForm({ initialMode = "login" }: { initialMode?: Mode }) {
         )}
 
         {mode === "signup" && (
-          <p id="signup-password-hint" className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-3 py-2 text-sm text-slate-600">
+          <p id="signup-password-hint" className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-3 py-2 text-sm text-[var(--muted)]">
             Utilisez au moins 8 caractères. Vous recevrez ensuite un email de confirmation.
           </p>
         )}

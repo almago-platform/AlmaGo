@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BrandLogo } from "@/components/brand/BrandLogo";
 import { HomeIcon } from "./HomeIcons";
 import s from "./Homepage.module.css";
 
@@ -39,11 +40,7 @@ export function HomeFooter() {
         <div className={s.footerGrid}>
           <div className={s.footerBrand}>
             <Link href="/" className={s.logo} aria-label="AlmaGo accueil">
-              <span className={s.logoMark}>A</span>
-              <span>
-                AlmaGo
-                <span className={s.logoSubtitle}>Études en Allemagne</span>
-              </span>
+              <BrandLogo variant="reverse" className={s.footerLogoImage} />
             </Link>
             <p>
               Un espace pour votre projet.

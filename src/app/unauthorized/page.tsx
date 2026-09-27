@@ -1,29 +1,22 @@
 import Link from "next/link";
+import { BrandLogo } from "@/components/brand/BrandLogo";
 
 export default function UnauthorizedPage() {
   return (
-    <main className="min-h-screen bg-slate-50 px-4 py-10 text-slate-950 sm:px-6 lg:px-8">
+    <main className="min-h-screen bg-[var(--background)] px-4 py-10 text-[var(--foreground)] sm:px-6 lg:px-8">
       <div className="mx-auto flex min-h-[calc(100vh-5rem)] w-full max-w-3xl items-center justify-center">
-        <section className="w-full rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-sm sm:p-10">
-          <Link href="/" className="mx-auto inline-flex items-center gap-3" aria-label="Retour à l'accueil AlmaGo">
-            <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--brand)] text-lg font-bold text-white shadow-sm">
-              A
-            </span>
-            <span className="text-left">
-              <span className="block text-lg font-bold tracking-tight">AlmaGo</span>
-              <span className="block text-xs font-medium uppercase tracking-[0.18em] text-slate-500">
-                Accès sécurisé
-              </span>
-            </span>
+        <section className="w-full rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-8 text-center shadow-sm sm:p-10">
+          <Link href="/" className="mx-auto inline-flex items-center" aria-label="Retour à l'accueil AlmaGo">
+            <BrandLogo className="h-auto w-48" />
           </Link>
 
-          <p className="mx-auto mt-10 inline-flex rounded-full border border-amber-200 bg-amber-50 px-4 py-2 text-sm font-bold text-amber-800">
+          <p className="mx-auto mt-10 inline-flex rounded-full border border-[#f2d37b] bg-[#fff0bf] px-4 py-2 text-sm font-bold text-[#8b6200]">
             Autorisation requise
           </p>
           <h1 className="mx-auto mt-4 max-w-xl text-3xl font-bold tracking-tight text-slate-950 sm:text-4xl">
             Cet espace est réservé à l&apos;équipe AlmaGo.
           </h1>
-          <p className="mx-auto mt-4 max-w-xl text-base leading-7 text-slate-600">
+          <p className="mx-auto mt-4 max-w-xl text-base leading-7 text-[var(--muted)]">
             Ton compte est bien connecté, mais il ne possède pas les droits nécessaires pour ouvrir cette zone administrative.
           </p>
 
@@ -36,7 +29,7 @@ export default function UnauthorizedPage() {
             </Link>
             <Link
               href="/login"
-              className="inline-flex items-center justify-center rounded-lg border border-slate-300 bg-white px-5 py-3 font-bold text-slate-900 shadow-sm transition hover:border-[var(--brand)] hover:text-[var(--brand)]"
+              className="inline-flex items-center justify-center rounded-lg border border-[var(--border-strong)] bg-[var(--surface)] px-5 py-3 font-bold text-[var(--foreground)] shadow-sm transition hover:border-[var(--brand)] hover:text-[var(--brand)]"
             >
               Changer de compte
             </Link>

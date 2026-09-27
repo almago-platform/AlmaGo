@@ -17,7 +17,7 @@ export function PageHeader({
       <div className="min-w-0 max-w-3xl">
         {badge && <Badge variant="neutral">{badge}</Badge>}
         <h1
-          className={`${badge ? "mt-4" : ""} break-words font-semibold tracking-[-0.03em] text-[var(--foreground)]`}
+          className={`${badge ? "mt-4" : ""} editorial-accent break-words text-[var(--foreground)]`}
           style={{ fontSize: "var(--text-page-title)", lineHeight: "var(--page-leading)" }}
         >
           {title}

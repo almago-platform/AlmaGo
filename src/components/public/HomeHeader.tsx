@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useRef, useState } from "react";
+import { BrandLogo } from "@/components/brand/BrandLogo";
 import { HomeIcon } from "./HomeIcons";
 import s from "./Homepage.module.css";
 
@@ -36,10 +37,7 @@ export function HomeHeader() {
       >
         <div className={`${s.container} ${s.headerInner}`}>
           <Link href="/" className={s.logo} aria-label="AlmaGo accueil">
-            <span className={s.logoMark}>A</span>
-            <span>
-              AlmaGo<span className={s.logoSubtitle}>Études en Allemagne</span>
-            </span>
+            <BrandLogo className={s.logoImage} priority />
           </Link>
           <nav className={s.desktopNav} aria-label="Navigation principale">
             {navigation.map(([label, href]) => (
