@@ -6,6 +6,8 @@ Source opérationnelle de suivi : GitHub issue #22.
 
 ## 1. A38 — validation juridique humaine
 
+PR #431 porte la proposition actuelle de rétention/suppression et la matrice de finalisation sur le `main` courant.
+
 À faire humainement :
 
 - compléter `docs/A38_OWNER_CONFIRMATION.md` avec les informations publiques réellement applicables ;
@@ -32,7 +34,7 @@ Ne pas ajouter les e-mails comme secrets sauf si l’on souhaite volontairement 
 
 A43 reste aussi bloquée tant que #286 empêche les jobs GitHub Actions d’exécuter leurs étapes.
 
-Draft #405 prépare une preuve A43 directement contre le runtime Render `almago-dev`, tout en conservant le mode local pour les régressions.
+PR #424 intègre la preuve A43 contre le runtime Render `almago-dev`, le mode local et les garde-fous main-only/A38.
 
 ## 3. Render — connexion GitHub et health check
 
@@ -50,16 +52,17 @@ Le dashboard affiche actuellement auto-deploy activé, mais les derniers deploys
 
 Le service est actuellement sur Render Free et peut s’endormir après inactivité. Passer à un plan payant est une décision propriétaire séparée ; aucun upgrade ne doit être lancé automatiquement.
 
-## 4. Catalogue production — opération protégée
+## 4. Catalogue production — terminé
 
-Le dernier audit lecture seule de la dette de fixtures indiquait encore :
+#176 est clôturée. Son journal de clôture rapporte :
 
-- 1 recommandation test à archiver ;
-- 7 programmes test à désactiver ;
-- 8 universités test à désactiver ;
-- aucun DELETE.
+- 1 recommandation test archivée ;
+- 7 programmes test désactivés ;
+- 8 universités test désactivées ;
+- aucun DELETE ;
+- post-contrôle : 0 fixture active.
 
-Cette opération touche les données de production et doit rester explicitement autorisée/revue. Après écriture, refaire un audit lecture seule confirmant qu’aucune fixture test active n’est exposée.
+**Ne pas rejouer cette opération depuis ce document.** Toute future vérification live doit être une tâche séparée et explicitement autorisée.
 
 ## 5. A44 — observabilité/analytics
 
@@ -90,7 +93,7 @@ Ne pas rendre obligatoire un check GitHub Actions tant que #286 n’est pas rés
 
 ## 8. A45 — final release gate
 
-Draft #407 prépare le gate final Render :
+PR #430 prépare le gate final Render :
 
 - capture du SHA exact de `main` ;
 - preuve `/api/health` de la même révision ;
