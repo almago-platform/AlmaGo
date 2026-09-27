@@ -7,10 +7,11 @@ const route = readFileSync(
   "utf8",
 );
 
-test("Student language-course API requires authenticated server Supabase access", () => {
-  assert.match(route, /createClient\(\)/);
-  assert.match(route, /supabase\.auth\.getUser\(\)/);
+test("Student language-course API requires the shared student auth boundary", () => {
+  assert.match(route, /getStudentUser\(\)/);
   assert.match(route, /status:\s*401/);
+  assert.match(route, /status:\s*403/);
+  assert.match(route, /Accès étudiant requis/);
   assert.doesNotMatch(route, /service[_-]?role/i);
 });
 
@@ -59,8 +60,8 @@ test("Student read API makes no suitability or regulatory decision", () => {
   );
 });
 
-test("RLS remains the final authority because the route uses the signed-in client directly", () => {
-  assert.match(route, /const supabase = await createClient\(\)/);
+test("RLS remains the final authority because the shared auth helper returns the signed-in client", () => {
+  assert.match(route, /const \{ supabase, user, isStudent \} = await getStudentUser\(\)/);
   assert.match(route, /supabase\s*\.from\("language_courses"\)/);
   assert.doesNotMatch(route, /createAdminClient|service[_-]?role|SUPABASE_SERVICE_ROLE_KEY/i);
 });
