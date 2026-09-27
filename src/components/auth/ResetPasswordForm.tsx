@@ -4,6 +4,7 @@ import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/Button";
+import { BrandLogo } from "@/components/brand/BrandLogo";
 
 export function ResetPasswordForm() {
   const [password, setPassword] = useState("");
@@ -37,7 +38,7 @@ export function ResetPasswordForm() {
   return (
     <section className="w-full rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] shadow-none">
       <div className="border-b border-[var(--border)] px-6 py-6 sm:px-8">
-        <p className="text-sm font-bold uppercase tracking-[0.18em] text-[var(--accent-strong)]">AlmaGo</p>
+        <BrandLogo className="h-auto w-36" />
         <h1 className="mt-3 text-3xl font-semibold tracking-[-0.035em] text-slate-950">Nouveau mot de passe</h1>
         <p className="mt-3 text-sm leading-6 text-slate-600">
           Saisissez un mot de passe solide pour sécuriser votre accès au dossier.
