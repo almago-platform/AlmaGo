@@ -222,6 +222,37 @@ A branch should be considered a strong deletion candidate only when at least one
 
 Branches tied to unresolved V3 feature parity, experiments that are still under comparison, backups intentionally retained by the owner, or active infrastructure investigations should remain until separately reviewed.
 
+
+## Branch integration-evidence pass
+
+A stronger branch proof pass was completed against the review snapshot.
+
+Method:
+
+- fetch all current branches;
+- fetch all closed pull requests;
+- keep only merged pull requests;
+- compare each current branch tip SHA with the merged PR head SHA that used the same branch name.
+
+Result:
+
+- current branches: **193**;
+- current branch tips that exactly match a merged PR head: **103** (excluding `main`);
+- branches whose name has merged-PR history but whose current tip moved after that merge: **2**.
+
+The **103 exact-tip matches are strong cleanup candidates** because their present branch tip is the exact commit GitHub records as merged through a pull request.
+
+This is stronger evidence than merely saying a branch name once appeared on a merged PR.
+
+However, even these are still not deleted by this audit. A separate destructive cleanup step should:
+
+1. exclude any branch intentionally retained as an archive/experiment/reference;
+2. exclude branches named by active automation or external tooling;
+3. confirm no open PR currently uses the branch;
+4. delete only after explicit owner approval.
+
+The two branches whose tips moved after a historical merge must be reviewed separately; their current tips are not proven integrated by the older merge record.
+
 ## Documentation cleanup refinement
 
 Historical design/status documents should not be deleted merely because they are old. Prefer one of:
