@@ -20,10 +20,11 @@ export function HomeHeader() {
     <>
       <div className={s.utility}>
         <div className={s.container}>
-          <span>Pour les étudiants internationaux</span>
-          <a href="#confiance">
-            <HomeIcon name="source" /> Plateforme indépendante
-          </a>
+          <span>
+            <HomeIcon name="source" /> AlmaGo est une plateforme indépendante
+            qui vous guide dans votre projet d’études en Allemagne.
+          </span>
+          <a href="#confiance">Comprendre notre rôle</a>
         </div>
       </div>
       <header

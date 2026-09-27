@@ -19,8 +19,8 @@ export default function Home() {
       <main id="main-content" tabIndex={-1}>
         <HomeHero />
         <HomeQuickAccess />
-        <HomeProductPreview />
         <HomePhotoBand />
+        <HomeProductPreview />
         <HomeJourneySection />
         <HomeTrustSection />
         <HomeFaqSection />
