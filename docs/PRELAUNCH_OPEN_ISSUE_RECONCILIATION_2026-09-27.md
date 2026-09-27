@@ -15,8 +15,8 @@ Current open-issue population:
 | Class | Count |
 | --- | ---: |
 | Implementation prepared in an open PR but **not yet on main** | 8 |
-| Human / operational / external-system work still genuinely open | 10 |
-| Repository/status coordination issues that should remain open for now | 3 |
+| Human / operational / external-system work still genuinely open | 9 |
+| Repository/status coordination issues that should remain open for now | 4 |
 | Clearly fully satisfied by current main and safe to close immediately | **0** |
 | **Total** | **21** |
 
@@ -115,13 +115,15 @@ Still open.
 
 This is an infrastructure/dashboard task. No current-main code commit alone proves repository authorization, automatic deploy triggering or service-level health-check configuration.
 
-### #19 / #22 — master status and owner actions
+## Repository/status coordination issues
 
-These remain useful coordination surfaces while A38/A43/A44/A45 and operational blockers remain unresolved.
+### #19 — Master Plan Status
 
-Do not close them as “stale” merely because many implementation tasks are finished.
+Keep open while A38/A43/A44/A45 remain unresolved. It is a status surface rather than stale implementation work.
 
-## Repository-hygiene coordination issues
+### #22 — owner actions
+
+Keep open as the current owner-facing checklist while human/infrastructure actions remain outstanding.
 
 ### #418 — V3 archive extraction backlog
 
@@ -150,7 +152,7 @@ So the manifest remains internally consistent at this snapshot.
 
 This still does **not** delete the branches. Recheck each SHA immediately before destructive execution.
 
-### Hygiene audit tracking
+## Hygiene tracking note
 
 The original hygiene task has transitioned into #410 / #417 evidence plus #418 / #419 execution records. Preserve snapshot dates rather than rewriting historical counts.
 
