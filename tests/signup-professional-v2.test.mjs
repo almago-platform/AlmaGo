@@ -5,11 +5,13 @@ import test from "node:test";
 const signup = readFileSync("src/app/signup/page.tsx", "utf8");
 const form = readFileSync("src/components/auth/AuthForm.tsx", "utf8");
 const story = readFileSync("src/components/auth/AuthStoryPanel.tsx", "utf8");
+const progress = readFileSync("src/components/student/StudentEntryProgress.tsx", "utf8");
 
 test("signup page uses the new student registration composition", () => {
   assert.match(signup, /AuthStoryPanel mode="signup"/);
   assert.match(signup, /linear-gradient/);
-  assert.match(signup, /Progression de création du dossier/);
+  assert.match(form, /StudentEntryProgress current=\{1\} compact/);
+  assert.match(progress, /Progression de création du dossier/);
   assert.match(signup, /max-w-\[36rem\]/);
 });
 
@@ -29,7 +31,7 @@ test("signup form keeps Supabase auth behavior unchanged", () => {
 });
 
 test("signup form improves password and account navigation UX", () => {
-  assert.match(form, /Étape 1 sur 3/);
+  assert.match(progress, /Étape \{current\} sur 3/);
   assert.match(form, /showPassword/);
   assert.match(form, /8 caractères minimum/);
   assert.match(form, /Confirmation par email/);

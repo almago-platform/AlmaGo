@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { ProgressBar } from "@/components/ui/ProgressBar";
+import { StudentEntryProgress } from "@/components/student/StudentEntryProgress";
 
 export const dynamic = "force-dynamic";
 export default async function ProfilePage() {
@@ -19,8 +20,12 @@ export default async function ProfilePage() {
     .maybeSingle();
   if (error) {
     return (
-      <main className="mx-auto w-full max-w-7xl px-4 py-7 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
-        <PageHeader badge="Mon profil" title="Votre profil étudiant" />
+      <main className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 sm:py-7 lg:px-8 lg:py-9">
+        <PageHeader
+          badge="Espace étudiant"
+          title="Votre profil étudiant"
+          actions={<ButtonLink href="/student" variant="secondary">Retour à mon dossier</ButtonLink>}
+        />
         <Card>
           <div role="alert">
             <h2 className="text-xl font-semibold text-slate-950">Profil temporairement indisponible</h2>
@@ -52,15 +57,23 @@ export default async function ProfilePage() {
   const profileCompletion = Math.round((completedRequiredFields / requiredProfileKeys.length) * 100);
 
   return (
-    <main className="mx-auto w-full max-w-7xl px-4 py-7 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
+    <main className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 sm:py-7 lg:px-8 lg:py-9">
       <PageHeader
-        badge="Mon profil"
+        badge="Espace étudiant · Mon profil"
         title="Informations du dossier"
         description="Gardez vos informations personnelles, votre parcours, vos langues et votre projet d’études à jour pour que votre dossier reste cohérent et facile à suivre."
+        actions={<ButtonLink href="/student" variant="secondary">Retour à mon dossier</ButtonLink>}
       />
 
       <div className="grid gap-5 lg:grid-cols-[minmax(15rem,0.35fr)_minmax(0,1fr)] lg:gap-6">
         <aside className="space-y-4 lg:sticky lg:top-6 lg:self-start" aria-label="Repères du profil">
+          <Card className="shadow-none">
+            <StudentEntryProgress current={3} compact />
+            <p className="mt-3 text-xs leading-5 text-[var(--muted)]">
+              Votre compte et votre dossier initial sont configurés. Vous pouvez revenir ici à tout moment pour corriger vos informations.
+            </p>
+          </Card>
+
           <Card className="border-[var(--brand-border)] bg-white shadow-none">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <Badge variant={profileCompletion === 100 ? "success" : "info"}>Profil étudiant</Badge>

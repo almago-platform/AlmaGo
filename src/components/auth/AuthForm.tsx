@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { buttonClassName } from "@/components/ui/Button";
 import { BrandLogo } from "@/components/brand/BrandLogo";
+import { StudentEntryProgress } from "@/components/student/StudentEntryProgress";
 
 type Mode = "login" | "signup" | "forgot";
 
@@ -77,15 +78,20 @@ export function AuthForm({ initialMode = "login" }: { initialMode?: Mode }) {
           <BrandLogo className="hidden h-auto w-32 lg:block" />
           {mode === "signup" && (
             <span className="rounded-full border border-[var(--brand-border)] bg-[var(--brand-soft)] px-3 py-1 text-[0.68rem] font-bold uppercase tracking-[0.12em] text-[var(--brand)]">
-              Étape 1 sur 3
+              Compte étudiant
             </span>
           )}
         </div>
         <h1 className="editorial-accent mt-2 text-[2rem] leading-[1.06] text-[var(--foreground)] sm:text-[2.2rem]">{title}</h1>
         <p className="mt-3 max-w-lg text-sm leading-6 text-[var(--muted)] sm:text-base sm:leading-7">{subtitle}</p>
+        {mode === "signup" && (
+          <div className="mt-5">
+            <StudentEntryProgress current={1} compact />
+          </div>
+        )}
       </div>
 
-      <form onSubmit={submit} className="space-y-4 px-5 py-5 sm:px-7 sm:py-6">
+      <form onSubmit={submit} aria-busy={loading} className="space-y-4 px-5 py-5 sm:px-7 sm:py-6">
         {mode === "signup" && (
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="block text-sm font-semibold text-[var(--foreground)]">
