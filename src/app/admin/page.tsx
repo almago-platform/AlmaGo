@@ -3,7 +3,8 @@ import { createClient } from "@/lib/supabase/server";
 import { Badge } from "@/components/ui/Badge";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Card } from "@/components/ui/Card";
-import { PageHeader } from "@/components/ui/PageHeader";
+import { AdminLoadError } from "@/components/admin/AdminLoadError";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { catalogVerificationCutoff } from "@/lib/catalog-freshness";
 
 export const dynamic = "force-dynamic";
@@ -17,9 +18,9 @@ export default async function AdminEntry() {
 
   if (!staleCutoff) {
     return (
-      <main className="mx-auto w-full max-w-7xl px-4 py-7 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
-        <PageHeader badge="Administration" title="Vue d’ensemble" />
-        <Card><div role="alert"><h2 className="text-xl font-bold text-slate-950">Vue d’ensemble temporairement indisponible</h2></div></Card>
+      <main className="mx-auto w-full max-w-[92rem] px-4 py-5 sm:px-6 sm:py-6 xl:px-8">
+        <AdminPageHeader section="Pilotage" title="Vue d’ensemble" description="Priorités opérationnelles de l’équipe AlmaGo." />
+        <AdminLoadError title="La vue d’ensemble est temporairement indisponible" description="Nous n’arrivons pas à calculer les indicateurs de l’équipe pour le moment." retryHref="/admin" />
       </main>
     );
   }
@@ -51,19 +52,9 @@ export default async function AdminEntry() {
     || staleLanguageError || dueLanguageError || staleFinanceError || dueFinanceError
   ) {
     return (
-      <main className="mx-auto w-full max-w-7xl px-4 py-7 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
-        <PageHeader badge="Administration" title="Vue d’ensemble" />
-        <Card>
-          <div role="alert">
-            <h2 className="text-xl font-bold text-slate-950">Vue d’ensemble temporairement indisponible</h2>
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
-              Nous n’arrivons pas à charger les indicateurs de l’équipe pour le moment. Rien n’a été modifié.
-            </p>
-          </div>
-          <div className="mt-5">
-            <ButtonLink href="/admin">Réessayer</ButtonLink>
-          </div>
-        </Card>
+      <main className="mx-auto w-full max-w-[92rem] px-4 py-5 sm:px-6 sm:py-6 xl:px-8">
+        <AdminPageHeader section="Pilotage" title="Vue d’ensemble" description="Priorités opérationnelles de l’équipe AlmaGo." />
+        <AdminLoadError title="La vue d’ensemble est temporairement indisponible" description="Nous n’arrivons pas à charger les indicateurs de l’équipe pour le moment." retryHref="/admin" />
       </main>
     );
   }
@@ -112,11 +103,11 @@ export default async function AdminEntry() {
         };
 
   return (
-    <main className="mx-auto w-full max-w-7xl px-4 py-7 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
-      <PageHeader
-        badge="Administration"
+    <main className="mx-auto w-full max-w-[92rem] px-4 py-5 sm:px-6 sm:py-6 xl:px-8">
+      <AdminPageHeader
+        section="Pilotage"
         title="Vue d’ensemble"
-        description="Voyez d’abord ce qui demande l’attention de l’équipe, puis accédez directement à la bonne file de travail."
+        description="Voyez d’abord ce qui demande l’attention de l’équipe, puis ouvrez directement la bonne file de travail."
         actions={
           <>
             <ButtonLink href="/admin/documents">Traiter les documents</ButtonLink>
@@ -125,7 +116,7 @@ export default async function AdminEntry() {
         }
       />
 
-      <section aria-label="Priorité opérationnelle" className="grid gap-5 lg:grid-cols-[minmax(0,1.45fr)_minmax(18rem,0.75fr)]">
+      <section aria-label="Priorité opérationnelle" className="grid gap-4 lg:grid-cols-[minmax(0,1.5fr)_minmax(17rem,0.7fr)]">
         <Card className="relative overflow-hidden border-[var(--brand-border)] bg-white shadow-none">
           <div aria-hidden="true" className="absolute inset-y-0 left-0 w-1 bg-[var(--brand)]" />
           <div className="pl-2 sm:pl-3">
@@ -160,7 +151,7 @@ export default async function AdminEntry() {
         </Card>
       </section>
 
-      <section className="mt-9" aria-labelledby="admin-overview-title">
+      <section className="mt-7" aria-labelledby="admin-overview-title">
         <div className="mb-5">
           <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Files de travail</p>
           <h2 id="admin-overview-title" className="mt-2 text-2xl font-semibold tracking-[-0.03em] text-slate-950">
@@ -200,7 +191,7 @@ export default async function AdminEntry() {
         </div>
       </section>
 
-      <section className="mt-8" aria-labelledby="catalogue-health-title">
+      <section className="mt-7" aria-labelledby="catalogue-health-title">
         <div className="mb-5">
           <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Fraîcheur des sources</p>
           <h2 id="catalogue-health-title" className="mt-2 text-2xl font-semibold tracking-[-0.03em] text-slate-950">
@@ -221,7 +212,7 @@ export default async function AdminEntry() {
         )}
       </section>
 
-      <Card className="mt-8 border-[var(--border)] bg-white shadow-none">
+      <Card className="mt-7 border-[var(--border)] bg-white shadow-none">
         <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">Principe de travail</p>
