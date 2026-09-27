@@ -210,6 +210,48 @@ Suggested first extraction candidates, because they are user-facing and bounded:
 
 Each candidate should be assessed independently for current product value before implementation.
 
+
+## V3 feature-parity matrix
+
+A second bounded pass checked whether the most useful #213 surfaces are already supported by current data/security contracts or only by the old UI.
+
+| V3 surface | Current-main state | Classification | Pre-launch treatment |
+| --- | --- | --- | --- |
+| Student notifications | `notifications` table, own-read RLS, admin inserts, document/application notification producers, and `read_at`-only student write boundary already exist; UI/API routes are absent | **BACKEND READY / UI MISSING** | High-value extraction candidate, but defer implementation until current release chain stabilizes |
+| Student deadlines center | application `deadline` + `next_action` are already used on dashboard/applications; dedicated `/student/echeances` is absent | **FUNCTION PARTIAL / DEDICATED VIEW MISSING** | Optional extraction after release gate; not a blocker because critical next deadline is already surfaced |
+| Admin students list/detail | current admin has operational queues but no `/admin/students` case workspace | **MISSING OPERATIONAL SURFACE** | Valuable Admin V2 follow-up; requires data-minimization review because the detail view aggregates broad profile/history/note data |
+| Public help center | homepage FAQ exists; dedicated `/aide` route is absent | **PARTIAL** | Useful but non-blocking; recompose against current Brand V2 instead of copying V3 layout |
+| Official sources page | current student pathway/orientation already exposes official-source links and freshness framing; dedicated public directory is absent | **PARTIAL** | Candidate after factual source review; do not port stale URLs blindly |
+| Accessibility page | no dedicated public accessibility route found | **MISSING / NEEDS FACTUAL REVIEW** | Do not copy old claims without an actual accessibility audit and human review |
+| About / trust / process public routes | much of the semantic content is already embedded in homepage/footer/FAQ/student pathway | **PARTIALLY SUPERSEDED** | Only extract if navigation/content strategy calls for dedicated SEO/information pages |
+
+### Notifications are unusually extraction-ready
+
+Current `main` already creates notifications from trusted backend workflows:
+
+- document review writes document-status notifications;
+- application status changes write application notifications;
+- RLS allows users to read only their own notifications;
+- students may update only `read_at`, reinforced by migration `0029_profile_notification_write_boundary.sql`.
+
+Therefore the V3 notification page does **not** require a new notification data model. The missing work is primarily current-design UI plus narrow PATCH endpoints that preserve the existing student-role boundary and `read_at`-only write contract.
+
+This makes notifications a safer extraction candidate than reintroducing the entire V3 stack.
+
+### Admin student case needs a stricter privacy gate
+
+The old V3 admin student-case page combines:
+
+- identity/profile fields;
+- documents;
+- checklist;
+- recommendations;
+- applications/events;
+- student history;
+- private admin notes.
+
+That is operationally useful, but it creates a broad single-screen personal-data surface. Any new implementation should be designed from current Admin V2 and A38 data-minimization requirements, not copied wholesale from #213.
+
 ## Branch-cleanup interpretation
 
 The current count of 153 branches without open PRs is only a discovery set, not a deletion list.
