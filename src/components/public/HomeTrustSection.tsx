@@ -58,10 +58,6 @@ export function HomeTrustSection() {
           ))}
         </div>
 
-        <p className={s.helpfulToolsNote}>
-          AlmaGo organise votre préparation. Les admissions, visas et autres
-          décisions officielles restent aux organismes compétents.
-        </p>
       </div>
     </section>
   );
