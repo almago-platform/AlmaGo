@@ -55,6 +55,7 @@ export function AdminUniversitiesPanel({ universities }: { universities: Univers
   const [items] = useState(universities);
   const [form, setForm] = useState<UniversityForm>(empty);
   const [editing, setEditing] = useState<string | null>(null);
+  const [formOpen, setFormOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [type, setType] = useState("all");
   const [notice, setNotice] = useState<Notice | null>(null);
@@ -86,10 +87,12 @@ export function AdminUniversitiesPanel({ universities }: { universities: Univers
   function resetForm() {
     setEditing(null);
     setForm(empty);
+    setFormOpen(false);
   }
 
   function edit(university: University) {
     setEditing(university.id);
+    setFormOpen(true);
     setForm({
       name: university.name,
       city: university.city,
@@ -180,7 +183,16 @@ export function AdminUniversitiesPanel({ universities }: { universities: Univers
   }
 
   return (
-    <div className="space-y-7">
+    <div className="space-y-6">
+      <div className="flex flex-col gap-3 rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <p className="text-sm font-bold text-[var(--foreground)]">Catalogue des universités</p>
+          <p className="mt-1 text-xs leading-5 text-[var(--muted)]">Recherchez une fiche existante avant d’ajouter un établissement.</p>
+        </div>
+        <Button type="button" onClick={() => { resetForm(); setFormOpen(true); }} className="w-full justify-center sm:w-auto">+ Ajouter une université</Button>
+      </div>
+
+      {formOpen && (
       <Card aria-labelledby="admin-university-form-title" className="min-w-0 overflow-hidden">
         <form onSubmit={save}>
           <div className="mb-6 flex flex-col gap-3 border-b border-[var(--border)] pb-5 sm:flex-row sm:items-center sm:justify-between">
@@ -331,6 +343,7 @@ export function AdminUniversitiesPanel({ universities }: { universities: Univers
           )}
         </form>
       </Card>
+      )}
 
       <section aria-labelledby="university-catalogue-title">
         <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
