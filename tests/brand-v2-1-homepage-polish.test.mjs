@@ -2,21 +2,25 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
 
+const page = readFileSync("src/app/page.tsx", "utf8");
 const hero = readFileSync("src/components/public/HomeHero.tsx", "utf8");
 const footer = readFileSync("src/components/public/HomeClosing.tsx", "utf8");
 const css = readFileSync("src/components/public/Homepage.module.css", "utf8");
 const config = readFileSync("next.config.ts", "utf8");
 
-test("Brand V2.1 uses contextual Pexels campus photography", () => {
-  assert.match(hero, /pexels-photo-7683694\.jpeg/);
-  assert.match(hero, /bâtiment universitaire moderne/);
-  assert.match(footer, /college-students-in-a-university-campus-7683694/);
+test("Brand V2.1 keeps contextual Pexels photography with transparent attribution", () => {
+  assert.match(hero, /pexels-photo-7972313\.jpeg/);
+  assert.match(hero, /className=\{s\.heroBackdrop\}/);
+  assert.match(footer, /Photographies d’illustration/);
+  assert.match(footer, /pexels\.com\/license/);
+  assert.match(footer, /ne sont pas présentées comme utilisatrices d’AlmaGo/);
   assert.match(config, /hostname:\s*"images\.pexels\.com"/);
 });
 
-test("Brand V2.1 reduces visual competition and product whitespace", () => {
-  assert.match(css, /\.utility\s*\{[\s\S]*background:\s*#1c2124/);
-  assert.match(css, /\.product\.section\s*\{[\s\S]*padding-block:\s*72px/);
-  assert.match(css, /min-height:\s*404px/);
-  assert.match(css, /border-bottom-color:\s*#db0423/);
+test("Brand V2.1 keeps the immersive hero and removes the obsolete product block from the live page", () => {
+  assert.match(css, /\.hero\s*\{[\s\S]*min-height:\s*610px/);
+  assert.match(css, /\.heroBackdrop\s*\{[\s\S]*position:\s*absolute/);
+  assert.match(css, /\.heroImmersiveInner\s*\{[\s\S]*min-height:\s*610px/);
+  assert.match(page, /HomePhotoBand/);
+  assert.doesNotMatch(page, /HomeProduct/);
 });
