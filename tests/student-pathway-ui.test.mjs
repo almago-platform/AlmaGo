@@ -17,7 +17,7 @@ test("student pathway wires real project, evidence and language-course facts int
   assert.match(page, /filing_country/);
   assert.match(page, /regulatorySourceMatchesFilingCountry/);
   assert.match(page, /summarizeAcademicEvidence\(evidence, now\)/);
-  assert.match(page, /isPublishableLanguageCourse\(course, now\)/);
+  assert.match(page, /isPublishableLanguageCourse\(selectedLanguageCourse, now\)/);
   assert.match(page, /catalogVerificationCutoff\(now\)/);
   assert.match(page, /\.gt\("verified_at", catalogueCutoff\)/);
   assert.match(page, /determineRegulatoryPath\(facts\)/);
@@ -71,7 +71,8 @@ test("pathway exposes only current official regulatory sources and fails closed 
   assert.match(page, /Règles vérifiées pour ce parcours/);
   assert.match(page, /Revalidation requise/);
   assert.match(page, /AlmaGo n’affiche donc pas de règle par défaut/);
-  assert.match(page, /Ouvrir la source officielle/);
+  assert.match(page, /href=\{source\.source_url\}/);
+  assert.match(page, />\s*Source officielle\s*</);
   assert.doesNotMatch(page, /source\.verification_status === "verified" && source\.verified_at/);
 });
 
