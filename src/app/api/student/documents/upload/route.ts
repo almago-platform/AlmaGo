@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
-import { getAuthenticatedUser } from "@/lib/auth/access";
+import { getStudentUser } from "@/lib/auth/access";
 import { isDocumentCategory, isSafeDocumentFile, maxDocumentBytes, safeFilename } from "@/lib/documents";
 
 export async function POST(request: Request) {
-  const { supabase, user } = await getAuthenticatedUser();
+  const { supabase, user, isStudent } = await getStudentUser();
   if (!user) return NextResponse.json({ error: "Non authentifié." }, { status: 401 });
+  if (!isStudent) return NextResponse.json({ error: "Accès étudiant requis." }, { status: 403 });
 
   const formData = await request.formData();
   const file = formData.get("file");
