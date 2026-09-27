@@ -12,3 +12,15 @@ export async function getAdminUser() {
   const { data: role } = await supabase.from("user_roles").select("role").eq("user_id", user.id).maybeSingle();
   return { supabase, user, isAdmin: role?.role === "admin" };
 }
+
+
+export async function getStudentUser() {
+  const { supabase, user } = await getAuthenticatedUser();
+  if (!user) return { supabase, user: null, isStudent: false };
+  const { data: role } = await supabase
+    .from("user_roles")
+    .select("role")
+    .eq("user_id", user.id)
+    .maybeSingle();
+  return { supabase, user, isStudent: role?.role === "student" };
+}
