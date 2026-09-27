@@ -117,9 +117,12 @@ export function AppShell({
         )}
 
         <nav
-          className="flex-1 space-y-1 overflow-y-auto px-3 py-4 before:mb-3 before:block before:px-3 before:text-[10px] before:font-bold before:uppercase before:tracking-[0.16em] before:text-[var(--muted)] before:content-['Espace_de_travail']"
+          className="flex-1 space-y-1 overflow-y-auto px-3 py-4"
           aria-label={role === "admin" ? "Navigation administration" : "Navigation étudiant"}
         >
+          <p className="mb-3 px-3 text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--muted)]">
+            {role === "admin" ? "Espace de travail" : "Navigation"}
+          </p>
           {role === "admin" ? (
             <div className="space-y-4">
               {adminGroups.map((group) => (
