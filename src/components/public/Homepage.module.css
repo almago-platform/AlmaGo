@@ -110,7 +110,7 @@
   font-size: 13px;
   text-decoration: underline;
   text-underline-offset: 5px;
-  text-decoration-color: #98a89b;
+  text-decoration-color: #6b6f72;
 }
 .textLink:hover {
   color: var(--home-terra);
@@ -130,7 +130,7 @@
 }
 .utility {
   background: var(--home-green);
-  color: #edf0e9;
+  color: #f7f4ec;
   font-size: 10px;
   letter-spacing: 0.04em;
 }
