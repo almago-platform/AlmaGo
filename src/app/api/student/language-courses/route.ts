@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { publishableLanguageCoursesQuery } from "@/lib/language-courses";
-import { createClient } from "@/lib/supabase/server";
+import { getStudentUser } from "@/lib/auth/access";
 
 const studentCourseFields = [
   "id",
@@ -46,11 +46,13 @@ type StudentLanguageCourseQueryResult = {
 };
 
 export async function GET(request: Request) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { supabase, user, isStudent } = await getStudentUser();
 
   if (!user) {
     return NextResponse.json({ error: "Non authentifié." }, { status: 401 });
+  }
+  if (!isStudent) {
+    return NextResponse.json({ error: "Accès étudiant requis." }, { status: 403 });
   }
 
   const url = new URL(request.url);
