@@ -49,7 +49,8 @@ Brouillon de finalités correspondant au produit actuel :
 Actuellement visibles dans le projet :
 
 - Supabase — Auth, PostgreSQL et Storage ;
-- Vercel — hébergement/déploiement.
+- Render — hébergement/déploiement canonique actuellement utilisé pour l’application ;
+- une intégration Vercel reste visible/connectée au dépôt ; son rôle technique éventuel et tout traitement de données associé doivent être confirmés avant publication, sans la présenter comme hébergement canonique sans preuve.
 
 Futur analytics/observabilité : **[NON ACTIF / FOURNISSEUR À CONFIRMER]**.
 
