@@ -2858,3 +2858,295 @@
     border-top: 0;
   }
 }
+
+
+/* Homepage V7.1 — product showcase density */
+.product.section {
+  padding-block: 58px 66px;
+}
+.product {
+  background:
+    linear-gradient(180deg, #fffdf8 0%, #fffdf8 62%, #f7f4ec 62%, #f7f4ec 100%);
+}
+.productGrid {
+  grid-template-columns: minmax(0, 0.72fr) minmax(0, 1.28fr);
+  gap: 42px;
+  align-items: stretch;
+}
+.productCopy {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  padding: 14px 0 10px;
+}
+.productCopy .sectionTitle {
+  font-size: clamp(42px, 3.6vw, 54px);
+}
+.productCopy .lead {
+  max-width: 500px;
+  margin-top: 18px;
+  font-size: 15px;
+  line-height: 1.72;
+}
+.productBenefits {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  margin: 25px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.productBenefits li {
+  display: grid;
+  grid-template-columns: 42px 1fr;
+  gap: 13px;
+  align-items: start;
+  padding: 14px 15px;
+  border: 1px solid #e2ddd3;
+  border-radius: 8px;
+  background: rgba(255, 253, 248, 0.8);
+}
+.productBenefitNumber {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #fce5e9;
+  color: #db0423;
+  font-family: var(--font-source-serif), "Source Serif 4", Georgia, serif;
+  font-size: 15px;
+  font-style: italic;
+  font-weight: 650;
+}
+.productBenefits h3 {
+  margin: 0;
+  color: #1c2124;
+  font-size: 13px;
+  line-height: 1.35;
+  font-weight: 700;
+}
+.productBenefits p {
+  margin: 4px 0 0;
+  color: #6b6f72;
+  font-size: 11px;
+  line-height: 1.55;
+}
+.productAssurance {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid #d9d3c7;
+  color: #6b6f72;
+  font-size: 10px;
+  line-height: 1.6;
+}
+.productAssurance svg {
+  width: 17px;
+  height: 17px;
+  color: #db0423;
+  margin-top: 1px;
+}
+
+.productStage {
+  position: relative;
+  min-width: 0;
+  padding: 24px;
+  border-radius: 16px;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(252, 181, 10, 0.16), transparent 27%),
+    radial-gradient(circle at 0% 100%, rgba(219, 4, 35, 0.14), transparent 32%),
+    #1c2124;
+  box-shadow: 0 26px 60px -38px rgba(28, 33, 36, 0.64);
+}
+.productStageHead {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: flex-end;
+  margin-bottom: 16px;
+  color: #fffdf8;
+}
+.productStageHead > div {
+  display: grid;
+  gap: 4px;
+}
+.productStageKicker {
+  color: #fcb50a;
+  font-size: 9px;
+  line-height: 1.3;
+  font-weight: 750;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+.productStageHead strong {
+  font-size: 16px;
+  line-height: 1.3;
+  font-weight: 650;
+}
+.productStageBadge {
+  flex: 0 0 auto;
+  padding: 5px 8px;
+  border: 1px solid rgba(247, 244, 236, 0.24);
+  border-radius: 4px;
+  color: #d9d3c7;
+  font-size: 8px;
+  line-height: 1.3;
+}
+.productStage .productFrame {
+  border: 1px solid rgba(255, 253, 248, 0.2);
+  border-radius: 11px;
+  background: #fffdf8;
+  box-shadow: 0 22px 48px -28px rgba(0, 0, 0, 0.65);
+}
+.productStage .previewPanel {
+  min-height: 342px;
+  padding: 22px;
+}
+.productStage .previewTop {
+  padding: 14px 19px;
+}
+.productStage .previewTabs {
+  padding-inline: 20px;
+}
+.productStage .previewTabs button {
+  min-height: 44px;
+}
+.productStage .previewCaption {
+  padding: 10px 18px;
+}
+.productStageFoot {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  margin-top: 14px;
+  color: #d9d3c7;
+  font-size: 9px;
+}
+.productStageFoot span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.productStageFoot svg {
+  width: 13px;
+  height: 13px;
+  color: #fcb50a;
+}
+
+@media (max-width: 1040px) {
+  .productGrid {
+    grid-template-columns: minmax(0, 0.78fr) minmax(0, 1.22fr);
+    gap: 28px;
+  }
+  .productStage {
+    padding: 19px;
+  }
+  .productStage .previewPanel {
+    min-height: 390px;
+  }
+}
+
+@media (max-width: 899px) {
+  .product.section {
+    padding-block: 52px 58px;
+  }
+  .product {
+    background: #fffdf8;
+  }
+  .productGrid {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  .productCopy {
+    padding: 0;
+  }
+  .productBenefits {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .productBenefits li {
+    display: block;
+    min-height: 142px;
+    padding: 14px;
+  }
+  .productBenefits h3 {
+    margin-top: 10px;
+  }
+  .productAssurance {
+    max-width: 650px;
+  }
+  .productStage {
+    width: 100%;
+    padding: 22px;
+  }
+  .productStage .productFrame {
+    max-width: none;
+  }
+  .productStage .previewPanel {
+    min-height: 382px;
+  }
+}
+
+@media (max-width: 599px) {
+  .product.section {
+    padding-block: 44px 48px;
+  }
+  .productCopy .sectionTitle {
+    font-size: 35px;
+  }
+  .productCopy .lead {
+    font-size: 14px;
+  }
+  .productBenefits {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .productBenefits li {
+    display: grid;
+    min-height: 0;
+    grid-template-columns: 40px 1fr;
+    padding: 12px;
+  }
+  .productBenefits h3 {
+    margin-top: 0;
+  }
+  .productStage {
+    margin-inline: -6px;
+    width: calc(100% + 12px);
+    padding: 13px;
+    border-radius: 12px;
+  }
+  .productStageHead {
+    align-items: flex-start;
+    margin-bottom: 12px;
+  }
+  .productStageHead strong {
+    font-size: 14px;
+  }
+  .productStageBadge {
+    display: none;
+  }
+  .productStage .previewTop {
+    padding: 12px;
+  }
+  .productStage .previewTabs {
+    padding-inline: 12px;
+  }
+  .productStage .previewPanel {
+    min-height: 428px;
+    padding: 16px 12px;
+  }
+  .productStage .previewCaption {
+    padding-inline: 12px;
+  }
+  .productStageFoot {
+    justify-content: flex-start;
+    gap: 8px 12px;
+    font-size: 8px;
+  }
+}
