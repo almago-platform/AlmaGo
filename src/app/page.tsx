@@ -1,7 +1,6 @@
 import { HomeHeader } from "@/components/public/HomeHeader";
 import { HomeHero } from "@/components/public/HomeHero";
 import { HomeQuickAccess } from "@/components/public/HomeQuickAccess";
-import { HomeProductPreview } from "@/components/public/HomeProductPreview";
 import { HomeJourneySection } from "@/components/public/HomeJourneySection";
 import { HomePhotoBand } from "@/components/public/HomePhotoBand";
 import { HomeTrustSection } from "@/components/public/HomeTrustSection";
@@ -20,7 +19,6 @@ export default function Home() {
         <HomeHero />
         <HomeQuickAccess />
         <HomePhotoBand />
-        <HomeProductPreview />
         <HomeJourneySection />
         <HomeTrustSection />
         <HomeFaqSection />
