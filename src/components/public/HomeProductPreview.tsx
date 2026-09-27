@@ -1,216 +1,278 @@
-const previewMetrics = [
-  ["À traiter", "Actions enregistrées"],
-  ["En attente AlmaGo", "Étapes suivies"],
-  ["Recommandations", "Pistes d’études"],
-  ["Candidatures", "Dossiers enregistrés"],
-] as const;
-
+"use client";
+import Link from "next/link";
+import { useRef, useState, type KeyboardEvent } from "react";
+import { HomeSymbol, type SymbolName } from "./HomeSymbol";
+import s from "./CodexHome.module.css";
+const tabs: { id: string; label: string; icon: SymbolName }[] = [
+  { id: "projet", label: "Mon projet", icon: "folder" },
+  { id: "documents", label: "Mes documents", icon: "document" },
+  { id: "candidatures", label: "Mes candidatures", icon: "book" },
+];
 export function HomeProductPreview() {
+  const [active, setActive] = useState(0);
+  const buttons = useRef<(HTMLButtonElement | null)[]>([]);
+  function move(event: KeyboardEvent<HTMLButtonElement>, index: number) {
+    let next = index;
+    if (event.key === "ArrowDown" || event.key === "ArrowRight")
+      next = (index + 1) % tabs.length;
+    else if (event.key === "ArrowUp" || event.key === "ArrowLeft")
+      next = (index + tabs.length - 1) % tabs.length;
+    else if (event.key === "Home") next = 0;
+    else if (event.key === "End") next = tabs.length - 1;
+    else return;
+    event.preventDefault();
+    setActive(next);
+    buttons.current[next]?.focus();
+  }
   return (
-    <section id="espace" className="border-b border-[var(--border)] bg-[#f4f6f8] py-12 sm:py-14 lg:py-16" aria-labelledby="product-preview-title">
-      <div className="mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 lg:grid-cols-[0.68fr_1.32fr] lg:items-center lg:gap-10 lg:px-8">
-        <div>
-          <p className="eyebrow">Votre espace AlmaGo</p>
-          <h2 id="product-preview-title" className="mt-3 max-w-xl text-3xl font-semibold tracking-[-0.035em] text-slate-950 sm:text-4xl lg:text-[2.8rem]">
-            Votre dossier, en un coup d’œil.
-          </h2>
-          <p className="mt-4 max-w-xl text-base leading-7 text-slate-600">
-            L’espace étudiant est construit autour d’une question simple : qu’est-ce qui est enregistré dans mon dossier, et quelle action est utile maintenant ?
+    <section
+      id="espace"
+      className={[s.section, s.workspaceSection].join(" ")}
+      aria-labelledby="workspace-title"
+    >
+      <div className={s.container}>
+        <div className={s.sectionHeading}>
+          <div>
+            <p className={s.eyebrow}>Votre espace, en pratique</p>
+            <h2 id="workspace-title" className={s.title}>
+              Un projet qui avance.
+              <br />
+              <span>Un dossier qui suit.</span>
+            </h2>
+          </div>
+          <p className={s.lead}>
+            Moins de notes éparpillées, plus de visibilité. Retrouvez les
+            informations qui comptent, au même endroit.
           </p>
-
-          <ul className="mt-6 space-y-3">
-            <PreviewBenefit title="Une prochaine action visible" text="Le dashboard met en avant l’action enregistrée comme prioritaire dans votre dossier." />
-            <PreviewBenefit title="Une progression expliquée" text="Le suivi concerne les étapes enregistrées ; il n’est jamais présenté comme une probabilité d’admission." />
-            <PreviewBenefit title="Vos informations reliées" text="Documents, recommandations, candidatures et échéances restent accessibles depuis le même espace." />
-          </ul>
         </div>
-
-        <div className="overflow-hidden rounded-[calc(var(--radius-panel)+0.2rem)] border border-[var(--brand-border)] bg-white shadow-none md:hidden">
-          <div className="flex items-center justify-between gap-3 border-b border-[var(--border)] px-4 py-3">
-            <div className="flex items-center gap-2">
-              <span className="grid h-8 w-8 place-items-center rounded-[var(--radius-control)] bg-[var(--brand)] text-xs font-bold text-white">A</span>
-              <div>
-                <p className="text-sm font-bold text-slate-950">AlmaGo</p>
-                <p className="text-[9px] font-bold uppercase tracking-[0.14em] text-slate-500">Espace étudiant</p>
-              </div>
-            </div>
-            <span className="rounded-[var(--radius-control)] bg-[var(--brand-soft)] px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.13em] text-[var(--brand)]">
-              Exemple
+        <div className={s.workspace}>
+          <div className={s.workspaceBar}>
+            <span>
+              <span className={s.miniLogo}>A</span>Votre espace AlmaGo
             </span>
+            <span className={s.exampleLabel}>Démonstration</span>
           </div>
-
-          <div className="bg-[var(--surface-subtle)] p-4">
-            <div>
-              <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-[var(--brand)]">Votre dossier</p>
-              <h3 className="mt-1 text-xl font-bold tracking-tight text-slate-950">Ce qui compte maintenant</h3>
-              <p className="mt-1 text-sm leading-6 text-slate-600">Une vue compacte des prochaines actions et éléments enregistrés.</p>
+          <div className={s.workspaceBody}>
+            <div className={s.workspaceSide}>
+              <p className={s.smallLabel}>Mon dossier</p>
+              <div
+                role="tablist"
+                aria-label="Explorer la démonstration du dossier"
+                aria-orientation="vertical"
+                className={s.workspaceTabs}
+              >
+                {tabs.map((tab, index) => (
+                  <button
+                    ref={(node) => {
+                      buttons.current[index] = node;
+                    }}
+                    key={tab.id}
+                    id={"demo-tab-" + tab.id}
+                    type="button"
+                    role="tab"
+                    aria-selected={active === index}
+                    aria-controls={"demo-panel-" + tab.id}
+                    tabIndex={active === index ? 0 : -1}
+                    onClick={() => setActive(index)}
+                    onKeyDown={(event) => move(event, index)}
+                  >
+                    <HomeSymbol name={tab.icon} />
+                    <span>{tab.label}</span>
+                    <HomeSymbol name="arrow" />
+                  </button>
+                ))}
+              </div>
+              <p className={s.sidebarNote}>
+                <HomeSymbol name="shield" />
+                Un aperçu illustratif.
+                <br />
+                Vos informations restent liées à votre situation.
+              </p>
             </div>
-
-            <div className="relative mt-4 overflow-hidden rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-white p-4 shadow-none">
-              <div aria-hidden="true" className="absolute inset-y-0 left-0 w-1 bg-[var(--brand)]" />
-              <div className="pl-2">
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--brand)]">À suivre maintenant</span>
-                  <span className="rounded-[var(--radius-control)] border border-amber-200 bg-amber-50 px-2 py-1 text-[10px] font-bold text-amber-800">Action à faire</span>
-                </div>
-                <p className="mt-3 text-base font-bold text-slate-950">Votre prochaine étape</p>
-                <p className="mt-1 text-sm leading-6 text-slate-600">L’action prioritaire enregistrée apparaît ici avec son contexte.</p>
-                <span className="mt-3 inline-flex min-h-10 items-center rounded-[var(--radius-control)] bg-[var(--brand)] px-3 text-xs font-bold text-white">
-                  Continuer ma checklist
-                </span>
-              </div>
-            </div>
-
-            <div className="mt-4 grid grid-cols-2 gap-2">
-              {previewMetrics.map(([title, detail]) => (
-                <div key={title} className="rounded-[var(--radius-control)] border border-[var(--border)] bg-white p-3">
-                  <p className="text-xs font-bold text-slate-900">{title}</p>
-                  <p className="mt-1 text-[11px] leading-4 text-slate-500">{detail}</p>
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-4 rounded-[var(--radius-control)] border border-[var(--border)] bg-white p-3">
-              <div className="flex items-center justify-between gap-3">
-                <p className="text-xs font-bold text-slate-900">Étapes du dossier</p>
-                <span className="text-[10px] font-bold text-[var(--brand)]">Suivi visible</span>
-              </div>
-              <div className="mt-3 h-2 overflow-hidden rounded-full bg-slate-100">
-                <div aria-hidden="true" className="h-full w-3/5 rounded-full bg-[var(--brand)]" />
-              </div>
-              <p className="mt-2 text-[10px] leading-4 text-slate-500">Illustration d’un suivi interne, jamais d’une probabilité d’admission.</p>
-            </div>
-          </div>
-
-          <div className="border-t border-[var(--border)] px-4 py-3">
-            <p className="text-[10px] leading-4 text-slate-500">Aperçu d’exemple : les informations réelles dépendent de chaque dossier.</p>
-          </div>
-        </div>
-
-        <div className="hidden md:block overflow-hidden rounded-[calc(var(--radius-panel)+0.3rem)] border border-[var(--brand-border)] bg-white shadow-none">
-          <div className="flex items-center justify-between gap-4 border-b border-[var(--border)] bg-white px-4 py-3 sm:px-5">
-            <div>
-              <p className="text-xs font-bold text-slate-950">Aperçu de l’espace étudiant</p>
-              <p className="mt-0.5 text-[10px] text-slate-500">Exemple de structure, sans données réelles</p>
-            </div>
-            <span className="rounded-[var(--radius-control)] bg-[var(--brand-soft)] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.15em] text-[var(--brand)]">
-              Démonstration
-            </span>
-          </div>
-
-          <div className="grid min-h-[34rem] sm:grid-cols-[10.5rem_1fr]">
-            <aside className="hidden border-r border-[var(--border)] bg-white p-4 sm:block" aria-label="Navigation illustrative AlmaGo">
-              <div className="flex items-center gap-2.5 px-2 py-2">
-                <span className="grid h-8 w-8 place-items-center rounded-[var(--radius-control)] bg-[var(--brand)] text-xs font-bold text-white">A</span>
-                <span className="text-sm font-bold text-slate-950">AlmaGo</span>
-              </div>
-              <div className="mt-6 space-y-2 text-xs font-semibold">
-                <PreviewNav active label="Mon dossier" />
-                <PreviewNav label="Documents" />
-                <PreviewNav label="Orientation" />
-                <PreviewNav label="Candidatures" />
-                <PreviewNav label="Démarches" />
-              </div>
-            </aside>
-
-            <div className="bg-[var(--surface-subtle)] p-4 sm:p-5 lg:p-6">
-              <div className="flex flex-wrap items-start justify-between gap-4">
-                <div>
-                  <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Espace étudiant</p>
-                  <h3 className="mt-1 text-xl font-bold tracking-tight text-slate-950 sm:text-2xl">Votre dossier</h3>
-                  <p className="mt-1 text-xs leading-5 text-slate-500">Démarches, documents et candidatures réunis au même endroit.</p>
-                </div>
-                <span className="rounded-[var(--radius-control)] border border-[var(--border)] bg-white px-3 py-1 text-[10px] font-bold text-slate-600">
-                  Exemple visuel
-                </span>
-              </div>
-
-              <div className="mt-5 grid gap-3 lg:grid-cols-[1.35fr_0.85fr]">
-                <div className="relative overflow-hidden rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-white p-4 shadow-none">
-                  <div aria-hidden="true" className="absolute inset-y-0 left-0 w-1 bg-[var(--brand)]" />
-                  <div className="pl-2">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-[var(--brand)]">À suivre maintenant</span>
-                      <span className="rounded-[var(--radius-control)] border border-amber-200 bg-amber-50 px-2 py-1 text-[10px] font-bold text-amber-800">Action à faire</span>
+            {tabs.map((tab, index) => (
+              <div
+                key={tab.id}
+                id={"demo-panel-" + tab.id}
+                role="tabpanel"
+                aria-labelledby={"demo-tab-" + tab.id}
+                tabIndex={0}
+                hidden={active !== index}
+                className={s.workspacePanel}
+              >
+                {index === 0 && (
+                  <>
+                    <div className={s.panelHeading}>
+                      <div>
+                        <p className={s.smallLabel}>Vue de mon projet</p>
+                        <h3>Un point de départ. Une direction.</h3>
+                      </div>
+                      <span className={s.status}>En préparation</span>
                     </div>
-                    <p className="mt-4 text-lg font-bold text-slate-950">Votre prochaine étape</p>
-                    <p className="mt-2 text-xs leading-5 text-slate-600">
-                      L’action prioritaire enregistrée dans votre dossier apparaît ici avec son contexte.
+                    <div className={s.projectFields}>
+                      <div>
+                        <span>Destination</span>
+                        <strong>Allemagne</strong>
+                      </div>
+                      <div>
+                        <span>Diplôme envisagé · exemple</span>
+                        <strong>Master</strong>
+                      </div>
+                      <div>
+                        <span>Domaine</span>
+                        <strong>À préciser</strong>
+                      </div>
+                    </div>
+                    <div className={s.nextAction}>
+                      <span className={s.actionMark}>
+                        <HomeSymbol name="arrow" />
+                      </span>
+                      <div>
+                        <p className={s.smallLabel}>
+                          Prochaine action · exemple
+                        </p>
+                        <h4>Rassembler vos justificatifs académiques</h4>
+                        <p>
+                          Préparez vos diplômes et relevés de notes pour
+                          préciser la suite de votre parcours.
+                        </p>
+                      </div>
+                    </div>
+                    <div className={s.panelRows}>
+                      <div>
+                        <HomeSymbol name="check" />
+                        <span>Les premiers repères de votre projet</span>
+                        <span className={s.rowStatus}>Renseignés</span>
+                      </div>
+                      <div>
+                        <HomeSymbol name="clock" />
+                        <span>Les exigences des programmes</span>
+                        <span className={s.rowStatus}>À examiner</span>
+                      </div>
+                    </div>
+                  </>
+                )}
+                {index === 1 && (
+                  <>
+                    <div className={s.panelHeading}>
+                      <div>
+                        <p className={s.smallLabel}>Mes pièces académiques</p>
+                        <h3>Chaque document trouve sa place.</h3>
+                      </div>
+                    </div>
+                    <p className={s.panelIntro}>
+                      Distinguez les pièces déjà ajoutées de celles qu’il vous
+                      reste à réunir.
                     </p>
-                    <span className="mt-4 inline-flex min-h-9 items-center rounded-[var(--radius-control)] bg-[var(--brand)] px-3 text-xs font-bold text-white">
-                      Continuer ma checklist
-                    </span>
-                  </div>
-                </div>
-
-                <div className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-4 shadow-none">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-slate-500">Préparation</p>
-                  <p className="mt-2 text-sm font-bold text-slate-950">Étapes du dossier</p>
-                  <div className="mt-5 flex items-end justify-between gap-3">
-                    <span className="text-lg font-bold text-slate-950">Suivi visible</span>
-                    <span className="text-xs font-bold text-[var(--brand)]">Exemple</span>
-                  </div>
-                  <div className="mt-3 h-2 overflow-hidden rounded-full bg-slate-100">
-                    <div aria-hidden="true" className="h-full w-3/5 rounded-full bg-[var(--brand)]" />
-                  </div>
-                  <p className="mt-3 text-[11px] leading-5 text-slate-500">
-                    Ce suivi illustre des étapes enregistrées, pas une chance d’admission.
-                  </p>
-                </div>
-              </div>
-
-              <div className="mt-5">
-                <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-[var(--brand)]">Vue d’ensemble</p>
-                <div className="mt-3 grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
-                  {previewMetrics.map(([title, detail]) => (
-                    <div key={title} className="rounded-[var(--radius-control)] border border-[var(--border)] bg-white p-3">
-                      <p className="text-[11px] font-bold text-slate-800">{title}</p>
-                      <p className="mt-1 text-[10px] leading-4 text-slate-500">{detail}</p>
+                    <div className={s.documentRows}>
+                      {[
+                        ["Diplôme", "Ajouté"],
+                        ["Relevé de notes", "À rassembler"],
+                        ["Justificatif de langue", "À examiner"],
+                      ].map(([label, status], index) => (
+                        <div key={label}>
+                          <span className={s.fileIcon}>
+                            <HomeSymbol name="document" />
+                          </span>
+                          <div>
+                            <strong>{label}</strong>
+                            <span>
+                              {index === 0
+                                ? "Exemple de pièce enregistrée"
+                                : "Selon votre parcours et le programme"}
+                            </span>
+                          </div>
+                          <span
+                            className={
+                              index === 0 ? s.readyStatus : s.pendingStatus
+                            }
+                          >
+                            {status}
+                          </span>
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
+                    <p className={s.panelNote}>
+                      <HomeSymbol name="shield" />« Ajouté » ne signifie pas «
+                      accepté » par une université.
+                    </p>
+                  </>
+                )}
+                {index === 2 && (
+                  <>
+                    <div className={s.panelHeading}>
+                      <div>
+                        <p className={s.smallLabel}>Mes candidatures</p>
+                        <h3>Voir ce qui reste à préparer.</h3>
+                      </div>
+                    </div>
+                    <div className={s.application}>
+                      <div>
+                        <HomeSymbol name="book" />
+                        <span>
+                          <strong>Programme à explorer</strong>
+                          <span>
+                            Exemple fictif · aucun établissement associé
+                          </span>
+                        </span>
+                        <span className={s.status}>À examiner</span>
+                      </div>
+                      <dl>
+                        <div>
+                          <dt>Critères d’accès</dt>
+                          <dd>À confirmer à la source</dd>
+                        </div>
+                        <div>
+                          <dt>Échéance</dt>
+                          <dd>À vérifier</dd>
+                        </div>
+                        <div>
+                          <dt>Pièces demandées</dt>
+                          <dd>À rassembler</dd>
+                        </div>
+                      </dl>
+                    </div>
+                    <p className={s.panelNote}>
+                      <HomeSymbol name="shield" />
+                      Le suivi organise votre préparation. Il ne transmet pas
+                      une candidature et ne prédit pas l’admission.
+                    </p>
+                  </>
+                )}
               </div>
-
-              <div className="mt-5 flex flex-col justify-between gap-3 rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-4 sm:flex-row sm:items-center">
-                <div>
-                  <span className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-2 py-1 text-[10px] font-bold text-slate-600">Prochaine échéance</span>
-                  <p className="mt-2 text-sm font-bold text-slate-950">Une date enregistrée apparaît ici</p>
-                  <p className="mt-1 text-[11px] leading-5 text-slate-500">Avec la prochaine action associée lorsqu’elle est connue.</p>
-                </div>
-                <span className="inline-flex min-h-9 shrink-0 items-center justify-center rounded-[var(--radius-control)] border border-[var(--border)] px-3 text-xs font-bold text-slate-700">
-                  Voir mes candidatures
-                </span>
-              </div>
-            </div>
+            ))}
           </div>
-
-          <div className="border-t border-[var(--border)] bg-white px-5 py-3">
-            <p className="text-[11px] leading-5 text-slate-500">
-              Illustration fidèle à la structure du dashboard AlmaGo. Les statuts, actions et informations réelles dépendent de chaque dossier.
+          <div className={s.workspaceFoot}>
+            <span>Données fictives · Aucun dossier réel affiché</span>
+            <Link href="/signup">
+              Créer mon propre dossier
+              <HomeSymbol name="arrow" />
+            </Link>
+          </div>
+        </div>
+        <div className={s.benefits}>
+          <div>
+            <span>01</span>
+            <h3>Tout relier.</h3>
+            <p>
+              Votre profil, vos documents et vos candidatures partagent le même
+              contexte.
             </p>
+          </div>
+          <div>
+            <span>02</span>
+            <h3>Voir la prochaine action.</h3>
+            <p>
+              Les éléments à compléter restent visibles, sans confondre
+              préparation et décision.
+            </p>
+          </div>
+          <div>
+            <span>03</span>
+            <h3>Reprendre facilement.</h3>
+            <p>Retrouvez vos repères lorsque vous revenez à votre projet.</p>
           </div>
         </div>
       </div>
     </section>
-  );
-}
-
-function PreviewBenefit({ title, text }: { title: string; text: string }) {
-  return (
-    <li className="flex gap-3">
-      <span aria-hidden="true" className="mt-1 grid h-6 w-6 shrink-0 place-items-center rounded-[var(--radius-control)] bg-[var(--brand-soft)] text-xs font-bold text-[var(--brand)]">✓</span>
-      <div>
-        <p className="text-sm font-bold text-slate-950">{title}</p>
-        <p className="mt-1 text-sm leading-6 text-slate-600">{text}</p>
-      </div>
-    </li>
-  );
-}
-
-function PreviewNav({ label, active = false }: { label: string; active?: boolean }) {
-  return (
-    <div className={`rounded-[var(--radius-control)] px-3 py-2.5 ${active ? "bg-[var(--brand-soft)] text-[var(--brand)]" : "text-slate-500"}`}>
-      {label}
-    </div>
   );
 }
