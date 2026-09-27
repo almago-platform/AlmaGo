@@ -27,7 +27,8 @@ test("student API supports read upsert and clear without recommendation language
   assert.match(api, /export async function PUT/);
   assert.match(api, /export async function DELETE/);
   assert.match(api, /isPublishableLanguageCourse/);
-  assert.match(api, /getStudentUser\(\)/);\n  assert.match(api, /Accès étudiant requis/);
+  assert.match(api, /getStudentUser\(\)/);
+  assert.match(api, /Accès étudiant requis/);
   assert.doesNotMatch(api, /recommended|suitable|visa eligible|guaranteed/i);
 });
 
