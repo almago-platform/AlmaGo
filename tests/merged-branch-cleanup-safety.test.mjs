@@ -34,6 +34,14 @@ test("merged branch cleanup requires the current tip to equal a merged PR head",
   );
 });
 
+test("merged branch cleanup caps destructive batches and rechecks every tip", () => {
+  assert.match(workflow, /const maxDeletePerRun = 20/);
+  assert.match(workflow, /eligible\.length > maxDeletePerRun/);
+  assert.match(workflow, /const freshSha = freshRef\.data\.object\.sha/);
+  assert.match(workflow, /if \(freshSha !== candidate\.sha\)/);
+  assert.match(workflow, /Branch tip changed during deletion preflight/);
+});
+
 test("merged branch cleanup never deletes archive or backup refs", () => {
   assert.match(
     workflow,
