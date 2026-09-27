@@ -1,23 +1,20 @@
-# AlmaGo — pre-launch open PR triage
+# AlmaGo — legacy V3 PR triage and extraction evidence
 
 Date: 27 September 2026  
 Review base: `main@0a37fd411880744596ca3b2ed68086591e311deb`  
-Mode: classification only. No PR closure, merge, rebase, retarget or branch deletion.
+Mode: classification only.
 
-## Objective
+## Status update
 
-Reduce the risk of treating the legacy V3 stack as one undifferentiated cleanup block.
+The legacy V3 PR chain described below has now been **closed without merge**.
 
-This triage separates:
+Issue **#418 — [V3 ARCHIVE] Reconcile legacy V3 features into current-main extraction backlog** is the canonical current record for deciding which bounded features should be reimplemented from current `main`.
 
-- current release work that must stay isolated;
-- legacy work whose intent is already represented on current `main`;
-- legacy work that still contains user-facing product value not present on current `main`;
-- mixed PRs that must be decomposed before any extraction.
+Therefore this document is no longer an “open PR” action list. It is preserved as the evidence explaining why closure of the stale PR containers does **not** imply that every feature was shipped or rejected.
 
-## Current release / pre-launch work — keep isolated
+No V3 branch deletion is authorized by this document.
 
-Do not use repository hygiene to rewrite or close these:
+## Current release / pre-launch work — still open and isolated
 
 | PR | Treatment |
 | --- | --- |
@@ -45,297 +42,117 @@ Current-main path check:
 
 Classification: **KEEP AS A38 SOURCE / DO NOT MERGE BLINDLY**.
 
-The legal/privacy gate is still human-owned. If this material remains useful, port the still-valid proposal text onto current `main` through the A38 workstream rather than merging the old branch wholesale.
+The legal/privacy gate remains human-owned.
 
-## Legacy V3 — evidence-based triage
+## Legacy V3 classification preserved for #418
 
-### #142 — language/trust copy modernization
+### Functionally or largely superseded
 
-Touches only existing public/student/admin copy surfaces. Since that branch, current `main` has received multiple later public, student and admin redesign waves.
+- #142 — language/trust copy: later public/student/admin redesigns supersede most of the old copy layer; compare wording only.
+- #143 — role/trust: semantic core is already present; only the dedicated standalone role block remains optional.
+- #145 — official-source visibility: current orientation/admin flows already expose and verify official-source evidence.
+- #151 — old public-language contract: historical test contract only.
+- #156 — private indexing boundary is represented later; sitemap remains optional.
+- #162/#163 — old verification-date implementation is largely superseded by the later verification model.
+- #165/#166 — partial overlap with the later revalidation/freshness model; extract only a specific missing queue if still needed.
 
-Classification: **COPY-PARITY REVIEW, NOT DIRECT MERGE**.
+### Unabsorbed bounded feature sources
 
-No unique route or standalone feature requires preserving the branch itself. Before closure, compare only the remaining wording that still has policy/trust value.
+- #146 — selectable side-by-side comparison of up to three programmes.
+- #147 — `/comprendre-les-demarches`.
+- #148 — `/selon-votre-pays`.
+- #149 — `/aide`.
+- #157 — `/confiance`.
+- #159 — `/a-propos`.
+- #167 — student notification inbox + related read APIs.
+- #170 — `/sources-officielles`.
 
-### #143 — role/trust layer
+### Optional / partial-overlap feature sources
 
-Current-main already preserves the core semantic boundaries:
+- #150 — missing-source/missing-deadline programme quality queues.
+- #161 — combined dashboard-level dossier history; underlying document/application history already exists.
+- #172 — accessibility page only; the bundled security/release material is historical and must not be copied wholesale.
 
-- AlmaGo does not guarantee admission or visa;
-- official sources remain authoritative;
-- official decisions belong to competent bodies;
-- the student keeps the decision while AlmaGo structures the process.
+### Dependent feature sources
 
-What is missing is the dedicated public `HomeRoleSection`.
+- #152 — contextual help entry, only if the help center is retained.
+- #155 — public help navigation, only after route decisions.
+- #160 — public breadcrumbs, only with retained guidance pages.
+- #171 — local help-center search, only if #149 is reimplemented.
 
-Classification: **SEMANTIC CORE MOSTLY SUPERSEDED; OPTIONAL UI EXTRACTION**.
+### Product-decision / deferred source
 
-If a dedicated “Notre rôle” block is still desired, rebuild it in the current homepage system.
+- #153 — multilingual readiness scaffolding/policy.
 
-### #145 — official-source visibility
+### Historical/archive-only containers
 
-Current `main` already contains:
+- #173 — old V3 implementation-status documents.
+- #213 — full 609-commit V3 validation/integration tree; archive/feature-parity source only, never a current-main merge candidate.
 
-- student orientation copy explicitly telling users to verify the official source;
-- a visible “Vérifier la source officielle” action;
-- admin programme forms with official-source fields;
-- verification gates using `source_url`, `application_url` and verification evidence.
+## Current-main evidence behind key classifications
 
-Classification: **FUNCTIONALLY SUPERSEDED**.
+### #146 programme comparison
 
-Closure can be considered after owner confirmation; direct merge would reintroduce old component history for behavior already present.
+The old PR adds local `comparisonIds` selection, up to three programmes, side-by-side facts and clear/remove actions.
 
-### #146 — programme comparison
+Current `StudentOrientationPanel` uses comparison-oriented copy but does not contain that dedicated selection/comparison interaction.
 
-Unique feature proven in the PR diff:
+### #167 notifications
 
-- local selection state;
-- up to three programmes;
-- side-by-side comparison;
-- remove/clear actions;
-- no ranking/winner.
+Current main has:
 
-Current `StudentOrientationPanel` uses “Comparez avant de décider” framing but has no `comparisonIds` selection state and no equivalent side-by-side comparison block.
+- the `notifications` table;
+- notification generation;
+- a hardened `read_at` write boundary.
 
-Classification: **UNABSORBED BOUNDED FEATURE SOURCE**.
+Current main lacks the old V3 user-facing notification page/panel/read-one/read-all routes.
 
-If wanted, extract this feature onto current `main` as a fresh bounded issue/branch. Do not merge the old stacked PR.
+### #161 dossier history
 
-### #147 — plain-language study-process guidance
-
-Adds `/comprendre-les-demarches`.
-
-Current-main path: absent.
-
-Classification: **UNABSORBED PUBLIC FEATURE SOURCE**.
-
-### #148 — country-of-qualification guidance
-
-Adds `/selon-votre-pays`.
-
-Current-main path: absent.
-
-Classification: **UNABSORBED PUBLIC FEATURE SOURCE**.
-
-### #149 — public help center
-
-Adds `/aide`.
-
-Current-main path: absent.
-
-Classification: **UNABSORBED PUBLIC FEATURE SOURCE**.
-
-### #150 — programme information-quality queues
-
-Unique behavior includes:
-
-- active-program count;
-- missing-source count;
-- missing-deadline count;
-- admin filters for those gaps.
-
-Current `main` has a later 30-day verification/revalidation model and a current admin freshness dashboard, but not the same programme quality-card/filter implementation.
-
-Classification: **PARTIAL OVERLAP; EXTRACT ONLY IF THE MISSING-SOURCE / MISSING-DEADLINE QUEUES ARE STILL DESIRED**.
-
-Do not merge the old panel wholesale.
-
-### #151 — public-language source-contract test
-
-This test was written against the old V3 public copy chain.
-
-Classification: **HISTORICAL TEST CONTRACT**.
-
-Do not revive it unchanged. Any useful assertions should be rewritten against the current public copy contract.
-
-### #152 — contextual help entry
-
-Adds student-shell help navigation toward the V3 help center.
-
-Because the target `/aide` page is absent on current `main`, this PR should not be ported independently.
-
-Classification: **DEPENDENT FEATURE SOURCE — ONLY WITH #149 HELP-CENTER EXTRACTION**.
-
-### #153 — multilingual readiness scaffolding
-
-Adds planning docs, locale metadata/scaffolding and tests without a complete translation rollout.
-
-Classification: **PRODUCT-DECISION / DEFERRED FEATURE SOURCE**.
-
-Do not merge as pre-launch cleanup. Revisit only if multilingual rollout becomes an explicit current priority.
-
-### #155 — public help navigation
-
-Depends on the V3 public help/guidance route set.
-
-Classification: **DEPENDENT FEATURE SOURCE**.
-
-Rebuild navigation only after deciding which public guidance routes should exist.
-
-### #156 — sitemap/private indexing boundaries
-
-Current-main evidence:
-
-- `src/app/robots.ts` exists;
-- private/auth noindex behavior has since been implemented through later security work;
-- `src/app/sitemap.ts` is absent.
-
-Classification: **PARTIALLY SUPERSEDED**.
-
-The indexing boundary is already represented; sitemap generation remains a separable optional extraction.
-
-### #157 — trust/transparency page
-
-Adds `/confiance`.
-
-Current-main path: absent.
-
-Classification: **UNABSORBED PUBLIC FEATURE SOURCE**.
-
-### #159 — About AlmaGo page
-
-Adds `/a-propos`.
-
-Current-main path: absent.
-
-Classification: **UNABSORBED PUBLIC FEATURE SOURCE**.
-
-### #160 — public breadcrumbs
-
-Adds `PublicBreadcrumbs.tsx` and applies it to V3 public guidance pages.
-
-Current-main component path: absent.
-
-Classification: **DEPENDENT FEATURE SOURCE**.
-
-Only extract if the corresponding public guidance pages are chosen.
-
-### #161 — combined dossier history on student dashboard
-
-Current `main` already exposes:
+Current main already exposes:
 
 - document history on the documents surface;
-- application-event history on student applications.
+- application event history on the applications surface.
 
-What it does not currently expose is the same combined dashboard-level recent-history feed proposed by #161.
+The old V3 proposal adds a combined recent-history feed on the student dashboard. That aggregation remains optional rather than a missing data foundation.
 
-Classification: **FUNCTIONAL CORE PRESENT; AGGREGATED DASHBOARD HISTORY OPTIONAL**.
+### #150/#162/#163/#165/#166 catalogue verification
 
-### #162 / #163 — programme and university verification dates
+Current main has a later 30-day catalogue freshness/revalidation model and verified-source fields across current Germany/catalogue workflows.
 
-Current `main` already uses verification timestamps and source evidence across the Germany/catalogue model, including programme verification logic and verified source/date concepts in admin workflows.
-
-Classification: **LARGELY SUPERSEDED BY LATER VERIFICATION MODEL**.
-
-Do not merge the old implementation directly. Any missing university-specific parity should be handled against the current schema/API.
-
-### #165 / #166 — catalogue maintenance priority and quality deep links
-
-Current `main` contains a later “Fraîcheur des sources / Révalidations du catalogue Allemagne” admin model with expiry/due-soon handling. The V3 PRs use a different quality-gap model centered on missing source/verification fields for programmes/universities.
-
-Classification: **PARTIAL OVERLAP / DO NOT DIRECT-MERGE**.
-
-Only extract a specific missing queue or deep link if it remains useful after the current revalidation model is stabilized.
-
-### #167 — student notification inbox
-
-Current-main backend evidence:
-
-- `notifications` table exists;
-- notification generation exists;
-- write boundary is hardened to `read_at`.
-
-Current-main user-facing paths are absent:
-
-- `src/app/student/notifications/page.tsx`;
-- notification read-one/read-all API routes;
-- `StudentNotificationsPanel.tsx`.
-
-Classification: **BACKEND PRESENT, USER-FACING INBOX UNABSORBED**.
-
-This is a strong bounded extraction candidate if an in-app inbox is still wanted.
-
-### #170 — official sources reference page
-
-Adds `/sources-officielles`.
-
-Current-main path: absent.
-
-Classification: **UNABSORBED PUBLIC FEATURE SOURCE**.
-
-### #171 — local help-center search
-
-Depends on `/aide`, which is absent on current `main`.
-
-Classification: **DEPENDENT FEATURE SOURCE — ONLY AFTER #149**.
-
-### #172 — accessibility/public-404 integration plus historical security/release work
-
-This PR is mixed and therefore unsafe to treat as one feature:
-
-- `/accessibilite` is absent on current `main`;
-- V3 public/help/admin work is bundled with security proposal docs and old A44/workflow changes;
-- later current-main security and Render release work supersedes much of the operational/security portion.
-
-Classification: **DECOMPOSE; NEVER DIRECT-MERGE**.
-
-Potential extraction: accessibility page only, after a fresh current-main review. Security/release sections must be re-evaluated against current migrations/workflows rather than copied.
-
-### #173 — V3 implementation-status documents
-
-Adds V3 status/plan documents tied to the legacy chain.
-
-Classification: **HISTORICAL DOCUMENTATION / CLOSURE CANDIDATE AFTER FEATURE-PARITY DECISIONS**.
-
-Do not let these become a current source of truth.
-
-### #213 — full V3 validation integration
-
-Current comparison remains 609 commits ahead and 83 behind the review-main snapshot.
-
-It contains real unabsorbed user-facing surface, but also obsolete and later-reimplemented security/release material.
-
-Classification: **ARCHIVE / FEATURE-PARITY SOURCE, NOT A MERGE CANDIDATE**.
+The old V3 chain contains a different set of quality queues and explicit programme/university verification UI. These are not safe to merge wholesale but may still inform a bounded enhancement.
 
 ## #193 — Germany study/visa worksite plan
 
-Adds a 648-line planning document. The current repository now contains a much later implemented Germany stack and current master-plan state.
+Adds a 648-line planning document based on a much older repository state.
 
 Classification: **PLAN RECONCILIATION REQUIRED**.
 
-Do not merge the old plan as current truth. Compare it to the implemented Germany features and current master plan; preserve only still-useful planning/history content.
+Do not merge it as current truth. Compare it with the implemented Germany stack and current master plan; preserve only useful historical/planning content.
 
-## Dependency-aware cleanup order for legacy V3
+## Extraction rule
 
-Because the V3 PRs are stacked, cleanup should preserve base branches until all dependent PRs are resolved.
+For anything retained from #418:
 
-Recommended order:
+1. start from current `main`;
+2. verify current product value and overlap;
+3. create one bounded issue/branch;
+4. do not resurrect the old stacked V3 chain;
+5. re-check Auth/RLS/security assumptions instead of copying old proposals;
+6. close the extraction task only after current-main validation.
 
-1. Decide bounded product extractions first: #146, #147, #148, #149, #157, #159, #167, #170, optional pieces from #161/#172.
-2. Resolve dependent PRs only after their parent feature decision: #152/#155/#160/#171.
-3. Record closure evidence for superseded/overlapped PRs: #142/#143/#145/#151/#156/#162/#163/#165/#166.
-4. Close/archive #173 only after the feature-parity record is final.
-5. Treat #213 as the final archive/reference node.
-6. Only after all open dependents are closed should V3 base branches become eligible for branch-deletion review.
+## Branch rule after PR archive
 
-## Important branch rule
+The V3 PR containers are closed, but their branches remain reference material.
 
-Never delete a branch merely because it is not the head of an open PR.
-
-A branch may still be the **base of another open PR**. The active example remains:
-
-- `release/v3-validation-20260925` — base of #213.
-
-Deletion preflight must exclude both open-PR heads and open-PR bases.
+Do not delete the V3 branch family until #418 records extraction/decline decisions for the retained feature set.
 
 ## Conclusion
 
-The legacy V3 backlog is not one cleanup action.
+The V3 archive now has a clean semantic model:
 
-It contains three materially different things:
-
-1. behavior already represented on current `main`;
-2. bounded product features that remain genuinely absent;
-3. mixed historical integration/release material that should only be used as reference.
-
-This classification supports closing stale PR noise later without discarding useful product work or reviving obsolete implementation stacks.
+- stale PR containers: closed;
+- feature intent: preserved in #418;
+- old branches: retained temporarily as source evidence;
+- future implementation: fresh branches from current `main`;
+- old integration stack: never revived as a release candidate.
