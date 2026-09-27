@@ -38,3 +38,24 @@ export function isSafeDocumentFile(file: File) {
 export function safeFilename(filename: string) {
   return filename.replace(/[^a-zA-Z0-9._-]/g, "-").replace(/-+/g, "-").slice(0, 120) || "document";
 }
+
+
+export async function hasAllowedDocumentSignature(file: File) {
+  const bytes = new Uint8Array(await file.slice(0, 8).arrayBuffer());
+
+  if (file.type === "application/pdf") {
+    const pdf = [0x25, 0x50, 0x44, 0x46, 0x2d];
+    return pdf.every((value, index) => bytes[index] === value);
+  }
+
+  if (file.type === "image/jpeg") {
+    return bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff;
+  }
+
+  if (file.type === "image/png") {
+    const png = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
+    return png.every((value, index) => bytes[index] === value);
+  }
+
+  return false;
+}
