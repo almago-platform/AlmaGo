@@ -62,15 +62,13 @@ jobs:
               per_page: 100,
             });
 
-            const sameRepositoryPulls = openPulls.filter(
-              (pr) => pr.head.repo?.full_name === `${owner}/${repo}`,
-            );
-
             const openHeads = new Set(
-              sameRepositoryPulls.map((pr) => pr.head.ref),
+              openPulls
+                .filter((pr) => pr.head.repo?.full_name === `${owner}/${repo}`)
+                .map((pr) => pr.head.ref),
             );
             const openBases = new Set(
-              sameRepositoryPulls
+              openPulls
                 .filter((pr) => pr.base.repo?.full_name === `${owner}/${repo}`)
                 .map((pr) => pr.base.ref),
             );
@@ -100,6 +98,7 @@ jobs:
               mergedByBranch.get(pr.head.ref).push(pr);
             }
 
+            const eligible = [];
             const planned = [];
             const deleted = [];
             const skippedProtected = [];
@@ -142,8 +141,11 @@ jobs:
                 continue;
               }
 
+              const candidate = `${branch} @ ${currentSha}`;
+              eligible.push(candidate);
+
               if (dryRun) {
-                planned.push(`${branch} @ ${currentSha}`);
+                planned.push(candidate);
                 continue;
               }
 
@@ -152,13 +154,15 @@ jobs:
                 repo,
                 ref: `heads/${branch}`,
               });
-              deleted.push(`${branch} @ ${currentSha}`);
+              deleted.push(candidate);
             }
 
             await core.summary
               .addHeading("AlmaGo merged branch cleanup")
               .addRaw(`Mode: ${dryRun ? "DRY RUN" : "DELETE"}\n\n`)
-              .addRaw("Eligible in this run: " + planned.length + "\n")
+              .addRaw("Eligible in this run: " + eligible.length + "\n")
+              .addList(eligible.length ? eligible : ["None."])
+              .addRaw("\nPlanned only (dry run): " + planned.length + "\n")
               .addList(planned.length ? planned : ["None."])
               .addRaw("\nDeleted: " + deleted.length + "\n")
               .addList(deleted.length ? deleted : ["None."])
