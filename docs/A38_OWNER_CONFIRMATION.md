@@ -15,7 +15,7 @@ Le dépôt et les migrations montrent déjà les faits techniques suivants :
 - le service s’appelle **AlmaGo** ;
 - le service organise un projet d’études en Allemagne : profil, documents, checklist, orientation et suivi de candidatures ;
 - Supabase fournit Auth, PostgreSQL et Storage ;
-- Vercel fournit l’hébergement/déploiement ;
+- Render fournit actuellement l’hébergement/déploiement canonique ;
 - les catégories de données traitées sont inventoriées dans `docs/data-processing-inventory.md` ;
 - les recommandations AlmaGo ne sont pas des décisions d’admission ;
 - aucun fournisseur analytics/observabilité n’est actuellement actif dans l’application ;
