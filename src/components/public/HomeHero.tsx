@@ -33,6 +33,9 @@ export function HomeHero() {
           </div>
           <div className={s.heroProof}>
             <span>
+              <HomeIcon name="check" /> Parcours en 6 étapes
+            </span>
+            <span>
               <HomeIcon name="check" /> Un dossier structuré
             </span>
             <span>
@@ -43,13 +46,14 @@ export function HomeHero() {
         <div className={s.heroVisual}>
           <figure className={s.heroPhoto}>
             <Image
-              src="https://images.pexels.com/photos/7683694/pexels-photo-7683694.jpeg?auto=compress&cs=tinysrgb&w=1600"
+              src="https://images.pexels.com/photos/7683694/pexels-photo-7683694.jpeg"
               alt="Un groupe d’étudiants échange devant un bâtiment universitaire moderne."
               fill
               priority
-              sizes="(min-width: 1280px) 560px, (min-width: 900px) 46vw, (min-width: 600px) 75vw, 100vw"
+              sizes="(min-width: 1400px) 760px, (min-width: 900px) 58vw, (min-width: 600px) 82vw, 100vw"
+              quality={90}
             />
-            <figcaption>Un projet d’études commence par des repères clairs.</figcaption>
+            <figcaption>Votre projet. Une direction claire.</figcaption>
           </figure>
           <div className={s.heroDossier}>
             <div className={s.miniHead}>
