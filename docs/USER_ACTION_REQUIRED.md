@@ -1,44 +1,110 @@
-# AlmaGo — intervention minimale du propriétaire
+# AlmaGo — interventions propriétaire réellement requises
 
-Ce fichier contient uniquement les actions qui nécessitent forcément le compte du propriétaire. Tout le reste doit être automatisé dans le repository.
+Ce fichier ne liste que les actions qui nécessitent le compte, une décision, un secret, un paiement ou une écriture production protégée du propriétaire.
 
-## À faire maintenant pour activer Gemini/Grok
+Source opérationnelle de suivi : GitHub issue #22.
 
-Dans **GitHub → AlmaGo → Settings → Secrets and variables → Actions** :
+## 1. A38 — validation juridique humaine
 
-1. Ajouter au moins un secret fournisseur :
-   - `GEMINI_API_KEY`
-   - et/ou `XAI_API_KEY`
-2. Configurer chez le fournisseur un plafond de dépense bloquant avant activation.
-3. Dans **Variables**, définir :
-   - `ALMAGO_AI_BILLING_CAP_CONFIRMED=true`
-   - `ALMAGO_AI_ENABLED=true`
+PR #431 porte la proposition actuelle de rétention/suppression et la matrice de finalisation sur le `main` courant.
 
-Ne jamais mettre une clé API dans une Issue, un commit, une variable publique ou ce fichier.
+À faire humainement :
 
-## Plus tard — uniquement quand les tâches correspondantes sont atteintes
+- compléter `docs/A38_OWNER_CONFIRMATION.md` avec les informations publiques réellement applicables ;
+- décider les règles de conservation et suppression ;
+- faire relire les textes A38 par un humain compétent ;
+- ne mettre `A38_REVIEW_READY: true` que lorsque les quatre fichiers juridiques ne contiennent plus de placeholders bloquants ;
+- après la vraie relecture, poster exactement `A38 HUMAN REVIEW APPROVED` sur l’issue A38.
 
-### E2E authentifiés
+Ne jamais publier un mot de passe, une clé, un document d’identité ou une donnée étudiant dans GitHub.
 
-Les comptes **de test uniquement** existent déjà dans Supabase et leurs rôles étudiant/admin ont été vérifiés le 23/09/2026. Ne pas en créer de nouveaux. Si nécessaire, réinitialiser uniquement leurs mots de passe depuis Supabase, puis ajouter dans GitHub Actions Secrets :
+## 2. A43 — deux mots de passe de comptes E2E
 
-- `NEXT_PUBLIC_SUPABASE_URL`
-- `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
-- `ALMAGO_E2E_STUDENT_EMAIL`
+Les identités de test non sensibles sont déjà définies :
+
+- étudiant : `phase3.student.a@almago.test`
+- admin : `phase3.admin@almago.test`
+
+Il reste uniquement à fournir dans **GitHub Actions Secrets** :
+
 - `ALMAGO_E2E_STUDENT_PASSWORD`
-- `ALMAGO_E2E_ADMIN_EMAIL`
 - `ALMAGO_E2E_ADMIN_PASSWORD`
 
-Enfin définir `ALMAGO_AUTH_E2E_ENABLED=true`. Tant que cette variable reste absente/fausse, le workflow authentifié est ignoré. Après un run réussi, A43 est clôturée automatiquement ; aucune manipulation manuelle de label n’est nécessaire.
+Ne pas ajouter les e-mails comme secrets sauf si l’on souhaite volontairement remplacer les identités par défaut. Ne pas créer de variable `ALMAGO_AUTH_E2E_ENABLED` : elle n’est pas requise par le workflow actuel.
 
-### Observabilité
+A43 reste aussi bloquée tant que #286 empêche les jobs GitHub Actions d’exécuter leurs étapes.
 
-Créer/choisir le compte Sentry ou analytics lors de A44, puis placer les secrets directement dans GitHub. Aucun secret ne doit passer dans le chat.
+PR #424 intègre la preuve A43 contre le runtime Render `almago-dev`, le mode local et les garde-fous main-only/A38.
 
-### Design Figma
+## 3. Render — connexion GitHub et health check
 
-Connecter Figma à ChatGPT/Codex quand tu veux activer la boucle design visuelle. Cette connexion nécessite ton action dans l’interface ; elle ne doit pas bloquer les tâches de code non visuelles.
+Runtime de recette actuel :
 
-## Codex / OpenAI
+`https://almago-dev.onrender.com`
 
-Le système n’utilise pas Codex pour les petites tâches. Les tâches sensibles ou complexes sont placées dans `almago-codex-required`. Si le quota OpenAI est épuisé, elles attendent sans bloquer les tâches Gemini/Grok déjà sûres, sauf quand elles sont une dépendance obligatoire du plan.
+Action propriétaire suivie dans #389 :
+
+- vérifier/reconnecter l’autorisation GitHub du service Render ;
+- confirmer qu’un nouveau commit sur `main` déclenche réellement un deploy automatique ;
+- définir `/api/health` comme health check du service existant.
+
+Le dashboard affiche actuellement auto-deploy activé, mais les derniers deploys observés ont été déclenchés par API. Le health check du service est encore vide.
+
+Le service est actuellement sur Render Free et peut s’endormir après inactivité. Passer à un plan payant est une décision propriétaire séparée ; aucun upgrade ne doit être lancé automatiquement.
+
+## 4. Catalogue production — terminé
+
+#176 est clôturée. Son journal de clôture rapporte :
+
+- 1 recommandation test archivée ;
+- 7 programmes test désactivés ;
+- 8 universités test désactivées ;
+- aucun DELETE ;
+- post-contrôle : 0 fixture active.
+
+**Ne pas rejouer cette opération depuis ce document.** Toute future vérification live doit être une tâche séparée et explicitement autorisée.
+
+## 5. A44 — observabilité/analytics
+
+A44 vient après A38 et A43.
+
+À ce moment-là seulement :
+
+- choisir le fournisseur ;
+- configurer rétention/consentement conformément à la revue juridique ;
+- placer les secrets fournisseur dans Render/GitHub, jamais dans le dépôt ou le chat ;
+- tester avec des données synthétiques ;
+- vérifier l’allow-list de télémétrie et l’absence de données personnelles inutiles ;
+- définir les variables non sensibles `ALMAGO_OBSERVABILITY_ENABLED=true` et `ALMAGO_OBSERVABILITY_PROVIDER=<nom>` lorsque l’activation est réellement vérifiée.
+
+Aucun fournisseur n’est activé automatiquement.
+
+## 6. Supabase Auth — décision d’abonnement
+
+Le Security Advisor signale encore la protection contre mots de passe compromis comme désactivée. La décision d’un éventuel passage Supabase Pro est suivie dans #179.
+
+Aucun paiement/upgrade automatique.
+
+## 7. Protection de `main`
+
+`main` reste actuellement non protégée et aucun ruleset n’est actif. Suivi : #336.
+
+Ne pas rendre obligatoire un check GitHub Actions tant que #286 n’est pas résolu, sinon les merges peuvent être bloqués par un job qui échoue avant toute étape.
+
+## 8. A45 — final release gate
+
+PR #430 prépare le gate final Render :
+
+- capture du SHA exact de `main` ;
+- preuve `/api/health` de la même révision ;
+- smoke de `/`, `/login`, `/signup` sur Render ;
+- revalidation que `main` n’a pas changé ;
+- aucune fusion ni aucun déploiement déclenché par le gate.
+
+A45 reste dépendante de A38, A43 et A44.
+
+## Optionnel — Gemini/Grok
+
+L’activation Gemini/Grok n’est **pas** une action nécessaire au lancement AlmaGo.
+
+Ne l’activer que si souhaité et seulement après avoir configuré un plafond de dépenses fournisseur. Les clés restent dans GitHub Secrets ; aucune clé ne doit être copiée dans une Issue, un commit ou le chat.
