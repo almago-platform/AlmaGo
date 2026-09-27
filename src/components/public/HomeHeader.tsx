@@ -18,15 +18,6 @@ export function HomeHeader() {
   const toggle = useRef<HTMLButtonElement>(null);
   return (
     <>
-      <div className={s.utility}>
-        <div className={s.container}>
-          <span>
-            <HomeIcon name="source" /> AlmaGo est une plateforme indépendante
-            qui vous guide dans votre projet d’études en Allemagne.
-          </span>
-          <a href="#outils">Voir les outils utiles</a>
-        </div>
-      </div>
       <header
         className={s.header}
         onKeyDown={(event) => {
