@@ -83,7 +83,7 @@ Current state:
 - current release work now targets Render through #405/#407;
 - GitHub Actions startup failure is separately tracked in #286.
 
-Recommendation: **do not merge this branch as-is**. Extract any still-missing workflow guard in a fresh PR against current `main`, then close #184.
+Action completed during the audit: the still-relevant guards were extracted into draft #412 against current `main`, coordinated with #405, and **#184 was closed without merge**. Its obsolete Vercel-era A45 logic was intentionally not carried forward.
 
 ### #193 — Germany study/visa worksite plan
 
@@ -251,7 +251,7 @@ Keep #389 open. Do not change paid plan automatically.
 1. Finish/validate the current release chain (#399 → #403, plus #401/#405/#407 as applicable).
 2. Resolve or escalate GitHub Actions startup failure (#286).
 3. Protect `main` (#336) with rules that match actually functioning checks.
-4. Close the clearly superseded diagnostic/sandbox/workflow PRs (#287, likely #285, then #184 after extraction check).
+4. #287 and #184 are now closed without merge; decide separately whether the five-line sandbox PR #285 is worth retaining as historical evidence.
 5. Perform feature-parity extraction for the V3 stacked chain; close old PRs only after useful pieces are retained.
 6. Update legal/runtime docs from Vercel to Render as part of A38 factual review, not blind search/replace.
 7. Only then perform branch deletion as a separate, explicit owner-approved operation.
