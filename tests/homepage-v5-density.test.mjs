@@ -6,8 +6,8 @@ const hero = readFileSync("src/components/public/HomeHero.tsx", "utf8");
 const css = readFileSync("src/components/public/Homepage.module.css", "utf8");
 const config = readFileSync("next.config.ts", "utf8");
 
-test("homepage V5 uses the original high-resolution campus source", () => {
-  assert.match(hero, /photos\/7683694\/pexels-photo-7683694\.jpeg"/);
+test("homepage keeps a high-resolution campus hero source", () => {
+  assert.match(hero, /photos\/7972313\/pexels-photo-7972313\.jpeg"/);
   assert.doesNotMatch(hero, /w=1600/);
   assert.match(hero, /quality=\{90\}/);
   assert.match(config, /qualities:\s*\[75, 90\]/);
