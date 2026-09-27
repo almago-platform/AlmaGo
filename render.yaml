@@ -5,7 +5,7 @@ services:
     region: frankfurt
     plan: 1c-2g
     buildCommand: npm ci && npm run build
-    startCommand: npm start
+    startCommand: npm start -- -p $PORT -H 0.0.0.0
     healthCheckPath: /api/health
     autoDeployTrigger: commit
     maxShutdownDelaySeconds: 30
