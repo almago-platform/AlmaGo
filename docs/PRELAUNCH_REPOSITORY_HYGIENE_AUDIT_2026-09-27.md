@@ -61,7 +61,7 @@ Current state:
 - comparison against `main` has **0 changed files**;
 - issue #286 now contains the continuing infrastructure evidence, including fresh `steps: null` runs.
 
-Recommendation: **close without merge** after preserving #286 as the canonical incident record.
+Action completed during the audit: **#287 was closed without merge** after confirming the comparison against current `main` had 0 changed files. #286 remains the canonical incident record.
 
 ### #285 — Copilot Autopilot sandbox note
 
