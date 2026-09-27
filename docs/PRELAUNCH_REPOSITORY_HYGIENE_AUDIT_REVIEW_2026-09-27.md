@@ -157,6 +157,59 @@ Refined classification: **FUNCTIONALLY SUPERSEDED BY CURRENT STUDENT V2 COPY AND
 
 No copy extraction is required before closing #144, provided the owner accepts `Suivi AlmaGo` / `Responsable : AlmaGo` as the current terminology.
 
+
+## #213 extraction inventory against current main
+
+A path-level extraction scan was completed for files that #213 adds relative to its own base.
+
+#213 adds **84 files** relative to `release/v3-validation-20260925`. Current `main` still does not contain any of the following added application pages:
+
+- `/a-propos`;
+- `/accessibilite`;
+- admin students list/detail;
+- `/aide`;
+- `/comprendre-les-demarches`;
+- `/confiance`;
+- `/parcours-allemagne`;
+- `/selon-votre-pays`;
+- `/sources-officielles`;
+- student `/echeances`;
+- student `/notifications`.
+
+The two notification mutation/read-all API routes added by #213 are also absent from current `main`.
+
+The following added components are absent from current `main`:
+
+- `AdminStudentCase.tsx`;
+- `AdminStudentsPanel.tsx`;
+- `SwitchAccountButton.tsx`;
+- `HomeRoleSection.tsx`;
+- `PublicBreadcrumbs.tsx`;
+- `StudentNotificationsPanel.tsx`.
+
+Among #213-added library files, `src/lib/application-intake.ts` is present on current `main`; the other added helper paths from that set are absent.
+
+None of the **39 tests added by #213 relative to its base** are present under the same paths on current `main`.
+
+This does **not** prove that all missing files should be restored. Some security/business behavior has since been reimplemented differently on current main. It does prove that #213 contains real feature surface that has not been absorbed path-for-path and therefore cannot be labelled “fully superseded”.
+
+Refined #213 treatment:
+
+- **DO NOT MERGE** the 609-commit stack;
+- **DO NOT CLOSE AS FULLY SUPERSEDED** yet;
+- use it as a feature-parity source;
+- extract candidate features one by one against current product priorities;
+- re-review security proposals against current Supabase/RLS state before considering any port.
+
+Suggested first extraction candidates, because they are user-facing and bounded:
+
+1. public help / official-sources / accessibility information;
+2. student deadlines;
+3. student notifications;
+4. admin student-case list/detail.
+
+Each candidate should be assessed independently for current product value before implementation.
+
 ## Branch-cleanup interpretation
 
 The current count of 153 branches without open PRs is only a discovery set, not a deletion list.
