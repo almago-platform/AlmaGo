@@ -6,13 +6,13 @@ Status: proposal only; **no cleanup mutation is authorized by this document**.
 
 ## Goal
 
-Turn the hygiene audit into small, reversible cleanup waves instead of one large destructive operation.
+Keep repository cleanup small, reversible and evidence-based.
 
-Each wave has its own stop condition. If evidence is incomplete, stop and keep the item.
+The repository changed during this review: the legacy V3 PR chain was closed without merge and issue #418 now preserves the extraction backlog. The waves below are refreshed to match that state.
 
 ## Wave 0 — finish active release work
 
-Do not clean around moving release branches.
+Status: **NOT COMPLETE**.
 
 Protected work:
 
@@ -28,32 +28,27 @@ Protected work:
 - #286 GitHub Actions incident;
 - A38/A43/A44/A45 gates.
 
-Exit condition: current release chain is either merged/closed with evidence or explicitly deferred.
+Exit condition: current release work is merged/closed with evidence or explicitly deferred.
 
-## Wave 1 — close superseded legacy PR noise, no branch deletion
+## Wave 1 — archive stale V3 PR containers without deleting branches
 
-Candidate group after owner review:
+Status: **COMPLETED OUTSIDE THIS REVIEW BRANCH**.
 
-- #145 — official-source visibility is already represented on current main;
-- #151 — old public-language source-contract test;
-- #156 — indexing boundary mostly superseded; preserve sitemap idea separately if wanted;
-- #162/#163 — old programme/university verification-date implementation, superseded by later verification model.
+The legacy V3 PR chain, including #213, is now closed without merge.
 
-Review-first candidates:
+This review branch did not perform those closures.
 
-- #142 — copy parity only;
-- #143 — semantic role/trust core present; dedicated role block optional;
-- #165/#166 — partial overlap with the later revalidation model.
+Important: PR closure is **not** branch-deletion authorization and is **not** evidence that every V3 feature shipped.
 
-Do **not** include #146/#147/#148/#149/#157/#159/#167/#170 in this wave because they still contain bounded user-facing features absent from current main.
+Canonical unresolved-feature record: **#418**.
 
-Wave 1 must close PRs only; keep their branches until dependency/base analysis says deletion is safe.
+## Wave 2 — decide V3 product extractions through #418
 
-## Wave 2 — decide product extractions
+Status: **ACTIVE / PRODUCT DECISION REQUIRED**.
 
-Create fresh current-main issues/branches only for features the owner still wants.
+Issue #418 now records the features that may still deserve a fresh current-main implementation.
 
-Strong bounded candidates:
+Strong bounded candidates identified by the audit include:
 
 1. #146 — side-by-side programme comparison;
 2. #149 — public help center;
@@ -67,34 +62,41 @@ Strong bounded candidates:
 Optional/secondary candidates:
 
 - #161 — combined dashboard dossier history;
-- #150 — programme missing-source/missing-deadline quality queues;
+- #150 — missing-source/missing-deadline programme quality queues;
 - #172 — accessibility page only.
 
 Dependent additions:
 
-- #152 contextual help entry only if help center exists;
+- #152 contextual help entry only if a help center exists;
 - #155 public help navigation only after route decisions;
 - #160 breadcrumbs only with retained public guidance pages;
-- #171 local search only if #149 is extracted.
+- #171 local search only if the help center is reimplemented.
 
-Exit condition: every retained feature has a fresh current-main implementation task or is explicitly declined.
+Exit condition: every feature retained by #418 has a fresh current-main task/implementation or is explicitly declined.
 
-## Wave 3 — archive the legacy V3 stack
+## Wave 3 — preserve V3 branch evidence until extraction decisions finish
 
-After Wave 2 decisions are recorded:
+Status: **HOLD**.
 
-- close remaining legacy V3 PRs with a short supersession/extraction note;
-- treat #173 as historical documentation;
-- treat #213 as the immutable integration/reference source;
-- do not merge the 609-commit V3 integration into current main.
+The repository still contains the historical V3 branches after the PR archive pass.
 
-Keep all base branches until every open dependent PR is closed.
+Do not bulk-delete them while #418 is unresolved.
+
+Reason:
+
+- closed V3 PRs remain source material;
+- some features are genuinely absent from current main;
+- historical intermediate branches can be necessary to reconstruct a bounded feature delta.
+
+The earlier open-PR-base blocker for `release/v3-validation-20260925` no longer applies because #213 is closed. Its retention reason is now archive/reference preservation, not active dependency.
 
 ## Wave 4 — delete only evidence-backed merged-tip branches
 
+Status: **NOT STARTED**.
+
 Starting evidence set: **103 branches** whose current tip exactly equals a merged PR head.
 
-Before deletion, remove from the batch any branch that is:
+Before deletion, exclude any branch that is:
 
 - head of an open PR;
 - base of an open PR;
@@ -102,21 +104,21 @@ Before deletion, remove from the batch any branch that is:
 - an intentional archive/backup/experiment to retain;
 - otherwise explicitly retained by the owner.
 
-Delete in small batches, then recount branches after each batch.
+Delete only in small batches and refresh evidence immediately before each batch.
 
 Suggested batch size: 10–20 branches.
 
-Stop immediately if branch state changed since the audit evidence was collected.
+## Wave 5 — review the 76 non-trivial remainder branches
 
-## Wave 5 — review the 49 non-trivial remainder branches
+After the V3 PR archive pass, the non-main/non-open-head population is **179**.
 
-The remainder outside the 103 exact merged-tip set is:
+Outside the 103 exact merged-tip set, **76 branches** remain:
 
 - 2 post-merge moved-tip branches;
-- 40 branches with closed-unmerged PR history;
+- 67 branches with closed-unmerged PR history;
 - 7 branches with no PR history.
 
-These require individual treatment.
+The rise in closed-unmerged-history branches is expected because the archived V3 heads moved into that class.
 
 Never infer “safe to delete” from age, naming, or a closed PR alone.
 
@@ -124,14 +126,14 @@ Never infer “safe to delete” from age, naming, or a closed PR alone.
 
 Known candidate:
 
-- `src/components/public/HomeProductPreview.tsx` — no current application import; only historical tests reference it.
+- `src/components/public/HomeProductPreview.tsx` — no current application import; historical tests still reference it.
 
 Before removal:
 
 1. confirm no active PR depends on it;
-2. update/remove historical tests that intentionally encode the retired composition;
+2. update/remove only the historical tests that encode the retired composition;
 3. remove the component in a small dedicated PR;
-4. run source-contract tests/build locally or in functioning CI.
+4. run the relevant test/build checks.
 
 Do not mix unused-code deletion with branch cleanup.
 
@@ -156,6 +158,7 @@ Immediately before A45:
 - recount open issues;
 - recount branches;
 - list active release branches;
+- verify #418 extraction decisions are recorded;
 - verify no stale PR still claims to be the release source of truth;
 - verify branch protection state;
 - verify the #286 GitHub Actions disposition;
