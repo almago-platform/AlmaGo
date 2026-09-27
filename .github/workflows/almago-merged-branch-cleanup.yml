@@ -8,6 +8,11 @@ on:
         required: true
         default: true
         type: boolean
+      branch_specs:
+        description: "Optional comma/newline list: branch/name@40-char-sha. Required for deletion."
+        required: false
+        default: ""
+        type: string
       confirm_delete:
         description: "Required only for deletion mode: type DELETE_MERGED_BRANCHES"
         required: false
@@ -31,6 +36,7 @@ jobs:
         uses: actions/github-script@v7
         env:
           DRY_RUN: ${{ inputs.dry_run }}
+          BRANCH_SPECS: ${{ inputs.branch_specs }}
           CONFIRM_DELETE: ${{ inputs.confirm_delete }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -45,9 +51,56 @@ jobs:
             const confirmation = String(process.env.CONFIRM_DELETE || "");
             const maxDeletePerRun = 20;
 
+            const rawSpecs = String(process.env.BRANCH_SPECS || "");
+            const requested = new Map();
+            const malformedSpecs = [];
+
+            for (const raw of rawSpecs.split(/[,\n\r]+/)) {
+              const spec = raw.trim();
+              if (!spec) continue;
+              const match = spec.match(/^(.+)@([0-9a-fA-F]{40})$/);
+              if (!match) {
+                malformedSpecs.push(spec);
+                continue;
+              }
+              const branch = match[1].trim();
+              const sha = match[2].toLowerCase();
+              if (!branch) {
+                malformedSpecs.push(spec);
+                continue;
+              }
+              const previous = requested.get(branch);
+              if (previous && previous !== sha) {
+                malformedSpecs.push(spec);
+                continue;
+              }
+              requested.set(branch, sha);
+            }
+
+            if (malformedSpecs.length) {
+              core.setFailed(
+                "Invalid branch_specs entries: " + malformedSpecs.join(", "),
+              );
+              return;
+            }
+
             if (!dryRun && confirmation !== "DELETE_MERGED_BRANCHES") {
               core.setFailed(
                 "Deletion mode requires confirm_delete=DELETE_MERGED_BRANCHES.",
+              );
+              return;
+            }
+
+            if (!dryRun && requested.size === 0) {
+              core.setFailed(
+                "Deletion mode requires at least one explicit branch@sha entry in branch_specs.",
+              );
+              return;
+            }
+
+            if (requested.size > maxDeletePerRun) {
+              core.setFailed(
+                `At most ${maxDeletePerRun} explicit branch@sha specs are allowed per run.`,
               );
               return;
             }
@@ -113,8 +166,7 @@ jobs:
               mergedByBranch.get(pr.head.ref).push(pr);
             }
 
-            const eligible = [];
-            const deleted = [];
+            const discoveredEligible = [];
             const skippedProtected = [];
             const skippedChanged = [];
 
@@ -144,10 +196,10 @@ jobs:
                 throw error;
               }
 
-              const currentSha = currentRef.data.object.sha;
+              const currentSha = currentRef.data.object.sha.toLowerCase();
               const mergedPulls = mergedByBranch.get(branch) || [];
               const exactMergedHead = mergedPulls.some(
-                (pr) => pr.head.sha === currentSha,
+                (pr) => String(pr.head.sha).toLowerCase() === currentSha,
               );
 
               if (!exactMergedHead) {
@@ -155,15 +207,50 @@ jobs:
                 continue;
               }
 
-              eligible.push({ branch, sha: currentSha });
+              discoveredEligible.push({ branch, sha: currentSha });
             }
 
-            if (!dryRun && eligible.length > maxDeletePerRun) {
+            const discoveredByBranch = new Map(
+              discoveredEligible.map((candidate) => [candidate.branch, candidate]),
+            );
+
+            const requestErrors = [];
+            for (const [branch, expectedSha] of requested) {
+              const candidate = discoveredByBranch.get(branch);
+              if (!candidate) {
+                requestErrors.push(`${branch}: not eligible or not found`);
+                continue;
+              }
+              if (candidate.sha !== expectedSha) {
+                requestErrors.push(
+                  `${branch}: expected ${expectedSha}, current ${candidate.sha}`,
+                );
+              }
+            }
+
+            if (requestErrors.length) {
               core.setFailed(
-                `Refusing to delete ${eligible.length} branches in one run; maximum is ${maxDeletePerRun}. Narrow the eligible set before retrying.`,
+                "Requested branch_specs failed validation: " +
+                  requestErrors.join("; "),
               );
               return;
             }
+
+            const eligible =
+              requested.size > 0
+                ? [...requested.keys()].map((branch) =>
+                    discoveredByBranch.get(branch),
+                  )
+                : discoveredEligible;
+
+            if (!dryRun && eligible.length > maxDeletePerRun) {
+              core.setFailed(
+                `Refusing to delete ${eligible.length} branches in one run; maximum is ${maxDeletePerRun}.`,
+              );
+              return;
+            }
+
+            const deleted = [];
 
             if (!dryRun) {
               for (const candidate of eligible) {
@@ -183,7 +270,7 @@ jobs:
                   throw error;
                 }
 
-                const freshSha = freshRef.data.object.sha;
+                const freshSha = freshRef.data.object.sha.toLowerCase();
                 if (freshSha !== candidate.sha) {
                   throw new Error(
                     `Branch tip changed during deletion preflight: ${candidate.branch} expected ${candidate.sha}, got ${freshSha}`,
@@ -199,6 +286,9 @@ jobs:
               }
             }
 
+            const requestedSummary = [...requested.entries()].map(
+              ([branch, sha]) => `${branch} @ ${sha}`,
+            );
             const eligibleSummary = eligible.map(
               ({ branch, sha }) => `${branch} @ ${sha}`,
             );
@@ -206,7 +296,9 @@ jobs:
             await core.summary
               .addHeading("AlmaGo merged branch cleanup")
               .addRaw(`Mode: ${dryRun ? "DRY RUN" : "DELETE"}\n\n`)
-              .addRaw("Eligible in this run: " + eligibleSummary.length + "\n")
+              .addRaw("Explicit branch specs: " + requestedSummary.length + "\n")
+              .addList(requestedSummary.length ? requestedSummary : ["None."])
+              .addRaw("\nEligible in this run: " + eligibleSummary.length + "\n")
               .addList(eligibleSummary.length ? eligibleSummary : ["None."])
               .addRaw(
                 "\nPer-run deletion cap: " + maxDeletePerRun + "\n",
