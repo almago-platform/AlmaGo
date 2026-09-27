@@ -9,7 +9,7 @@ Cette matrice sépare ce qu'AlmaGo peut préparer automatiquement de ce qui doit
 | Nom du service | établi | dépôt AlmaGo | aucune |
 | Fonctions actuelles | établi | code + `docs/data-processing-inventory.md` | aucune |
 | Supabase Auth/Postgres/Storage | établi | code/migrations | aucune |
-| Vercel hébergement/déploiement | établi | dépôt/workflows | aucune |
+| Render hébergement/déploiement | établi | `render.yaml` + configuration/runtime vérifiés | aucune |
 | Analytics actif | aucun actuellement | code + A44 séparé | aucune pour A38 |
 | Exploitant légal | inconnu | information business | propriétaire |
 | Forme juridique | inconnue | information business | propriétaire |
