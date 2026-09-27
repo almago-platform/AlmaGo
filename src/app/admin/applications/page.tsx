@@ -1,6 +1,6 @@
 import { AdminApplicationsPanel } from "@/components/admin/AdminApplicationsPanel";
-import { Card } from "@/components/ui/Card";
-import { PageHeader } from "@/components/ui/PageHeader";
+import { AdminLoadError } from "@/components/admin/AdminLoadError";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -14,24 +14,25 @@ export default async function AdminApplicationsPage() {
 
   if (error) {
     return (
-      <main className="mx-auto w-full max-w-7xl px-4 py-7 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
-        <PageHeader badge="Suivi équipe" title="Candidatures" />
-        <Card>
-          <div role="alert">
-            <h2 className="text-xl font-bold text-slate-950">File des candidatures temporairement indisponible</h2>
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
-              Nous n’arrivons pas à charger les dossiers pour le moment. Rien n’a été modifié.
-            </p>
-          </div>
-        </Card>
+      <main className="mx-auto w-full max-w-[92rem] px-4 py-5 sm:px-6 sm:py-6 xl:px-8">
+        <AdminPageHeader
+          section="Opérations"
+          title="Candidatures"
+          description="Suivi des dossiers, des échéances et des prochaines actions."
+        />
+        <AdminLoadError
+          title="La file des candidatures est temporairement indisponible"
+          description="Nous n’arrivons pas à charger les dossiers pour le moment."
+          retryHref="/admin/applications"
+        />
       </main>
     );
   }
 
   return (
-    <main className="mx-auto w-full max-w-7xl px-4 py-7 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
-      <PageHeader
-        badge="Suivi équipe"
+    <main className="mx-auto w-full max-w-[92rem] px-4 py-5 sm:px-6 sm:py-6 xl:px-8">
+      <AdminPageHeader
+        section="Opérations"
         title="Candidatures"
         description="Traitez les dossiers actifs, surveillez les échéances et gardez clairement identifiés les champs qui alimentent l’espace étudiant."
       />
