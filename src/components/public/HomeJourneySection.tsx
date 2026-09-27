@@ -1,81 +1,88 @@
-import Link from "next/link";
-import { HomeSymbol } from "./HomeSymbol";
-import s from "./CodexHome.module.css";
+import { HomeIcon } from "./HomeIcons";
+import s from "./Homepage.module.css";
+
 const steps = [
-  [
-    "Poser votre projet",
-    "Diplôme, domaine, langue, rentrée : donnez une direction à vos recherches.",
-    "Le point de départ",
-  ],
-  [
-    "Clarifier votre base académique",
-    "Rassemblez vos diplômes et justificatifs. Identifiez les éléments à faire vérifier.",
-    "Votre parcours actuel",
-  ],
-  [
-    "Explorer les programmes",
-    "Examinez les programmes, leurs critères, leurs échéances et leurs sources.",
-    "Des pistes à comparer",
-  ],
-  [
-    "Préparer les candidatures",
-    "Reliez chaque candidature aux pièces demandées et aux actions à effectuer.",
-    "Un dossier à la fois",
-  ],
-  [
-    "Préparer les conditions du projet",
-    "Langue, financement et assurance : organisez les besoins selon votre situation.",
-    "Les besoins à anticiper",
-  ],
-  [
-    "Suivre les démarches suivantes",
-    "Avancez avec une checklist adaptée aux réponses reçues et à votre projet réel.",
-    "La suite, au bon moment",
-  ],
+  {
+    title: "Poser votre projet",
+    text: "Le diplôme, le domaine, la langue et la rentrée qui donnent une direction à vos recherches.",
+    detail: "Votre point de départ",
+  },
+  {
+    title: "Établir votre base académique",
+    text: "Vos diplômes et justificatifs, avec ce qui est acquis et ce qui reste à vérifier.",
+    detail: "Les éléments de votre parcours",
+  },
+  {
+    title: "Explorer les programmes",
+    text: "Des pistes à examiner selon votre profil, leurs critères, leurs échéances et leurs sources.",
+    detail: "Des choix à comparer",
+    id: "programmes",
+  },
+  {
+    title: "Préparer vos candidatures",
+    text: "Les pièces, les statuts et la prochaine action de chaque candidature, réunis au même endroit.",
+    detail: "Un suivi pour chaque dossier",
+  },
+  {
+    title: "Organiser votre préparation",
+    text: "Langue, financement et assurance : des besoins à préparer selon votre projet réel.",
+    detail: "Les conditions de votre départ",
+  },
+  {
+    title: "Suivre la suite du parcours",
+    text: "Une checklist pour les démarches qui deviennent pertinentes et les réponses encore attendues.",
+    detail: "Le prochain pas, au bon moment",
+  },
 ] as const;
+
 export function HomeJourneySection() {
   return (
     <section
       id="parcours"
-      className={s.section}
+      className={`${s.section} ${s.journey}`}
       aria-labelledby="journey-title"
     >
-      <div className={[s.container, s.journeyGrid].join(" ")}>
-        <div className={s.journeyIntro}>
-          <p className={s.eyebrow}>Un parcours, six repères</p>
-          <h2 id="journey-title" className={s.title}>
-            D’abord les études.
-            <br />
-            <span>Puis la suite.</span>
-          </h2>
-          <p className={s.lead}>
-            Vous n’avez pas à tout maîtriser aujourd’hui. Chaque étape vous aide
-            à préparer la suivante.
-          </p>
-          <div className={s.journeyAside}>
-            <HomeSymbol name="route" />
-            <p>
-              <strong>Votre première priorité</strong>Construire un projet
-              académique cohérent avant les démarches qui en dépendent.
-            </p>
+      <div className={s.container}>
+        <div className={s.sectionHeading}>
+          <div>
+            <p className={s.eyebrow}>Le parcours, simplement</p>
+            <h2 id="journey-title" className={s.sectionTitle}>
+              Un grand projet.
+              <br />
+              <em>Six étapes pour avancer.</em>
+            </h2>
           </div>
-          <Link href="/signup" className={s.textLink}>
-            Commencer par mon projet
-            <HomeSymbol name="arrow" />
-          </Link>
+          <p>
+            Vous n’avez pas à tout connaître dès le départ. Commencez par votre
+            projet académique, puis préparez les démarches qui en découlent.
+          </p>
         </div>
-        <ol className={s.steps} aria-label="Les six étapes du projet">
-          {steps.map(([title, text, detail], index) => (
-            <li key={title} id={index === 2 ? "programmes" : undefined}>
-              <span className={s.stepNumber}>
-                {String(index + 1).padStart(2, "0")}
-              </span>
-              <h3>{title}</h3>
-              <p>{text}</p>
-              <span className={s.stepDetail}>{detail}</span>
+        <ol
+          className={s.steps}
+          aria-label="Les six étapes de votre projet d’études"
+        >
+          {steps.map((step, i) => (
+            <li key={step.title} id={"id" in step ? step.id : undefined}>
+              <div className={s.stepNumber}>
+                <span>{String(i + 1).padStart(2, "0")}</span>
+                <HomeIcon name={i === 5 ? "check" : "arrow"} />
+              </div>
+              <h3>{step.title}</h3>
+              <p>{step.text}</p>
+              <span className={s.stepDetail}>{step.detail}</span>
             </li>
           ))}
         </ol>
+        <div className={s.journeyFoot}>
+          <span>
+            <HomeIcon name="source" /> Votre préparation avance. Les décisions
+            restent aux organismes compétents.
+          </span>
+          <a href="/signup">
+            Commencer par mon projet
+            <HomeIcon name="arrow" />
+          </a>
+        </div>
       </div>
     </section>
   );

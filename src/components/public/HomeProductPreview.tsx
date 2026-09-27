@@ -1,21 +1,35 @@
 "use client";
-import Link from "next/link";
+
 import { useRef, useState, type KeyboardEvent } from "react";
-import { HomeSymbol, type SymbolName } from "./HomeSymbol";
-import s from "./CodexHome.module.css";
-const tabs: { id: string; label: string; icon: SymbolName }[] = [
-  { id: "projet", label: "Mon projet", icon: "folder" },
-  { id: "documents", label: "Mes documents", icon: "document" },
-  { id: "candidatures", label: "Mes candidatures", icon: "book" },
-];
+import { HomeIcon, type HomeIconName } from "./HomeIcons";
+import s from "./Homepage.module.css";
+
+const tabs = ["Vue d’ensemble", "Documents", "Candidatures"] as const;
+const benefits = [
+  [
+    "01",
+    "Tout retrouver au même endroit.",
+    "Votre profil, vos pièces et vos candidatures restent reliés à votre projet.",
+  ],
+  [
+    "02",
+    "Savoir ce qui mérite votre attention.",
+    "Les éléments connus, ceux qui manquent et les prochaines actions sont distingués.",
+  ],
+  [
+    "03",
+    "Garder le fil, à votre rythme.",
+    "Vous retrouvez le contexte de votre dossier quand vous reprenez vos démarches.",
+  ],
+] as const;
+
 export function HomeProductPreview() {
   const [active, setActive] = useState(0);
   const buttons = useRef<(HTMLButtonElement | null)[]>([]);
-  function move(event: KeyboardEvent<HTMLButtonElement>, index: number) {
-    let next = index;
-    if (event.key === "ArrowDown" || event.key === "ArrowRight")
-      next = (index + 1) % tabs.length;
-    else if (event.key === "ArrowUp" || event.key === "ArrowLeft")
+  function navigate(event: KeyboardEvent<HTMLButtonElement>, index: number) {
+    let next: number;
+    if (event.key === "ArrowRight") next = (index + 1) % tabs.length;
+    else if (event.key === "ArrowLeft")
       next = (index + tabs.length - 1) % tabs.length;
     else if (event.key === "Home") next = 0;
     else if (event.key === "End") next = tabs.length - 1;
@@ -27,252 +41,242 @@ export function HomeProductPreview() {
   return (
     <section
       id="espace"
-      className={[s.section, s.workspaceSection].join(" ")}
-      aria-labelledby="workspace-title"
+      className={`${s.section} ${s.product}`}
+      aria-labelledby="product-title"
     >
-      <div className={s.container}>
-        <div className={s.sectionHeading}>
-          <div>
-            <p className={s.eyebrow}>Votre espace, en pratique</p>
-            <h2 id="workspace-title" className={s.title}>
-              Un projet qui avance.
-              <br />
-              <span>Un dossier qui suit.</span>
-            </h2>
-          </div>
+      <div className={`${s.container} ${s.productGrid}`}>
+        <div className={s.productCopy}>
+          <p className={s.eyebrow}>Pourquoi AlmaGo</p>
+          <h2 id="product-title" className={s.sectionTitle}>
+            Moins d’onglets.
+            <br />
+            <em>Plus de clarté.</em>
+          </h2>
           <p className={s.lead}>
-            Moins de notes éparpillées, plus de visibilité. Retrouvez les
-            informations qui comptent, au même endroit.
+            Votre projet ne devrait pas se perdre entre une note, un e-mail et
+            un document.
           </p>
+          <ol className={s.benefits}>
+            {benefits.map(([n, title, text]) => (
+              <li key={n}>
+                <span>{n}</span>
+                <div>
+                  <h3>{title}</h3>
+                  <p>{text}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
         </div>
-        <div className={s.workspace}>
-          <div className={s.workspaceBar}>
-            <span>
-              <span className={s.miniLogo}>A</span>Votre espace AlmaGo
-            </span>
-            <span className={s.exampleLabel}>Démonstration</span>
-          </div>
-          <div className={s.workspaceBody}>
-            <div className={s.workspaceSide}>
-              <p className={s.smallLabel}>Mon dossier</p>
-              <div
-                role="tablist"
-                aria-label="Explorer la démonstration du dossier"
-                aria-orientation="vertical"
-                className={s.workspaceTabs}
-              >
-                {tabs.map((tab, index) => (
-                  <button
-                    ref={(node) => {
-                      buttons.current[index] = node;
-                    }}
-                    key={tab.id}
-                    id={"demo-tab-" + tab.id}
-                    type="button"
-                    role="tab"
-                    aria-selected={active === index}
-                    aria-controls={"demo-panel-" + tab.id}
-                    tabIndex={active === index ? 0 : -1}
-                    onClick={() => setActive(index)}
-                    onKeyDown={(event) => move(event, index)}
-                  >
-                    <HomeSymbol name={tab.icon} />
-                    <span>{tab.label}</span>
-                    <HomeSymbol name="arrow" />
-                  </button>
-                ))}
-              </div>
-              <p className={s.sidebarNote}>
-                <HomeSymbol name="shield" />
-                Un aperçu illustratif.
-                <br />
-                Vos informations restent liées à votre situation.
-              </p>
+        <div className={s.productFrame}>
+          <div className={s.previewTop}>
+            <div>
+              <span className={s.previewLogo}>A</span>
+              <strong>Votre espace AlmaGo</strong>
             </div>
-            {tabs.map((tab, index) => (
-              <div
-                key={tab.id}
-                id={"demo-panel-" + tab.id}
-                role="tabpanel"
-                aria-labelledby={"demo-tab-" + tab.id}
-                tabIndex={0}
-                hidden={active !== index}
-                className={s.workspacePanel}
+            <span className={s.sample}>Démonstration</span>
+          </div>
+          <div
+            className={s.previewTabs}
+            role="tablist"
+            aria-label="Explorer l’exemple de dossier"
+          >
+            {tabs.map((tab, i) => (
+              <button
+                key={tab}
+                ref={(element) => {
+                  buttons.current[i] = element;
+                }}
+                id={`preview-tab-${i}`}
+                type="button"
+                role="tab"
+                aria-selected={active === i}
+                aria-controls={`preview-panel-${i}`}
+                tabIndex={active === i ? 0 : -1}
+                onClick={() => setActive(i)}
+                onKeyDown={(event) => navigate(event, i)}
               >
-                {index === 0 && (
-                  <>
-                    <div className={s.panelHeading}>
-                      <div>
-                        <p className={s.smallLabel}>Vue de mon projet</p>
-                        <h3>Un point de départ. Une direction.</h3>
-                      </div>
-                      <span className={s.status}>En préparation</span>
-                    </div>
-                    <div className={s.projectFields}>
-                      <div>
-                        <span>Destination</span>
-                        <strong>Allemagne</strong>
-                      </div>
-                      <div>
-                        <span>Diplôme envisagé · exemple</span>
-                        <strong>Master</strong>
-                      </div>
-                      <div>
-                        <span>Domaine</span>
-                        <strong>À préciser</strong>
-                      </div>
-                    </div>
-                    <div className={s.nextAction}>
-                      <span className={s.actionMark}>
-                        <HomeSymbol name="arrow" />
-                      </span>
-                      <div>
-                        <p className={s.smallLabel}>
-                          Prochaine action · exemple
-                        </p>
-                        <h4>Rassembler vos justificatifs académiques</h4>
-                        <p>
-                          Préparez vos diplômes et relevés de notes pour
-                          préciser la suite de votre parcours.
-                        </p>
-                      </div>
-                    </div>
-                    <div className={s.panelRows}>
-                      <div>
-                        <HomeSymbol name="check" />
-                        <span>Les premiers repères de votre projet</span>
-                        <span className={s.rowStatus}>Renseignés</span>
-                      </div>
-                      <div>
-                        <HomeSymbol name="clock" />
-                        <span>Les exigences des programmes</span>
-                        <span className={s.rowStatus}>À examiner</span>
-                      </div>
-                    </div>
-                  </>
-                )}
-                {index === 1 && (
-                  <>
-                    <div className={s.panelHeading}>
-                      <div>
-                        <p className={s.smallLabel}>Mes pièces académiques</p>
-                        <h3>Chaque document trouve sa place.</h3>
-                      </div>
-                    </div>
-                    <p className={s.panelIntro}>
-                      Distinguez les pièces déjà ajoutées de celles qu’il vous
-                      reste à réunir.
-                    </p>
-                    <div className={s.documentRows}>
-                      {[
-                        ["Diplôme", "Ajouté"],
-                        ["Relevé de notes", "À rassembler"],
-                        ["Justificatif de langue", "À examiner"],
-                      ].map(([label, status], index) => (
-                        <div key={label}>
-                          <span className={s.fileIcon}>
-                            <HomeSymbol name="document" />
-                          </span>
-                          <div>
-                            <strong>{label}</strong>
-                            <span>
-                              {index === 0
-                                ? "Exemple de pièce enregistrée"
-                                : "Selon votre parcours et le programme"}
-                            </span>
-                          </div>
-                          <span
-                            className={
-                              index === 0 ? s.readyStatus : s.pendingStatus
-                            }
-                          >
-                            {status}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                    <p className={s.panelNote}>
-                      <HomeSymbol name="shield" />« Ajouté » ne signifie pas «
-                      accepté » par une université.
-                    </p>
-                  </>
-                )}
-                {index === 2 && (
-                  <>
-                    <div className={s.panelHeading}>
-                      <div>
-                        <p className={s.smallLabel}>Mes candidatures</p>
-                        <h3>Voir ce qui reste à préparer.</h3>
-                      </div>
-                    </div>
-                    <div className={s.application}>
-                      <div>
-                        <HomeSymbol name="book" />
-                        <span>
-                          <strong>Programme à explorer</strong>
-                          <span>
-                            Exemple fictif · aucun établissement associé
-                          </span>
-                        </span>
-                        <span className={s.status}>À examiner</span>
-                      </div>
-                      <dl>
-                        <div>
-                          <dt>Critères d’accès</dt>
-                          <dd>À confirmer à la source</dd>
-                        </div>
-                        <div>
-                          <dt>Échéance</dt>
-                          <dd>À vérifier</dd>
-                        </div>
-                        <div>
-                          <dt>Pièces demandées</dt>
-                          <dd>À rassembler</dd>
-                        </div>
-                      </dl>
-                    </div>
-                    <p className={s.panelNote}>
-                      <HomeSymbol name="shield" />
-                      Le suivi organise votre préparation. Il ne transmet pas
-                      une candidature et ne prédit pas l’admission.
-                    </p>
-                  </>
-                )}
-              </div>
+                {tab}
+              </button>
             ))}
           </div>
-          <div className={s.workspaceFoot}>
-            <span>Données fictives · Aucun dossier réel affiché</span>
-            <Link href="/signup">
-              Créer mon propre dossier
-              <HomeSymbol name="arrow" />
-            </Link>
-          </div>
-        </div>
-        <div className={s.benefits}>
-          <div>
-            <span>01</span>
-            <h3>Tout relier.</h3>
-            <p>
-              Votre profil, vos documents et vos candidatures partagent le même
-              contexte.
-            </p>
-          </div>
-          <div>
-            <span>02</span>
-            <h3>Voir la prochaine action.</h3>
-            <p>
-              Les éléments à compléter restent visibles, sans confondre
-              préparation et décision.
-            </p>
-          </div>
-          <div>
-            <span>03</span>
-            <h3>Reprendre facilement.</h3>
-            <p>Retrouvez vos repères lorsque vous revenez à votre projet.</p>
-          </div>
+          {tabs.map((tab, i) => (
+            <div
+              key={tab}
+              role="tabpanel"
+              id={`preview-panel-${i}`}
+              aria-labelledby={`preview-tab-${i}`}
+              hidden={active !== i}
+              tabIndex={0}
+              className={s.previewPanel}
+            >
+              {i === 0 ? (
+                <>
+                  <div className={s.previewHeading}>
+                    <div>
+                      <p className={s.overline}>Mon projet d’études</p>
+                      <h3>Une vue claire pour avancer.</h3>
+                    </div>
+                    <span className={s.projectStatus}>En préparation</span>
+                  </div>
+                  <div className={s.nextAction}>
+                    <span className={s.actionIcon}>
+                      <HomeIcon name="arrow" />
+                    </span>
+                    <div>
+                      <p className={s.overline}>Prochaine action · Exemple</p>
+                      <h4>Ajouter votre relevé de notes</h4>
+                      <p>
+                        Rassemblez les pièces utiles à l’examen de votre
+                        parcours.
+                      </p>
+                    </div>
+                  </div>
+                  <div className={s.dossierRows}>
+                    <DemoRow
+                      icon="check"
+                      title="Projet académique"
+                      detail="Diplôme, domaine et rentrée"
+                      status="Renseigné"
+                      ready
+                    />
+                    <DemoRow
+                      icon="document"
+                      title="Documents"
+                      detail="Les pièces de votre dossier"
+                      status="À compléter"
+                    />
+                    <DemoRow
+                      icon="book"
+                      title="Programmes"
+                      detail="Des pistes à examiner"
+                      status="À explorer"
+                    />
+                  </div>
+                  <div className={s.previewNote}>
+                    <HomeIcon name="clock" />
+                    <span>
+                      Une étape enregistrée décrit votre préparation, pas une
+                      chance d’admission.
+                    </span>
+                  </div>
+                </>
+              ) : i === 1 ? (
+                <>
+                  <div className={s.previewHeading}>
+                    <div>
+                      <p className={s.overline}>Mes documents</p>
+                      <h3>Chaque pièce à sa place.</h3>
+                    </div>
+                  </div>
+                  <p className={s.panelIntro}>
+                    L’exemple distingue un document ajouté d’une pièce encore à
+                    rassembler.
+                  </p>
+                  <div className={s.dossierRows}>
+                    <DemoRow
+                      icon="document"
+                      title="Diplôme"
+                      detail="Pièce enregistrée dans le dossier"
+                      status="Ajouté"
+                      ready
+                    />
+                    <DemoRow
+                      icon="document"
+                      title="Relevé de notes"
+                      detail="La prochaine pièce à rassembler"
+                      status="À ajouter"
+                    />
+                    <DemoRow
+                      icon="document"
+                      title="Justificatif de langue"
+                      detail="Selon les exigences du programme"
+                      status="À examiner"
+                    />
+                  </div>
+                  <div className={s.previewNote}>
+                    <HomeIcon name="source" />
+                    <span>
+                      « Ajouté » ne signifie pas « accepté » par une université.
+                    </span>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className={s.previewHeading}>
+                    <div>
+                      <p className={s.overline}>Mes candidatures</p>
+                      <h3>Ne perdez plus le fil.</h3>
+                    </div>
+                  </div>
+                  <div className={s.applicationExample}>
+                    <span className={s.projectStatus}>
+                      Exemple de candidature
+                    </span>
+                    <h4>Votre programme sélectionné</h4>
+                    <dl>
+                      <div>
+                        <dt>Statut</dt>
+                        <dd>En préparation</dd>
+                      </div>
+                      <div>
+                        <dt>Prochaine action</dt>
+                        <dd>Vérifier les pièces demandées</dd>
+                      </div>
+                      <div>
+                        <dt>Échéance</dt>
+                        <dd>À confirmer à la source</dd>
+                      </div>
+                      <div>
+                        <dt>Décision d’admission</dt>
+                        <dd>Université concernée</dd>
+                      </div>
+                    </dl>
+                  </div>
+                  <div className={s.previewNote}>
+                    <HomeIcon name="source" />
+                    <span>
+                      La candidature officielle suit le canal demandé par
+                      l’établissement.
+                    </span>
+                  </div>
+                </>
+              )}
+            </div>
+          ))}
+          <p className={s.previewCaption}>
+            Aperçu illustratif · Données fictives · Votre dossier dépend de
+            votre situation.
+          </p>
         </div>
       </div>
     </section>
+  );
+}
+
+function DemoRow({
+  icon,
+  title,
+  detail,
+  status,
+  ready = false,
+}: {
+  icon: HomeIconName;
+  title: string;
+  detail: string;
+  status: string;
+  ready?: boolean;
+}) {
+  return (
+    <div className={s.dossierRow}>
+      <span className={s.rowIcon}>
+        <HomeIcon name={icon} />
+      </span>
+      <div>
+        <strong>{title}</strong>
+        <span>{detail}</span>
+      </div>
+      <span className={ready ? s.statusReady : s.statusPending}>{status}</span>
+    </div>
   );
 }
