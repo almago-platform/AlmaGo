@@ -22,12 +22,6 @@ export default function SignupPage() {
             </Link>
           </div>
 
-          <div className="mb-4 flex items-center gap-2 lg:hidden" aria-label="Progression de création du dossier">
-            <span className="h-1.5 flex-1 rounded-full bg-[var(--brand)]" />
-            <span className="h-1.5 flex-1 rounded-full bg-[var(--border)]" />
-            <span className="h-1.5 flex-1 rounded-full bg-[var(--border)]" />
-          </div>
-
           <AuthForm initialMode="signup" />
         </section>
       </div>
