@@ -1,12 +1,19 @@
-# Homepage Work V4 photograph
+# Homepage Brand V2.1 photography
 
-- File: `study-library.webp` (1349 × 900, 96,146 bytes)
-- Photographer: Mikhail Nilov
-- Original: https://www.pexels.com/photo/college-students-studying-in-a-library-7777713/
-- Download: https://images.pexels.com/photos/7777713/pexels-photo-7777713.jpeg?auto=compress&dpr=1&h=900&w=1600
+## Current hero
+
+- Remote image ID: Pexels #7683694
+- Photographer: RDNE Stock project
+- Page: https://www.pexels.com/photo/college-students-in-a-university-campus-7683694/
+- Delivery: https://images.pexels.com/photos/7683694/pexels-photo-7683694.jpeg?auto=compress&cs=tinysrgb&w=1600
+- Original dimensions reported by Pexels: 6169 × 4113
 - License reviewed 2026-09-27: https://www.pexels.com/license/
-- Pexels permits website use and modification; attribution is voluntary and included in the homepage footer.
+- Pexels marks the asset free to use.
 - No endorsement, AlmaGo customer relationship, institutional partnership or German location is asserted.
-- The file was converted to WebP without generative edits. The homepage uses responsive Next Image delivery and CSS cropping, with the hero image prioritized.
+- The homepage uses responsive Next Image delivery and CSS cropping; no generative edit is applied.
 
-Chosen for its natural light, quiet academic setting, candid-looking concentration and warm neutral tones. It illustrates preparation rather than success, official approval or a personal adviser.
+Chosen because the scene is clearly university-contextual, human and outdoors, with a modern campus environment rather than a generic interior.
+
+## Previous Work V4 asset
+
+The former local `study-library.webp` remains in repository history and can be restored if needed.

@@ -43,13 +43,13 @@ export function HomeHero() {
         <div className={s.heroVisual}>
           <figure className={s.heroPhoto}>
             <Image
-              src="/images/homepage/study-library.webp"
-              alt="Deux étudiants concentrés sur leur travail à une table de bibliothèque, éclairée par la lumière du jour."
+              src="https://images.pexels.com/photos/7683694/pexels-photo-7683694.jpeg?auto=compress&cs=tinysrgb&w=1600"
+              alt="Un groupe d’étudiants échange devant un bâtiment universitaire moderne."
               fill
               priority
               sizes="(min-width: 1280px) 560px, (min-width: 900px) 46vw, (min-width: 600px) 75vw, 100vw"
             />
-            <figcaption>Une nouvelle étape commence ici.</figcaption>
+            <figcaption>Un projet d’études commence par des repères clairs.</figcaption>
           </figure>
           <div className={s.heroDossier}>
             <div className={s.miniHead}>

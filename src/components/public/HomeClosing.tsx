@@ -80,8 +80,8 @@ export function HomeFooter() {
         </div>
         <p className={s.photoCredit}>
           Photographie d’illustration :{" "}
-          <a href="https://www.pexels.com/photo/college-students-studying-in-a-library-7777713/">
-            Mikhail Nilov / Pexels
+          <a href="https://www.pexels.com/photo/college-students-in-a-university-campus-7683694/">
+            RDNE Stock project / Pexels
           </a>
           . Les personnes représentées ne sont pas présentées comme
           utilisatrices d’AlmaGo.
