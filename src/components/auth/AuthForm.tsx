@@ -4,6 +4,7 @@ import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { buttonClassName } from "@/components/ui/Button";
+import { BrandLogo } from "@/components/brand/BrandLogo";
 
 type Mode = "login" | "signup" | "forgot";
 
@@ -70,7 +71,7 @@ export function AuthForm({ initialMode = "login" }: { initialMode?: Mode }) {
   return (
     <section className="w-full max-w-xl rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] shadow-none">
       <div className="border-b border-[var(--border)] px-6 py-6 sm:px-8">
-        <p className="text-sm font-bold uppercase tracking-[0.18em] text-[var(--accent-strong)]">AlmaGo</p>
+        <BrandLogo className="h-auto w-36" />
         <h1 className="mt-3 text-3xl font-semibold tracking-[-0.035em] text-slate-950">{title}</h1>
         <p className="mt-3 text-base leading-7 text-slate-600">{subtitle}</p>
       </div>
