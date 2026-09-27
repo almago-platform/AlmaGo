@@ -10,11 +10,11 @@ test("helpful tools no longer render the isolated footer note", () => {
   assert.doesNotMatch(toolsSection, /helpfulToolsNote/);
 });
 
-test("tools and FAQ use compact desktop spacing", () => {
-  assert.match(css, /\.helpfulTools\.section\s*\{[\s\S]*padding-block:\s*50px 38px/);
-  assert.match(css, /\.helpfulToolsHeading\s*\{[\s\S]*margin-bottom:\s*28px/);
-  assert.match(css, /\.faq\.section\s*\{[\s\S]*padding-block:\s*50px 56px/);
-  assert.match(css, /\.faqGrid\s*\{[\s\S]*gap:\s*58px/);
+test("tools and FAQ keep the current deliberate desktop spacing", () => {
+  assert.match(css, /\.helpfulTools\.section\s*\{[\s\S]*padding-block:\s*66px 58px/);
+  assert.match(css, /\.helpfulToolsHeading\s*\{[\s\S]*margin:\s*0 auto 40px/);
+  assert.match(css, /\.faq\.section\s*\{[\s\S]*padding-block:\s*48px 52px/);
+  assert.match(css, /\.faqGrid\s*\{[\s\S]*gap:\s*56px/);
 });
 
 test("FAQ uses a subtle warm background and keeps responsive stacking", () => {
