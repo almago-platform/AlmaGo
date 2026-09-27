@@ -2,27 +2,29 @@ import { HomeHeader } from "@/components/public/HomeHeader";
 import { HomeHero } from "@/components/public/HomeHero";
 import { HomeQuickAccess } from "@/components/public/HomeQuickAccess";
 import { HomeProductPreview } from "@/components/public/HomeProductPreview";
-import { HomeValueSection } from "@/components/public/HomeValueSection";
 import { HomeJourneySection } from "@/components/public/HomeJourneySection";
-import { HomeHumanSupportSection } from "@/components/public/HomeHumanSupportSection";
 import { HomeTrustSection } from "@/components/public/HomeTrustSection";
 import { HomeFaqSection } from "@/components/public/HomeFaqSection";
 import { HomeFinalCta, HomeFooter } from "@/components/public/HomeClosing";
+import s from "@/components/public/CodexHome.module.css";
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-[var(--background)] text-slate-950">
+    <div className={s.home}>
+      <a className={s.skip} href="#main-content">
+        Aller au contenu
+      </a>
       <HomeHeader />
-      <HomeHero />
-      <HomeQuickAccess />
-      <HomeProductPreview />
-      <HomeValueSection />
-      <HomeJourneySection />
-      <HomeHumanSupportSection />
-      <HomeTrustSection />
-      <HomeFaqSection />
-      <HomeFinalCta />
+      <main id="main-content" tabIndex={-1}>
+        <HomeHero />
+        <HomeQuickAccess />
+        <HomeProductPreview />
+        <HomeJourneySection />
+        <HomeTrustSection />
+        <HomeFaqSection />
+        <HomeFinalCta />
+      </main>
       <HomeFooter />
-    </main>
+    </div>
   );
 }
