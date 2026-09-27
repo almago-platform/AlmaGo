@@ -1,6 +1,6 @@
 import { AdminDocumentsPanel } from "@/components/admin/AdminDocumentsPanel";
-import { Card } from "@/components/ui/Card";
-import { PageHeader } from "@/components/ui/PageHeader";
+import { AdminLoadError } from "@/components/admin/AdminLoadError";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { createClient } from "@/lib/supabase/server";
 import {
   toAdminAcademicEvidenceView,
@@ -25,25 +25,26 @@ export default async function AdminDocumentsPage() {
 
   if (documentsResult.error) {
     return (
-      <main className="mx-auto w-full max-w-7xl px-4 py-7 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
-        <PageHeader badge="Administration" title="Revue des documents" />
-        <Card>
-          <div role="alert">
-            <h2 className="text-xl font-bold text-slate-950">File documentaire temporairement indisponible</h2>
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
-              Nous n’arrivons pas à charger les documents à traiter pour le moment. Rien n’a été modifié.
-            </p>
-          </div>
-        </Card>
+      <main className="mx-auto w-full max-w-[92rem] px-4 py-5 sm:px-6 sm:py-6 xl:px-8">
+        <AdminPageHeader
+          section="Opérations"
+          title="Documents"
+          description="File de vérification des pièces qui peuvent bloquer ou ralentir le dossier étudiant."
+        />
+        <AdminLoadError
+          title="La file documentaire est temporairement indisponible"
+          description="Nous n’arrivons pas à charger les documents à traiter pour le moment."
+          retryHref="/admin/documents"
+        />
       </main>
     );
   }
 
   return (
-    <main className="mx-auto w-full max-w-7xl px-4 py-7 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
-      <PageHeader
-        badge="Administration"
-        title="Revue des documents"
+    <main className="mx-auto w-full max-w-[92rem] px-4 py-5 sm:px-6 sm:py-6 xl:px-8">
+      <AdminPageHeader
+        section="Opérations"
+        title="Documents"
         description="Traitez les pièces en attente, consultez le contexte du dossier et gardez explicite tout message qui sera visible par l’étudiant."
       />
       <AdminDocumentsPanel
