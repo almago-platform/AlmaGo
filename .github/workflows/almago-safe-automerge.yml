@@ -10,7 +10,6 @@ permissions:
   pull-requests: read
   issues: write
   actions: read
-  statuses: read
 
 concurrency:
   group: almago-merge-readiness-${{ github.event.workflow_run.head_sha }}
@@ -89,10 +88,6 @@ jobs:
             );
             if (!green) return;
 
-            const { data: combined } = await github.rest.repos.getCombinedStatusForRef({ owner, repo, ref: headSha });
-            const vercel = combined.statuses.find(status => status.context === "Vercel");
-            if (vercel?.state !== "success") return;
-
             const marker = `<!-- almago-merge-ready:head=${headSha} -->`;
             const comments = await github.paginate(github.rest.issues.listComments, {
               owner, repo, issue_number: pullNumber, per_page: 100
@@ -107,9 +102,9 @@ jobs:
                   `HEAD: ${headSha}`,
                   marker,
                   "",
-                  "Exact-file scope, canonical CI, browser/accessibility quality and Vercel are green.",
+                  "Exact-file scope, canonical CI and browser/accessibility quality are green.",
                   "**No automatic merge is performed.** Merge remains explicitly controlled."
                 ].join("\n")
               });
             }
-            core.summary.addHeading("AlmaGo merge readiness").addRaw(`PR #${pullNumber} is ready for controlled merge.`).write();
+            core.summary.addHeading("AlmaGo merge readiness").addRaw(`PR #${pullNumber} is ready for controlled merge. Render exact-main verification remains an A45 release concern after merge.`).write();
