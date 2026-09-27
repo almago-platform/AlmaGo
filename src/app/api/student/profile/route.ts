@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { getStudentUser } from "@/lib/auth/access";
 import { profileUpdateFromInput, validateProfileUpdate } from "@/lib/student/profile";
 
 export async function PATCH(request: Request) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { supabase, user, isStudent } = await getStudentUser();
   if (!user) return NextResponse.json({ error: "Non authentifié." }, { status: 401 });
+  if (!isStudent) return NextResponse.json({ error: "Accès étudiant requis." }, { status: 403 });
   let input: Record<string, unknown>;
   try { input = await request.json(); } catch { return NextResponse.json({ error: "Données invalides." }, { status: 400 }); }
   const update = profileUpdateFromInput(input);
