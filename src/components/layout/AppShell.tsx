@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, type ReactNode } from "react";
 import { Button } from "@/components/ui/Button";
+import { BrandLogo } from "@/components/brand/BrandLogo";
 import { createClient } from "@/lib/supabase/client";
 
 type AppShellRole = "student" | "admin";
@@ -90,35 +91,27 @@ export function AppShell({
 
       <aside className="hidden lg:fixed lg:inset-y-0 lg:z-40 lg:flex lg:w-[17.25rem] lg:flex-col lg:border-r lg:border-[var(--border)] lg:bg-[var(--surface)]">
         <div className="flex min-h-20 items-center border-b border-[var(--border)] px-5">
-          <Link href={role === "admin" ? "/admin" : "/student"} className="flex items-center gap-3" aria-label="Accueil AlmaGo">
-            <span className="grid h-9 w-9 place-items-center rounded-[var(--radius-control)] bg-[var(--brand)] text-sm font-bold text-white">
-              A
-            </span>
-            <span>
-              <span className="block text-base font-bold tracking-tight text-[var(--foreground)]">AlmaGo</span>
-              <span className="block text-[11px] font-medium leading-4 text-[var(--muted)]">
-                {role === "admin" ? "Espace administration" : "Votre espace étudiant"}
-              </span>
-            </span>
+          <Link href={role === "admin" ? "/admin" : "/student"} className="flex items-center" aria-label="Accueil AlmaGo">
+            <BrandLogo className="h-auto w-[9.5rem]" />
           </Link>
         </div>
 
         {role === "student" ? (
           <div className="mx-5 border-b border-[var(--border)] py-4">
-            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#7b8a82]">Dossier étudiant</p>
+            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--muted)]">Dossier étudiant</p>
             <p className="mt-1 text-sm font-bold text-[var(--foreground)]">{studentName}</p>
             <p className="mt-1 text-[11px] leading-4 text-[var(--muted)]">Projet d’études en Allemagne</p>
           </div>
         ) : (
           <div className="mx-5 border-b border-[var(--border)] py-4">
-            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#7b8a82]">Administration</p>
+            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--muted)]">Administration</p>
             <p className="mt-1 text-sm font-bold text-[var(--foreground)]">Pilotage opérationnel</p>
             <p className="mt-1 text-[11px] leading-4 text-[var(--muted)]">Dossiers, catalogues et revalidations</p>
           </div>
         )}
 
         <nav
-          className="flex-1 space-y-1 overflow-y-auto px-3 py-4 before:mb-3 before:block before:px-3 before:text-[10px] before:font-bold before:uppercase before:tracking-[0.16em] before:text-[#7b8a82] before:content-['Navigation']"
+          className="flex-1 space-y-1 overflow-y-auto px-3 py-4 before:mb-3 before:block before:px-3 before:text-[10px] before:font-bold before:uppercase before:tracking-[0.16em] before:text-[var(--muted)] before:content-['Navigation']"
           aria-label={role === "admin" ? "Navigation administration" : "Navigation étudiant"}
         >
           {items.map((item) => {
@@ -130,13 +123,13 @@ export function AppShell({
                 aria-current={active ? "page" : undefined}
                 className={`group relative flex min-h-11 items-center gap-3 rounded-[var(--radius-control)] px-3 py-2 transition-colors duration-150 ${active ? "bg-[var(--brand-soft)] text-[var(--brand)] ring-1 ring-[var(--brand-border)]" : "text-[var(--muted)] hover:bg-[var(--surface-subtle)] hover:text-[var(--foreground)]"}`}
               >
-                <span className={`grid h-7 w-7 shrink-0 place-items-center rounded-[var(--radius-control)] ${active ? "bg-[var(--brand-soft)] text-[var(--accent-strong)]" : "bg-transparent text-[#7b8a82] group-hover:text-[var(--muted)]"}`}>
+                <span className={`grid h-7 w-7 shrink-0 place-items-center rounded-[var(--radius-control)] ${active ? "bg-[var(--brand-soft)] text-[var(--accent-strong)]" : "bg-transparent text-[var(--muted)] group-hover:text-[var(--muted)]"}`}>
                   {item.icon}
                 </span>
                 <span className="min-w-0">
                   <span className="block text-sm font-semibold [overflow-wrap:anywhere]">{item.label}</span>
                   {item.helper && (
-                    <span className={`mt-0.5 block text-[11px] leading-4 ${active ? "text-[var(--brand)]/75" : "text-[#7b8a82]"}`}>
+                    <span className={`mt-0.5 block text-[11px] leading-4 ${active ? "text-[var(--brand)]/75" : "text-[var(--muted)]"}`}>
                       {item.helper}
                     </span>
                   )}
@@ -166,13 +159,10 @@ export function AppShell({
       <div className="lg:pl-[17.25rem]">
         {role === "student" ? (
           <>
-            <header className="sticky top-0 z-30 border-b border-[var(--border)] bg-[#fffefa]/95 pt-[env(safe-area-inset-top)] shadow-[0_8px_24px_-22px_rgba(23,63,54,0.28)] backdrop-blur lg:hidden">
+            <header className="sticky top-0 z-30 border-b border-[var(--border)] bg-[#fffdf8]/95 pt-[env(safe-area-inset-top)] shadow-[0_8px_24px_-22px_rgba(28,33,36,0.24)] backdrop-blur lg:hidden">
               <div className="flex min-h-16 items-center justify-between gap-3 px-3 py-2.5 min-[360px]:px-4">
                 <Link href="/student" onClick={() => setMobileMenuOpen(false)} className="flex min-w-0 items-center gap-2.5" aria-label="Accueil AlmaGo">
-                  <span className="relative grid h-9 w-9 shrink-0 place-items-center rounded-[var(--radius-control)] bg-[var(--brand)] text-sm font-bold text-white">
-                    A
-                    <span aria-hidden="true" className="absolute -bottom-1 -right-1 h-2.5 w-2.5 rounded-full border-2 border-[#fffefa] bg-[var(--accent)]" />
-                  </span>
+                  <span className="grid h-10 w-10 shrink-0 place-items-center"><BrandLogo symbolOnly className="h-10 w-10 object-contain" /></span>
                   <span className="min-w-0">
                     <span className="block text-sm font-bold leading-4 text-[var(--foreground)]">AlmaGo</span>
                     <span className="mt-0.5 block truncate text-[11px] font-medium text-[var(--muted)]">{currentItem.label}</span>
@@ -208,7 +198,7 @@ export function AppShell({
                           href={item.href}
                           onClick={() => setMobileMenuOpen(false)}
                           aria-current={active ? "page" : undefined}
-                          className={`flex min-h-14 items-center gap-3 rounded-[var(--radius-control)] border px-3.5 py-2.5 transition-colors ${active ? "border-[var(--brand-border)] bg-[var(--surface)] text-[var(--brand)] shadow-sm" : "border-transparent bg-[#fffefa]/80 text-[var(--foreground)] hover:border-[var(--border)] hover:bg-[var(--surface)]"}`}
+                          className={`flex min-h-14 items-center gap-3 rounded-[var(--radius-control)] border px-3.5 py-2.5 transition-colors ${active ? "border-[var(--brand-border)] bg-[var(--surface)] text-[var(--brand)] shadow-sm" : "border-transparent bg-[#fffdf8]/80 text-[var(--foreground)] hover:border-[var(--border)] hover:bg-[var(--surface)]"}`}
                         >
                           <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-[var(--radius-control)] ${active ? "bg-[var(--brand-soft)] text-[var(--accent-strong)]" : "bg-[var(--surface-muted)] text-[var(--muted)]"}`}>
                             {item.icon}
@@ -245,13 +235,10 @@ export function AppShell({
           </>
         ) : (
           <>
-            <header className="sticky top-0 z-30 border-b border-[var(--border)] bg-[#fffefa]/95 pt-[env(safe-area-inset-top)] shadow-[0_8px_24px_-22px_rgba(23,63,54,0.28)] backdrop-blur lg:hidden">
+            <header className="sticky top-0 z-30 border-b border-[var(--border)] bg-[#fffdf8]/95 pt-[env(safe-area-inset-top)] shadow-[0_8px_24px_-22px_rgba(28,33,36,0.24)] backdrop-blur lg:hidden">
               <div className="flex min-h-16 items-center justify-between gap-3 px-3 py-2.5 min-[360px]:px-4">
                 <Link href="/admin" onClick={() => setMobileMenuOpen(false)} className="flex min-w-0 items-center gap-2.5" aria-label="Accueil AlmaGo">
-                  <span className="relative grid h-9 w-9 shrink-0 place-items-center rounded-[var(--radius-control)] bg-[var(--brand)] text-sm font-bold text-white">
-                    A
-                    <span aria-hidden="true" className="absolute -bottom-1 -right-1 h-2.5 w-2.5 rounded-full border-2 border-[#fffefa] bg-[var(--accent)]" />
-                  </span>
+                  <span className="grid h-10 w-10 shrink-0 place-items-center"><BrandLogo symbolOnly className="h-10 w-10 object-contain" /></span>
                   <span className="min-w-0">
                     <span className="block text-sm font-bold leading-4 text-[var(--foreground)]">AlmaGo</span>
                     <span className="mt-0.5 block truncate text-[11px] font-medium text-[var(--muted)]">{currentItem.label}</span>
@@ -287,7 +274,7 @@ export function AppShell({
                           href={item.href}
                           onClick={() => setMobileMenuOpen(false)}
                           aria-current={active ? "page" : undefined}
-                          className={`flex min-h-14 items-center gap-3 rounded-[var(--radius-control)] border px-3.5 py-2.5 transition-colors ${active ? "border-[var(--brand-border)] bg-[var(--surface)] text-[var(--brand)] shadow-sm" : "border-transparent bg-[#fffefa]/80 text-[var(--foreground)] hover:border-[var(--border)] hover:bg-[var(--surface)]"}`}
+                          className={`flex min-h-14 items-center gap-3 rounded-[var(--radius-control)] border px-3.5 py-2.5 transition-colors ${active ? "border-[var(--brand-border)] bg-[var(--surface)] text-[var(--brand)] shadow-sm" : "border-transparent bg-[#fffdf8]/80 text-[var(--foreground)] hover:border-[var(--border)] hover:bg-[var(--surface)]"}`}
                         >
                           <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-[var(--radius-control)] ${active ? "bg-[var(--brand-soft)] text-[var(--accent-strong)]" : "bg-[var(--surface-muted)] text-[var(--muted)]"}`}>
                             {item.icon}
@@ -310,7 +297,7 @@ export function AppShell({
               )}
             </header>
 
-            <div className="hidden min-h-[4.75rem] items-center justify-between gap-6 border-b border-[var(--border)] bg-[#fffefa]/95 px-6 backdrop-blur lg:flex xl:px-8">
+            <div className="hidden min-h-[4.75rem] items-center justify-between gap-6 border-b border-[var(--border)] bg-[#fffdf8]/95 px-6 backdrop-blur lg:flex xl:px-8">
               <div>
                 <p className="text-xs font-bold uppercase tracking-[0.15em] text-[var(--brand)]">{currentItem.label}</p>
                 <p className="mt-1 text-sm text-[var(--muted)]">
