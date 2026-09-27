@@ -32,18 +32,18 @@ export function HomeFaqSection() {
       aria-labelledby="faq-title"
     >
       <div className={`${s.container} ${s.faqGrid}`}>
-        <div>
-          <p className={s.eyebrow}>Vos premières questions</p>
+        <div className={s.faqIntro}>
+          <p className={s.eyebrow}>Questions essentielles</p>
           <h2 id="faq-title" className={s.sectionTitle}>
             Avant de faire
             <br />
             <em>le premier pas.</em>
           </h2>
           <p className={s.lead}>
-            Vous pouvez commencer avec ce que vous savez déjà.
+            Les réponses aux questions qui reviennent le plus avant de commencer.
           </p>
           <a className={s.textLink} href="#parcours">
-            Revoir les six étapes
+            Comprendre le parcours
             <HomeIcon name="arrow" />
           </a>
         </div>
