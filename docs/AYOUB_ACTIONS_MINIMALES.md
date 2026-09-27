@@ -1,144 +1,111 @@
-# AYOUB — Actions minimales requises
+# AYOUB — Actions minimales requises avant lancement
 
-Le système AlmaGo est conçu pour fonctionner avec le moins d’intervention possible du propriétaire.
+Le système AlmaGo est conçu pour réduire l’intervention propriétaire, mais certaines étapes ne peuvent pas être automatisées de façon sûre.
 
 ## État actuel
 
 Master Plan : **41/45 — 91 %**.
 
-La professionnalisation visuelle V2 est maintenant terminée pour :
-- la Homepage ;
-- l’espace étudiant ;
-- l’espace administration.
+Chaîne de release :
 
-Ces trois chantiers ont leurs plans et preuves dédiés dans `docs/HOMEPAGE_V2_PLAN.md`, `docs/STUDENT_SPACE_V2_PLAN.md`, `docs/STUDENT_SPACE_V2_IMPLEMENTATION.md`, `docs/ADMIN_SPACE_V2_PLAN.md` et `docs/ADMIN_SPACE_V2_IMPLEMENTATION.md`.
+**A38 juridique → A43 E2E authentifiés → A44 observabilité → A45 gate final Render**
 
-Chaîne restante avant la recette finale :
+Runtime canonique de recette :
 
-**A38 juridique → A43 E2E authentifiés → A44 observabilité/analytics → A45 gate de publication.**
+`https://almago-dev.onrender.com`
 
-## A38 — confirmation juridique minimale
+GitHub Actions a actuellement un incident séparé : les workflows sont créés mais certains jobs échouent avant toute étape avec `steps: null`. Suivi : #286.
 
-Ne jamais envoyer ici de mot de passe, clé privée, document d’identité ou autre secret.
+## Ce qu’il te reste réellement à faire
 
-Le dépôt connaît déjà les catégories de données, Supabase/Vercel et l’état actuel **sans analytics actif**. Il n’est plus demandé de choisir un fournisseur analytics dans A38 : ce choix appartient à A44.
+### A38 — juridique
 
-Une seule réponse propriétaire est requise via :
+Compléter `docs/A38_OWNER_CONFIRMATION.md`, décider conservation/suppression, faire relire les textes, puis n’activer `A38_REVIEW_READY: true` qu’une fois les placeholders réellement résolus.
 
-`docs/A38_OWNER_CONFIRMATION.md`
+Après la relecture humaine, poster exactement :
 
-Elle regroupe uniquement les informations impossibles à déduire du code : identité publique de l’éditeur, statut juridique/commercial, conservation/suppression, éventuel DPO/activité réglementée et relecteur final.
+`A38 HUMAN REVIEW APPROVED`
 
-Le contenu ne doit pas être présenté comme final avant cette relecture humaine.
+sur l’issue A38.
 
-Quand les quatre fichiers A38 sont complètement renseignés, `A38_REVIEW_READY: true` déclenche automatiquement une vérification des placeholders et publie la preuve liée au SHA exact de `main`. Après cette preuve et la vraie relecture humaine, la seule action mécanique finale du propriétaire est de poster exactement `A38 HUMAN REVIEW APPROVED` sur l’Issue A38. Le gate vérifie le propriétaire + le SHA avant de fermer A38 et relancer l’orchestrateur.
+### A43 — E2E étudiant/admin
 
-## A43 — E2E authentifiés
+Les comptes test existent déjà.
 
-Le workflow est déjà prêt dans :
+Il manque uniquement deux GitHub Actions Secrets :
 
-`.github/workflows/almago-authenticated-e2e.yml`
+- `ALMAGO_E2E_STUDENT_PASSWORD`
+- `ALMAGO_E2E_ADMIN_PASSWORD`
 
-Des identités Supabase **réservées aux tests, sans donnée réelle**, existent déjà et ont été vérifiées le 23/09/2026 :
+Les e-mails test sont déjà définis par défaut dans le workflow. Aucune variable d’activation supplémentaire n’est nécessaire.
 
-- au moins un compte étudiant avec le rôle `student` ;
-- un compte admin avec le rôle `admin`.
+Le workflow ne pourra toutefois produire une vraie preuve tant que #286 empêche le runner GitHub d’exécuter ses étapes.
 
-**Ne pas créer de nouveaux comptes pour A43.** Réutiliser ces identités dédiées. Si leurs mots de passe ne sont plus connus, les réinitialiser depuis le compte propriétaire Supabase avant de renseigner GitHub Actions.
+Draft #405 prépare un mode de preuve authentifiée contre Render, avec réveil et contrôle de `/api/health`.
 
-Pour empêcher l'utilisation accidentelle d'un vrai compte, conserver uniquement des adresses dédiées contenant `e2e` ou `test`.
+### Render
 
-Configuration A43 requise :
+Suivi : #389.
 
-Secrets GitHub Actions :
-- `NEXT_PUBLIC_SUPABASE_URL` — déjà configuré ;
-- `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` — déjà configuré ;
-- `ALMAGO_E2E_STUDENT_PASSWORD` ;
-- `ALMAGO_E2E_ADMIN_PASSWORD`.
+Dans le dashboard Render :
 
-Les identités de test non sensibles sont définies par défaut dans le workflow :
-- étudiant : `phase3.student.a@almago.test` ;
-- admin : `phase3.admin@almago.test`.
+- reconnecter/réautoriser GitHub si nécessaire ;
+- vérifier qu’un push sur `main` déclenche réellement un deploy ;
+- définir `/api/health` comme health check.
 
-Elles peuvent être remplacées plus tard par les variables GitHub non sensibles `ALMAGO_E2E_STUDENT_EMAIL` et `ALMAGO_E2E_ADMIN_EMAIL` si nécessaire, sans modifier le code.
+Le service est Free et peut afficher un écran de réveil après inactivité. Un éventuel plan payant est une décision séparée.
 
-Aucune variable d'activation supplémentaire n'est requise. Le workflow détecte automatiquement si la configuration nécessaire est disponible :
+### Catalogue production
 
-- sur un `push` pertinent, il se met en attente proprement si la configuration est incomplète ;
-- dès que les secrets sont présents, les changements Auth/étudiant/admin déclenchent automatiquement le parcours E2E ;
-- un lancement manuel (`workflow_dispatch`) échoue explicitement si un secret requis manque, au lieu de produire un faux résultat.
+Le dernier audit lecture seule indique encore une opération protégée :
 
-Il ne reste donc que les **deux mots de passe des comptes de test** à renseigner. Le Master Orchestrator sonde automatiquement A43 à chaque passage (push sur `main` et toutes les trois heures). Tant que les mots de passe manquent, le probe se termine proprement sans faux échec ; dès qu'ils sont présents, le vrai parcours E2E s'exécute et A43 se clôture automatiquement. Un lancement manuel reste possible uniquement pour obtenir la preuve immédiatement, mais il n'est plus obligatoire.
+- archiver 1 recommandation test ;
+- désactiver 7 programmes test ;
+- désactiver 8 universités test ;
+- aucun DELETE ;
+- refaire ensuite un audit lecture seule.
 
-Le test vérifie maintenant que :
+Ne pas exécuter cette écriture sans validation explicite.
 
-- le compte étudiant atteint l’espace étudiant ;
-- le compte étudiant ne peut pas entrer dans `/admin` ;
-- le compte admin passe le garde de rôle côté serveur ;
-- les 6 pages principales de l’espace étudiant passent la matrice responsive 320 / 375 / 390 / 768 / 1024 / 1440 ;
-- les 6 pages principales de l’espace admin passent la même matrice ;
-- aucune de ces pages ne présente de débordement horizontal ;
-- axe ne détecte aucune violation sérieuse/critique ;
-- des screenshots authentifiés complets sont conservés comme preuve pour la revue finale.
+### A44 — observabilité
 
-Ne jamais réutiliser les identifiants d’un vrai étudiant pour ces tests. Aucun mot de passe de test ne doit être ajouté au repository, à une Issue ou au chat.
+Après A38 + A43 :
 
-## A44 — observabilité et analytics
+- choisir le fournisseur ;
+- définir rétention/consentement ;
+- stocker les secrets dans Render/GitHub ;
+- tester avec données synthétiques ;
+- activer seulement après vérification de l’allow-list et de la confidentialité.
 
-Choisir et connecter un fournisseur de production avant d’activer le tracking.
+Le runtime est Render, pas Vercel.
 
-Chemin simple recommandé :
+### Supabase Auth
 
-- Vercel pour le contexte déploiement/runtime ;
-- PostHog, ou un fournisseur équivalent approuvé, pour analytics produit et observabilité.
+#179 suit la décision optionnelle d’un passage Pro pour la protection contre mots de passe compromis.
 
-Avant activation :
+### Protection GitHub
 
-- définir une petite allow-list d’événements produit ;
-- ne jamais envoyer le contenu des documents, mots de passe, tokens, notes libres, e-mails ou autre donnée personnelle inutile ;
-- conserver les secrets fournisseur uniquement dans GitHub/Vercel ;
-- faire correspondre la rétention et le tracking avec la politique de confidentialité validée en A38.
+#336 suit la protection de `main`.
 
-A44 reste bloquée tant qu’un compte fournisseur n’est pas connecté.
+Ne pas exiger le check GitHub Actions cassé tant que #286 n’est pas résolu.
 
-Après activation et vérification, renseigner aussi les variables GitHub Actions non sensibles :
-- `ALMAGO_OBSERVABILITY_ENABLED=true`
-- `ALMAGO_OBSERVABILITY_PROVIDER=<nom-du-fournisseur>`
+### A45
 
-Le Final Release Gate exige ces deux preuves en plus de la clôture A44.
+Draft #407 prépare la recette finale Render et exige que le service live rapporte le SHA exact de `main` avant de publier `RELEASE GATE: READY`.
 
-## A45 — gate final
+## Ce qui n’est pas requis maintenant
 
-A45 est gérée par le système et dépend d’A44. Elle doit fournir un gate de publication visible avant une mise en production critique.
+- activer Gemini/Grok ;
+- connecter Figma ;
+- passer Render ou Supabase sur un plan payant ;
+- créer de nouveaux comptes E2E ;
+- fournir les e-mails E2E comme secrets ;
+- créer une variable `ALMAGO_AUTH_E2E_ENABLED`.
 
-## Optionnel — file Gemini/Grok
+## Garde-fous
 
-Seulement si l’on veut réactiver la file IA externe :
-
-### Secrets
-
-- `GEMINI_API_KEY`
-- `XAI_API_KEY` — optionnel
-
-### Variables
-
-- `ALMAGO_AI_BILLING_CAP_CONFIRMED=true`
-- `ALMAGO_AI_ENABLED=true`
-- optionnel : `ALMAGO_MAX_AI_TASKS_PER_DAY=4`
-
-Configurer d’abord un plafond de dépenses bloquant ou un solde prépayé chez chaque fournisseur.
-
-## Ce que le système fait déjà sans Ayoub
-
-- sélection et suivi du Master Plan ;
-- création et suivi des issues ;
-- tests, TypeScript, lint, build et diff check ;
-- Playwright desktop/mobile et screenshots ;
-- audit axe accessibilité ;
-- Lighthouse advisory ;
-- contrôles Vercel quand disponibles ;
-- protections de scope et de secrets ;
-- nettoyage des branches fusionnées ;
-- watchdog des automations.
-
-**Aucune PR n’est fusionnée automatiquement.**
+- aucun secret dans GitHub Issues, commits, logs ou chat ;
+- aucune vraie donnée étudiant dans les E2E ;
+- aucune modification Auth/RLS/Storage pour faire passer un test ;
+- aucune fusion automatique ;
+- aucune montée de plan payant automatique.
