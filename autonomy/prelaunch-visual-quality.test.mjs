@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import test from "node:test";
 import {
   buildPrelaunchVisualPlan,
@@ -51,4 +52,15 @@ test("invalid visual review fails closed", () => {
     review: { verdict: "REVISE", confidence: "high", findings: [], actions: [] },
     mainSha: "abc",
   }).reason, "invalid_visual_review");
+});
+
+
+test("visual workflow is billing-gated, main-only and cannot auto-merge", () => {
+  const workflow = readFileSync(".github/workflows/almago-prelaunch-visual-quality.yml", "utf8");
+  assert.match(workflow, /branches: \[main\]/);
+  assert.match(workflow, /ALMAGO_AI_ENABLED == 'true'/);
+  assert.match(workflow, /ALMAGO_AI_BILLING_CAP_CONFIRMED == 'true'/);
+  assert.match(workflow, /ALMAGO_COPILOT_AUTOPILOT_DRY_RUN: "false"/);
+  assert.match(workflow, /ALMAGO_COPILOT_AUTOPILOT_MAX_NEW_TASKS: "1"/);
+  assert.doesNotMatch(workflow, /AUTOMERGE_ENABLED/);
 });
