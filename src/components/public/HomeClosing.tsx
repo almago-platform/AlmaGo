@@ -8,25 +8,25 @@ export function HomeFinalCta() {
     <section className={s.finalCta} aria-labelledby="final-title">
       <div className={`${s.container} ${s.finalInner}`}>
         <div className={s.finalCopy}>
-          <p className={s.eyebrow}>Votre prochaine étape</p>
+          <p className={s.eyebrow}>Commencez simplement</p>
           <h2 id="final-title">
-            Votre projet commence
+            Commencez
             <br />
-            <em>par une direction claire.</em>
+            <em>par votre projet.</em>
           </h2>
           <p>
-            Créez votre dossier, rassemblez vos documents et gardez la
-            prochaine action visible au même endroit.
+            Créez votre dossier. Vous ajouterez vos documents et vos prochaines
+            étapes ensuite.
           </p>
           <div className={s.finalProof} aria-label="Ce que votre dossier rassemble">
             <span>
-              <HomeIcon name="check" /> Projet académique
+              <HomeIcon name="check" /> Projet
             </span>
             <span>
               <HomeIcon name="check" /> Documents
             </span>
             <span>
-              <HomeIcon name="check" /> Prochaines actions
+              <HomeIcon name="check" /> Prochaines étapes
             </span>
           </div>
         </div>
@@ -37,7 +37,7 @@ export function HomeFinalCta() {
             <HomeIcon name="arrow" />
           </Link>
           <p>
-            Déjà un espace ? <Link href="/login">Me connecter</Link>
+            <Link href="/login">J’ai déjà un compte</Link>
           </p>
         </div>
       </div>
@@ -54,10 +54,7 @@ export function HomeFooter() {
             <Link href="/" className={s.logo} aria-label="AlmaGo accueil">
               <BrandLogo variant="reverse" className={s.footerLogoImage} />
             </Link>
-            <p>
-              Votre projet d’études, organisé de la première question à la
-              prochaine action.
-            </p>
+            <p>Votre dossier d’études, étape par étape.</p>
             <span className={s.footerIndependence}>Plateforme indépendante</span>
           </div>
 
@@ -73,8 +70,8 @@ export function HomeFooter() {
           <FooterColumn
             title="Préparer"
             links={[
-              ["L’espace étudiant", "/login"],
-              ["Explorer les programmes", "#programmes"],
+              ["Mon espace", "/login"],
+              ["Comparer les programmes", "#programmes"],
               ["Créer mon dossier", "/signup"],
             ]}
           />
@@ -82,7 +79,7 @@ export function HomeFooter() {
           <FooterColumn
             title="Repères"
             links={[
-              ["Me connecter", "/login"],
+              ["Se connecter", "/login"],
               ["uni-assist · source externe", "https://www.uni-assist.de/en/"],
             ]}
           />
@@ -91,8 +88,8 @@ export function HomeFooter() {
         <div className={s.footerBottom}>
           <p>© AlmaGo</p>
           <p>
-            Les admissions, visas et autres décisions officielles appartiennent
-            aux organismes compétents.
+            AlmaGo organise votre préparation. Les décisions officielles
+            appartiennent aux organismes compétents.
           </p>
         </div>
 
