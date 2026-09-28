@@ -322,6 +322,13 @@ test("head-ref PR resolution replaces stale internal IDs and fails closed when u
     artifactNumber: 496,
     priorPullNumber: 4663451678,
     hasHeadRef: true,
+  }), null);
+
+  assert.equal(reconciledPullRequestNumber({
+    resolvedByHead: null,
+    artifactNumber: 496,
+    priorPullNumber: 4663451678,
+    hasHeadRef: false,
   }), 496);
 
   assert.equal(reconciledPullRequestNumber({
