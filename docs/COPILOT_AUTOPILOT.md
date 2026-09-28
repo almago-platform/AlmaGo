@@ -99,3 +99,11 @@ The implementation scope is exactly `Homepage.module.css`, `HomeHeader.tsx` and 
 
 The loop reuses the normal Autopilot lifecycle with one concurrent task, two revision attempts, open-PR collision locks and `noAutomaticMerge=true`. It becomes inactive after A45.
 
+## Safe-merge observer
+
+The real safe-merge executor remains separately gated by repository variables and write permissions. A second workflow, `AlmaGo Autopilot Safe Merge Observer`, runs every 30 minutes and by manual dispatch with read-only repository permissions.
+
+The observer forces `ALMAGO_AUTOPILOT_AUTOMERGE_ENABLED=true` only inside its own process so the same evaluator executes, while forcing `ALMAGO_AUTOPILOT_AUTOMERGE_DRY_RUN=true`. Because its GitHub token has only read permissions, it cannot merge, comment, close issues, push code or otherwise mutate repository state even if a future code regression attempted a write.
+
+This continuously validates quarantine, ruleset readiness, exact-HEAD CI, Browser Quality, Supervisor approval, provenance and PR-collision logic before real automerge is ever enabled.
+
