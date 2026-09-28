@@ -178,8 +178,8 @@ export default async function StudentPathwayPage() {
       />
 
       <Card className="mt-7 relative overflow-hidden border-[var(--brand-border)] bg-white shadow-none">
-        <div aria-hidden="true" className="absolute inset-y-0 left-0 w-1 bg-[var(--brand)]" />
-        <div className="flex flex-col gap-5 pl-2 lg:flex-row lg:items-start lg:justify-between sm:pl-3">
+        <div aria-hidden="true" className="student-accent-edge absolute inset-y-0 w-1 bg-[var(--brand)]" />
+        <div className="student-accent-content student-accent-content-wide flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
           <div className="max-w-3xl">
             <div className="flex flex-wrap items-center gap-3">
               <Badge variant={statusVariant(decision.status)}>{t.decisionStatus[decision.status]}</Badge>
