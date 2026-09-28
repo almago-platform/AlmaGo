@@ -110,9 +110,8 @@ export function reconciledPullRequestNumber({
     const number = Number(value || 0);
     return Number.isSafeInteger(number) && number > 0 ? number : null;
   };
-  return valid(resolvedByHead) ||
-    valid(artifactNumber) ||
-    (hasHeadRef ? null : valid(priorPullNumber));
+  if (hasHeadRef) return valid(resolvedByHead);
+  return valid(artifactNumber) || valid(priorPullNumber);
 }
 
 export function mapAgentTaskState(state) {
