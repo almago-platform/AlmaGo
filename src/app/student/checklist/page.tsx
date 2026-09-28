@@ -191,18 +191,18 @@ export default async function ChecklistPage() {
         current="checklist"
         eyebrow="Mon dossier"
         title="Mes démarches"
-        description="Voyez en un coup d’œil ce qui est à faire par vous, ce qu’AlmaGo suit et les étapes déjà terminées dans votre dossier."
+        description="Voyez ce que vous devez faire, ce qui est suivi et ce qui est terminé."
         actions={<ButtonLink href="/student/documents" variant="secondary">Voir mes documents</ButtonLink>}
       />
 
       <section className="mb-8" aria-labelledby="germany-plan-title">
         <div className="mb-5">
-          <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Plan Allemagne personnalisé</p>
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Selon votre dossier</p>
           <h2 id="germany-plan-title" className="mt-2 text-2xl font-bold tracking-[-0.03em] text-slate-950">
-            Étapes calculées à partir de votre dossier
+            Étapes selon votre dossier
           </h2>
           <p className="mt-2 max-w-4xl text-sm leading-6 text-slate-600">
-            Ces étapes sont générées uniquement à partir des faits actuellement enregistrés : projet, preuves académiques vérifiées et cours explicitement sélectionné. Elles n’inventent ni admission, ni délai, ni éligibilité de visa.
+            Elles utilisent votre projet, vos documents vérifiés et le cours choisi. Elles ne garantissent ni admission, ni date limite, ni visa.
           </p>
         </div>
 
