@@ -17,15 +17,15 @@ test("V8 removes stale public #espace anchors", () => {
 });
 
 test("V8 strengthens the final CTA and footer", () => {
-  assert.match(closing, /Votre projet commence/);
-  assert.match(closing, /par une direction claire/);
-  assert.match(closing, /Projet académique/);
+  assert.match(closing, /Commencez simplement/);
+  assert.match(closing, /par votre projet/);
+  assert.match(closing, /Prochaines étapes/);
   assert.match(closing, /Plateforme indépendante/);
   assert.match(closing, /Outils utiles/);
 });
 
 test("V8 gives the FAQ a compact editorial surface", () => {
-  assert.match(faq, /Questions essentielles/);
+  assert.match(faq, /Questions utiles/);
   assert.match(faq, /className=\{s\.faqIntro\}/);
   assert.match(css, /\.faqIntro\s*\{[\s\S]*position:\s*sticky/);
   assert.match(css, /\.faqList\s*\{[\s\S]*border-radius:\s*10px/);
