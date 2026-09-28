@@ -7,8 +7,9 @@ const codex = readFileSync(".github/workflows/almago-autonomous-codex.yml", "utf
 
 test("instant supervisor uses Gemini structured output and no OpenAI API dependency", () => {
   assert.match(supervisor, /GEMINI_API_KEY:\s*\$\{\{ secrets\.GEMINI_API_KEY \}\}/);
-  assert.match(supervisor, /GEMINI_MODEL:\s*gemini-3\.5-flash/);
+  assert.match(supervisor, /GEMINI_MODEL:\s*gemini-3\.8-flash/);
   assert.match(supervisor, /GEMINI_FALLBACK_MODEL:\s*gemini-3\.6-flash/);
+  assert.match(supervisor, /GEMINI_TERTIARY_MODEL:\s*gemini-3\.5-flash/);
   assert.match(supervisor, /generativelanguage\.googleapis\.com\/v1beta\/models\//);
   assert.match(supervisor, /x-goog-api-key/);
   assert.match(supervisor, /responseMimeType:\s*"application\/json"/);
@@ -23,8 +24,8 @@ test("instant supervisor uses Gemini structured output and no OpenAI API depende
   assert.match(supervisor, /high demand/);
   assert.match(supervisor, /const providerAttempts = \[/);
   assert.match(supervisor, /\{ model, waitMs: 0 \}/);
-  assert.match(supervisor, /\{ model, waitMs: 5000 \}/);
   assert.match(supervisor, /\{ model: fallbackModel, waitMs: 5000 \}/);
+  assert.match(supervisor, /\{ model: tertiaryModel, waitMs: 5000 \}/);
   assert.match(supervisor, /Gemini temporarily unavailable after/);
   assert.match(supervisor, /await callGemini\(providerAttempt\.model\)/);
   assert.match(supervisor, /publishProviderBlocked/);
