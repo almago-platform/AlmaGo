@@ -39,3 +39,54 @@ test("language selection persists without changing application routes", () => {
   assert.match(provider, /router\.refresh\(\)/);
   assert.doesNotMatch(switcher, /window\.location\.href/);
 });
+
+
+test("student workspace uses explicit native copy contracts across core surfaces", () => {
+  const files = [
+    "student-dashboard-copy.ts",
+    "student-documents-copy.ts",
+    "student-orientation-copy.ts",
+    "student-applications-copy.ts",
+    "student-checklist-copy.ts",
+    "student-pathway-copy.ts",
+    "student-language-courses-copy.ts",
+    "student-finance-copy.ts",
+    "student-profile-copy.ts",
+    "student-project-copy.ts",
+    "student-onboarding-copy.ts",
+  ];
+  for (const file of files) {
+    const source = readFileSync(`src/content/${file}`, "utf8");
+    assert.ok(source.includes("fr:") || source.includes("const fr"));
+    assert.ok(source.includes("ar:") || source.includes("const ar"));
+    assert.ok(source.includes("en:") || source.includes("const en"));
+    assert.ok(source.includes("de:") || source.includes("const de"));
+  }
+});
+
+test("dynamic official and user-entered records stay separate from localized UI copy", () => {
+  const finance = readFileSync("src/app/student/finance-insurance/page.tsx", "utf8");
+  const applications = readFileSync("src/components/student/StudentApplicationsPanel.tsx", "utf8");
+  const orientation = readFileSync("src/components/student/StudentOrientationPanel.tsx", "utf8");
+
+  assert.ok(finance.includes("{option.description}"));
+  assert.ok(finance.includes("option.eligibility_notes"));
+  assert.ok(applications.includes("{application.student_notes}"));
+  assert.ok(applications.includes("{event.message}"));
+  assert.ok(orientation.includes("program?.name") || orientation.includes("program.name"));
+  assert.ok(orientation.includes("university?.name") || orientation.includes("university.name"));
+});
+
+test("regulatory and checklist localization is keyed by stable machine decisions", () => {
+  const pathway = readFileSync("src/app/student/pathway/page.tsx", "utf8");
+  const pathwayCopy = readFileSync("src/content/student-pathway-copy.ts", "utf8");
+  const checklist = readFileSync("src/app/student/checklist/page.tsx", "utf8");
+  const checklistCopy = readFileSync("src/content/student-checklist-copy.ts", "utf8");
+
+  assert.ok(pathway.includes("decision.reason_code"));
+  assert.ok(pathwayCopy.includes("definitive_admission_accepted"));
+  assert.ok(pathwayCopy.includes("academic_evidence_pending_review"));
+  assert.ok(checklist.includes("item.key"));
+  assert.ok(checklistCopy.includes("academic_evidence_review"));
+  assert.ok(checklistCopy.includes("continue_academic_search"));
+});
