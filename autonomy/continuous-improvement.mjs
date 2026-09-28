@@ -2,6 +2,7 @@ import { appendFileSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import {
   buildSignals,
+  RECURRENCE_MARKER,
   issueBodyForSignal,
   labelsForSignal,
   signalKeyFromIssue,
@@ -83,6 +84,8 @@ async function upsertSignal(issue, signal) {
     return "created";
   }
 
+  if (issue.state === "open") return "unchanged";
+
   await gh("/repos/" + owner + "/" + repo + "/issues/" + issue.number, {
     method: "PATCH",
     body: JSON.stringify({
@@ -92,7 +95,19 @@ async function upsertSignal(issue, signal) {
       labels,
     }),
   });
-  return issue.state === "open" ? "updated" : "reopened";
+  await gh("/repos/" + owner + "/" + repo + "/issues/" + issue.number + "/comments", {
+    method: "POST",
+    body: JSON.stringify({
+      body: [
+        RECURRENCE_MARKER,
+        "CONTINUOUS IMPROVEMENT SENSOR: RECURRENCE",
+        "",
+        "The deterministic post-launch sensor reports this signal again after a resolved occurrence.",
+        "Any previous implementation contract is stale and must be revalidated for this occurrence.",
+      ].join("\n"),
+    }),
+  });
+  return "reopened";
 }
 
 async function closeResolved(issue) {
