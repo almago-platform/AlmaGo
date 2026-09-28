@@ -4,10 +4,10 @@
 import { Badge } from "@/components/ui/Badge";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Card } from "@/components/ui/Card";
+import { useLocale } from "@/components/i18n/LocaleProvider";
+import { studentApplicationsCopy } from "@/content/student-applications-copy";
 import {
   isSubmittedApplicationStatus,
-  studentApplicationStageLabel,
-  studentApplicationStatusLabel,
   normalizeApplicationStatus,
 } from "@/lib/application-workflow";
 import { formatDeadline, isActiveApplication, isPastDeadline, nextActiveDeadline } from "@/lib/phase4";
@@ -27,30 +27,38 @@ function firstUniversity(program: any) {
   return Array.isArray(program?.universities) ? program.universities[0] : program?.universities;
 }
 
-function studentEventLabel(eventType: string) {
-  if (eventType === "application_status_changed") return "Statut de candidature mis à jour";
-  return "Mise à jour du dossier";
+function studentEventLabel(
+  eventType: string,
+  copy: (typeof studentApplicationsCopy)["fr"]["panel"],
+) {
+  if (eventType === "application_status_changed") return copy.eventStatusChanged;
+  return copy.eventUpdate;
 }
 
-function ApplicationStepper({ status }: { status: string }) {
+function ApplicationStepper({
+  status,
+  copy,
+}: {
+  status: string;
+  copy: (typeof studentApplicationsCopy)["fr"]["panel"];
+}) {
   const normalizedStatus = normalizeApplicationStatus(status);
   
   if (normalizedStatus === "withdrawn") {
     return (
       <div className="mt-4 mb-2 rounded-[var(--radius-control)] bg-slate-100/60 border border-slate-200/80 p-3 text-xs text-slate-600 flex items-center justify-between">
-        <span className="font-medium text-slate-700">Le suivi de cette candidature a été retiré.</span>
-        <Badge variant="neutral">Suivi retiré</Badge>
+        <span className="font-medium text-slate-700">{copy.withdrawnText}</span>
+        <Badge variant="neutral">{copy.withdrawnBadge}</Badge>
       </div>
     );
   }
 
-  // Define 5 key phases of the application journey
   const stages = [
-    { label: "À préparer", active: true },
-    { label: "Préparation", active: ["preparing", "documents_missing"].includes(normalizedStatus || "") },
-    { label: "Prêt", active: normalizedStatus === "ready_to_submit" },
-    { label: "Envoyé", active: ["submitted", "waiting_university"].includes(normalizedStatus || "") },
-    { label: "Décision", active: ["admission", "rejection"].includes(normalizedStatus || "") },
+    { label: copy.stepper[0], active: true },
+    { label: copy.stepper[1], active: ["preparing", "documents_missing"].includes(normalizedStatus || "") },
+    { label: copy.stepper[2], active: normalizedStatus === "ready_to_submit" },
+    { label: copy.stepper[3], active: ["submitted", "waiting_university"].includes(normalizedStatus || "") },
+    { label: copy.stepper[4], active: ["admission", "rejection"].includes(normalizedStatus || "") },
   ];
 
   // Let's determine the current index
@@ -104,6 +112,8 @@ export function StudentApplicationsPanel({
   applications: any[];
   loadError?: string;
 }) {
+  const { locale } = useLocale();
+  const t = studentApplicationsCopy[locale].panel;
   const actionable = applications.filter((application) => isActiveApplication(application.status) && Boolean(application.next_action));
   const submitted = applications.filter(
     (application) => Boolean(application.submitted_at) || isSubmittedApplicationStatus(application.status),
