@@ -68,6 +68,9 @@ export function buildSignals({
   typecheckOutcome = "success",
   lintOutcome = "success",
   audit = {},
+  testEvidence = "",
+  typecheckEvidence = "",
+  lintEvidence = "",
 } = {}) {
   const signals = [];
   if (testOutcome !== "success") {
@@ -77,7 +80,7 @@ export function buildSignals({
       severity: "high",
       title: "[CONTINUOUS] Main test suite regression",
       summary: "The scheduled post-launch sensor detected a failing full test suite on the default branch.",
-      evidence: "Sensor outcome: npm test = " + testOutcome + ". Inspect the exact scheduled run before creating a repair contract.",
+      evidence: ("Sensor outcome: npm test = " + testOutcome + ".\n" + String(testEvidence || "")).slice(0, 6000),
     });
   }
   if (typecheckOutcome !== "success") {
@@ -87,7 +90,7 @@ export function buildSignals({
       severity: "high",
       title: "[CONTINUOUS] Main TypeScript regression",
       summary: "The scheduled post-launch sensor detected a TypeScript typecheck failure on the default branch.",
-      evidence: "Sensor outcome: npx tsc --noEmit = " + typecheckOutcome + ".",
+      evidence: ("Sensor outcome: npx tsc --noEmit = " + typecheckOutcome + ".\n" + String(typecheckEvidence || "")).slice(0, 6000),
     });
   }
   if (lintOutcome !== "success") {
@@ -97,7 +100,7 @@ export function buildSignals({
       severity: "moderate",
       title: "[CONTINUOUS] Main lint regression",
       summary: "The scheduled post-launch sensor detected a lint failure on the default branch.",
-      evidence: "Sensor outcome: npm run lint = " + lintOutcome + ".",
+      evidence: ("Sensor outcome: npm run lint = " + lintOutcome + ".\n" + String(lintEvidence || "")).slice(0, 6000),
     });
   }
 
