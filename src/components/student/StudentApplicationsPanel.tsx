@@ -160,8 +160,8 @@ export function StudentApplicationsPanel({
 
       <section aria-label={t.priorityAria} className="grid gap-5 lg:grid-cols-[1.08fr_0.92fr]">
         <Card className="relative overflow-hidden border-[var(--brand-border)] bg-white shadow-none">
-          <div aria-hidden="true" className="absolute inset-y-0 left-0 w-1 bg-[var(--brand)]" />
-          <div className="pl-2 sm:pl-3">
+          <div aria-hidden="true" className="student-accent-edge absolute inset-y-0 w-1 bg-[var(--brand)]" />
+          <div className="student-accent-content student-accent-content-wide">
             <Badge variant={loadError ? "neutral" : actionable.length ? "warning" : "info"}>
               {loadError ? t.unavailable : actionable.length ? t.actionNeeded : t.tracking}
             </Badge>
@@ -277,7 +277,7 @@ export function StudentApplicationsPanel({
                         </span>
                       </div>
                     </div>
-                    <div className={direction === "rtl" ? "text-right sm:text-left flex flex-col items-end sm:items-start" : "text-left sm:text-right flex flex-col items-start sm:items-end"}>
+                    <div className="flex flex-col items-start text-start">
                       <Badge variant={applicationVariant(application.status)}>
                         {localizedApplicationStatus(application.status, t)}
                       </Badge>
