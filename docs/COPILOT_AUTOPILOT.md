@@ -107,3 +107,11 @@ The observer forces `ALMAGO_AUTOPILOT_AUTOMERGE_ENABLED=true` only inside its ow
 
 This continuously validates quarantine, ruleset readiness, exact-HEAD CI, Browser Quality, Supervisor approval, provenance and PR-collision logic before real automerge is ever enabled.
 
+## Live Copilot Agent Task connectivity probe
+
+The historical `SANDBOX-01` validated a bounded documentation PR, but its lock did not contain a Copilot Agent Task ID. A separate temporary `AGENT-PROBE-01` therefore validates the real Agent Tasks API path.
+
+The probe may create exactly one file, `docs/COPILOT_AGENT_TASK_LIVE_PROBE.md`, from `main`. It runs the normal controller live with one concurrent task, one revision attempt and `noAutomaticMerge=true`. The workflow has read-only contents and pull-request permissions; it can write only its tracking issue and dispatch/reconcile the external Agent Task.
+
+The probe is pre-launch only. Product code, workflows, tests, dependencies, Auth/RLS/Supabase, migrations, secrets, billing, production data and deployment are outside its writable contract. After the connectivity/lifecycle result is proven, the probe workflow and plan should be retired or disabled.
+
