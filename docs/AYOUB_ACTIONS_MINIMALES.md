@@ -28,7 +28,7 @@ Après la relecture humaine, poster exactement :
 
 `A38 HUMAN REVIEW APPROVED`
 
-sur l’issue A38.
+sur l’issue A38 depuis un compte disposant de la permission GitHub `admin` sur le repository.
 
 ### A43 — E2E étudiant/admin
 
