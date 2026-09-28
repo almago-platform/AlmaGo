@@ -1,0 +1,99 @@
+name: AlmaGo Prelaunch Self-Heal
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "37 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: read
+  actions: read
+
+concurrency:
+  group: almago-prelaunch-self-heal
+  cancel-in-progress: true
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Check release state
+        id: release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node autonomy/continuous-improvement.mjs activation
+
+      - name: Install dependencies
+        if: steps.release.outputs.active != 'true'
+        run: npm ci
+
+      - name: Prepare evidence directory
+        if: steps.release.outputs.active != 'true'
+        run: mkdir -p artifacts/prelaunch-repair
+
+      - name: Typecheck sensor
+        id: typecheck
+        if: steps.release.outputs.active != 'true'
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          npx tsc --noEmit 2>&1 | tee artifacts/prelaunch-repair/typecheck.log
+
+      - name: Lint sensor
+        id: lint
+        if: steps.release.outputs.active != 'true'
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          npm run lint 2>&1 | tee artifacts/prelaunch-repair/lint.log
+
+      - name: Build one bounded repair plan
+        id: plan
+        if: steps.release.outputs.active != 'true'
+        env:
+          ALMAGO_MAIN_SHA: ${{ github.sha }}
+          ALMAGO_TYPECHECK_OUTCOME: ${{ steps.typecheck.outcome }}
+          ALMAGO_LINT_OUTCOME: ${{ steps.lint.outcome }}
+          ALMAGO_TYPECHECK_LOG: artifacts/prelaunch-repair/typecheck.log
+          ALMAGO_LINT_LOG: artifacts/prelaunch-repair/lint.log
+          ALMAGO_PRELAUNCH_PLAN_PATH: artifacts/prelaunch-repair/plan.json
+        run: node autonomy/prelaunch-repair.mjs
+
+      - name: Dispatch at most one safe repair
+        if: steps.release.outputs.active != 'true' && steps.plan.outputs.eligible == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ALMAGO_COPILOT_AUTOPILOT_TOKEN: ${{ secrets.ALMAGO_COPILOT_AUTOPILOT_TOKEN }}
+          ALMAGO_COPILOT_AUTOPILOT_ENABLED: "true"
+          ALMAGO_COPILOT_AUTOPILOT_DRY_RUN: "false"
+          ALMAGO_COPILOT_AUTOPILOT_PLAN_PATH: artifacts/prelaunch-repair/plan.json
+          ALMAGO_COPILOT_AUTOPILOT_MAX_NEW_TASKS: "1"
+        run: node autonomy/copilot-autopilot.mjs
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "## AlmaGo Prelaunch Self-Heal"
+            echo
+            echo "Post-launch active: ${{ steps.release.outputs.active || 'unknown' }}"
+            echo "Typecheck: ${{ steps.typecheck.outcome || 'not-run' }}"
+            echo "Lint: ${{ steps.lint.outcome || 'not-run' }}"
+            echo "Bounded repair eligible: ${{ steps.plan.outputs.eligible || 'false' }}"
+            echo "Reason: ${{ steps.plan.outputs.reason || 'none' }}"
+            echo
+            echo "Pre-launch repair is limited to one exact-path lint/typecheck Agent Task."
+            echo "It cannot merge, deploy, edit workflows/dependencies/Auth/RLS/Supabase/migrations/secrets, or bypass A38/A43/A44/A45."
+          } >> "$GITHUB_STEP_SUMMARY"
