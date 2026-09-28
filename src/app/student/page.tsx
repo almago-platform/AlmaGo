@@ -114,10 +114,10 @@ export default async function StudentEntry() {
       tone: documentsNeedingAction ? "active" : studentDocuments.length ? "done" : "neutral",
     },
     {
-      label: "Orientation",
+      label: "Programmes",
       detail: studentRecommendations.length
-        ? `${studentRecommendations.length} piste${studentRecommendations.length > 1 ? "s" : ""} proposée${studentRecommendations.length > 1 ? "s" : ""}`
-        : "Aucune piste enregistrée",
+        ? `${studentRecommendations.length} programme${studentRecommendations.length > 1 ? "s" : ""} à comparer`
+        : "Aucun programme proposé",
       href: "/student/orientation",
       tone: studentRecommendations.length ? "active" : "neutral",
     },
@@ -212,7 +212,7 @@ export default async function StudentEntry() {
             )}
 
             <p className="mt-4 text-xs leading-5 text-[var(--muted)]">
-              Cette progression décrit uniquement les éléments enregistrés dans AlmaGo. Elle ne représente ni une admission ni une validation finale.
+              Cette progression montre seulement votre dossier dans AlmaGo. Elle ne vaut pas admission.
             </p>
 
             <div className="mt-4 [&_a]:w-full">
@@ -233,9 +233,9 @@ export default async function StudentEntry() {
         />
         <OverviewCard
           href="/student/orientation"
-          title="Orientation"
+          title="Programmes"
           value={studentRecommendations.length}
-          detail="Pistes d’études enregistrées"
+          detail="Programmes à comparer"
         />
         <OverviewCard
           href="/student/applications"
@@ -257,14 +257,14 @@ export default async function StudentEntry() {
         <Card className="border-[var(--brand-border)] bg-[var(--brand-soft)]/55 shadow-none">
           <p className="text-[0.68rem] font-bold uppercase tracking-[0.15em] text-[var(--brand)]">Projet Allemagne</p>
           <h2 className="editorial-accent mt-2 text-[1.55rem] leading-[1.1] text-[var(--foreground)]">
-            Précisez votre parcours pour adapter les prochaines étapes.
+            Choisissez votre objectif pour voir les étapes utiles.
           </h2>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--muted)]">
-            Université, préparation allemand + études, Master + langue ou langue uniquement : votre objectif sert de base au parcours affiché.
+            Études, préparation aux études ou cours de langue : indiquez ce que vous voulez faire.
           </p>
           <div className="mt-5 flex flex-col gap-2 sm:flex-row">
-            <ButtonLink href="/student/pathway">Voir mon parcours</ButtonLink>
-            <ButtonLink href="/student/project" variant="secondary">Définir mon projet</ButtonLink>
+            <ButtonLink href="/student/pathway">Voir mes étapes</ButtonLink>
+            <ButtonLink href="/student/project" variant="secondary">Choisir mon objectif</ButtonLink>
           </div>
         </Card>
 
@@ -289,16 +289,16 @@ export default async function StudentEntry() {
       <section className="mt-7 rounded-[1rem] border border-[var(--border)] bg-[#1c2124] px-5 py-5 text-white sm:px-6">
         <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
           <div>
-            <p className="text-[0.68rem] font-bold uppercase tracking-[0.15em] text-[#fcb50a]">Votre repère AlmaGo</p>
-            <h2 className="mt-2 text-lg font-bold sm:text-xl">Vous gardez les décisions. AlmaGo garde les étapes lisibles.</h2>
+            <p className="text-[0.68rem] font-bold uppercase tracking-[0.15em] text-[#fcb50a]">Votre dossier</p>
+            <h2 className="mt-2 text-lg font-bold sm:text-xl">Revenez ici pour voir votre prochaine étape.</h2>
             <p className="mt-2 max-w-3xl text-xs leading-5 text-[#d9d3c7] sm:text-sm sm:leading-6">
-              Revenez ici pour voir ce qui est enregistré, ce qui manque et la prochaine action utile, sans remplacer les décisions des universités ou des autorités.
+              Vous voyez ce qui est fait, ce qui manque et ce que vous pouvez faire maintenant.
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
-            <span className="rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-xs font-bold text-[#f7f4ec]">Comprendre</span>
+            <span className="rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-xs font-bold text-[#f7f4ec]">Voir</span>
             <span className="rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-xs font-bold text-[#f7f4ec]">Préparer</span>
-            <span className="rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-xs font-bold text-[#f7f4ec]">Vérifier</span>
+            <span className="rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-xs font-bold text-[#f7f4ec]">Continuer</span>
           </div>
         </div>
       </section>
@@ -377,7 +377,7 @@ function DashboardUnavailable() {
         <div role="alert">
           <h2 className="text-xl font-semibold text-slate-950">Dossier temporairement indisponible</h2>
           <p className="mt-2 text-sm leading-6 text-slate-600">
-            Nous n’arrivons pas à afficher votre dossier pour le moment. Rien n’a été supprimé ou modifié. Vous pouvez réessayer dans quelques instants.
+            Impossible d’afficher votre dossier pour le moment. Réessayez dans quelques instants.
           </p>
         </div>
         <div className="mt-5">
