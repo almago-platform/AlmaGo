@@ -428,7 +428,7 @@
   width: 15px;
 }
 .miniNext {
-  color: var(--home-terra);
+  color: #b6031d;
   background: #fce5e9;
 }
 .miniStatus {
@@ -2477,7 +2477,7 @@
   height: 29px;
   border-radius: 50%;
   background: #ece8df;
-  color: #6b6f72;
+  color: #4f5356;
   font-size: 10px;
   font-weight: 650;
 }
@@ -2626,7 +2626,7 @@
   height: 31px;
   border-radius: 50%;
   background: #fce5e9;
-  color: #db0423;
+  color: #b6031d;
   font-size: 9px;
   font-weight: 750;
 }
