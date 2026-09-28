@@ -35,7 +35,7 @@ test("current homepage places quick access and the visual pathway immediately af
   assert.ok(page.indexOf("<HomeHero />") < page.indexOf("<HomeQuickAccess />"));
   assert.ok(page.indexOf("<HomeQuickAccess />") < page.indexOf("<HomePhotoBand />"));
   assert.ok(page.indexOf("<HomePhotoBand />") < page.indexOf("<HomeJourneySection />"));
-  assert.equal(quick.split("{ href:").length - 1, 5);
+  assert.equal(quick.split('icon: "').length - 1, 5);
   assert.ok(css.includes("repeat(5"));
 });
 
