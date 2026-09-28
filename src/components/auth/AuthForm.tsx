@@ -22,7 +22,7 @@ export function AuthForm({ initialMode = "login" }: { initialMode?: Mode }) {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
-  const { copy, direction } = useLocale();
+  const { copy } = useLocale();
   const auth = copy.auth;
 
   async function submit(event: FormEvent<HTMLFormElement>) {
@@ -63,11 +63,11 @@ export function AuthForm({ initialMode = "login" }: { initialMode?: Mode }) {
 
   const title = auth.titles[mode];
   const subtitle = auth.subtitles[mode];
-  const passwordPadding = direction === "rtl" ? "pl-24" : "pr-24";
-  const passwordButtonSide = direction === "rtl" ? "left-2" : "right-2";
+  const passwordPadding = "pr-24 text-left";
+  const passwordButtonSide = "right-2";
 
   return (
-    <section className="w-full overflow-hidden rounded-[1rem] border border-[var(--border)] bg-[var(--surface)] shadow-[0_24px_70px_-54px_rgba(28,33,36,0.5)]">
+    <section className="auth-form-card w-full overflow-hidden rounded-[1rem] border border-[var(--border)] bg-[var(--surface)] shadow-[0_24px_70px_-54px_rgba(28,33,36,0.5)]">
       <div className="border-b border-[var(--border)] px-5 py-5 sm:px-7 sm:py-6">
         <div className="flex items-center justify-between gap-4">
           <BrandLogo className="hidden h-auto w-32 lg:block" />
@@ -77,7 +77,7 @@ export function AuthForm({ initialMode = "login" }: { initialMode?: Mode }) {
             </span>
           )}
         </div>
-        <h1 className="editorial-accent mt-2 text-[2rem] leading-[1.06] text-[var(--foreground)] sm:text-[2.2rem]">{title}</h1>
+        <h1 className="auth-form-title editorial-accent mt-2 text-[2rem] leading-[1.06] text-[var(--foreground)] sm:text-[2.2rem]">{title}</h1>
         <p className="mt-3 max-w-lg text-sm leading-6 text-[var(--muted)] sm:text-base sm:leading-7">{subtitle}</p>
         {mode === "signup" && (
           <div className="mt-5">
@@ -124,7 +124,7 @@ export function AuthForm({ initialMode = "login" }: { initialMode?: Mode }) {
             value={email}
             onChange={(event) => setEmail(event.target.value)}
             placeholder={auth.placeholders.email}
-            className="field mt-2 min-h-12"
+            className="field mt-2 min-h-12 text-left"
           />
         </label>
 
