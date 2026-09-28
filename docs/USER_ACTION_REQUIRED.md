@@ -4,6 +4,20 @@ Ce fichier ne liste que les actions qui nécessitent le compte, une décision, u
 
 Source opérationnelle de suivi : GitHub issue #22.
 
+## Séquence release candidate — garder le même SHA jusqu’à A45
+
+Avant la validation humaine finale A38 :
+
+1. terminer et merger les PR pré-lancement réellement retenues ;
+2. terminer la protection de `main` suivie dans #336 ;
+3. relever le **SHA exact** du release candidate sur `main`.
+
+À partir de ce SHA, ne plus merger ni pousser sur `main` pendant **A38 → A43 → A44 → A45**.
+
+Les preuves A38, A43 et A44 sont liées à un SHA exact, et A45 exige qu’elles correspondent toutes au même SHA que le release candidate. Si `main` change avant A45, ne pas réutiliser les anciennes preuves : recommencer la chaîne de preuve sur le nouveau SHA.
+
+Cette consigne n’installe aucun verrou automatique ; elle décrit seulement la séquence sûre à suivre.
+
 ## 1. A38 — validation juridique humaine
 
 Suivi humain/juridique : #66. La proposition de rétention/suppression et la matrice de finalisation doivent rester alignées avec le `main` courant.
