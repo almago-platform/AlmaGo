@@ -56,3 +56,13 @@ test("owner docs use durable workstream references and completed catalogue clean
     assert.doesNotMatch(source, /1 recommandation test à archiver/);
   }
 });
+
+
+test("owner docs require one exact release-candidate SHA across A38 to A45", () => {
+  for (const source of [required, minimal]) {
+    assert.match(source, /SHA exact/);
+    assert.match(source, /A38 → A43 → A44 → A45/);
+    assert.match(source, /si `main` change/i);
+    assert.match(source, /nouveau SHA/);
+  }
+});
