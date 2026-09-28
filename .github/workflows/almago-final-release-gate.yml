@@ -46,6 +46,43 @@ jobs:
               branch: mainBranch,
             });
             const mainSha = mainRef.commit.sha;
+
+            if (mainRef.protected !== true) {
+              core.summary
+                .addHeading("AlmaGo final release gate")
+                .addRaw(
+                  "BLOCKED — the default branch " +
+                  mainBranch +
+                  " is not protected. Resolve repository-hardening issue #336 before release readiness."
+                )
+                .write();
+              core.setFailed(
+                "A45 requires protected main before RELEASE GATE: READY can be published."
+              );
+              return;
+            }
+
+            const { data: hardeningIssue } = await github.rest.issues.get({
+              owner,
+              repo,
+              issue_number: 336,
+            });
+            const hardeningComplete =
+              hardeningIssue.state === "closed" &&
+              hardeningIssue.state_reason !== "not_planned";
+            if (!hardeningComplete) {
+              core.summary
+                .addHeading("AlmaGo final release gate")
+                .addRaw(
+                  "BLOCKED — repository-hardening issue #336 is not completed. Protection must be reviewed and confirmed before release readiness."
+                )
+                .write();
+              core.setFailed(
+                "A45 requires completed repository-hardening issue #336 before RELEASE GATE: READY."
+              );
+              return;
+            }
+
             core.setOutput("main_sha", mainSha);
 
             const allIssues = await github.paginate(github.rest.issues.listForRepo, {
@@ -59,8 +96,11 @@ jobs:
             const taskId = issue =>
               String(issue.body || "").match(/<!--\s*almago-plan-task:(A\d{2})\s*-->/)?.[1];
 
+            const planIssue = id =>
+              allIssues.find(item => !item.pull_request && taskId(item) === id);
+
             const completed = id => {
-              const issue = allIssues.find(item => !item.pull_request && taskId(item) === id);
+              const issue = planIssue(id);
               if (!issue) return false;
               const labels = new Set(
                 (issue.labels || []).map(label => typeof label === "string" ? label : label.name),
@@ -76,6 +116,49 @@ jobs:
                 .addRaw("BLOCKED — incomplete prerequisites: " + missing.join(", "))
                 .write();
               core.setFailed("Release prerequisites are incomplete: " + missing.join(", "));
+              return;
+            }
+
+            const evidenceMatches = {
+              A38: body =>
+                body.includes(`<!-- almago-a38-human-approved:sha=${mainSha};`),
+              A43: body =>
+                body.includes("<!-- almago-a43-evidence:") &&
+                body.includes(`;sha=${mainSha} -->`),
+              A44: body =>
+                body.includes("<!-- almago-a44-evidence:") &&
+                body.includes(`;sha=${mainSha} -->`),
+            };
+
+            const staleEvidence = [];
+            for (const id of required) {
+              const issue = planIssue(id);
+              const comments = await github.paginate(github.rest.issues.listComments, {
+                owner,
+                repo,
+                issue_number: issue.number,
+                per_page: 100,
+              });
+              const hasExactEvidence = comments.some(comment =>
+                evidenceMatches[id](String(comment.body || "")),
+              );
+              if (!hasExactEvidence) staleEvidence.push(id);
+            }
+
+            if (staleEvidence.length) {
+              core.summary
+                .addHeading("AlmaGo final release gate")
+                .addRaw(
+                  "BLOCKED — prerequisite evidence is missing or stale for exact main SHA " +
+                    mainSha +
+                    ": " +
+                    staleEvidence.join(", "),
+                )
+                .write();
+              core.setFailed(
+                "A45 requires exact-main prerequisite evidence for: " +
+                  staleEvidence.join(", "),
+              );
               return;
             }
 
@@ -224,12 +307,49 @@ jobs:
           retention-days: 14
           if-no-files-found: warn
 
-  vercel-and-ready:
+  render-and-ready:
     needs: [prerequisites, quality]
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
+    env:
+      RENDER_BASE_URL: https://almago-dev.onrender.com
+      EXPECTED_MAIN_SHA: ${{ needs.prerequisites.outputs.main_sha }}
     steps:
-      - name: Require exact-main Vercel success and publish readiness
+      - name: Require exact-main Render revision
+        shell: bash
+        run: |
+          expected_short="${EXPECTED_MAIN_SHA:0:12}"
+          mkdir -p artifacts/final-release
+
+          for i in {1..30}; do
+            health="$(curl --fail --silent --show-error --max-time 5 "$RENDER_BASE_URL/api/health" 2>/dev/null || true)"
+            if [ -n "$health" ]; then
+              printf '%s\n' "$health" > artifacts/final-release/render-health.json
+              revision="$(printf '%s' "$health" | jq -r '.revision // empty' 2>/dev/null || true)"
+              branch="$(printf '%s' "$health" | jq -r '.branch // empty' 2>/dev/null || true)"
+
+              if [ "$revision" = "$expected_short" ] && [ "$branch" = "main" ]; then
+                echo "Render is serving exact main revision $revision."
+                exit 0
+              fi
+
+              echo "Render is healthy but not yet on exact main (expected $expected_short, got ${revision:-none}, branch ${branch:-none})."
+            fi
+            sleep 5
+          done
+
+          echo "::error::Render did not serve exact main revision $expected_short within the verification window."
+          exit 1
+
+      - name: Smoke canonical Render public routes
+        shell: bash
+        run: |
+          for path in / /login /signup; do
+            echo "Checking $RENDER_BASE_URL$path"
+            curl --fail --silent --show-error --max-time 15 "$RENDER_BASE_URL$path" > /dev/null
+          done
+
+      - name: Revalidate exact main and publish readiness
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -260,18 +380,25 @@ jobs:
               return;
             }
 
-            const { data: combined } = await github.rest.repos.getCombinedStatusForRef({
+            if (currentMain.protected !== true) {
+              core.setFailed(
+                "A45 cannot publish READY because main protection was removed during the release gate."
+              );
+              return;
+            }
+
+            const { data: finalHardeningIssue } = await github.rest.issues.get({
               owner,
               repo,
-              ref: sha,
+              issue_number: 336,
             });
-            const vercel = combined.statuses.find(status => status.context === "Vercel");
-            if (!vercel || vercel.state !== "success") {
-              core.summary
-                .addHeading("AlmaGo final release gate")
-                .addRaw("BLOCKED — Vercel is not successful for exact main SHA " + sha + ".")
-                .write();
-              core.setFailed("Vercel must be successful for exact main SHA " + sha + ".");
+            const finalHardeningComplete =
+              finalHardeningIssue.state === "closed" &&
+              finalHardeningIssue.state_reason !== "not_planned";
+            if (!finalHardeningComplete) {
+              core.setFailed(
+                "A45 cannot publish READY because repository-hardening issue #336 is no longer completed."
+              );
               return;
             }
 
@@ -282,6 +409,105 @@ jobs:
               labels: "almago-plan",
               per_page: 100,
             });
+
+            const finalTaskId = issue =>
+              String(issue.body || "").match(/<!--\s*almago-plan-task:(A\d{2})\s*-->/)?.[1];
+            const finalRequired = ["A38", "A43", "A44"];
+            const finalEvidenceMatches = {
+              A38: body =>
+                body.includes(`<!-- almago-a38-human-approved:sha=${sha};`),
+              A43: body =>
+                body.includes("<!-- almago-a43-evidence:") &&
+                body.includes(`;sha=${sha} -->`),
+              A44: body =>
+                body.includes("<!-- almago-a44-evidence:") &&
+                body.includes(`;sha=${sha} -->`),
+            };
+
+            for (const id of finalRequired) {
+              const prerequisite = allIssues.find(
+                item => !item.pull_request && finalTaskId(item) === id,
+              );
+              if (!prerequisite) {
+                core.setFailed("A45 prerequisite disappeared before readiness: " + id);
+                return;
+              }
+              const labels = new Set(
+                (prerequisite.labels || []).map(label =>
+                  typeof label === "string" ? label : label.name,
+                ),
+              );
+              if (
+                prerequisite.state !== "closed" &&
+                !labels.has("almago-plan-done")
+              ) {
+                core.setFailed("A45 prerequisite reopened before readiness: " + id);
+                return;
+              }
+
+              const comments = await github.paginate(github.rest.issues.listComments, {
+                owner,
+                repo,
+                issue_number: prerequisite.number,
+                per_page: 100,
+              });
+              if (
+                !comments.some(comment =>
+                  finalEvidenceMatches[id](String(comment.body || "")),
+                )
+              ) {
+                core.setFailed(
+                  "A45 exact-main prerequisite evidence changed before readiness: " + id,
+                );
+                return;
+              }
+            }
+
+            const renderBaseUrl = String(process.env.RENDER_BASE_URL || "").replace(/\/$/, "");
+            if (!renderBaseUrl) {
+              core.setFailed("A45 cannot publish READY: missing Render base URL.");
+              return;
+            }
+
+            let finalRenderHealth;
+            try {
+              const response = await fetch(renderBaseUrl + "/api/health", {
+                headers: { "cache-control": "no-cache" },
+              });
+              if (!response.ok) {
+                core.setFailed(
+                  "A45 cannot publish READY: final Render health check returned HTTP " +
+                    response.status +
+                    ".",
+                );
+                return;
+              }
+              finalRenderHealth = await response.json();
+            } catch (error) {
+              core.setFailed(
+                "A45 cannot publish READY: final Render health check failed: " +
+                  String(error?.message || error),
+              );
+              return;
+            }
+
+            const finalExpectedRevision = sha.slice(0, 12);
+            if (
+              finalRenderHealth?.revision !== finalExpectedRevision ||
+              finalRenderHealth?.branch !== "main"
+            ) {
+              core.setFailed(
+                "A45 cannot publish READY: Render drifted before publication. Expected " +
+                  finalExpectedRevision +
+                  " on main, got " +
+                  String(finalRenderHealth?.revision || "none") +
+                  " on " +
+                  String(finalRenderHealth?.branch || "none") +
+                  ".",
+              );
+              return;
+            }
+
             let a45 = allIssues.find(issue =>
               !issue.pull_request &&
               String(issue.body || "").includes("<!-- almago-plan-task:A45 -->")
@@ -333,8 +559,9 @@ jobs:
               "RELEASE GATE: READY",
               "",
               "Exact main SHA: " + sha,
+              "Runtime: https://almago-dev.onrender.com",
               "",
-              "A38/A43/A44 complete, unit/security/business checks green, public + authenticated browser journeys green, and Vercel successful.",
+              "A38/A43/A44 complete, unit/security/business checks green, public + authenticated browser journeys green, and Render is serving the exact main revision.",
               "",
               "**No deployment or merge was performed by this gate.**"
             ].join("\n");
@@ -370,5 +597,18 @@ jobs:
 
             await core.summary
               .addHeading("AlmaGo final release gate")
-              .addRaw("RELEASE GATE: READY\n\nExact main SHA: " + sha + "\n\nMaster Orchestrator refresh dispatched.")
+              .addRaw(
+                "RELEASE GATE: READY\n\nExact main SHA: " +
+                sha +
+                "\n\nRender exact-main verification passed. Master Orchestrator refresh dispatched.",
+              )
               .write();
+
+      - name: Upload Render release evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: almago-final-render-${{ github.run_id }}
+          path: artifacts/final-release/render-health.json
+          retention-days: 14
+          if-no-files-found: warn

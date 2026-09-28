@@ -10,11 +10,22 @@ on:
         required: false
         default: false
         type: boolean
+      target:
+        description: "Authenticated E2E target"
+        required: false
+        default: render
+        type: choice
+        options:
+          - render
+          - local
   push:
     branches: [main]
     paths:
       - "src/app/admin/**"
       - "src/app/student/**"
+      - "src/app/api/admin/**"
+      - "src/app/api/student/**"
+      - "src/app/api/documents/**"
       - "src/app/login/**"
       - "src/components/auth/**"
       - "src/components/student/**"
@@ -23,7 +34,14 @@ on:
       - "src/app/globals.css"
       - "playwright.config.mjs"
       - "src/lib/supabase/**"
+      - "src/lib/auth/**"
+      - "src/lib/phase4.ts"
+      - "src/lib/documents.ts"
+      - "src/lib/source-verification.ts"
+      - "src/lib/application-intake.ts"
+      - "src/lib/identifiers.ts"
       - "src/proxy.ts"
+      - "supabase/migrations/**"
       - "tests/e2e/authenticated.spec.mjs"
       - "tests/e2e/student-space-quality.spec.mjs"
       - "tests/e2e/admin-space-quality.spec.mjs"
@@ -96,6 +114,7 @@ jobs:
       ALMAGO_E2E_ADMIN_EMAIL: ${{ vars.ALMAGO_E2E_ADMIN_EMAIL || 'phase3.admin@almago.test' }}
       ALMAGO_E2E_ADMIN_PASSWORD: ${{ secrets.ALMAGO_E2E_ADMIN_PASSWORD }}
       CI: "true"
+      ALMAGO_E2E_TARGET: ${{ inputs.target || 'local' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -144,7 +163,17 @@ jobs:
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
 
-      - name: Build and start AlmaGo
+      - name: Configure authenticated E2E target
+        shell: bash
+        run: |
+          if [ "$ALMAGO_E2E_TARGET" = "render" ]; then
+            echo "ALMAGO_BASE_URL=https://almago-dev.onrender.com" >> "$GITHUB_ENV"
+          else
+            echo "ALMAGO_BASE_URL=http://127.0.0.1:3000" >> "$GITHUB_ENV"
+          fi
+
+      - name: Build and start AlmaGo locally
+        if: env.ALMAGO_E2E_TARGET != 'render'
         shell: bash
         run: |
           mkdir -p artifacts/auth-e2e
@@ -157,6 +186,32 @@ jobs:
           cat artifacts/auth-e2e/server.log
           exit 1
 
+      - name: Wake and verify exact Render target
+        if: env.ALMAGO_E2E_TARGET == 'render'
+        shell: bash
+        run: |
+          mkdir -p artifacts/auth-e2e
+          expected_revision="${GITHUB_SHA:0:12}"
+          for i in {1..60}; do
+            health="$(curl --fail --silent --show-error --max-time 10 "$ALMAGO_BASE_URL/api/health" 2>/dev/null || true)"
+            if [ -n "$health" ]; then
+              printf '%s\n' "$health" > artifacts/auth-e2e/render-health.json
+              revision="$(printf '%s' "$health" | jq -r '.revision // empty' 2>/dev/null || true)"
+              branch="$(printf '%s' "$health" | jq -r '.branch // empty' 2>/dev/null || true)"
+
+              if [ "$revision" = "$expected_revision" ] && [ "$branch" = "main" ]; then
+                cat artifacts/auth-e2e/render-health.json
+                echo "Render is serving exact workflow revision $revision."
+                exit 0
+              fi
+
+              echo "Render is healthy but not on exact workflow revision yet (expected $expected_revision, got ${revision:-none}, branch ${branch:-none})."
+            fi
+            sleep 5
+          done
+          echo "::error::Render did not serve exact workflow revision $expected_revision in time."
+          exit 1
+
       - name: Run student/admin isolation journeys
         run: npx playwright test tests/e2e/authenticated.spec.mjs --project=desktop-chromium
 
@@ -167,22 +222,112 @@ jobs:
         run: npx playwright test tests/e2e/admin-space-quality.spec.mjs
 
       - name: Complete A43 after successful authenticated evidence
-        if: success()
+        if: >-
+          success() &&
+          github.ref == 'refs/heads/main' &&
+          env.ALMAGO_E2E_TARGET == 'render'
         uses: actions/github-script@v7
+        env:
+          A43_TARGET: ${{ env.ALMAGO_E2E_TARGET }}
+          A43_BASE_URL: ${{ env.ALMAGO_BASE_URL }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const owner = context.repo.owner;
             const repo = context.repo.repo;
-            const issues = await github.paginate(github.rest.issues.listForRepo, {
+            const baseUrl = String(process.env.A43_BASE_URL || "").replace(/\/$/, "");
+            if (!baseUrl) {
+              core.setFailed("A43 completion is missing the Render base URL.");
+              return;
+            }
+
+            let finalHealth;
+            try {
+              const response = await fetch(baseUrl + "/api/health", {
+                headers: { "cache-control": "no-cache" },
+              });
+              if (!response.ok) {
+                core.setFailed(
+                  "A43 cannot close: final Render health check returned HTTP " +
+                    response.status +
+                    ".",
+                );
+                return;
+              }
+              finalHealth = await response.json();
+            } catch (error) {
+              core.setFailed(
+                "A43 cannot close: final Render health check failed: " +
+                  String(error?.message || error),
+              );
+              return;
+            }
+
+            const expectedRenderRevision = context.sha.slice(0, 12);
+            if (
+              finalHealth?.revision !== expectedRenderRevision ||
+              finalHealth?.branch !== "main"
+            ) {
+              core.setFailed(
+                "A43 cannot close: Render drifted after authenticated E2E. Expected " +
+                  expectedRenderRevision +
+                  " on main, got " +
+                  String(finalHealth?.revision || "none") +
+                  " on " +
+                  String(finalHealth?.branch || "none") +
+                  ".",
+              );
+              return;
+            }
+
+            const { data: repository } = await github.rest.repos.get({ owner, repo });
+            const mainBranch = repository.default_branch || "main";
+            const expectedRef = `refs/heads/${mainBranch}`;
+            if (context.ref !== expectedRef) {
+              core.setFailed(
+                `A43 completion requires ${expectedRef}; received ${context.ref}.`,
+              );
+              return;
+            }
+
+            const { data: currentMain } = await github.rest.repos.getBranch({
               owner,
               repo,
-              state: "open",
+              branch: mainBranch,
+            });
+            if (currentMain.commit.sha !== context.sha) {
+              core.setFailed(
+                `A43 cannot close because main changed during authenticated E2E. Tested ${context.sha}, current ${currentMain.commit.sha}.`,
+              );
+              return;
+            }
+
+            const planIssues = await github.paginate(github.rest.issues.listForRepo, {
+              owner,
+              repo,
+              state: "all",
               labels: "almago-plan",
               per_page: 100,
             });
-            const issue = issues.find(item =>
+
+            const a38 = planIssues.find(item =>
               !item.pull_request &&
+              String(item.body || "").includes("<!-- almago-plan-task:A38 -->")
+            );
+            const a38Labels = new Set(
+              (a38?.labels || []).map(label => typeof label === "string" ? label : label.name)
+            );
+            const a38Complete = Boolean(
+              a38 && (a38.state === "closed" || a38Labels.has("almago-plan-done"))
+            );
+            if (!a38Complete) {
+              core.info("A43 evidence is green, but A38 is not complete; A43 will remain open.");
+              return;
+            }
+
+            const issue = planIssues.find(item =>
+              !item.pull_request &&
+              item.state === "open" &&
               String(item.body || "").includes("<!-- almago-plan-task:A43 -->")
             );
             if (!issue) {
@@ -206,7 +351,8 @@ jobs:
                   "A43 AUTHENTICATED E2E: PASS",
                   "",
                   "Run: " + context.serverUrl + "/" + owner + "/" + repo + "/actions/runs/" + context.runId,
-                  "SHA: " + context.sha,
+                  "Exact main SHA: " + context.sha,
+                  "Target: " + process.env.A43_TARGET,
                   marker,
                   "",
                   "Dedicated student/admin identities passed the authenticated isolation journeys plus the Student Space and Admin Space responsive/accessibility quality matrices."
