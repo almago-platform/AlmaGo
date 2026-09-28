@@ -53,7 +53,7 @@ jobs:
         run: npm ci
 
       - name: Install browser-quality tools without changing the lockfile
-        run: npm install --no-save --package-lock=false @playwright/test@1.55.0 @axe-core/playwright@4.10.2 @lhci/cli@0.14.0
+        run: npm install --no-save --package-lock=false @playwright/test@1.55.0 @axe-core/playwright@4.10.2 @lhci/cli@0.15.1
 
       - name: Cache Playwright browser
         uses: actions/cache@v4

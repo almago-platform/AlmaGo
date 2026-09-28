@@ -79,3 +79,13 @@ The lane builds a temporary one-block Autopilot plan with `maxConcurrentTasks=1`
 
 This pre-launch lane does not depend on the repository-wide Autopilot dry-run variable because its own workflow is the explicit live-dispatch boundary. Its authority stops at a bounded repair PR / `MERGE_READY`: it cannot merge, deploy or bypass A38, A43, A44 or A45. Once A45 is complete, the lane becomes inactive and the post-launch Continuous Improvement stack takes over.
 
+## Pre-launch measured performance loop
+
+A separate pre-launch performance workflow measures the production build with Lighthouse. It is evidence-driven and does not run after A45.
+
+The homepage budget is 0.80 for the Lighthouse performance category. A task is eligible only when the homepage is below that budget while accessibility remains at least 0.95 and SEO/best-practices remain at least 0.90. The login page is measured for performance/accessibility/best-practices but is not given an SEO category assertion because its deliberate no-index policy is not a public SEO defect.
+
+When eligible, exactly one Codex Agent Task may work on three public files: `HomeHeader.tsx`, `HomeHero.tsx` and `HomeJourneySection.tsx`. The prompt includes measured LCP, Total Blocking Time, Max Potential FID, responsive-image waste and unused-JavaScript evidence. It must preserve content, accessibility, keyboard behavior, SEO and the current visual direction.
+
+Like the lint/typecheck self-heal lane, this loop uses `maxConcurrentTasks=1`, a revision budget of two and `noAutomaticMerge=true`. Open PR collisions and the normal exact-HEAD lifecycle still apply.
+
