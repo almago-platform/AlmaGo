@@ -1,3 +1,6 @@
+"use client";
+
+import { useLocale } from "@/components/i18n/LocaleProvider";
 import { HomeHeader } from "@/components/public/HomeHeader";
 import { HomeHero } from "@/components/public/HomeHero";
 import { HomeQuickAccess } from "@/components/public/HomeQuickAccess";
@@ -9,10 +12,12 @@ import { HomeFinalCta, HomeFooter } from "@/components/public/HomeClosing";
 import s from "@/components/public/Homepage.module.css";
 
 export default function Home() {
+  const { copy } = useLocale();
+
   return (
     <div className={s.home}>
       <a className={s.skipLink} href="#main-content">
-        Aller au contenu
+        {copy.common.skip}
       </a>
       <HomeHeader />
       <main id="main-content" tabIndex={-1}>

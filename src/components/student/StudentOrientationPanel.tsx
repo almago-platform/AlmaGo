@@ -5,8 +5,10 @@ import { Badge } from "@/components/ui/Badge";
 import { Button, buttonClassName } from "@/components/ui/Button";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Card } from "@/components/ui/Card";
+import { useLocale } from "@/components/i18n/LocaleProvider";
+import { studentOrientationCopy } from "@/content/student-orientation-copy";
 import type { MasterRequirementsMatch, RequirementMatchResult } from "@/lib/master-requirements";
-import { formatDeadline, recommendationStatusLabels } from "@/lib/phase4";
+import { formatDeadline } from "@/lib/phase4";
 
 type University = { name: string; city: string; bundesland?: string | null };
 type Program = {
@@ -34,14 +36,6 @@ type Recommendation = {
 };
 
 type Feedback = { message: string; kind: "success" | "error" } | null;
-
-const studentRecommendationLabels: Record<string, string> = {
-  recommended: "Piste recommandée",
-  possible: "Piste possible",
-  ambitious: "Piste ambitieuse",
-  missing_requirements: "Prérequis à compléter",
-  not_recommended: "Piste non recommandée",
-};
 
 function recommendationVariant(status: string): "success" | "warning" | "info" | "neutral" {
   if (status === "recommended" || status === "possible") return "success";
@@ -71,6 +65,8 @@ export function StudentOrientationPanel({
   applicationStateError?: string;
   criteriaStateError?: string;
 }) {
+  const { locale } = useLocale();
+  const t = studentOrientationCopy[locale].panel;
   const [items, setItems] = useState(() =>
     recommendations.map((recommendation) => {
       const program = firstProgram(recommendation);
@@ -102,7 +98,7 @@ export function StudentOrientationPanel({
       const result = await response.json().catch(() => ({}));
 
       if (!response.ok) {
-        setFeedback({ message: result.error || "Impossible de créer la candidature.", kind: "error" });
+        setFeedback({ message: locale === "fr" && typeof result.error === "string" ? result.error : t.addError, kind: "error" });
         return;
       }
 
@@ -112,11 +108,11 @@ export function StudentOrientationPanel({
         ),
       );
       setFeedback({
-        message: "Votre intérêt est bien enregistré. Cette piste est maintenant visible dans vos candidatures.",
+        message: t.addSuccess,
         kind: "success",
       });
     } catch {
-      setFeedback({ message: "Erreur réseau. Vérifiez votre connexion puis réessayez.", kind: "error" });
+      setFeedback({ message: t.networkError, kind: "error" });
     } finally {
       setBusy(null);
     }
@@ -126,12 +122,12 @@ export function StudentOrientationPanel({
     return (
       <Card>
         <div role="alert">
-          <h2 className="text-lg font-semibold text-slate-950">Recommandations indisponibles</h2>
+          <h2 className="text-lg font-semibold text-slate-950">{t.loadTitle}</h2>
           <p className="mt-2 text-sm leading-6 text-slate-600">{loadError}</p>
         </div>
         <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-          <ButtonLink href="/student/orientation">Réessayer</ButtonLink>
-          <ButtonLink href="/student" variant="secondary">Retour à mon dossier</ButtonLink>
+          <ButtonLink href="/student/orientation">{studentOrientationCopy[locale].page.retry}</ButtonLink>
+          <ButtonLink href="/student" variant="secondary">{studentOrientationCopy[locale].page.back}</ButtonLink>
         </div>
       </Card>
     );
@@ -143,10 +139,10 @@ export function StudentOrientationPanel({
         <div role="alert" className="rounded-[var(--radius-control)] border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
           <p>{applicationStateError}</p>
           <p className="mt-1 leading-6">
-            Vos recommandations restent visibles, mais les boutons d’intérêt sont désactivés jusqu’à ce que l’état puisse être revérifié.
+            {t.applicationStateDetail}
           </p>
           <div className="mt-3">
-            <ButtonLink href="/student/orientation" variant="secondary">Réessayer la vérification</ButtonLink>
+            <ButtonLink href="/student/orientation" variant="secondary">{t.retryVerification}</ButtonLink>
           </div>
         </div>
       )}
@@ -155,7 +151,7 @@ export function StudentOrientationPanel({
         <div role="alert" className="rounded-[var(--radius-control)] border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
           <p>{criteriaStateError}</p>
           <p className="mt-1 leading-6">
-            Les programmes restent visibles. Les comparaisons personnalisées réapparaîtront dès que votre projet pourra être relu.
+            {t.criteriaStateDetail}
           </p>
         </div>
       )}
@@ -171,62 +167,62 @@ export function StudentOrientationPanel({
         </div>
       )}
 
-      <section aria-label="Synthèse orientation" className="grid gap-5 lg:grid-cols-[1.15fr_0.85fr]">
+      <section aria-label={t.summaryAria} className="grid gap-5 lg:grid-cols-[1.15fr_0.85fr]">
         <Card className="relative overflow-hidden border-[var(--brand-border)] bg-white shadow-none">
           <div aria-hidden="true" className="absolute inset-y-0 left-0 w-1 bg-[var(--brand)]" />
           <div className="pl-2 sm:pl-3">
             <div className="flex flex-wrap items-center gap-3">
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Votre orientation</p>
-              <Badge variant={items.length ? "info" : "neutral"}>{items.length ? "Pistes disponibles" : "Aucune piste publiée"}</Badge>
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">{t.programsEyebrow}</p>
+              <Badge variant={items.length ? "info" : "neutral"}>{items.length ? t.programsAvailable : t.noPrograms}</Badge>
             </div>
-            <h2 className="mt-4 text-2xl font-semibold tracking-[-0.03em] text-slate-950">Comparez avant de décider.</h2>
+            <h2 className="mt-4 text-2xl font-semibold tracking-[-0.03em] text-slate-950">{t.compareTitle}</h2>
             <p className="mt-3 text-sm leading-6 text-slate-600">
               {applicationStateError
-                ? "Vos recommandations restent visibles, mais nous ne pouvons pas confirmer l’état de vos intérêts enregistrés pour le moment."
+                ? t.interestStateUnknown
                 : nextProgram
-                  ? `Commencez par ${nextProgram.name}. Vérifiez les critères visibles et la source officielle avant d’enregistrer votre intérêt.`
+                  ? t.startWith(nextProgram.name)
                   : items.length
-                    ? "Vos intérêts enregistrés sont déjà visibles dans vos candidatures."
-                    : "Aucune recommandation n’est publiée pour le moment. Vérifiez que votre profil contient les informations utiles à l’orientation."}
+                    ? t.selectedPrograms
+                    : t.noProgramsText}
             </p>
             {nextProgram && (
               <div className="mt-6 rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4">
-                <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--accent-strong)]">À regarder maintenant</p>
+                <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--accent-strong)]">{t.lookNow}</p>
                 <p className="mt-2 font-bold text-slate-950">{nextProgram.name}</p>
-                <p className="mt-1 text-sm text-slate-600">{nextProgram.degree_level} · {nextProgram.field || "Domaine à préciser"}</p>
+                <p className="mt-1 text-sm text-slate-600">{nextProgram.degree_level} · {nextProgram.field || t.fieldUnknown}</p>
               </div>
             )}
           </div>
         </Card>
 
-        <section aria-label="Résumé de l’orientation" className="grid gap-4 sm:grid-cols-3 lg:grid-cols-1">
-          <SummaryCard title="Recommandations" value={items.length} badge="Publiées" tone="info" />
-          <SummaryCard title="À comparer" value={comparableItems.length - interestedCount} badge="À décider" tone={comparableItems.length - interestedCount > 0 ? "warning" : "success"} />
-          <SummaryCard title="Intérêts enregistrés" value={applicationStateError ? "—" : interestedCount} badge={applicationStateError ? "Indisponible" : interestedCount ? "Suivi démarré" : "Aucun intérêt"} tone={applicationStateError ? "neutral" : interestedCount ? "success" : "neutral"} />
+        <section aria-label={t.orientationSummaryAria} className="grid gap-4 sm:grid-cols-3 lg:grid-cols-1">
+          <SummaryCard title={t.summaryPrograms} value={items.length} badge={t.proposed} tone="info" />
+          <SummaryCard title={t.compare} value={comparableItems.length - interestedCount} badge={t.decide} tone={comparableItems.length - interestedCount > 0 ? "warning" : "success"} />
+          <SummaryCard title={t.added} value={applicationStateError ? "—" : interestedCount} badge={applicationStateError ? t.unavailable : interestedCount ? t.trackingStarted : t.none} tone={applicationStateError ? "neutral" : interestedCount ? "success" : "neutral"} />
         </section>
       </section>
 
       {!loadError && items.length === 0 ? (
         <Card aria-labelledby="orientation-empty-title" className="border-dashed bg-white/70 py-9 text-center">
           <span aria-hidden="true" className="mx-auto grid h-11 w-11 place-items-center rounded-full bg-[var(--brand-soft)] text-[var(--brand)]">⌁</span>
-          <h2 id="orientation-empty-title" className="mt-4 text-lg font-bold text-slate-950">Aucune piste d’orientation n’est publiée pour le moment.</h2>
+          <h2 id="orientation-empty-title" className="mt-4 text-lg font-bold text-slate-950">{t.emptyTitle}</h2>
           <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-slate-600">
-            Cela peut être normal pendant la préparation du dossier. Vérifiez que votre profil est à jour ; les nouvelles pistes apparaîtront ici lorsqu’elles seront enregistrées.
+            {t.emptyText}
           </p>
           <div className="mt-5 flex flex-col justify-center gap-3 sm:flex-row">
-            <ButtonLink href="/student/profile" variant="secondary">Vérifier mon profil</ButtonLink>
-            <ButtonLink href="/student">Retour à mon dossier</ButtonLink>
+            <ButtonLink href="/student/profile" variant="secondary">{t.profile}</ButtonLink>
+            <ButtonLink href="/student">{studentOrientationCopy[locale].page.back}</ButtonLink>
           </div>
         </Card>
       ) : (
         <section aria-labelledby="recommended-programs-title">
           <div className="mb-4 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
             <div>
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Vos pistes</p>
-              <h2 id="recommended-programs-title" className="mt-1 text-2xl font-semibold tracking-[-0.03em] text-slate-950">Programmes à comparer</h2>
-              <p className="mt-1 text-sm leading-6 text-slate-600">Chaque fiche reprend uniquement les critères enregistrés dans AlmaGo. Vérifiez toujours les informations importantes auprès de la source officielle.</p>
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">{t.programsEyebrow}</p>
+              <h2 id="recommended-programs-title" className="mt-1 text-2xl font-semibold tracking-[-0.03em] text-slate-950">{t.listEyebrow}</h2>
+              <p className="mt-1 text-sm leading-6 text-slate-600">{t.listDescription}</p>
             </div>
-            <ButtonLink href="/student/applications" variant="secondary">Mes candidatures</ButtonLink>
+            <ButtonLink href="/student/applications" variant="secondary">{studentOrientationCopy[locale].page.applications}</ButtonLink>
           </div>
 
           <div className="space-y-4">
@@ -246,13 +242,13 @@ export function StudentOrientationPanel({
                   <div className="flex flex-col gap-4">
                     <div className="flex flex-wrap items-start justify-between gap-3">
                       <div className="min-w-0">
-                        <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">Établissement</p>
+                        <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">{t.institution}</p>
                         <p className="mt-1 text-sm font-bold leading-5 text-slate-900 [overflow-wrap:anywhere]">
-                          {university?.name || "Université à confirmer"}{university?.city ? ` · ${university.city}` : ""}
+                          {university?.name || t.universityUnknown}{university?.city ? ` · ${university.city}` : ""}
                         </p>
                       </div>
                       <Badge variant={recommendation.student_interest_at ? "success" : recommendationVariant(recommendation.status)}>
-                        {recommendation.student_interest_at ? "Intérêt enregistré" : studentRecommendationLabels[recommendation.status] || recommendationStatusLabels[recommendation.status] || recommendation.status}
+                        {recommendation.student_interest_at ? t.addedToApplications : t.recommendationLabels[recommendation.status] || recommendation.status}
                       </Badge>
                     </div>
                     <div>
@@ -261,54 +257,54 @@ export function StudentOrientationPanel({
                       </h3>
                       <div className="mt-3 flex flex-wrap gap-2 text-xs font-semibold text-slate-600">
                         <span className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-2.5 py-1.5">{program.degree_level}</span>
-                        <span className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-2.5 py-1.5">{program.field || "Domaine à préciser"}</span>
+                        <span className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-2.5 py-1.5">{program.field || t.fieldUnknown}</span>
                         {program.teaching_language && <span className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-2.5 py-1.5">{program.teaching_language}</span>}
                       </div>
                     </div>
                   </div>
 
                   <div className="mt-5 rounded-[var(--radius-control)] border border-[var(--brand-border)] bg-[var(--brand-soft)]/45 p-4">
-                    <h4 className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">Pourquoi cette piste apparaît ?</h4>
+                    <h4 className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">{t.whyProgram}</h4>
                     <p className="mt-2 text-sm leading-6 text-slate-700 [overflow-wrap:anywhere]">
-                      {recommendation.note || "Cette piste a été enregistrée dans votre orientation. Consultez les critères ci-dessous et vérifiez les informations officielles avant de décider."}
+                      {recommendation.note || t.proposedBoundary}
                     </p>
                   </div>
 
                   <div className="mt-5">
-                    <h4 className="text-xs font-bold uppercase tracking-[0.14em] text-slate-500">Critères enregistrés</h4>
+                    <h4 className="text-xs font-bold uppercase tracking-[0.14em] text-slate-500">{t.recordedCriteria}</h4>
                     <dl className="mt-3 grid gap-3 text-sm sm:grid-cols-2">
-                    <InfoItem label="Langue d’enseignement" value={program.teaching_language || "À confirmer"} />
-                    <InfoItem label="Échéance hiver" value={formatDeadline(program.winter_deadline)} />
-                    <InfoItem label="Échéance été" value={formatDeadline(program.summer_deadline || null)} />
-                    <InfoItem label="Diplôme demandé" value={program.diploma_required || "À confirmer"} />
+                    <InfoItem label={t.teachingLanguage} value={program.teaching_language || studentOrientationCopy[locale].panel.routeUnknown} />
+                    <InfoItem label={t.winterDeadline} value={formatDeadline(program.winter_deadline, locale)} />
+                    <InfoItem label={t.summerDeadline} value={formatDeadline(program.summer_deadline || null, locale)} />
+                    <InfoItem label={t.diplomaRequired} value={program.diploma_required || t.routeUnknown} />
                     <div className="rounded-[var(--radius-control)] bg-[var(--surface-muted)] p-3 sm:col-span-2">
-                      <dt className="text-slate-500">Niveaux linguistiques demandés</dt>
+                      <dt className="text-slate-500">{t.languageLevels}</dt>
                       <dd className="mt-1 text-slate-900">
                         {[
-                          program.german_level_required && `Allemand ${program.german_level_required}`,
-                          program.english_level_required && `Anglais ${program.english_level_required}`,
-                        ].filter(Boolean).join(" · ") || "À confirmer avec AlmaGo"}
+                          program.german_level_required && `${t.german} ${program.german_level_required}`,
+                          program.english_level_required && `${t.english} ${program.english_level_required}`,
+                        ].filter(Boolean).join(" · ") || t.officialCheck}
                       </dd>
                     </div>
                     </dl>
                   </div>
 
-                  <RequirementAssessment match={recommendation.requirement_match} programName={program.name} />
+                  <RequirementAssessment match={recommendation.requirement_match} programName={program.name} copy={t} />
 
                   <div className="mt-5 rounded-[var(--radius-control)] border border-amber-200 bg-amber-50/60 p-3 text-xs leading-5 text-amber-900">
-                    Cette recommandation est une piste d’orientation. Elle ne garantit ni l’éligibilité finale ni l’admission.
+                    {t.programLeadBoundary}
                   </div>
 
                   <div className="mt-auto flex flex-col gap-2 border-t border-[var(--border)] pt-5 sm:flex-row sm:flex-wrap">
                     {program.application_url && (
                       <a
                         href={program.application_url}
-                        aria-label={`Site officiel de ${program.name} (nouvel onglet)`}
+                        aria-label={t.officialSourceAria(program.name)}
                         target="_blank"
                         rel="noreferrer"
                         className={buttonClassName("secondary", "w-full sm:w-auto")}
                       >
-                        Vérifier la source officielle
+                        {t.officialVerify}
                       </a>
                     )}
                     <Button
@@ -318,12 +314,12 @@ export function StudentOrientationPanel({
                       onClick={() => interested(recommendation.id)}
                     >
                       {recommendation.student_interest_at
-                        ? "Intérêt enregistré"
+                        ? t.addedToApplications
                         : busy === recommendation.id
-                          ? "Enregistrement…"
+                          ? t.saving
                           : recommendation.status === "not_recommended"
-                            ? "Non disponible"
-                            : "Cette piste m’intéresse"}
+                            ? t.unavailableAction
+                            : t.addToApplications}
                     </Button>
                   </div>
                 </Card>
@@ -356,23 +352,34 @@ function InfoItem({ label, value }: { label: string; value: string }) {
 }
 
 
-function RequirementAssessment({ match, programName }: { match?: MasterRequirementsMatch | null; programName: string }) {
+function RequirementAssessment({
+  match,
+  programName,
+  copy,
+}: {
+  match?: MasterRequirementsMatch | null;
+  programName: string;
+  copy: (typeof studentOrientationCopy)["fr"]["panel"];
+}) {
   if (!match) return null;
 
   const summary = match.has_blocking_mismatch
-    ? { label: "Point à compléter", tone: "warning" as const }
+    ? { label: copy.pointToComplete, tone: "warning" as const }
     : match.needs_manual_review
-      ? { label: "Vérification nécessaire", tone: "info" as const }
+      ? { label: copy.verificationNeeded, tone: "info" as const }
       : match.has_unknowns
-        ? { label: "Informations manquantes", tone: "neutral" as const }
-        : { label: "Critères comparés", tone: "success" as const };
+        ? { label: copy.missingInformation, tone: "neutral" as const }
+        : { label: copy.criteriaCompared, tone: "success" as const };
 
   return (
-    <section className="mt-5 rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-4" aria-label={`Comparaison avec votre projet - ${programName}`}>
+    <section
+      className="mt-5 rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-4"
+      aria-label={`${copy.comparisonAria} - ${programName}`}
+    >
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
-          <h4 className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">Comparaison avec votre projet</h4>
-          <p className="mt-1 text-xs leading-5 text-slate-500">Lecture factuelle des critères vérifiés disponibles. Ce n’est pas une décision d’admission.</p>
+          <h4 className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">{copy.comparisonAria}</h4>
+          <p className="mt-1 text-xs leading-5 text-slate-500">{copy.comparisonBoundary}</p>
         </div>
         <Badge variant={summary.tone}>{summary.label}</Badge>
       </div>
@@ -382,15 +389,15 @@ function RequirementAssessment({ match, programName }: { match?: MasterRequireme
           {match.criteria.map((item, index) => (
             <div key={`${item.criterion}-${index}`} className="rounded-[var(--radius-control)] bg-[var(--surface-muted)] p-3">
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <p className="text-sm font-semibold text-slate-900">{criterionLabel(item.criterion)}</p>
-                <Badge variant={criterionTone(item)}>{criterionStatusLabel(item)}</Badge>
+                <p className="text-sm font-semibold text-slate-900">{criterionLabel(item.criterion, copy)}</p>
+                <Badge variant={criterionTone(item)}>{criterionStatusLabel(item, copy)}</Badge>
               </div>
-              <p className="mt-1 text-xs leading-5 text-slate-600">{criterionExplanation(item)}</p>
+              <p className="mt-1 text-xs leading-5 text-slate-600">{criterionExplanation(item, copy)}</p>
               {(item.student_value !== null || item.required_value !== null) && (
                 <p className="mt-1 text-xs text-slate-500">
-                  {item.student_value !== null ? `Votre information : ${item.student_value}` : ""}
+                  {item.student_value !== null ? `${copy.yourInformation}: ${item.student_value}` : ""}
                   {item.student_value !== null && item.required_value !== null ? " · " : ""}
-                  {item.required_value !== null ? `Critère publié : ${item.required_value}` : ""}
+                  {item.required_value !== null ? `${copy.publishedCriterion}: ${item.required_value}` : ""}
                 </p>
               )}
             </div>
@@ -400,49 +407,38 @@ function RequirementAssessment({ match, programName }: { match?: MasterRequireme
 
       {match.application_route && (
         <div className="mt-3 rounded-[var(--radius-control)] border border-[var(--brand-border)] bg-[var(--brand-soft)]/40 p-3 text-sm">
-          <span className="font-semibold text-slate-900">Mode de candidature : </span>
-          <span className="text-slate-700">{applicationRouteLabel(match.application_route)}</span>
+          <span className="font-semibold text-slate-900">{copy.applicationRoute}: </span>
+          <span className="text-slate-700">{applicationRouteLabel(match.application_route, copy)}</span>
         </div>
       )}
     </section>
   );
 }
 
-function criterionLabel(criterion: string) {
-  if (criterion === "minimum_ects") return "ECTS minimum";
-  if (criterion === "minimum_grade") return "Note minimale";
-  if (criterion === "prior_degree") return "Diplôme antérieur";
-  if (criterion === "intake") return "Rentrée";
-  if (criterion === "deadline") return "Échéance";
+function criterionLabel(criterion: string, copy: (typeof studentOrientationCopy)["fr"]["panel"]) {
+  if (copy.requirementLabels[criterion]) return copy.requirementLabels[criterion];
   if (criterion.startsWith("language:")) {
     const lang = criterion.slice("language:".length).toLowerCase().trim();
-    let displayLang = lang;
-    if (lang === "german" || lang === "deutsch") displayLang = "allemand";
-    else if (lang === "english") displayLang = "anglais";
-    else if (lang === "french") displayLang = "français";
-    return `Langue · ${displayLang.charAt(0).toUpperCase() + displayLang.slice(1)}`;
+    const displayLang = copy.languageNames[lang] || lang;
+    return `${copy.languagePrefix} · ${displayLang}`;
   }
   if (criterion.startsWith("subject_credits:")) {
-    const subj = criterion.slice("subject_credits:".length).toLowerCase().trim();
-    let displaySubj = subj;
-    if (subj === "math" || subj === "mathematics" || subj === "maths") displaySubj = "mathématiques";
-    else if (subj === "computer science" || subj === "cs") displaySubj = "informatique";
-    else if (subj === "physics") displaySubj = "physique";
-    else if (subj === "chemistry") displaySubj = "chimie";
-    return `Crédits · ${displaySubj.charAt(0).toUpperCase() + displaySubj.slice(1)}`;
+    const subject = criterion.slice("subject_credits:".length).toLowerCase().trim();
+    const displaySubject = copy.subjectNames[subject] || subject;
+    return `${copy.creditsPrefix} · ${displaySubject}`;
   }
-  return "Critère du programme";
+  return copy.requirementLabels.other;
 }
 
-function criterionStatusLabel(item: RequirementMatchResult) {
+function criterionStatusLabel(
+  item: RequirementMatchResult,
+  copy: (typeof studentOrientationCopy)["fr"]["panel"],
+) {
   if (item.criterion === "deadline") {
-    if (item.status === "satisfied") return "Échéance ouverte";
-    if (item.status === "not_satisfied") return "Échéance dépassée";
+    if (item.status === "satisfied") return copy.deadlineOpen;
+    if (item.status === "not_satisfied") return copy.deadlinePassed;
   }
-  if (item.status === "satisfied") return "Critère rempli";
-  if (item.status === "not_satisfied") return "Écart potentiel";
-  if (item.status === "needs_manual_review") return "À vérifier";
-  return "Information manquante";
+  return copy.statusLabels[item.status] || copy.missing;
 }
 
 function criterionTone(item: RequirementMatchResult): "success" | "warning" | "info" | "neutral" {
@@ -452,69 +448,55 @@ function criterionTone(item: RequirementMatchResult): "success" | "warning" | "i
   return "neutral";
 }
 
-function criterionExplanation(item: RequirementMatchResult) {
-  if (item.criterion === "minimum_ects" && item.status === "unknown") return "Nous n’avons pas encore assez d’informations pour comparer vos ECTS.";
-  if (item.criterion === "minimum_grade" && item.status === "unknown") return "Votre note n’est pas encore disponible dans un format comparable.";
-  if (item.criterion.startsWith("subject_credits:") && item.status === "unknown") return "Vos crédits par matière ne sont pas encore disponibles pour cette comparaison.";
-  if (item.criterion.startsWith("language:") && item.status === "unknown") return "Votre niveau dans cette langue n’est pas encore disponible pour la comparaison.";
-  if (item.criterion === "prior_degree" && item.status === "needs_manual_review") return "La compatibilité de votre diplôme doit être vérifiée avant de conclure.";
+function criterionExplanation(
+  item: RequirementMatchResult,
+  copy: (typeof studentOrientationCopy)["fr"]["panel"],
+) {
+  let userFacingFrench: string | null = null;
 
-  const reason = item.reason;
-  if (reason === "Les ECTS totaux de l’étudiant ne sont pas structurés dans le projet.") {
-    return "Vos crédits ECTS totaux ne sont pas encore renseignés de manière structurée dans votre projet.";
-  }
-  if (reason === "Les crédits par matière de l’étudiant ne sont pas structurés dans le projet.") {
-    return "Vos crédits par matière ne sont pas encore renseignés de manière structurée dans votre projet.";
-  }
-  if (reason === "Aucune note étudiante comparable et normalisée n’est disponible.") {
-    return "Votre moyenne ou note de référence n’est pas encore saisie de manière comparable.";
-  }
-  if (reason === "Diplôme actuel non renseigné.") {
-    return "Votre diplôme actuel n’est pas encore renseigné dans votre profil.";
-  }
-  if (reason === "La compatibilité du diplôme doit être confirmée manuellement.") {
-    return "La compatibilité de votre diplôme avec ce programme doit être confirmée manuellement.";
-  }
-  if (reason === "Le niveau étudiant pour cette langue n’est pas structuré.") {
-    return "Votre niveau de langue n’est pas encore structuré dans votre projet.";
-  }
-  if (reason === "Niveau d’allemand étudiant absent ou non comparable.") {
-    return "Votre niveau d’allemand n’est pas renseigné ou n’est pas sous un format comparable.";
-  }
-  if (reason === "Le niveau requis n’est pas un niveau CEFR comparable.") {
-    return "Le niveau requis par l’établissement n’est pas exprimé selon le cadre CEFR.";
-  }
-  if (reason === "Rentrée étudiante absente ou non structurée.") {
-    return "Votre période de rentrée souhaitée n’est pas renseignée ou structurée.";
-  }
-  if (reason === "La rentrée du programme n’est pas comparable automatiquement.") {
-    return "La date de rentrée du programme nécessite une analyse manuelle.";
-  }
-  if (reason === "La deadline vérifiée n’est pas une date structurée comparable.") {
-    return "La date limite de candidature n’est pas disponible sous un format comparable.";
-  }
-  if (reason === "Information non renseignée.") {
-    return "Cette information n’est pas encore disponible ou renseignée.";
-  }
-  if (reason === "Source ou vérification à revalider.") {
-    return "Les sources officielles de cette information doivent être vérifiées à nouveau.";
-  }
-  if (reason === "Le prérequis est disponible uniquement en texte libre.") {
-    return "Ce critère est détaillé en texte libre et demande une lecture attentive.";
-  }
-  if (reason === "Valeur vérifiée absente.") {
-    return "L’information vérifiée n’est pas disponible.";
-  }
-  if (reason === "Valeur numérique non exploitable.") {
-    return "La valeur chiffrée présente un format non exploitable.";
+  if (item.criterion === "minimum_ects" && item.status === "unknown") {
+    userFacingFrench = "Nous n’avons pas encore assez d’informations pour comparer vos ECTS.";
+  } else if (item.criterion === "minimum_grade" && item.status === "unknown") {
+    userFacingFrench = "Votre note n’est pas encore disponible dans un format comparable.";
+  } else if (item.criterion.startsWith("subject_credits:") && item.status === "unknown") {
+    userFacingFrench = "Vos crédits par matière ne sont pas encore disponibles pour cette comparaison.";
+  } else if (item.criterion.startsWith("language:") && item.status === "unknown") {
+    userFacingFrench = "Votre niveau dans cette langue n’est pas encore disponible pour la comparaison.";
+  } else if (item.criterion === "prior_degree" && item.status === "needs_manual_review") {
+    userFacingFrench = "La compatibilité de votre diplôme doit être vérifiée avant de conclure.";
   }
 
-  return reason;
+  if (!userFacingFrench) {
+    userFacingFrench = ({
+      "Les ECTS totaux de l’étudiant ne sont pas structurés dans le projet.": "Le total de vos ECTS n’est pas encore indiqué dans votre projet.",
+      "Les crédits par matière de l’étudiant ne sont pas structurés dans le projet.": "Vos crédits par matière ne sont pas encore renseignés de manière structurée dans votre projet.",
+      "Aucune note étudiante comparable et normalisée n’est disponible.": "Votre moyenne n’est pas encore indiquée dans un format utilisable pour la comparaison.",
+      "Diplôme actuel non renseigné.": "Votre diplôme actuel n’est pas encore renseigné dans votre profil.",
+      "La compatibilité du diplôme doit être confirmée manuellement.": "L’université doit confirmer si votre diplôme correspond à ce programme.",
+      "Le niveau étudiant pour cette langue n’est pas structuré.": "Votre niveau de langue n’est pas encore structuré dans votre projet.",
+      "Niveau d’allemand étudiant absent ou non comparable.": "Votre niveau d’allemand n’est pas renseigné ou n’est pas sous un format comparable.",
+      "Le niveau requis n’est pas un niveau CEFR comparable.": "Le niveau demandé n’utilise pas les niveaux A1–C2. Vérifiez la source officielle.",
+      "Rentrée étudiante absente ou non structurée.": "Votre période de rentrée souhaitée n’est pas renseignée ou structurée.",
+      "La rentrée du programme n’est pas comparable automatiquement.": "La date de rentrée du programme nécessite une analyse manuelle.",
+      "La deadline vérifiée n’est pas une date structurée comparable.": "La date limite de candidature n’est pas disponible sous un format comparable.",
+      "Information non renseignée.": "Cette information n’est pas encore disponible ou renseignée.",
+      "Source ou vérification à revalider.": "Les sources officielles de cette information doivent être vérifiées à nouveau.",
+      "Le prérequis est disponible uniquement en texte libre.": "La source donne ce critère en texte. Lisez-la avant de décider.",
+      "Valeur vérifiée absente.": "L’information vérifiée n’est pas disponible.",
+      "Valeur numérique non exploitable.": "La valeur chiffrée présente un format non exploitable.",
+    } as Record<string, string>)[item.reason] || item.reason;
+  }
+
+  return copy.reasonLabels[userFacingFrench] || userFacingFrench;
 }
 
-function applicationRouteLabel(route: MasterRequirementsMatch["application_route"]) {
-  if (route === "direct") return "candidature directe auprès de l’établissement";
-  if (route === "uni_assist") return "candidature via uni-assist";
-  if (route === "vpd") return "VPD à obtenir avant la candidature";
-  return "à confirmer";
+function applicationRouteLabel(
+  route: MasterRequirementsMatch["application_route"],
+  copy: (typeof studentOrientationCopy)["fr"]["panel"],
+) {
+  if (route === "direct") return copy.routeDirect;
+  if (route === "uni_assist") return copy.routeUniAssist;
+  if (route === "vpd") return copy.routeVpd;
+  return copy.routeUnknown;
 }
+

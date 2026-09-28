@@ -10,6 +10,8 @@ import {
   TextInput,
 } from "@/components/student/ProfileControls";
 import { Button } from "@/components/ui/Button";
+import { useLocale } from "@/components/i18n/LocaleProvider";
+import { studentOnboardingCopy } from "@/content/student-onboarding-copy";
 import {
   budgetOptions,
   certificateOptions,
@@ -79,22 +81,6 @@ const scalarKeys = [
   "budget_range",
 ] as const;
 
-const steps = [
-  { id: 1, title: "Identité", description: "Vos informations principales" },
-  { id: 2, title: "Parcours", description: "Votre parcours académique" },
-  { id: 3, title: "Langues", description: "Vos niveaux et certificats" },
-  { id: 4, title: "Projet", description: "Votre projet d’études" },
-  { id: 5, title: "Validation", description: "Vérification finale" },
-] as const;
-
-const stepGuidance = [
-  "Nous commençons par les informations nécessaires pour identifier correctement votre dossier.",
-  "Votre parcours académique permet ensuite de distinguer ce qui est acquis de ce qui devra être vérifié.",
-  "Vos niveaux de langue servent à repérer les programmes accessibles et les éventuelles étapes de préparation.",
-  "Votre objectif académique donne une direction concrète à la recherche de programmes et aux démarches qui suivent.",
-  "Relisez les informations essentielles avant d’ouvrir votre espace étudiant.",
-] as const;
-
 function mergeProfile(profile: Record<string, unknown>): FormData {
   const merged: FormData = { ...initial };
 
@@ -122,6 +108,9 @@ export function OnboardingForm({ profile }: { profile: Record<string, unknown> }
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
   const router = useRouter();
+  const { locale } = useLocale();
+  const t = studentOnboardingCopy[locale];
+  const steps = t.steps;
 
   const set = (key: string, value: string | string[]) =>
     setData((current) => ({ ...current, [key]: value }));
@@ -134,7 +123,7 @@ export function OnboardingForm({ profile }: { profile: Record<string, unknown> }
     };
 
     if (requiredByStep[step]?.some((key) => !String(data[key] || "").trim())) {
-      setError("Complétez les champs marqués d’un * avant de continuer.");
+      setError(t.requiredError);
       return;
     }
 
@@ -150,8 +139,7 @@ export function OnboardingForm({ profile }: { profile: Record<string, unknown> }
 
       if (!response.ok) {
         setError(
-          result.error ||
-            "Nous n’arrivons pas à enregistrer cette étape pour le moment. Réessayez dans quelques instants.",
+          locale === "fr" && typeof result.error === "string" ? result.error : t.saveError,
         );
         return;
       }
@@ -162,9 +150,7 @@ export function OnboardingForm({ profile }: { profile: Record<string, unknown> }
         window.scrollTo({ top: 0, behavior: "smooth" });
       }
     } catch {
-      setError(
-        "Nous n’arrivons pas à enregistrer cette étape pour le moment. Vérifiez votre connexion puis réessayez.",
-      );
+      setError(t.networkError);
     } finally {
       setSaving(false);
     }
@@ -180,7 +166,7 @@ export function OnboardingForm({ profile }: { profile: Record<string, unknown> }
           <div className="relative h-40 overflow-hidden sm:h-48 lg:h-56">
             <Image
               src="https://images.pexels.com/photos/7973208/pexels-photo-7973208.jpeg?auto=compress&cs=tinysrgb&w=1200"
-              alt="Des étudiants relisent ensemble des documents devant un bâtiment universitaire."
+              alt={t.imageAlt}
               fill
               priority
               sizes="(min-width: 1024px) 34vw, 100vw"
@@ -189,10 +175,10 @@ export function OnboardingForm({ profile }: { profile: Record<string, unknown> }
             <div className="absolute inset-0 bg-gradient-to-t from-[rgba(28,33,36,0.66)] via-[rgba(28,33,36,0.08)] to-transparent" />
             <div className="absolute inset-x-5 bottom-4 text-white sm:inset-x-6">
               <p className="text-[0.66rem] font-bold uppercase tracking-[0.15em] text-[#fff0bf]">
-                Votre dossier AlmaGo
+                {t.dossierEyebrow}
               </p>
               <h1 className="editorial-accent mt-1 max-w-md text-2xl leading-[1.08] sm:text-[1.8rem]">
-                Donnez une direction claire à votre projet.
+                {t.dossierTitle}
               </h1>
             </div>
           </div>
@@ -201,7 +187,7 @@ export function OnboardingForm({ profile }: { profile: Record<string, unknown> }
             <div className="flex items-center justify-between gap-4">
               <div>
                 <p className="text-[0.68rem] font-bold uppercase tracking-[0.13em] text-[var(--brand)]">
-                  Étape actuelle
+                  {t.currentStep}
                 </p>
                 <p className="mt-1 text-xl font-bold text-[var(--foreground)]">{currentStep.title}</p>
               </div>
@@ -210,11 +196,11 @@ export function OnboardingForm({ profile }: { profile: Record<string, unknown> }
               </span>
             </div>
 
-            <p className="mt-3 text-sm leading-6 text-[var(--muted)]">{stepGuidance[step - 1]}</p>
+            <p className="mt-3 text-sm leading-6 text-[var(--muted)]">{currentStep.guidance}</p>
 
             <div className="mt-5 grid gap-2">
               <div className="flex items-center justify-between text-xs font-semibold text-[var(--muted)]">
-                <span>Progression</span>
+                <span>{t.progress}</span>
                 <span>{progress}</span>
               </div>
               <div className="h-2 overflow-hidden rounded-full bg-[var(--surface-subtle)]">
@@ -226,12 +212,13 @@ export function OnboardingForm({ profile }: { profile: Record<string, unknown> }
             </div>
 
             <ol className="mobile-nav-scroll mt-5 flex gap-2 overflow-x-auto pb-1 lg:grid lg:overflow-visible">
-              {steps.map((item) => {
-                const active = item.id === step;
-                const done = item.id < step;
+              {steps.map((item, index) => {
+                const itemId = index + 1;
+                const active = itemId === step;
+                const done = itemId < step;
                 return (
                   <li
-                    key={item.id}
+                    key={itemId}
                     className={`min-w-[10.5rem] rounded-[var(--radius-control)] border px-3 py-2.5 lg:min-w-0 ${
                       active
                         ? "border-[var(--brand-border)] bg-[var(--brand-soft)]"
@@ -248,7 +235,7 @@ export function OnboardingForm({ profile }: { profile: Record<string, unknown> }
                             : "bg-[var(--surface-muted)] text-[var(--muted)]"
                         }`}
                       >
-                        {done ? "✓" : item.id}
+                        {done ? "✓" : itemId}
                       </span>
                       <div className="min-w-0">
                         <p className="text-sm font-bold text-[var(--foreground)]">{item.title}</p>
@@ -261,7 +248,7 @@ export function OnboardingForm({ profile }: { profile: Record<string, unknown> }
             </ol>
 
             <p className="mt-5 border-t border-[var(--border)] pt-4 text-xs leading-5 text-[var(--muted)]">
-              Les champs marqués d’un * sont obligatoires. Les autres peuvent être complétés ou modifiés plus tard.
+              {t.requiredNote}
             </p>
           </div>
         </div>
@@ -272,7 +259,7 @@ export function OnboardingForm({ profile }: { profile: Record<string, unknown> }
           <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div>
               <p className="text-[0.68rem] font-bold uppercase tracking-[0.14em] text-[var(--brand)]">
-                Étape {step} sur 5
+                {t.stepOf(step)}
               </p>
               <h2 className="editorial-accent mt-2 text-[2rem] leading-[1.05] text-[var(--foreground)] sm:text-[2.3rem]">
                 {currentStep.title}
@@ -280,7 +267,7 @@ export function OnboardingForm({ profile }: { profile: Record<string, unknown> }
               <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{currentStep.description}</p>
             </div>
             <span className="self-start rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-3 py-2 text-xs font-semibold text-[var(--muted)]">
-              Enregistré à chaque étape
+              {t.saved}
             </span>
           </div>
         </div>
@@ -289,16 +276,16 @@ export function OnboardingForm({ profile }: { profile: Record<string, unknown> }
           {step === 1 && (
             <div className="space-y-5">
               <SectionIntro
-                title="Informations personnelles"
-                text="Commençons par les informations qui permettent d’identifier votre dossier."
+                title={t.sections.identity.title}
+                text={t.sections.identity.text}
               />
               <div className="grid gap-4 sm:grid-cols-2">
-                <TextInput label="Prénom" required value={String(data.first_name)} onChange={(v) => set("first_name", v)} />
-                <TextInput label="Nom" required value={String(data.last_name)} onChange={(v) => set("last_name", v)} />
-                <TextInput label="Date de naissance" type="date" value={String(data.birth_date)} onChange={(v) => set("birth_date", v)} />
-                <SearchableDatalistInput label="Nationalité" required value={String(data.nationality)} onChange={(v) => set("nationality", v)} options={nationalityOptions} />
-                <TextInput label="Ville actuelle" value={String(data.current_city)} onChange={(v) => set("current_city", v)} />
-                <TextInput label="Téléphone" value={String(data.phone)} onChange={(v) => set("phone", v)} />
+                <TextInput label={t.fields.firstName} required value={String(data.first_name)} onChange={(v) => set("first_name", v)} />
+                <TextInput label={t.fields.lastName} required value={String(data.last_name)} onChange={(v) => set("last_name", v)} />
+                <TextInput label={t.fields.birthDate} type="date" value={String(data.birth_date)} onChange={(v) => set("birth_date", v)} />
+                <SearchableDatalistInput label={t.fields.nationality} required value={String(data.nationality)} onChange={(v) => set("nationality", v)} options={nationalityOptions} />
+                <TextInput label={t.fields.city} value={String(data.current_city)} onChange={(v) => set("current_city", v)} />
+                <TextInput label={t.fields.phone} value={String(data.phone)} onChange={(v) => set("phone", v)} />
               </div>
             </div>
           )}
@@ -306,18 +293,18 @@ export function OnboardingForm({ profile }: { profile: Record<string, unknown> }
           {step === 2 && (
             <div className="space-y-5">
               <SectionIntro
-                title="Parcours académique"
-                text="Ajoutez ce que vous savez déjà. Les pièces justificatives pourront être rattachées ensuite."
+                title={t.sections.studies.title}
+                text={t.sections.studies.text}
               />
               <div className="grid gap-4 sm:grid-cols-2">
-                <SelectInput label="Dernier diplôme" value={String(data.last_diploma)} onChange={(v) => set("last_diploma", v)} options={diplomaOptions} />
-                <SelectInput label="Type / section du Bac tunisien" value={String(data.bac_track)} onChange={(v) => set("bac_track", v)} options={tunisianBacTrackOptions} />
-                <TextInput label="Année du Bac" type="number" value={String(data.bac_year)} onChange={(v) => set("bac_year", v)} />
-                <TextInput label="Moyenne générale" type="number" placeholder="Ex. 14,50" value={String(data.general_average)} onChange={(v) => set("general_average", v)} />
-                <TextInput label="Établissement" value={String(data.institution)} onChange={(v) => set("institution", v)} />
-                <TextInput label="Études universitaires actuelles" value={String(data.current_university_studies)} onChange={(v) => set("current_university_studies", v)} />
-                <TextInput label="Domaine actuel" value={String(data.current_field)} onChange={(v) => set("current_field", v)} />
-                <TextInput label="Nombre de semestres" type="number" value={String(data.university_semesters)} onChange={(v) => set("university_semesters", v)} />
+                <SelectInput label={t.fields.lastDiploma} value={String(data.last_diploma)} onChange={(v) => set("last_diploma", v)} options={diplomaOptions} />
+                <SelectInput label={t.fields.bacTrack} value={String(data.bac_track)} onChange={(v) => set("bac_track", v)} options={tunisianBacTrackOptions} />
+                <TextInput label={t.fields.bacYear} type="number" value={String(data.bac_year)} onChange={(v) => set("bac_year", v)} />
+                <TextInput label={t.fields.average} type="number" placeholder={t.fields.averagePlaceholder} value={String(data.general_average)} onChange={(v) => set("general_average", v)} />
+                <TextInput label={t.fields.institution} value={String(data.institution)} onChange={(v) => set("institution", v)} />
+                <TextInput label={t.fields.currentStudies} value={String(data.current_university_studies)} onChange={(v) => set("current_university_studies", v)} />
+                <TextInput label={t.fields.currentField} value={String(data.current_field)} onChange={(v) => set("current_field", v)} />
+                <TextInput label={t.fields.semesters} type="number" value={String(data.university_semesters)} onChange={(v) => set("university_semesters", v)} />
               </div>
             </div>
           )}
@@ -325,17 +312,17 @@ export function OnboardingForm({ profile }: { profile: Record<string, unknown> }
           {step === 3 && (
             <div className="space-y-5">
               <SectionIntro
-                title="Langues"
-                text="Indiquez vos niveaux actuels. Ils servent à repérer les exigences à vérifier pour chaque programme."
+                title={t.sections.languages.title}
+                text={t.sections.languages.text}
               />
               <div className="grid gap-4 sm:grid-cols-2">
-                <SelectInput label="Allemand" value={String(data.german_level)} onChange={(v) => set("german_level", v)} options={languageLevelOptions} />
-                <SelectInput label="Anglais" value={String(data.english_level)} onChange={(v) => set("english_level", v)} options={languageLevelOptions} />
-                <SelectInput label="Français" value={String(data.french_level)} onChange={(v) => set("french_level", v)} options={languageLevelOptions} />
-                <SelectInput label="Certificat de langue" value={String(data.language_certificate)} onChange={(v) => set("language_certificate", v)} options={certificateOptions} />
+                <SelectInput label={t.fields.german} value={String(data.german_level)} onChange={(v) => set("german_level", v)} options={languageLevelOptions} />
+                <SelectInput label={t.fields.english} value={String(data.english_level)} onChange={(v) => set("english_level", v)} options={languageLevelOptions} />
+                <SelectInput label={t.fields.french} value={String(data.french_level)} onChange={(v) => set("french_level", v)} options={languageLevelOptions} />
+                <SelectInput label={t.fields.languageCertificate} value={String(data.language_certificate)} onChange={(v) => set("language_certificate", v)} options={certificateOptions} />
               </div>
               {data.language_certificate === "other" && (
-                <TextInput label="Autre certificat" value={String(data.language_certificate_other)} onChange={(v) => set("language_certificate_other", v)} />
+                <TextInput label={t.fields.otherCertificate} value={String(data.language_certificate_other)} onChange={(v) => set("language_certificate_other", v)} />
               )}
             </div>
           )}
@@ -343,16 +330,16 @@ export function OnboardingForm({ profile }: { profile: Record<string, unknown> }
           {step === 4 && (
             <div className="space-y-5">
               <SectionIntro
-                title="Votre projet en Allemagne"
-                text="Ces quatre informations obligatoires donnent une direction aux recherches et aux prochaines démarches."
+                title={t.sections.project.title}
+                text={t.sections.project.text}
               />
               <div className="grid gap-4 sm:grid-cols-2">
-                <SelectInput label="Niveau visé" required value={String(data.target_degree)} onChange={(v) => set("target_degree", v)} options={degreeOptions} />
-                <SelectInput label="Domaine souhaité" required value={String(data.target_field)} onChange={(v) => set("target_field", v)} options={studyFieldOptions} />
-                <SelectInput label="Langue d'études souhaitée" required value={String(data.study_language)} onChange={(v) => set("study_language", v)} options={studyLanguageOptions} />
-                <TextInput label="Semestre / rentrée souhaitée" required value={String(data.target_intake)} onChange={(v) => set("target_intake", v)} placeholder="Ex. hiver 2027" />
+                <SelectInput label={t.fields.targetDegree} required value={String(data.target_degree)} onChange={(v) => set("target_degree", v)} options={degreeOptions} />
+                <SelectInput label={t.fields.targetField} required value={String(data.target_field)} onChange={(v) => set("target_field", v)} options={studyFieldOptions} />
+                <SelectInput label={t.fields.studyLanguage} required value={String(data.study_language)} onChange={(v) => set("study_language", v)} options={studyLanguageOptions} />
+                <TextInput label={t.fields.targetIntake} required value={String(data.target_intake)} onChange={(v) => set("target_intake", v)} placeholder={t.fields.targetIntakePlaceholder} />
                 <PreferredCitiesPicker value={Array.isArray(data.preferred_cities) ? data.preferred_cities : []} onChange={(v) => set("preferred_cities", v)} />
-                <SelectInput label="Budget indicatif" value={String(data.budget_range)} onChange={(v) => set("budget_range", v)} options={budgetOptions} />
+                <SelectInput label={t.fields.budget} value={String(data.budget_range)} onChange={(v) => set("budget_range", v)} options={budgetOptions} />
               </div>
             </div>
           )}
@@ -360,17 +347,17 @@ export function OnboardingForm({ profile }: { profile: Record<string, unknown> }
           {step === 5 && (
             <div className="space-y-6">
               <SectionIntro
-                title="Confirmez votre profil"
-                text="Relisez les informations principales avant d’accéder à votre espace AlmaGo."
+                title={t.sections.review.title}
+                text={t.sections.review.text}
               />
 
               <dl className="overflow-hidden rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)]">
                 {[
-                  ["Nom", `${valueOrDash(data.first_name)} ${valueOrDash(data.last_name)}`],
-                  ["Parcours", `${valueOrDash(data.last_diploma)} · ${valueOrDash(data.institution)}`],
-                  ["Langues", `DE ${valueOrDash(data.german_level)} · EN ${valueOrDash(data.english_level)} · FR ${valueOrDash(data.french_level)}`],
-                  ["Projet", `${valueOrDash(data.target_degree)} · ${valueOrDash(data.target_field)}`],
-                  ["Rentrée", `${valueOrDash(data.target_intake)} · ${valueOrDash(data.study_language)}`],
+                  [t.review.name, `${valueOrDash(data.first_name)} ${valueOrDash(data.last_name)}`],
+                  [t.review.studies, `${valueOrDash(data.last_diploma)} · ${valueOrDash(data.institution)}`],
+                  [t.review.languages, `DE ${valueOrDash(data.german_level)} · EN ${valueOrDash(data.english_level)} · FR ${valueOrDash(data.french_level)}`],
+                  [t.review.project, `${valueOrDash(data.target_degree)} · ${valueOrDash(data.target_field)}`],
+                  [t.review.intake, `${valueOrDash(data.target_intake)} · ${valueOrDash(data.study_language)}`],
                 ].map(([label, value]) => (
                   <div
                     key={label}
@@ -390,15 +377,15 @@ export function OnboardingForm({ profile }: { profile: Record<string, unknown> }
                   className="mt-1 h-5 w-5 shrink-0 accent-[var(--brand)]"
                 />
                 <span>
-                  J&apos;accepte que les informations fournies soient utilisées pour traiter mon dossier AlmaGo.
-                  <span className="font-bold text-[var(--brand)]"> Obligatoire.</span>
+                  {t.consent}
+                  <span className="font-bold text-[var(--brand)]"> {t.mandatory}</span>
                 </span>
               </label>
 
               <div className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4">
-                <p className="text-sm font-bold text-[var(--foreground)]">Après validation</p>
+                <p className="text-sm font-bold text-[var(--foreground)]">{t.afterTitle}</p>
                 <p className="mt-1 text-xs leading-5 text-[var(--muted)]">
-                  Vous accéderez à votre tableau de bord. Vous pourrez ensuite compléter les documents, explorer les programmes et suivre vos démarches.
+                  {t.afterText}
                 </p>
               </div>
             </div>
@@ -423,7 +410,7 @@ export function OnboardingForm({ profile }: { profile: Record<string, unknown> }
               variant="secondary"
               className="w-full sm:w-auto"
             >
-              Retour
+              {t.back}
             </Button>
             <Button
               type="button"
@@ -431,7 +418,7 @@ export function OnboardingForm({ profile }: { profile: Record<string, unknown> }
               onClick={() => save(step + 1)}
               className="w-full justify-center sm:min-w-44 sm:w-auto"
             >
-              {saving ? "Enregistrement..." : step === 5 ? "Confirmer et ouvrir mon espace" : "Continuer"}
+              {saving ? t.saving : step === 5 ? t.finish : t.continue}
             </Button>
           </div>
         </div>

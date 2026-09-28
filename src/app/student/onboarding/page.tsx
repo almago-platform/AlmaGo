@@ -3,13 +3,18 @@ import { redirect } from "next/navigation";
 import { BrandLogo } from "@/components/brand/BrandLogo";
 import { OnboardingForm } from "@/components/student/OnboardingForm";
 import { StudentEntryProgress } from "@/components/student/StudentEntryProgress";
+import { LanguageSwitcher } from "@/components/i18n/LanguageSwitcher";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Card } from "@/components/ui/Card";
 import { createClient } from "@/lib/supabase/server";
+import { getRequestLocale } from "@/lib/i18n-server";
+import { studentOnboardingCopy } from "@/content/student-onboarding-copy";
 
 export const dynamic = "force-dynamic";
 
 export default async function OnboardingPage() {
+  const locale = await getRequestLocale();
+  const t = studentOnboardingCopy[locale];
   const supabase = await createClient();
   const {
     data: { user },
@@ -23,18 +28,21 @@ export default async function OnboardingPage() {
     .eq("id", user.id)
     .single();
 
-  if (profileError) return <OnboardingUnavailable />;
+  if (profileError) return <OnboardingUnavailable copy={t} />;
   if (profile?.onboarding_completed) redirect("/student");
 
   return (
     <main className="min-h-screen bg-[linear-gradient(180deg,#fffdf8_0%,#f7f4ec_58%,#f1ece4_100%)] text-[var(--foreground)]">
       <header className="border-b border-[var(--border)] bg-[rgba(255,253,248,0.96)] backdrop-blur">
         <div className="mx-auto flex min-h-16 w-full max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
-          <Link href="/" className="inline-flex min-h-11 items-center" aria-label="Retour à l'accueil AlmaGo">
+          <Link href="/" className="inline-flex min-h-11 items-center" aria-label={t.homeAria}>
             <BrandLogo className="h-auto w-32 sm:w-36" />
           </Link>
-          <div className="hidden min-w-[19rem] sm:block">
-            <StudentEntryProgress current={2} compact />
+          <div className="flex items-center gap-3">
+            <LanguageSwitcher compact />
+            <div className="hidden min-w-[19rem] sm:block">
+              <StudentEntryProgress current={2} compact />
+            </div>
           </div>
         </div>
       </header>
@@ -49,29 +57,28 @@ export default async function OnboardingPage() {
   );
 }
 
-function OnboardingUnavailable() {
+function OnboardingUnavailable({ copy }: { copy: (typeof studentOnboardingCopy)["fr"] }) {
   return (
     <main className="min-h-screen bg-[linear-gradient(180deg,#fffdf8_0%,#f7f4ec_58%,#f1ece4_100%)] px-4 py-8 text-[var(--foreground)] sm:px-6">
       <div className="mx-auto w-full max-w-3xl">
-        <Link href="/" className="inline-flex min-h-11 items-center" aria-label="Retour à l'accueil AlmaGo">
-          <BrandLogo className="h-auto w-32 sm:w-36" />
-        </Link>
+        <div className="flex items-center justify-between gap-3">
+          <Link href="/" className="inline-flex min-h-11 items-center" aria-label={copy.homeAria}>
+            <BrandLogo className="h-auto w-32 sm:w-36" />
+          </Link>
+          <LanguageSwitcher compact />
+        </div>
         <div className="mt-6">
           <StudentEntryProgress current={2} compact />
         </div>
         <Card className="mt-5">
           <div role="alert">
-            <p className="text-[0.68rem] font-bold uppercase tracking-[0.14em] text-[var(--brand)]">Configuration du dossier</p>
-            <h1 className="editorial-accent mt-2 text-2xl leading-tight text-[var(--foreground)] sm:text-3xl">
-              Votre dossier initial est temporairement indisponible
-            </h1>
-            <p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--muted)]">
-              Nous n’arrivons pas à charger vos informations pour le moment. Aucune donnée n’a été modifiée.
-            </p>
+            <p className="text-[0.68rem] font-bold uppercase tracking-[0.14em] text-[var(--brand)]">{copy.unavailable.eyebrow}</p>
+            <h1 className="editorial-accent mt-2 text-2xl leading-tight text-[var(--foreground)] sm:text-3xl">{copy.unavailable.title}</h1>
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--muted)]">{copy.unavailable.text}</p>
           </div>
           <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-            <ButtonLink href="/student/onboarding">Réessayer</ButtonLink>
-            <ButtonLink href="/" variant="secondary">Retour à l’accueil</ButtonLink>
+            <ButtonLink href="/student/onboarding">{copy.unavailable.retry}</ButtonLink>
+            <ButtonLink href="/" variant="secondary">{copy.unavailable.home}</ButtonLink>
           </div>
         </Card>
       </div>

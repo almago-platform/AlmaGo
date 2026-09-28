@@ -14,7 +14,7 @@ test("the four project paths are stable and accepted", () => {
 });
 
 test("project input rejects an unknown path and bounds student-controlled values", () => {
-  assert.equal(parseStudentProject({ path: "visa_only" }).error, "Choisissez un parcours valide.");
+  assert.equal(parseStudentProject({ path: "visa_only" }).error, "Choisissez un objectif valide.");
   const result = parseStudentProject({
     path: "university_search",
     preferred_cities: [" Berlin ", "Berlin", 42, "Munich"],

@@ -5,6 +5,8 @@ import { usePathname, useRouter } from "next/navigation";
 import { useState, type ReactNode } from "react";
 import { Button } from "@/components/ui/Button";
 import { BrandLogo } from "@/components/brand/BrandLogo";
+import { LanguageSwitcher } from "@/components/i18n/LanguageSwitcher";
+import { useLocale } from "@/components/i18n/LocaleProvider";
 import { createClient } from "@/lib/supabase/client";
 
 type AppShellRole = "student" | "admin";
@@ -34,21 +36,21 @@ const icons = {
 const studentItems: NavItem[] = [
   { label: "Mon dossier", href: "/student", icon: icons.dashboard, helper: "Vue d’ensemble" },
   { label: "Mon projet", href: "/student/project", icon: icons.universities, helper: "Point de départ" },
-  { label: "Mon parcours", href: "/student/pathway", icon: icons.checklist, helper: "Admission, préparation, séjour" },
+  { label: "Mon parcours", href: "/student/pathway", icon: icons.checklist, helper: "Mes étapes en Allemagne" },
   { label: "Mon profil", href: "/student/profile", icon: icons.profile, helper: "Mes informations" },
   { label: "Mes documents", href: "/student/documents", icon: icons.documents, helper: "Pièces et statuts" },
-  { label: "Mon orientation", href: "/student/orientation", icon: icons.orientation, helper: "Programmes proposés" },
-  { label: "Cours de langue", href: "/student/language-courses", icon: icons.programs, helper: "Préparation linguistique" },
-  { label: "Financement & assurance", href: "/student/finance-insurance", icon: icons.applications, helper: "Options factuelles vérifiées" },
+  { label: "Mes programmes", href: "/student/orientation", icon: icons.orientation, helper: "Programmes à comparer" },
+  { label: "Cours de langue", href: "/student/language-courses", icon: icons.programs, helper: "Cours à comparer" },
+  { label: "Financement & assurance", href: "/student/finance-insurance", icon: icons.applications, helper: "Options vérifiées" },
   { label: "Mes démarches", href: "/student/checklist", icon: icons.checklist, helper: "Étapes du dossier" },
   { label: "Mes candidatures", href: "/student/applications", icon: icons.applications, helper: "Suivi et échéances" },
 ];
 
-const studentGroups = [
-  { label: "Dossier", items: [studentItems[0], studentItems[1], studentItems[3]] },
-  { label: "Parcours", items: [studentItems[2], studentItems[4], studentItems[5], studentItems[8], studentItems[9]] },
-  { label: "Ressources", items: [studentItems[6], studentItems[7]] },
-];
+const studentGroupIndexes = [
+  [0, 1, 3],
+  [2, 4, 5, 8, 9],
+  [6, 7],
+] as const;
 
 const adminItems: NavItem[] = [
   { label: "Vue d’ensemble", href: "/admin", icon: icons.dashboard, helper: "Priorités de l’équipe" },
@@ -84,9 +86,20 @@ export function AppShell({
   const pathname = usePathname();
   const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const items = role === "admin" ? adminItems : studentItems;
+  const { copy, direction } = useLocale();
+  const shell = copy.shell;
+  const localizedStudentItems = studentItems.map((item, index) => ({
+    ...item,
+    label: shell.items[index][0],
+    helper: shell.items[index][1],
+  }));
+  const studentGroups = studentGroupIndexes.map((indexes, groupIndex) => ({
+    label: shell.groups[groupIndex],
+    items: indexes.map((index) => localizedStudentItems[index]),
+  }));
+  const items = role === "admin" ? adminItems : localizedStudentItems;
   const currentItem = items.find((item) => isActive(pathname, item.href)) || items[0];
-  const studentName = displayName?.trim() || "étudiant";
+  const studentName = displayName?.trim() || shell.studentNameFallback;
 
 
   async function signOut() {
@@ -96,9 +109,9 @@ export function AppShell({
   }
 
   return (
-    <div className="min-h-screen bg-[var(--background)]">
+    <div dir={role === "admin" ? "ltr" : direction} className="min-h-screen bg-[var(--background)]">
       <a href="#main-content" className="skip-link">
-        Aller au contenu
+        {role === "student" ? shell.skip : "Aller au contenu"}
       </a>
 
       <aside className="hidden lg:fixed lg:inset-y-0 lg:z-40 lg:flex lg:w-[15.5rem] lg:flex-col lg:border-r lg:border-[var(--border)] lg:bg-[var(--surface)]">
@@ -110,9 +123,9 @@ export function AppShell({
 
         {role === "student" ? (
           <div className="mx-5 border-b border-[var(--border)] py-4">
-            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--muted)]">Dossier étudiant</p>
+            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--muted)]">{shell.studentFile}</p>
             <p className="mt-1 text-sm font-bold text-[var(--foreground)]">{studentName}</p>
-            <p className="mt-1 text-[11px] leading-4 text-[var(--muted)]">Projet d’études en Allemagne</p>
+            <p className="mt-1 text-[11px] leading-4 text-[var(--muted)]">{shell.studyProject}</p>
           </div>
         ) : (
           <div className="mx-5 border-b border-[var(--border)] py-4">
@@ -124,10 +137,10 @@ export function AppShell({
 
         <nav
           className="flex-1 space-y-1 overflow-y-auto px-3 py-4"
-          aria-label={role === "admin" ? "Navigation administration" : "Navigation étudiant"}
+          aria-label={role === "admin" ? "Navigation administration" : shell.studentNavigation}
         >
           <p className="mb-3 px-3 text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--muted)]">
-            {role === "admin" ? "Espace de travail" : "Navigation"}
+            {role === "admin" ? "Espace de travail" : shell.navigation}
           </p>
           {role === "admin" ? (
             <div className="space-y-4">
@@ -190,16 +203,19 @@ export function AppShell({
 
         <div className="border-t border-[var(--border)] bg-[var(--surface-subtle)] p-4">
           {role === "student" ? (
-            <p className="mb-3 px-1 text-[11px] leading-4 text-[var(--muted)]">
-              AlmaGo organise votre dossier. Les décisions officielles restent celles des organismes compétents.
-            </p>
+            <>
+              <div className="mb-3 px-1"><LanguageSwitcher /></div>
+              <p className="mb-3 px-1 text-[11px] leading-4 text-[var(--muted)]">
+                {shell.footer}
+              </p>
+            </>
           ) : (
             <p className="mb-3 px-1 text-[11px] leading-4 text-[var(--muted)]">
               Les actions d’administration peuvent modifier ce qui est visible dans l’espace étudiant.
             </p>
           )}
           <Button type="button" onClick={signOut} variant="secondary" className="w-full justify-start">
-            Déconnexion
+            {role === "student" ? shell.logout : "Déconnexion"}
           </Button>
         </div>
       </aside>
@@ -222,22 +238,27 @@ export function AppShell({
                   onClick={() => setMobileMenuOpen((open) => !open)}
                   aria-expanded={mobileMenuOpen}
                   aria-controls="student-mobile-menu"
-                  aria-label={mobileMenuOpen ? "Fermer le menu étudiant" : "Ouvrir le menu étudiant"}
+                  aria-label={mobileMenuOpen ? shell.closeMenu : shell.openMenu}
                   className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface)] px-2.5 text-sm font-bold text-[var(--foreground)] shadow-sm transition-colors hover:border-[var(--brand-border)] hover:text-[var(--brand)] min-[340px]:px-3"
                 >
                   {mobileMenuOpen ? icons.close : icons.menu}
-                  <span className="hidden min-[340px]:inline">{mobileMenuOpen ? "Fermer" : "Menu"}</span>
+                  <span className="hidden min-[340px]:inline">{mobileMenuOpen ? shell.close : shell.menu}</span>
                 </button>
               </div>
 
               {mobileMenuOpen && (
                 <div id="student-mobile-menu" className="max-h-[calc(100svh-4rem)] overflow-y-auto overscroll-contain border-t border-[var(--border)] bg-[var(--surface-subtle)] px-3 py-4 min-[360px]:px-4">
                   <div className="mb-4 rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--brand-soft)]/65 p-3.5">
-                    <p className="text-xs font-bold text-[var(--foreground)]">Bonjour {studentName}</p>
-                    <p className="mt-1 text-xs leading-5 text-[var(--muted)]">Choisissez la partie de votre dossier que vous souhaitez consulter.</p>
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <p className="text-xs font-bold text-[var(--foreground)]">{shell.hello} {studentName}</p>
+                        <p className="mt-1 text-xs leading-5 text-[var(--muted)]">{shell.mobileIntro}</p>
+                      </div>
+                      <LanguageSwitcher compact />
+                    </div>
                   </div>
 
-                  <nav className="space-y-4" aria-label="Navigation étudiant mobile">
+                  <nav className="space-y-4" aria-label={shell.studentMobileNavigation}>
                     {studentGroups.map((group) => (
                       <section key={group.label} aria-label={group.label}>
                         <p className="mb-2 px-1 text-[10px] font-bold uppercase tracking-[0.15em] text-[var(--muted)]">{group.label}</p>
@@ -269,7 +290,7 @@ export function AppShell({
 
                   <div className="mt-4 border-t border-[var(--border)] pt-4">
                     <Button type="button" onClick={signOut} variant="secondary" className="w-full justify-center">
-                      Déconnexion
+                      {shell.logout}
                     </Button>
                   </div>
                 </div>
@@ -280,11 +301,14 @@ export function AppShell({
               <div>
                 <p className="text-xs font-bold uppercase tracking-[0.15em] text-[var(--brand)]">{currentItem.label}</p>
                 <p className="mt-1 text-sm text-[var(--muted)]">
-                  Bonjour {studentName}. Voici ce qui compte aujourd’hui pour votre projet d’études.
+                  {shell.hello} {studentName}. {shell.desktopIntro}
                 </p>
               </div>
-              <div className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-3 py-2 text-xs font-semibold text-[var(--muted)]">
-                Dossier personnel
+              <div className="flex items-center gap-2">
+                <LanguageSwitcher compact />
+                <div className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-3 py-2 text-xs font-semibold text-[var(--muted)]">
+                  {shell.personalFile}
+                </div>
               </div>
             </div>
           </>

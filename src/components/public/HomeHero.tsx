@@ -1,9 +1,15 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { useLocale } from "@/components/i18n/LocaleProvider";
 import { HomeIcon } from "./HomeIcons";
 import s from "./Homepage.module.css";
 
 export function HomeHero() {
+  const { copy } = useLocale();
+  const hero = copy.home.hero;
+
   return (
     <section className={s.hero} aria-labelledby="home-title">
       <div className={s.heroBackdrop} aria-hidden="true">
@@ -20,74 +26,58 @@ export function HomeHero() {
       <div className={`${s.container} ${s.heroImmersiveInner}`}>
         <div className={s.heroCopy}>
           <p className={s.eyebrow}>
-            <span className={s.dot} /> Votre projet. Votre avenir.
+            <span className={s.dot} /> {hero.eyebrow}
           </p>
           <h1 id="home-title">
-            Étudier en <br />
-            Allemagne,
+            {hero.title1}
             <br />
-            <em>avec un cap clair.</em>
+            {hero.title2}
+            <br />
+            <em>{hero.title3}</em>
           </h1>
-          <p className={s.heroLead}>
-            Programmes, documents, candidatures : AlmaGo rassemble votre projet
-            dans un seul espace et vous aide à savoir quoi faire ensuite.
-          </p>
+          <p className={s.heroLead}>{hero.lead}</p>
           <div className={s.heroActions}>
             <Link className={s.button} href="/signup">
-              Créer mon dossier
+              {hero.primary}
               <HomeIcon name="arrow" />
             </Link>
             <a className={s.heroTextLink} href="#parcours">
-              Comprendre le parcours
+              {hero.secondary}
               <HomeIcon name="arrow" />
             </a>
           </div>
           <div className={s.heroProof}>
-            <span>
-              <HomeIcon name="check" /> Parcours en 6 étapes
-            </span>
-            <span>
-              <HomeIcon name="check" /> Un dossier structuré
-            </span>
-            <span>
-              <HomeIcon name="check" /> Des sources identifiées
-            </span>
+            {hero.proof.map((item) => (
+              <span key={item}>
+                <HomeIcon name="check" /> {item}
+              </span>
+            ))}
           </div>
         </div>
 
-        <aside className={s.heroDossier} aria-label="Exemple de dossier AlmaGo">
+        <aside className={s.heroDossier} aria-label={hero.exampleAria}>
           <div className={s.miniHead}>
             <span>
-              <HomeIcon name="folder" /> Votre projet prend forme
+              <HomeIcon name="folder" /> {hero.exampleTitle}
             </span>
-            <span className={s.sample}>Exemple</span>
+            <span className={s.sample}>{hero.sample}</span>
           </div>
-          <div className={s.miniRow}>
-            <span className={s.miniCheck}>
-              <HomeIcon name="check" />
-            </span>
-            <div>
-              <strong>Votre projet d’études</strong>
-              <span>Une direction définie</span>
+          {hero.rows.map(([title, detail, status], index) => (
+            <div className={s.miniRow} key={title}>
+              {index === 0 ? (
+                <span className={s.miniCheck}><HomeIcon name="check" /></span>
+              ) : (
+                <span className={index === 1 ? s.miniNext : s.miniLater}>
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+              )}
+              <div>
+                <strong>{title}</strong>
+                <span>{detail}</span>
+              </div>
+              {status ? <span className={s.miniStatus}>{status}</span> : <HomeIcon name="arrow" />}
             </div>
-            <span className={s.miniStatus}>Renseigné</span>
-          </div>
-          <div className={s.miniRow}>
-            <span className={s.miniNext}>02</span>
-            <div>
-              <strong>Vos documents</strong>
-              <span>La prochaine étape à préparer</span>
-            </div>
-            <HomeIcon name="arrow" />
-          </div>
-          <div className={s.miniRow}>
-            <span className={s.miniLater}>03</span>
-            <div>
-              <strong>Vos candidatures</strong>
-              <span>À structurer selon vos choix</span>
-            </div>
-            <HomeIcon name="arrow" />
-          </div>
+          ))}
         </aside>
       </div>
     </section>

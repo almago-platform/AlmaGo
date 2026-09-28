@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { AuthForm } from "@/components/auth/AuthForm";
+import { AuthMobileHeader } from "@/components/auth/AuthMobileHeader";
 import { AuthStoryPanel } from "@/components/auth/AuthStoryPanel";
-import { BrandLogo } from "@/components/brand/BrandLogo";
 
 export const metadata: Metadata = {
   robots: { index: false, follow: false },
@@ -15,14 +14,7 @@ export default function LoginPage() {
         <AuthStoryPanel mode="login" />
 
         <section className="mx-auto w-full max-w-[36rem]">
-          <div className="mb-5 flex items-center justify-between lg:hidden">
-            <Link href="/" className="inline-flex min-h-11 items-center" aria-label="AlmaGo accueil">
-              <BrandLogo className="h-auto w-32" />
-            </Link>
-            <Link href="/signup" className="inline-flex min-h-11 items-center rounded-[var(--radius-control)] px-2 text-sm font-semibold text-[var(--muted)] hover:text-[var(--brand)]">
-              Créer un compte
-            </Link>
-          </div>
+          <AuthMobileHeader mode="login" />
           <AuthForm />
         </section>
       </div>

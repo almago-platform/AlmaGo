@@ -1,15 +1,19 @@
+"use client";
+
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { useLocale } from "@/components/i18n/LocaleProvider";
+import { studentSharedCopy } from "@/content/student-shared-copy";
 
 type StudentJourneyStep = "project" | "documents" | "orientation" | "checklist" | "applications" | "pathway";
 
-const journeySteps: Array<{ key: StudentJourneyStep; label: string; href: string }> = [
-  { key: "project", label: "Mon projet", href: "/student/project" },
-  { key: "documents", label: "Documents", href: "/student/documents" },
-  { key: "orientation", label: "Orientation", href: "/student/orientation" },
-  { key: "checklist", label: "Démarches", href: "/student/checklist" },
-  { key: "applications", label: "Candidatures", href: "/student/applications" },
-  { key: "pathway", label: "Parcours Allemagne", href: "/student/pathway" },
+const journeySteps: Array<{ key: StudentJourneyStep; href: string }> = [
+  { key: "project", href: "/student/project" },
+  { key: "documents", href: "/student/documents" },
+  { key: "orientation", href: "/student/orientation" },
+  { key: "checklist", href: "/student/checklist" },
+  { key: "applications", href: "/student/applications" },
+  { key: "pathway", href: "/student/pathway" },
 ];
 
 export function StudentJourneyHeader({
@@ -25,6 +29,9 @@ export function StudentJourneyHeader({
   description?: ReactNode;
   actions?: ReactNode;
 }) {
+  const { locale } = useLocale();
+  const shared = studentSharedCopy[locale];
+
   return (
     <header className="mb-6 sm:mb-7">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
@@ -43,7 +50,7 @@ export function StudentJourneyHeader({
       </div>
 
       <nav
-        aria-label="Étapes de mon dossier"
+        aria-label={shared.journeyAria}
         className="mt-5 overflow-x-auto rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-1.5 shadow-[0_18px_45px_-42px_rgba(28,33,36,0.45)]"
       >
         <ol className="flex min-w-max items-center gap-1">
@@ -72,7 +79,7 @@ export function StudentJourneyHeader({
                   >
                     {index + 1}
                   </span>
-                  <span>{step.label}</span>
+                  <span>{shared.journeySteps[index]}</span>
                 </Link>
               </li>
             );

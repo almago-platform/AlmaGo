@@ -6,10 +6,14 @@ import { StudentGuidancePanel } from "@/components/student/StudentGuidancePanel"
 import { matchMasterRequirements } from "@/lib/master-requirements";
 import { readMasterRequirementProfile } from "@/lib/master-requirements-persistence";
 import { createClient } from "@/lib/supabase/server";
+import { getRequestLocale } from "@/lib/i18n-server";
+import { studentOrientationCopy } from "@/content/student-orientation-copy";
 
 export const dynamic = "force-dynamic";
 
 export default async function StudentOrientationPage() {
+  const locale = await getRequestLocale();
+  const t = studentOrientationCopy[locale];
   const supabase = await createClient();
   const [
     { data, error },
@@ -29,7 +33,7 @@ export default async function StudentOrientationPage() {
   ]);
 
   if (error) {
-    return <OrientationUnavailable />;
+    return <OrientationUnavailable copy={t} />;
   }
 
   const recommendations = (data || []).map((recommendation) => {
@@ -55,52 +59,48 @@ export default async function StudentOrientationPage() {
     <main className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 sm:py-7 lg:px-8 lg:py-9">
       <StudentJourneyHeader
         current="orientation"
-        eyebrow="Mon dossier"
-        title="Programmes recommandés"
-        description="Comparez les pistes préparées pour votre dossier, comprenez pourquoi elles apparaissent et vérifiez les critères importants avant de décider. Une recommandation reste une piste de travail, pas une garantie d’admission."
-        actions={<ButtonLink href="/student/applications" variant="secondary">Mes candidatures</ButtonLink>}
+        eyebrow={t.page.eyebrow}
+        title={t.page.title}
+        description={t.page.description}
+        actions={<ButtonLink href="/student/applications" variant="secondary">{t.page.applications}</ButtonLink>}
       />
 
       <StudentGuidancePanel
-        eyebrow="Votre repère orientation"
-        title="Une recommandation est un point de départ pour comparer, pas une décision à votre place."
-        description="Prenez le temps de regarder les critères, la langue, l’échéance et la source de chaque programme. AlmaGo rassemble ces éléments pour rendre la comparaison plus simple et plus transparente."
-        points={[
-          "Comprendre pourquoi une piste apparaît dans votre dossier.",
-          "Comparer les critères importants avant de vous engager.",
-          "Décider ensuite si cette piste mérite une candidature.",
-        ]}
+        eyebrow={t.page.guidanceEyebrow}
+        title={t.page.guidanceTitle}
+        description={t.page.guidanceDescription}
+        points={[...t.page.guidancePoints]}
         image={{
           src: "https://images.unsplash.com/photo-1758270704787-615782711641?auto=format&fit=crop&w=1200&q=82",
-          alt: "Groupe d’étudiants échangeant dans un amphithéâtre universitaire.",
-          credit: "Photo : Vitaly Gariev / Unsplash",
+          alt: t.page.imageAlt,
+          credit: t.page.imageCredit,
         }}
       />
 
       <StudentOrientationPanel
         recommendations={recommendations}
         applicationProgramIds={(applications || []).map((application) => application.program_id)}
-        applicationStateError={applicationsError ? "Impossible de vérifier vos intérêts enregistrés pour le moment." : undefined}
-        criteriaStateError={projectError ? "Impossible de comparer les critères avec votre projet pour le moment." : undefined}
+        applicationStateError={applicationsError ? t.page.applicationsStateError : undefined}
+        criteriaStateError={projectError ? t.page.criteriaStateError : undefined}
       />
     </main>
   );
 }
 
-function OrientationUnavailable() {
+function OrientationUnavailable({ copy }: { copy: (typeof studentOrientationCopy)["fr"] }) {
   return (
     <main className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 sm:py-7 lg:px-8 lg:py-9">
-      <StudentJourneyHeader current="orientation" eyebrow="Mon dossier" title="Programmes recommandés" />
+      <StudentJourneyHeader current="orientation" eyebrow={copy.page.eyebrow} title={copy.page.title} />
       <Card>
         <div role="alert">
-          <h2 className="text-xl font-semibold text-slate-950">Orientation temporairement indisponible</h2>
+          <h2 className="text-xl font-semibold text-slate-950">{copy.page.unavailableTitle}</h2>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
-            Nous n’arrivons pas à afficher vos recommandations pour le moment. Rien n’a été supprimé ou modifié dans votre dossier.
+            {copy.page.unavailableText}
           </p>
         </div>
         <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-          <ButtonLink href="/student/orientation">Réessayer</ButtonLink>
-          <ButtonLink href="/student" variant="secondary">Retour à mon dossier</ButtonLink>
+          <ButtonLink href="/student/orientation">{copy.page.retry}</ButtonLink>
+          <ButtonLink href="/student" variant="secondary">{copy.page.back}</ButtonLink>
         </div>
       </Card>
     </main>

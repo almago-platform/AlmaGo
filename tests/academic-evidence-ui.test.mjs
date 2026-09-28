@@ -4,6 +4,7 @@ import test from "node:test";
 
 const studentPage = readFileSync("src/app/student/documents/page.tsx", "utf8");
 const studentPanel = readFileSync("src/components/student/DocumentsPanel.tsx", "utf8");
+const studentCopy = readFileSync("src/content/student-documents-copy.ts", "utf8");
 const adminPage = readFileSync("src/app/admin/documents/page.tsx", "utf8");
 const adminPanel = readFileSync("src/components/admin/AdminDocumentsPanel.tsx", "utf8");
 
@@ -15,17 +16,18 @@ test("Student documents page loads own academic evidence through the existing RL
 });
 
 test("Student UI separates document review from academic pathway evidence", () => {
-  assert.match(studentPanel, /Le statut d’un fichier et son statut comme preuve académique sont deux choses différentes/);
-  assert.match(studentPanel, /Un document peut être approuvé sans être encore accepté comme preuve de parcours/);
-  assert.match(studentPanel, /ne constitue ni une admission ni une décision de visa/);
-  assert.match(studentPanel, /Acceptée comme preuve de parcours/);
-  assert.match(studentPanel, /À vérifier/);
-  assert.match(studentPanel, /À remplacer/);
+  assert.ok(studentCopy.includes("Le statut d’un fichier et son statut comme preuve académique sont deux choses différentes"));
+  assert.ok(studentCopy.includes("Un document peut être approuvé sans être encore accepté comme preuve de parcours"));
+  assert.ok(studentCopy.includes("ne constitue ni une admission ni une décision de visa"));
+  assert.ok(studentCopy.includes('accepted_for_pathway: "Acceptée comme preuve de parcours"'));
+  assert.ok(studentCopy.includes('needs_review: "À vérifier"'));
+  assert.ok(studentCopy.includes('replace_required: "À remplacer"'));
+  assert.match(studentPanel, /t\.evidence\.boundary/);
 });
 
 test("Student evidence copy stays factual and exposes no Admin ownership fields", () => {
   assert.match(studentPanel, /item\.assessment\.reason/);
-  assert.match(studentPanel, /item\.institution \|\| "À confirmer"/);
+  assert.match(studentPanel, /item\.institution \|\| t\.unknown/);
   assert.doesNotMatch(studentPanel, /verified_by|student_id|admin_notes/i);
   assert.doesNotMatch(
     studentPanel,
@@ -65,7 +67,8 @@ test("Admin evidence write uses only the bounded backend contract and connected 
 });
 
 test("evidence load failures do not block ordinary document review surfaces", () => {
-  assert.match(studentPanel, /Les classifications académiques sont temporairement indisponibles/);
+  assert.ok(studentCopy.includes("Les classifications académiques sont temporairement indisponibles"));
+  assert.match(studentPanel, /t\.evidence\.loadError/);
   assert.match(adminPanel, /Les classifications académiques sont temporairement indisponibles/);
   assert.match(adminPanel, /La revue des fichiers reste accessible/);
 });

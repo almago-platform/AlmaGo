@@ -8,15 +8,8 @@ import { createClient } from "@/lib/supabase/server";
 import { summarizeAcademicEvidence, type AcademicEvidenceRecord } from "@/lib/academic-evidence";
 import { buildGermanyChecklist, type GermanyChecklistItem } from "@/lib/germany-checklist";
 import { determineRegulatoryPath } from "@/lib/regulatory-path-engine";
-
-const labels: Record<string, string> = {
-  not_started: "À faire par vous",
-  todo: "À faire par vous",
-  in_progress: "En cours",
-  waiting_student: "À faire par vous",
-  waiting_almago: "Suivi par AlmaGo",
-  completed: "Terminé",
-};
+import { getRequestLocale } from "@/lib/i18n-server";
+import { studentChecklistCopy } from "@/content/student-checklist-copy";
 
 const badgeVariants = {
   completed: "success",
@@ -30,6 +23,8 @@ const badgeVariants = {
 export const dynamic = "force-dynamic";
 
 export default async function ChecklistPage() {
+  const locale = await getRequestLocale();
+  const t = studentChecklistCopy[locale];
   const supabase = await createClient();
   const {
     data: { user },
@@ -43,7 +38,7 @@ export default async function ChecklistPage() {
     .eq("id", user.id)
     .maybeSingle();
 
-  if (profileError) return <ChecklistUnavailable />;
+  if (profileError) return <ChecklistUnavailable copy={t} />;
   if (!profile?.onboarding_completed) redirect("/student/onboarding");
 
   const now = new Date();
@@ -84,7 +79,7 @@ export default async function ChecklistPage() {
     || documentsResult.error
     || evidenceResult.error
     || selectionResult.error
-  ) return <ChecklistUnavailable />;
+  ) return <ChecklistUnavailable copy={t} />;
 
   let selectedCourse: {
     id: string;
@@ -104,7 +99,7 @@ export default async function ChecklistPage() {
       .select("id,title,provider_name,language,purpose,source_url,application_url,verified_at,is_active")
       .eq("id", selectionResult.data.language_course_id)
       .maybeSingle();
-    if (error) return <ChecklistUnavailable />;
+    if (error) return <ChecklistUnavailable copy={t} />;
     selectedCourse = data
       ? {
           id: data.id,
@@ -189,26 +184,26 @@ export default async function ChecklistPage() {
     <main className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 sm:py-7 lg:px-8 lg:py-9">
       <StudentJourneyHeader
         current="checklist"
-        eyebrow="Mon dossier"
-        title="Mes démarches"
-        description="Voyez en un coup d’œil ce qui est à faire par vous, ce qu’AlmaGo suit et les étapes déjà terminées dans votre dossier."
-        actions={<ButtonLink href="/student/documents" variant="secondary">Voir mes documents</ButtonLink>}
+        eyebrow={t.page.eyebrow}
+        title={t.page.title}
+        description={t.page.description}
+        actions={<ButtonLink href="/student/documents" variant="secondary">{t.page.documents}</ButtonLink>}
       />
 
       <section className="mb-8" aria-labelledby="germany-plan-title">
         <div className="mb-5">
-          <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Plan Allemagne personnalisé</p>
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">{t.page.planEyebrow}</p>
           <h2 id="germany-plan-title" className="mt-2 text-2xl font-bold tracking-[-0.03em] text-slate-950">
-            Étapes calculées à partir de votre dossier
+            {t.page.planTitle}
           </h2>
           <p className="mt-2 max-w-4xl text-sm leading-6 text-slate-600">
-            Ces étapes sont générées uniquement à partir des faits actuellement enregistrés : projet, preuves académiques vérifiées et cours explicitement sélectionné. Elles n’inventent ni admission, ni délai, ni éligibilité de visa.
+            {t.page.planDescription}
           </p>
         </div>
 
         <div className="overflow-hidden rounded-[var(--radius-panel)] border border-[var(--border)] bg-white divide-y divide-[var(--border)]">
           {personalizedItems.map((item) => (
-            <PersonalizedChecklistCard key={item.key} item={item} />
+            <PersonalizedChecklistCard key={item.key} item={item} copy={t} />
           ))}
         </div>
       </section>
@@ -219,24 +214,24 @@ export default async function ChecklistPage() {
           <div className="pl-2 sm:pl-3">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
-                <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Votre progression</p>
-                <h2 id="checklist-progress-title" className="mt-3 text-2xl font-semibold tracking-[-0.03em] text-slate-950 sm:text-3xl">Démarches enregistrées dans votre dossier</h2>
+                <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">{t.page.progressEyebrow}</p>
+                <h2 id="checklist-progress-title" className="mt-3 text-2xl font-semibold tracking-[-0.03em] text-slate-950 sm:text-3xl">{t.page.progressTitle}</h2>
               </div>
               <Badge variant={checklistItems.length > 0 && progression === 100 ? "success" : "info"}>
-                {checklistItems.length ? `${completedCount}/${checklistItems.length} terminées` : "Aucune étape"}
+                {checklistItems.length ? t.page.completedBadge(completedCount, checklistItems.length) : t.page.noStep}
               </Badge>
             </div>
 
             <div className="mt-7">
               <div className="mb-3 flex items-end justify-between gap-4">
                 <p className="text-4xl font-bold tracking-tight text-slate-950 sm:text-5xl">{checklistItems.length ? `${progression}%` : "—"}</p>
-                <p className="max-w-xs text-right text-sm leading-6 text-slate-600">Étapes réellement enregistrées dans AlmaGo</p>
+                <p className="max-w-xs text-right text-sm leading-6 text-slate-600">{t.page.recordedSteps}</p>
               </div>
-              {checklistItems.length > 0 && <ProgressBar value={progression} label="Progression des démarches enregistrées" />}
+              {checklistItems.length > 0 && <ProgressBar value={progression} label={t.page.progressLabel} />}
             </div>
 
             <p className="mt-5 text-sm leading-6 text-slate-600">
-              Cette progression concerne les démarches enregistrées dans votre dossier. Elle ne représente ni une admission ni une validation finale.
+              {t.page.progressBoundary}
             </p>
           </div>
         </Card>
@@ -244,10 +239,10 @@ export default async function ChecklistPage() {
         <Card aria-labelledby="checklist-next-action-title" className={nextItem ? "border-amber-200 bg-amber-50/25 shadow-none" : "shadow-none"}>
           <div className="flex flex-wrap items-center justify-between gap-3">
             <Badge variant={nextItem ? "warning" : waitingAlmaGoCount ? "info" : "neutral"}>
-              {nextItem ? "À faire maintenant" : waitingAlmaGoCount ? "Suivi en cours" : "Aucune action demandée"}
+              {nextItem ? t.page.doNow : waitingAlmaGoCount ? t.page.tracking : t.page.noAction}
             </Badge>
             <span className="text-xs font-bold uppercase tracking-[0.14em] text-slate-500">
-              {nextItem ? "À faire par vous" : waitingAlmaGoCount ? "Suivi par AlmaGo" : "Dossier"}
+              {nextItem ? t.page.ownerStudent : waitingAlmaGoCount ? t.page.ownerAlmaGo : t.page.file}
             </span>
           </div>
           {nextItem ? (
@@ -256,40 +251,40 @@ export default async function ChecklistPage() {
               {nextItem.description && <p className="mt-3 text-sm leading-6 text-slate-700">{nextItem.description}</p>}
               <div className="mt-5 inline-flex items-center gap-2 rounded-[var(--radius-control)] border border-amber-200 bg-white px-3 py-2 text-xs font-bold text-amber-900">
                 <span aria-hidden="true" className="h-2 w-2 rounded-full bg-[var(--accent)]" />
-                {labels[nextItem.status] || "À faire par vous"}
+                {t.statusLabels[nextItem.status] || t.page.ownerStudent}
               </div>
             </>
           ) : (
             <>
               <h2 id="checklist-next-action-title" className="mt-5 text-2xl font-bold tracking-[-0.03em] text-slate-950">
-                {waitingAlmaGoCount ? "Vous n’avez rien à faire pour le moment" : "Aucune action n’est demandée actuellement"}
+                {waitingAlmaGoCount ? t.page.nothingNow : t.page.nothingRequested}
               </h2>
               <p className="mt-3 text-sm leading-6 text-slate-600">
                 {waitingAlmaGoCount
-                  ? "AlmaGo suit actuellement certaines étapes de votre dossier. Vous pouvez consulter leur détail ci-dessous."
-                  : "Les démarches enregistrées dans votre dossier apparaissent ci-dessous. Une nouvelle action sera mise en évidence lorsqu’elle vous concernera."}
+                  ? t.page.waitingText
+                  : t.page.noActionText}
               </p>
             </>
           )}
         </Card>
       </div>
 
-      <section aria-label="Résumé des démarches" className="mt-5 grid gap-4 sm:grid-cols-3">
-        <SummaryCard title="À faire par vous" value={actionableItems.length} badge={actionableItems.length ? "À traiter" : "Rien à faire"} tone={actionableItems.length ? "warning" : "success"} />
-        <SummaryCard title="Suivi par AlmaGo" value={waitingAlmaGoCount} badge={waitingAlmaGoCount ? "En cours" : "Aucune étape"} tone="info" />
-        <SummaryCard title="Terminées" value={completedCount} badge="Étapes complétées" tone="success" />
+      <section aria-label={t.page.summaryAria} className="mt-5 grid gap-4 sm:grid-cols-3">
+        <SummaryCard title={t.page.todo} value={actionableItems.length} badge={actionableItems.length ? t.page.todoBadge : t.page.nothingBadge} tone={actionableItems.length ? "warning" : "success"} />
+        <SummaryCard title={t.page.tracked} value={waitingAlmaGoCount} badge={waitingAlmaGoCount ? t.page.inProgress : t.page.noStep} tone="info" />
+        <SummaryCard title={t.page.completed} value={completedCount} badge={t.page.completedSteps} tone="success" />
       </section>
 
       {checklistItems.length === 0 ? (
         <Card aria-labelledby="checklist-empty-title" className="mt-6 border-dashed bg-white/70 py-9 text-center">
           <span aria-hidden="true" className="mx-auto grid h-11 w-11 place-items-center rounded-full bg-[var(--brand-soft)] text-[var(--brand)]">✓</span>
-          <h2 id="checklist-empty-title" className="mt-4 text-lg font-bold text-slate-950">Aucune démarche n’est enregistrée pour le moment.</h2>
+          <h2 id="checklist-empty-title" className="mt-4 text-lg font-bold text-slate-950">{t.page.emptyTitle}</h2>
           <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-slate-600">
-            Lorsqu’une nouvelle étape sera ajoutée à votre dossier, elle apparaîtra ici avec son responsable et son statut.
+            {t.page.emptyText}
           </p>
           <div className="mt-5 flex justify-center gap-3">
-            <ButtonLink href="/student">Retour à mon dossier</ButtonLink>
-            <ButtonLink href="/student/documents" variant="secondary">Voir mes documents</ButtonLink>
+            <ButtonLink href="/student">{t.page.back}</ButtonLink>
+            <ButtonLink href="/student/documents" variant="secondary">{t.page.documents}</ButtonLink>
           </div>
         </Card>
       ) : (
@@ -301,10 +296,10 @@ export default async function ChecklistPage() {
               <section key={category} aria-labelledby={categoryId}>
                 <div className="mb-4 flex flex-col justify-between gap-3 border-b border-[var(--border)] pb-3 sm:flex-row sm:items-end">
                   <div>
-                    <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Étape du dossier</p>
+                    <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">{t.page.categoryEyebrow}</p>
                     <h2 id={categoryId} className="mt-1 text-xl font-bold tracking-[-0.02em] text-slate-950">{category}</h2>
                   </div>
-                  <Badge variant={groupCompleted === group.length ? "success" : "neutral"}>{groupCompleted}/{group.length} terminées</Badge>
+                  <Badge variant={groupCompleted === group.length ? "success" : "neutral"}>{t.page.groupDone(groupCompleted, group.length)}</Badge>
                 </div>
                 <div className="space-y-3">
                   {group.map((item) => (
@@ -313,18 +308,18 @@ export default async function ChecklistPage() {
                         <div className="min-w-0">
                           <div className="flex flex-wrap items-center gap-2">
                             <Badge variant={badgeVariants[item.status as keyof typeof badgeVariants] || "neutral"}>
-                              {labels[item.status] || item.status}
+                              {t.statusLabels[item.status] || item.status}
                             </Badge>
-                            {["waiting_student", "todo", "not_started"].includes(item.status) && <span className="text-xs font-bold uppercase tracking-[0.14em] text-amber-800">Responsable : vous</span>}
-                            {item.status === "waiting_almago" && <span className="text-xs font-bold uppercase tracking-[0.14em] text-blue-800">Responsable : AlmaGo</span>}
+                            {["waiting_student", "todo", "not_started"].includes(item.status) && <span className="text-xs font-bold uppercase tracking-[0.14em] text-amber-800">{t.page.responsibleStudent}</span>}
+                            {item.status === "waiting_almago" && <span className="text-xs font-bold uppercase tracking-[0.14em] text-blue-800">{t.page.responsibleAlmaGo}</span>}
                           </div>
                           <h3 id={`checklist-item-title-${item.id}`} className="mt-3 font-bold text-slate-950">{item.title}</h3>
                           {item.description && <p className="mt-1 text-sm leading-6 text-slate-600">{item.description}</p>}
                           {item.completed_at && (
                             <p className="mt-3 text-xs text-slate-500">
-                              Terminé le{" "}
+                              {t.page.completedOn}{" "}
                               <time dateTime={item.completed_at}>
-                                {new Intl.DateTimeFormat("fr-TN", { dateStyle: "medium" }).format(new Date(item.completed_at))}
+                                {new Intl.DateTimeFormat(t.page.intlLocale, { dateStyle: "medium" }).format(new Date(item.completed_at))}
                               </time>
                             </p>
                           )}
@@ -352,49 +347,50 @@ function SummaryCard({ title, value, badge, tone }: { title: string; value: numb
   );
 }
 
-function ChecklistUnavailable() {
+function ChecklistUnavailable({ copy }: { copy: (typeof studentChecklistCopy)["fr"] }) {
   return (
     <main className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 sm:py-7 lg:px-8 lg:py-9">
-      <StudentJourneyHeader current="checklist" eyebrow="Mon dossier" title="Mes démarches" />
+      <StudentJourneyHeader current="checklist" eyebrow={copy.page.eyebrow} title={copy.page.title} />
       <Card>
         <div role="alert">
-          <h2 className="text-xl font-semibold text-slate-950">Démarches temporairement indisponibles</h2>
-          <p className="mt-2 text-sm leading-6 text-slate-600">Nous n’arrivons pas à afficher vos démarches pour le moment. Rien n’a été supprimé ou modifié. Vous pouvez réessayer ou revenir à votre dossier.</p>
+          <h2 className="text-xl font-semibold text-slate-950">{copy.page.unavailableTitle}</h2>
+          <p className="mt-2 text-sm leading-6 text-slate-600">{copy.page.unavailableText}</p>
         </div>
         <div className="mt-5 flex flex-wrap gap-3">
-          <ButtonLink href="/student/checklist">Réessayer</ButtonLink>
-          <ButtonLink href="/student" variant="secondary">Retour à mon dossier</ButtonLink>
+          <ButtonLink href="/student/checklist">{copy.page.retry}</ButtonLink>
+          <ButtonLink href="/student" variant="secondary">{copy.page.back}</ButtonLink>
         </div>
       </Card>
     </main>
   );
 }
 
-
-function PersonalizedChecklistCard({ item }: { item: GermanyChecklistItem }) {
+function PersonalizedChecklistCard({
+  item,
+  copy,
+}: {
+  item: GermanyChecklistItem;
+  copy: (typeof studentChecklistCopy)["fr"];
+}) {
   const variant =
     item.status === "completed"
       ? "success"
       : item.status === "waiting_almago"
         ? "info"
         : "warning";
-  const statusLabel =
-    item.status === "completed"
-      ? "Terminé"
-      : item.status === "waiting_almago"
-        ? "Suivi par AlmaGo"
-        : "À faire par vous";
+  const localized = copy.personalized.items[item.key];
+  const statusLabel = copy.statusLabels[item.status] || item.status;
 
   return (
     <article className="grid gap-4 p-5 sm:grid-cols-[9rem_minmax(12rem,0.7fr)_minmax(0,1.3fr)] sm:items-start sm:p-6">
       <div>
         <Badge variant={variant}>{statusLabel}</Badge>
         <p className="mt-2 text-[11px] font-bold uppercase tracking-[0.12em] text-slate-500">
-          Responsable : {item.owner === "student" ? "vous" : "AlmaGo"}
+          {copy.personalized.owner}: {item.owner === "student" ? copy.personalized.you : copy.personalized.almago}
         </p>
       </div>
-      <h3 className="text-base font-bold text-slate-950">{item.title}</h3>
-      <p className="text-sm leading-6 text-slate-600">{item.explanation}</p>
+      <h3 className="text-base font-bold text-slate-950">{localized?.title || item.title}</h3>
+      <p className="text-sm leading-6 text-slate-600">{localized?.explanation || item.explanation}</p>
     </article>
   );
 }

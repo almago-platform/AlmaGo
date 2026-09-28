@@ -3,37 +3,25 @@ import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Card } from "@/components/ui/Card";
 import { StudentResourceHeader } from "@/components/student/StudentResourceHeader";
 import { StudentGuidancePanel } from "@/components/student/StudentGuidancePanel";
+import { studentFinanceCopy } from "@/content/student-finance-copy";
 import {
   financeInsuranceKinds,
   isPublishableFinanceInsuranceOption,
-  type FinanceInsuranceKind,
   type FinanceInsuranceOption,
 } from "@/lib/finance-insurance";
 import { catalogVerificationCutoff, catalogVerificationExpiresAt } from "@/lib/catalog-freshness";
+import { getRequestLocale } from "@/lib/i18n-server";
 import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
-const kindDetails: Record<FinanceInsuranceKind, { title: string; description: string }> = {
-  blocked_account_provider: {
-    title: "Compte bloqué",
-    description: "Prestataires enregistrés avec une source officielle vérifiée. La présence dans AlmaGo ne signifie pas qu’un produit est requis ou adapté à votre situation.",
-  },
-  health_insurance_provider: {
-    title: "Assurance santé",
-    description: "Options d’assurance publiées à titre factuel. Les conditions applicables doivent être confirmées auprès du fournisseur et des organismes compétents.",
-  },
-  student_financing_option: {
-    title: "Financement étudiant",
-    description: "Solutions de financement enregistrées sans classement, score ni promesse d’acceptation.",
-  },
-};
-
 export default async function StudentFinanceInsurancePage() {
+  const locale = await getRequestLocale();
+  const t = studentFinanceCopy[locale];
   const supabase = await createClient();
   const now = new Date();
   const cutoff = catalogVerificationCutoff(now);
-  if (!cutoff) return <CatalogueUnavailable />;
+  if (!cutoff) return <CatalogueUnavailable copy={t} />;
 
   const { data, error } = await supabase
     .from("finance_insurance_catalog")
@@ -44,7 +32,7 @@ export default async function StudentFinanceInsurancePage() {
     .order("kind", { ascending: true })
     .order("provider_name", { ascending: true });
 
-  if (error) return <CatalogueUnavailable />;
+  if (error) return <CatalogueUnavailable copy={t} />;
 
   const options = (data || []).filter((option) =>
     isPublishableFinanceInsuranceOption(option, now),
@@ -54,25 +42,21 @@ export default async function StudentFinanceInsurancePage() {
     <main className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 sm:py-7 lg:px-8 lg:py-9">
       <StudentResourceHeader
         current="finance"
-        title="Financement et assurance"
-        description="Consultez uniquement les options factuelles enregistrées avec une source officielle et une vérification datée. AlmaGo ne classe pas les fournisseurs et ne déduit ni votre éligibilité ni une exigence de visa à partir de ce catalogue."
-        actions={<ButtonLink href="/student/pathway" variant="secondary">Retour à mon parcours</ButtonLink>}
+        title={t.title}
+        description={t.description}
+        actions={<ButtonLink href="/student/pathway" variant="secondary">{t.back}</ButtonLink>}
       />
 
       <StudentGuidancePanel
-        eyebrow="Avant toute démarche ou paiement"
-        title="Comparez les informations, puis revenez toujours à la source officielle."
-        description="Les prix, conditions et règles peuvent changer. AlmaGo organise les options publiées sans les classer et sans décider si elles sont adaptées ou obligatoires pour votre dossier."
-        points={[
-          "Regarder la date de vérification et la source officielle.",
-          "Relire les conditions directement chez le fournisseur.",
-          "Confirmer les exigences de séjour auprès des autorités compétentes.",
-        ]}
+        eyebrow={t.guidance.eyebrow}
+        title={t.guidance.title}
+        description={t.guidance.description}
+        points={[...t.guidance.points]}
       />
 
       <div className="mt-8 space-y-8">
         {financeInsuranceKinds.map((kind) => {
-          const section = kindDetails[kind];
+          const section = t.kinds[kind];
           const sectionOptions = options.filter((option) => option.kind === kind);
 
           return (
@@ -87,15 +71,13 @@ export default async function StudentFinanceInsurancePage() {
               {sectionOptions.length ? (
                 <div className="overflow-hidden rounded-[var(--radius-panel)] border border-[var(--border)] bg-white divide-y divide-[var(--border)]">
                   {sectionOptions.map((option) => (
-                    <OptionCard key={option.id} option={option} />
+                    <OptionCard key={option.id} option={option} copy={t} />
                   ))}
                 </div>
               ) : (
                 <Card className="bg-[var(--surface-subtle)] shadow-none">
-                  <Badge variant="neutral">Aucune option publiée</Badge>
-                  <p className="mt-3 text-sm leading-6 text-slate-600">
-                    Aucun enregistrement actif et vérifié n’est disponible dans cette catégorie pour le moment.
-                  </p>
+                  <Badge variant="neutral">{t.emptyBadge}</Badge>
+                  <p className="mt-3 text-sm leading-6 text-slate-600">{t.emptyText}</p>
                 </Card>
               )}
             </section>
@@ -103,18 +85,22 @@ export default async function StudentFinanceInsurancePage() {
         })}
       </div>
 
-      <p className="mt-8 text-xs leading-5 text-slate-500">
-        Les fournisseurs restent responsables de leurs propres conditions. Les autorités compétentes restent seules responsables des exigences de séjour, de visa et d’assurance applicables à un dossier.
-      </p>
+      <p className="mt-8 text-xs leading-5 text-slate-500">{t.boundary}</p>
     </main>
   );
 }
 
-function OptionCard({ option }: { option: FinanceInsuranceOption }) {
+function OptionCard({
+  option,
+  copy,
+}: {
+  option: FinanceInsuranceOption;
+  copy: (typeof studentFinanceCopy)["fr"];
+}) {
   return (
     <article className="grid gap-5 p-5 sm:p-6 lg:grid-cols-[minmax(12rem,0.55fr)_minmax(0,1.45fr)]">
       <div>
-        <Badge variant="success">Source vérifiée</Badge>
+        <Badge variant="success">{copy.verified}</Badge>
         <p className="mt-3 text-lg font-bold text-slate-950">{option.provider_name}</p>
         {option.product_name && <p className="mt-1 text-sm font-semibold text-slate-700">{option.product_name}</p>}
         <div className="mt-5 flex flex-col gap-2">
@@ -124,7 +110,7 @@ function OptionCard({ option }: { option: FinanceInsuranceOption }) {
             rel="noreferrer"
             className="inline-flex min-h-11 items-center justify-center rounded-[var(--radius-control)] bg-[var(--brand)] px-4 py-2.5 text-sm font-bold text-white hover:bg-[var(--brand-strong)]"
           >
-            Source officielle
+            {copy.officialSource}
           </a>
           {option.application_url && (
             <a
@@ -133,7 +119,7 @@ function OptionCard({ option }: { option: FinanceInsuranceOption }) {
               rel="noreferrer"
               className="inline-flex min-h-11 items-center justify-center rounded-[var(--radius-control)] border border-[var(--border-strong)] bg-white px-4 py-2.5 text-sm font-bold text-slate-700 hover:border-[var(--brand)] hover:text-[var(--brand)]"
             >
-              Site du fournisseur
+              {copy.providerSite}
             </a>
           )}
         </div>
@@ -142,10 +128,10 @@ function OptionCard({ option }: { option: FinanceInsuranceOption }) {
       <div>
         {option.description && <p className="text-sm leading-6 text-slate-600">{option.description}</p>}
         <dl className="mt-4 divide-y divide-[var(--border)] border-y border-[var(--border)]">
-          <Fact label="Prix / frais" value={option.price_notes || "À confirmer sur la source officielle"} />
-          <Fact label="Conditions publiées" value={option.eligibility_notes || "À confirmer auprès du fournisseur"} />
-          <Fact label="Dernière vérification" value={formatVerifiedAt(option.verified_at)} />
-          <Fact label="À revalider avant" value={formatVerifiedAt(catalogVerificationExpiresAt(option.verified_at))} />
+          <Fact label={copy.facts.price} value={option.price_notes || copy.unknownOfficial} />
+          <Fact label={copy.facts.eligibility} value={option.eligibility_notes || copy.unknownProvider} />
+          <Fact label={copy.facts.verifiedAt} value={formatVerifiedAt(option.verified_at, copy)} />
+          <Fact label={copy.facts.revalidateBefore} value={formatVerifiedAt(catalogVerificationExpiresAt(option.verified_at), copy)} />
         </dl>
       </div>
     </article>
@@ -161,30 +147,28 @@ function Fact({ label, value }: { label: string; value: string }) {
   );
 }
 
-function formatVerifiedAt(value: string | null) {
-  if (!value) return "À confirmer";
+function formatVerifiedAt(value: string | null, copy: (typeof studentFinanceCopy)["fr"]) {
+  if (!value) return copy.unknown;
   const timestamp = Date.parse(value);
-  if (!Number.isFinite(timestamp)) return "À confirmer";
-  return new Intl.DateTimeFormat("fr-FR", {
+  if (!Number.isFinite(timestamp)) return copy.unknown;
+  return new Intl.DateTimeFormat(copy.intlLocale, {
     dateStyle: "medium",
     timeZone: "UTC",
   }).format(new Date(timestamp));
 }
 
-function CatalogueUnavailable() {
+function CatalogueUnavailable({ copy }: { copy: (typeof studentFinanceCopy)["fr"] }) {
   return (
     <main className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 sm:py-7 lg:px-8 lg:py-9">
-      <StudentResourceHeader current="finance" title="Financement et assurance" description="Les options vérifiées sont temporairement indisponibles." />
+      <StudentResourceHeader current="finance" title={copy.title} description={copy.unavailableDescription} />
       <Card>
         <div role="alert">
-          <h2 className="text-xl font-semibold text-slate-950">Catalogue temporairement indisponible</h2>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
-            Les options vérifiées ne peuvent pas être chargées pour le moment. AlmaGo n’affiche aucun fournisseur de remplacement ou non vérifié.
-          </p>
+          <h2 className="text-xl font-semibold text-slate-950">{copy.unavailableTitle}</h2>
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">{copy.unavailableText}</p>
         </div>
         <div className="mt-5 flex flex-wrap gap-3">
-          <ButtonLink href="/student/finance-insurance">Réessayer</ButtonLink>
-          <ButtonLink href="/student/pathway" variant="secondary">Retour à mon parcours</ButtonLink>
+          <ButtonLink href="/student/finance-insurance">{copy.retry}</ButtonLink>
+          <ButtonLink href="/student/pathway" variant="secondary">{copy.back}</ButtonLink>
         </div>
       </Card>
     </main>

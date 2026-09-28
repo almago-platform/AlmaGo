@@ -4,6 +4,7 @@ import test from "node:test";
 
 const page = readFileSync("src/app/student/orientation/page.tsx", "utf8");
 const panel = readFileSync("src/components/student/StudentOrientationPanel.tsx", "utf8");
+const orientationCopy = readFileSync("src/content/student-orientation-copy.ts", "utf8");
 
 test("orientation computes Master requirement matching on the server", () => {
   assert.match(page, /readMasterRequirementProfile\(program\.requirements\)/);
@@ -16,63 +17,63 @@ test("technical requirements JSON is not forwarded to the student panel", () => 
   assert.doesNotMatch(panel, /almago_master_requirements/);
 });
 
-test("student UI exposes only human criterion states", () => {
-  assert.match(panel, /Critère rempli/);
-  assert.match(panel, /Écart potentiel/);
-  assert.match(panel, /Information manquante/);
-  assert.match(panel, /À vérifier/);
-  assert.match(panel, /Ce n’est pas une décision d’admission/);
+test("student UI exposes only human criterion states through localized copy", () => {
+  assert.ok(orientationCopy.includes('satisfied: "Critère rempli"'));
+  assert.ok(orientationCopy.includes('not_satisfied: "Point à vérifier"'));
+  assert.ok(orientationCopy.includes('unknown: "Information manquante"'));
+  assert.ok(orientationCopy.includes('needs_manual_review: "À vérifier"'));
+  assert.ok(orientationCopy.includes("L’université décide au final"));
+  assert.ok(panel.includes("copy.statusLabels"));
 });
 
 test("application route is shown separately from eligibility criteria", () => {
-  assert.match(panel, /Mode de candidature/);
-  assert.match(panel, /candidature via uni-assist/);
-  assert.match(panel, /VPD à obtenir avant la candidature/);
+  assert.ok(orientationCopy.includes('applicationRoute: "Mode de candidature"'));
+  assert.ok(orientationCopy.includes('routeUniAssist: "candidature via uni-assist"'));
+  assert.ok(orientationCopy.includes('routeVpd: "VPD à obtenir avant la candidature"'));
+  assert.ok(panel.includes("applicationRouteLabel"));
 });
 
 test("orientation keeps a recovery state when the student project cannot be read", () => {
   assert.match(page, /criteriaStateError=/);
-  assert.match(panel, /comparaisons personnalisées réapparaîtront/);
+  assert.ok(orientationCopy.includes("comparaisons personnalisées réapparaîtront"));
+  assert.ok(panel.includes("t.criteriaStateDetail"));
 });
 
-test("StudentApplicationsPanel has enhanced progress tracking and mobile layout", () => {
+test("StudentApplicationsPanel has localized progress tracking and RTL-aware layout", () => {
   const applicationsPanel = readFileSync("src/components/student/StudentApplicationsPanel.tsx", "utf8");
-  assert.match(applicationsPanel, /ApplicationStepper/);
-  assert.match(applicationsPanel, /"Intérêt"/);
-  assert.match(applicationsPanel, /"Préparation"/);
-  assert.match(applicationsPanel, /"Prêt"/);
-  assert.match(applicationsPanel, /"Envoyé"/);
-  assert.match(applicationsPanel, /"Décision"/);
-  assert.match(applicationsPanel, /text-left sm:text-right flex flex-col items-start sm:items-end/);
-  assert.match(applicationsPanel, /Suivi des candidatures indisponible/);
-
-  // Corrected withdrawal behavior: withdrawn should be handled separately and not mapped to progress index 4
-  assert.match(applicationsPanel, /normalizedStatus === "withdrawn"/);
-  assert.match(applicationsPanel, /Le suivi de cette candidature a été retiré\./);
+  const applicationsCopy = readFileSync("src/content/student-applications-copy.ts", "utf8");
+  assert.ok(applicationsPanel.includes("ApplicationStepper"));
+  for (const label of ["À préparer", "Préparation", "Prêt", "Envoyé", "Décision"]) {
+    assert.ok(applicationsCopy.includes(label));
+  }
+  assert.ok(applicationsPanel.includes('direction === "rtl"'));
+  assert.ok(applicationsCopy.includes("Suivi des candidatures indisponible"));
+  assert.ok(applicationsPanel.includes('normalizedStatus === "withdrawn"'));
+  assert.ok(applicationsCopy.includes("Le suivi de cette candidature a été retiré."));
   assert.doesNotMatch(applicationsPanel, /"withdrawn"\].*currentIndex/);
 });
 
-test("StudentJourneyOverview calculates progress and shows visual badges", () => {
+test("StudentJourneyOverview calculates progress and shows localized visual badges", () => {
   const journeyOverview = readFileSync("src/components/student/StudentJourneyOverview.tsx", "utf8");
-  assert.match(journeyOverview, /completedStages\.length/);
-  assert.match(journeyOverview, /progressPercent/);
-  assert.match(journeyOverview, /Terminé/);
-  assert.match(journeyOverview, /En cours/);
-  assert.match(journeyOverview, /À venir/);
-  assert.match(journeyOverview, /Ouvrir →/);
-  assert.doesNotMatch(journeyOverview, /intelligence artificielle/i);
-  assert.doesNotMatch(journeyOverview, /garantie/i);
+  const shared = readFileSync("src/content/student-shared-copy.ts", "utf8");
+  assert.ok(journeyOverview.includes("completedStages.length"));
+  assert.ok(journeyOverview.includes("progressPercent"));
+  assert.ok(journeyOverview.includes("copy.done"));
+  assert.ok(journeyOverview.includes("copy.inProgress"));
+  assert.ok(journeyOverview.includes("copy.upcoming"));
+  assert.ok(journeyOverview.includes("openArrow"));
+  assert.ok(shared.includes('done: "Terminé"'));
+  assert.ok(shared.includes('inProgress: "En cours"'));
+  assert.ok(shared.includes('upcoming: "À venir"'));
+  assert.ok(!journeyOverview.toLowerCase().includes("intelligence artificielle"));
+  assert.ok(!journeyOverview.toLowerCase().includes("garantie"));
 
-  // No pseudo-precise numeric percentage completion displayed to user
-  assert.doesNotMatch(journeyOverview, /whitespace-nowrap.*progressPercent/);
+  // No pseudo-precise numeric percentage completion displayed to user as a standalone promise.
+  assert.ok(!journeyOverview.includes("whitespace-nowrap"));
 });
 
 test("StudentOrientationPanel has explicit unknown route and unique comparison landmarks", () => {
-  const panelContent = readFileSync("src/components/student/StudentOrientationPanel.tsx", "utf8");
-
-  // Explicit unknown application route mapped to "à confirmer"
-  assert.match(panelContent, /à confirmer/);
-
-  // Unique and differentiated comparison landmarks per program
-  assert.match(panelContent, /aria-label=\{\`Comparaison avec votre projet - \$\{programName\}\`\}/);
+  assert.ok(orientationCopy.includes('routeUnknown: "à confirmer"'));
+  assert.ok(panel.includes("copy.comparisonAria"));
+  assert.ok(panel.includes("programName"));
 });

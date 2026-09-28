@@ -4,6 +4,8 @@ import { FormEvent, useEffect, useState } from "react";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { useLocale } from "@/components/i18n/LocaleProvider";
+import { studentLanguageCoursesCopy } from "@/content/student-language-courses-copy";
 import { catalogVerificationExpiresAt } from "@/lib/catalog-freshness";
 
 type Course = {
@@ -43,44 +45,59 @@ const emptyFilters: Filters = {
 
 const levels = ["A1", "A2", "B1", "B2", "C1", "C2"];
 
-function purposeLabel(purpose: Course["purpose"]) {
-  return purpose === "study_preparation"
-    ? "Préparation aux études"
-    : "Cours de langue autonome";
+function purposeLabel(
+  purpose: Course["purpose"],
+  copy: (typeof studentLanguageCoursesCopy)["fr"]["panel"],
+) {
+  return copy.purpose[purpose];
 }
 
-function formatDate(value: string | null) {
+function formatDate(
+  value: string | null,
+  copy: (typeof studentLanguageCoursesCopy)["fr"]["panel"],
+) {
   if (!value) return null;
   const date = new Date(`${value}T12:00:00Z`);
   if (Number.isNaN(date.getTime())) return null;
-  return new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium" }).format(date);
+  return new Intl.DateTimeFormat(copy.intlLocale, { dateStyle: "medium" }).format(date);
 }
 
-function formatVerification(value: string | null) {
-  if (!value) return "À confirmer";
+function formatVerification(
+  value: string | null,
+  copy: (typeof studentLanguageCoursesCopy)["fr"]["panel"],
+) {
+  if (!value) return copy.unknown;
   const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "À confirmer";
-  return new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium" }).format(date);
+  if (Number.isNaN(date.getTime())) return copy.unknown;
+  return new Intl.DateTimeFormat(copy.intlLocale, { dateStyle: "medium" }).format(date);
 }
 
-function formatPrice(course: Course) {
-  if (course.price_cents === null || !course.currency) return "À confirmer";
-  return new Intl.NumberFormat("fr-FR", {
+function formatPrice(
+  course: Course,
+  copy: (typeof studentLanguageCoursesCopy)["fr"]["panel"],
+) {
+  if (course.price_cents === null || !course.currency) return copy.unknown;
+  return new Intl.NumberFormat(copy.intlLocale, {
     style: "currency",
     currency: course.currency,
   }).format(course.price_cents / 100);
 }
 
-function levelLabel(course: Course) {
+function levelLabel(
+  course: Course,
+  copy: (typeof studentLanguageCoursesCopy)["fr"]["panel"],
+) {
   if (course.level_from && course.level_to) {
     return course.level_from === course.level_to
       ? course.level_from
       : `${course.level_from} → ${course.level_to}`;
   }
-  return course.level_from || course.level_to || "À confirmer";
+  return course.level_from || course.level_to || copy.unknown;
 }
 
 export function StudentLanguageCoursesPanel() {
+  const { locale } = useLocale();
+  const t = studentLanguageCoursesCopy[locale].panel;
   const [draftFilters, setDraftFilters] = useState<Filters>(emptyFilters);
   const [filters, setFilters] = useState<Filters>(emptyFilters);
   const [courses, setCourses] = useState<Course[]>([]);
@@ -103,7 +120,7 @@ export function StudentLanguageCoursesPanel() {
         const response = await fetch("/api/student/language-course-selection", { signal: controller.signal });
         const result = await response.json().catch(() => ({}));
         if (!response.ok) {
-          if (active) setSelectionError(result.error || "Impossible de charger votre choix de cours.");
+          if (active) setSelectionError(t.selectionLoadError);
           return;
         }
         if (active) {
@@ -112,7 +129,7 @@ export function StudentLanguageCoursesPanel() {
         }
       } catch (selectionLoadError) {
         if (active && !(selectionLoadError instanceof DOMException && selectionLoadError.name === "AbortError")) {
-          setSelectionError("Impossible de charger votre choix de cours.");
+          setSelectionError(t.selectionLoadError);
         }
       } finally {
         if (active) setSelectionLoading(false);
@@ -124,7 +141,7 @@ export function StudentLanguageCoursesPanel() {
       active = false;
       controller.abort();
     };
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     let active = true;
@@ -149,7 +166,7 @@ export function StudentLanguageCoursesPanel() {
         if (!response.ok) {
           if (active) {
             setCourses([]);
-            setError(result.error || "Impossible de charger les cours vérifiés pour le moment.");
+            setError(t.coursesLoadError);
           }
           return;
         }
@@ -158,7 +175,7 @@ export function StudentLanguageCoursesPanel() {
       } catch (loadError) {
         if (active && !(loadError instanceof DOMException && loadError.name === "AbortError")) {
           setCourses([]);
-          setError("Impossible de charger les cours vérifiés pour le moment.");
+          setError(t.coursesLoadError);
         }
       } finally {
         if (active) setLoading(false);
@@ -170,7 +187,7 @@ export function StudentLanguageCoursesPanel() {
       active = false;
       controller.abort();
     };
-  }, [filters]);
+  }, [filters, t]);
 
   async function selectCourse(courseId: string) {
     setSelectionBusy(courseId);
@@ -183,13 +200,13 @@ export function StudentLanguageCoursesPanel() {
       });
       const result = await response.json().catch(() => ({}));
       if (!response.ok) {
-        setSelectionError(result.error || "Impossible d’enregistrer ce choix.");
+        setSelectionError(t.selectionSaveError);
         return;
       }
       setSelectedCourseId(courseId);
       setSelectionPublishable(true);
     } catch {
-      setSelectionError("Impossible d’enregistrer ce choix.");
+      setSelectionError(t.selectionSaveError);
     } finally {
       setSelectionBusy(null);
     }
@@ -202,13 +219,13 @@ export function StudentLanguageCoursesPanel() {
       const response = await fetch("/api/student/language-course-selection", { method: "DELETE" });
       const result = await response.json().catch(() => ({}));
       if (!response.ok) {
-        setSelectionError(result.error || "Impossible de retirer ce choix.");
+        setSelectionError(t.selectionRemoveError);
         return;
       }
       setSelectedCourseId(null);
       setSelectionPublishable(true);
     } catch {
-      setSelectionError("Impossible de retirer ce choix.");
+      setSelectionError(t.selectionRemoveError);
     } finally {
       setSelectionBusy(null);
     }
@@ -229,23 +246,23 @@ export function StudentLanguageCoursesPanel() {
       <Card className="border-[var(--brand-border)] bg-[var(--brand-soft)]/55 shadow-none">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <h2 className="text-lg font-bold text-slate-950">Votre choix actuel</h2>
+            <h2 className="text-lg font-bold text-slate-950">{t.currentTitle}</h2>
             <p className="mt-2 max-w-4xl text-sm leading-6 text-slate-700">
               {selectionLoading
-                ? "Chargement de votre choix…"
+                ? t.currentLoading
                 : selectedCourseId && selectionPublishable
-                  ? "Un cours vérifié est associé à votre projet. Vous pouvez le remplacer en choisissant une autre fiche ci-dessous."
+                  ? t.currentSelected
                   : selectedCourseId
-                    ? "Votre ancien choix n’est plus publiable et doit être revalidé. Choisissez une autre fiche vérifiée ou retirez ce choix."
-                    : "Aucun cours n’est encore associé à votre projet."}
+                    ? t.currentStale
+                    : t.currentNone}
             </p>
             <p className="mt-2 text-xs leading-5 text-slate-500">
-              Ce choix enregistre votre intention. Il ne constitue ni une décision d’admission, ni une validation de pertinence, ni une décision de visa.
+              {t.selectionBoundary}
             </p>
           </div>
           {selectedCourseId && (
             <Button type="button" variant="secondary" onClick={clearSelection} disabled={selectionBusy === "clear"}>
-              {selectionBusy === "clear" ? "Retrait…" : "Retirer mon choix"}
+              {selectionBusy === "clear" ? t.removing : t.remove}
             </Button>
           )}
         </div>
@@ -253,77 +270,77 @@ export function StudentLanguageCoursesPanel() {
       </Card>
 
       <Card className="border-[var(--brand-border)] bg-[var(--brand-soft)]/55 shadow-none">
-        <h2 className="text-lg font-bold text-slate-950">Comment lire ce catalogue ?</h2>
+        <h2 className="text-lg font-bold text-slate-950">{t.catalogueTitle}</h2>
         <p className="mt-2 max-w-4xl text-sm leading-6 text-slate-700">
-          Les informations affichées proviennent de fiches vérifiées dans AlmaGo. Un cours intensif n’est pas automatiquement une préparation universitaire. La présence d’un cours ici ne constitue ni une décision d’admission ni une décision de visa.
+          {t.catalogueDescription}
         </p>
       </Card>
 
       <Card className="shadow-none">
-        <form onSubmit={applyFilters} aria-label="Filtrer les cours de langue">
+        <form onSubmit={applyFilters} aria-label={t.filterAria}>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
             <label className="block text-sm font-medium text-slate-700">
-              Type de cours
+              {t.courseType}
               <select
                 className="field"
                 value={draftFilters.purpose}
                 onChange={(event) => setDraftFilters((current) => ({ ...current, purpose: event.target.value }))}
               >
-                <option value="">Tous</option>
-                <option value="study_preparation">Préparation aux études</option>
-                <option value="standalone_language">Cours de langue autonome</option>
+                <option value="">{t.all}</option>
+                <option value="study_preparation">{t.purpose.study_preparation}</option>
+                <option value="standalone_language">{t.purpose.standalone_language}</option>
               </select>
             </label>
 
             <label className="block text-sm font-medium text-slate-700">
-              Ville
+              {t.city}
               <input
                 className="field"
                 value={draftFilters.city}
                 onChange={(event) => setDraftFilters((current) => ({ ...current, city: event.target.value }))}
-                placeholder="Ex. Berlin"
+                placeholder={t.cityPlaceholder}
               />
             </label>
 
             <label className="block text-sm font-medium text-slate-700">
-              Langue
+              {t.language}
               <input
                 className="field"
                 value={draftFilters.language}
                 onChange={(event) => setDraftFilters((current) => ({ ...current, language: event.target.value }))}
-                placeholder="Ex. Deutsch"
+                placeholder={t.languagePlaceholder}
               />
             </label>
 
             <label className="block text-sm font-medium text-slate-700">
-              Niveau de départ
+              {t.startLevel}
               <select
                 className="field"
                 value={draftFilters.level_from}
                 onChange={(event) => setDraftFilters((current) => ({ ...current, level_from: event.target.value }))}
               >
-                <option value="">Tous</option>
+                <option value="">{t.all}</option>
                 {levels.map((level) => <option key={level} value={level}>{level}</option>)}
               </select>
             </label>
 
             <label className="block text-sm font-medium text-slate-700">
-              Niveau cible
+              {t.targetLevel}
               <select
                 className="field"
                 value={draftFilters.level_to}
                 onChange={(event) => setDraftFilters((current) => ({ ...current, level_to: event.target.value }))}
               >
-                <option value="">Tous</option>
+                <option value="">{t.all}</option>
                 {levels.map((level) => <option key={level} value={level}>{level}</option>)}
               </select>
             </label>
           </div>
 
           <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-            <Button type="submit">Appliquer les filtres</Button>
+            <Button type="submit">{t.apply}</Button>
             <Button type="button" variant="secondary" onClick={clearFilters}>
-              Effacer les filtres
+              {t.clear}
             </Button>
           </div>
         </form>
@@ -332,28 +349,28 @@ export function StudentLanguageCoursesPanel() {
       <section aria-live="polite" aria-busy={loading} aria-labelledby="language-course-results-title">
         <div className="mb-4 flex flex-col justify-between gap-2 sm:flex-row sm:items-end">
           <div>
-            <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">Catalogue vérifié</p>
+            <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">{t.catalogueEyebrow}</p>
             <h2 id="language-course-results-title" className="mt-1 text-2xl font-semibold text-slate-950">
-              Cours disponibles
+              {t.available}
             </h2>
           </div>
           {!loading && !error && (
             <p className="text-sm text-slate-500">
-              {courses.length} cours affiché{courses.length > 1 ? "s" : ""}
+              {t.resultCount(courses.length)}
             </p>
           )}
         </div>
 
         {loading && (
           <Card className="border-dashed shadow-none">
-            <p className="text-sm text-slate-600">Chargement des cours vérifiés…</p>
+            <p className="text-sm text-slate-600">{t.loading}</p>
           </Card>
         )}
 
         {!loading && error && (
           <Card className="border-red-200 bg-red-50/50 shadow-none">
             <div role="alert">
-              <h3 className="font-bold text-red-950">Catalogue temporairement indisponible</h3>
+              <h3 className="font-bold text-red-950">{t.unavailableTitle}</h3>
               <p className="mt-2 text-sm leading-6 text-red-800">{error}</p>
             </div>
           </Card>
@@ -361,9 +378,9 @@ export function StudentLanguageCoursesPanel() {
 
         {!loading && !error && courses.length === 0 && (
           <Card className="border-dashed text-center shadow-none">
-            <h3 className="font-bold text-slate-950">Aucun cours ne correspond à ces filtres.</h3>
+            <h3 className="font-bold text-slate-950">{t.emptyTitle}</h3>
             <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-slate-600">
-              Essayez d’élargir vos critères. Aucune information manquante n’est remplacée par une estimation.
+              {t.emptyText}
             </p>
           </Card>
         )}
@@ -371,8 +388,8 @@ export function StudentLanguageCoursesPanel() {
         {!loading && !error && courses.length > 0 && (
           <div className="space-y-4">
             {courses.map((course) => {
-              const start = formatDate(course.starts_on);
-              const end = formatDate(course.ends_on);
+              const start = formatDate(course.starts_on, t);
+              const end = formatDate(course.ends_on, t);
               return (
                 <Card as="article" key={course.id} className="shadow-none">
                   <div>
@@ -386,28 +403,28 @@ export function StudentLanguageCoursesPanel() {
                         </h3>
                       </div>
                       <Badge variant={course.purpose === "study_preparation" ? "info" : "neutral"}>
-                        {purposeLabel(course.purpose)}
+                        {purposeLabel(course.purpose, t)}
                       </Badge>
                     </div>
 
                     <dl className="mt-5 grid gap-3 sm:grid-cols-2">
-                      <Fact label="Ville" value={course.city || "À confirmer"} />
-                      <Fact label="Langue" value={course.language} />
-                      <Fact label="Niveaux" value={levelLabel(course)} />
+                      <Fact label={t.city} value={course.city || t.unknown} />
+                      <Fact label={t.language} value={course.language} />
+                      <Fact label={t.levels} value={levelLabel(course, t)} />
                       <Fact
-                        label="Volume"
-                        value={course.hours_per_week === null ? "À confirmer" : `${course.hours_per_week} h / semaine`}
+                        label={t.volume}
+                        value={course.hours_per_week === null ? t.unknown : t.hoursWeek(course.hours_per_week)}
                       />
                       <Fact
-                        label="Période"
-                        value={start || end ? [start, end].filter(Boolean).join(" → ") : "À confirmer"}
+                        label={t.period}
+                        value={start || end ? [start, end].filter(Boolean).join(" → ") : t.unknown}
                       />
-                      <Fact label="Prix" value={formatPrice(course)} />
+                      <Fact label={t.price} value={formatPrice(course, t)} />
                     </dl>
 
                     <p className="mt-4 text-xs leading-5 text-slate-500">
-                      Dernière vérification enregistrée : {formatVerification(course.verified_at)}
-                      {" · "}à revalider avant : {formatVerification(catalogVerificationExpiresAt(course.verified_at))}
+                      {t.lastVerified}: {formatVerification(course.verified_at, t)}
+                      {" · "}{t.revalidateBefore}: {formatVerification(catalogVerificationExpiresAt(course.verified_at), t)}
                     </p>
                   </div>
 
@@ -419,7 +436,7 @@ export function StudentLanguageCoursesPanel() {
                         rel="noreferrer"
                         className="inline-flex min-h-11 items-center justify-center rounded-[var(--radius-control)] border border-[var(--border-strong)] bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:border-[var(--brand)] hover:text-[var(--brand)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)]"
                       >
-                        Voir la source officielle
+                        {t.officialSource}
                       </a>
                     )}
                     <Button
@@ -428,10 +445,10 @@ export function StudentLanguageCoursesPanel() {
                       disabled={selectionBusy === course.id || selectedCourseId === course.id}
                     >
                       {selectedCourseId === course.id
-                        ? "Cours sélectionné"
+                        ? t.selected
                         : selectionBusy === course.id
-                          ? "Enregistrement…"
-                          : "Choisir pour mon projet"}
+                          ? t.saving
+                          : t.choose}
                     </Button>
                     {course.application_url && (
                       <a
@@ -440,7 +457,7 @@ export function StudentLanguageCoursesPanel() {
                         rel="noreferrer"
                         className="inline-flex min-h-11 items-center justify-center rounded-[var(--radius-control)] border border-[var(--border-strong)] bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:border-[var(--brand)] hover:text-[var(--brand)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)]"
                       >
-                        Voir le lien d’inscription
+                        {t.applicationLink}
                       </a>
                     )}
                   </div>

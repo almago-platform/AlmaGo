@@ -1,12 +1,16 @@
+"use client";
+
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { useLocale } from "@/components/i18n/LocaleProvider";
+import { studentSharedCopy } from "@/content/student-shared-copy";
 
 type ResourceKey = "language" | "finance";
 
 const resourceLinks = [
-  { key: "pathway", label: "Parcours Allemagne", href: "/student/pathway" },
-  { key: "language", label: "Cours de langue", href: "/student/language-courses" },
-  { key: "finance", label: "Finance & assurance", href: "/student/finance-insurance" },
+  { key: "pathway", href: "/student/pathway" },
+  { key: "language", href: "/student/language-courses" },
+  { key: "finance", href: "/student/finance-insurance" },
 ] as const;
 
 export function StudentResourceHeader({
@@ -20,12 +24,15 @@ export function StudentResourceHeader({
   description: ReactNode;
   actions?: ReactNode;
 }) {
+  const { locale } = useLocale();
+  const shared = studentSharedCopy[locale];
+
   return (
     <header className="mb-6 sm:mb-7">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div className="min-w-0 max-w-4xl">
           <p className="text-[0.68rem] font-bold uppercase tracking-[0.16em] text-[var(--brand)]">
-            Ressources du parcours
+            {shared.resourceEyebrow}
           </p>
           <h1 className="editorial-accent mt-1.5 break-words text-[2rem] leading-[1.07] text-[var(--foreground)] sm:text-[2.55rem]">
             {title}
@@ -38,11 +45,11 @@ export function StudentResourceHeader({
       </div>
 
       <nav
-        aria-label="Ressources liées au parcours Allemagne"
+        aria-label={shared.resourceAria}
         className="mt-5 overflow-x-auto rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-1.5"
       >
         <div className="flex min-w-max items-center gap-1">
-          {resourceLinks.map((item) => {
+          {resourceLinks.map((item, index) => {
             const active = item.key === current;
             return (
               <Link
@@ -56,7 +63,7 @@ export function StudentResourceHeader({
                     : "text-[var(--muted)] hover:bg-[var(--surface-subtle)] hover:text-[var(--foreground)]")
                 }
               >
-                {item.label}
+                {shared.resourceLinks[index]}
               </Link>
             );
           })}

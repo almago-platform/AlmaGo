@@ -5,11 +5,11 @@ import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/Badge";
 import { Button, buttonClassName } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { useLocale } from "@/components/i18n/LocaleProvider";
+import { studentDocumentsCopy } from "@/content/student-documents-copy";
 import {
-  categoryLabel,
   documentCategories,
   removableDocumentStatuses,
-  statusLabel,
 } from "@/lib/documents";
 
 type StudentDocument = {
@@ -51,27 +51,17 @@ function statusVariant(status: string): "success" | "warning" | "info" | "neutra
   return "neutral";
 }
 
-function formatFileSize(sizeBytes: number) {
-  if (sizeBytes >= 1024 * 1024) return `${(sizeBytes / (1024 * 1024)).toFixed(1)} MiB`;
-  return `${Math.ceil(sizeBytes / 1024)} Ko`;
+function formatFileSize(sizeBytes: number, copy: (typeof studentDocumentsCopy)["fr"]) {
+  if (sizeBytes >= 1024 * 1024) return `${(sizeBytes / (1024 * 1024)).toFixed(1)} ${copy.fileSizes.mb}`;
+  return `${Math.ceil(sizeBytes / 1024)} ${copy.fileSizes.kb}`;
 }
 
-function evidenceTypeLabel(type: string) {
-  return ({
-    definitive_admission: "Admission définitive",
-    conditional_admission: "Admission conditionnelle",
-    bewerberbestaetigung: "Bewerberbestätigung",
-    admissible_university_correspondence: "Correspondance universitaire admissible",
-  } as Record<string, string>)[type] || "Preuve académique";
+function evidenceTypeLabel(type: string, copy: (typeof studentDocumentsCopy)["fr"]) {
+  return copy.evidenceTypes[type] || copy.evidenceTypes.other;
 }
 
-function evidenceStatusLabel(status: string) {
-  return ({
-    received: "Reçue",
-    needs_review: "À vérifier",
-    accepted_for_pathway: "Acceptée comme preuve de parcours",
-    replace_required: "À remplacer",
-  } as Record<string, string>)[status] || "État à confirmer";
+function evidenceStatusLabel(status: string, copy: (typeof studentDocumentsCopy)["fr"]) {
+  return copy.evidenceStatuses[status] || copy.evidenceStatuses.other;
 }
 
 function evidenceStatusVariant(status: string): "success" | "warning" | "info" | "neutral" {
@@ -81,11 +71,11 @@ function evidenceStatusVariant(status: string): "success" | "warning" | "info" |
   return "neutral";
 }
 
-function formatEvidenceDate(value: string | null) {
-  if (!value) return "Date à confirmer";
+function formatEvidenceDate(value: string | null, copy: (typeof studentDocumentsCopy)["fr"]) {
+  if (!value) return copy.unknown;
   const date = new Date(`${value}T12:00:00Z`);
-  if (Number.isNaN(date.getTime())) return "Date à confirmer";
-  return new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium" }).format(date);
+  if (Number.isNaN(date.getTime())) return copy.unknown;
+  return new Intl.DateTimeFormat(copy.intlLocale, { dateStyle: "medium" }).format(date);
 }
 
 export function DocumentsPanel({
@@ -102,6 +92,8 @@ export function DocumentsPanel({
   evidenceLoadError?: boolean;
 }) {
   const router = useRouter();
+  const { locale } = useLocale();
+  const t = studentDocumentsCopy[locale];
   const fileInput = useRef<HTMLInputElement>(null);
   const [category, setCategory] = useState("passport");
   const [feedback, setFeedback] = useState<Feedback>(null);
@@ -119,7 +111,7 @@ export function DocumentsPanel({
     const file = fileInput.current?.files?.[0];
 
     if (!file) {
-      setFeedback({ message: "Choisissez un fichier avant de continuer.", kind: "error" });
+      setFeedback({ message: t.feedback.chooseFile, kind: "error" });
       return;
     }
 
@@ -135,22 +127,22 @@ export function DocumentsPanel({
       const result = await response.json().catch(() => ({}));
 
       if (!response.ok) {
-        setFeedback({ message: result.error || "Impossible d’envoyer le document.", kind: "error" });
+        setFeedback({ message: locale === "fr" && typeof result.error === "string" ? result.error : t.feedback.uploadError, kind: "error" });
         return;
       }
 
       if (fileInput.current) fileInput.current.value = "";
-      setFeedback({ message: "Votre fichier est bien enregistré. Son statut sera mis à jour après vérification.", kind: "success" });
+      setFeedback({ message: t.feedback.uploadSuccess, kind: "success" });
       router.refresh();
     } catch {
-      setFeedback({ message: "Erreur réseau. Vérifiez votre connexion puis réessayez.", kind: "error" });
+      setFeedback({ message: t.feedback.networkError, kind: "error" });
     } finally {
       setBusy(false);
     }
   }
 
   async function removeDocument(id: string) {
-    if (!window.confirm("Voulez-vous supprimer ce document ?")) return;
+    if (!window.confirm(t.feedback.deleteConfirm)) return;
 
     setBusy(true);
     setFeedback(null);
@@ -160,14 +152,14 @@ export function DocumentsPanel({
       const result = await response.json().catch(() => ({}));
 
       if (!response.ok) {
-        setFeedback({ message: result.error || "Impossible de supprimer le document.", kind: "error" });
+        setFeedback({ message: locale === "fr" && typeof result.error === "string" ? result.error : t.feedback.deleteError, kind: "error" });
         return;
       }
 
-      setFeedback({ message: "Le document a bien été supprimé de votre dossier.", kind: "success" });
+      setFeedback({ message: t.feedback.deleteSuccess, kind: "success" });
       router.refresh();
     } catch {
-      setFeedback({ message: "Erreur réseau. Vérifiez votre connexion puis réessayez.", kind: "error" });
+      setFeedback({ message: t.feedback.networkError, kind: "error" });
     } finally {
       setBusy(false);
     }
@@ -175,36 +167,36 @@ export function DocumentsPanel({
 
   return (
     <div className="space-y-8">
-      <section aria-label="Priorité documentaire" className="grid gap-5 lg:grid-cols-[minmax(0,1.45fr)_minmax(18rem,0.85fr)]">
+      <section aria-label={t.priority.aria} className="grid gap-5 lg:grid-cols-[minmax(0,1.45fr)_minmax(18rem,0.85fr)]">
         <Card className={`relative overflow-hidden shadow-none ${correctionCount ? "border-amber-300 bg-amber-50/25" : "border-[var(--brand-border)] bg-white"}`}>
           <div aria-hidden="true" className="absolute inset-y-0 left-0 w-1 bg-[var(--brand)]" />
           <div className="pl-2">
           <Badge variant={correctionCount ? "warning" : reviewCount ? "info" : "neutral"}>
-            {correctionCount ? "Correction demandée" : reviewCount ? "En attente de vérification" : "Dossier documentaire"}
+            {correctionCount ? t.priority.correctionBadge : reviewCount ? t.priority.reviewBadge : t.priority.documentsBadge}
           </Badge>
           <h2 className="mt-5 text-2xl font-semibold tracking-[-0.03em] text-slate-950 sm:text-3xl">
-            {correctionCount ? "Une action est nécessaire sur vos documents" : reviewCount ? "Vos documents sont en cours de vérification" : "Votre dossier documentaire"}
+            {correctionCount ? t.priority.correctionTitle : reviewCount ? t.priority.reviewTitle : t.priority.documentsTitle}
           </h2>
           <p className="mt-3 text-base leading-7 text-slate-700">
             {correctionCount
-              ? `${correctionCount} document${correctionCount > 1 ? "s doivent" : " doit"} être corrigé${correctionCount > 1 ? "s" : ""}. Consultez le message AlmaGo avant de remplacer le fichier.`
+              ? t.priority.correctionText(correctionCount)
               : reviewCount
-                ? "Aucune action n’est demandée de votre côté pendant cette vérification. Les retours apparaîtront sur cette page."
+                ? t.priority.reviewText
                 : documents.length
-                  ? "Aucune correction n’est demandée actuellement. Vous pouvez ajouter une nouvelle pièce lorsqu’elle est nécessaire."
-                  : "Vous n’avez encore ajouté aucun document. Lorsque votre dossier nécessitera une pièce, vous pourrez la déposer ci-dessous."}
+                  ? t.priority.hasDocumentsText
+                  : t.priority.emptyText}
           </p>
           {priorityDocument && (
             <div className="mt-6 rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4 shadow-none">
               <div className="flex flex-wrap items-center gap-2">
-                <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">Document suivi</p>
-                <Badge variant={statusVariant(priorityDocument.status)}>{statusLabel(priorityDocument.status)}</Badge>
+                <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">{t.priority.tracked}</p>
+                <Badge variant={statusVariant(priorityDocument.status)}>{t.statuses[priorityDocument.status] || priorityDocument.status}</Badge>
               </div>
               <p className="mt-3 [overflow-wrap:anywhere] font-bold text-slate-950">{priorityDocument.original_filename}</p>
-              <p className="mt-1 text-sm text-slate-600">{categoryLabel(priorityDocument.category)}</p>
+              <p className="mt-1 text-sm text-slate-600">{t.categories[priorityDocument.category] || t.categories.other}</p>
               {correctionCount > 0 && priorityDocument.admin_comment && (
                 <div className="mt-4 rounded-[var(--radius-control)] border border-amber-200 bg-amber-50 p-3.5">
-                  <p className="text-xs font-bold uppercase tracking-[0.12em] text-amber-900">Pourquoi cette correction ?</p>
+                  <p className="text-xs font-bold uppercase tracking-[0.12em] text-amber-900">{t.priority.correctionWhy}</p>
                   <p className="mt-1.5 text-sm leading-6 text-amber-900">{priorityDocument.admin_comment}</p>
                 </div>
               )}
@@ -213,10 +205,10 @@ export function DocumentsPanel({
           </div>
         </Card>
 
-        <section aria-label="Résumé des documents" className="grid gap-4 sm:grid-cols-3 lg:grid-cols-1">
-          <SummaryCard id="documents-summary-approved" title="Validés" value={approvedCount} badge="Conformes" tone="success" />
-          <SummaryCard id="documents-summary-review" title="En vérification" value={reviewCount} badge="Chez AlmaGo" tone="info" />
-          <SummaryCard id="documents-summary-correction" title="À corriger" value={correctionCount} badge={correctionCount ? "Action requise" : "Rien à signaler"} tone={correctionCount ? "warning" : "neutral"} />
+        <section aria-label={t.summary.aria} className="grid gap-4 sm:grid-cols-3 lg:grid-cols-1">
+          <SummaryCard id="documents-summary-approved" title={t.summary.approvedTitle} value={approvedCount} badge={t.summary.approvedBadge} tone="success" />
+          <SummaryCard id="documents-summary-review" title={t.summary.reviewTitle} value={reviewCount} badge={t.summary.reviewBadge} tone="info" />
+          <SummaryCard id="documents-summary-correction" title={t.summary.correctionTitle} value={correctionCount} badge={correctionCount ? t.summary.actionRequired : t.summary.nothing} tone={correctionCount ? "warning" : "neutral"} />
         </section>
       </section>
 
@@ -224,32 +216,32 @@ export function DocumentsPanel({
         <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">
-              Preuves académiques
+              {t.evidence.eyebrow}
             </p>
             <h2 id="academic-evidence-title" className="mt-1 text-2xl font-semibold tracking-tight text-slate-950">
-              Ce que vos documents prouvent dans votre parcours
+              {t.evidence.title}
             </h2>
           </div>
-          <Badge variant="neutral">{evidence.length} classification{evidence.length > 1 ? "s" : ""}</Badge>
+          <Badge variant="neutral">{t.evidence.count(evidence.length)}</Badge>
         </div>
 
         <Card className="mt-4 border-[var(--brand-border)] bg-[var(--brand-soft)]/55 shadow-none">
           <p className="text-sm leading-6 text-slate-700">
-            Le statut d’un fichier et son statut comme preuve académique sont deux choses différentes. Un document peut être approuvé sans être encore accepté comme preuve de parcours. Cette classification ne constitue ni une admission ni une décision de visa.
+            {t.evidence.boundary}
           </p>
         </Card>
 
         {evidenceLoadError ? (
           <Card className="mt-4">
             <p role="alert" className="text-sm text-red-800">
-              Les classifications académiques sont temporairement indisponibles. Vos fichiers restent accessibles normalement.
+              {t.evidence.loadError}
             </p>
           </Card>
         ) : evidence.length === 0 ? (
           <Card className="mt-4 border-dashed shadow-none">
-            <h3 className="font-bold text-slate-950">Aucune preuve académique n’est encore classée.</h3>
+            <h3 className="font-bold text-slate-950">{t.evidence.emptyTitle}</h3>
             <p className="mt-2 text-sm leading-6 text-slate-600">
-              Lorsqu’une pièce académique sera examinée pour votre parcours, son état apparaîtra ici séparément du statut du fichier.
+              {t.evidence.emptyText}
             </p>
           </Card>
         ) : (
@@ -258,26 +250,26 @@ export function DocumentsPanel({
               <Card as="article" key={item.id} aria-labelledby={`academic-evidence-title-${item.id}`} className="shadow-none">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <Badge variant={evidenceStatusVariant(item.verification_status)}>
-                    {evidenceStatusLabel(item.verification_status)}
+                    {evidenceStatusLabel(item.verification_status, t)}
                   </Badge>
                   {item.document_status && (
                     <span className="text-xs font-semibold text-slate-500">
-                      Fichier : {statusLabel(item.document_status)}
+                      {t.evidence.file}: {t.statuses[item.document_status] || item.document_status}
                     </span>
                   )}
                 </div>
 
                 <h3 id={`academic-evidence-title-${item.id}`} className="mt-4 text-lg font-bold text-slate-950">
-                  {evidenceTypeLabel(item.type)}
+                  {evidenceTypeLabel(item.type, t)}
                 </h3>
                 <dl className="mt-3 grid gap-3 sm:grid-cols-2">
                   <div>
-                    <dt className="text-xs font-semibold uppercase tracking-[0.1em] text-slate-500">Établissement</dt>
-                    <dd className="mt-1 text-sm text-slate-800">{item.institution || "À confirmer"}</dd>
+                    <dt className="text-xs font-semibold uppercase tracking-[0.1em] text-slate-500">{t.evidence.institution}</dt>
+                    <dd className="mt-1 text-sm text-slate-800">{item.institution || t.unknown}</dd>
                   </div>
                   <div>
-                    <dt className="text-xs font-semibold uppercase tracking-[0.1em] text-slate-500">Date de la preuve</dt>
-                    <dd className="mt-1 text-sm text-slate-800">{formatEvidenceDate(item.evidence_date)}</dd>
+                    <dt className="text-xs font-semibold uppercase tracking-[0.1em] text-slate-500">{t.evidence.date}</dt>
+                    <dd className="mt-1 text-sm text-slate-800">{formatEvidenceDate(item.evidence_date, t)}</dd>
                   </div>
                 </dl>
 
@@ -293,10 +285,10 @@ export function DocumentsPanel({
       <Card aria-labelledby="document-upload-title" className="overflow-hidden shadow-none">
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
           <div>
-            <Badge variant="neutral">Nouveau fichier</Badge>
-            <h2 id="document-upload-title" className="mt-3 text-xl font-semibold text-slate-950">Ajouter un document</h2>
+            <Badge variant="neutral">{t.upload.badge}</Badge>
+            <h2 id="document-upload-title" className="mt-3 text-xl font-semibold text-slate-950">{t.upload.title}</h2>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
-              Trois étapes simples. PDF, JPEG ou PNG · 10 MiB maximum. Les fichiers sont conservés dans un espace privé.
+              {t.upload.text}
             </p>
           </div>
         </div>
@@ -306,9 +298,9 @@ export function DocumentsPanel({
             <label className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)]/45 p-4 text-sm font-medium text-slate-700">
               <span className="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-[var(--brand)]">
                 <span className="grid h-6 w-6 place-items-center rounded-full bg-[var(--brand)] text-[10px] text-white">1</span>
-                Choisir le type
+                {t.upload.stepType}
               </span>
-              Type de document
+              {t.upload.typeLabel}
               <select
                 value={category}
                 onChange={(event) => setCategory(event.target.value)}
@@ -316,7 +308,7 @@ export function DocumentsPanel({
                 className="field"
               >
                 {documentCategories.map((item) => (
-                  <option key={item.value} value={item.value}>{item.label}</option>
+                  <option key={item.value} value={item.value}>{t.categories[item.value] || item.label}</option>
                 ))}
               </select>
             </label>
@@ -324,9 +316,9 @@ export function DocumentsPanel({
             <label className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)]/45 p-4 text-sm font-medium text-slate-700">
               <span className="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-[var(--brand)]">
                 <span className="grid h-6 w-6 place-items-center rounded-full bg-[var(--brand)] text-[10px] text-white">2</span>
-                Choisir le fichier
+                {t.upload.stepFile}
               </span>
-              Fichier à envoyer
+              {t.upload.fileLabel}
               <input
                 ref={fileInput}
                 type="file"
@@ -339,10 +331,10 @@ export function DocumentsPanel({
             <div className="rounded-[var(--radius-control)] border border-[var(--brand-border)] bg-white p-4">
               <span className="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-[var(--brand)]">
                 <span className="grid h-6 w-6 place-items-center rounded-full bg-[var(--brand)] text-[10px] text-white">3</span>
-                Envoyer
+                {t.upload.stepSend}
               </span>
               <Button type="submit" disabled={busy} className="w-full justify-center lg:w-auto">
-                {busy ? "Envoi en cours…" : "Envoyer le document"}
+                {busy ? t.upload.sending : t.upload.send}
               </Button>
             </div>
           </div>
@@ -361,7 +353,7 @@ export function DocumentsPanel({
           )}
 
           <p className="mt-4 text-sm leading-6 text-slate-500">
-            Un remplacement ne supprime pas automatiquement les anciens fichiers validés.
+            {t.upload.footer}
           </p>
         </form>
       </Card>
@@ -369,8 +361,8 @@ export function DocumentsPanel({
       <section aria-labelledby="documents-list-title">
         <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
           <div>
-            <h2 id="documents-list-title" className="text-2xl font-semibold tracking-tight text-slate-950">Mes documents</h2>
-            <p className="mt-1 text-sm text-slate-600">{documents.length} document{documents.length > 1 ? "s" : ""} dans votre dossier.</p>
+            <h2 id="documents-list-title" className="text-2xl font-semibold tracking-tight text-slate-950">{t.list.title}</h2>
+            <p className="mt-1 text-sm text-slate-600">{t.list.count(documents.length)}</p>
           </div>
         </div>
 
@@ -378,8 +370,8 @@ export function DocumentsPanel({
           {documents.length === 0 ? (
             <Card aria-labelledby="documents-empty-title" className="border-dashed bg-white/70 py-8 text-center">
               <span aria-hidden="true" className="mx-auto grid h-11 w-11 place-items-center rounded-full bg-[var(--brand-soft)] text-lg text-[var(--brand)]">+</span>
-              <h3 id="documents-empty-title" className="mt-4 font-bold text-slate-950">Vous n’avez encore ajouté aucun document.</h3>
-              <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-slate-600">Lorsque votre dossier nécessitera une pièce, vous pourrez la déposer avec le formulaire ci-dessus.</p>
+              <h3 id="documents-empty-title" className="mt-4 font-bold text-slate-950">{t.list.emptyTitle}</h3>
+              <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-slate-600">{t.list.emptyText}</p>
             </Card>
           ) : (
             documents.map((document) => (
@@ -387,22 +379,22 @@ export function DocumentsPanel({
                 <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-start">
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
-                      <Badge variant={statusVariant(document.status)}>{statusLabel(document.status)}</Badge>
-                      <span className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-2.5 py-1 text-xs font-semibold text-slate-600">{categoryLabel(document.category)}</span>
+                      <Badge variant={statusVariant(document.status)}>{t.statuses[document.status] || document.status}</Badge>
+                      <span className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-2.5 py-1 text-xs font-semibold text-slate-600">{t.categories[document.category] || t.categories.other}</span>
                     </div>
                     <h3 id={`student-document-title-${document.id}`} className="mt-3 [overflow-wrap:anywhere] text-lg font-semibold text-slate-950">{document.original_filename}</h3>
                     <p className="mt-1 text-sm text-slate-500">
-                      {formatFileSize(document.size_bytes)} · envoyé le{" "}
+                      {formatFileSize(document.size_bytes, t)} · {t.sentOn}{" "}
                       <time dateTime={document.created_at}>
-                        {new Intl.DateTimeFormat("fr-TN", { dateStyle: "medium" }).format(new Date(document.created_at))}
+                        {new Intl.DateTimeFormat(t.intlLocale, { dateStyle: "medium" }).format(new Date(document.created_at))}
                       </time>
                     </p>
                     {document.admin_comment && (
                       <div className="mt-4 rounded-[var(--radius-control)] border border-amber-200 bg-amber-50 p-4">
-                        <h4 className="text-sm font-semibold text-amber-950">Message pour ce document</h4>
+                        <h4 className="text-sm font-semibold text-amber-950">{t.list.commentTitle}</h4>
                         <p className="mt-1 text-sm leading-6 text-amber-900">{document.admin_comment}</p>
                         <p className="mt-2 text-xs leading-5 text-amber-800">
-                          Ce commentaire est destiné à votre espace étudiant et concerne uniquement ce document.
+                          {t.list.commentBoundary}
                         </p>
                       </div>
                     )}
@@ -411,25 +403,25 @@ export function DocumentsPanel({
                   <div className="flex w-full flex-wrap gap-2 sm:w-auto sm:shrink-0">
                     <a
                       href={`/api/documents/${document.id}/view`}
-                      aria-label={`Ouvrir ${document.original_filename} (nouvel onglet)`}
+                      aria-label={t.list.openAria(document.original_filename)}
                       target="_blank"
                       rel="noreferrer"
                       className={buttonClassName("secondary")}
                     >
-                      Ouvrir
+                      {t.list.open}
                     </a>
                     {removableDocumentStatuses.includes(
                       document.status as (typeof removableDocumentStatuses)[number],
                     ) && (
                       <Button
                         type="button"
-                        aria-label={`Supprimer ${document.original_filename}`}
+                        aria-label={t.list.removeAria(document.original_filename)}
                         onClick={() => removeDocument(document.id)}
                         disabled={busy}
                         variant="secondary"
                         className="border-red-200 text-red-700 hover:bg-red-50"
                       >
-                        Supprimer
+                        {t.list.remove}
                       </Button>
                     )}
                   </div>
@@ -442,20 +434,20 @@ export function DocumentsPanel({
 
       <section aria-labelledby="document-history-title">
         <h2 id="document-history-title" className="text-2xl font-semibold tracking-tight text-slate-950">
-          Historique visible du dossier
+          {t.history.title}
         </h2>
         <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
-          Cette chronologie reprend les décisions et demandes communiquées dans votre espace. Les notes internes de l’équipe n’y apparaissent pas.
+          {t.history.description}
         </p>
         <div className="mt-4 space-y-2">
           {historyLoadError ? (
             <Card>
-              <p role="alert" className="text-sm text-red-800">Historique indisponible pour le moment. Réessayez dans quelques instants.</p>
+              <p role="alert" className="text-sm text-red-800">{t.history.loadError}</p>
             </Card>
           ) : history.length === 0 ? (
             <Card aria-labelledby="document-history-empty-title" className="border-dashed">
               <p id="document-history-empty-title" className="text-sm text-slate-600">
-                Les décisions et mises à jour qui vous sont communiquées apparaîtront ici.
+                {t.history.empty}
               </p>
             </Card>
           ) : (
@@ -463,7 +455,7 @@ export function DocumentsPanel({
               <Card as="article" key={event.id} aria-labelledby={`document-event-title-${event.id}`} className="p-4 shadow-none">
                 <h3 id={`document-event-title-${event.id}`} className="text-sm font-medium text-slate-700">{event.message}</h3>
                 <time dateTime={event.created_at} className="mt-1 block text-xs text-slate-500">
-                  {new Intl.DateTimeFormat("fr-TN", {
+                  {new Intl.DateTimeFormat(t.intlLocale, {
                     dateStyle: "medium",
                     timeStyle: "short",
                   }).format(new Date(event.created_at))}

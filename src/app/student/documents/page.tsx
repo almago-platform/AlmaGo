@@ -4,6 +4,8 @@ import { DocumentsPanel } from "@/components/student/DocumentsPanel";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Card } from "@/components/ui/Card";
 import { createClient } from "@/lib/supabase/server";
+import { getRequestLocale } from "@/lib/i18n-server";
+import { studentDocumentsCopy } from "@/content/student-documents-copy";
 import {
   toStudentAcademicEvidenceView,
   type AcademicEvidenceStoreRow,
@@ -12,6 +14,8 @@ import {
 export const dynamic = "force-dynamic";
 
 export default async function StudentDocumentsPage() {
+  const locale = await getRequestLocale();
+  const t = studentDocumentsCopy[locale];
   const supabase = await createClient();
   const {
     data: { user },
@@ -25,7 +29,7 @@ export default async function StudentDocumentsPage() {
     .eq("id", user.id)
     .maybeSingle();
 
-  if (profileError) return <DocumentsUnavailable />;
+  if (profileError) return <DocumentsUnavailable copy={t} />;
   if (!profile?.onboarding_completed) redirect("/student/onboarding");
 
   const [documentsResult, historyResult, evidenceResult] = await Promise.all([
@@ -45,7 +49,7 @@ export default async function StudentDocumentsPage() {
       .order("updated_at", { ascending: false }),
   ]);
 
-  if (documentsResult.error) return <DocumentsUnavailable />;
+  if (documentsResult.error) return <DocumentsUnavailable copy={t} />;
 
   const documentStatusById = new Map(
     (documentsResult.data || []).map((document) => [document.id, document.status]),
@@ -63,9 +67,9 @@ export default async function StudentDocumentsPage() {
     <main className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 sm:py-7 lg:px-8 lg:py-9">
       <StudentJourneyHeader
         current="documents"
-        eyebrow="Mon dossier"
-        title="Vos documents"
-        description="Voyez immédiatement ce qui est validé, ce qui est en vérification et ce qui demande une action de votre part."
+        eyebrow={t.page.eyebrow}
+        title={t.page.title}
+        description={t.page.description}
       />
       <DocumentsPanel
         documents={documentsResult.data || []}
@@ -78,18 +82,18 @@ export default async function StudentDocumentsPage() {
   );
 }
 
-function DocumentsUnavailable() {
+function DocumentsUnavailable({ copy }: { copy: (typeof studentDocumentsCopy)["fr"] }) {
   return (
     <main className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 sm:py-7 lg:px-8 lg:py-9">
-      <StudentJourneyHeader current="documents" eyebrow="Mon dossier" title="Vos documents" />
+      <StudentJourneyHeader current="documents" eyebrow={copy.page.eyebrow} title={copy.page.title} />
       <Card>
         <div role="alert">
-          <h2 className="text-xl font-semibold text-slate-950">Documents temporairement indisponibles</h2>
-          <p className="mt-2 text-sm leading-6 text-slate-600">Impossible de charger vos documents pour le moment. Aucun document n’a été supprimé ou remplacé. Vous pouvez relancer le chargement ou revenir à votre dossier.</p>
+          <h2 className="text-xl font-semibold text-slate-950">{copy.page.unavailableTitle}</h2>
+          <p className="mt-2 text-sm leading-6 text-slate-600">{copy.page.unavailableText}</p>
         </div>
         <div className="mt-5 flex flex-wrap gap-3">
-          <ButtonLink href="/student/documents">Réessayer</ButtonLink>
-          <ButtonLink href="/student" variant="secondary">Retour à mon dossier</ButtonLink>
+          <ButtonLink href="/student/documents">{copy.page.retry}</ButtonLink>
+          <ButtonLink href="/student" variant="secondary">{copy.page.back}</ButtonLink>
         </div>
       </Card>
     </main>
