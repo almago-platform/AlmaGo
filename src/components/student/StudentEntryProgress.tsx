@@ -1,10 +1,55 @@
+"use client";
+
+import { useLocale } from "@/components/i18n/LocaleProvider";
+
 type EntryStage = 1 | 2 | 3;
 
-const stages = [
-  { id: 1 as const, label: "Compte", detail: "Créer votre accès" },
-  { id: 2 as const, label: "Dossier initial", detail: "Renseigner votre profil" },
-  { id: 3 as const, label: "Espace étudiant", detail: "Suivre votre parcours" },
-];
+const progressCopy = {
+  fr: {
+    aria: "Progression de création du dossier",
+    title: "Parcours de démarrage",
+    step: "Étape",
+    of: "sur",
+    stages: [
+      ["Compte", "Créer votre accès"],
+      ["Dossier initial", "Renseigner votre profil"],
+      ["Espace étudiant", "Suivre votre parcours"],
+    ],
+  },
+  ar: {
+    aria: "تقدم إنشاء الملف",
+    title: "خطوات البداية",
+    step: "الخطوة",
+    of: "من",
+    stages: [
+      ["الحساب", "إنشاء بيانات الدخول"],
+      ["الملف الأولي", "إضافة معلوماتك"],
+      ["مساحة الطالب", "متابعة مسارك"],
+    ],
+  },
+  en: {
+    aria: "File setup progress",
+    title: "Getting started",
+    step: "Step",
+    of: "of",
+    stages: [
+      ["Account", "Create your access"],
+      ["Initial file", "Add your profile"],
+      ["Student space", "Follow your journey"],
+    ],
+  },
+  de: {
+    aria: "Fortschritt bei der Einrichtung",
+    title: "Erste Schritte",
+    step: "Schritt",
+    of: "von",
+    stages: [
+      ["Konto", "Zugang erstellen"],
+      ["Erste Angaben", "Profil ausfüllen"],
+      ["Studierendenbereich", "Studienweg verfolgen"],
+    ],
+  },
+} as const;
 
 export function StudentEntryProgress({
   current,
@@ -13,22 +58,28 @@ export function StudentEntryProgress({
   current: EntryStage;
   compact?: boolean;
 }) {
+  const { locale } = useLocale();
+  const copy = progressCopy[locale];
+
   return (
-    <div aria-label="Progression de création du dossier">
+    <div aria-label={copy.aria}>
       <div className="flex items-center justify-between gap-3">
         <p className="text-[0.66rem] font-bold uppercase tracking-[0.14em] text-[var(--brand)]">
-          Parcours de démarrage
+          {copy.title}
         </p>
-        <span className="text-xs font-semibold text-[var(--muted)]">Étape {current} sur 3</span>
+        <span className="text-xs font-semibold text-[var(--muted)]">
+          {copy.step} {current} {copy.of} 3
+        </span>
       </div>
 
       <ol className={compact ? "mt-2 grid grid-cols-3 gap-1.5" : "mt-3 grid gap-2 sm:grid-cols-3"}>
-        {stages.map((stage) => {
-          const active = stage.id === current;
-          const done = stage.id < current;
+        {copy.stages.map(([label, detail], index) => {
+          const id = (index + 1) as EntryStage;
+          const active = id === current;
+          const done = id < current;
           return (
             <li
-              key={stage.id}
+              key={label}
               aria-current={active ? "step" : undefined}
               className={
                 compact
@@ -60,11 +111,11 @@ export function StudentEntryProgress({
                         : "bg-[var(--surface-muted)] text-[var(--muted)]")
                     }
                   >
-                    {done ? "✓" : stage.id}
+                    {done ? "✓" : id}
                   </span>
                   <div className="min-w-0">
-                    <p className="text-sm font-bold text-[var(--foreground)]">{stage.label}</p>
-                    <p className="mt-0.5 text-[0.68rem] leading-4 text-[var(--muted)]">{stage.detail}</p>
+                    <p className="text-sm font-bold text-[var(--foreground)]">{label}</p>
+                    <p className="mt-0.5 text-[0.68rem] leading-4 text-[var(--muted)]">{detail}</p>
                   </div>
                 </div>
               )}
