@@ -26,20 +26,20 @@ export function AuthStoryPanel({ mode }: AuthStoryPanelProps) {
   const story = mode === "login" ? copy.auth.loginStory : copy.auth.signupStory;
 
   return (
-    <section className="hidden min-h-[700px] overflow-hidden rounded-[1rem] border border-[var(--border)] bg-[var(--surface)] shadow-[0_28px_70px_-52px_rgba(28,33,36,0.55)] lg:flex lg:flex-col">
-      <div className="flex items-center justify-between gap-3 border-b border-[var(--border)] bg-[var(--surface)] px-7 py-5">
+    <section className="auth-story-panel hidden min-h-[700px] overflow-hidden rounded-[1rem] border border-[var(--border)] bg-[var(--surface)] shadow-[0_28px_70px_-52px_rgba(28,33,36,0.55)] lg:flex lg:flex-col">
+      <div className="auth-story-header flex items-center justify-between gap-3 border-b border-[var(--border)] bg-[var(--surface)] px-7 py-5">
         <Link href="/" className="inline-flex items-center" aria-label={copy.common.homeAria}>
           <BrandLogo className="h-auto w-36" />
         </Link>
         <div className="flex items-center gap-2">
           <LanguageSwitcher compact />
-          <span className="rounded-full border border-[var(--border)] bg-[var(--surface-subtle)] px-3 py-1.5 text-[0.68rem] font-bold uppercase tracking-[0.12em] text-slate-600">
+          <span className="auth-student-badge rounded-full border border-[var(--border)] bg-[var(--surface-subtle)] px-3 py-1.5 text-[0.68rem] font-bold uppercase tracking-[0.12em] text-slate-600">
             {copy.auth.studentSpace}
           </span>
         </div>
       </div>
 
-      <div className="relative h-64 shrink-0 overflow-hidden">
+      <div className="auth-story-image relative h-64 shrink-0 overflow-hidden">
         <Image
           src={images[mode].src}
           alt={images[mode].alt}
@@ -53,9 +53,9 @@ export function AuthStoryPanel({ mode }: AuthStoryPanelProps) {
         </p>
       </div>
 
-      <div className="flex flex-1 flex-col p-7">
-        <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">{story.eyebrow}</p>
-        <h1 className="editorial-accent mt-3 max-w-xl text-[2rem] leading-[1.08] text-[var(--foreground)]">
+      <div className="auth-story-body flex flex-1 flex-col p-7">
+        <p className="auth-story-eyebrow text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">{story.eyebrow}</p>
+        <h1 className="auth-story-title editorial-accent mt-3 max-w-xl text-[2rem] leading-[1.08] text-[var(--foreground)]">
           {story.title}
         </h1>
         <p className="mt-4 max-w-xl text-sm leading-6 text-[var(--muted)]">{story.description}</p>
