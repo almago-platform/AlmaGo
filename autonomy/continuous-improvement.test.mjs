@@ -34,6 +34,12 @@ test("regression sensors create deterministic bounded candidates", () => {
   assert.equal(labelsForSignal(signals[0]).includes("almago-codex-required"), true);
 });
 
+test("sensor evidence is bounded and retained for diagnosis", () => {
+  const [signal] = buildSignals({ testOutcome: "failure", testEvidence: "X".repeat(7000) });
+  assert.match(signal.evidence, /Sensor outcome: npm test = failure/);
+  assert.ok(signal.evidence.length <= 6000);
+});
+
 test("production audit escalates critical vulnerabilities to human gate", () => {
   const [signal] = buildSignals({
     audit: { metadata: { vulnerabilities: { critical: 1, high: 2, moderate: 3, low: 4 } } },
