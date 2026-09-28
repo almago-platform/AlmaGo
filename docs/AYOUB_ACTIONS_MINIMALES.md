@@ -16,6 +16,19 @@ Runtime canonique de recette :
 
 GitHub Actions a actuellement un incident séparé : les workflows sont créés mais certains jobs échouent avant toute étape avec `steps: null`. Suivi : #286.
 
+## Séquence release candidate — un seul SHA
+
+Avant l’approbation finale A38, terminer et merger uniquement les changements réellement destinés au lancement, puis finaliser la protection de `main` suivie dans #336.
+
+Ensuite :
+
+1. relever le **SHA exact** du release candidate sur `main` ;
+2. ne plus merger ni pousser sur `main` pendant la séquence de preuve ;
+3. exécuter **A38 → A43 → A44 → A45** contre ce même SHA ;
+4. si `main` change avant A45, considérer les preuves exact-SHA précédentes comme périmées et recommencer la chaîne de preuve sur le nouveau SHA.
+
+C’est une règle d’intégrité de preuve. Elle ne déclenche aucun verrouillage, merge ou déploiement automatique.
+
 ## Ce qu’il te reste réellement à faire
 
 ### A38 — juridique
