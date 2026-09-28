@@ -7,6 +7,9 @@ export const AUTOPILOT_STATES = new Set([
 ]);
 
 export const MERGE_CLASSES = new Set(["AUTONOMOUS_SAFE", "HUMAN_GATE"]);
+export const SUPERVISOR_DECISIONS = new Set([
+  "APPROVED", "APPROVED_WITH_CHANGES", "REVISE", "BLOCKED",
+]);
 
 export function normalizePath(value) {
   return String(value || "").trim().replace(/^\.\//, "").replace(/\\/g, "/").replace(/\/+/g, "/");
@@ -23,6 +26,30 @@ export function pathsOverlap(a, b) {
   const pb = prefixBeforeGlob(b);
   if (!pa || !pb) return true;
   return pa === pb || pa.startsWith(pb + "/") || pb.startsWith(pa + "/");
+}
+
+export function pathMatchesPattern(path, pattern) {
+  const candidate = normalizePath(path);
+  const normalizedPattern = normalizePath(pattern);
+  if (!candidate || !normalizedPattern) return false;
+  if (!/[?*[{]/.test(normalizedPattern)) return candidate === normalizedPattern;
+  const prefix = prefixBeforeGlob(normalizedPattern);
+  if (!prefix) return true;
+  return candidate === prefix || candidate.startsWith(prefix + "/");
+}
+
+export function scopeAssessment(block, changedFiles = []) {
+  const writable = Array.isArray(block?.writable_paths) ? block.writable_paths : [];
+  const forbidden = Array.isArray(block?.forbidden_paths) ? block.forbidden_paths : [];
+  const normalized = changedFiles.map(normalizePath).filter(Boolean);
+  return {
+    scopeExact: normalized.length > 0 && normalized.every((file) =>
+      writable.some((pattern) => pathMatchesPattern(file, pattern))
+    ),
+    forbiddenTouched: normalized.some((file) =>
+      forbidden.some((pattern) => pathMatchesPattern(file, pattern))
+    ),
+  };
 }
 
 export function collidesWithLocks(block, locks = []) {
@@ -117,6 +144,31 @@ export function checksValidForHead(checks, expectedHead) {
   return Boolean(expectedHead) && checks.every((check) => check.head_sha === expectedHead);
 }
 
+export function workflowResult(runs = [], workflowName) {
+  const matching = runs
+    .filter((run) => run?.name === workflowName)
+    .sort((a, b) =>
+      Date.parse(b.updated_at || b.created_at || 0) - Date.parse(a.updated_at || a.created_at || 0)
+    );
+  const run = matching[0];
+  if (!run || run.status !== "completed") return "PENDING";
+  if (run.conclusion === "success") return "SUCCESS";
+  if (run.conclusion === "skipped") return "SKIPPED";
+  return "FAILURE";
+}
+
+export function supervisorDecisionForHead(comments = [], expectedHead) {
+  if (!expectedHead) return null;
+  for (const comment of [...comments].reverse()) {
+    const body = String(comment?.body || "");
+    const decision = body.match(/^SUPERVISOR:\s*(APPROVED_WITH_CHANGES|APPROVED|REVISE|BLOCKED)\s*$/mi)?.[1];
+    const reviewedHead = body.match(/Reviewed HEAD:\s*`([0-9a-f]{40})`/i)?.[1];
+    if (!decision || !SUPERVISOR_DECISIONS.has(decision) || reviewedHead !== expectedHead) continue;
+    return { decision, feedback: body.slice(0, 6000) };
+  }
+  return null;
+}
+
 export function canRevise(lock, maxAttempts = 3) {
   return Number(lock?.revision_attempts || 0) < maxAttempts;
 }
@@ -131,4 +183,74 @@ export function mergeReadiness({
   if (supervisor !== "APPROVED" || !scopeExact || forbiddenTouched || conflict) return "BLOCKED";
   if (block.writable_paths.some(isCriticalPath)) return "HUMAN_GATE";
   return "MERGE_READY";
+}
+
+export function lifecycleDecision({
+  block,
+  lock,
+  prOpen,
+  prMerged,
+  headMatches,
+  baseMatches,
+  ci,
+  browser,
+  supervisor,
+  scopeExact,
+  forbiddenTouched,
+  conflict,
+  maxRevisionAttempts = 3,
+}) {
+  if (prMerged) return { state: "DONE", action: "DONE", reason: "pull request merged" };
+  if (!prOpen) return { state: "BLOCKED", action: "STOP", reason: "pull request closed without merge" };
+  if (!headMatches || !baseMatches) {
+    return { state: "BLOCKED", action: "STOP", reason: "pull request branch/base no longer matches the contract" };
+  }
+  if (!scopeExact || forbiddenTouched) {
+    return { state: "BLOCKED", action: "STOP", reason: "changed files violate the writable/forbidden path contract" };
+  }
+  if (conflict) return { state: "BLOCKED", action: "STOP", reason: "pull request has merge conflicts" };
+
+  if (ci === "PENDING" || browser === "PENDING") {
+    return { state: "CI", action: "WAIT", reason: "canonical checks still pending" };
+  }
+
+  if (ci !== "SUCCESS" || !["SUCCESS", "NOT_APPLICABLE"].includes(browser)) {
+    if (canRevise(lock, maxRevisionAttempts)) {
+      return { state: "REVISE", action: "REVISE", reason: "canonical validation failed" };
+    }
+    return { state: "HUMAN_GATE", action: "STOP", reason: "revision budget exhausted after validation failures" };
+  }
+
+  if (!supervisor) {
+    return { state: "REVIEW", action: "WAIT", reason: "waiting for supervisor decision bound to this HEAD" };
+  }
+
+  if (supervisor === "BLOCKED") {
+    return { state: "BLOCKED", action: "STOP", reason: "supervisor blocked the change" };
+  }
+  if (supervisor === "REVISE" || supervisor === "APPROVED_WITH_CHANGES") {
+    if (canRevise(lock, maxRevisionAttempts)) {
+      return { state: "REVISE", action: "REVISE", reason: "supervisor requested changes" };
+    }
+    return { state: "HUMAN_GATE", action: "STOP", reason: "revision budget exhausted after supervisor feedback" };
+  }
+
+  const readiness = mergeReadiness({
+    block,
+    headMatches,
+    baseMatches,
+    ci,
+    browser,
+    supervisor,
+    scopeExact,
+    forbiddenTouched,
+    conflict,
+  });
+  if (readiness === "MERGE_READY") {
+    return { state: "MERGE_READY", action: "WAIT_MERGE", reason: "all automatic gates passed" };
+  }
+  if (readiness === "HUMAN_GATE") {
+    return { state: "HUMAN_GATE", action: "STOP", reason: "change requires explicit human merge gate" };
+  }
+  return { state: "BLOCKED", action: "STOP", reason: "merge readiness failed closed" };
 }
