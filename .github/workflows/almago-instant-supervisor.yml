@@ -369,11 +369,9 @@ jobs:
               required: ["decision", "summary", "next_step"],
             };
 
-            async function callGemini() {
+            async function callGemini(thinkingLevel = "medium") {
               return fetch(
-                "https://generativelanguage.googleapis.com/v1beta/models/" +
-                  encodeURIComponent(model) +
-                  ":generateContent",
+                "https://generativelanguage.googleapis.com/v1beta/interactions",
                 {
                   method: "POST",
                   headers: {
@@ -381,18 +379,18 @@ jobs:
                     "Content-Type": "application/json",
                   },
                   body: JSON.stringify({
-                    systemInstruction: {
-                      parts: [{ text: instructions }],
+                    model,
+                    store: false,
+                    system_instruction: instructions,
+                    input: contextText,
+                    generation_config: {
+                      thinking_level: thinkingLevel,
+                      max_output_tokens: 2200,
                     },
-                    contents: [{
-                      role: "user",
-                      parts: [{ text: contextText }],
-                    }],
-                    generationConfig: {
-                      temperature: 0.1,
-                      maxOutputTokens: 2200,
-                      responseMimeType: "application/json",
-                      responseSchema: schema,
+                    response_format: {
+                      type: "text",
+                      mime_type: "application/json",
+                      schema,
                     },
                   }),
                 },
@@ -407,40 +405,49 @@ jobs:
                   return null;
                 }
                 throw new Error(
-                  "Gemini API " + attemptLabel + " error " + response.status + ": " +
+                  "Gemini Interactions API " + attemptLabel + " error " + response.status + ": " +
                     redact(errorBody, 2000)
                 );
               }
 
               const data = await response.json();
-              const blocked = data?.promptFeedback?.blockReason;
-              if (blocked) {
-                await publishProviderBlocked(
-                  "Gemini prompt blocked",
-                  JSON.stringify({ blockReason: blocked })
-                );
-                return null;
-              }
-
-              const outputText = (data?.candidates?.[0]?.content?.parts || [])
-                .map((part) => typeof part?.text === "string" ? part.text : "")
+              const outputText = (data?.steps || [])
+                .filter((step) => step?.type === "model_output")
+                .flatMap((step) => Array.isArray(step?.content) ? step.content : [])
+                .filter((part) => part?.type === "text" && typeof part?.text === "string")
+                .map((part) => part.text)
                 .join("")
                 .trim();
 
-              return outputText || null;
+              if (data?.status === "completed" && outputText) return outputText;
+
+              const errorDetail = Array.isArray(data?.errors)
+                ? data.errors.map((error) => error?.message || error?.code || "").filter(Boolean).join("; ")
+                : "";
+              if (errorDetail && isQuotaOrAuthFailure(400, errorDetail)) {
+                await publishProviderBlocked("Gemini interaction failed", errorDetail);
+                return null;
+              }
+
+              core.info(
+                "Gemini interaction " + attemptLabel +
+                " returned status=" + redact(data?.status || "unknown", 100) +
+                " with output=" + String(Boolean(outputText))
+              );
+              return null;
             }
 
-            let outputText = await readGeminiResponse(await callGemini(), "request");
+            let outputText = await readGeminiResponse(await callGemini("medium"), "request");
             if (!outputText) {
-              core.info("Gemini returned no structured text. Retrying once.");
-              outputText = await readGeminiResponse(await callGemini(), "retry");
+              core.info("Gemini returned no completed structured text. Retrying once at low thinking level.");
+              outputText = await readGeminiResponse(await callGemini("low"), "retry");
             }
 
             if (!outputText) {
               if (!comments.some((comment) => comment.body?.includes(apiBlockedMarker))) {
                 await publishProviderBlocked(
-                  "Gemini returned no structured output",
-                  "The provider returned no usable JSON text after one retry."
+                  "Gemini returned no completed structured output",
+                  "The Interactions API returned no usable JSON text after one bounded retry."
                 );
               }
               return;
