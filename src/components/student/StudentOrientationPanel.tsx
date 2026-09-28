@@ -122,12 +122,12 @@ export function StudentOrientationPanel({
     return (
       <Card>
         <div role="alert">
-          <h2 className="text-lg font-semibold text-slate-950">Recommandations indisponibles</h2>
+          <h2 className="text-lg font-semibold text-slate-950">{t.loadTitle}</h2>
           <p className="mt-2 text-sm leading-6 text-slate-600">{loadError}</p>
         </div>
         <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-          <ButtonLink href="/student/orientation">Réessayer</ButtonLink>
-          <ButtonLink href="/student" variant="secondary">Retour à mon dossier</ButtonLink>
+          <ButtonLink href="/student/orientation">{studentOrientationCopy[locale].page.retry}</ButtonLink>
+          <ButtonLink href="/student" variant="secondary">{studentOrientationCopy[locale].page.back}</ButtonLink>
         </div>
       </Card>
     );
@@ -139,10 +139,10 @@ export function StudentOrientationPanel({
         <div role="alert" className="rounded-[var(--radius-control)] border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
           <p>{applicationStateError}</p>
           <p className="mt-1 leading-6">
-            Vos recommandations restent visibles, mais les boutons d’intérêt sont désactivés jusqu’à ce que l’état puisse être revérifié.
+            {t.applicationStateDetail}
           </p>
           <div className="mt-3">
-            <ButtonLink href="/student/orientation" variant="secondary">Réessayer la vérification</ButtonLink>
+            <ButtonLink href="/student/orientation" variant="secondary">{t.retryVerification}</ButtonLink>
           </div>
         </div>
       )}
@@ -151,7 +151,7 @@ export function StudentOrientationPanel({
         <div role="alert" className="rounded-[var(--radius-control)] border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
           <p>{criteriaStateError}</p>
           <p className="mt-1 leading-6">
-            Les programmes restent visibles. Les comparaisons personnalisées réapparaîtront dès que votre projet pourra être relu.
+            {t.criteriaStateDetail}
           </p>
         </div>
       )}
@@ -167,50 +167,50 @@ export function StudentOrientationPanel({
         </div>
       )}
 
-      <section aria-label="Synthèse orientation" className="grid gap-5 lg:grid-cols-[1.15fr_0.85fr]">
+      <section aria-label={t.summaryAria} className="grid gap-5 lg:grid-cols-[1.15fr_0.85fr]">
         <Card className="relative overflow-hidden border-[var(--brand-border)] bg-white shadow-none">
           <div aria-hidden="true" className="absolute inset-y-0 left-0 w-1 bg-[var(--brand)]" />
           <div className="pl-2 sm:pl-3">
             <div className="flex flex-wrap items-center gap-3">
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Vos programmes</p>
-              <Badge variant={items.length ? "info" : "neutral"}>{items.length ? "Programmes disponibles" : "Aucun programme proposé"}</Badge>
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">{t.programsEyebrow}</p>
+              <Badge variant={items.length ? "info" : "neutral"}>{items.length ? t.programsAvailable : t.noPrograms}</Badge>
             </div>
-            <h2 className="mt-4 text-2xl font-semibold tracking-[-0.03em] text-slate-950">Comparez avant de décider.</h2>
+            <h2 className="mt-4 text-2xl font-semibold tracking-[-0.03em] text-slate-950">{t.compareTitle}</h2>
             <p className="mt-3 text-sm leading-6 text-slate-600">
               {applicationStateError
-                ? "Vos recommandations restent visibles, mais nous ne pouvons pas confirmer l’état de vos intérêts enregistrés pour le moment."
+                ? t.interestStateUnknown
                 : nextProgram
-                  ? `Commencez par ${nextProgram.name}. Vérifiez les critères et la source officielle avant de l’ajouter à vos candidatures.`
+                  ? t.startWith(nextProgram.name)
                   : items.length
-                    ? "Les programmes choisis sont déjà visibles dans vos candidatures."
-                    : "Aucun programme n’est proposé pour le moment. Vérifiez que votre profil contient les informations utiles."}
+                    ? t.selectedPrograms
+                    : t.noProgramsText}
             </p>
             {nextProgram && (
               <div className="mt-6 rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4">
-                <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--accent-strong)]">À regarder maintenant</p>
+                <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--accent-strong)]">{t.lookNow}</p>
                 <p className="mt-2 font-bold text-slate-950">{nextProgram.name}</p>
-                <p className="mt-1 text-sm text-slate-600">{nextProgram.degree_level} · {nextProgram.field || "Domaine à préciser"}</p>
+                <p className="mt-1 text-sm text-slate-600">{nextProgram.degree_level} · {nextProgram.field || t.fieldUnknown}</p>
               </div>
             )}
           </div>
         </Card>
 
-        <section aria-label="Résumé de l’orientation" className="grid gap-4 sm:grid-cols-3 lg:grid-cols-1">
-          <SummaryCard title="Programmes" value={items.length} badge="Proposés" tone="info" />
-          <SummaryCard title="À comparer" value={comparableItems.length - interestedCount} badge="À décider" tone={comparableItems.length - interestedCount > 0 ? "warning" : "success"} />
-          <SummaryCard title="Ajoutés aux candidatures" value={applicationStateError ? "—" : interestedCount} badge={applicationStateError ? "Indisponible" : interestedCount ? "Suivi démarré" : "Aucun"} tone={applicationStateError ? "neutral" : interestedCount ? "success" : "neutral"} />
+        <section aria-label={t.orientationSummaryAria} className="grid gap-4 sm:grid-cols-3 lg:grid-cols-1">
+          <SummaryCard title={t.summaryPrograms} value={items.length} badge={t.proposed} tone="info" />
+          <SummaryCard title={t.compare} value={comparableItems.length - interestedCount} badge={t.decide} tone={comparableItems.length - interestedCount > 0 ? "warning" : "success"} />
+          <SummaryCard title={t.added} value={applicationStateError ? "—" : interestedCount} badge={applicationStateError ? t.unavailable : interestedCount ? t.trackingStarted : t.none} tone={applicationStateError ? "neutral" : interestedCount ? "success" : "neutral"} />
         </section>
       </section>
 
       {!loadError && items.length === 0 ? (
         <Card aria-labelledby="orientation-empty-title" className="border-dashed bg-white/70 py-9 text-center">
           <span aria-hidden="true" className="mx-auto grid h-11 w-11 place-items-center rounded-full bg-[var(--brand-soft)] text-[var(--brand)]">⌁</span>
-          <h2 id="orientation-empty-title" className="mt-4 text-lg font-bold text-slate-950">Aucun programme n’est proposé pour le moment.</h2>
+          <h2 id="orientation-empty-title" className="mt-4 text-lg font-bold text-slate-950">{t.emptyTitle}</h2>
           <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-slate-600">
-            Vérifiez que votre profil est à jour. Les nouveaux programmes apparaîtront ici lorsqu’ils seront proposés.
+            {t.emptyText}
           </p>
           <div className="mt-5 flex flex-col justify-center gap-3 sm:flex-row">
-            <ButtonLink href="/student/profile" variant="secondary">Vérifier mon profil</ButtonLink>
+            <ButtonLink href="/student/profile" variant="secondary">{t.profile}</ButtonLink>
             <ButtonLink href="/student">Retour à mon dossier</ButtonLink>
           </div>
         </Card>
@@ -218,11 +218,11 @@ export function StudentOrientationPanel({
         <section aria-labelledby="recommended-programs-title">
           <div className="mb-4 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
             <div>
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Vos programmes</p>
-              <h2 id="recommended-programs-title" className="mt-1 text-2xl font-semibold tracking-[-0.03em] text-slate-950">Programmes à comparer</h2>
-              <p className="mt-1 text-sm leading-6 text-slate-600">Vérifiez les critères, les dates et la source officielle avant de choisir.</p>
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">{t.programsEyebrow}</p>
+              <h2 id="recommended-programs-title" className="mt-1 text-2xl font-semibold tracking-[-0.03em] text-slate-950">{t.listEyebrow}</h2>
+              <p className="mt-1 text-sm leading-6 text-slate-600">{t.listDescription}</p>
             </div>
-            <ButtonLink href="/student/applications" variant="secondary">Mes candidatures</ButtonLink>
+            <ButtonLink href="/student/applications" variant="secondary">{studentOrientationCopy[locale].page.applications}</ButtonLink>
           </div>
 
           <div className="space-y-4">
@@ -242,13 +242,13 @@ export function StudentOrientationPanel({
                   <div className="flex flex-col gap-4">
                     <div className="flex flex-wrap items-start justify-between gap-3">
                       <div className="min-w-0">
-                        <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">Établissement</p>
+                        <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">{t.institution}</p>
                         <p className="mt-1 text-sm font-bold leading-5 text-slate-900 [overflow-wrap:anywhere]">
-                          {university?.name || "Université à confirmer"}{university?.city ? ` · ${university.city}` : ""}
+                          {university?.name || t.universityUnknown}{university?.city ? ` · ${university.city}` : ""}
                         </p>
                       </div>
                       <Badge variant={recommendation.student_interest_at ? "success" : recommendationVariant(recommendation.status)}>
-                        {recommendation.student_interest_at ? "Ajouté aux candidatures" : studentRecommendationLabels[recommendation.status] || recommendationStatusLabels[recommendation.status] || recommendation.status}
+                        {recommendation.student_interest_at ? t.addedToApplications : t.recommendationLabels[recommendation.status] || recommendation.status}
                       </Badge>
                     </div>
                     <div>
@@ -257,54 +257,54 @@ export function StudentOrientationPanel({
                       </h3>
                       <div className="mt-3 flex flex-wrap gap-2 text-xs font-semibold text-slate-600">
                         <span className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-2.5 py-1.5">{program.degree_level}</span>
-                        <span className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-2.5 py-1.5">{program.field || "Domaine à préciser"}</span>
+                        <span className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-2.5 py-1.5">{program.field || t.fieldUnknown}</span>
                         {program.teaching_language && <span className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-2.5 py-1.5">{program.teaching_language}</span>}
                       </div>
                     </div>
                   </div>
 
                   <div className="mt-5 rounded-[var(--radius-control)] border border-[var(--brand-border)] bg-[var(--brand-soft)]/45 p-4">
-                    <h4 className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">Pourquoi ce programme apparaît ?</h4>
+                    <h4 className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">{t.whyProgram}</h4>
                     <p className="mt-2 text-sm leading-6 text-slate-700 [overflow-wrap:anywhere]">
-                      {recommendation.note || "Ce programme a été proposé pour votre dossier. Vérifiez les critères et la source officielle avant de décider."}
+                      {recommendation.note || t.proposedBoundary}
                     </p>
                   </div>
 
                   <div className="mt-5">
-                    <h4 className="text-xs font-bold uppercase tracking-[0.14em] text-slate-500">Critères enregistrés</h4>
+                    <h4 className="text-xs font-bold uppercase tracking-[0.14em] text-slate-500">{t.recordedCriteria}</h4>
                     <dl className="mt-3 grid gap-3 text-sm sm:grid-cols-2">
-                    <InfoItem label="Langue d’enseignement" value={program.teaching_language || "À confirmer"} />
-                    <InfoItem label="Échéance hiver" value={formatDeadline(program.winter_deadline)} />
-                    <InfoItem label="Échéance été" value={formatDeadline(program.summer_deadline || null)} />
-                    <InfoItem label="Diplôme demandé" value={program.diploma_required || "À confirmer"} />
+                    <InfoItem label={t.teachingLanguage} value={program.teaching_language || studentOrientationCopy[locale].panel.routeUnknown} />
+                    <InfoItem label={t.winterDeadline} value={formatDeadline(program.winter_deadline, locale)} />
+                    <InfoItem label={t.summerDeadline} value={formatDeadline(program.summer_deadline || null, locale)} />
+                    <InfoItem label={t.diplomaRequired} value={program.diploma_required || t.routeUnknown} />
                     <div className="rounded-[var(--radius-control)] bg-[var(--surface-muted)] p-3 sm:col-span-2">
-                      <dt className="text-slate-500">Niveaux linguistiques demandés</dt>
+                      <dt className="text-slate-500">{t.languageLevels}</dt>
                       <dd className="mt-1 text-slate-900">
                         {[
-                          program.german_level_required && `Allemand ${program.german_level_required}`,
-                          program.english_level_required && `Anglais ${program.english_level_required}`,
-                        ].filter(Boolean).join(" · ") || "À vérifier sur la source officielle"}
+                          program.german_level_required && `${t.german} ${program.german_level_required}`,
+                          program.english_level_required && `${t.english} ${program.english_level_required}`,
+                        ].filter(Boolean).join(" · ") || t.officialCheck}
                       </dd>
                     </div>
                     </dl>
                   </div>
 
-                  <RequirementAssessment match={recommendation.requirement_match} programName={program.name} />
+                  <RequirementAssessment match={recommendation.requirement_match} programName={program.name} copy={t} />
 
                   <div className="mt-5 rounded-[var(--radius-control)] border border-amber-200 bg-amber-50/60 p-3 text-xs leading-5 text-amber-900">
-                    Ce programme est une piste. L’université vérifie les conditions et prend la décision.
+                    {t.programLeadBoundary}
                   </div>
 
                   <div className="mt-auto flex flex-col gap-2 border-t border-[var(--border)] pt-5 sm:flex-row sm:flex-wrap">
                     {program.application_url && (
                       <a
                         href={program.application_url}
-                        aria-label={`Site officiel de ${program.name} (nouvel onglet)`}
+                        aria-label={t.officialSourceAria(program.name)}
                         target="_blank"
                         rel="noreferrer"
                         className={buttonClassName("secondary", "w-full sm:w-auto")}
                       >
-                        Vérifier la source officielle
+                        {t.officialVerify}
                       </a>
                     )}
                     <Button
@@ -314,12 +314,12 @@ export function StudentOrientationPanel({
                       onClick={() => interested(recommendation.id)}
                     >
                       {recommendation.student_interest_at
-                        ? "Ajouté aux candidatures"
+                        ? t.addedToApplications
                         : busy === recommendation.id
-                          ? "Enregistrement…"
+                          ? t.saving
                           : recommendation.status === "not_recommended"
-                            ? "Non disponible"
-                            : "Ajouter à mes candidatures"}
+                            ? t.unavailableAction
+                            : t.addToApplications}
                     </Button>
                   </div>
                 </Card>
