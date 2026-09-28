@@ -4,7 +4,7 @@ import test from "node:test";
 
 const page = readFileSync("src/app/student/pathway/page.tsx", "utf8");
 const shell = readFileSync("src/components/layout/AppShell.tsx", "utf8");
-const dashboard = readFileSync("src/app/student/page.tsx", "utf8");
+const dashboard = readFileSync("src/app/student/page.tsx", "utf8");\nconst nativeCopy = readFileSync("src/content/native-copy.ts", "utf8");\nconst dashboardCopy = readFileSync("src/content/student-dashboard-copy.ts", "utf8");
 
 test("student pathway wires real project, evidence and language-course facts into the regulatory engine", () => {
   assert.match(page, /from\("student_projects"\)/);
@@ -57,12 +57,12 @@ test("next actions remain bounded to existing student surfaces", () => {
 });
 
 test("the real student shell and dashboard expose the pathway page", () => {
-  assert.match(shell, /Mon parcours/);
-  assert.match(shell, /\/student\/pathway/);
-  assert.match(shell, /Financement & assurance/);
-  assert.match(shell, /\/student\/finance-insurance/);
-  assert.match(dashboard, /Voir mes étapes/);
-  assert.match(dashboard, /\/student\/pathway/);
+  assert.ok(nativeCopy.includes('"Mon parcours"'));
+  assert.ok(shell.includes("/student/pathway"));
+  assert.ok(nativeCopy.includes('"Financement & assurance"'));
+  assert.ok(shell.includes("/student/finance-insurance"));
+  assert.ok(dashboardCopy.includes('pathwayCta: "Voir mes étapes"'));
+  assert.ok(dashboard.includes("/student/pathway"));
 });
 
 
