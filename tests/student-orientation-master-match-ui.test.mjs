@@ -52,19 +52,23 @@ test("StudentApplicationsPanel has enhanced progress tracking and mobile layout"
   assert.doesNotMatch(applicationsPanel, /"withdrawn"\].*currentIndex/);
 });
 
-test("StudentJourneyOverview calculates progress and shows visual badges", () => {
+test("StudentJourneyOverview calculates progress and shows localized visual badges", () => {
   const journeyOverview = readFileSync("src/components/student/StudentJourneyOverview.tsx", "utf8");
-  assert.match(journeyOverview, /completedStages\.length/);
-  assert.match(journeyOverview, /progressPercent/);
-  assert.match(journeyOverview, /Terminé/);
-  assert.match(journeyOverview, /En cours/);
-  assert.match(journeyOverview, /À venir/);
-  assert.match(journeyOverview, /Ouvrir →/);
-  assert.doesNotMatch(journeyOverview, /intelligence artificielle/i);
-  assert.doesNotMatch(journeyOverview, /garantie/i);
+  const shared = readFileSync("src/content/student-shared-copy.ts", "utf8");
+  assert.ok(journeyOverview.includes("completedStages.length"));
+  assert.ok(journeyOverview.includes("progressPercent"));
+  assert.ok(journeyOverview.includes("copy.done"));
+  assert.ok(journeyOverview.includes("copy.inProgress"));
+  assert.ok(journeyOverview.includes("copy.upcoming"));
+  assert.ok(journeyOverview.includes("openArrow"));
+  assert.ok(shared.includes('done: "Terminé"'));
+  assert.ok(shared.includes('inProgress: "En cours"'));
+  assert.ok(shared.includes('upcoming: "À venir"'));
+  assert.ok(!journeyOverview.toLowerCase().includes("intelligence artificielle"));
+  assert.ok(!journeyOverview.toLowerCase().includes("garantie"));
 
-  // No pseudo-precise numeric percentage completion displayed to user
-  assert.doesNotMatch(journeyOverview, /whitespace-nowrap.*progressPercent/);
+  // No pseudo-precise numeric percentage completion displayed to user as a standalone promise.
+  assert.ok(!journeyOverview.includes("whitespace-nowrap"));
 });
 
 test("StudentOrientationPanel has explicit unknown route and unique comparison landmarks", () => {
