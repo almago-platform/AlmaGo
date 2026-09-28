@@ -254,6 +254,35 @@ jobs:
 
             if (!dryRun) {
               for (const candidate of eligible) {
+                const freshOpenPulls = await github.paginate(
+                  github.rest.pulls.list,
+                  {
+                    owner,
+                    repo,
+                    state: "open",
+                    per_page: 100,
+                  },
+                );
+                const freshOpenHeads = new Set(
+                  freshOpenPulls
+                    .filter((pr) => pr.head.repo?.full_name === `${owner}/${repo}`)
+                    .map((pr) => pr.head.ref),
+                );
+                const freshOpenBases = new Set(
+                  freshOpenPulls
+                    .filter((pr) => pr.base.repo?.full_name === `${owner}/${repo}`)
+                    .map((pr) => pr.base.ref),
+                );
+
+                if (
+                  freshOpenHeads.has(candidate.branch) ||
+                  freshOpenBases.has(candidate.branch)
+                ) {
+                  throw new Error(
+                    `Branch became active in an open PR during deletion preflight: ${candidate.branch}`,
+                  );
+                }
+
                 let freshRef;
                 try {
                   freshRef = await github.rest.git.getRef({
