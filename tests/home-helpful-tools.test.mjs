@@ -8,10 +8,10 @@ const icons = readFileSync("src/components/public/HomeIcons.tsx", "utf8");
 const css = readFileSync("src/components/public/Homepage.module.css", "utf8");
 
 test("homepage replaces the old trust block with three helpful tools", () => {
-  assert.match(section, /Outils utiles/);
-  assert.match(section, /Évaluer mon point de départ/);
-  assert.match(section, /Explorer les programmes/);
-  assert.match(section, /Trouver les bons repères/);
+  assert.match(section, /Pour avancer/);
+  assert.match(section, /Voir par où commencer/);
+  assert.match(section, /Comparer les programmes/);
+  assert.match(section, /Vérifier une information/);
   assert.doesNotMatch(section, /Des sources visibles/);
 });
 
@@ -24,7 +24,7 @@ test("helpful tools use dedicated large visual icons", () => {
 });
 
 test("navigation now targets the helpful-tools section", () => {
-  assert.match(header, /\["Nos repères", "#outils"\]/);
+  assert.match(header, /\["Pourquoi AlmaGo", "#outils"\]/);
   assert.doesNotMatch(header, /Voir les outils utiles/);
   assert.doesNotMatch(header, /plateforme indépendante/);
   assert.match(section, /id="outils"/);
