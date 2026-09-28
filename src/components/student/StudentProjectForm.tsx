@@ -65,7 +65,7 @@ export function StudentProjectForm({ project }: { project: Project }) {
     const result = await response.json().catch(() => ({}));
     if (!response.ok) {
       setStatus("error");
-      setMessage(result.error || t.saveError);
+      setMessage(locale === "fr" && typeof result.error === "string" ? result.error : t.saveError);
       return;
     }
 
