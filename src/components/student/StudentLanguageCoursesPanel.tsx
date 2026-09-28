@@ -240,7 +240,7 @@ export function StudentLanguageCoursesPanel() {
                     : "Aucun cours n’est encore associé à votre projet."}
             </p>
             <p className="mt-2 text-xs leading-5 text-slate-500">
-              Ce choix enregistre votre intention. Il ne constitue ni une décision d’admission, ni une validation de pertinence, ni une décision de visa.
+              Votre choix indique votre projet. Il ne confirme ni admission ni visa.
             </p>
           </div>
           {selectedCourseId && (
@@ -253,9 +253,9 @@ export function StudentLanguageCoursesPanel() {
       </Card>
 
       <Card className="border-[var(--brand-border)] bg-[var(--brand-soft)]/55 shadow-none">
-        <h2 className="text-lg font-bold text-slate-950">Comment lire ce catalogue ?</h2>
+        <h2 className="text-lg font-bold text-slate-950">Cours de langue</h2>
         <p className="mt-2 max-w-4xl text-sm leading-6 text-slate-700">
-          Les informations affichées proviennent de fiches vérifiées dans AlmaGo. Un cours intensif n’est pas automatiquement une préparation universitaire. La présence d’un cours ici ne constitue ni une décision d’admission ni une décision de visa.
+          Les cours affichés ont une source et une date de vérification. Un cours intensif n’est pas automatiquement une préparation aux études.
         </p>
       </Card>
 
@@ -291,7 +291,7 @@ export function StudentLanguageCoursesPanel() {
                 className="field"
                 value={draftFilters.language}
                 onChange={(event) => setDraftFilters((current) => ({ ...current, language: event.target.value }))}
-                placeholder="Ex. Deutsch"
+                placeholder="Ex. allemand"
               />
             </label>
 
@@ -363,7 +363,7 @@ export function StudentLanguageCoursesPanel() {
           <Card className="border-dashed text-center shadow-none">
             <h3 className="font-bold text-slate-950">Aucun cours ne correspond à ces filtres.</h3>
             <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-slate-600">
-              Essayez d’élargir vos critères. Aucune information manquante n’est remplacée par une estimation.
+              Essayez moins de filtres. AlmaGo n’invente pas les informations manquantes.
             </p>
           </Card>
         )}
