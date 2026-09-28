@@ -89,3 +89,13 @@ When eligible, exactly one Codex Agent Task may work on three public files: `Hom
 
 Like the lint/typecheck self-heal lane, this loop uses `maxConcurrentTasks=1`, a revision budget of two and `noAutomaticMerge=true`. Open PR collisions and the normal exact-HEAD lifecycle still apply.
 
+## Pre-launch visual-quality loop
+
+A separate `AlmaGo Prelaunch Visual Quality` workflow turns validated homepage screenshots into a bounded visual-improvement signal. It is opt-in and billing-gated: it runs live only when both `ALMAGO_AI_ENABLED=true` and `ALMAGO_AI_BILLING_CAP_CONFIRMED=true`.
+
+The visual reviewer uses structured JSON with `PASS` or `REVISE`, a confidence level, at most six bounded findings, and at most four prioritized actions. A live implementation task requires all of the following: `REVISE`, `high` confidence, and at least one `moderate` or `high` finding. PASS, medium/low confidence, low-severity-only feedback, malformed output, missing screenshots or provider failure all produce no task.
+
+The implementation scope is exactly `Homepage.module.css`, `HomeHeader.tsx` and `HomeHero.tsx`. The task must preserve product facts, content meaning, routes, functionality, responsive behavior, keyboard accessibility, semantic structure and legal wording. It may not edit tests, workflows, dependencies, backend/Auth/RLS/Supabase code, migrations, secrets, billing or production data.
+
+The loop reuses the normal Autopilot lifecycle with one concurrent task, two revision attempts, open-PR collision locks and `noAutomaticMerge=true`. It becomes inactive after A45.
+
