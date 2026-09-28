@@ -10,7 +10,7 @@ test("public trust framing keeps AlmaGo independent and official decisions exter
   assert.match(closing, /Plateforme indépendante/);
   assert.match(closing, /uni-assist · source externe/);
   assert.match(closing, /Les admissions, visas et autres décisions officielles appartiennent/);
-  assert.match(tools, /savoir où vérifier les informations importantes/);
+  assert.match(tools, /Vérifier une information/);
 });
 
 test("helpful tools use the current three-column desktop layout", () => {
