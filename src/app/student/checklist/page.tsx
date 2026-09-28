@@ -210,8 +210,8 @@ export default async function ChecklistPage() {
 
       <div className="grid gap-5 lg:grid-cols-[1.15fr_0.85fr]">
         <Card aria-labelledby="checklist-progress-title" className="relative overflow-hidden border-[var(--brand-border)] bg-white shadow-none">
-          <div aria-hidden="true" className="absolute inset-y-0 left-0 w-1 bg-[var(--brand)]" />
-          <div className="pl-2 sm:pl-3">
+          <div aria-hidden="true" className="student-accent-edge absolute inset-y-0 w-1 bg-[var(--brand)]" />
+          <div className="student-accent-content student-accent-content-wide">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
                 <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">{t.page.progressEyebrow}</p>
@@ -225,7 +225,7 @@ export default async function ChecklistPage() {
             <div className="mt-7">
               <div className="mb-3 flex items-end justify-between gap-4">
                 <p className="text-4xl font-bold tracking-tight text-slate-950 sm:text-5xl">{checklistItems.length ? `${progression}%` : "—"}</p>
-                <p className="max-w-xs text-right text-sm leading-6 text-slate-600">{t.page.recordedSteps}</p>
+                <p className="max-w-xs text-end text-sm leading-6 text-slate-600">{t.page.recordedSteps}</p>
               </div>
               {checklistItems.length > 0 && <ProgressBar value={progression} label={t.page.progressLabel} />}
             </div>
