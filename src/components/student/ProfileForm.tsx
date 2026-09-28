@@ -31,17 +31,17 @@ export function ProfileForm({ profile }: { profile: Record<string, unknown> }) {
     try {
       const response = await fetch("/api/student/profile", { method: "PATCH", headers: { "content-type": "application/json" }, body: JSON.stringify(data) });
       const result = await response.json().catch(() => ({}));
-      if (!response.ok) setError(result.error || "Nous n’arrivons pas à enregistrer vos modifications pour le moment.");
-      else setStatus("Vos modifications ont bien été enregistrées dans votre dossier.");
+      if (!response.ok) setError(result.error || "Impossible d’enregistrer vos modifications pour le moment.");
+      else setStatus("Vos modifications sont enregistrées.");
     } catch {
-      setError("Nous n’arrivons pas à enregistrer votre profil pour le moment. Vérifiez votre connexion puis réessayez.");
+      setError("Impossible d’enregistrer votre profil. Vérifiez votre connexion puis réessayez.");
     } finally {
       setSaving(false);
     }
   }
 
   return <form onSubmit={submit} className="space-y-6 sm:space-y-8">
-    <ProfileSection badge="Identité" title="Informations personnelles" description="Ces informations permettent d’identifier correctement votre dossier.">
+    <ProfileSection badge="Identité" title="Informations personnelles" description="Indiquez vos informations de base.">
       <TextInput label="Prénom" required value={String(data.first_name)} onChange={(value) => set("first_name", value)} />
       <TextInput label="Nom" required value={String(data.last_name)} onChange={(value) => set("last_name", value)} />
       <TextInput label="Date de naissance" type="date" value={String(data.birth_date)} onChange={(value) => set("birth_date", value)} />
@@ -50,7 +50,7 @@ export function ProfileForm({ profile }: { profile: Record<string, unknown> }) {
       <TextInput label="Téléphone" value={String(data.phone)} onChange={(value) => set("phone", value)} />
     </ProfileSection>
 
-    <ProfileSection badge="Études" title="Parcours académique" description="Indiquez votre parcours actuel ou le dernier diplôme obtenu.">
+    <ProfileSection badge="Études" title="Mes études" description="Indiquez votre dernier diplôme et vos études actuelles.">
       <SelectInput label="Dernier diplôme" value={String(data.last_diploma)} onChange={(value) => set("last_diploma", value)} options={diplomaOptions} />
       <SelectInput label="Type / section du Bac tunisien" value={String(data.bac_track)} onChange={(value) => set("bac_track", value)} options={tunisianBacTrackOptions} />
       <TextInput label="Année du Bac" type="number" value={String(data.bac_year)} onChange={(value) => set("bac_year", value)} />
@@ -61,7 +61,7 @@ export function ProfileForm({ profile }: { profile: Record<string, unknown> }) {
       <TextInput label="Nombre de semestres" type="number" value={String(data.university_semesters)} onChange={(value) => set("university_semesters", value)} />
     </ProfileSection>
 
-    <ProfileSection badge="Langues" title="Niveaux linguistiques" description="Ajoutez uniquement les niveaux ou certificats que vous pouvez expliquer dans votre dossier.">
+    <ProfileSection badge="Langues" title="Mes langues" description="Indiquez vos niveaux et certificats réels.">
       <SelectInput label="Allemand" value={String(data.german_level)} onChange={(value) => set("german_level", value)} options={languageLevelOptions} />
       <SelectInput label="Anglais" value={String(data.english_level)} onChange={(value) => set("english_level", value)} options={languageLevelOptions} />
       <SelectInput label="Français" value={String(data.french_level)} onChange={(value) => set("french_level", value)} options={languageLevelOptions} />
@@ -69,7 +69,7 @@ export function ProfileForm({ profile }: { profile: Record<string, unknown> }) {
       {data.language_certificate === "other" && <TextInput label="Autre certificat" value={String(data.language_certificate_other)} onChange={(value) => set("language_certificate_other", value)} />}
     </ProfileSection>
 
-    <ProfileSection badge="Projet" title="Projet en Allemagne" description="Ces éléments guident les recommandations de programmes et les prochaines démarches.">
+    <ProfileSection badge="Projet" title="Mon projet en Allemagne" description="Indiquez ce que vous souhaitez étudier.">
       <SelectInput label="Niveau visé" required value={String(data.target_degree)} onChange={(value) => set("target_degree", value)} options={degreeOptions} />
       <SelectInput label="Domaine souhaité" required value={String(data.target_field)} onChange={(value) => set("target_field", value)} options={studyFieldOptions} />
       <SelectInput label="Langue d’études souhaitée" required value={String(data.study_language)} onChange={(value) => set("study_language", value)} options={studyLanguageOptions} />
@@ -83,7 +83,7 @@ export function ProfileForm({ profile }: { profile: Record<string, unknown> }) {
 
     <div className="student-sticky-actions sticky bottom-0 -mx-5 border-t border-[var(--border)] bg-white/98 px-5 py-4 sm:-mx-6 sm:px-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-sm leading-6 text-slate-500">Enregistrez vos modifications avant de quitter cette page.</p>
+        <p className="text-sm leading-6 text-slate-500">Enregistrez avant de quitter la page.</p>
         <Button type="submit" disabled={saving} className="w-full sm:w-auto">{saving ? "Enregistrement…" : "Enregistrer les modifications"}</Button>
       </div>
     </div>
