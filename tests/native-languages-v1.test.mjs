@@ -146,3 +146,22 @@ test("Arabic homepage mirrors the visual hierarchy and protects tablet RTL layou
   assert.match(css, /\.quickLinks a:first-child/);
   assert.match(css, /margin-left: -16px/);
 });
+
+
+test("English and German public copy are native rewrites rather than French-shaped translations", () => {
+  assert.match(copy, /Plan your studies/);
+  assert.match(copy, /with a clear next step/);
+  assert.match(copy, /Get started/);
+  assert.match(copy, /Sign in and continue where you left off/);
+  assert.doesNotMatch(copy, /Your study plans/);
+  assert.doesNotMatch(copy, /made clearer/);
+  assert.doesNotMatch(copy, /Start my file/);
+
+  assert.match(copy, /Plane dein Studium/);
+  assert.match(copy, /Schritt für Schritt/);
+  assert.match(copy, /Jetzt starten/);
+  assert.match(copy, /Melde dich an und mach dort weiter, wo du aufgehört hast/);
+  assert.doesNotMatch(copy, /klarer gemacht/);
+  assert.doesNotMatch(copy, /Akte starten/);
+  assert.doesNotMatch(copy, /Meine Akte/);
+});
