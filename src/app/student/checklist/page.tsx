@@ -347,49 +347,50 @@ function SummaryCard({ title, value, badge, tone }: { title: string; value: numb
   );
 }
 
-function ChecklistUnavailable() {
+function ChecklistUnavailable({ copy }: { copy: (typeof studentChecklistCopy)["fr"] }) {
   return (
     <main className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 sm:py-7 lg:px-8 lg:py-9">
-      <StudentJourneyHeader current="checklist" eyebrow="Mon dossier" title="Mes démarches" />
+      <StudentJourneyHeader current="checklist" eyebrow={copy.page.eyebrow} title={copy.page.title} />
       <Card>
         <div role="alert">
-          <h2 className="text-xl font-semibold text-slate-950">Démarches temporairement indisponibles</h2>
-          <p className="mt-2 text-sm leading-6 text-slate-600">Nous n’arrivons pas à afficher vos démarches pour le moment. Rien n’a été supprimé ou modifié. Vous pouvez réessayer ou revenir à votre dossier.</p>
+          <h2 className="text-xl font-semibold text-slate-950">{copy.page.unavailableTitle}</h2>
+          <p className="mt-2 text-sm leading-6 text-slate-600">{copy.page.unavailableText}</p>
         </div>
         <div className="mt-5 flex flex-wrap gap-3">
-          <ButtonLink href="/student/checklist">Réessayer</ButtonLink>
-          <ButtonLink href="/student" variant="secondary">Retour à mon dossier</ButtonLink>
+          <ButtonLink href="/student/checklist">{copy.page.retry}</ButtonLink>
+          <ButtonLink href="/student" variant="secondary">{copy.page.back}</ButtonLink>
         </div>
       </Card>
     </main>
   );
 }
 
-
-function PersonalizedChecklistCard({ item }: { item: GermanyChecklistItem }) {
+function PersonalizedChecklistCard({
+  item,
+  copy,
+}: {
+  item: GermanyChecklistItem;
+  copy: (typeof studentChecklistCopy)["fr"];
+}) {
   const variant =
     item.status === "completed"
       ? "success"
       : item.status === "waiting_almago"
         ? "info"
         : "warning";
-  const statusLabel =
-    item.status === "completed"
-      ? "Terminé"
-      : item.status === "waiting_almago"
-        ? "Suivi par AlmaGo"
-        : "À faire par vous";
+  const localized = copy.personalized.items[item.key];
+  const statusLabel = copy.statusLabels[item.status] || item.status;
 
   return (
     <article className="grid gap-4 p-5 sm:grid-cols-[9rem_minmax(12rem,0.7fr)_minmax(0,1.3fr)] sm:items-start sm:p-6">
       <div>
         <Badge variant={variant}>{statusLabel}</Badge>
         <p className="mt-2 text-[11px] font-bold uppercase tracking-[0.12em] text-slate-500">
-          Responsable : {item.owner === "student" ? "vous" : "AlmaGo"}
+          {copy.personalized.owner}: {item.owner === "student" ? copy.personalized.you : copy.personalized.almago}
         </p>
       </div>
-      <h3 className="text-base font-bold text-slate-950">{item.title}</h3>
-      <p className="text-sm leading-6 text-slate-600">{item.explanation}</p>
+      <h3 className="text-base font-bold text-slate-950">{localized?.title || item.title}</h3>
+      <p className="text-sm leading-6 text-slate-600">{localized?.explanation || item.explanation}</p>
     </article>
   );
 }
