@@ -25,7 +25,7 @@ test("current hero uses a high-resolution campus image without claiming a German
 });
 
 test("current quick access exposes five actions", () => {
-  assert.equal(quick.split("{ href:").length - 1, 5);
+  assert.equal(quick.split('icon: "').length - 1, 5);
   assert.ok(quick.includes("quick.items.map"));
   assert.ok(quick.includes("key={title}"));
   assert.ok(nativeCopy.includes('"Trouver un programme"'));
