@@ -369,95 +369,33 @@ function statusVariant(status: RegulatoryPathDecision["status"]): "success" | "i
   return "warning";
 }
 
-function statusLabel(status: RegulatoryPathDecision["status"]) {
-  if (status === "confirmed_basis") return "Base vérifiée";
-  if (status === "candidate") return "Parcours à examiner";
-  return "Action requise";
+function academicBasisLabel(
+  summary: ReturnType<typeof summarizeAcademicEvidence>,
+  copy: (typeof studentPathwayCopy)["fr"],
+) {
+  if (summary.accepted_definitive_admission) return copy.academic.labels.definitive;
+  if (summary.accepted_preparatory_basis) return copy.academic.labels.preparatory;
+  if (summary.has_replacement_required) return copy.academic.labels.replacement;
+  if (summary.has_pending_review) return copy.academic.labels.pending;
+  return copy.academic.labels.none;
 }
 
-function academicBasisLabel(summary: ReturnType<typeof summarizeAcademicEvidence>) {
-  if (summary.accepted_definitive_admission) return "Admission définitive acceptée";
-  if (summary.accepted_preparatory_basis) return "Base préparatoire acceptée";
-  if (summary.has_replacement_required) return "Document à remplacer";
-  if (summary.has_pending_review) return "Vérification en cours";
-  return "Aucune base acceptée";
+function academicBasisDetail(
+  summary: ReturnType<typeof summarizeAcademicEvidence>,
+  copy: (typeof studentPathwayCopy)["fr"],
+) {
+  if (summary.accepted_definitive_admission) return copy.academic.details.definitive;
+  if (summary.accepted_preparatory_basis) return copy.academic.details.preparatory;
+  if (summary.has_replacement_required) return copy.academic.details.replacement;
+  if (summary.has_pending_review) return copy.academic.details.pending;
+  return copy.academic.details.none;
 }
 
-function academicBasisDetail(summary: ReturnType<typeof summarizeAcademicEvidence>) {
-  if (summary.accepted_definitive_admission) {
-    return "Une admission définitive officielle a été vérifiée et acceptée comme preuve de parcours.";
-  }
-  if (summary.accepted_preparatory_basis) {
-    return "Une admission conditionnelle, Bewerberbestätigung ou correspondance universitaire admissible a été acceptée comme base préparatoire.";
-  }
-  if (summary.has_replacement_required) {
-    return "Une preuve académique doit être remplacée avant de pouvoir être utilisée.";
-  }
-  if (summary.has_pending_review) {
-    return "Une preuve académique est enregistrée mais doit encore être vérifiée ou complétée.";
-  }
-  return "Aucune preuve académique acceptée pour le parcours n’est enregistrée à ce stade.";
-}
-
-function nextActionFor(decision: RegulatoryPathDecision) {
-  switch (decision.reason_code) {
-    case "definitive_admission_accepted":
-      return {
-        title: "Préparer les démarches après admission",
-        description: "Votre admission acceptée permet de passer aux démarches opérationnelles enregistrées dans votre dossier.",
-        label: "Voir mes démarches",
-        href: "/student/checklist",
-      };
-    case "preparatory_basis_and_course_confirmed":
-      return {
-        title: "Organiser la préparation aux études",
-        description: "Votre base académique préparatoire et le catalogue de cours vérifiés permettent d’organiser la suite du dossier.",
-        label: "Voir mes démarches",
-        href: "/student/checklist",
-      };
-    case "preparatory_course_missing":
-      return {
-        title: "Identifier un cours préparatoire vérifié",
-        description: "La base académique existe, mais il manque encore un cours de préparation aux études vérifié dans les données disponibles.",
-        label: "Voir les cours",
-        href: "/student/language-courses",
-      };
-    case "academic_evidence_replacement_required":
-      return {
-        title: "Remplacer la preuve académique",
-        description: "Corrigez le document signalé avant de recalculer le parcours.",
-        label: "Voir mes documents",
-        href: "/student/documents",
-      };
-    case "academic_evidence_pending_review":
-      return {
-        title: "Attendre ou compléter la vérification académique",
-        description: "Une preuve est encore en cours de vérification. Consultez vos documents pour voir son état.",
-        label: "Voir mes documents",
-        href: "/student/documents",
-      };
-    case "language_only_project":
-      return {
-        title: "Comparer les cours de langue vérifiés",
-        description: "Votre objectif enregistré est linguistique. Consultez le catalogue avant d’organiser les démarches suivantes.",
-        label: "Voir les cours",
-        href: "/student/language-courses",
-      };
-    case "study_place_search_candidate":
-      return {
-        title: "Continuer la recherche de programme",
-        description: "Aucune admission acceptée n’est encore enregistrée. Continuez l’orientation et la préparation de vos candidatures.",
-        label: "Voir mon orientation",
-        href: "/student/orientation",
-      };
-    default:
-      return {
-        title: "Définir votre projet",
-        description: "Précisez d’abord votre objectif en Allemagne pour que le parcours puisse être calculé.",
-        label: "Définir mon projet",
-        href: "/student/project",
-      };
-  }
+function nextActionFor(
+  decision: RegulatoryPathDecision,
+  copy: (typeof studentPathwayCopy)["fr"],
+) {
+  return copy.nextActions[decision.reason_code] || copy.nextActions.project_path_missing_or_unknown;
 }
 
 function PathwayCard({
@@ -518,6 +456,7 @@ function regulatoryTopicsForRoute(route: RegulatoryRoute | null) {
 
 function RegulatorySourceCard({
   source,
+  copy,
 }: {
   source: {
     authority: string;
@@ -535,14 +474,15 @@ function RegulatorySourceCard({
     verified_at: string | null;
     review_due_at: string | null;
   };
+  copy: (typeof studentPathwayCopy)["fr"];
 }) {
   return (
     <article className="grid gap-4 p-5 sm:p-6 lg:grid-cols-[minmax(10rem,0.55fr)_minmax(0,1.45fr)_auto] lg:items-start">
       <div>
-        <Badge variant="success">Vérifiée</Badge>
+        <Badge variant="success">{copy.sources.verified}</Badge>
         <p className="mt-3 text-xs font-bold uppercase tracking-[0.14em] text-slate-500">{source.authority}</p>
         <p className="mt-1 text-xs text-slate-500">
-          Contrôlée le {formatSourceDate(source.checked_on)}
+          {copy.sources.checkedOn} {formatSourceDate(source.checked_on, copy)}
         </p>
       </div>
 
@@ -551,11 +491,11 @@ function RegulatorySourceCard({
         <p className="mt-2 text-sm leading-6 text-slate-600">{source.summary}</p>
         {source.amount !== null && source.currency && (
           <p className="mt-3 text-sm font-semibold text-slate-800">
-            Montant publié : {new Intl.NumberFormat("fr-FR", { style: "currency", currency: source.currency }).format(source.amount)}
-            {source.periodicity === "monthly" ? " / mois" : source.periodicity === "yearly" ? " / an" : ""}
+            {copy.sources.publishedAmount}: {new Intl.NumberFormat(copy.sources.intlLocale, { style: "currency", currency: source.currency }).format(source.amount)}
+            {source.periodicity === "monthly" ? copy.sources.monthly : source.periodicity === "yearly" ? copy.sources.yearly : ""}
           </p>
         )}
-        <p className="mt-3 text-xs text-slate-500">À revoir avant le {formatSourceDate(source.review_due_at)}</p>
+        <p className="mt-3 text-xs text-slate-500">{copy.sources.reviewBefore} {formatSourceDate(source.review_due_at, copy)}</p>
       </div>
 
       <a
@@ -564,17 +504,20 @@ function RegulatorySourceCard({
         rel="noreferrer"
         className="inline-flex min-h-11 items-center justify-center rounded-[var(--radius-control)] border border-[var(--border-strong)] bg-white px-4 py-2.5 text-sm font-bold text-slate-700 hover:border-[var(--brand)] hover:text-[var(--brand)]"
       >
-        Source officielle
+        {copy.sources.official}
       </a>
     </article>
   );
 }
 
-function formatSourceDate(value: string | null) {
+function formatSourceDate(
+  value: string | null,
+  copy: (typeof studentPathwayCopy)["fr"],
+) {
   if (!value) return "—";
   const timestamp = Date.parse(value);
   if (!Number.isFinite(timestamp)) return "—";
-  return new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium", timeZone: "UTC" }).format(new Date(timestamp));
+  return new Intl.DateTimeFormat(copy.sources.intlLocale, { dateStyle: "medium", timeZone: "UTC" }).format(new Date(timestamp));
 }
 
 function FactRow({ label, value }: { label: string; value: string }) {
@@ -586,20 +529,18 @@ function FactRow({ label, value }: { label: string; value: string }) {
   );
 }
 
-function PathwayUnavailable() {
+function PathwayUnavailable({ copy }: { copy: (typeof studentPathwayCopy)["fr"] }) {
   return (
     <main className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 sm:py-7 lg:px-8 lg:py-9">
-      <StudentJourneyHeader current="pathway" eyebrow="Mon dossier" title="Parcours temporairement indisponible" />
+      <StudentJourneyHeader current="pathway" eyebrow={copy.page.eyebrow} title={copy.unavailable.title} />
       <Card>
         <div role="alert">
-          <h2 className="text-xl font-semibold text-slate-950">Impossible de calculer le parcours pour le moment</h2>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
-            Une donnée nécessaire au calcul n’a pas pu être chargée. AlmaGo ne propose aucun parcours par défaut lorsque les faits du dossier sont indisponibles.
-          </p>
+          <h2 className="text-xl font-semibold text-slate-950">{copy.unavailable.heading}</h2>
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">{copy.unavailable.text}</p>
         </div>
         <div className="mt-5 flex flex-wrap gap-3">
-          <ButtonLink href="/student/pathway">Réessayer</ButtonLink>
-          <ButtonLink href="/student" variant="secondary">Retour à mon dossier</ButtonLink>
+          <ButtonLink href="/student/pathway">{copy.unavailable.retry}</ButtonLink>
+          <ButtonLink href="/student" variant="secondary">{copy.unavailable.back}</ButtonLink>
         </div>
       </Card>
     </main>
