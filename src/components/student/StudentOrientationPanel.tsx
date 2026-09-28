@@ -352,23 +352,34 @@ function InfoItem({ label, value }: { label: string; value: string }) {
 }
 
 
-function RequirementAssessment({ match, programName }: { match?: MasterRequirementsMatch | null; programName: string }) {
+function RequirementAssessment({
+  match,
+  programName,
+  copy,
+}: {
+  match?: MasterRequirementsMatch | null;
+  programName: string;
+  copy: (typeof studentOrientationCopy)["fr"]["panel"];
+}) {
   if (!match) return null;
 
   const summary = match.has_blocking_mismatch
-    ? { label: "Point à compléter", tone: "warning" as const }
+    ? { label: copy.pointToComplete, tone: "warning" as const }
     : match.needs_manual_review
-      ? { label: "Vérification nécessaire", tone: "info" as const }
+      ? { label: copy.verificationNeeded, tone: "info" as const }
       : match.has_unknowns
-        ? { label: "Informations manquantes", tone: "neutral" as const }
-        : { label: "Critères comparés", tone: "success" as const };
+        ? { label: copy.missingInformation, tone: "neutral" as const }
+        : { label: copy.criteriaCompared, tone: "success" as const };
 
   return (
-    <section className="mt-5 rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-4" aria-label={`Comparaison avec votre projet - ${programName}`}>
+    <section
+      className="mt-5 rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-4"
+      aria-label={`${copy.comparisonAria} - ${programName}`}
+    >
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
-          <h4 className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">Comparaison avec votre dossier</h4>
-          <p className="mt-1 text-xs leading-5 text-slate-500">Comparaison des informations disponibles. L’université décide au final.</p>
+          <h4 className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">{copy.comparisonAria}</h4>
+          <p className="mt-1 text-xs leading-5 text-slate-500">{copy.comparisonBoundary}</p>
         </div>
         <Badge variant={summary.tone}>{summary.label}</Badge>
       </div>
@@ -378,15 +389,15 @@ function RequirementAssessment({ match, programName }: { match?: MasterRequireme
           {match.criteria.map((item, index) => (
             <div key={`${item.criterion}-${index}`} className="rounded-[var(--radius-control)] bg-[var(--surface-muted)] p-3">
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <p className="text-sm font-semibold text-slate-900">{criterionLabel(item.criterion)}</p>
-                <Badge variant={criterionTone(item)}>{criterionStatusLabel(item)}</Badge>
+                <p className="text-sm font-semibold text-slate-900">{criterionLabel(item.criterion, copy)}</p>
+                <Badge variant={criterionTone(item)}>{criterionStatusLabel(item, copy)}</Badge>
               </div>
-              <p className="mt-1 text-xs leading-5 text-slate-600">{criterionExplanation(item)}</p>
+              <p className="mt-1 text-xs leading-5 text-slate-600">{criterionExplanation(item, copy)}</p>
               {(item.student_value !== null || item.required_value !== null) && (
                 <p className="mt-1 text-xs text-slate-500">
-                  {item.student_value !== null ? `Votre information : ${item.student_value}` : ""}
+                  {item.student_value !== null ? `${copy.yourInformation}: ${item.student_value}` : ""}
                   {item.student_value !== null && item.required_value !== null ? " · " : ""}
-                  {item.required_value !== null ? `Critère publié : ${item.required_value}` : ""}
+                  {item.required_value !== null ? `${copy.publishedCriterion}: ${item.required_value}` : ""}
                 </p>
               )}
             </div>
@@ -396,49 +407,38 @@ function RequirementAssessment({ match, programName }: { match?: MasterRequireme
 
       {match.application_route && (
         <div className="mt-3 rounded-[var(--radius-control)] border border-[var(--brand-border)] bg-[var(--brand-soft)]/40 p-3 text-sm">
-          <span className="font-semibold text-slate-900">Mode de candidature : </span>
-          <span className="text-slate-700">{applicationRouteLabel(match.application_route)}</span>
+          <span className="font-semibold text-slate-900">{copy.applicationRoute}: </span>
+          <span className="text-slate-700">{applicationRouteLabel(match.application_route, copy)}</span>
         </div>
       )}
     </section>
   );
 }
 
-function criterionLabel(criterion: string) {
-  if (criterion === "minimum_ects") return "ECTS minimum";
-  if (criterion === "minimum_grade") return "Note minimale";
-  if (criterion === "prior_degree") return "Diplôme antérieur";
-  if (criterion === "intake") return "Rentrée";
-  if (criterion === "deadline") return "Échéance";
+function criterionLabel(criterion: string, copy: (typeof studentOrientationCopy)["fr"]["panel"]) {
+  if (copy.requirementLabels[criterion]) return copy.requirementLabels[criterion];
   if (criterion.startsWith("language:")) {
     const lang = criterion.slice("language:".length).toLowerCase().trim();
-    let displayLang = lang;
-    if (lang === "german" || lang === "deutsch") displayLang = "allemand";
-    else if (lang === "english") displayLang = "anglais";
-    else if (lang === "french") displayLang = "français";
-    return `Langue · ${displayLang.charAt(0).toUpperCase() + displayLang.slice(1)}`;
+    const displayLang = copy.languageNames[lang] || lang;
+    return `${copy.languagePrefix} · ${displayLang}`;
   }
   if (criterion.startsWith("subject_credits:")) {
-    const subj = criterion.slice("subject_credits:".length).toLowerCase().trim();
-    let displaySubj = subj;
-    if (subj === "math" || subj === "mathematics" || subj === "maths") displaySubj = "mathématiques";
-    else if (subj === "computer science" || subj === "cs") displaySubj = "informatique";
-    else if (subj === "physics") displaySubj = "physique";
-    else if (subj === "chemistry") displaySubj = "chimie";
-    return `Crédits · ${displaySubj.charAt(0).toUpperCase() + displaySubj.slice(1)}`;
+    const subject = criterion.slice("subject_credits:".length).toLowerCase().trim();
+    const displaySubject = copy.subjectNames[subject] || subject;
+    return `${copy.creditsPrefix} · ${displaySubject}`;
   }
-  return "Critère du programme";
+  return copy.requirementLabels.other;
 }
 
-function criterionStatusLabel(item: RequirementMatchResult) {
+function criterionStatusLabel(
+  item: RequirementMatchResult,
+  copy: (typeof studentOrientationCopy)["fr"]["panel"],
+) {
   if (item.criterion === "deadline") {
-    if (item.status === "satisfied") return "Échéance ouverte";
-    if (item.status === "not_satisfied") return "Échéance dépassée";
+    if (item.status === "satisfied") return copy.deadlineOpen;
+    if (item.status === "not_satisfied") return copy.deadlinePassed;
   }
-  if (item.status === "satisfied") return "Critère rempli";
-  if (item.status === "not_satisfied") return "Point à vérifier";
-  if (item.status === "needs_manual_review") return "À vérifier";
-  return "Information manquante";
+  return copy.statusLabels[item.status] || copy.missing;
 }
 
 function criterionTone(item: RequirementMatchResult): "success" | "warning" | "info" | "neutral" {
@@ -448,69 +448,55 @@ function criterionTone(item: RequirementMatchResult): "success" | "warning" | "i
   return "neutral";
 }
 
-function criterionExplanation(item: RequirementMatchResult) {
-  if (item.criterion === "minimum_ects" && item.status === "unknown") return "Nous n’avons pas encore assez d’informations pour comparer vos ECTS.";
-  if (item.criterion === "minimum_grade" && item.status === "unknown") return "Votre note n’est pas encore disponible dans un format comparable.";
-  if (item.criterion.startsWith("subject_credits:") && item.status === "unknown") return "Vos crédits par matière ne sont pas encore disponibles pour cette comparaison.";
-  if (item.criterion.startsWith("language:") && item.status === "unknown") return "Votre niveau dans cette langue n’est pas encore disponible pour la comparaison.";
-  if (item.criterion === "prior_degree" && item.status === "needs_manual_review") return "La compatibilité de votre diplôme doit être vérifiée avant de conclure.";
+function criterionExplanation(
+  item: RequirementMatchResult,
+  copy: (typeof studentOrientationCopy)["fr"]["panel"],
+) {
+  let userFacingFrench: string | null = null;
 
-  const reason = item.reason;
-  if (reason === "Les ECTS totaux de l’étudiant ne sont pas structurés dans le projet.") {
-    return "Le total de vos ECTS n’est pas encore indiqué dans votre projet.";
-  }
-  if (reason === "Les crédits par matière de l’étudiant ne sont pas structurés dans le projet.") {
-    return "Vos crédits par matière ne sont pas encore renseignés de manière structurée dans votre projet.";
-  }
-  if (reason === "Aucune note étudiante comparable et normalisée n’est disponible.") {
-    return "Votre moyenne n’est pas encore indiquée dans un format utilisable pour la comparaison.";
-  }
-  if (reason === "Diplôme actuel non renseigné.") {
-    return "Votre diplôme actuel n’est pas encore renseigné dans votre profil.";
-  }
-  if (reason === "La compatibilité du diplôme doit être confirmée manuellement.") {
-    return "L’université doit confirmer si votre diplôme correspond à ce programme.";
-  }
-  if (reason === "Le niveau étudiant pour cette langue n’est pas structuré.") {
-    return "Votre niveau de langue n’est pas encore structuré dans votre projet.";
-  }
-  if (reason === "Niveau d’allemand étudiant absent ou non comparable.") {
-    return "Votre niveau d’allemand n’est pas renseigné ou n’est pas sous un format comparable.";
-  }
-  if (reason === "Le niveau requis n’est pas un niveau CEFR comparable.") {
-    return "Le niveau demandé n’utilise pas les niveaux A1–C2. Vérifiez la source officielle.";
-  }
-  if (reason === "Rentrée étudiante absente ou non structurée.") {
-    return "Votre période de rentrée souhaitée n’est pas renseignée ou structurée.";
-  }
-  if (reason === "La rentrée du programme n’est pas comparable automatiquement.") {
-    return "La date de rentrée du programme nécessite une analyse manuelle.";
-  }
-  if (reason === "La deadline vérifiée n’est pas une date structurée comparable.") {
-    return "La date limite de candidature n’est pas disponible sous un format comparable.";
-  }
-  if (reason === "Information non renseignée.") {
-    return "Cette information n’est pas encore disponible ou renseignée.";
-  }
-  if (reason === "Source ou vérification à revalider.") {
-    return "Les sources officielles de cette information doivent être vérifiées à nouveau.";
-  }
-  if (reason === "Le prérequis est disponible uniquement en texte libre.") {
-    return "La source donne ce critère en texte. Lisez-la avant de décider.";
-  }
-  if (reason === "Valeur vérifiée absente.") {
-    return "L’information vérifiée n’est pas disponible.";
-  }
-  if (reason === "Valeur numérique non exploitable.") {
-    return "La valeur chiffrée présente un format non exploitable.";
+  if (item.criterion === "minimum_ects" && item.status === "unknown") {
+    userFacingFrench = "Nous n’avons pas encore assez d’informations pour comparer vos ECTS.";
+  } else if (item.criterion === "minimum_grade" && item.status === "unknown") {
+    userFacingFrench = "Votre note n’est pas encore disponible dans un format comparable.";
+  } else if (item.criterion.startsWith("subject_credits:") && item.status === "unknown") {
+    userFacingFrench = "Vos crédits par matière ne sont pas encore disponibles pour cette comparaison.";
+  } else if (item.criterion.startsWith("language:") && item.status === "unknown") {
+    userFacingFrench = "Votre niveau dans cette langue n’est pas encore disponible pour la comparaison.";
+  } else if (item.criterion === "prior_degree" && item.status === "needs_manual_review") {
+    userFacingFrench = "La compatibilité de votre diplôme doit être vérifiée avant de conclure.";
   }
 
-  return reason;
+  if (!userFacingFrench) {
+    userFacingFrench = ({
+      "Les ECTS totaux de l’étudiant ne sont pas structurés dans le projet.": "Le total de vos ECTS n’est pas encore indiqué dans votre projet.",
+      "Les crédits par matière de l’étudiant ne sont pas structurés dans le projet.": "Vos crédits par matière ne sont pas encore renseignés de manière structurée dans votre projet.",
+      "Aucune note étudiante comparable et normalisée n’est disponible.": "Votre moyenne n’est pas encore indiquée dans un format utilisable pour la comparaison.",
+      "Diplôme actuel non renseigné.": "Votre diplôme actuel n’est pas encore renseigné dans votre profil.",
+      "La compatibilité du diplôme doit être confirmée manuellement.": "L’université doit confirmer si votre diplôme correspond à ce programme.",
+      "Le niveau étudiant pour cette langue n’est pas structuré.": "Votre niveau de langue n’est pas encore structuré dans votre projet.",
+      "Niveau d’allemand étudiant absent ou non comparable.": "Votre niveau d’allemand n’est pas renseigné ou n’est pas sous un format comparable.",
+      "Le niveau requis n’est pas un niveau CEFR comparable.": "Le niveau demandé n’utilise pas les niveaux A1–C2. Vérifiez la source officielle.",
+      "Rentrée étudiante absente ou non structurée.": "Votre période de rentrée souhaitée n’est pas renseignée ou structurée.",
+      "La rentrée du programme n’est pas comparable automatiquement.": "La date de rentrée du programme nécessite une analyse manuelle.",
+      "La deadline vérifiée n’est pas une date structurée comparable.": "La date limite de candidature n’est pas disponible sous un format comparable.",
+      "Information non renseignée.": "Cette information n’est pas encore disponible ou renseignée.",
+      "Source ou vérification à revalider.": "Les sources officielles de cette information doivent être vérifiées à nouveau.",
+      "Le prérequis est disponible uniquement en texte libre.": "La source donne ce critère en texte. Lisez-la avant de décider.",
+      "Valeur vérifiée absente.": "L’information vérifiée n’est pas disponible.",
+      "Valeur numérique non exploitable.": "La valeur chiffrée présente un format non exploitable.",
+    } as Record<string, string>)[item.reason] || item.reason;
+  }
+
+  return copy.reasonLabels[userFacingFrench] || userFacingFrench;
 }
 
-function applicationRouteLabel(route: MasterRequirementsMatch["application_route"]) {
-  if (route === "direct") return "candidature directe auprès de l’établissement";
-  if (route === "uni_assist") return "candidature via uni-assist";
-  if (route === "vpd") return "VPD à obtenir avant la candidature";
-  return "à confirmer";
+function applicationRouteLabel(
+  route: MasterRequirementsMatch["application_route"],
+  copy: (typeof studentOrientationCopy)["fr"]["panel"],
+) {
+  if (route === "direct") return copy.routeDirect;
+  if (route === "uni_assist") return copy.routeUniAssist;
+  if (route === "vpd") return copy.routeVpd;
+  return copy.routeUnknown;
 }
+
