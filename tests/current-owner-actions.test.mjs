@@ -39,14 +39,17 @@ test("optional external AI is not presented as a launch requirement", () => {
 });
 
 
-test("owner docs point to current integration PRs and completed catalogue cleanup", () => {
+test("owner docs use durable workstream references and completed catalogue cleanup", () => {
   for (const source of [required, minimal]) {
-    assert.match(source, /#424/);
-    assert.match(source, /#438/);
-    assert.match(source, /#443/);
-    assert.match(source, /#445/);
+    assert.match(source, /#66/);
+    assert.match(source, /#84/);
+    assert.match(source, /#448/);
+    assert.match(source, /#433/);
+    assert.match(source, /#406/);
+    assert.match(source, /#439/);
     assert.match(source, /#176/);
     assert.match(source, /0 fixture active/);
+    assert.doesNotMatch(source, /PR #(?:424|438|443|445)/);
     assert.doesNotMatch(source, /Draft #405/);
     assert.doesNotMatch(source, /Draft #407/);
     assert.doesNotMatch(source, /#430/);

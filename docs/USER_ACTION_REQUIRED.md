@@ -6,7 +6,7 @@ Source opérationnelle de suivi : GitHub issue #22.
 
 ## 1. A38 — validation juridique humaine
 
-PR #438 porte la proposition actuelle de rétention/suppression et la matrice de finalisation sur le `main` courant.
+Suivi humain/juridique : #66. La proposition de rétention/suppression et la matrice de finalisation doivent rester alignées avec le `main` courant.
 
 À faire humainement :
 
@@ -34,7 +34,7 @@ Ne pas ajouter les e-mails comme secrets sauf si l’on souhaite volontairement 
 
 A43 reste aussi bloquée tant que #286 empêche les jobs GitHub Actions d’exécuter leurs étapes.
 
-PR #424 intègre la preuve A43 contre le runtime Render `almago-dev`, le mode local et les garde-fous main-only/A38.
+Suivi durable : #84 (A43), #286 (runner GitHub Actions) et #448 (preuve exact-main). Le workflow A43 conserve le runtime Render `almago-dev`, le mode local et les garde-fous main-only/A38.
 
 ## 3. Render — connexion GitHub et health check
 
@@ -79,7 +79,7 @@ A44 vient après A38 et A43.
 
 Aucun fournisseur n’est activé automatiquement.
 
-PR #445 exige que la preuve A44 soit liée au SHA exact du `main` courant et revérifie que `main` n’a pas bougé avant clôture.
+Intégrité de preuve A44 exact-main : #433. La preuve doit être liée au SHA exact du `main` courant et `main` revérifié avant clôture.
 
 ## 6. Supabase Auth — décision d’abonnement
 
@@ -95,7 +95,7 @@ Ne pas rendre obligatoire un check GitHub Actions tant que #286 n’est pas rés
 
 ## 8. A45 — final release gate
 
-PR #443 prépare le gate final Render et refuse de publier la readiness tant que `main` n’est pas protégée (#336) :
+Suivi durable : #406 (gate final Render) et #439 (protection de `main`). Le gate final refuse de publier la readiness tant que `main` n’est pas protégée (#336) :
 
 - capture du SHA exact de `main` ;
 - preuve `/api/health` de la même révision ;
