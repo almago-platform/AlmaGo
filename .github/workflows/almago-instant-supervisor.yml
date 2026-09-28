@@ -49,6 +49,7 @@ jobs:
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       GEMINI_MODEL: gemini-3.5-flash
+      GEMINI_FALLBACK_MODEL: gemini-3.6-flash
 
 
     steps:
@@ -73,6 +74,7 @@ jobs:
               ? new Date().toISOString()
               : (process.env.CHECKPOINT_CREATED_AT || "");
             const model = process.env.GEMINI_MODEL || "gemini-3.5-flash";
+            const fallbackModel = process.env.GEMINI_FALLBACK_MODEL || "gemini-3.6-flash";
 
             if (!pull_number) {
               core.setFailed("Missing pull request number for supervisor run.");
@@ -165,7 +167,11 @@ jobs:
                 /\bUNAVAILABLE\b|high demand|temporar(?:y|ily)|overload|backend error|service unavailable|try again later/i.test(String(detail || ""));
             }
 
-            const transientBackoffMs = [0, 5000, 15000];
+            const providerAttempts = [
+              { model, waitMs: 0 },
+              { model, waitMs: 5000 },
+              { model: fallbackModel, waitMs: 5000 },
+            ];
 
             if (alreadyHandled) {
               core.info("Checkpoint " + checkpointId + " for HEAD " + headSha + " is already supervised or blocked. Skipping.");
@@ -376,10 +382,10 @@ jobs:
               required: ["decision", "summary", "next_step"],
             };
 
-            async function callGemini() {
+            async function callGemini(modelName) {
               return fetch(
                 "https://generativelanguage.googleapis.com/v1beta/models/" +
-                  encodeURIComponent(model) +
+                  encodeURIComponent(modelName) +
                   ":generateContent",
                 {
                   method: "POST",
@@ -448,18 +454,21 @@ jobs:
 
             let outputText = null;
             let lastTransient = null;
-            for (let attempt = 0; attempt < transientBackoffMs.length; attempt++) {
-              if (transientBackoffMs[attempt] > 0) {
+            for (let attempt = 0; attempt < providerAttempts.length; attempt++) {
+              const providerAttempt = providerAttempts[attempt];
+              if (providerAttempt.waitMs > 0) {
                 core.info(
                   "Gemini transient provider failure; retry " + (attempt + 1) + "/" +
-                  transientBackoffMs.length + " after " + transientBackoffMs[attempt] + "ms."
+                  providerAttempts.length + " after " + providerAttempt.waitMs + "ms using " +
+                  providerAttempt.model + "."
                 );
-                await new Promise((resolve) => setTimeout(resolve, transientBackoffMs[attempt]));
+                await new Promise((resolve) => setTimeout(resolve, providerAttempt.waitMs));
               }
 
               const result = await readGeminiResponse(
-                await callGemini(),
-                "attempt " + (attempt + 1) + "/" + transientBackoffMs.length,
+                await callGemini(providerAttempt.model),
+                "attempt " + (attempt + 1) + "/" + providerAttempts.length +
+                  " model=" + providerAttempt.model,
               );
               if (result.stop) return;
               if (result.outputText) {
@@ -467,19 +476,20 @@ jobs:
                 break;
               }
               if (result.transient) {
-                lastTransient = result;
+                lastTransient = { ...result, model: providerAttempt.model };
                 continue;
               }
 
-              if (attempt < transientBackoffMs.length - 1) {
+              if (attempt < providerAttempts.length - 1) {
                 core.info("Gemini returned no structured text; retrying within the bounded provider budget.");
               }
             }
 
             if (!outputText && lastTransient) {
               await publishProviderBlocked(
-                "Gemini temporarily unavailable after " + transientBackoffMs.length + " attempts",
-                "HTTP " + lastTransient.status + ": " + redact(lastTransient.detail, 1200)
+                "Gemini temporarily unavailable after " + providerAttempts.length + " attempts",
+                "Last model " + lastTransient.model + "; HTTP " + lastTransient.status + ": " +
+                  redact(lastTransient.detail, 1200)
               );
               return;
             }
@@ -489,7 +499,7 @@ jobs:
                 await publishProviderBlocked(
                   "Gemini returned no structured output",
                   "The provider returned no usable JSON text after " +
-                    transientBackoffMs.length + " bounded attempts."
+                    providerAttempts.length + " bounded attempts."
                 );
               }
               return;
