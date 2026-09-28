@@ -93,6 +93,17 @@ type OrientationCopy = {
     recordedCriteria: string;
     languageLevels: string;
     institution: string;
+    german: string;
+    english: string;
+    languagePrefix: string;
+    creditsPrefix: string;
+    languageNames: Record<string, string>;
+    subjectNames: Record<string, string>;
+    yourInformation: string;
+    publishedCriterion: string;
+    programLeadBoundary: string;
+    officialVerify: string;
+    officialSourceAria: (name: string) => string;
     statusLabels: Record<string, string>;
     reasonLabels: Record<string, string>;
     requirementLabels: Record<string, string>;
@@ -198,6 +209,17 @@ const fr: OrientationCopy = {
     recordedCriteria: "Critères enregistrés",
     languageLevels: "Niveaux linguistiques demandés",
     institution: "Établissement",
+    german: "Allemand",
+    english: "Anglais",
+    languagePrefix: "Langue",
+    creditsPrefix: "Crédits",
+    languageNames: { german: "Allemand", deutsch: "Allemand", english: "Anglais", french: "Français" },
+    subjectNames: { math: "Mathématiques", mathematics: "Mathématiques", maths: "Mathématiques", "computer science": "Informatique", cs: "Informatique", physics: "Physique", chemistry: "Chimie" },
+    yourInformation: "Votre information",
+    publishedCriterion: "Critère publié",
+    programLeadBoundary: "Ce programme est une piste. L’université vérifie les conditions et prend la décision.",
+    officialVerify: "Vérifier la source officielle",
+    officialSourceAria: (name) => `Site officiel de ${name} (nouvel onglet)`,
     statusLabels: {
       satisfied: "Critère rempli",
       not_satisfied: "Point à vérifier",
@@ -337,6 +359,17 @@ const ar: OrientationCopy = {
     recordedCriteria: "الشروط المسجلة",
     languageLevels: "مستويات اللغة المطلوبة",
     institution: "المؤسسة",
+    german: "الألمانية",
+    english: "الإنجليزية",
+    languagePrefix: "اللغة",
+    creditsPrefix: "الرصيد",
+    languageNames: { german: "الألمانية", deutsch: "الألمانية", english: "الإنجليزية", french: "الفرنسية" },
+    subjectNames: { math: "الرياضيات", mathematics: "الرياضيات", maths: "الرياضيات", "computer science": "علوم الحاسوب", cs: "علوم الحاسوب", physics: "الفيزياء", chemistry: "الكيمياء" },
+    yourInformation: "معلوماتك",
+    publishedCriterion: "الشرط المنشور",
+    programLeadBoundary: "هذا البرنامج خيار للمقارنة فقط. الجامعة تتحقق من الشروط وتتخذ القرار.",
+    officialVerify: "التحقق من المصدر الرسمي",
+    officialSourceAria: (name) => `الموقع الرسمي لبرنامج ${name} في علامة تبويب جديدة`,
     statusLabels: {
       satisfied: "الشرط مستوفى",
       not_satisfied: "نقطة تحتاج إلى تحقق",
@@ -476,6 +509,17 @@ const en: OrientationCopy = {
     recordedCriteria: "Recorded requirements",
     languageLevels: "Required language levels",
     institution: "Institution",
+    german: "German",
+    english: "English",
+    languagePrefix: "Language",
+    creditsPrefix: "Credits",
+    languageNames: { german: "German", deutsch: "German", english: "English", french: "French" },
+    subjectNames: { math: "Mathematics", mathematics: "Mathematics", maths: "Mathematics", "computer science": "Computer Science", cs: "Computer Science", physics: "Physics", chemistry: "Chemistry" },
+    yourInformation: "Your information",
+    publishedCriterion: "Published requirement",
+    programLeadBoundary: "This programme is an option to consider. The university checks the requirements and makes the decision.",
+    officialVerify: "Check the official source",
+    officialSourceAria: (name) => `Official website for ${name} (opens in a new tab)`,
     statusLabels: {
       satisfied: "Requirement met",
       not_satisfied: "Point to check",
@@ -615,6 +659,17 @@ const de: OrientationCopy = {
     recordedCriteria: "Gespeicherte Voraussetzungen",
     languageLevels: "Geforderte Sprachniveaus",
     institution: "Hochschule",
+    german: "Deutsch",
+    english: "Englisch",
+    languagePrefix: "Sprache",
+    creditsPrefix: "Credits",
+    languageNames: { german: "Deutsch", deutsch: "Deutsch", english: "Englisch", french: "Französisch" },
+    subjectNames: { math: "Mathematik", mathematics: "Mathematik", maths: "Mathematik", "computer science": "Informatik", cs: "Informatik", physics: "Physik", chemistry: "Chemie" },
+    yourInformation: "Deine Angabe",
+    publishedCriterion: "Veröffentlichte Voraussetzung",
+    programLeadBoundary: "Dieser Studiengang ist eine mögliche Option. Die Hochschule prüft die Voraussetzungen und trifft die Entscheidung.",
+    officialVerify: "Offizielle Quelle prüfen",
+    officialSourceAria: (name) => `Offizielle Website von ${name} (öffnet in einem neuen Tab)`,
     statusLabels: {
       satisfied: "Voraussetzung erfüllt",
       not_satisfied: "Zu prüfen",
