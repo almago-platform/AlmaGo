@@ -90,3 +90,20 @@ test("regulatory and checklist localization is keyed by stable machine decisions
   assert.ok(checklistCopy.includes("academic_evidence_review"));
   assert.ok(checklistCopy.includes("continue_academic_search"));
 });
+
+
+test("non-French student interfaces do not surface raw French API errors", () => {
+  const files = [
+    "src/components/student/ProfileForm.tsx",
+    "src/components/student/DocumentsPanel.tsx",
+    "src/components/student/StudentProjectForm.tsx",
+    "src/components/student/OnboardingForm.tsx",
+    "src/components/student/StudentOrientationPanel.tsx",
+  ];
+
+  for (const file of files) {
+    const source = readFileSync(file, "utf8");
+    assert.ok(source.includes('locale === "fr"'));
+    assert.ok(source.includes('typeof result.error === "string"'));
+  }
+});
