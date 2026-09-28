@@ -98,7 +98,7 @@ export function StudentOrientationPanel({
       const result = await response.json().catch(() => ({}));
 
       if (!response.ok) {
-        setFeedback({ message: result.error || t.addError, kind: "error" });
+        setFeedback({ message: locale === "fr" && typeof result.error === "string" ? result.error : t.addError, kind: "error" });
         return;
       }
 
