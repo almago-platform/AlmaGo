@@ -166,3 +166,64 @@ html[dir="rtl"] .skip-link {
   left: auto;
   right: 1rem;
 }
+
+
+/* Arabic Auth RTL Polish: keep the form primary and visually aligned in Arabic. */
+html[dir="rtl"] .auth-form-title,
+html[dir="rtl"] .auth-story-title {
+  line-height: 1.4;
+}
+
+html[dir="rtl"] :is(.auth-story-eyebrow, .auth-student-badge) {
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+html[dir="rtl"] .auth-form-card input[dir="ltr"] {
+  text-align: left;
+}
+
+html[dir="rtl"] .auth-story-panel {
+  min-height: 640px;
+}
+
+html[dir="rtl"] .auth-story-header {
+  padding: 1rem 1.5rem;
+}
+
+html[dir="rtl"] .auth-story-image {
+  height: 14rem;
+}
+
+html[dir="rtl"] .auth-story-body {
+  padding: 1.5rem;
+}
+
+html[dir="rtl"] .auth-story-body > ol {
+  margin-top: 1.25rem;
+}
+
+html[dir="rtl"] .auth-story-body > div:last-child {
+  padding-top: 1.25rem;
+}
+
+@media (min-width: 1024px) {
+  html[dir="rtl"] .auth-page-grid {
+    direction: ltr;
+  }
+
+  html[dir="rtl"] .auth-page-grid > * {
+    direction: rtl;
+  }
+
+  html[dir="rtl"] .auth-form-shell,
+  html[dir="rtl"] .auth-story-panel {
+    align-self: start;
+  }
+}
+
+@media (max-width: 1023px) {
+  html[dir="rtl"] .auth-page {
+    padding-inline: 1rem;
+  }
+}
