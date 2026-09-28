@@ -20,7 +20,23 @@ The workflow must:
 - run TypeScript, lint and production build;
 - run public Playwright responsive/accessibility tests;
 - run authenticated student/admin isolation tests;
-- require a successful Vercel status for the exact `main` SHA;
-- publish `RELEASE GATE: READY` only when every check passes.
+- require the canonical Render service to report the exact shortened `main` SHA from `/api/health`;
+- smoke `/`, `/login` and `/signup` on `https://almago-dev.onrender.com`;
+- publish `RELEASE GATE: READY` only when every check passes and Render serves the exact `main` revision.
 
 It never deploys, merges, changes RLS or creates users.
+
+
+## Canonical runtime evidence
+
+A45 treats Render as the publication runtime. The gate must not accept a healthy but stale deployment.
+
+The required runtime proof is:
+
+- `https://almago-dev.onrender.com/api/health` responds successfully;
+- its `revision` equals the first 12 characters of the exact `main` SHA captured at gate start;
+- its `branch` is `main`;
+- public root, login and signup routes answer successfully;
+- `main` is revalidated immediately before A45 is marked ready.
+
+The gate tolerates a bounded Render Free cold start. It does not trigger a deployment, upgrade a plan, merge code or change production configuration.
