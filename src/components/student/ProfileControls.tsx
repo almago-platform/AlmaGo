@@ -4,7 +4,7 @@ import { useId, useMemo, useState } from "react";
 import { preferredCityOptions, type SelectOption } from "@/lib/student/profile-options";
 
 function FieldLabel({ label, required }: { label: string; required?: boolean }) {
-  return <span>{label}{required ? <span className="text-[var(--accent-strong)]"> *</span> : <span className="ml-1 font-normal text-slate-500">(facultatif)</span>}</span>;
+  return <span>{label}{required ? <span className="text-[var(--accent-strong)]"> *</span> : null}</span>;
 }
 
 export function TextInput({ label, value, onChange, type = "text", required = false, placeholder = "" }: { label: string; value: string; onChange: (value: string) => void; type?: string; required?: boolean; placeholder?: string }) {
