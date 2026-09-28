@@ -46,7 +46,7 @@ function ApplicationStepper({ status }: { status: string }) {
 
   // Define 5 key phases of the application journey
   const stages = [
-    { label: "Intérêt", active: true },
+    { label: "À préparer", active: true },
     { label: "Préparation", active: ["preparing", "documents_missing"].includes(normalizedStatus || "") },
     { label: "Prêt", active: normalizedStatus === "ready_to_submit" },
     { label: "Envoyé", active: ["submitted", "waiting_university"].includes(normalizedStatus || "") },
@@ -146,7 +146,7 @@ export function StudentApplicationsPanel({
                   ? priorityApplication.next_action
                   : priorityApplication
                     ? "Aucune action précise n’est enregistrée de votre côté pour cette candidature. Consultez son statut et son historique ci-dessous."
-                    : "Aucune candidature n’est encore enregistrée. Consultez vos recommandations pour choisir un programme à suivre."}
+                    : "Aucune candidature n’est encore enregistrée. Ajoutez un programme depuis « Mes programmes » pour le suivre ici."}
             </p>
             {priorityApplication && (
               <div className="mt-5 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4">
@@ -194,10 +194,10 @@ export function StudentApplicationsPanel({
           <span aria-hidden="true" className="mx-auto grid h-11 w-11 place-items-center rounded-full bg-[var(--brand-soft)] text-[var(--brand)]">＋</span>
           <h2 id="applications-empty-title" className="mt-4 text-lg font-bold text-slate-950">Vous n’avez encore aucune candidature enregistrée.</h2>
           <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-slate-600">
-            Lorsque vous indiquez votre intérêt pour une recommandation disponible, le suivi correspondant peut apparaître ici.
+            Ajoutez un programme depuis « Mes programmes » pour le suivre ici. Cette action n’envoie pas votre candidature.
           </p>
           <div className="mt-5">
-            <ButtonLink href="/student/orientation">Voir mes recommandations</ButtonLink>
+            <ButtonLink href="/student/orientation">Voir mes programmes</ButtonLink>
           </div>
         </Card>
       ) : (
@@ -289,7 +289,7 @@ export function StudentApplicationsPanel({
                   <section aria-labelledby={`application-history-title-${application.id}`} className="mt-6">
                     <div className="mb-3 flex items-center justify-between gap-3">
                       <h4 id={`application-history-title-${application.id}`} className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">
-                        Historique du suivi
+                        Ce qui a été fait
                         <span className="sr-only"> de la candidature {program?.name || "Programme"}</span>
                       </h4>
                       <span className="text-xs text-slate-500">{events.length} événement{events.length > 1 ? "s" : ""}</span>
@@ -315,9 +315,6 @@ export function StudentApplicationsPanel({
                     )}
                   </section>
 
-                  <p className="mt-5 border-t border-[var(--border)] pt-4 text-xs leading-5 text-slate-500">
-                    Ce statut et cet historique correspondent aux informations enregistrées dans AlmaGo. Vérifiez le portail officiel de l’université pour le statut administratif définitif.
-                  </p>
                 </Card>
               );
             })}
