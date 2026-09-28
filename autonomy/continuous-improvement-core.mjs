@@ -1,5 +1,6 @@
 export const SIGNAL_CATEGORIES = new Set(["regression", "typecheck", "lint", "security"]);
 export const SIGNAL_SEVERITIES = new Set(["low", "moderate", "high", "critical"]);
+export const RECURRENCE_MARKER = "<!-- almago-improvement-recurrence -->";
 
 export function signalMarker(key) {
   if (!/^[a-z0-9][a-z0-9-]{1,63}$/.test(String(key || ""))) {
