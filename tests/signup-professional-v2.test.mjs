@@ -18,9 +18,9 @@ test("signup page uses the new student registration composition", () => {
 test("signup story communicates the three-step account-to-dossier path", () => {
   assert.match(story, /Créer votre compte/);
   assert.match(story, /Définir votre projet/);
-  assert.match(story, /Construire votre dossier/);
+  assert.match(story, /Préparer votre dossier/);
   assert.match(story, /7973208/);
-  assert.match(story, /Les décisions d’admission, de visa/);
+  assert.match(story, /Les universités et les autorités prennent les décisions officielles/);
 });
 
 test("signup form keeps Supabase auth behavior unchanged", () => {
