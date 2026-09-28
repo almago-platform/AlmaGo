@@ -4,7 +4,7 @@ import s from "./Homepage.module.css";
 const moments = [
   {
     label: "01",
-    title: "Je m’informe sur les programmes",
+    title: "Je compare les programmes",
     image: "https://images.pexels.com/photos/5965674/pexels-photo-5965674.jpeg?auto=compress&cs=tinysrgb&w=1200",
     alt: "Des étudiantes se déplacent sur un campus avec un ordinateur et des documents.",
   },
@@ -16,7 +16,7 @@ const moments = [
   },
   {
     label: "03",
-    title: "Je structure mes candidatures",
+    title: "Je prépare mes candidatures",
     image: "https://images.pexels.com/photos/5553958/pexels-photo-5553958.jpeg?auto=compress&cs=tinysrgb&w=1200",
     alt: "Deux étudiants discutent devant l’entrée d’un établissement universitaire.",
   },
@@ -28,16 +28,16 @@ export function HomePhotoBand() {
       <div className={`${s.container} ${s.photoBandLayout}`}>
         <div className={s.photoBandHeading}>
           <p className={s.eyebrow}>
-            <span className={s.dot} /> Un accompagnement à chaque étape
+            <span className={s.dot} /> Votre projet d’études d’abord
           </p>
           <h2 id="photo-band-title" className={s.photoBandTitle}>
-            Un parcours clair pour réaliser
+            Préparez la suite
             <br />
-            votre projet <em>en Allemagne.</em>
+            <em>au bon moment.</em>
           </h2>
           <p>
-            Votre projet académique d’abord. Les démarches administratives
-            viennent ensuite, au bon moment et avec leurs sources.
+            Commencez par le programme et les documents. Préparez ensuite le
+            reste, au bon moment.
           </p>
         </div>
 
