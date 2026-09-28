@@ -77,9 +77,16 @@ export function isPastDeadline(deadline: string, now = new Date()) {
   return deadline < today;
 }
 
-export function formatDeadline(value: string | null | undefined) {
-  if (!value || !isValidDateOnly(value)) return "Date à confirmer";
-  return new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium" }).format(new Date(`${value}T12:00:00Z`));
+export function formatDeadline(value: string | null | undefined, locale: "fr" | "ar" | "en" | "de" = "fr") {
+  const intlLocale = { fr: "fr-FR", ar: "ar-TN", en: "en-GB", de: "de-DE" }[locale];
+  const unknownDate = {
+    fr: "Date à confirmer",
+    ar: "التاريخ يحتاج إلى تأكيد",
+    en: "Date to be confirmed",
+    de: "Datum noch zu bestätigen",
+  }[locale];
+  if (!value || !isValidDateOnly(value)) return unknownDate;
+  return new Intl.DateTimeFormat(intlLocale, { dateStyle: "medium" }).format(new Date(`${value}T12:00:00Z`));
 }
 
 export function statusTone(status: string) {
