@@ -1,0 +1,71 @@
+name: AlmaGo Copilot Agent Task Live Probe
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "autonomy/copilot-agent-task-live-probe-plan.json"
+      - "autonomy/copilot-agent-client.mjs"
+      - "autonomy/copilot-autopilot.mjs"
+      - ".github/workflows/almago-copilot-agent-task-live-probe.yml"
+  schedule:
+    - cron: "5,20,35,50 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: read
+  actions: write
+  statuses: read
+
+concurrency:
+  group: almago-copilot-agent-task-live-probe
+  cancel-in-progress: false
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check release state
+        id: release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node autonomy/continuous-improvement.mjs activation
+
+      - name: Validate bounded probe controller
+        if: steps.release.outputs.active != 'true'
+        run: node --test autonomy/copilot-autopilot.test.mjs
+
+      - name: Run live docs-only Agent Task probe
+        if: steps.release.outputs.active != 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ALMAGO_COPILOT_AUTOPILOT_TOKEN: ${{ secrets.ALMAGO_COPILOT_AUTOPILOT_TOKEN }}
+          ALMAGO_COPILOT_AUTOPILOT_ENABLED: "true"
+          ALMAGO_COPILOT_AUTOPILOT_DRY_RUN: "false"
+          ALMAGO_COPILOT_AUTOPILOT_PLAN_PATH: autonomy/copilot-agent-task-live-probe-plan.json
+          ALMAGO_COPILOT_AUTOPILOT_MAX_NEW_TASKS: "1"
+        run: node autonomy/copilot-autopilot.mjs
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "## AlmaGo Copilot Agent Task Live Probe"
+            echo
+            echo "Post-launch active: ${{ steps.release.outputs.active || 'unknown' }}"
+            echo "Plan: AGENT-PROBE-01"
+            echo "Writable path: docs/COPILOT_AGENT_TASK_LIVE_PROBE.md"
+            echo "Automatic merge: disabled"
+            echo
+            echo "This workflow exists only to prove the real Copilot Agent Tasks API/lifecycle with a docs-only contract."
+            echo "It cannot authorize product, workflow, dependency, Auth/RLS/Supabase, migration, secret, billing, production-data or deployment changes."
+          } >> "$GITHUB_STEP_SUMMARY"
