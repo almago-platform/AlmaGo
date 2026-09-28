@@ -5,23 +5,23 @@ const tools = [
   {
     href: "/signup",
     icon: "certificate",
-    title: "Évaluer mon point de départ",
-    text: "Diplôme, domaine, langue et rentrée : posez les bases de votre projet avant de chercher.",
+    title: "Voir par où commencer",
+    text: "Indiquez votre diplôme, votre domaine, votre langue et votre rentrée.",
     cta: "Commencer mon dossier",
   },
   {
     href: "#programmes",
     icon: "university",
-    title: "Explorer les programmes",
-    text: "Comparez des pistes selon votre profil, leurs critères, leurs échéances et leurs sources.",
+    title: "Comparer les programmes",
+    text: "Regardez les critères, les dates et la source officielle.",
     cta: "Voir les programmes",
   },
   {
     href: "#faq",
     icon: "globe",
-    title: "Trouver les bons repères",
-    text: "Identifiez où confirmer une information et quel organisme est responsable de la décision.",
-    cta: "Consulter les repères",
+    title: "Vérifier une information",
+    text: "Voyez qui donne l’information et où la confirmer.",
+    cta: "Voir les sources",
   },
 ] as const;
 
@@ -34,12 +34,9 @@ export function HomeTrustSection() {
     >
       <div className={s.container}>
         <div className={s.helpfulToolsHeading}>
-          <p className={s.eyebrow}>Pour avancer plus simplement</p>
-          <h2 id="helpful-tools-title">Outils utiles</h2>
-          <p>
-            Trois points d’entrée pour clarifier votre projet, explorer vos
-            options et savoir où vérifier les informations importantes.
-          </p>
+          <p className={s.eyebrow}>Pour avancer</p>
+          <h2 id="helpful-tools-title">Choisissez par où commencer.</h2>
+          <p>Trois façons simples d’avancer dans votre projet.</p>
         </div>
 
         <div className={s.helpfulToolsGrid}>
@@ -57,7 +54,6 @@ export function HomeTrustSection() {
             </a>
           ))}
         </div>
-
       </div>
     </section>
   );
