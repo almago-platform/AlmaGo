@@ -25,22 +25,22 @@ const routeDetails: Record<RegulatoryRoute, { title: string; description: string
   STUDIUM: {
     title: "Études (Studium)",
     description:
-      "Une admission définitive acceptée comme preuve académique fournit une base pour le parcours d’études. La décision de séjour ou de visa appartient toujours à l’autorité compétente.",
+      "Votre dossier contient une admission définitive vérifiée. L’autorité compétente décide ensuite du visa ou du séjour.",
   },
   STUDIENVORBEREITUNG: {
     title: "Préparation aux études (Studienvorbereitung)",
     description:
-      "Une base académique préparatoire acceptée et un cours de préparation vérifié fournissent une base pour examiner le parcours de préparation aux études.",
+      "Votre dossier contient un document préparatoire accepté et un cours de préparation vérifié. Vérifiez la suite avec la source officielle.",
   },
   STUDIENPLATZSUCHE: {
     title: "Recherche de place d’études (Studienplatzsuche)",
     description:
-      "Aucune admission acceptée n’est enregistrée à ce stade. Le dossier reste dans une logique de recherche de place d’études à examiner.",
+      "Vous cherchez encore une place d’études. Comparez les programmes et préparez vos candidatures.",
   },
   SPRACHKURS: {
     title: "Cours de langue (Sprachkurs)",
     description:
-      "Le projet enregistré concerne actuellement un séjour linguistique autonome. Ce parcours doit encore être vérifié au regard du dossier complet.",
+      "Votre objectif actuel est un cours de langue. Vérifiez les conditions pour votre dossier complet.",
   },
 };
 
@@ -186,8 +186,8 @@ export default async function StudentPathwayPage() {
       <StudentJourneyHeader
         current="pathway"
         eyebrow="Mon dossier"
-        title="Admission, préparation, séjour et dossier final"
-        description="AlmaGo relie votre projet, vos preuves académiques et les cours vérifiés pour montrer où en est votre dossier. Cette vue organise les faits enregistrés ; elle ne constitue ni une décision d’admission ni une décision de visa ou de titre de séjour."
+        title="Mon parcours Allemagne"
+        description="Cette page montre les étapes utiles selon votre dossier. Elle ne remplace pas les décisions des universités ou des autorités."
         actions={<ButtonLink href="/student/project" variant="secondary">Modifier mon projet</ButtonLink>}
       />
 
@@ -224,9 +224,9 @@ export default async function StudentPathwayPage() {
 
       <section className="mt-8" aria-labelledby="pathway-steps-title">
         <div className="mb-5">
-          <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Votre chaîne de décision</p>
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Les étapes de votre parcours</p>
           <h2 id="pathway-steps-title" className="mt-2 text-2xl font-bold tracking-[-0.03em] text-slate-950">
-            Du projet jusqu’aux démarches suivantes
+            De votre projet aux prochaines démarches
           </h2>
         </div>
 
@@ -273,7 +273,7 @@ export default async function StudentPathwayPage() {
 
           <PathwayCard
             number="4"
-            title="Parcours réglementaire"
+            title="Étape administrative à vérifier"
             state={routeInfo?.title || "Non déterminé"}
             detail={
               decision.status === "confirmed_basis"
@@ -317,14 +317,14 @@ export default async function StudentPathwayPage() {
         <div className="mb-5">
           <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Sources officielles</p>
           <h2 id="official-sources-title" className="mt-2 text-2xl font-bold tracking-[-0.03em] text-slate-950">
-            Règles vérifiées pour ce parcours
+            Règles à vérifier pour votre situation
           </h2>
           <p className="mt-2 max-w-4xl text-sm leading-6 text-slate-600">
-            AlmaGo n’utilise ici que des sources marquées comme vérifiées et encore dans leur période de revue. Les règles affichées restent à confirmer sur la source officielle au moment du dépôt.
+            Ces informations viennent de sources officielles vérifiées. Vérifiez-les encore sur la source officielle avant votre démarche.
           </p>
           {needsFilingCountry && (
             <div className="mt-4 rounded-[var(--radius-control)] border border-amber-200 bg-amber-50/60 p-4 text-sm leading-6 text-amber-900">
-              Indiquez votre pays de résidence / dépôt dans « Mon projet » pour afficher les règles de la mission allemande compétente. AlmaGo ne déduit pas ce pays de votre nationalité.
+              Indiquez dans « Mon projet » le pays depuis lequel vous ferez vos démarches. Il peut être différent de votre nationalité.
             </div>
           )}
         </div>
@@ -348,10 +348,10 @@ export default async function StudentPathwayPage() {
       <section className="mt-8 grid gap-5 lg:grid-cols-[minmax(0,1.25fr)_minmax(18rem,0.75fr)]">
         <Card>
           <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Pourquoi ce résultat ?</p>
-          <h2 className="mt-2 text-xl font-bold text-slate-950">Faits utilisés par AlmaGo</h2>
+          <h2 className="mt-2 text-xl font-bold text-slate-950">Pourquoi cette étape ?</h2>
           <dl className="mt-5 divide-y divide-slate-100">
             <FactRow label="Projet défini" value={facts.project_path ? "Oui" : "Non"} />
-            <FactRow label="Pays de résidence / dépôt" value={filingCountry || "À renseigner"} />
+            <FactRow label="Pays de vos démarches" value={filingCountry || "À renseigner"} />
             <FactRow label="Admission définitive acceptée" value={facts.accepted_definitive_admission ? "Oui" : "Non"} />
             <FactRow label="Base préparatoire acceptée" value={facts.accepted_preparatory_basis ? "Oui" : "Non"} />
             <FactRow label="Cours de préparation vérifié publié" value={facts.has_publishable_study_preparation_course ? "Oui" : "Non"} />
