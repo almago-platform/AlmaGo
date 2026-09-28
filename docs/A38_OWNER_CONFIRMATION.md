@@ -15,11 +15,29 @@ Le dépôt et les migrations montrent déjà les faits techniques suivants :
 - le service s’appelle **AlmaGo** ;
 - le service organise un projet d’études en Allemagne : profil, documents, checklist, orientation et suivi de candidatures ;
 - Supabase fournit Auth, PostgreSQL et Storage ;
-- Vercel fournit l’hébergement/déploiement ;
+- Render fournit actuellement l’hébergement/déploiement canonique ;
 - les catégories de données traitées sont inventoriées dans `docs/data-processing-inventory.md` ;
 - les recommandations AlmaGo ne sont pas des décisions d’admission ;
 - aucun fournisseur analytics/observabilité n’est actuellement actif dans l’application ;
 - l’activation d’un futur fournisseur analytics appartient à **A44** et ne doit pas bloquer la validation de la situation actuelle en A38.
+
+## Voie rapide — accepter ou modifier la proposition de rétention
+
+Une proposition interne détaillée est disponible dans `docs/A38_RETENTION_POLICY_PROPOSAL.md`.
+
+Si le propriétaire et le relecteur l'acceptent, il n'est pas nécessaire de ressaisir toutes les durées. Il suffit d'écrire dans le bloc ci-dessous :
+
+`Politique de conservation proposée : APPROUVÉE`
+
+La proposition actuellement soumise à validation utilise :
+- revue des comptes inactifs après **24 mois** ;
+- délai opérationnel cible de suppression des données actives : **30 jours maximum** après demande confirmée ;
+- logs techniques ordinaires : **30 jours** ;
+- logs liés à l'investigation d'un incident : jusqu'à **90 jours** ;
+- suppression des objets Supabase Storage avant suppression de l'utilisateur Auth ;
+- suppression/anonymisation des données de dossier à la fermeture du compte, sous réserve d'une obligation légale ou d'un litige documenté.
+
+Ces valeurs restent une **proposition**, pas une décision juridique. Le propriétaire/relecteur peut les modifier ligne par ligne.
 
 ## Une seule confirmation humaine à remplir
 
@@ -39,15 +57,16 @@ A38 OWNER CONFIRMATION
 9. Statut commercial actuel : [gratuit / payant]
 10. DPO : [nom/contact / aucun DPO / à confirmer par le relecteur]
 11. Activité soumise à autorisation ou profession réglementée : [non / oui + autorité]
-12. Règles de conservation :
-    - compte + profil :
-    - documents :
-    - candidatures + historique + notes internes :
-    - logs techniques :
-13. Procédure de suppression validée :
-    - compte/base de données :
-    - fichiers Supabase Storage :
-    - sauvegardes/logs fournisseurs :
+12. Politique de conservation proposée : [APPROUVÉE / MODIFICATIONS CI-DESSOUS]
+    - compte + profil : [24 mois d'inactivité avant revue, si approuvé]
+    - documents : [suppression avec le compte / dès qu'ils ne sont plus utiles, si approuvé]
+    - candidatures + historique + notes internes : [suppression/anonymisation avec le dossier, sauf obligation documentée, si approuvé]
+    - logs techniques : [30 jours / jusqu'à 90 jours pour incident, si approuvé]
+13. Procédure de suppression validée : [APPROUVÉE / MODIFICATIONS]
+    - Storage Supabase via API avant suppression Auth
+    - suppression/anonymisation des données applicatives
+    - suppression utilisateur Auth côté serveur
+    - sauvegardes/logs fournisseurs selon rotation documentée
 14. Relecteur humain/juridique final :
 15. Date de relecture finale :
 ```
@@ -98,8 +117,8 @@ La décision reste humaine. Le workflow `.github/workflows/almago-a38-human-appr
 
 1. les textes finalisés ont été mergés sur `main` ;
 2. l’Issue A38 contient une preuve machine liée au **SHA exact** sous la forme `<!-- almago-a38-review-ready:sha=... -->` ;
-3. le propriétaire du repository poste exactement : `A38 HUMAN REVIEW APPROVED`.
+3. un administrateur autorisé du repository poste exactement : `A38 HUMAN REVIEW APPROVED` après la vraie relecture humaine.
 
-Le workflow vérifie que le signal vient du propriétaire et qu’il correspond au SHA courant de `main`, puis il ferme A38 et relance le Master Orchestrator. Il n’effectue aucune appréciation juridique lui-même.
+Le workflow vérifie que le signal vient d’un utilisateur ayant la permission `admin` sur le repository et qu’il correspond au SHA courant de `main`, puis il ferme A38 et relance le Master Orchestrator. Il n’effectue aucune appréciation juridique lui-même.
 
 Jusqu’à cette étape, les brouillons restent marqués **NE PAS PUBLIER TEL QUEL**.

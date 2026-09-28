@@ -198,7 +198,8 @@ Actuellement le code montre l’utilisation de :
 - Supabase Auth ;
 - Supabase PostgreSQL ;
 - Supabase Storage ;
-- Vercel pour le déploiement.
+- Render pour l’hébergement/déploiement canonique actuel ;
+- une intégration Vercel reste visible/connectée au dépôt ; son rôle technique éventuel et tout traitement de données associé doivent être confirmés avant la notice finale.
 
 Aucun fournisseur analytics/observabilité n’est actuellement codé comme actif dans l’application.
 

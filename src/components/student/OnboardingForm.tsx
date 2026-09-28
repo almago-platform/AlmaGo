@@ -179,7 +179,7 @@ export function OnboardingForm({ profile }: { profile: Record<string, unknown> }
         <div className="overflow-hidden rounded-[1rem] border border-[var(--border)] bg-[var(--surface)] shadow-[0_24px_70px_-58px_rgba(28,33,36,0.55)]">
           <div className="relative h-40 overflow-hidden sm:h-48 lg:h-56">
             <Image
-              src="https://images.pexels.com/photos/7973208/pexels-photo-7973208.jpeg"
+              src="https://images.pexels.com/photos/7973208/pexels-photo-7973208.jpeg?auto=compress&cs=tinysrgb&w=1200"
               alt="Des étudiants relisent ensemble des documents devant un bâtiment universitaire."
               fill
               priority
