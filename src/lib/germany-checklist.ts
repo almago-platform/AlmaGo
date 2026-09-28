@@ -49,11 +49,11 @@ export function buildGermanyChecklist(input: GermanyChecklistInput): GermanyChec
     return [
       item(
         "define_project",
-        "Définir votre projet Allemagne",
+        "Définir mon projet",
         "student",
         "todo",
         ["project_path"],
-        "Précisez votre objectif avant de calculer les étapes suivantes.",
+        "Indiquez votre objectif pour voir les étapes utiles.",
       ),
     ];
   }
@@ -73,11 +73,11 @@ export function buildGermanyChecklist(input: GermanyChecklistInput): GermanyChec
     items.push(
       item(
         "replace_academic_evidence",
-        "Remplacer ou corriger la preuve académique",
+        "Remplacer le document demandé",
         "student",
         "todo",
         ["has_replacement_required"],
-        "Une preuve académique est marquée à remplacer et ne peut pas servir de base au parcours.",
+        "Ce document doit être remplacé avant d’être utilisé pour votre parcours.",
       ),
     );
     return items;
@@ -101,11 +101,11 @@ export function buildGermanyChecklist(input: GermanyChecklistInput): GermanyChec
     items.push(
       item(
         "definitive_admission_basis",
-        "Admission définitive acceptée comme base académique",
+        "Admission définitive vérifiée",
         "almago",
         "completed",
         ["accepted_definitive_admission", "decision:STUDIUM"],
-        "Une admission définitive vérifiée est enregistrée. Cette étape décrit un fait du dossier et ne constitue pas une décision de visa.",
+        "Votre admission est enregistrée dans le dossier. Cela ne décide pas votre visa.",
       ),
     );
     return items;
@@ -172,11 +172,11 @@ export function buildGermanyChecklist(input: GermanyChecklistInput): GermanyChec
     items.push(
       item(
         "continue_academic_search",
-        "Continuer la recherche de programme et de base académique",
+        "Continuer à chercher un programme",
         "student",
         "todo",
         ["decision:STUDIENPLATZSUCHE"],
-        "Aucune admission acceptée n’est enregistrée. Continuez l’orientation et les candidatures jusqu’à obtenir une base académique vérifiable.",
+        "Vous n’avez pas encore d’admission vérifiée. Comparez les programmes et préparez vos candidatures.",
       ),
     );
   }
