@@ -235,7 +235,7 @@ export function DocumentsPanel({
 
         <Card className="mt-4 border-[var(--brand-border)] bg-[var(--brand-soft)]/55 shadow-none">
           <p className="text-sm leading-6 text-slate-700">
-            Un fichier validé n’est pas forcément un document accepté pour votre parcours. Cette indication ne vaut ni admission ni décision de visa.
+            Le statut d’un fichier et son statut comme preuve académique sont deux choses différentes. Un document peut être approuvé sans être encore accepté comme preuve de parcours. Cette classification ne constitue ni une admission ni une décision de visa.
           </p>
         </Card>
 
