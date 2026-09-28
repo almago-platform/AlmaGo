@@ -1,6 +1,10 @@
 import { readFileSync } from "node:fs";
 import { getAgentTask, startAgentTask } from "./copilot-agent-client.mjs";
 import {
+  parseReadyDynamicContract,
+  sourceSignalStillValid,
+} from "./dynamic-contracts-core.mjs";
+import {
   browserQualityRequirement,
   leaseExpired,
   lifecycleDecision,
@@ -32,9 +36,10 @@ if (!copilotToken) {
 }
 
 const [owner, repo] = repository.split("/");
-const plan = JSON.parse(readFileSync("autonomy/copilot-autopilot-plan.json", "utf8"));
-validateAutopilotPlan(plan);
-const blockById = new Map(plan.blocks.map((block) => [block.block_id, block]));
+const staticPlan = JSON.parse(readFileSync("autonomy/copilot-autopilot-plan.json", "utf8"));
+validateAutopilotPlan(staticPlan);
+let plan = staticPlan;
+let blockById = new Map(staticPlan.blocks.map((block) => [block.block_id, block]));
 
 const headers = {
   Authorization: "Bearer " + githubToken,
@@ -123,8 +128,15 @@ function pullArtifactNumber(task) {
 }
 
 async function pullFiles(pullNumber) {
-  const files = await gh("/repos/" + owner + "/" + repo + "/pulls/" + pullNumber + "/files?per_page=100");
-  return files.map((file) => String(file.filename || "")).filter(Boolean);
+  const files = [];
+  for (let page = 1; page <= 10; page += 1) {
+    const batch = await gh(
+      "/repos/" + owner + "/" + repo + "/pulls/" + pullNumber + "/files?per_page=100&page=" + page
+    );
+    files.push(...batch.map((file) => String(file.filename || "")).filter(Boolean));
+    if (batch.length < 100) return files;
+  }
+  throw new Error("Open PR file list exceeded the bounded 1000-file collision scan.");
 }
 
 async function workflowRuns(headSha) {
@@ -132,6 +144,92 @@ async function workflowRuns(headSha) {
     "/repos/" + owner + "/" + repo + "/actions/runs?head_sha=" + encodeURIComponent(headSha) + "&per_page=100"
   );
   return Array.isArray(data?.workflow_runs) ? data.workflow_runs : [];
+}
+
+function issueLabelNames(issue) {
+  return new Set((issue?.labels || []).map((label) => typeof label === "string" ? label : label.name));
+}
+
+async function postLaunchReady() {
+  const issues = await gh("/repos/" + owner + "/" + repo + "/issues?state=all&labels=almago-plan&per_page=100");
+  const a45 = issues.find((issue) =>
+    !issue.pull_request && String(issue.body || "").includes("<!-- almago-plan-task:A45 -->")
+  );
+  if (!a45) return false;
+  const labels = issueLabelNames(a45);
+  return a45.state === "closed" || labels.has("almago-plan-done");
+}
+
+async function openPrScopes() {
+  const pulls = [];
+  for (let page = 1; page <= 10; page += 1) {
+    const batch = await gh(
+      "/repos/" + owner + "/" + repo + "/pulls?state=open&per_page=100&page=" + page
+    );
+    pulls.push(...batch);
+    if (batch.length < 100) break;
+    if (page === 10) throw new Error("Open PR list exceeded the bounded 1000-PR collision scan.");
+  }
+
+  const scopes = [];
+  for (const pr of pulls) {
+    scopes.push({
+      pr_number: pr.number,
+      head_ref: pr.head?.ref || null,
+      files: await pullFiles(pr.number),
+    });
+  }
+  return scopes;
+}
+
+async function loadDynamicAutopilotContext() {
+  const prScopes = await openPrScopes();
+  const externalLocks = prScopes.map((scope) => ({
+    state: "IN_PROGRESS",
+    writable_paths: scope.files.length ? scope.files : ["**"],
+    external_pr_number: scope.pr_number,
+    external_head_ref: scope.head_ref,
+  }));
+
+  if (!await postLaunchReady()) {
+    return { dynamicBlocks: [], externalLocks, prScopes };
+  }
+
+  const contractIssues = await gh(
+    "/repos/" + owner + "/" + repo +
+    "/issues?state=open&labels=almago-improvement-contract%2Calmago-autopilot-contract-ready&per_page=100"
+  );
+  const staticIds = new Set(staticPlan.blocks.map((block) => block.block_id));
+  const dynamicBlocks = [];
+
+  for (const issue of contractIssues) {
+    if (issue.pull_request) continue;
+    const parsed = parseReadyDynamicContract(issue);
+    if (!parsed.eligible) {
+      console.log("Skipping dynamic contract issue #" + issue.number + ": " + parsed.reason + ".");
+      continue;
+    }
+    if (staticIds.has(parsed.block.block_id) ||
+        dynamicBlocks.some((block) => block.block_id === parsed.block.block_id)) {
+      console.log("Skipping duplicate dynamic block id " + parsed.block.block_id + ".");
+      continue;
+    }
+
+    const sourceIssue = await gh(
+      "/repos/" + owner + "/" + repo + "/issues/" + parsed.source_issue_number
+    );
+    if (!sourceSignalStillValid(sourceIssue, parsed.key)) {
+      console.log("Skipping stale dynamic contract " + parsed.block.block_id + ": source signal is not valid.");
+      continue;
+    }
+
+    dynamicBlocks.push({
+      ...parsed.block,
+      dynamic_contract_issue_number: issue.number,
+    });
+  }
+
+  return { dynamicBlocks, externalLocks, prScopes };
 }
 
 function revisionPrompt(block, decision, supervisorFeedback, headSha) {
@@ -271,6 +369,14 @@ async function advanceLifecycle(issue, block, lock) {
   return revised;
 }
 
+const dynamicContext = await loadDynamicAutopilotContext();
+plan = {
+  ...staticPlan,
+  blocks: [...staticPlan.blocks, ...dynamicContext.dynamicBlocks],
+};
+validateAutopilotPlan(plan);
+blockById = new Map(plan.blocks.map((block) => [block.block_id, block]));
+
 let issues = await listBlockIssues();
 const byBlock = new Map(issues.map((issue) => [blockIdFromIssue(issue), issue]).filter(([id]) => id));
 const stateByBlock = new Map();
@@ -333,12 +439,21 @@ for (const [id, issue] of byBlock) {
   if (!["DONE"].includes(lock.state)) locks.push(lock);
 }
 
-const eligible = selectEligibleBlocks(plan, stateByBlock, locks);
+const eligible = selectEligibleBlocks(
+  plan,
+  stateByBlock,
+  [...locks, ...dynamicContext.externalLocks],
+);
 
 if (dryRun) {
   console.log("AlmaGo Copilot Autopilot DRY RUN.");
   console.log(JSON.stringify({
     eligible: eligible.map((block) => block.block_id),
+    dynamicBlocks: dynamicContext.dynamicBlocks.map((block) => block.block_id),
+    openPrScopes: dynamicContext.prScopes.map((scope) => ({
+      pr_number: scope.pr_number,
+      files: scope.files,
+    })),
     activeLocks: locks.map((lock) => ({
       block_id: lock.block_id,
       state: lock.state,

@@ -48,3 +48,12 @@ Locks track block, task, model/persona, base/head, PR, expected HEAD, writable a
 PR CI remains the canonical source-code validation. Browser Quality is required only when changed UI/product paths make it applicable. Supervisor evidence must bind its conclusion to the same remote HEAD.
 
 Automatic merge remains disabled. Enabling autonomous merge requires a separate reviewed change and repository-level required checks on the protected default branch.
+
+
+## Dynamic post-launch contracts
+
+After A45 is complete, the Continuous Improvement discovery/compiler stack may produce open issues labeled `almago-improvement-contract` and `almago-autopilot-contract-ready`. The controller treats those issues as untrusted input and revalidates the embedded block before use.
+
+A dynamic block is loaded only when its source signal is still open and non-human-gated, its base is `main`, its merge class is `AUTONOMOUS_SAFE`, and it contains 1–3 exact existing non-critical `src/**` writable files. The controller scans open pull requests and converts their changed files into external path locks; any overlap blocks new dispatch.
+
+Dynamic contracts do not bypass the normal lifecycle. They still create an Autopilot block issue, launch through Agent Tasks, pass exact-HEAD CI/Browser/Supervisor gates, obey the bounded revision budget, and stop at `MERGE_READY`. Automatic merge remains disabled.
