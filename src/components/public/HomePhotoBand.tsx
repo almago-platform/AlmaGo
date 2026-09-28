@@ -41,7 +41,7 @@ export function HomePhotoBand() {
           </p>
         </div>
 
-        <div className={s.photoBandGrid}>
+        <div className={s.photoBandGrid} tabIndex={0} role="region" aria-label="Étapes du parcours étudiant, faites défiler horizontalement">
           {moments.map((moment) => (
             <article className={s.photoCard} key={moment.label}>
               <div className={s.photoCardMedia}>
