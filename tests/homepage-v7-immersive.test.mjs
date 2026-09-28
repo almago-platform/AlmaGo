@@ -23,7 +23,7 @@ test("V7 keeps copy and product proof integrated inside the hero", () => {
   assert.match(hero, /Étudier en/);
   assert.match(hero, /plus clair/);
   assert.match(hero, /Votre dossier avance/);
-  assert.match(hero, /Vos candidatures/);
+  assert.match(hero, /Mes candidatures/);
   assert.match(css, /\.hero \.heroDossier\s*\{[\s\S]*position:\s*absolute/);
 });
 
