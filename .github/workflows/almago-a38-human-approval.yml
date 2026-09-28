@@ -17,7 +17,6 @@ jobs:
   approve-a38:
     if: >-
       github.event.issue.pull_request == null &&
-      github.event.comment.user.login == github.repository_owner &&
       contains(github.event.comment.body, 'A38 HUMAN REVIEW APPROVED')
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -41,14 +40,29 @@ jobs:
               return;
             }
 
-            if (comment.user?.login !== context.repo.owner) {
-              core.setFailed("Only the repository owner may approve the A38 human-review gate.");
-              return;
-            }
-
             const owner = context.repo.owner;
             const repo = context.repo.repo;
             const issueNumber = issuePayload.number;
+            const approver = comment.user?.login;
+
+            if (!approver) {
+              core.setFailed("A38 approval requires an authenticated GitHub user.");
+              return;
+            }
+
+            const { data: approverPermission } =
+              await github.rest.repos.getCollaboratorPermissionLevel({
+                owner,
+                repo,
+                username: approver,
+              });
+
+            if (approverPermission.permission !== "admin") {
+              core.setFailed(
+                "Only a repository admin may approve the A38 human-review gate.",
+              );
+              return;
+            }
 
             const { data: issue } = await github.rest.issues.get({
               owner,
@@ -139,4 +153,6 @@ jobs:
               ref: mainBranch,
             });
 
-            core.info("A38 closed after exact-SHA readiness evidence plus repository-owner approval.");
+            core.info(
+              "A38 closed after exact-SHA readiness evidence plus repository-admin approval.",
+            );
