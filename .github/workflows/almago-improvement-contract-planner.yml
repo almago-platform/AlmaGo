@@ -21,7 +21,7 @@ jobs:
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-      ALMAGO_CONTINUOUS_PLANNER_MODEL: gpt-5.4-mini
+      ALMAGO_CONTINUOUS_PLANNER_MODEL: gpt-5.6-luna
       ALMAGO_PLANNER_MAX_PER_RUN: "1"
     steps:
       - uses: actions/checkout@v4
