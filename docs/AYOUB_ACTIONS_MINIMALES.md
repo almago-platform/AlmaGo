@@ -79,6 +79,8 @@ Après A38 + A43 :
 
 Le runtime est Render, pas Vercel.
 
+PR #445 durcit la preuve A44 : elle doit être produite depuis le SHA exact du `main` courant, puis `main` est revérifié avant toute clôture A44.
+
 ### Supabase Auth
 
 #179 suit la décision optionnelle d’un passage Pro pour la protection contre mots de passe compromis.
@@ -91,7 +93,7 @@ Ne pas exiger le check GitHub Actions cassé tant que #286 n’est pas résolu.
 
 ### A45
 
-PR #430 prépare la recette finale Render et exige que le service live rapporte le SHA exact de `main` avant de publier `RELEASE GATE: READY`.
+PR #443 prépare la recette finale Render, exige que `main` soit protégée (#336), puis exige que le service live rapporte le SHA exact de `main` avant de publier `RELEASE GATE: READY`.
 
 ## Ce qui n’est pas requis maintenant
 
