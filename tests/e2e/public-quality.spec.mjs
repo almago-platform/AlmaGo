@@ -54,6 +54,30 @@ test("native language switch persists and Arabic renders RTL without overflow", 
   await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
   await expect(page.getByRole("heading", { name: "تسجيل الدخول" })).toBeVisible();
 
+  if (["desktop-chromium", "tablet-landscape-chromium"].includes(testInfo.project.name)) {
+    const authForm = page.locator(".auth-form-shell");
+    const authStory = page.locator(".auth-story-panel");
+    await expect(authForm).toBeVisible();
+    await expect(authStory).toBeVisible();
+
+    const [authFormBox, authStoryBox] = await Promise.all([
+      authForm.boundingBox(),
+      authStory.boundingBox(),
+    ]);
+    expect(authFormBox, "Arabic auth form should have a visible box").not.toBeNull();
+    expect(authStoryBox, "Arabic auth story should have a visible box").not.toBeNull();
+    expect(authFormBox.x, "Arabic auth form should be the right-hand primary panel").toBeGreaterThan(authStoryBox.x);
+    expect(
+      Math.abs(authFormBox.y - authStoryBox.y),
+      "Arabic auth panels should align at the top",
+    ).toBeLessThanOrEqual(2);
+  }
+
+  await page.screenshot({
+    path: "artifacts/screenshots/login-ar-" + testInfo.project.name + ".png",
+    fullPage: true,
+  });
+
   await page.goto("/", { waitUntil: "networkidle" });
   await expect(page.locator("html")).toHaveAttribute("lang", "ar");
   await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
