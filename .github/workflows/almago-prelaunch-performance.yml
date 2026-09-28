@@ -8,6 +8,7 @@ on:
       - "src/components/public/HomeHero.tsx"
       - "src/components/public/HomeJourneySection.tsx"
       - "lighthouserc.cjs"
+      - "lighthouserc.prelaunch-performance.cjs"
       - "autonomy/prelaunch-performance*.mjs"
       - ".github/workflows/almago-prelaunch-performance.yml"
   schedule:
@@ -87,7 +88,7 @@ jobs:
 
       - name: Collect Lighthouse evidence
         if: steps.release.outputs.active != 'true'
-        run: npx lhci autorun --config=./lighthouserc.cjs || true
+        run: npx lhci autorun --config=./lighthouserc.prelaunch-performance.cjs || true
 
       - name: Build one measured performance plan
         id: plan
@@ -96,6 +97,7 @@ jobs:
           ALMAGO_MAIN_SHA: ${{ github.sha }}
           ALMAGO_LIGHTHOUSE_REPORT_DIR: artifacts/lighthouse
           ALMAGO_PERFORMANCE_PLAN_PATH: artifacts/prelaunch-performance/plan.json
+          ALMAGO_PERFORMANCE_MIN_RUNS: "3"
         run: node autonomy/prelaunch-performance.mjs
 
       - name: Dispatch at most one measured performance task
@@ -129,8 +131,10 @@ jobs:
             echo "Post-launch active: ${{ steps.release.outputs.active || 'unknown' }}"
             echo "Performance task eligible: ${{ steps.plan.outputs.eligible || 'false' }}"
             echo "Reason: ${{ steps.plan.outputs.reason || 'none' }}"
-            echo "Measured homepage score: ${{ steps.plan.outputs.performance_score || 'n/a' }}"
+            echo "Measured homepage median: ${{ steps.plan.outputs.performance_score || 'n/a' }}"
+            echo "Measured range: ${{ steps.plan.outputs.performance_range || 'n/a' }}"
+            echo "Homepage runs: ${{ steps.plan.outputs.run_count || 'n/a' }}"
             echo
-            echo "A live task is allowed only below the 0.80 homepage performance budget while accessibility, SEO and best-practices remain healthy."
+            echo "A live task is allowed only when the median of 3 homepage runs is below the 0.80 performance budget while accessibility, SEO and best-practices remain healthy."
             echo "Writable scope is exactly HomeHeader.tsx, HomeHero.tsx and HomeJourneySection.tsx; merge remains disabled."
           } >> "$GITHUB_STEP_SUMMARY"
