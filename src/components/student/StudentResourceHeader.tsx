@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 type ResourceKey = "language" | "finance";
 
 const resourceLinks = [
-  { key: "pathway", label: "Parcours Allemagne", href: "/student/pathway" },
+  { key: "pathway", label: "Parcours", href: "/student/pathway" },
   { key: "language", label: "Cours de langue", href: "/student/language-courses" },
   { key: "finance", label: "Finance & assurance", href: "/student/finance-insurance" },
 ] as const;
@@ -25,7 +25,7 @@ export function StudentResourceHeader({
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div className="min-w-0 max-w-4xl">
           <p className="text-[0.68rem] font-bold uppercase tracking-[0.16em] text-[var(--brand)]">
-            Ressources du parcours
+            Pour préparer votre projet
           </p>
           <h1 className="editorial-accent mt-1.5 break-words text-[2rem] leading-[1.07] text-[var(--foreground)] sm:text-[2.55rem]">
             {title}
