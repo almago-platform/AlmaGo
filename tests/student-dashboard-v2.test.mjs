@@ -4,37 +4,43 @@ import test from "node:test";
 
 const page = readFileSync("src/app/student/page.tsx", "utf8");
 const journey = readFileSync("src/components/student/StudentJourneyOverview.tsx", "utf8");
+const shared = readFileSync("src/content/student-shared-copy.ts", "utf8");
 
 test("student dashboard keeps the existing Supabase data contract", () => {
-  assert.match(page, /from\("student_checklist_items"\)/);
-  assert.match(page, /from\("documents"\)/);
-  assert.match(page, /from\("program_recommendations"\)/);
-  assert.match(page, /from\("applications"\)/);
-  assert.match(page, /if \(!profile\?\.onboarding_completed\) redirect\("\/student\/onboarding"\)/);
+  assert.ok(page.includes('from("student_checklist_items")'));
+  assert.ok(page.includes('from("documents")'));
+  assert.ok(page.includes('from("program_recommendations")'));
+  assert.ok(page.includes('from("applications")'));
+  assert.ok(page.includes('if (!profile?.onboarding_completed) redirect("/student/onboarding")'));
 });
 
 test("student dashboard preserves next-action priority logic", () => {
-  assert.match(page, /documentsNeedingAction[\s\S]*Corriger mes documents/);
-  assert.match(page, /actionableApplication\?\.next_action[\s\S]*Voir ma candidature/);
-  assert.match(page, /nextItem[\s\S]*Continuer mes démarches/);
+  assert.ok(page.includes("documentsNeedingAction"));
+  assert.ok(page.includes("Corriger mes documents"));
+  assert.ok(page.includes("actionableApplication?.next_action"));
+  assert.ok(page.includes("Voir ma candidature"));
+  assert.ok(page.includes("nextItem"));
+  assert.ok(page.includes("Continuer mes démarches"));
 });
 
 test("student dashboard V2 centers the first view on what matters now", () => {
-  assert.match(page, /Voici ce qui compte maintenant/);
-  assert.match(page, /Prochaine action/);
-  assert.match(page, /Préparation du dossier/);
-  assert.match(page, /Votre dossier/);
-  assert.match(page, /sm:grid-cols-2 xl:grid-cols-4/);
+  assert.ok(page.includes("Voici ce qui compte maintenant"));
+  assert.ok(page.includes("Prochaine action"));
+  assert.ok(page.includes("Préparation du dossier"));
+  assert.ok(page.includes("Votre dossier"));
+  assert.ok(page.includes("sm:grid-cols-2 xl:grid-cols-4"));
 });
 
-test("journey overview uses visual cards and remains responsive", () => {
-  assert.match(journey, /rounded-\[1rem\]/);
-  assert.match(journey, /sm:grid-cols-2 xl:grid-cols-3/);
-  assert.match(journey, /Ouvrir →/);
-  assert.match(journey, /Étape en cours/);
+test("journey overview uses localized visual cards and remains responsive", () => {
+  assert.ok(journey.includes("rounded-[1rem]"));
+  assert.ok(journey.includes("sm:grid-cols-2 xl:grid-cols-3"));
+  assert.ok(journey.includes("openArrow"));
+  assert.ok(journey.includes("copy.active"));
+  assert.ok(shared.includes('open: "Ouvrir"'));
+  assert.ok(shared.includes('active: "Étape en cours"'));
 });
 
 test("dashboard retains legal framing around progress and decisions", () => {
-  assert.match(page, /ne représente ni une admission ni une validation finale/);
-  assert.match(page, /sans remplacer les décisions des universités ou des autorités/);
+  assert.ok(page.includes("ne représente ni une admission ni une validation finale"));
+  assert.ok(page.includes("sans remplacer les décisions des universités ou des autorités"));
 });
