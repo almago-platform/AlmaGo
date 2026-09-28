@@ -3,83 +3,89 @@
 import Link from "next/link";
 import { useRef, useState } from "react";
 import { BrandLogo } from "@/components/brand/BrandLogo";
+import { LanguageSwitcher } from "@/components/i18n/LanguageSwitcher";
+import { useLocale } from "@/components/i18n/LocaleProvider";
 import { HomeIcon } from "./HomeIcons";
 import s from "./Homepage.module.css";
-
-const navigation = [
-  ["Le parcours", "#parcours"],
-  ["Mon espace", "/login"],
-  ["Pourquoi AlmaGo", "#outils"],
-  ["Questions", "#faq"],
-] as const;
 
 export function HomeHeader() {
   const [open, setOpen] = useState(false);
   const toggle = useRef<HTMLButtonElement>(null);
+  const { copy } = useLocale();
+  const nav = copy.home.nav;
+  const navigation = [
+    [nav.journey, "#parcours"],
+    [nav.space, "/login"],
+    [nav.why, "#outils"],
+    [nav.questions, "#faq"],
+  ] as const;
+
   return (
-    <>
-      <header
-        className={s.header}
-        onKeyDown={(event) => {
-          if (event.key === "Escape" && open) {
-            setOpen(false);
-            toggle.current?.focus();
-          }
-        }}
-      >
-        <div className={`${s.container} ${s.headerInner}`}>
-          <Link href="/" className={s.logo} aria-label="AlmaGo accueil">
-            <BrandLogo className={s.logoImage} priority />
-          </Link>
-          <nav className={s.desktopNav} aria-label="Navigation principale">
-            {navigation.map(([label, href]) => (
-              <a key={href} href={href}>
-                {label}
-              </a>
-            ))}
-          </nav>
-          <div className={s.headerActions}>
-            <Link className={s.login} href="/login">
-              Se connecter
-            </Link>
-            <Link className={`${s.button} ${s.headerCta}`} href="/signup">
-              Créer mon dossier
-              <HomeIcon name="arrow" />
-            </Link>
-            <button
-              ref={toggle}
-              className={s.menuToggle}
-              aria-expanded={open}
-              aria-controls="home-mobile-menu"
-              aria-label={open ? "Fermer le menu" : "Ouvrir le menu"}
-              onClick={() => setOpen(!open)}
-            >
-              <HomeIcon name={open ? "close" : "menu"} />
-            </button>
-          </div>
-        </div>
-        <nav
-          id="home-mobile-menu"
-          className={s.mobileNav}
-          aria-label="Navigation mobile"
-          hidden={!open}
-        >
+    <header
+      className={s.header}
+      onKeyDown={(event) => {
+        if (event.key === "Escape" && open) {
+          setOpen(false);
+          toggle.current?.focus();
+        }
+      }}
+    >
+      <div className={`${s.container} ${s.headerInner}`}>
+        <Link href="/" className={s.logo} aria-label={copy.common.homeAria}>
+          <BrandLogo className={s.logoImage} priority />
+        </Link>
+        <nav className={s.desktopNav} aria-label={nav.mainNavigation}>
           {navigation.map(([label, href]) => (
-            <a key={href} href={href} onClick={() => setOpen(false)}>
+            <a key={href} href={href}>
               {label}
-              <HomeIcon name="arrow" />
             </a>
           ))}
-          <Link href="/login" onClick={() => setOpen(false)}>
-            Se connecter
-            <HomeIcon name="arrow" />
-          </Link>
-          <Link className={s.mobileSignup} href="/signup" onClick={() => setOpen(false)}>
-            Créer mon dossier
-            <HomeIcon name="arrow" />
-          </Link>
         </nav>
-      </header>
-    </>
+        <div className={s.headerActions}>
+          <LanguageSwitcher compact className="hidden xl:inline-flex" />
+          <Link className={s.login} href="/login">
+            {nav.login}
+          </Link>
+          <Link className={`${s.button} ${s.headerCta}`} href="/signup">
+            {nav.signup}
+            <HomeIcon name="arrow" />
+          </Link>
+          <button
+            ref={toggle}
+            className={s.menuToggle}
+            aria-expanded={open}
+            aria-controls="home-mobile-menu"
+            aria-label={open ? nav.closeMenu : nav.openMenu}
+            onClick={() => setOpen(!open)}
+          >
+            <HomeIcon name={open ? "close" : "menu"} />
+          </button>
+        </div>
+      </div>
+      <nav
+        id="home-mobile-menu"
+        className={s.mobileNav}
+        aria-label={nav.mobileNavigation}
+        hidden={!open}
+      >
+        <div className="mb-2 px-1">
+          <LanguageSwitcher />
+        </div>
+        {navigation.map(([label, href]) => (
+          <a key={href} href={href} onClick={() => setOpen(false)}>
+            {label}
+            <HomeIcon name="arrow" />
+          </a>
+        ))}
+        <Link href="/login" onClick={() => setOpen(false)}>
+          {nav.login}
+          <HomeIcon name="arrow" />
+        </Link>
+        <Link className={s.mobileSignup} href="/signup" onClick={() => setOpen(false)}>
+          {nav.signup}
+          <HomeIcon name="arrow" />
+        </Link>
+      </nav>
+    </header>
   );
 }
