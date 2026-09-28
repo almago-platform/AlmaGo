@@ -61,14 +61,14 @@ test("the real student shell and dashboard expose the pathway page", () => {
   assert.match(shell, /\/student\/pathway/);
   assert.match(shell, /Financement & assurance/);
   assert.match(shell, /\/student\/finance-insurance/);
-  assert.match(dashboard, /Voir mon parcours/);
+  assert.match(dashboard, /Voir mes étapes/);
   assert.match(dashboard, /\/student\/pathway/);
 });
 
 
 test("pathway exposes only current official regulatory sources and fails closed on stale data", () => {
   assert.match(page, /Sources officielles/);
-  assert.match(page, /Règles vérifiées pour ce parcours/);
+  assert.match(page, /Règles à vérifier pour votre situation/);
   assert.match(page, /Revalidation requise/);
   assert.match(page, /AlmaGo n’affiche donc pas de règle par défaut/);
   assert.match(page, />\s*Source officielle\s*</);
