@@ -5,11 +5,11 @@ import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/Badge";
 import { Button, buttonClassName } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { useLocale } from "@/components/i18n/LocaleProvider";
+import { studentDocumentsCopy } from "@/content/student-documents-copy";
 import {
-  categoryLabel,
   documentCategories,
   removableDocumentStatuses,
-  statusLabel,
 } from "@/lib/documents";
 
 type StudentDocument = {
@@ -51,27 +51,17 @@ function statusVariant(status: string): "success" | "warning" | "info" | "neutra
   return "neutral";
 }
 
-function formatFileSize(sizeBytes: number) {
-  if (sizeBytes >= 1024 * 1024) return `${(sizeBytes / (1024 * 1024)).toFixed(1)} MiB`;
-  return `${Math.ceil(sizeBytes / 1024)} Ko`;
+function formatFileSize(sizeBytes: number, copy: (typeof studentDocumentsCopy)["fr"]) {
+  if (sizeBytes >= 1024 * 1024) return `${(sizeBytes / (1024 * 1024)).toFixed(1)} ${copy.fileSizes.mb}`;
+  return `${Math.ceil(sizeBytes / 1024)} ${copy.fileSizes.kb}`;
 }
 
-function evidenceTypeLabel(type: string) {
-  return ({
-    definitive_admission: "Admission définitive",
-    conditional_admission: "Admission conditionnelle",
-    bewerberbestaetigung: "Bewerberbestätigung (attestation de l’université)",
-    admissible_university_correspondence: "Courrier d’université accepté pour votre parcours",
-  } as Record<string, string>)[type] || "Preuve académique";
+function evidenceTypeLabel(type: string, copy: (typeof studentDocumentsCopy)["fr"]) {
+  return copy.evidenceTypes[type] || copy.evidenceTypes.other;
 }
 
-function evidenceStatusLabel(status: string) {
-  return ({
-    received: "Reçue",
-    needs_review: "À vérifier",
-    accepted_for_pathway: "Acceptée comme preuve de parcours",
-    replace_required: "À remplacer",
-  } as Record<string, string>)[status] || "État à confirmer";
+function evidenceStatusLabel(status: string, copy: (typeof studentDocumentsCopy)["fr"]) {
+  return copy.evidenceStatuses[status] || copy.evidenceStatuses.other;
 }
 
 function evidenceStatusVariant(status: string): "success" | "warning" | "info" | "neutral" {
@@ -81,11 +71,11 @@ function evidenceStatusVariant(status: string): "success" | "warning" | "info" |
   return "neutral";
 }
 
-function formatEvidenceDate(value: string | null) {
-  if (!value) return "Date à confirmer";
+function formatEvidenceDate(value: string | null, copy: (typeof studentDocumentsCopy)["fr"]) {
+  if (!value) return copy.unknown;
   const date = new Date(`${value}T12:00:00Z`);
-  if (Number.isNaN(date.getTime())) return "Date à confirmer";
-  return new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium" }).format(date);
+  if (Number.isNaN(date.getTime())) return copy.unknown;
+  return new Intl.DateTimeFormat(copy.intlLocale, { dateStyle: "medium" }).format(date);
 }
 
 export function DocumentsPanel({
@@ -102,6 +92,8 @@ export function DocumentsPanel({
   evidenceLoadError?: boolean;
 }) {
   const router = useRouter();
+  const { locale } = useLocale();
+  const t = studentDocumentsCopy[locale];
   const fileInput = useRef<HTMLInputElement>(null);
   const [category, setCategory] = useState("passport");
   const [feedback, setFeedback] = useState<Feedback>(null);
@@ -119,7 +111,7 @@ export function DocumentsPanel({
     const file = fileInput.current?.files?.[0];
 
     if (!file) {
-      setFeedback({ message: "Choisissez un fichier avant de continuer.", kind: "error" });
+      setFeedback({ message: t.feedback.chooseFile, kind: "error" });
       return;
     }
 
@@ -135,22 +127,22 @@ export function DocumentsPanel({
       const result = await response.json().catch(() => ({}));
 
       if (!response.ok) {
-        setFeedback({ message: result.error || "Impossible d’envoyer le document.", kind: "error" });
+        setFeedback({ message: result.error || t.feedback.uploadError, kind: "error" });
         return;
       }
 
       if (fileInput.current) fileInput.current.value = "";
-      setFeedback({ message: "Votre fichier est bien enregistré. Son statut sera mis à jour après vérification.", kind: "success" });
+      setFeedback({ message: t.feedback.uploadSuccess, kind: "success" });
       router.refresh();
     } catch {
-      setFeedback({ message: "Erreur réseau. Vérifiez votre connexion puis réessayez.", kind: "error" });
+      setFeedback({ message: t.feedback.networkError, kind: "error" });
     } finally {
       setBusy(false);
     }
   }
 
   async function removeDocument(id: string) {
-    if (!window.confirm("Voulez-vous supprimer ce document ?")) return;
+    if (!window.confirm(t.feedback.deleteConfirm)) return;
 
     setBusy(true);
     setFeedback(null);
@@ -160,14 +152,14 @@ export function DocumentsPanel({
       const result = await response.json().catch(() => ({}));
 
       if (!response.ok) {
-        setFeedback({ message: result.error || "Impossible de supprimer le document.", kind: "error" });
+        setFeedback({ message: result.error || t.feedback.deleteError, kind: "error" });
         return;
       }
 
-      setFeedback({ message: "Le document a bien été supprimé de votre dossier.", kind: "success" });
+      setFeedback({ message: t.feedback.deleteSuccess, kind: "success" });
       router.refresh();
     } catch {
-      setFeedback({ message: "Erreur réseau. Vérifiez votre connexion puis réessayez.", kind: "error" });
+      setFeedback({ message: t.feedback.networkError, kind: "error" });
     } finally {
       setBusy(false);
     }
