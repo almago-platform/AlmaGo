@@ -116,6 +116,10 @@ test("workflow evidence stays pending until the named latest run completes", () 
     workflowResult([{ name: "AlmaGo PR CI", status: "completed", conclusion: "failure" }], "AlmaGo PR CI"),
     "FAILURE",
   );
+  assert.equal(
+    workflowResult([{ name: "AlmaGo PR CI", status: "completed", conclusion: "action_required" }], "AlmaGo PR CI"),
+    "ACTION_REQUIRED",
+  );
 });
 
 test("supervisor evidence must bind to the exact reviewed HEAD", () => {
@@ -170,6 +174,36 @@ test("lifecycle advances CI -> review -> merge-ready and completes only after me
   assert.deepEqual(lifecycleDecision(base).state, "REVIEW");
   assert.deepEqual(lifecycleDecision({ ...base, supervisor: "APPROVED" }).state, "MERGE_READY");
   assert.deepEqual(lifecycleDecision({ ...base, prOpen: false, prMerged: true }).state, "DONE");
+});
+
+
+test("workflow approval requirements stop at a human gate instead of spending revisions", () => {
+  const block = { ...plan.blocks[0], writable_paths: ["docs/**"], merge_class: "AUTONOMOUS_SAFE" };
+  const base = {
+    block,
+    lock: { revision_attempts: 0 },
+    prOpen: true,
+    prMerged: false,
+    headMatches: true,
+    baseMatches: true,
+    ci: "ACTION_REQUIRED",
+    browser: "NOT_APPLICABLE",
+    supervisor: null,
+    scopeExact: true,
+    forbiddenTouched: false,
+    conflict: false,
+    maxRevisionAttempts: 3,
+  };
+
+  assert.deepEqual(lifecycleDecision(base), {
+    state: "HUMAN_GATE",
+    action: "STOP",
+    reason: "GitHub workflow approval is required before canonical validation can run",
+  });
+  assert.equal(
+    lifecycleDecision({ ...base, ci: "SUCCESS", browser: "ACTION_REQUIRED" }).state,
+    "HUMAN_GATE",
+  );
 });
 
 test("lifecycle sends bounded revisions and stops at the revision budget", () => {
