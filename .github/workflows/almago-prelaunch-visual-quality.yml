@@ -1,0 +1,146 @@
+name: AlmaGo Prelaunch Visual Quality
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/components/public/**"
+      - "autonomy/visual-review.mjs"
+      - "autonomy/prelaunch-visual-quality*.mjs"
+      - ".github/workflows/almago-prelaunch-visual-quality.yml"
+  schedule:
+    - cron: "17 7 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: read
+  actions: read
+
+concurrency:
+  group: almago-prelaunch-visual-quality
+  cancel-in-progress: true
+
+jobs:
+  review:
+    if: vars.ALMAGO_AI_ENABLED == 'true' && vars.ALMAGO_AI_BILLING_CAP_CONFIRMED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      CI: "true"
+      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Check release state
+        id: release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node autonomy/continuous-improvement.mjs activation
+
+      - name: Install browser tools
+        if: steps.release.outputs.active != 'true'
+        run: |
+          npm ci
+          npm install --no-save --package-lock=false @playwright/test@1.55.0 @axe-core/playwright@4.10.2
+          npx playwright install --with-deps chromium
+
+      - name: Prepare safe public configuration
+        if: steps.release.outputs.active != 'true'
+        shell: bash
+        run: |
+          if [ -z "$NEXT_PUBLIC_SUPABASE_URL" ]; then
+            echo "NEXT_PUBLIC_SUPABASE_URL=https://example.supabase.co" >> "$GITHUB_ENV"
+          fi
+          if [ -z "$NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY" ]; then
+            echo "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_prelaunch_visual_placeholder" >> "$GITHUB_ENV"
+          fi
+
+      - name: Build AlmaGo
+        if: steps.release.outputs.active != 'true'
+        run: npm run build
+
+      - name: Start production server
+        if: steps.release.outputs.active != 'true'
+        run: |
+          mkdir -p artifacts
+          npm start -- -p 3000 > artifacts/server.log 2>&1 &
+          for i in {1..40}; do
+            if curl --fail --silent http://127.0.0.1:3000/ > /dev/null; then exit 0; fi
+            sleep 2
+          done
+          cat artifacts/server.log
+          exit 1
+
+      - name: Capture validated homepage screenshots
+        if: steps.release.outputs.active != 'true'
+        run: |
+          npx playwright test tests/e2e/public-quality.spec.mjs \
+            --config=playwright.config.mjs \
+            --grep "^home " \
+            --project=desktop-chromium \
+            --project=mobile-chromium
+
+      - name: Structured Gemini visual review
+        if: steps.release.outputs.active != 'true'
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          ALMAGO_GEMINI_MODEL: ${{ vars.ALMAGO_GEMINI_MODEL }}
+          ALMAGO_VISUAL_REVIEW_MAX_IMAGES: "2"
+        run: node autonomy/visual-review.mjs artifacts/screenshots
+
+      - name: Build one bounded visual plan
+        id: plan
+        if: steps.release.outputs.active != 'true'
+        env:
+          ALMAGO_MAIN_SHA: ${{ github.sha }}
+          ALMAGO_VISUAL_REVIEW_JSON: artifacts/visual-review.json
+          ALMAGO_VISUAL_PLAN_PATH: artifacts/prelaunch-visual/plan.json
+        run: node autonomy/prelaunch-visual-quality.mjs
+
+      - name: Dispatch at most one visual-quality task
+        if: steps.release.outputs.active != 'true' && steps.plan.outputs.eligible == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ALMAGO_COPILOT_AUTOPILOT_TOKEN: ${{ secrets.ALMAGO_COPILOT_AUTOPILOT_TOKEN }}
+          ALMAGO_COPILOT_AUTOPILOT_ENABLED: "true"
+          ALMAGO_COPILOT_AUTOPILOT_DRY_RUN: "false"
+          ALMAGO_COPILOT_AUTOPILOT_PLAN_PATH: artifacts/prelaunch-visual/plan.json
+          ALMAGO_COPILOT_AUTOPILOT_MAX_NEW_TASKS: "1"
+        run: node autonomy/copilot-autopilot.mjs
+
+      - name: Store visual evidence
+        if: always() && steps.release.outputs.active != 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: almago-prelaunch-visual-${{ github.run_id }}
+          path: |
+            artifacts/screenshots/
+            artifacts/visual-review.md
+            artifacts/visual-review.json
+            artifacts/server.log
+          if-no-files-found: warn
+          retention-days: 7
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "## AlmaGo Prelaunch Visual Quality"
+            echo
+            echo "Post-launch active: ${{ steps.release.outputs.active || 'unknown' }}"
+            echo "Visual task eligible: ${{ steps.plan.outputs.eligible || 'false' }}"
+            echo "Reason: ${{ steps.plan.outputs.reason || 'none' }}"
+            echo "Verdict: ${{ steps.plan.outputs.verdict || 'none' }}"
+            echo "Confidence: ${{ steps.plan.outputs.confidence || 'none' }}"
+            echo
+            echo "A live task requires REVISE + high confidence + at least one moderate/high finding."
+            echo "Writable scope is exactly Homepage.module.css, HomeHeader.tsx and HomeHero.tsx; automatic merge remains disabled."
+          } >> "$GITHUB_STEP_SUMMARY"
