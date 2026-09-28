@@ -105,7 +105,7 @@ export function buildGermanyChecklist(input: GermanyChecklistInput): GermanyChec
         "almago",
         "completed",
         ["accepted_definitive_admission", "decision:STUDIUM"],
-        "Votre admission est enregistrée dans le dossier. Cela ne décide pas votre visa.",
+        "Votre admission est enregistrée dans le dossier. Cette étape ne constitue pas une décision de visa.",
       ),
     );
     return items;
