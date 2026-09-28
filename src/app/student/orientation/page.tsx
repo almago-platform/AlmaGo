@@ -56,19 +56,19 @@ export default async function StudentOrientationPage() {
       <StudentJourneyHeader
         current="orientation"
         eyebrow="Mon dossier"
-        title="Programmes recommandés"
-        description="Comparez les pistes préparées pour votre dossier, comprenez pourquoi elles apparaissent et vérifiez les critères importants avant de décider. Une recommandation reste une piste de travail, pas une garantie d’admission."
+        title="Mes programmes"
+        description="Comparez les programmes proposés et vérifiez les critères avant de choisir. Un programme proposé n’est pas une admission."
         actions={<ButtonLink href="/student/applications" variant="secondary">Mes candidatures</ButtonLink>}
       />
 
       <StudentGuidancePanel
-        eyebrow="Votre repère orientation"
-        title="Une recommandation est un point de départ pour comparer, pas une décision à votre place."
-        description="Prenez le temps de regarder les critères, la langue, l’échéance et la source de chaque programme. AlmaGo rassemble ces éléments pour rendre la comparaison plus simple et plus transparente."
+        eyebrow="Pour choisir un programme"
+        title="Comparez avant de choisir."
+        description="Vérifiez la langue, les critères, la date limite et la source officielle."
         points={[
-          "Comprendre pourquoi une piste apparaît dans votre dossier.",
-          "Comparer les critères importants avant de vous engager.",
-          "Décider ensuite si cette piste mérite une candidature.",
+          "Vérifier les critères du programme.",
+          "Regarder la date limite et la langue.",
+          "Choisir si vous voulez le suivre dans vos candidatures.",
         ]}
         image={{
           src: "https://images.unsplash.com/photo-1758270704787-615782711641?auto=format&fit=crop&w=1200&q=82",
@@ -90,12 +90,12 @@ export default async function StudentOrientationPage() {
 function OrientationUnavailable() {
   return (
     <main className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 sm:py-7 lg:px-8 lg:py-9">
-      <StudentJourneyHeader current="orientation" eyebrow="Mon dossier" title="Programmes recommandés" />
+      <StudentJourneyHeader current="orientation" eyebrow="Mon dossier" title="Mes programmes" />
       <Card>
         <div role="alert">
           <h2 className="text-xl font-semibold text-slate-950">Orientation temporairement indisponible</h2>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
-            Nous n’arrivons pas à afficher vos recommandations pour le moment. Rien n’a été supprimé ou modifié dans votre dossier.
+            Impossible d’afficher vos programmes pour le moment. Réessayez.
           </p>
         </div>
         <div className="mt-5 flex flex-col gap-3 sm:flex-row">
