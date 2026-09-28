@@ -392,12 +392,8 @@ jobs:
                     generationConfig: {
                       temperature: 0.1,
                       maxOutputTokens: 2200,
-                      responseFormat: {
-                        text: {
-                          mimeType: "application/json",
-                          schema,
-                        },
-                      },
+                      responseMimeType: "application/json",
+                      responseSchema: schema,
                     },
                   }),
                 },
