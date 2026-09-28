@@ -48,8 +48,9 @@ jobs:
     timeout-minutes: 10
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-      GEMINI_MODEL: gemini-3.5-flash
+      GEMINI_MODEL: gemini-3.8-flash
       GEMINI_FALLBACK_MODEL: gemini-3.6-flash
+      GEMINI_TERTIARY_MODEL: gemini-3.5-flash
 
 
     steps:
@@ -73,8 +74,9 @@ jobs:
             const checkpointCreatedAt = isDispatch
               ? new Date().toISOString()
               : (process.env.CHECKPOINT_CREATED_AT || "");
-            const model = process.env.GEMINI_MODEL || "gemini-3.5-flash";
+            const model = process.env.GEMINI_MODEL || "gemini-3.8-flash";
             const fallbackModel = process.env.GEMINI_FALLBACK_MODEL || "gemini-3.6-flash";
+            const tertiaryModel = process.env.GEMINI_TERTIARY_MODEL || "gemini-3.5-flash";
 
             if (!pull_number) {
               core.setFailed("Missing pull request number for supervisor run.");
@@ -169,8 +171,8 @@ jobs:
 
             const providerAttempts = [
               { model, waitMs: 0 },
-              { model, waitMs: 5000 },
               { model: fallbackModel, waitMs: 5000 },
+              { model: tertiaryModel, waitMs: 5000 },
             ];
 
             if (alreadyHandled) {
