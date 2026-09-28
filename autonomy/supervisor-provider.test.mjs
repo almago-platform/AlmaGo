@@ -10,7 +10,9 @@ test("instant supervisor uses Gemini structured output and no OpenAI API depende
   assert.match(supervisor, /GEMINI_MODEL:\s*gemini-3\.5-flash/);
   assert.match(supervisor, /generativelanguage\.googleapis\.com\/v1beta\/models\//);
   assert.match(supervisor, /x-goog-api-key/);
-  assert.match(supervisor, /responseFormat/);
+  assert.match(supervisor, /responseMimeType:\s*"application\/json"/);
+  assert.match(supervisor, /responseSchema:\s*schema/);
+  assert.doesNotMatch(supervisor, /responseFormat:\s*\{/);
   assert.match(supervisor, /application\/json/);
   assert.doesNotMatch(supervisor, /api\.openai\.com/);
   assert.doesNotMatch(supervisor, /OPENAI_API_KEY/);
