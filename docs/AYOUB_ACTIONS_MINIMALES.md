@@ -20,6 +20,8 @@ GitHub Actions a actuellement un incident séparé : les workflows sont créés 
 
 ### A38 — juridique
 
+PR #438 regroupe sur le `main` courant la proposition de rétention/suppression, la matrice de finalisation et les faits Render/Vercel à relire humainement.
+
 Compléter `docs/A38_OWNER_CONFIRMATION.md`, décider conservation/suppression, faire relire les textes, puis n’activer `A38_REVIEW_READY: true` qu’une fois les placeholders réellement résolus.
 
 Après la relecture humaine, poster exactement :
