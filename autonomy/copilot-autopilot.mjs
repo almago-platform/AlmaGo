@@ -37,7 +37,12 @@ if (!copilotToken) {
 }
 
 const [owner, repo] = repository.split("/");
-const staticPlan = JSON.parse(readFileSync("autonomy/copilot-autopilot-plan.json", "utf8"));
+const planPath = process.env.ALMAGO_COPILOT_AUTOPILOT_PLAN_PATH || "autonomy/copilot-autopilot-plan.json";
+const maxNewTasksRaw = Number.parseInt(process.env.ALMAGO_COPILOT_AUTOPILOT_MAX_NEW_TASKS || "", 10);
+const maxNewTasks = Number.isSafeInteger(maxNewTasksRaw) && maxNewTasksRaw > 0
+  ? Math.min(maxNewTasksRaw, 10)
+  : null;
+const staticPlan = JSON.parse(readFileSync(planPath, "utf8"));
 validateAutopilotPlan(staticPlan);
 let plan = staticPlan;
 let blockById = new Map(staticPlan.blocks.map((block) => [block.block_id, block]));
@@ -466,11 +471,15 @@ const eligible = selectEligibleBlocks(
   stateByBlock,
   [...locks, ...dynamicContext.externalLocks],
 );
+const dispatchable = maxNewTasks ? eligible.slice(0, maxNewTasks) : eligible;
 
 if (dryRun) {
   console.log("AlmaGo Copilot Autopilot DRY RUN.");
   console.log(JSON.stringify({
     eligible: eligible.map((block) => block.block_id),
+    dispatchable: dispatchable.map((block) => block.block_id),
+    planPath,
+    maxNewTasks,
     dynamicBlocks: dynamicContext.dynamicBlocks.map((block) => block.block_id),
     aiContinuousBlocks: aiContinuousBlocks.map((block) => block.block_id),
     openPrScopes: dynamicContext.prScopes.map((scope) => ({
@@ -487,7 +496,7 @@ if (dryRun) {
   process.exit(0);
 }
 
-for (const block of eligible) {
+for (const block of dispatchable) {
   let issue = byBlock.get(block.block_id);
   if (!issue) {
     issue = await gh("/repos/" + owner + "/" + repo + "/issues", {
