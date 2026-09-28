@@ -12,7 +12,7 @@ const content = {
     title: "Reprenez votre parcours là où vous l’avez laissé.",
     description:
       "Votre projet, vos documents, vos candidatures et vos prochaines actions restent réunis dans un dossier structuré.",
-    image: "https://images.pexels.com/photos/6684514/pexels-photo-6684514.jpeg",
+    image: "https://images.pexels.com/photos/6684514/pexels-photo-6684514.jpeg?auto=compress&cs=tinysrgb&w=1200",
     alt: "Des étudiants travaillent ensemble dans une bibliothèque universitaire.",
     badge: "Votre dossier reste organisé",
     points: [
@@ -26,7 +26,7 @@ const content = {
     title: "Créez votre espace. Construisez ensuite votre projet, étape par étape.",
     description:
       "Le compte est seulement le point de départ : vous définissez ensuite votre projet académique, vos documents et vos prochaines démarches.",
-    image: "https://images.pexels.com/photos/7973208/pexels-photo-7973208.jpeg",
+    image: "https://images.pexels.com/photos/7973208/pexels-photo-7973208.jpeg?auto=compress&cs=tinysrgb&w=1200",
     alt: "Des étudiants relisent ensemble des documents devant un bâtiment universitaire.",
     badge: "Étudier en Allemagne, avec un cap clair",
     points: [
@@ -46,7 +46,7 @@ export function AuthStoryPanel({ mode }: AuthStoryPanelProps) {
         <Link href="/" className="inline-flex items-center" aria-label="Retour à l'accueil AlmaGo">
           <BrandLogo className="h-auto w-36" />
         </Link>
-        <span className="rounded-full border border-[var(--border)] bg-[var(--surface-subtle)] px-3 py-1.5 text-[0.68rem] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">
+        <span className="rounded-full border border-[var(--border)] bg-[var(--surface-subtle)] px-3 py-1.5 text-[0.68rem] font-bold uppercase tracking-[0.12em] text-slate-600">
           Espace étudiant
         </span>
       </div>
@@ -78,10 +78,10 @@ export function AuthStoryPanel({ mode }: AuthStoryPanelProps) {
               key={number}
               className="grid grid-cols-[2.75rem_1fr] gap-3 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-4 py-3"
             >
-              <span className="pt-0.5 text-xs font-bold tracking-[0.14em] text-[var(--brand)]">{number}</span>
+              <span className="pt-0.5 text-xs font-bold tracking-[0.14em] text-[var(--brand-strong)]">{number}</span>
               <div>
                 <p className="text-sm font-bold text-[var(--foreground)]">{title}</p>
-                <p className="mt-1 text-xs leading-5 text-[var(--muted)]">{detail}</p>
+                <p className="mt-1 text-xs leading-5 text-slate-600">{detail}</p>
               </div>
             </li>
           ))}

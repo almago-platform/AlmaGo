@@ -8,7 +8,7 @@ export function HomeHero() {
     <section className={s.hero} aria-labelledby="home-title">
       <div className={s.heroBackdrop} aria-hidden="true">
         <Image
-          src="https://images.pexels.com/photos/7972313/pexels-photo-7972313.jpeg"
+          src="https://images.pexels.com/photos/7972313/pexels-photo-7972313.jpeg?auto=compress&cs=tinysrgb&w=1920"
           alt=""
           fill
           priority
