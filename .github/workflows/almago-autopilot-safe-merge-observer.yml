@@ -1,0 +1,58 @@
+name: AlmaGo Autopilot Safe Merge Observer
+
+on:
+  schedule:
+    - cron: "13,43 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: read
+  issues: read
+  actions: read
+  statuses: read
+
+concurrency:
+  group: almago-autopilot-safe-merge-observer
+  cancel-in-progress: true
+
+jobs:
+  observe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      ALMAGO_AUTOPILOT_AUTOMERGE_ENABLED: "true"
+      ALMAGO_AUTOPILOT_AUTOMERGE_DRY_RUN: "true"
+      ALMAGO_REAL_AUTOMERGE_ENABLED: ${{ vars.ALMAGO_AUTOPILOT_AUTOMERGE_ENABLED }}
+      ALMAGO_REAL_AUTOMERGE_DRY_RUN: ${{ vars.ALMAGO_AUTOPILOT_AUTOMERGE_DRY_RUN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Validate safe-merge policy
+        run: node --test autonomy/autopilot-safe-merge.test.mjs
+
+      - name: Observe safe-merge readiness
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node autonomy/autopilot-safe-merge.mjs
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "## AlmaGo Autopilot Safe Merge Observer"
+            echo
+            echo "Observer executor enabled: true"
+            echo "Observer dry-run: true"
+            echo "Observer token permissions: read-only"
+            echo
+            echo "Configured real automerge enabled: ${ALMAGO_REAL_AUTOMERGE_ENABLED:-false}"
+            echo "Configured real automerge dry-run: ${ALMAGO_REAL_AUTOMERGE_DRY_RUN:-true}"
+            echo
+            echo "This observer can validate merge readiness but cannot merge, comment, close, push, or mutate repository state."
+            echo "A real merge still requires the separate Safe Merge workflow, ENABLED=true, DRY_RUN=false, and the strict required 'verify' ruleset check."
+          } >> "$GITHUB_STEP_SUMMARY"
