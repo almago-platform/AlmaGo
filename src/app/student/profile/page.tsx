@@ -7,9 +7,13 @@ import { Card } from "@/components/ui/Card";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { StudentEntryProgress } from "@/components/student/StudentEntryProgress";
+import { getRequestLocale } from "@/lib/i18n-server";
+import { studentProfileCopy } from "@/content/student-profile-copy";
 
 export const dynamic = "force-dynamic";
 export default async function ProfilePage() {
+  const locale = await getRequestLocale();
+  const t = studentProfileCopy[locale];
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
@@ -22,18 +26,18 @@ export default async function ProfilePage() {
     return (
       <main className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 sm:py-7 lg:px-8 lg:py-9">
         <PageHeader
-          badge="Espace étudiant"
-          title="Votre profil étudiant"
-          actions={<ButtonLink href="/student" variant="secondary">Retour à mon dossier</ButtonLink>}
+          badge={t.page.badge}
+          title={t.page.title}
+          actions={<ButtonLink href="/student" variant="secondary">{t.page.back}</ButtonLink>}
         />
         <Card>
           <div role="alert">
-            <h2 className="text-xl font-semibold text-slate-950">Profil temporairement indisponible</h2>
-            <p className="mt-2 text-sm leading-6 text-slate-600">Impossible de charger votre profil pour le moment. Réessayez ou revenez à votre dossier.</p>
+            <h2 className="text-xl font-semibold text-slate-950">{t.page.unavailableTitle}</h2>
+            <p className="mt-2 text-sm leading-6 text-slate-600">{t.page.unavailableText}</p>
           </div>
           <div className="mt-5 flex flex-wrap gap-3">
-            <ButtonLink href="/student/profile">Réessayer</ButtonLink>
-            <ButtonLink href="/student" variant="secondary">Retour à mon dossier</ButtonLink>
+            <ButtonLink href="/student/profile">{t.page.retry}</ButtonLink>
+            <ButtonLink href="/student" variant="secondary">{t.page.back}</ButtonLink>
           </div>
         </Card>
       </main>
@@ -59,47 +63,47 @@ export default async function ProfilePage() {
   return (
     <main className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 sm:py-7 lg:px-8 lg:py-9">
       <PageHeader
-        badge="Espace étudiant · Mon profil"
-        title="Informations du dossier"
-        description="Mettez à jour vos informations pour garder votre dossier clair."
-        actions={<ButtonLink href="/student" variant="secondary">Retour à mon dossier</ButtonLink>}
+        badge={t.page.badge}
+        title={t.page.title}
+        description={t.page.description}
+        actions={<ButtonLink href="/student" variant="secondary">{t.page.back}</ButtonLink>}
       />
 
       <div className="grid gap-5 lg:grid-cols-[minmax(15rem,0.35fr)_minmax(0,1fr)] lg:gap-6">
-        <aside className="space-y-4 lg:sticky lg:top-6 lg:self-start" aria-label="Repères du profil">
+        <aside className="space-y-4 lg:sticky lg:top-6 lg:self-start" aria-label={t.page.landmarks}>
           <Card className="shadow-none">
             <StudentEntryProgress current={3} compact />
             <p className="mt-3 text-xs leading-5 text-[var(--muted)]">
-              Votre compte est prêt. Vous pouvez modifier vos informations à tout moment.
+              {t.page.accountReady}
             </p>
           </Card>
 
           <Card className="border-[var(--brand-border)] bg-white shadow-none">
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <Badge variant={profileCompletion === 100 ? "success" : "info"}>Profil étudiant</Badge>
+              <Badge variant={profileCompletion === 100 ? "success" : "info"}>{t.page.profileBadge}</Badge>
               <span className="text-sm font-bold text-[var(--brand)]">{profileCompletion}%</span>
             </div>
-            <h2 className="mt-4 text-xl font-semibold tracking-[-0.02em] text-slate-950">Profil rempli</h2>
+            <h2 className="mt-4 text-xl font-semibold tracking-[-0.02em] text-slate-950">{t.page.profileFilled}</h2>
             <div className="mt-4">
-              <ProgressBar value={profileCompletion} label="Champs requis du profil complétés" />
+              <ProgressBar value={profileCompletion} label={t.page.progressLabel} />
             </div>
             <p className="mt-4 text-sm leading-6 text-slate-600">
-              Ce pourcentage montre les champs obligatoires remplis. Il ne prédit pas une admission.
+              {t.page.progressBoundary}
             </p>
           </Card>
 
           <Card className="shadow-none">
-            <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">À quoi ça sert ?</p>
-            <h2 className="mt-3 text-lg font-semibold text-slate-950">Garder votre dossier à jour</h2>
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">{t.page.whyEyebrow}</p>
+            <h2 className="mt-3 text-lg font-semibold text-slate-950">{t.page.whyTitle}</h2>
             <p className="mt-2 text-sm leading-6 text-slate-600">
-              Ces informations servent à afficher des programmes et des étapes adaptés à votre dossier.
+              {t.page.whyText}
             </p>
           </Card>
 
           <Card className="shadow-none">
-            <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">À vérifier</p>
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">{t.page.checkEyebrow}</p>
             <p className="mt-3 text-sm leading-6 text-slate-600">
-              Si une ancienne valeur apparaît avec “à mettre à jour”, choisissez une valeur proposée avant d’enregistrer.
+              {t.page.checkText}
             </p>
           </Card>
         </aside>
