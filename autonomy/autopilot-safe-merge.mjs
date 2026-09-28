@@ -4,6 +4,7 @@ import {
   rulesetAllowsAutonomousMerge,
 } from "./autopilot-safe-merge-core.mjs";
 import { sourceSignalStillValid } from "./dynamic-contracts-core.mjs";
+import { hasOpenQuarantine, QUARANTINE_LABEL } from "./postmerge-quarantine-core.mjs";
 import {
   CONTRACT_LABEL,
   CONTRACT_READY_LABEL,
@@ -163,6 +164,14 @@ async function blockIssues() {
   return issues.filter((issue) =>
     !issue.pull_request && String(issue.body || "").includes("<!-- almago-autopilot-block:")
   );
+}
+
+const quarantineIssues = await gh(
+  "/repos/" + owner + "/" + repo + "/issues?state=open&labels=" + encodeURIComponent(QUARANTINE_LABEL) + "&per_page=100"
+);
+if (hasOpenQuarantine(quarantineIssues)) {
+  console.log("AlmaGo Autopilot Safe Merge: BLOCKED by open autonomy quarantine.");
+  process.exit(0);
 }
 
 const rulesets = await detailedRulesets();
