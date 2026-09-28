@@ -5,19 +5,19 @@ const moments = [
   {
     label: "01",
     title: "Je m’informe sur les programmes",
-    image: "https://images.pexels.com/photos/5965674/pexels-photo-5965674.jpeg",
+    image: "https://images.pexels.com/photos/5965674/pexels-photo-5965674.jpeg?auto=compress&cs=tinysrgb&w=1200",
     alt: "Des étudiantes se déplacent sur un campus avec un ordinateur et des documents.",
   },
   {
     label: "02",
     title: "Je prépare mes documents",
-    image: "https://images.pexels.com/photos/6684514/pexels-photo-6684514.jpeg",
+    image: "https://images.pexels.com/photos/6684514/pexels-photo-6684514.jpeg?auto=compress&cs=tinysrgb&w=1200",
     alt: "Des étudiants travaillent ensemble dans une bibliothèque universitaire.",
   },
   {
     label: "03",
     title: "Je structure mes candidatures",
-    image: "https://images.pexels.com/photos/5553958/pexels-photo-5553958.jpeg",
+    image: "https://images.pexels.com/photos/5553958/pexels-photo-5553958.jpeg?auto=compress&cs=tinysrgb&w=1200",
     alt: "Deux étudiants discutent devant l’entrée d’un établissement universitaire.",
   },
 ] as const;

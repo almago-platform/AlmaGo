@@ -71,7 +71,7 @@ test("pathway exposes only current official regulatory sources and fails closed 
   assert.match(page, /Règles vérifiées pour ce parcours/);
   assert.match(page, /Revalidation requise/);
   assert.match(page, /AlmaGo n’affiche donc pas de règle par défaut/);
-  assert.match(page, /Ouvrir la source officielle/);
+  assert.match(page, />\s*Source officielle\s*</);
   assert.doesNotMatch(page, /source\.verification_status === "verified" && source\.verified_at/);
 });
 

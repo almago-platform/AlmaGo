@@ -15,6 +15,9 @@ concurrency:
 
 jobs:
   approve-a38:
+    if: >-
+      github.event.issue.pull_request == null &&
+      contains(github.event.comment.body, 'A38 HUMAN REVIEW APPROVED')
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -37,14 +40,29 @@ jobs:
               return;
             }
 
-            if (comment.user?.login !== context.repo.owner) {
-              core.setFailed("Only the repository owner may approve the A38 human-review gate.");
-              return;
-            }
-
             const owner = context.repo.owner;
             const repo = context.repo.repo;
             const issueNumber = issuePayload.number;
+            const approver = comment.user?.login;
+
+            if (!approver) {
+              core.setFailed("A38 approval requires an authenticated GitHub user.");
+              return;
+            }
+
+            const { data: approverPermission } =
+              await github.rest.repos.getCollaboratorPermissionLevel({
+                owner,
+                repo,
+                username: approver,
+              });
+
+            if (approverPermission.permission !== "admin") {
+              core.setFailed(
+                "Only a repository admin may approve the A38 human-review gate.",
+              );
+              return;
+            }
 
             const { data: issue } = await github.rest.issues.get({
               owner,
@@ -81,27 +99,6 @@ jobs:
               return;
             }
 
-            const labels = new Set(
-              (issue.labels || []).map(label => typeof label === "string" ? label : label.name)
-            );
-            if (!labels.has("almago-plan-done")) {
-              await github.rest.issues.addLabels({
-                owner,
-                repo,
-                issue_number: issueNumber,
-                labels: ["almago-plan-done"],
-              });
-            }
-
-            for (const label of ["almago-human-required", "almago-ai-blocked"]) {
-              await github.rest.issues.removeLabel({
-                owner,
-                repo,
-                issue_number: issueNumber,
-                name: label,
-              }).catch(() => null);
-            }
-
             const evidenceMarker = `<!-- almago-a38-human-approved:sha=${sha};comment=${comment.id} -->`;
             if (!comments.some(item => String(item.body || "").includes(evidenceMarker))) {
               await github.rest.issues.createComment({
@@ -120,10 +117,44 @@ jobs:
               });
             }
 
+            const [{ data: finalMain }, { data: finalIssue }] = await Promise.all([
+              github.rest.repos.getBranch({
+                owner,
+                repo,
+                branch: mainBranch,
+              }),
+              github.rest.issues.get({
+                owner,
+                repo,
+                issue_number: issueNumber,
+              }),
+            ]);
+
+            if (finalMain.commit.sha !== sha) {
+              core.setFailed(
+                "A38 cannot close because main changed after readiness/approval validation. Expected " +
+                  sha +
+                  ", current " +
+                  finalMain.commit.sha +
+                  ".",
+              );
+              return;
+            }
+
+            const finalLabels = new Set(
+              (finalIssue.labels || []).map(label =>
+                typeof label === "string" ? label : label.name,
+              ),
+            );
+            finalLabels.add("almago-plan-done");
+            finalLabels.delete("almago-human-required");
+            finalLabels.delete("almago-ai-blocked");
+
             await github.rest.issues.update({
               owner,
               repo,
               issue_number: issueNumber,
+              labels: [...finalLabels],
               state: "closed",
               state_reason: "completed",
             });
@@ -135,4 +166,6 @@ jobs:
               ref: mainBranch,
             });
 
-            core.info("A38 closed after exact-SHA readiness evidence plus repository-owner approval.");
+            core.info(
+              "A38 closed after exact-SHA readiness evidence plus repository-admin approval.",
+            );
