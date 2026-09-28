@@ -31,21 +31,62 @@ test.describe("authenticated Student Space quality", () => {
     await page.getByRole("button", { name: "Se connecter" }).click();
     await page.waitForURL(/\/student(?:\/.*)?$/, { timeout: 20_000 });
 
+    const viewportWidth = testInfo.project.use.viewport?.width || 1440;
+    if (viewportWidth < 1024) {
+      await page.getByRole("button", { name: /menu étudiant/i }).click();
+    }
+
+    const languageSwitcher = page.locator("select:visible").first();
+    await expect(languageSwitcher).toBeVisible();
+    await languageSwitcher.selectOption("ar");
+    await expect(page.locator("html")).toHaveAttribute("lang", "ar");
+    await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
+
     for (const target of pages) {
       const response = await page.goto(target.path, { waitUntil: "networkidle" });
       expect(response, target.path + " should return a response").not.toBeNull();
       expect(response?.ok(), target.path + " should return a successful response").toBeTruthy();
       expect(new URL(page.url()).pathname, target.path + " should stay in the requested student route").toBe(target.path);
 
+      await expect(page.locator("html")).toHaveAttribute("lang", "ar");
+      await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
+
       const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
       expect(overflow, target.path + " must not overflow horizontally").toBeLessThanOrEqual(1);
+
+      if (viewportWidth >= 1024) {
+        const sidebar = page.locator(".student-shell-sidebar");
+        const main = page.locator(".student-shell-main");
+        const desktopHeader = page.locator(".student-shell-desktop-header");
+        await expect(sidebar).toBeVisible();
+        await expect(main).toBeVisible();
+        await expect(desktopHeader).toBeVisible();
+
+        const [sidebarBox, mainBox, headerBox] = await Promise.all([
+          sidebar.boundingBox(),
+          main.boundingBox(),
+          desktopHeader.boundingBox(),
+        ]);
+        expect(sidebarBox, target.path + " sidebar should have a box").not.toBeNull();
+        expect(mainBox, target.path + " main should have a box").not.toBeNull();
+        expect(headerBox, target.path + " desktop header should have a box").not.toBeNull();
+        expect(sidebarBox.x, target.path + " Arabic sidebar should sit to the right of main").toBeGreaterThan(mainBox.x);
+        expect(
+          mainBox.x + mainBox.width,
+          target.path + " main content must stop before the Arabic sidebar",
+        ).toBeLessThanOrEqual(sidebarBox.x + 1);
+        expect(
+          headerBox.x + headerBox.width,
+          target.path + " desktop header must stop before the Arabic sidebar",
+        ).toBeLessThanOrEqual(sidebarBox.x + 1);
+      }
 
       const results = await new AxeBuilder({ page }).analyze();
       const severe = results.violations.filter(item => item.impact === "serious" || item.impact === "critical");
       expect(severe, target.path + "\n" + JSON.stringify(severe, null, 2)).toEqual([]);
 
-      if ((testInfo.project.use.viewport?.width || 1440) < 1024) {
-        const menuButton = page.getByRole("button", { name: /menu étudiant/i });
+      if (viewportWidth < 1024) {
+        const menuButton = page.getByRole("button", { name: /فتح قائمة الطالب/ });
         await expect(menuButton).toBeVisible();
       }
 
