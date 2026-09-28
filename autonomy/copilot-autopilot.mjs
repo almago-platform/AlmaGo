@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
 import { getAgentTask, startAgentTask } from "./copilot-agent-client.mjs";
+import { loadContinuousImprovementBlocks } from "./improvement-intake.mjs";
 import {
   browserQualityRequirement,
   leaseExpired,
@@ -32,9 +33,10 @@ if (!copilotToken) {
 }
 
 const [owner, repo] = repository.split("/");
-const plan = JSON.parse(readFileSync("autonomy/copilot-autopilot-plan.json", "utf8"));
-validateAutopilotPlan(plan);
-const blockById = new Map(plan.blocks.map((block) => [block.block_id, block]));
+const staticPlan = JSON.parse(readFileSync("autonomy/copilot-autopilot-plan.json", "utf8"));
+validateAutopilotPlan(staticPlan);
+let plan = staticPlan;
+let blockById = new Map(plan.blocks.map((block) => [block.block_id, block]));
 
 const headers = {
   Authorization: "Bearer " + githubToken,
@@ -269,6 +271,22 @@ async function advanceLifecycle(issue, block, lock) {
   await recordLock(issue.number, revised);
   console.log("Dispatched revision " + revisionNumber + " for " + block.block_id + " as Agent Task " + task.id + ".");
   return revised;
+}
+
+const continuousBlocks = await loadContinuousImprovementBlocks({
+  owner,
+  repo,
+  gh,
+  listComments,
+});
+plan = {
+  ...staticPlan,
+  blocks: [...staticPlan.blocks, ...continuousBlocks],
+};
+validateAutopilotPlan(plan);
+blockById = new Map(plan.blocks.map((block) => [block.block_id, block]));
+if (continuousBlocks.length) {
+  console.log("Loaded " + continuousBlocks.length + " validated continuous-improvement block(s).");
 }
 
 let issues = await listBlockIssues();
