@@ -186,19 +186,30 @@ jobs:
           cat artifacts/auth-e2e/server.log
           exit 1
 
-      - name: Wake and verify Render target
+      - name: Wake and verify exact Render target
         if: env.ALMAGO_E2E_TARGET == 'render'
         shell: bash
         run: |
           mkdir -p artifacts/auth-e2e
+          expected_revision="${GITHUB_SHA:0:12}"
           for i in {1..60}; do
-            if curl --fail --silent --max-time 10 "$ALMAGO_BASE_URL/api/health" > artifacts/auth-e2e/render-health.json; then
-              cat artifacts/auth-e2e/render-health.json
-              exit 0
+            health="$(curl --fail --silent --show-error --max-time 10 "$ALMAGO_BASE_URL/api/health" 2>/dev/null || true)"
+            if [ -n "$health" ]; then
+              printf '%s\n' "$health" > artifacts/auth-e2e/render-health.json
+              revision="$(printf '%s' "$health" | jq -r '.revision // empty' 2>/dev/null || true)"
+              branch="$(printf '%s' "$health" | jq -r '.branch // empty' 2>/dev/null || true)"
+
+              if [ "$revision" = "$expected_revision" ] && [ "$branch" = "main" ]; then
+                cat artifacts/auth-e2e/render-health.json
+                echo "Render is serving exact workflow revision $revision."
+                exit 0
+              fi
+
+              echo "Render is healthy but not on exact workflow revision yet (expected $expected_revision, got ${revision:-none}, branch ${branch:-none})."
             fi
             sleep 5
           done
-          echo "::error::Render target did not become healthy in time."
+          echo "::error::Render did not serve exact workflow revision $expected_revision in time."
           exit 1
 
       - name: Run student/admin isolation journeys
@@ -220,6 +231,29 @@ jobs:
           script: |
             const owner = context.repo.owner;
             const repo = context.repo.repo;
+
+            const { data: repository } = await github.rest.repos.get({ owner, repo });
+            const mainBranch = repository.default_branch || "main";
+            const expectedRef = `refs/heads/${mainBranch}`;
+            if (context.ref !== expectedRef) {
+              core.setFailed(
+                `A43 completion requires ${expectedRef}; received ${context.ref}.`,
+              );
+              return;
+            }
+
+            const { data: currentMain } = await github.rest.repos.getBranch({
+              owner,
+              repo,
+              branch: mainBranch,
+            });
+            if (currentMain.commit.sha !== context.sha) {
+              core.setFailed(
+                `A43 cannot close because main changed during authenticated E2E. Tested ${context.sha}, current ${currentMain.commit.sha}.`,
+              );
+              return;
+            }
+
             const planIssues = await github.paginate(github.rest.issues.listForRepo, {
               owner,
               repo,
@@ -269,7 +303,7 @@ jobs:
                   "A43 AUTHENTICATED E2E: PASS",
                   "",
                   "Run: " + context.serverUrl + "/" + owner + "/" + repo + "/actions/runs/" + context.runId,
-                  "SHA: " + context.sha,
+                  "Exact main SHA: " + context.sha,
                   "Target: " + process.env.A43_TARGET,
                   marker,
                   "",
