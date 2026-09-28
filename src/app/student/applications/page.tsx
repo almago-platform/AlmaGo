@@ -24,18 +24,18 @@ export default async function StudentApplicationsPage() {
         current="applications"
         eyebrow="Mon dossier"
         title="Mes candidatures"
-        description="Retrouvez chaque dossier, son échéance, sa prochaine action et l’historique visible du suivi enregistré dans AlmaGo."
-        actions={<ButtonLink href="/student/orientation" variant="secondary">Voir les recommandations</ButtonLink>}
+        description="Retrouvez vos candidatures, la prochaine action et la date limite."
+        actions={<ButtonLink href="/student/orientation" variant="secondary">Voir mes programmes</ButtonLink>}
       />
 
       <StudentGuidancePanel
-        eyebrow="Suivre sans se perdre"
-        title="Traitez chaque candidature comme un dossier avec une prochaine action claire."
-        description="Vous n’avez pas besoin de mémoriser tous les statuts et toutes les dates. AlmaGo les rassemble pour que vous puissiez reprendre chaque candidature là où elle en est."
+        eyebrow="Pour avancer"
+        title="Commencez par la prochaine action."
+        description="Pour chaque candidature, regardez le statut, la date limite et ce qu’il faut faire ensuite."
         points={[
-          "Identifier le statut actuellement enregistré.",
-          "Regarder la prochaine action et l’échéance associée.",
-          "Consulter l’historique avant de poursuivre le dossier.",
+          "Voir le statut actuel.",
+          "Faire la prochaine action.",
+          "Vérifier la date limite.",
         ]}
       />
 
