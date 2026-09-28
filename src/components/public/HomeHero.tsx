@@ -20,17 +20,18 @@ export function HomeHero() {
       <div className={`${s.container} ${s.heroImmersiveInner}`}>
         <div className={s.heroCopy}>
           <p className={s.eyebrow}>
-            <span className={s.dot} /> Votre projet. Votre avenir.
+            <span className={s.dot} /> Étudier en Allemagne, étape par étape.
           </p>
           <h1 id="home-title">
-            Étudier en <br />
-            Allemagne,
+            Votre projet d’études
             <br />
-            <em>avec un cap clair.</em>
+            en Allemagne,
+            <br />
+            <em>plus clair.</em>
           </h1>
           <p className={s.heroLead}>
-            Programmes, documents, candidatures : AlmaGo rassemble votre projet
-            dans un seul espace et vous aide à savoir quoi faire ensuite.
+            AlmaGo vous aide à préparer votre dossier, comparer des programmes
+            et savoir quoi faire ensuite.
           </p>
           <div className={s.heroActions}>
             <Link className={s.button} href="/signup">
@@ -38,19 +39,19 @@ export function HomeHero() {
               <HomeIcon name="arrow" />
             </Link>
             <a className={s.heroTextLink} href="#parcours">
-              Comprendre le parcours
+              Voir les étapes
               <HomeIcon name="arrow" />
             </a>
           </div>
           <div className={s.heroProof}>
             <span>
-              <HomeIcon name="check" /> Parcours en 6 étapes
+              <HomeIcon name="check" /> 6 étapes simples
             </span>
             <span>
-              <HomeIcon name="check" /> Un dossier structuré
+              <HomeIcon name="check" /> Documents au même endroit
             </span>
             <span>
-              <HomeIcon name="check" /> Des sources identifiées
+              <HomeIcon name="check" /> Sources officielles à vérifier
             </span>
           </div>
         </div>
@@ -58,7 +59,7 @@ export function HomeHero() {
         <aside className={s.heroDossier} aria-label="Exemple de dossier AlmaGo">
           <div className={s.miniHead}>
             <span>
-              <HomeIcon name="folder" /> Votre projet prend forme
+              <HomeIcon name="folder" /> Votre dossier avance
             </span>
             <span className={s.sample}>Exemple</span>
           </div>
@@ -67,24 +68,24 @@ export function HomeHero() {
               <HomeIcon name="check" />
             </span>
             <div>
-              <strong>Votre projet d’études</strong>
-              <span>Une direction définie</span>
+              <strong>Mon projet</strong>
+              <span>Objectif indiqué</span>
             </div>
-            <span className={s.miniStatus}>Renseigné</span>
+            <span className={s.miniStatus}>Indiqué</span>
           </div>
           <div className={s.miniRow}>
             <span className={s.miniNext}>02</span>
             <div>
-              <strong>Vos documents</strong>
-              <span>La prochaine étape à préparer</span>
+              <strong>Mes documents</strong>
+              <span>À préparer maintenant</span>
             </div>
             <HomeIcon name="arrow" />
           </div>
           <div className={s.miniRow}>
             <span className={s.miniLater}>03</span>
             <div>
-              <strong>Vos candidatures</strong>
-              <span>À structurer selon vos choix</span>
+              <strong>Mes candidatures</strong>
+              <span>À suivre</span>
             </div>
             <HomeIcon name="arrow" />
           </div>
