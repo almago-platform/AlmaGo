@@ -21,10 +21,11 @@ test("Brand V2 official palette is the shared application palette", () => {
   assert.match(globals, /--muted:\s*#6b6f72/i);
 });
 
-test("Brand V2 typography loads Inter and Source Serif 4", () => {
-  assert.match(layout, /Inter, Source_Serif_4/);
+test("Brand V2 typography loads Latin brand fonts and native Arabic typography", () => {
+  assert.match(layout, /Inter, Noto_Sans_Arabic, Source_Serif_4/);
   assert.match(globals, /--font-inter/);
   assert.match(globals, /--font-source-serif/);
+  assert.match(layout, /--font-arabic/);
 });
 
 test("official vector logo is used on public and authenticated shells", () => {
