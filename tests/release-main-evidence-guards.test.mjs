@@ -27,7 +27,10 @@ test("A38 readiness evidence can only be published from main", () => {
 });
 
 test("A43 completion is main-only and requires A38 completion", () => {
-  assert.match(a43, /if: success\(\) && github\.ref == 'refs\/heads\/main'/);
+  assert.match(a43, /Complete A43 after successful authenticated evidence/);
+  assert.match(a43, /success\(\)/);
+  assert.match(a43, /github\.ref == 'refs\/heads\/main'/);
+  assert.match(a43, /env\.ALMAGO_E2E_TARGET == 'render'/);
   assert.match(a43, /almago-plan-task:A38/);
   assert.match(a43, /A43 evidence is green, but A38 is not complete; A43 will remain open/);
   assert.match(a43, /item\.state === "open"/);
