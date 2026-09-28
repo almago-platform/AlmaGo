@@ -132,11 +132,13 @@ export function readMasterRequirementProfile(
   if (!document) return null;
 
   const {
-    schema_version: _schemaVersion,
-    kind: _kind,
+    schema_version,
+    kind,
     ...profile
   } = document;
 
+  void schema_version;
+  void kind;
   return profile;
 }
 
