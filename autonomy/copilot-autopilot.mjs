@@ -67,6 +67,45 @@ async function gh(path, options = {}) {
   return response.status === 204 ? null : response.json();
 }
 
+async function ensureLabel(name, color, description) {
+  try {
+    await gh("/repos/" + owner + "/" + repo + "/labels", {
+      method: "POST",
+      body: JSON.stringify({ name, color, description }),
+    });
+  } catch (error) {
+    if (!String(error?.message || error).includes("GitHub 422")) throw error;
+  }
+}
+
+async function markHumanGate(issueNumber, lock) {
+  if (dryRun || lock?.state !== "HUMAN_GATE") return;
+  await ensureLabel(
+    "almago-human-required",
+    "B60205",
+    "Explicit human action is required before automation may continue",
+  );
+  await gh("/repos/" + owner + "/" + repo + "/issues/" + issueNumber + "/labels", {
+    method: "POST",
+    body: JSON.stringify({ labels: ["almago-human-required"] }),
+  });
+  await gh("/repos/" + owner + "/" + repo + "/issues/" + issueNumber + "/comments", {
+    method: "POST",
+    body: JSON.stringify({
+      body: [
+        "<!-- almago-autopilot-human-gate:" + String(lock.block_id || "unknown") + " -->",
+        "## AlmaGo Autopilot — human action required",
+        "",
+        "**Reason:** " + String(lock.lifecycle_reason || "human approval required"),
+        lock.pull_number ? "**Pull request:** #" + lock.pull_number : null,
+        lock.expected_head ? "**Expected HEAD:** `" + lock.expected_head + "`" : null,
+        "",
+        "Automation is stopped for this block and will not spend revision attempts until the human gate is resolved.",
+      ].filter(Boolean).join("\n"),
+    }),
+  });
+}
+
 const blockMarker = (id) => "<!-- almago-autopilot-block:" + id + " -->";
 const lockMarker = "<!-- almago-autopilot-lock -->";
 
@@ -348,6 +387,7 @@ async function advanceLifecycle(issue, block, lock) {
 
   if (decision.action !== "REVISE") {
     if (JSON.stringify(observed) !== JSON.stringify(lock)) await recordLock(issue.number, observed);
+    await markHumanGate(issue.number, observed);
     return observed;
   }
 
