@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import test from "node:test";
 import { AGENT_TASK_MODELS, startAgentTask } from "./copilot-agent-client.mjs";
 import {
+  agentTaskPullRequestNumber,
   normalizePath,
   pathsOverlap,
   pathMatchesPattern,
@@ -10,6 +11,7 @@ import {
   collidesWithLocks,
   validateAutopilotPlan,
   mapAgentTaskState,
+  reconciledPullRequestNumber,
   leaseExpired,
   selectEligibleBlocks,
   browserQualityRequirement,
@@ -283,4 +285,49 @@ test("missing token is rejected before network access", async () => {
     model: "gpt-5.3-codex",
     fetchImpl: async () => { throw new Error("network should not run"); },
   }), /TOKEN is required/);
+});
+
+
+test("Agent Task pull artifact uses public PR number, never GitHub database id", () => {
+  const task = {
+    artifacts: [{
+      provider: "github",
+      type: "pull",
+      data: { id: 4663451678, number: 496 },
+    }],
+  };
+  assert.equal(agentTaskPullRequestNumber(task), 496);
+  assert.equal(agentTaskPullRequestNumber({
+    artifacts: [{ provider: "github", type: "pull", data: { id: 4663451678 } }],
+  }), null);
+});
+
+test("head-ref PR resolution replaces stale internal IDs and fails closed when unresolved", () => {
+  assert.equal(reconciledPullRequestNumber({
+    resolvedByHead: 496,
+    artifactNumber: null,
+    priorPullNumber: 4663451678,
+    hasHeadRef: true,
+  }), 496);
+
+  assert.equal(reconciledPullRequestNumber({
+    resolvedByHead: null,
+    artifactNumber: null,
+    priorPullNumber: 4663451678,
+    hasHeadRef: true,
+  }), null);
+
+  assert.equal(reconciledPullRequestNumber({
+    resolvedByHead: null,
+    artifactNumber: 496,
+    priorPullNumber: 4663451678,
+    hasHeadRef: true,
+  }), 496);
+
+  assert.equal(reconciledPullRequestNumber({
+    resolvedByHead: null,
+    artifactNumber: null,
+    priorPullNumber: 496,
+    hasHeadRef: false,
+  }), 496);
 });
