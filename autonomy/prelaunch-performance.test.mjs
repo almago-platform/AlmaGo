@@ -1,5 +1,9 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+const require = createRequire(import.meta.url);
+const lighthouseConfig = require("../lighthouserc.cjs");
+
+import { createRequire } from "node:module";
 import {
   buildPrelaunchPerformancePlan,
   homepageLighthouseFinding,
@@ -92,4 +96,15 @@ test("performance plan contains observed metrics instead of generic optimization
   assert.match(prompt, /640 ms/);
   assert.match(prompt, /Responsive-image potential savings: 91 KiB/);
   assert.match(prompt, /Unused-JavaScript potential savings: 92 KiB/);
+});
+
+
+test("Lighthouse budgets distinguish public homepage SEO from deliberate login noindex", () => {
+  const matrix = lighthouseConfig.ci.assert.assertMatrix;
+  assert.equal(Array.isArray(matrix), true);
+  const home = matrix.find((entry) => entry.matchingUrlPattern.includes("3000/?$"));
+  const login = matrix.find((entry) => entry.matchingUrlPattern.includes("login"));
+  assert.deepEqual(home.assertions["categories:performance"], ["warn", { minScore: 0.8 }]);
+  assert.deepEqual(home.assertions["categories:seo"], ["warn", { minScore: 0.95 }]);
+  assert.equal(Object.hasOwn(login.assertions, "categories:seo"), false);
 });
