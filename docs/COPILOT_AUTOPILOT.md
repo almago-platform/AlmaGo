@@ -107,11 +107,10 @@ The observer forces `ALMAGO_AUTOPILOT_AUTOMERGE_ENABLED=true` only inside its ow
 
 This continuously validates quarantine, ruleset readiness, exact-HEAD CI, Browser Quality, Supervisor approval, provenance and PR-collision logic before real automerge is ever enabled.
 
-## Live Copilot Agent Task connectivity probe
+## Live Copilot Agent Task connectivity probe — completed
 
-The historical `SANDBOX-01` validated a bounded documentation PR, but its lock did not contain a Copilot Agent Task ID. A separate temporary `AGENT-PROBE-01` therefore validates the real Agent Tasks API path.
+The temporary live probe proved that GitHub Copilot Agent Tasks can create a same-repository branch and pull request from the bounded AlmaGo controller while respecting an exact one-file documentation scope.
 
-The probe may create exactly one file, `docs/COPILOT_AGENT_TASK_LIVE_PROBE.md`, from `main`. It runs the normal controller live with one concurrent task, one revision attempt and `noAutomaticMerge=true`. The workflow has read-only contents and pull-request permissions; it can write only its tracking issue and dispatch/reconcile the external Agent Task.
+Probe PR #496 changed only `docs/COPILOT_AGENT_TASK_LIVE_PROBE.md`. GitHub kept canonical PR CI in `action_required` for that Copilot-authored contribution, so AlmaGo did not treat the PR as validated and did not merge it. The probe PR was closed unmerged.
 
-The probe is pre-launch only. Product code, workflows, tests, dependencies, Auth/RLS/Supabase, migrations, secrets, billing, production data and deployment are outside its writable contract. After the connectivity/lifecycle result is proven, the probe workflow and plan should be retired or disabled.
-
+The temporary scheduled probe workflow, plan and dedicated tests were removed after the connectivity result was established. Future production Agent Tasks continue to use the normal Autopilot lifecycle and must satisfy repository workflow-approval, CI, Browser Quality when applicable, Supervisor and merge gates.
