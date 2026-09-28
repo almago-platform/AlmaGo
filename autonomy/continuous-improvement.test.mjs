@@ -2,12 +2,17 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   buildSignals,
+  RECURRENCE_MARKER,
   issueBodyForSignal,
   labelsForSignal,
   signalKeyFromIssue,
   signalMarker,
   validateSignal,
 } from "./continuous-improvement-core.mjs";
+
+test("recurrence marker is stable for future contract invalidation", () => {
+  assert.equal(RECURRENCE_MARKER, "<!-- almago-improvement-recurrence -->");
+});
 
 test("signal markers are stable and reject unsafe keys", () => {
   assert.equal(signalMarker("main-tests"), "<!-- almago-improvement-signal:main-tests -->");
