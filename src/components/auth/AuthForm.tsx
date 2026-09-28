@@ -52,7 +52,7 @@ export function AuthForm({ initialMode = "login" }: { initialMode?: Mode }) {
         else router.push("/student");
       }
     } catch {
-      setError("Une erreur est survenue. Réessayez.");
+      setError("Impossible de continuer pour le moment. Réessayez.");
     } finally {
       setLoading(false);
     }
@@ -60,16 +60,16 @@ export function AuthForm({ initialMode = "login" }: { initialMode?: Mode }) {
 
   const title =
     mode === "login"
-      ? "Connexion sécurisée"
+      ? "Se connecter"
       : mode === "signup"
-        ? "Créer mon compte étudiant"
-        : "Réinitialiser mon accès";
+        ? "Créer mon compte"
+        : "Réinitialiser mon mot de passe";
   const subtitle =
     mode === "signup"
-      ? "Ouvrez votre espace AlmaGo pour préparer votre dossier Allemagne étape par étape."
+      ? "Créez votre espace pour préparer votre dossier Allemagne."
       : mode === "forgot"
-        ? "Indiquez votre email et nous vous enverrons un lien pour récupérer votre accès."
-        : "Retrouvez votre dossier, vos documents, vos recommandations et vos prochaines actions.";
+        ? "Indiquez votre email pour recevoir un lien."
+        : "Retrouvez votre dossier et votre prochaine étape.";
 
   return (
     <section className="w-full overflow-hidden rounded-[1rem] border border-[var(--border)] bg-[var(--surface)] shadow-[0_24px_70px_-54px_rgba(28,33,36,0.5)]">
@@ -190,14 +190,14 @@ export function AuthForm({ initialMode = "login" }: { initialMode?: Mode }) {
       <div className="flex flex-col gap-2 border-t border-[var(--border)] bg-[var(--surface-subtle)] px-5 py-4 text-sm font-semibold text-[var(--brand-strong)] sm:flex-row sm:items-center sm:justify-between sm:px-7">
         {mode === "signup" ? (
           <p className="text-slate-600">
-            Déjà un compte ?{" "}
+            Déjà un compte?{" "}
             <Link href="/login" className="inline-flex min-h-11 items-center text-[var(--brand-strong)] underline decoration-current underline-offset-4 hover:text-[var(--foreground)]">
               Se connecter
             </Link>
           </p>
         ) : (
           <Link href="/signup" className="inline-flex min-h-11 items-center text-[var(--brand-strong)] hover:text-[var(--foreground)]">
-            Créer un compte étudiant
+            Créer un compte
           </Link>
         )}
         {mode !== "signup" && (
