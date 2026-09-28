@@ -1,14 +1,14 @@
 import assert from "node:assert/strict";
-import test from "node:test";
-const require = createRequire(import.meta.url);
-const lighthouseConfig = require("../lighthouserc.cjs");
-
 import { createRequire } from "node:module";
+import test from "node:test";
 import {
   buildPrelaunchPerformancePlan,
   homepageLighthouseFinding,
   PERFORMANCE_WRITABLE_PATHS,
 } from "./prelaunch-performance-core.mjs";
+
+const require = createRequire(import.meta.url);
+const lighthouseConfig = require("../lighthouserc.cjs");
 
 function report({
   url = "http://127.0.0.1:3000/",
