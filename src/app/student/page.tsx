@@ -212,7 +212,7 @@ export default async function StudentEntry() {
             )}
 
             <p className="mt-4 text-xs leading-5 text-[var(--muted)]">
-              Cette progression montre seulement votre dossier dans AlmaGo. Elle ne vaut pas admission.
+              Cette progression décrit uniquement les éléments enregistrés dans AlmaGo. Elle ne représente ni une admission ni une validation finale.
             </p>
 
             <div className="mt-4 [&_a]:w-full">
@@ -292,7 +292,7 @@ export default async function StudentEntry() {
             <p className="text-[0.68rem] font-bold uppercase tracking-[0.15em] text-[#fcb50a]">Votre dossier</p>
             <h2 className="mt-2 text-lg font-bold sm:text-xl">Revenez ici pour voir votre prochaine étape.</h2>
             <p className="mt-2 max-w-3xl text-xs leading-5 text-[#d9d3c7] sm:text-sm sm:leading-6">
-              Vous voyez ce qui est fait, ce qui manque et ce que vous pouvez faire maintenant.
+              Vous voyez ce qui est fait, ce qui manque et ce que vous pouvez faire maintenant, sans remplacer les décisions des universités ou des autorités.
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
