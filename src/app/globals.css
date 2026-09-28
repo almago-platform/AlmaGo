@@ -140,3 +140,29 @@ a, button, input, select, textarea { -webkit-tap-highlight-color: transparent; }
 @supports (padding: max(0px)) {
   .student-sticky-actions { padding-bottom: max(1rem, env(safe-area-inset-bottom)); }
 }
+
+
+/* Arabic Native Polish V2: Arabic uses its own typographic rhythm and direction. */
+html[dir="rtl"] body {
+  font-family: var(--font-arabic), Tahoma, Arial, sans-serif;
+  line-height: 1.7;
+}
+
+html[dir="rtl"] :is(.page-title, .section-title, .editorial-accent, .eyebrow) {
+  font-family: var(--font-arabic), Tahoma, Arial, sans-serif;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+html[dir="rtl"] .page-title {
+  line-height: 1.35;
+}
+
+html[dir="rtl"] :is(input, select, textarea, button) {
+  font-family: inherit;
+}
+
+html[dir="rtl"] .skip-link {
+  left: auto;
+  right: 1rem;
+}

@@ -21,7 +21,7 @@ test("student shell groups navigation by dossier, parcours and resources", () =>
   assert.ok(shell.includes("studentGroups.map"));
   assert.ok(shell.includes("shell.studentMobileNavigation"));
   assert.ok(nativeCopy.includes('groups: ["Dossier", "Parcours", "Ressources"]'));
-  assert.ok(nativeCopy.includes('groups: ["ملفي", "مساري", "موارد"]'));
+  assert.ok(nativeCopy.includes('groups: ["ملفي", "خطواتي", "الموارد"]'));
   assert.ok(nativeCopy.includes('groups: ["My file", "My journey", "Resources"]'));
   assert.ok(nativeCopy.includes('groups: ["Meine Akte", "Mein Weg", "Ressourcen"]'));
 });

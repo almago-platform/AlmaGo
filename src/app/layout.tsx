@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
-import { Inter, Source_Serif_4 } from "next/font/google";
+import { Inter, Noto_Sans_Arabic, Source_Serif_4 } from "next/font/google";
 import type { ReactNode } from "react";
 import { LocaleProvider } from "@/components/i18n/LocaleProvider";
 import { getNativeCopy } from "@/content/native-copy";
@@ -14,6 +14,7 @@ import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
 const sourceSerif = Source_Serif_4({ subsets: ["latin"], variable: "--font-source-serif", display: "swap" });
+const notoSansArabic = Noto_Sans_Arabic({ subsets: ["arabic"], variable: "--font-arabic", display: "swap" });
 
 async function requestLocale() {
   const store = await cookies();
@@ -61,7 +62,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
     <html
       lang={locale}
       dir={localeDirection(locale)}
-      className={`${inter.variable} ${sourceSerif.variable} h-full antialiased`}
+      className={`${inter.variable} ${sourceSerif.variable} ${notoSansArabic.variable} h-full antialiased`}
     >
       <body className="min-h-full">
         <LocaleProvider initialLocale={locale}>{children}</LocaleProvider>

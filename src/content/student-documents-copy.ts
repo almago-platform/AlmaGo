@@ -228,7 +228,7 @@ const ar: DocumentsCopy = {
   page: {
     eyebrow: "ملفي",
     title: "مستنداتي",
-    description: "اعرف فوراً ما تم التحقق منه، وما هو قيد المراجعة وما يحتاج إلى إجراء منك.",
+    description: "اعرف بسرعة ما تم التحقق منه، وما هو قيد المراجعة، وما يحتاج إلى إجراء منك.",
     unavailableTitle: "المستندات غير متاحة مؤقتاً",
     unavailableText: "تعذر تحميل مستنداتك الآن. لم يتم حذف أو استبدال أي مستند. يمكنك إعادة المحاولة أو العودة إلى ملفك.",
     retry: "إعادة المحاولة",
@@ -261,7 +261,7 @@ const ar: DocumentsCopy = {
   evidenceTypes: {
     definitive_admission: "قبول نهائي",
     conditional_admission: "قبول مشروط",
-    bewerberbestaetigung: "Bewerberbestätigung (إثبات من الجامعة)",
+    bewerberbestaetigung: "إثبات من الجامعة (Bewerberbestätigung)",
     admissible_university_correspondence: "مراسلة جامعية مقبولة للمسار",
     other: "إثبات أكاديمي",
   },
@@ -286,7 +286,7 @@ const ar: DocumentsCopy = {
     correctionBadge: "مطلوب تصحيح",
     reviewBadge: "قيد المراجعة",
     documentsBadge: "مستنداتك",
-    correctionTitle: "هناك إجراء مطلوب على مستنداتك",
+    correctionTitle: "يلزم تعديل بعض مستنداتك",
     reviewTitle: "مستنداتك قيد المراجعة",
     documentsTitle: "مستنداتك",
     correctionText: (count) => `هناك ${count} ${count === 1 ? "مستند يحتاج إلى تصحيح" : "مستندات تحتاج إلى تصحيح"}. اقرأ رسالة AlmaGo قبل استبدال الملف.`,
@@ -298,7 +298,7 @@ const ar: DocumentsCopy = {
   },
   summary: {
     aria: "ملخص المستندات",
-    approvedTitle: "تمت الموافقة",
+    approvedTitle: "مستندات مقبولة",
     approvedBadge: "مقبولة",
     reviewTitle: "قيد المراجعة",
     reviewBadge: "لدى AlmaGo",
@@ -308,7 +308,7 @@ const ar: DocumentsCopy = {
   },
   evidence: {
     eyebrow: "المستندات الدراسية",
-    title: "ما الذي يمكن التحقق منه",
+    title: "الإثباتات الأكاديمية في ملفك",
     count: (count) => `${count} تصنيف`,
     boundary: "حالة الملف وحالته كإثبات أكاديمي أمران مختلفان. قد تتم الموافقة على الملف من دون أن يُقبل بعد كإثبات للمسار. هذا التصنيف لا يعني قبولاً جامعياً ولا قرار تأشيرة.",
     loadError: "تصنيفات الإثبات الأكاديمي غير متاحة مؤقتاً. ملفاتك نفسها تبقى متاحة.",
@@ -321,7 +321,7 @@ const ar: DocumentsCopy = {
   upload: {
     badge: "ملف جديد",
     title: "إضافة مستند",
-    text: "أضف ملف PDF أو JPEG أو PNG (بحد أقصى 10 م.ب). ملفاتك تبقى خاصة.",
+    text: "أضف ملف PDF أو صورة JPEG أو PNG، بحد أقصى 10 م.ب. تبقى ملفاتك خاصة.",
     stepType: "اختر النوع",
     typeLabel: "نوع المستند",
     stepFile: "اختر الملف",
@@ -344,7 +344,7 @@ const ar: DocumentsCopy = {
     removeAria: (name) => `حذف ${name}`,
   },
   history: {
-    title: "سجل الملف الظاهر لك",
+    title: "سجل التحديثات الظاهر لك",
     description: "يعرض هذا السجل القرارات والطلبات التي تم إرسالها إلى مساحتك. الملاحظات الداخلية للفريق لا تظهر هنا.",
     loadError: "السجل غير متاح مؤقتاً. حاول مرة أخرى بعد قليل.",
     empty: "ستظهر هنا القرارات والتحديثات التي يتم إرسالها إليك.",

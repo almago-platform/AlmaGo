@@ -68,7 +68,7 @@ export const studentFinanceCopy: Record<Locale, FinanceCopy> = {
   },
   ar: {
     title: "التمويل والتأمين",
-    description: "قارن الخيارات مع الاطلاع على المصدر وتاريخ التحقق. AlmaGo لا يرتب مقدمي الخدمات ولا يستنتج أهليتك أو متطلبات التأشيرة.",
+    description: "قارن الخيارات مع الاطلاع على المصدر وتاريخ آخر تحقق. AlmaGo لا يرتّب مقدمي الخدمات ولا يقرر أهليتك أو متطلبات التأشيرة.",
     back: "العودة إلى مساري",
     guidance: {
       eyebrow: "قبل أي إجراء أو دفع",
@@ -79,11 +79,11 @@ export const studentFinanceCopy: Record<Locale, FinanceCopy> = {
     kinds: {
       blocked_account_provider: { title: "الحساب المغلق", description: "قارن العروض وتحقق من الشروط في المصدر الرسمي." },
       health_insurance_provider: { title: "التأمين الصحي", description: "قارن العروض وتحقق من الشروط مباشرة لدى شركة التأمين." },
-      student_financing_option: { title: "تمويل الطالب", description: "قارن الحلول وتحقق ممن يمكنه الاستفادة منها." },
+      student_financing_option: { title: "خيارات تمويل للطلاب", description: "قارن الحلول وراجع شروط الاستفادة من كل خيار." },
     },
     emptyBadge: "لا توجد خيارات منشورة",
     emptyText: "لا يوجد حالياً خيار تم التحقق منه في هذه الفئة.",
-    boundary: "مقدمو الخدمات يحددون شروطهم. الجهات المختصة تقرر متطلبات التأشيرة والإقامة والتأمين.",
+    boundary: "يحدد كل مقدم خدمة شروطه الخاصة، وتحدد الجهات المختصة متطلبات التأشيرة والإقامة والتأمين.",
     verified: "تم التحقق من المصدر",
     officialSource: "المصدر الرسمي",
     providerSite: "موقع مقدم الخدمة",
