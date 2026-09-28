@@ -88,11 +88,11 @@ const steps = [
 ] as const;
 
 const stepGuidance = [
-  "Nous commençons par les informations nécessaires pour identifier correctement votre dossier.",
-  "Votre parcours académique permet ensuite de distinguer ce qui est acquis de ce qui devra être vérifié.",
-  "Vos niveaux de langue servent à repérer les programmes accessibles et les éventuelles étapes de préparation.",
-  "Votre objectif académique donne une direction concrète à la recherche de programmes et aux démarches qui suivent.",
-  "Relisez les informations essentielles avant d’ouvrir votre espace étudiant.",
+  "Indiquez vos informations de base.",
+  "Ajoutez votre dernier diplôme et vos études actuelles.",
+  "Indiquez vos niveaux et certificats réels.",
+  "Dites ce que vous souhaitez étudier en Allemagne.",
+  "Vérifiez vos informations avant de continuer.",
 ] as const;
 
 function mergeProfile(profile: Record<string, unknown>): FormData {
@@ -151,7 +151,7 @@ export function OnboardingForm({ profile }: { profile: Record<string, unknown> }
       if (!response.ok) {
         setError(
           result.error ||
-            "Nous n’arrivons pas à enregistrer cette étape pour le moment. Réessayez dans quelques instants.",
+            "Impossible d’enregistrer cette étape pour le moment. Réessayez.",
         );
         return;
       }
@@ -163,7 +163,7 @@ export function OnboardingForm({ profile }: { profile: Record<string, unknown> }
       }
     } catch {
       setError(
-        "Nous n’arrivons pas à enregistrer cette étape pour le moment. Vérifiez votre connexion puis réessayez.",
+        "Impossible d’enregistrer cette étape. Vérifiez votre connexion puis réessayez.",
       );
     } finally {
       setSaving(false);
@@ -192,7 +192,7 @@ export function OnboardingForm({ profile }: { profile: Record<string, unknown> }
                 Votre dossier AlmaGo
               </p>
               <h1 className="editorial-accent mt-1 max-w-md text-2xl leading-[1.08] sm:text-[1.8rem]">
-                Donnez une direction claire à votre projet.
+                Commencez par votre projet.
               </h1>
             </div>
           </div>
@@ -280,7 +280,7 @@ export function OnboardingForm({ profile }: { profile: Record<string, unknown> }
               <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{currentStep.description}</p>
             </div>
             <span className="self-start rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-3 py-2 text-xs font-semibold text-[var(--muted)]">
-              Enregistré à chaque étape
+              Vos réponses sont enregistrées
             </span>
           </div>
         </div>
@@ -290,7 +290,7 @@ export function OnboardingForm({ profile }: { profile: Record<string, unknown> }
             <div className="space-y-5">
               <SectionIntro
                 title="Informations personnelles"
-                text="Commençons par les informations qui permettent d’identifier votre dossier."
+                text="Indiquez vos informations de base."
               />
               <div className="grid gap-4 sm:grid-cols-2">
                 <TextInput label="Prénom" required value={String(data.first_name)} onChange={(v) => set("first_name", v)} />
@@ -307,7 +307,7 @@ export function OnboardingForm({ profile }: { profile: Record<string, unknown> }
             <div className="space-y-5">
               <SectionIntro
                 title="Parcours académique"
-                text="Ajoutez ce que vous savez déjà. Les pièces justificatives pourront être rattachées ensuite."
+                text="Indiquez ce que vous savez déjà. Vous ajouterez les documents plus tard."
               />
               <div className="grid gap-4 sm:grid-cols-2">
                 <SelectInput label="Dernier diplôme" value={String(data.last_diploma)} onChange={(v) => set("last_diploma", v)} options={diplomaOptions} />
@@ -326,7 +326,7 @@ export function OnboardingForm({ profile }: { profile: Record<string, unknown> }
             <div className="space-y-5">
               <SectionIntro
                 title="Langues"
-                text="Indiquez vos niveaux actuels. Ils servent à repérer les exigences à vérifier pour chaque programme."
+                text="Indiquez vos niveaux et certificats réels."
               />
               <div className="grid gap-4 sm:grid-cols-2">
                 <SelectInput label="Allemand" value={String(data.german_level)} onChange={(v) => set("german_level", v)} options={languageLevelOptions} />
@@ -344,7 +344,7 @@ export function OnboardingForm({ profile }: { profile: Record<string, unknown> }
             <div className="space-y-5">
               <SectionIntro
                 title="Votre projet en Allemagne"
-                text="Ces quatre informations obligatoires donnent une direction aux recherches et aux prochaines démarches."
+                text="Dites ce que vous souhaitez étudier en Allemagne."
               />
               <div className="grid gap-4 sm:grid-cols-2">
                 <SelectInput label="Niveau visé" required value={String(data.target_degree)} onChange={(v) => set("target_degree", v)} options={degreeOptions} />
@@ -360,8 +360,8 @@ export function OnboardingForm({ profile }: { profile: Record<string, unknown> }
           {step === 5 && (
             <div className="space-y-6">
               <SectionIntro
-                title="Confirmez votre profil"
-                text="Relisez les informations principales avant d’accéder à votre espace AlmaGo."
+                title="Vérifiez vos informations"
+                text="Vérifiez vos informations avant de continuer."
               />
 
               <dl className="overflow-hidden rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)]">
@@ -398,7 +398,7 @@ export function OnboardingForm({ profile }: { profile: Record<string, unknown> }
               <div className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4">
                 <p className="text-sm font-bold text-[var(--foreground)]">Après validation</p>
                 <p className="mt-1 text-xs leading-5 text-[var(--muted)]">
-                  Vous accéderez à votre tableau de bord. Vous pourrez ensuite compléter les documents, explorer les programmes et suivre vos démarches.
+                  Vous ouvrirez votre espace. Vous pourrez ajouter vos documents, comparer des programmes et suivre vos étapes.
                 </p>
               </div>
             </div>
