@@ -96,8 +96,11 @@ jobs:
             const taskId = issue =>
               String(issue.body || "").match(/<!--\s*almago-plan-task:(A\d{2})\s*-->/)?.[1];
 
+            const planIssue = id =>
+              allIssues.find(item => !item.pull_request && taskId(item) === id);
+
             const completed = id => {
-              const issue = allIssues.find(item => !item.pull_request && taskId(item) === id);
+              const issue = planIssue(id);
               if (!issue) return false;
               const labels = new Set(
                 (issue.labels || []).map(label => typeof label === "string" ? label : label.name),
@@ -113,6 +116,49 @@ jobs:
                 .addRaw("BLOCKED — incomplete prerequisites: " + missing.join(", "))
                 .write();
               core.setFailed("Release prerequisites are incomplete: " + missing.join(", "));
+              return;
+            }
+
+            const evidenceMatches = {
+              A38: body =>
+                body.includes(`<!-- almago-a38-human-approved:sha=${mainSha};`),
+              A43: body =>
+                body.includes("<!-- almago-a43-evidence:") &&
+                body.includes(`;sha=${mainSha} -->`),
+              A44: body =>
+                body.includes("<!-- almago-a44-evidence:") &&
+                body.includes(`;sha=${mainSha} -->`),
+            };
+
+            const staleEvidence = [];
+            for (const id of required) {
+              const issue = planIssue(id);
+              const comments = await github.paginate(github.rest.issues.listComments, {
+                owner,
+                repo,
+                issue_number: issue.number,
+                per_page: 100,
+              });
+              const hasExactEvidence = comments.some(comment =>
+                evidenceMatches[id](String(comment.body || "")),
+              );
+              if (!hasExactEvidence) staleEvidence.push(id);
+            }
+
+            if (staleEvidence.length) {
+              core.summary
+                .addHeading("AlmaGo final release gate")
+                .addRaw(
+                  "BLOCKED — prerequisite evidence is missing or stale for exact main SHA " +
+                    mainSha +
+                    ": " +
+                    staleEvidence.join(", "),
+                )
+                .write();
+              core.setFailed(
+                "A45 requires exact-main prerequisite evidence for: " +
+                  staleEvidence.join(", "),
+              );
               return;
             }
 
@@ -363,6 +409,60 @@ jobs:
               labels: "almago-plan",
               per_page: 100,
             });
+
+            const finalTaskId = issue =>
+              String(issue.body || "").match(/<!--\s*almago-plan-task:(A\d{2})\s*-->/)?.[1];
+            const finalRequired = ["A38", "A43", "A44"];
+            const finalEvidenceMatches = {
+              A38: body =>
+                body.includes(`<!-- almago-a38-human-approved:sha=${sha};`),
+              A43: body =>
+                body.includes("<!-- almago-a43-evidence:") &&
+                body.includes(`;sha=${sha} -->`),
+              A44: body =>
+                body.includes("<!-- almago-a44-evidence:") &&
+                body.includes(`;sha=${sha} -->`),
+            };
+
+            for (const id of finalRequired) {
+              const prerequisite = allIssues.find(
+                item => !item.pull_request && finalTaskId(item) === id,
+              );
+              if (!prerequisite) {
+                core.setFailed("A45 prerequisite disappeared before readiness: " + id);
+                return;
+              }
+              const labels = new Set(
+                (prerequisite.labels || []).map(label =>
+                  typeof label === "string" ? label : label.name,
+                ),
+              );
+              if (
+                prerequisite.state !== "closed" &&
+                !labels.has("almago-plan-done")
+              ) {
+                core.setFailed("A45 prerequisite reopened before readiness: " + id);
+                return;
+              }
+
+              const comments = await github.paginate(github.rest.issues.listComments, {
+                owner,
+                repo,
+                issue_number: prerequisite.number,
+                per_page: 100,
+              });
+              if (
+                !comments.some(comment =>
+                  finalEvidenceMatches[id](String(comment.body || "")),
+                )
+              ) {
+                core.setFailed(
+                  "A45 exact-main prerequisite evidence changed before readiness: " + id,
+                );
+                return;
+              }
+            }
+
             let a45 = allIssues.find(issue =>
               !issue.pull_request &&
               String(issue.body || "").includes("<!-- almago-plan-task:A45 -->")
