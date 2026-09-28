@@ -88,8 +88,7 @@ export function HomeFooter() {
         <div className={s.footerBottom}>
           <p>© AlmaGo</p>
           <p>
-            AlmaGo organise votre préparation. Les décisions officielles
-            appartiennent aux organismes compétents.
+            AlmaGo organise votre préparation. Les admissions, visas et autres décisions officielles appartiennent aux organismes compétents.
           </p>
         </div>
 
