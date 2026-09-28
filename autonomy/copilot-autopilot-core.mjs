@@ -176,6 +176,7 @@ export function workflowResult(runs = [], workflowName) {
   if (!run || run.status !== "completed") return "PENDING";
   if (run.conclusion === "success") return "SUCCESS";
   if (run.conclusion === "skipped") return "SKIPPED";
+  if (run.conclusion === "action_required") return "ACTION_REQUIRED";
   return "FAILURE";
 }
 
@@ -234,6 +235,10 @@ export function lifecycleDecision({
 
   if (ci === "PENDING" || browser === "PENDING") {
     return { state: "CI", action: "WAIT", reason: "canonical checks still pending" };
+  }
+
+  if (ci === "ACTION_REQUIRED" || browser === "ACTION_REQUIRED") {
+    return { state: "HUMAN_GATE", action: "STOP", reason: "GitHub workflow approval is required before canonical validation can run" };
   }
 
   if (ci !== "SUCCESS" || !["SUCCESS", "NOT_APPLICABLE"].includes(browser)) {
