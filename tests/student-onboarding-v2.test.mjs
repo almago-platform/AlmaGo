@@ -36,7 +36,7 @@ test("onboarding preserves save API and completion consent behavior", () => {
 
 test("onboarding V2 provides premium guidance and mobile-friendly actions", () => {
   assert.match(page, /Configuration du dossier/);
-  assert.match(form, /Donnez une direction claire à votre projet/);
+  assert.match(form, /Commencez par votre projet/);
   assert.match(form, /mobile-nav-scroll/);
   assert.match(form, /w-full sm:w-auto/);
   assert.match(form, /Confirmer et ouvrir mon espace/);
