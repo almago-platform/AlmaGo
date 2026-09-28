@@ -28,7 +28,7 @@ export function StudentProjectForm({ project }: { project: Project }) {
   const [selected, setSelected] = useState<ProjectPath | null>(project?.path ?? null);
   const [status, setStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const [message, setMessage] = useState("");
-  const { locale } = useLocale();
+  const { locale, direction } = useLocale();
   const t = studentProjectCopy[locale];
 
   async function submit(event: FormEvent<HTMLFormElement>) {
@@ -100,7 +100,7 @@ export function StudentProjectForm({ project }: { project: Project }) {
 
       <div className="grid gap-5 rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-5 sm:grid-cols-2 sm:p-6">
         <Field label={t.fields.currentDiploma} name="current_diploma" defaultValue={project?.current_diploma} placeholder={t.fields.currentDiplomaPlaceholder} maxLength={160} />
-        <Field label={t.fields.diplomaCountry} name="diploma_country" defaultValue={project?.diploma_country} placeholder={t.fields.diplomaCountryPlaceholder} hint={t.fields.diplomaCountryHint} maxLength={2} />
+        <Field label={t.fields.diplomaCountry} name="diploma_country" defaultValue={project?.diploma_country} placeholder={t.fields.diplomaCountryPlaceholder} hint={t.fields.diplomaCountryHint} maxLength={2} inputDir="ltr" />
         <Field
           label={t.fields.filingCountry}
           name="filing_country"
@@ -108,6 +108,7 @@ export function StudentProjectForm({ project }: { project: Project }) {
           placeholder={t.fields.filingCountryPlaceholder}
           hint={t.fields.filingCountryHint}
           maxLength={2}
+          inputDir="ltr"
         />
         <Field label={t.fields.targetDegree} name="target_degree" defaultValue={project?.target_degree} placeholder={t.fields.targetDegreePlaceholder} maxLength={120} />
         <Field label={t.fields.targetField} name="target_field" defaultValue={project?.target_field} placeholder={t.fields.targetFieldPlaceholder} maxLength={160} />
@@ -130,7 +131,7 @@ export function StudentProjectForm({ project }: { project: Project }) {
               className="min-w-0 flex-1 px-4 py-3 text-slate-950 outline-none"
               placeholder={t.fields.monthlyBudgetPlaceholder}
             />
-            <span className="grid place-items-center border-l border-slate-200 bg-slate-50 px-4 text-sm font-bold text-slate-700">EUR</span>
+            <span className={`grid place-items-center bg-slate-50 px-4 text-sm font-bold text-slate-700 ${direction === "rtl" ? "border-r" : "border-l"} border-slate-200`}>EUR</span>
           </div>
           <span className="mt-1 block text-xs text-slate-500">{t.fields.currencyHint}</span>
         </label>
@@ -176,6 +177,7 @@ function Field({
   placeholder,
   hint,
   maxLength,
+  inputDir,
 }: {
   label: string;
   name: string;
@@ -183,12 +185,14 @@ function Field({
   placeholder?: string;
   hint?: string;
   maxLength?: number;
+  inputDir?: "ltr" | "rtl";
 }) {
   return (
     <label>
       <span className="text-sm font-bold text-slate-800">{label}</span>
       <input
         name={name}
+        dir={inputDir}
         defaultValue={defaultValue ?? ""}
         placeholder={placeholder}
         maxLength={maxLength}
