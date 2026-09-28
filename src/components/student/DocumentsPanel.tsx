@@ -127,7 +127,7 @@ export function DocumentsPanel({
       const result = await response.json().catch(() => ({}));
 
       if (!response.ok) {
-        setFeedback({ message: result.error || t.feedback.uploadError, kind: "error" });
+        setFeedback({ message: locale === "fr" && typeof result.error === "string" ? result.error : t.feedback.uploadError, kind: "error" });
         return;
       }
 
@@ -152,7 +152,7 @@ export function DocumentsPanel({
       const result = await response.json().catch(() => ({}));
 
       if (!response.ok) {
-        setFeedback({ message: result.error || t.feedback.deleteError, kind: "error" });
+        setFeedback({ message: locale === "fr" && typeof result.error === "string" ? result.error : t.feedback.deleteError, kind: "error" });
         return;
       }
 
