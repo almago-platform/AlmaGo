@@ -34,12 +34,12 @@ const icons = {
 const studentItems: NavItem[] = [
   { label: "Mon dossier", href: "/student", icon: icons.dashboard, helper: "Vue d’ensemble" },
   { label: "Mon projet", href: "/student/project", icon: icons.universities, helper: "Point de départ" },
-  { label: "Mon parcours", href: "/student/pathway", icon: icons.checklist, helper: "Admission, préparation, séjour" },
+  { label: "Mon parcours", href: "/student/pathway", icon: icons.checklist, helper: "Mes étapes en Allemagne" },
   { label: "Mon profil", href: "/student/profile", icon: icons.profile, helper: "Mes informations" },
   { label: "Mes documents", href: "/student/documents", icon: icons.documents, helper: "Pièces et statuts" },
-  { label: "Mon orientation", href: "/student/orientation", icon: icons.orientation, helper: "Programmes proposés" },
-  { label: "Cours de langue", href: "/student/language-courses", icon: icons.programs, helper: "Préparation linguistique" },
-  { label: "Financement & assurance", href: "/student/finance-insurance", icon: icons.applications, helper: "Options factuelles vérifiées" },
+  { label: "Mes programmes", href: "/student/orientation", icon: icons.orientation, helper: "Programmes à comparer" },
+  { label: "Cours de langue", href: "/student/language-courses", icon: icons.programs, helper: "Cours à comparer" },
+  { label: "Financement & assurance", href: "/student/finance-insurance", icon: icons.applications, helper: "Options vérifiées" },
   { label: "Mes démarches", href: "/student/checklist", icon: icons.checklist, helper: "Étapes du dossier" },
   { label: "Mes candidatures", href: "/student/applications", icon: icons.applications, helper: "Suivi et échéances" },
 ];
@@ -191,7 +191,7 @@ export function AppShell({
         <div className="border-t border-[var(--border)] bg-[var(--surface-subtle)] p-4">
           {role === "student" ? (
             <p className="mb-3 px-1 text-[11px] leading-4 text-[var(--muted)]">
-              AlmaGo organise votre dossier. Les décisions officielles restent celles des organismes compétents.
+              AlmaGo vous aide à préparer. Les organismes officiels prennent les décisions.
             </p>
           ) : (
             <p className="mb-3 px-1 text-[11px] leading-4 text-[var(--muted)]">
@@ -234,7 +234,7 @@ export function AppShell({
                 <div id="student-mobile-menu" className="max-h-[calc(100svh-4rem)] overflow-y-auto overscroll-contain border-t border-[var(--border)] bg-[var(--surface-subtle)] px-3 py-4 min-[360px]:px-4">
                   <div className="mb-4 rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--brand-soft)]/65 p-3.5">
                     <p className="text-xs font-bold text-[var(--foreground)]">Bonjour {studentName}</p>
-                    <p className="mt-1 text-xs leading-5 text-[var(--muted)]">Choisissez la partie de votre dossier que vous souhaitez consulter.</p>
+                    <p className="mt-1 text-xs leading-5 text-[var(--muted)]">Choisissez ce que vous voulez consulter.</p>
                   </div>
 
                   <nav className="space-y-4" aria-label="Navigation étudiant mobile">
@@ -280,7 +280,7 @@ export function AppShell({
               <div>
                 <p className="text-xs font-bold uppercase tracking-[0.15em] text-[var(--brand)]">{currentItem.label}</p>
                 <p className="mt-1 text-sm text-[var(--muted)]">
-                  Bonjour {studentName}. Voici ce qui compte aujourd’hui pour votre projet d’études.
+                  Bonjour {studentName}. Retrouvez ici votre prochaine étape.
                 </p>
               </div>
               <div className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-3 py-2 text-xs font-semibold text-[var(--muted)]">
