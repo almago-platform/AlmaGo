@@ -4385,3 +4385,46 @@
     padding-inline: 12px;
   }
 }
+
+
+/* Native Languages V1: RTL behavior for Arabic without redesigning the homepage. */
+:global(html[dir="rtl"]) .home {
+  direction: rtl;
+  text-align: right;
+}
+
+:global(html[dir="rtl"]) .home [data-home-icon="arrow"],
+:global(html[dir="rtl"]) .home [data-home-icon="external"] {
+  transform: scaleX(-1);
+}
+
+:global(html[dir="rtl"]) .quickArrow {
+  right: auto;
+  left: 16px;
+}
+
+:global(html[dir="rtl"]) .quickLinks a {
+  border-left: 0;
+  border-right: 1px solid #d9d3c7;
+}
+
+:global(html[dir="rtl"]) .heroDossier {
+  left: auto;
+  right: 24px;
+}
+
+:global(html[dir="rtl"]) .faqList details > p {
+  padding-right: 0;
+  padding-left: 35px;
+}
+
+:global(html[dir="rtl"]) .skipLink {
+  left: auto;
+  right: 16px;
+}
+
+@media (max-width: 900px) {
+  :global(html[dir="rtl"]) .heroDossier {
+    right: auto;
+  }
+}
