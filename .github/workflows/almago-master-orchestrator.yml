@@ -3,7 +3,7 @@ name: AlmaGo Master Orchestrator
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0,10,20,30,40,50 * * * *"
+    - cron: "*/5 * * * *"
   push:
     branches: [main]
 
@@ -72,6 +72,22 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
+            const { data: runs } = await github.rest.actions.listWorkflowRuns({
+              ...context.repo,
+              workflow_id: "almago-ai-queue.yml",
+              per_page: 20,
+            });
+            const active = runs.workflow_runs.find((run) =>
+              run.status === "queued" || run.status === "in_progress"
+            );
+            if (active) {
+              core.info(
+                "AI queue already active in run #" + active.id +
+                " (" + active.status + "); skipping duplicate dispatch."
+              );
+              return;
+            }
+
             await github.rest.actions.createWorkflowDispatch({
               ...context.repo,
               workflow_id: "almago-ai-queue.yml",
