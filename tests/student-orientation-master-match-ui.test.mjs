@@ -18,10 +18,10 @@ test("technical requirements JSON is not forwarded to the student panel", () => 
 
 test("student UI exposes only human criterion states", () => {
   assert.match(panel, /Critère rempli/);
-  assert.match(panel, /Écart potentiel/);
+  assert.match(panel, /Point à vérifier/);
   assert.match(panel, /Information manquante/);
   assert.match(panel, /À vérifier/);
-  assert.match(panel, /Ce n’est pas une décision d’admission/);
+  assert.match(panel, /L’université décide au final/);
 });
 
 test("application route is shown separately from eligibility criteria", () => {
@@ -38,7 +38,7 @@ test("orientation keeps a recovery state when the student project cannot be read
 test("StudentApplicationsPanel has enhanced progress tracking and mobile layout", () => {
   const applicationsPanel = readFileSync("src/components/student/StudentApplicationsPanel.tsx", "utf8");
   assert.match(applicationsPanel, /ApplicationStepper/);
-  assert.match(applicationsPanel, /"Intérêt"/);
+  assert.match(applicationsPanel, /"À préparer"/);
   assert.match(applicationsPanel, /"Préparation"/);
   assert.match(applicationsPanel, /"Prêt"/);
   assert.match(applicationsPanel, /"Envoyé"/);
