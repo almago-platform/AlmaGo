@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import test from "node:test";
 import {
   latestAutopilotLock,
@@ -198,4 +199,17 @@ test("critical path scope drift conflicts and other PR collisions block merge", 
     openPrCollision(90, ["src/lib/a.ts"], [{ pr_number: 91, files: ["docs/a.md"] }]),
     null,
   );
+});
+
+
+test("safe-merge observer is read-only and permanently dry-run", () => {
+  const workflow = readFileSync(".github/workflows/almago-autopilot-safe-merge-observer.yml", "utf8");
+  assert.match(workflow, /contents: read/);
+  assert.match(workflow, /pull-requests: read/);
+  assert.match(workflow, /issues: read/);
+  assert.match(workflow, /ALMAGO_AUTOPILOT_AUTOMERGE_DRY_RUN: "true"/);
+  assert.match(workflow, /ALMAGO_AUTOPILOT_AUTOMERGE_ENABLED: "true"/);
+  assert.doesNotMatch(workflow, /contents: write/);
+  assert.doesNotMatch(workflow, /pull-requests: write/);
+  assert.doesNotMatch(workflow, /issues: write/);
 });
