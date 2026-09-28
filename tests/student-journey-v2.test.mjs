@@ -15,10 +15,10 @@ const pages = [
 test("student journey header exposes the six core dossier steps", () => {
   assert.match(header, /Mon projet/);
   assert.match(header, /Documents/);
-  assert.match(header, /Orientation/);
+  assert.match(header, /Programmes/);
   assert.match(header, /Démarches/);
   assert.match(header, /Candidatures/);
-  assert.match(header, /Parcours Allemagne/);
+  assert.match(header, /label: "Parcours"/);
   assert.match(header, /aria-label="Étapes de mon dossier"/);
   assert.match(header, /aria-current=/);
 });
