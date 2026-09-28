@@ -9,30 +9,28 @@ type AuthStoryPanelProps = {
 const content = {
   login: {
     eyebrow: "Votre espace AlmaGo",
-    title: "Reprenez votre parcours là où vous l’avez laissé.",
-    description:
-      "Votre projet, vos documents, vos candidatures et vos prochaines actions restent réunis dans un dossier structuré.",
+    title: "Retrouvez votre prochaine étape.",
+    description: "Votre dossier reste au même endroit.",
     image: "https://images.pexels.com/photos/6684514/pexels-photo-6684514.jpeg?auto=compress&cs=tinysrgb&w=1200",
     alt: "Des étudiants travaillent ensemble dans une bibliothèque universitaire.",
     badge: "Votre dossier reste organisé",
     points: [
-      ["01", "Une prochaine action lisible", "Identifiez rapidement ce qui demande votre attention."],
-      ["02", "Des sources et statuts visibles", "Distinguez ce qui est vérifié, à compléter ou à confirmer."],
-      ["03", "Un espace personnel", "Retrouvez les éléments enregistrés sans les disperser."],
+      ["01", "Votre prochaine action", "Voyez rapidement ce qu’il faut faire."],
+      ["02", "Vos documents", "Retrouvez ce qui est ajouté ou à vérifier."],
+      ["03", "Vos candidatures", "Suivez chaque programme au même endroit."],
     ],
   },
   signup: {
     eyebrow: "Votre parcours commence ici",
-    title: "Créez votre espace. Construisez ensuite votre projet, étape par étape.",
-    description:
-      "Le compte est seulement le point de départ : vous définissez ensuite votre projet académique, vos documents et vos prochaines démarches.",
+    title: "Créez votre espace.",
+    description: "Vous indiquerez ensuite votre projet et vos documents.",
     image: "https://images.pexels.com/photos/7973208/pexels-photo-7973208.jpeg?auto=compress&cs=tinysrgb&w=1200",
     alt: "Des étudiants relisent ensemble des documents devant un bâtiment universitaire.",
-    badge: "Étudier en Allemagne, avec un cap clair",
+    badge: "Étudier en Allemagne, étape par étape",
     points: [
-      ["01", "Créer votre compte", "Vos coordonnées et votre accès personnel AlmaGo."],
-      ["02", "Définir votre projet", "Diplôme, domaine, langue et rentrée visée."],
-      ["03", "Construire votre dossier", "Documents, programmes, candidatures et prochaines actions."],
+      ["01", "Créer votre compte", "Vos informations de connexion."],
+      ["02", "Définir votre projet", "Diplôme, domaine, langue et rentrée."],
+      ["03", "Préparer votre dossier", "Documents, programmes et candidatures."],
     ],
   },
 } as const;
@@ -89,9 +87,9 @@ export function AuthStoryPanel({ mode }: AuthStoryPanelProps) {
 
         <div className="mt-auto pt-6">
           <div className="border-l-2 border-[var(--brand)] pl-4">
-            <p className="text-sm font-bold text-[var(--foreground)]">AlmaGo organise votre préparation.</p>
+            <p className="text-sm font-bold text-[var(--foreground)]">AlmaGo vous aide à préparer.</p>
             <p className="mt-1 text-xs leading-5 text-[var(--muted)]">
-              Les décisions d’admission, de visa et de titre de séjour restent du ressort des organismes compétents.
+              Les universités et les autorités prennent les décisions officielles.
             </p>
           </div>
         </div>
