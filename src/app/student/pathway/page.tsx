@@ -187,7 +187,7 @@ export default async function StudentPathwayPage() {
         current="pathway"
         eyebrow="Mon dossier"
         title="Mon parcours Allemagne"
-        description="Cette page montre les étapes utiles selon votre dossier. Elle ne remplace pas les décisions des universités ou des autorités."
+        description="Cette page montre les étapes utiles selon votre dossier. Elle ne constitue ni une décision d’admission ni une décision de visa ou de titre de séjour."
         actions={<ButtonLink href="/student/project" variant="secondary">Modifier mon projet</ButtonLink>}
       />
 
@@ -324,7 +324,7 @@ export default async function StudentPathwayPage() {
           </p>
           {needsFilingCountry && (
             <div className="mt-4 rounded-[var(--radius-control)] border border-amber-200 bg-amber-50/60 p-4 text-sm leading-6 text-amber-900">
-              Indiquez dans « Mon projet » le pays depuis lequel vous ferez vos démarches. Il peut être différent de votre nationalité.
+              Indiquez votre pays de résidence / dépôt dans « Mon projet ». AlmaGo ne déduit pas ce pays de votre nationalité.
             </div>
           )}
         </div>
@@ -351,7 +351,7 @@ export default async function StudentPathwayPage() {
           <h2 className="mt-2 text-xl font-bold text-slate-950">Pourquoi cette étape ?</h2>
           <dl className="mt-5 divide-y divide-slate-100">
             <FactRow label="Projet défini" value={facts.project_path ? "Oui" : "Non"} />
-            <FactRow label="Pays de vos démarches" value={filingCountry || "À renseigner"} />
+            <FactRow label="Pays de résidence / dépôt" value={filingCountry || "À renseigner"} />
             <FactRow label="Admission définitive acceptée" value={facts.accepted_definitive_admission ? "Oui" : "Non"} />
             <FactRow label="Base préparatoire acceptée" value={facts.accepted_preparatory_basis ? "Oui" : "Non"} />
             <FactRow label="Cours de préparation vérifié publié" value={facts.has_publishable_study_preparation_course ? "Oui" : "Non"} />
