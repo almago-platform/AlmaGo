@@ -60,8 +60,8 @@ function evidenceTypeLabel(type: string) {
   return ({
     definitive_admission: "Admission définitive",
     conditional_admission: "Admission conditionnelle",
-    bewerberbestaetigung: "Bewerberbestätigung",
-    admissible_university_correspondence: "Correspondance universitaire admissible",
+    bewerberbestaetigung: "Bewerberbestätigung (attestation de l’université)",
+    admissible_university_correspondence: "Courrier d’université accepté pour votre parcours",
   } as Record<string, string>)[type] || "Preuve académique";
 }
 
@@ -180,10 +180,10 @@ export function DocumentsPanel({
           <div aria-hidden="true" className="absolute inset-y-0 left-0 w-1 bg-[var(--brand)]" />
           <div className="pl-2">
           <Badge variant={correctionCount ? "warning" : reviewCount ? "info" : "neutral"}>
-            {correctionCount ? "Correction demandée" : reviewCount ? "En attente de vérification" : "Dossier documentaire"}
+            {correctionCount ? "Correction demandée" : reviewCount ? "En vérification" : "Vos documents"}
           </Badge>
           <h2 className="mt-5 text-2xl font-semibold tracking-[-0.03em] text-slate-950 sm:text-3xl">
-            {correctionCount ? "Une action est nécessaire sur vos documents" : reviewCount ? "Vos documents sont en cours de vérification" : "Votre dossier documentaire"}
+            {correctionCount ? "Une action est nécessaire sur vos documents" : reviewCount ? "Vos documents sont en cours de vérification" : "Vos documents"}
           </h2>
           <p className="mt-3 text-base leading-7 text-slate-700">
             {correctionCount
@@ -224,10 +224,10 @@ export function DocumentsPanel({
         <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">
-              Preuves académiques
+              Documents scolaires
             </p>
             <h2 id="academic-evidence-title" className="mt-1 text-2xl font-semibold tracking-tight text-slate-950">
-              Ce que vos documents prouvent dans votre parcours
+              Ce qu’ils permettent de vérifier
             </h2>
           </div>
           <Badge variant="neutral">{evidence.length} classification{evidence.length > 1 ? "s" : ""}</Badge>
@@ -235,7 +235,7 @@ export function DocumentsPanel({
 
         <Card className="mt-4 border-[var(--brand-border)] bg-[var(--brand-soft)]/55 shadow-none">
           <p className="text-sm leading-6 text-slate-700">
-            Le statut d’un fichier et son statut comme preuve académique sont deux choses différentes. Un document peut être approuvé sans être encore accepté comme preuve de parcours. Cette classification ne constitue ni une admission ni une décision de visa.
+            Un fichier validé n’est pas forcément un document accepté pour votre parcours. Cette indication ne vaut ni admission ni décision de visa.
           </p>
         </Card>
 
@@ -296,7 +296,7 @@ export function DocumentsPanel({
             <Badge variant="neutral">Nouveau fichier</Badge>
             <h2 id="document-upload-title" className="mt-3 text-xl font-semibold text-slate-950">Ajouter un document</h2>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
-              Trois étapes simples. PDF, JPEG ou PNG · 10 MiB maximum. Les fichiers sont conservés dans un espace privé.
+              Ajoutez un PDF, JPEG ou PNG (10 Mo max.). Vos fichiers restent privés.
             </p>
           </div>
         </div>
@@ -361,7 +361,7 @@ export function DocumentsPanel({
           )}
 
           <p className="mt-4 text-sm leading-6 text-slate-500">
-            Un remplacement ne supprime pas automatiquement les anciens fichiers validés.
+            Un nouveau fichier ne supprime pas automatiquement un fichier déjà validé.
           </p>
         </form>
       </Card>
