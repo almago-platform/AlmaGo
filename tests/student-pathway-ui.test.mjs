@@ -4,7 +4,9 @@ import test from "node:test";
 
 const page = readFileSync("src/app/student/pathway/page.tsx", "utf8");
 const shell = readFileSync("src/components/layout/AppShell.tsx", "utf8");
-const dashboard = readFileSync("src/app/student/page.tsx", "utf8");\nconst nativeCopy = readFileSync("src/content/native-copy.ts", "utf8");\nconst dashboardCopy = readFileSync("src/content/student-dashboard-copy.ts", "utf8");
+const dashboard = readFileSync("src/app/student/page.tsx", "utf8");
+const nativeCopy = readFileSync("src/content/native-copy.ts", "utf8");
+const dashboardCopy = readFileSync("src/content/student-dashboard-copy.ts", "utf8");
 
 test("student pathway wires real project, evidence and language-course facts into the regulatory engine", () => {
   assert.match(page, /from\("student_projects"\)/);
