@@ -109,12 +109,12 @@ export function AppShell({
   }
 
   return (
-    <div dir={role === "admin" ? "ltr" : direction} className="min-h-screen bg-[var(--background)]">
+    <div dir={role === "admin" ? "ltr" : direction} className={`${role === "student" ? "student-shell" : ""} min-h-screen bg-[var(--background)]`}>
       <a href="#main-content" className="skip-link">
         {role === "student" ? shell.skip : "Aller au contenu"}
       </a>
 
-      <aside className="hidden lg:fixed lg:inset-y-0 lg:z-40 lg:flex lg:w-[15.5rem] lg:flex-col lg:border-r lg:border-[var(--border)] lg:bg-[var(--surface)]">
+      <aside className="student-shell-sidebar hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-40 lg:flex lg:w-[15.5rem] lg:flex-col lg:border-r lg:border-[var(--border)] lg:bg-[var(--surface)]">
         <div className="flex min-h-20 items-center border-b border-[var(--border)] px-5">
           <Link href={role === "admin" ? "/admin" : "/student"} className="flex items-center" aria-label="Accueil AlmaGo">
             <BrandLogo className="h-auto w-[9.5rem]" />
@@ -162,7 +162,7 @@ export function AppShell({
                             <span className="block text-[0.82rem] font-semibold [overflow-wrap:anywhere]">{item.label}</span>
                             {item.helper && <span className="mt-0.5 block text-[10px] leading-3.5 text-[var(--muted)]">{item.helper}</span>}
                           </span>
-                          {active && <span aria-hidden="true" className="absolute inset-y-2 left-0 w-0.5 rounded-r-full bg-[var(--accent)]" />}
+                          {active && <span aria-hidden="true" className="student-shell-active-edge absolute inset-y-2 left-0 w-0.5 rounded-r-full bg-[var(--accent)]" />}
                         </Link>
                       );
                     })}
@@ -190,7 +190,7 @@ export function AppShell({
                             <span className="block text-[0.82rem] font-semibold [overflow-wrap:anywhere]">{item.label}</span>
                             {item.helper && <span className="mt-0.5 block text-[10px] leading-3.5 text-[var(--muted)]">{item.helper}</span>}
                           </span>
-                          {active && <span aria-hidden="true" className="absolute inset-y-2 left-0 w-0.5 rounded-r-full bg-[var(--accent)]" />}
+                          {active && <span aria-hidden="true" className="student-shell-active-edge absolute inset-y-2 left-0 w-0.5 rounded-r-full bg-[var(--accent)]" />}
                         </Link>
                       );
                     })}
@@ -220,7 +220,7 @@ export function AppShell({
         </div>
       </aside>
 
-      <div className="lg:pl-[15.5rem]">
+      <div className="student-shell-content lg:pl-[15.5rem]">
         {role === "student" ? (
           <>
             <header className="sticky top-0 z-30 border-b border-[var(--border)] bg-[#fffdf8]/95 pt-[env(safe-area-inset-top)] shadow-[0_8px_24px_-22px_rgba(28,33,36,0.24)] backdrop-blur lg:hidden">
@@ -297,7 +297,7 @@ export function AppShell({
               )}
             </header>
 
-            <div className="hidden min-h-[4.5rem] items-center justify-between gap-6 border-b border-[var(--border)] bg-[var(--surface)] px-6 lg:flex xl:px-8">
+            <div className="student-shell-desktop-header hidden min-h-[4.5rem] items-center justify-between gap-6 border-b border-[var(--border)] bg-[var(--surface)] px-6 lg:flex xl:px-8">
               <div>
                 <p className="text-xs font-bold uppercase tracking-[0.15em] text-[var(--brand)]">{currentItem.label}</p>
                 <p className="mt-1 text-sm text-[var(--muted)]">
@@ -390,7 +390,7 @@ export function AppShell({
           </>
         )}
 
-        <div id="main-content" tabIndex={-1} className="min-h-screen">
+        <div id="main-content" tabIndex={-1} className="student-shell-main min-h-screen">
           {children}
         </div>
       </div>
