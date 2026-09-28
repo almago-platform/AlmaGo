@@ -36,7 +36,7 @@ export function ProfileForm({ profile }: { profile: Record<string, unknown> }) {
     try {
       const response = await fetch("/api/student/profile", { method: "PATCH", headers: { "content-type": "application/json" }, body: JSON.stringify(data) });
       const result = await response.json().catch(() => ({}));
-      if (!response.ok) setError(result.error || t.form.saveError);
+      if (!response.ok) setError(locale === "fr" && typeof result.error === "string" ? result.error : t.form.saveError);
       else setStatus(t.form.saved);
     } catch {
       setError(t.form.networkError);
