@@ -59,7 +59,7 @@ jobs:
           echo "No unresolved A38 draft markers detected."
 
       - name: Publish exact-SHA readiness evidence
-        if: steps.flag.outputs.ready == 'true'
+        if: steps.flag.outputs.ready == 'true' && github.ref == 'refs/heads/main'
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -110,7 +110,7 @@ jobs:
                 marker,
                 "",
                 "Automated checks found no unresolved A38 placeholders or draft warnings in the four canonical legal-review files.",
-                "This is a readiness check only; A38 still requires explicit repository-owner human approval."
+                "This is a readiness check only; A38 still requires explicit human approval signaled by an authorized repository admin."
               ].join("\n"),
             });
 

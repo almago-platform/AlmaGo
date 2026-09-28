@@ -77,7 +77,7 @@ export function AuthForm({ initialMode = "login" }: { initialMode?: Mode }) {
         <div className="flex items-center justify-between gap-4">
           <BrandLogo className="hidden h-auto w-32 lg:block" />
           {mode === "signup" && (
-            <span className="rounded-full border border-[var(--brand-border)] bg-[var(--brand-soft)] px-3 py-1 text-[0.68rem] font-bold uppercase tracking-[0.12em] text-[var(--brand)]">
+            <span className="rounded-full border border-[var(--brand-border)] bg-[var(--brand-soft)] px-3 py-1 text-[0.68rem] font-bold uppercase tracking-[0.12em] text-[var(--brand-strong)]">
               Compte étudiant
             </span>
           )}
@@ -159,7 +159,7 @@ export function AuthForm({ initialMode = "login" }: { initialMode?: Mode }) {
         )}
 
         {mode === "signup" && (
-          <div id="signup-password-hint" className="grid gap-2 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-3 py-3 text-xs text-[var(--muted)] sm:grid-cols-2">
+          <div id="signup-password-hint" className="grid gap-2 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-3 py-3 text-xs text-slate-600 sm:grid-cols-2">
             <span>• 8 caractères minimum</span>
             <span>• Confirmation par email</span>
           </div>
@@ -187,16 +187,16 @@ export function AuthForm({ initialMode = "login" }: { initialMode?: Mode }) {
         </button>
       </form>
 
-      <div className="flex flex-col gap-2 border-t border-[var(--border)] bg-[var(--surface-subtle)] px-5 py-4 text-sm font-semibold text-[var(--brand)] sm:flex-row sm:items-center sm:justify-between sm:px-7">
+      <div className="flex flex-col gap-2 border-t border-[var(--border)] bg-[var(--surface-subtle)] px-5 py-4 text-sm font-semibold text-[var(--brand-strong)] sm:flex-row sm:items-center sm:justify-between sm:px-7">
         {mode === "signup" ? (
-          <p className="text-[var(--muted)]">
+          <p className="text-slate-600">
             Déjà un compte ?{" "}
-            <Link href="/login" className="inline-flex min-h-11 items-center text-[var(--brand)] hover:text-[var(--brand-strong)]">
+            <Link href="/login" className="inline-flex min-h-11 items-center text-[var(--brand-strong)] underline decoration-current underline-offset-4 hover:text-[var(--foreground)]">
               Se connecter
             </Link>
           </p>
         ) : (
-          <Link href="/signup" className="inline-flex min-h-11 items-center text-[var(--brand)] hover:text-[var(--brand-strong)]">
+          <Link href="/signup" className="inline-flex min-h-11 items-center text-[var(--brand-strong)] hover:text-[var(--foreground)]">
             Créer un compte étudiant
           </Link>
         )}

@@ -34,13 +34,13 @@ Provider-side defaults must also be reviewed before production activation. Do no
 
 1. Complete A38 legal/privacy review and A43 authenticated E2E.
 2. Create/connect the provider account.
-3. Store keys only in Vercel/GitHub secrets.
+3. Store provider secrets only in Render environment variables and GitHub Actions secrets.
 4. Configure retention and any consent requirement.
 5. Map provider events to the allow-list contract; disable provider automatic capture until separately reviewed.
 6. Verify production error capture with synthetic/test-only data.
 7. Inspect outgoing application payloads and provider-side enrichment for forbidden data.
 8. Mark A44 complete only after this verification.
 
-Recommended low-friction path: Vercel runtime context plus a dedicated product analytics/error provider such as PostHog, subject to the final privacy review.
+Recommended low-friction path: keep Render as the canonical runtime and connect a dedicated analytics/error provider only after the final privacy review. Any provider must respect the allow-list contract and automatic capture must remain disabled until reviewed.
 
-No telemetry provider is currently hard-coded into AlmaGo.
+No telemetry provider is currently hard-coded into AlmaGo. Render runtime logs are operational logs only and do not replace the A44 product telemetry contract.
