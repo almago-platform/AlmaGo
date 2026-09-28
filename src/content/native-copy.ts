@@ -588,7 +588,7 @@ const en = {
       text: "Create your account, add the documents you have, and work through the next steps at your own pace.",
       proofAria: "What your file brings together",
       proof: ["Study plan", "Documents", "Next steps"],
-      cta: "Start my file",
+      cta: "Get started",
       login: "I already have an account",
     },
     footer: {
@@ -825,7 +825,7 @@ const de = {
       text: "Erstelle dein Konto, füge deine vorhandenen Unterlagen hinzu und arbeite die nächsten Schritte in deinem Tempo ab.",
       proofAria: "Was deine Akte zusammenführt",
       proof: ["Studienplan", "Unterlagen", "Nächste Schritte"],
-      cta: "Akte starten",
+      cta: "Jetzt starten",
       login: "Ich habe schon ein Konto",
     },
     footer: {
