@@ -110,7 +110,7 @@ jobs:
                 marker,
                 "",
                 "Automated checks found no unresolved A38 placeholders or draft warnings in the four canonical legal-review files.",
-                "This is a readiness check only; A38 still requires explicit repository-owner human approval."
+                "This is a readiness check only; A38 still requires explicit human approval signaled by an authorized repository admin."
               ].join("\n"),
             });
 
