@@ -1,0 +1,43 @@
+name: AlmaGo Improvement Contract Planner
+
+on:
+  schedule:
+    - cron: "43 5 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: almago-improvement-contract-planner
+  cancel-in-progress: true
+
+jobs:
+  plan:
+    if: vars.ALMAGO_AI_ENABLED == 'true' && vars.ALMAGO_AI_BILLING_CAP_CONFIRMED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      ALMAGO_CONTINUOUS_PLANNER_MODEL: gpt-5.4-mini
+      ALMAGO_PLANNER_MAX_PER_RUN: "1"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Build at most one bounded improvement contract
+        run: node autonomy/improvement-contract-planner.mjs
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "## AlmaGo Improvement Contract Planner"
+            echo
+            echo "Planner is billing-gated and processes at most one unplanned signal per run."
+            echo "It can only publish a contract comment; it cannot dispatch an implementation Agent Task or merge code."
+          } >> "$GITHUB_STEP_SUMMARY"
