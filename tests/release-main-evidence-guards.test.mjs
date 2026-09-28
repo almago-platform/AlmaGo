@@ -7,10 +7,16 @@ const a38Readiness = readFileSync(".github/workflows/almago-a38-readiness.yml", 
 const a43 = readFileSync(".github/workflows/almago-authenticated-e2e.yml", "utf8");
 const orchestrator = readFileSync(".github/workflows/almago-master-orchestrator.yml", "utf8");
 
-test("A38 human approval is prefiltered to owner comments on issues", () => {
+test("A38 human approval is limited to repository admins on issues", () => {
   assert.match(a38Approval, /github\.event\.issue\.pull_request == null/);
-  assert.match(a38Approval, /github\.event\.comment\.user\.login == github\.repository_owner/);
   assert.match(a38Approval, /contains\(github\.event\.comment\.body, 'A38 HUMAN REVIEW APPROVED'\)/);
+  assert.doesNotMatch(
+    a38Approval,
+    /github\.event\.comment\.user\.login == github\.repository_owner/,
+  );
+  assert.match(a38Approval, /getCollaboratorPermissionLevel/);
+  assert.match(a38Approval, /approverPermission\.permission !== "admin"/);
+  assert.match(a38Approval, /Only a repository admin may approve/);
 });
 
 test("A38 readiness evidence can only be published from main", () => {
