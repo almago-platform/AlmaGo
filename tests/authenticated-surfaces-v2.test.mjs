@@ -14,6 +14,8 @@ const resetPage = readFileSync("src/app/reset-password/page.tsx", "utf8");
 const resetForm = readFileSync("src/components/auth/ResetPasswordForm.tsx", "utf8");
 const unauthorized = readFileSync("src/app/unauthorized/page.tsx", "utf8");
 const fallback = readFileSync("src/app/student/[section]/page.tsx", "utf8");
+const globals = readFileSync("src/app/globals.css", "utf8");
+const dashboard = readFileSync("src/app/student/page.tsx", "utf8");
 
 test("student shell groups navigation by dossier, parcours and resources", () => {
   assert.ok(shell.includes("const studentGroupIndexes"));
@@ -61,4 +63,26 @@ test("fallback and unauthorized states stay explicit, actionable and localized",
   assert.ok(accountCopy.includes("Diese Adresse gehört zu keiner aktiven Seite"));
   assert.ok(unauthorized.includes("accountStateCopy[locale].unauthorized"));
   assert.ok(fallback.includes("accountStateCopy[locale].unknownStudent"));
+});
+
+
+test("Arabic student shell reserves the sidebar on the correct RTL edge", () => {
+  assert.ok(shell.includes("student-shell-sidebar"));
+  assert.ok(shell.includes("student-shell-content"));
+  assert.ok(shell.includes("student-shell-main"));
+  assert.ok(shell.includes("student-shell-active-edge"));
+  assert.match(globals, /Arabic Student Space RTL V2/);
+  assert.match(globals, /html\[dir="rtl"\] \.student-shell \.student-shell-sidebar/);
+  assert.match(globals, /right: 0/);
+  assert.match(globals, /padding-right: 15\.5rem/);
+  assert.match(globals, /border-left: 1px solid var\(--border\)/);
+});
+
+test("student priority accents use logical inline positioning for RTL", () => {
+  assert.ok(dashboard.includes("student-accent-edge"));
+  assert.ok(dashboard.includes("student-accent-content"));
+  assert.ok(dashboard.includes("student-split-border"));
+  assert.match(globals, /inset-inline-start: 0/);
+  assert.match(globals, /padding-inline-start: 0\.5rem/);
+  assert.match(globals, /border-inline-end: 1px solid var\(--border\)/);
 });

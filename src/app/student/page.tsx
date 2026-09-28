@@ -170,9 +170,9 @@ export default async function StudentEntry() {
         </div>
 
         <div className="grid gap-0 lg:grid-cols-[minmax(0,1.5fr)_minmax(18rem,0.8fr)]">
-          <section className="relative border-b border-[var(--border)] p-5 sm:p-6 lg:border-b-0 lg:border-r">
-            <div aria-hidden="true" className="absolute inset-y-5 left-0 w-1 rounded-r-full bg-[var(--brand)]" />
-            <div className="pl-2">
+          <section className="student-split-border relative border-b border-[var(--border)] p-5 sm:p-6">
+            <div aria-hidden="true" className="student-accent-edge absolute inset-y-5 w-1 bg-[var(--brand)]" />
+            <div className="student-accent-content">
               <div className="flex flex-wrap items-center gap-2">
                 <p className="text-[0.68rem] font-bold uppercase tracking-[0.15em] text-[var(--brand)]">{t.nextActionEyebrow}</p>
                 <Badge variant={hasActionRequired ? "warning" : waitingAlmaGo.length ? "info" : "neutral"}>
@@ -356,7 +356,7 @@ function OverviewCard({
   return (
     <Link
       href={href}
-      className="professional-hover group rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-5 shadow-[var(--shadow-card)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] focus-visible:ring-offset-2"
+      className="student-overview-card professional-hover group rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-5 shadow-[var(--shadow-card)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] focus-visible:ring-offset-2"
     >
       <div className="flex items-start justify-between gap-4">
         <div>
@@ -365,7 +365,7 @@ function OverviewCard({
         </div>
         <span
           aria-hidden="true"
-          className={`grid h-9 w-9 place-items-center rounded-full text-sm transition-transform group-hover:translate-x-0.5 ${
+          className={`student-overview-arrow grid h-9 w-9 place-items-center rounded-full text-sm transition-transform group-hover:translate-x-0.5 ${
             tone === "warning"
               ? "bg-amber-50 text-amber-800"
               : "bg-[var(--brand-soft)] text-[var(--brand)]"

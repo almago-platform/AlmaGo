@@ -169,8 +169,8 @@ export function StudentOrientationPanel({
 
       <section aria-label={t.summaryAria} className="grid gap-5 lg:grid-cols-[1.15fr_0.85fr]">
         <Card className="relative overflow-hidden border-[var(--brand-border)] bg-white shadow-none">
-          <div aria-hidden="true" className="absolute inset-y-0 left-0 w-1 bg-[var(--brand)]" />
-          <div className="pl-2 sm:pl-3">
+          <div aria-hidden="true" className="student-accent-edge absolute inset-y-0 w-1 bg-[var(--brand)]" />
+          <div className="student-accent-content student-accent-content-wide">
             <div className="flex flex-wrap items-center gap-3">
               <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">{t.programsEyebrow}</p>
               <Badge variant={items.length ? "info" : "neutral"}>{items.length ? t.programsAvailable : t.noPrograms}</Badge>

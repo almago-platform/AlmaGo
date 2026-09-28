@@ -227,3 +227,83 @@ html[dir="rtl"] .auth-story-body > div:last-child {
     padding-inline: 1rem;
   }
 }
+
+
+/* Arabic Student Space RTL V2: mirror the authenticated shell and use logical UI edges. */
+.student-accent-edge {
+  inset-inline-start: 0;
+  inset-inline-end: auto;
+}
+
+.student-accent-content {
+  padding-inline-start: 0.5rem;
+}
+
+@media (min-width: 640px) {
+  .student-accent-content-wide {
+    padding-inline-start: 0.75rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .student-split-border {
+    border-bottom-width: 0;
+    border-inline-end: 1px solid var(--border);
+  }
+
+  html[dir="rtl"] .student-shell .student-shell-sidebar {
+    left: auto;
+    right: 0;
+    border-right-width: 0;
+    border-left: 1px solid var(--border);
+  }
+
+  html[dir="rtl"] .student-shell .student-shell-content {
+    padding-left: 0;
+    padding-right: 15.5rem;
+  }
+}
+
+html[dir="rtl"] .student-shell .student-shell-active-edge {
+  left: auto;
+  right: 0;
+  border-radius: 0.125rem 0 0 0.125rem;
+}
+
+html[dir="rtl"] .student-shell :is(.uppercase, [class*="uppercase"]) {
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+html[dir="rtl"] #main-content :is(.uppercase, [class*="uppercase"]) {
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+html[dir="rtl"] .student-overview-card:hover .student-overview-arrow {
+  transform: translateX(-0.125rem);
+}
+
+.student-journey-cell {
+  border-bottom: 1px solid var(--border);
+}
+
+@media (min-width: 640px) and (max-width: 1279px) {
+  .student-journey-cell {
+    border-inline-end: 1px solid var(--border);
+  }
+
+  .student-journey-cell:nth-child(2n) {
+    border-inline-end-width: 0;
+  }
+}
+
+@media (min-width: 1280px) {
+  .student-journey-cell {
+    border-inline-end: 1px solid var(--border);
+  }
+
+  .student-journey-cell:nth-child(3n) {
+    border-inline-end-width: 0;
+  }
+}

@@ -169,8 +169,8 @@ export function DocumentsPanel({
     <div className="space-y-8">
       <section aria-label={t.priority.aria} className="grid gap-5 lg:grid-cols-[minmax(0,1.45fr)_minmax(18rem,0.85fr)]">
         <Card className={`relative overflow-hidden shadow-none ${correctionCount ? "border-amber-300 bg-amber-50/25" : "border-[var(--brand-border)] bg-white"}`}>
-          <div aria-hidden="true" className="absolute inset-y-0 left-0 w-1 bg-[var(--brand)]" />
-          <div className="pl-2">
+          <div aria-hidden="true" className="student-accent-edge absolute inset-y-0 w-1 bg-[var(--brand)]" />
+          <div className="student-accent-content">
           <Badge variant={correctionCount ? "warning" : reviewCount ? "info" : "neutral"}>
             {correctionCount ? t.priority.correctionBadge : reviewCount ? t.priority.reviewBadge : t.priority.documentsBadge}
           </Badge>

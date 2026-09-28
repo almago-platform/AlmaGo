@@ -71,7 +71,7 @@ export function StudentJourneyOverview({ stages }: { stages: StudentJourneyStage
           );
 
           return (
-            <li key={stage.label} className="border-b border-[var(--border)] sm:border-r last:border-r-0 xl:[&:nth-child(3n)]:border-r-0">
+            <li key={stage.label} className="student-journey-cell border-b border-[var(--border)]">
               {stage.href ? (
                 <Link
                   href={stage.href}
