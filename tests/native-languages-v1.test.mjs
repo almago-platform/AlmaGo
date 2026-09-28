@@ -128,11 +128,11 @@ test("Arabic Native Polish V2 uses Arabic typography instead of Latin tracking",
 });
 
 test("Arabic public copy is written as direct native guidance", () => {
-  assert.match(copy, /طريقك للدراسة في ألمانيا، خطوة بخطوة/);
-  assert.match(copy, /يجمع لك AlmaGo البرامج والمستندات وطلبات التقديم/);
-  assert.match(copy, /ست مراحل واضحة/);
-  assert.match(copy, /اختر نقطة البداية المناسبة لك/);
-  assert.match(copy, /ابدأ ملفي/);
+  assert.match(copy, /كل ما تحتاجه لتنظيم ملفك الدراسي/);
+  assert.match(copy, /ابحث عن البرنامج المناسب، جهّز مستنداتك/);
+  assert.match(copy, /ست مراحل/);
+  assert.match(copy, /ابدأ من الخطوة التي تناسب وضعك/);
+  assert.match(copy, /ابدأ ملفك/);
   assert.doesNotMatch(copy, /بشكل أوضح/);
   assert.doesNotMatch(copy, /إنشاء ملفي/);
 });
