@@ -48,6 +48,11 @@ type ChecklistCopy = {
     retry: string;
     intlLocale: string;
   };
+  recorded: {
+    otherCategory: string;
+    categories: Record<string, string>;
+    items: Record<string, { title: string; description: string }>;
+  };
   personalized: {
     owner: string;
     you: string;
@@ -111,6 +116,27 @@ export const studentChecklistCopy: Record<Locale, ChecklistCopy> = {
       unavailableText: "Nous n’arrivons pas à afficher vos démarches pour le moment. Rien n’a été supprimé ou modifié. Vous pouvez réessayer ou revenir à votre dossier.",
       retry: "Réessayer",
       intlLocale: "fr-FR",
+    },
+    recorded: {
+      otherCategory: "Autre",
+      categories: {
+        Profil: "Profil",
+        Documents: "Documents",
+        Traduction: "Traductions",
+        Orientation: "Programmes",
+        Candidatures: "Candidatures",
+        Admission: "Admission",
+        "Préparation Allemagne": "Préparation du départ",
+      },
+      items: {
+        profile_complete: { title: "Vérifier mon profil", description: "Complétez les informations obligatoires." },
+        passport: { title: "Ajouter mon passeport", description: "Ajoutez un passeport lisible. Son statut apparaîtra ici." },
+        translation: { title: "Préparer les traductions demandées", description: "Préparez uniquement les traductions demandées après avoir vérifié les consignes applicables." },
+        orientation: { title: "Comparer mes programmes", description: "Comparez les programmes proposés, leurs critères et leurs échéances avant de choisir." },
+        applications: { title: "Préparer mes candidatures", description: "Revoyez les exigences de chaque programme et préparez chaque candidature étape par étape." },
+        admission: { title: "Suivre les réponses des universités", description: "Consultez l’état de vos candidatures et les décisions reçues des universités." },
+        germany_preparation: { title: "Préparer mon départ après admission", description: "Après votre admission, vérifiez les étapes utiles avant votre départ pour l’Allemagne." },
+      },
     },
     personalized: {
       owner: "Responsable",
@@ -186,6 +212,27 @@ export const studentChecklistCopy: Record<Locale, ChecklistCopy> = {
       retry: "إعادة المحاولة",
       intlLocale: "ar-TN",
     },
+    recorded: {
+      otherCategory: "خطوات أخرى",
+      categories: {
+        Profil: "الملف الشخصي",
+        Documents: "المستندات",
+        Traduction: "الترجمات",
+        Orientation: "اختيار البرامج",
+        Candidatures: "طلبات التقديم",
+        Admission: "القبول الجامعي",
+        "Préparation Allemagne": "الاستعداد لألمانيا",
+      },
+      items: {
+        profile_complete: { title: "أكمل معلوماتك", description: "راجع معلوماتك الأساسية وأكمل البيانات المطلوبة في ملفك." },
+        passport: { title: "أضف جواز سفرك", description: "ارفع نسخة واضحة من جواز السفر وتابع حالة المراجعة هنا." },
+        translation: { title: "جهّز الترجمات المطلوبة", description: "ترجم المستندات المطلوبة فقط بعد التحقق من تعليمات الجهة التي ستقدّم إليها." },
+        orientation: { title: "قارن البرامج المناسبة لك", description: "راجع البرامج المقترحة وشروطها ومواعيدها قبل أن تختار." },
+        applications: { title: "حضّر طلبات التقديم", description: "راجع متطلبات كل برنامج وجهّز طلب التقديم خطوة بخطوة." },
+        admission: { title: "تابع ردود الجامعات", description: "راجع حالة طلباتك والقرارات التي تصلك من الجامعات." },
+        germany_preparation: { title: "استعد للسفر بعد القبول", description: "بعد حصولك على القبول، راجع الخطوات التي تحتاجها قبل السفر إلى ألمانيا." },
+      },
+    },
     personalized: {
       owner: "المسؤول",
       you: "أنت",
@@ -260,6 +307,27 @@ export const studentChecklistCopy: Record<Locale, ChecklistCopy> = {
       retry: "Try again",
       intlLocale: "en-GB",
     },
+    recorded: {
+      otherCategory: "Other steps",
+      categories: {
+        Profil: "Profile",
+        Documents: "Documents",
+        Traduction: "Translations",
+        Orientation: "Programmes",
+        Candidatures: "Applications",
+        Admission: "Admission",
+        "Préparation Allemagne": "Preparing for Germany",
+      },
+      items: {
+        profile_complete: { title: "Complete my profile", description: "Review your basic information and complete the required fields." },
+        passport: { title: "Add my passport", description: "Upload a clear passport copy and follow its review status here." },
+        translation: { title: "Prepare required translations", description: "Translate only the documents requested after checking the applicable instructions." },
+        orientation: { title: "Compare suitable programmes", description: "Review suggested programmes, requirements and deadlines before choosing." },
+        applications: { title: "Prepare my applications", description: "Review each programme’s requirements and prepare the application step by step." },
+        admission: { title: "Track university responses", description: "Check your application status and decisions received from universities." },
+        germany_preparation: { title: "Prepare to travel after admission", description: "After admission, review the steps you need before travelling to Germany." },
+      },
+    },
     personalized: {
       owner: "Owner",
       you: "you",
@@ -333,6 +401,27 @@ export const studentChecklistCopy: Record<Locale, ChecklistCopy> = {
       unavailableText: "Deine Schritte können gerade nicht angezeigt werden. Es wurde nichts gelöscht oder geändert. Versuche es erneut oder gehe zurück zu deiner Akte.",
       retry: "Noch einmal versuchen",
       intlLocale: "de-DE",
+    },
+    recorded: {
+      otherCategory: "Weitere Schritte",
+      categories: {
+        Profil: "Profil",
+        Documents: "Unterlagen",
+        Traduction: "Übersetzungen",
+        Orientation: "Studiengänge",
+        Candidatures: "Bewerbungen",
+        Admission: "Zulassung",
+        "Préparation Allemagne": "Vorbereitung für Deutschland",
+      },
+      items: {
+        profile_complete: { title: "Mein Profil vervollständigen", description: "Prüfe deine Grundangaben und vervollständige die erforderlichen Felder." },
+        passport: { title: "Meinen Reisepass hinzufügen", description: "Lade eine gut lesbare Passkopie hoch und verfolge hier den Prüfstatus." },
+        translation: { title: "Erforderliche Übersetzungen vorbereiten", description: "Übersetze nur die verlangten Unterlagen, nachdem du die geltenden Hinweise geprüft hast." },
+        orientation: { title: "Passende Studiengänge vergleichen", description: "Vergleiche vorgeschlagene Studiengänge, Voraussetzungen und Fristen, bevor du auswählst." },
+        applications: { title: "Meine Bewerbungen vorbereiten", description: "Prüfe die Anforderungen jedes Studiengangs und bereite die Bewerbung Schritt für Schritt vor." },
+        admission: { title: "Antworten der Hochschulen verfolgen", description: "Prüfe den Status deiner Bewerbungen und die Entscheidungen der Hochschulen." },
+        germany_preparation: { title: "Abreise nach der Zulassung vorbereiten", description: "Prüfe nach der Zulassung die Schritte, die du vor der Reise nach Deutschland brauchst." },
+      },
     },
     personalized: {
       owner: "Zuständig",

@@ -16,6 +16,8 @@ const unauthorized = readFileSync("src/app/unauthorized/page.tsx", "utf8");
 const fallback = readFileSync("src/app/student/[section]/page.tsx", "utf8");
 const globals = readFileSync("src/app/globals.css", "utf8");
 const dashboard = readFileSync("src/app/student/page.tsx", "utf8");
+const checklist = readFileSync("src/app/student/checklist/page.tsx", "utf8");
+const checklistCopy = readFileSync("src/content/student-checklist-copy.ts", "utf8");
 
 test("student shell groups navigation by dossier, parcours and resources", () => {
   assert.ok(shell.includes("const studentGroupIndexes"));
@@ -85,4 +87,22 @@ test("student priority accents use logical inline positioning for RTL", () => {
   assert.match(globals, /inset-inline-start: 0/);
   assert.match(globals, /padding-inline-start: 0\.5rem/);
   assert.match(globals, /border-inline-end: 1px solid var\(--border\)/);
+});
+
+
+test("recorded checklist templates are localized by stable template key", () => {
+  assert.ok(checklist.includes("checklist_templates(key,category,sort_order)"));
+  assert.ok(dashboard.includes("checklist_templates(key)"));
+  assert.ok(dashboard.includes("checklistCopy.recorded.items[relation.key]"));
+  assert.ok(checklist.includes("localizedTitle"));
+  assert.ok(checklist.includes("localizedDescription"));
+  assert.ok(checklist.includes("localizedCategory"));
+  assert.ok(checklist.includes("t.recorded.items[templateKey]"));
+  assert.ok(checklistCopy.includes('passport: { title: "أضف جواز سفرك"'));
+  assert.ok(checklistCopy.includes('translation: { title: "جهّز الترجمات المطلوبة"'));
+  assert.ok(checklistCopy.includes('orientation: { title: "قارن البرامج المناسبة لك"'));
+  assert.ok(checklistCopy.includes('applications: { title: "حضّر طلبات التقديم"'));
+  assert.ok(checklistCopy.includes('Traduction: "الترجمات"'));
+  assert.ok(checklistCopy.includes('Orientation: "اختيار البرامج"'));
+  assert.ok(checklistCopy.includes('Candidatures: "طلبات التقديم"'));
 });

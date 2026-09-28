@@ -9,6 +9,7 @@ import { StudentJourneyOverview, type StudentJourneyStage } from "@/components/s
 import { createClient } from "@/lib/supabase/server";
 import { getRequestCopy } from "@/lib/i18n-server";
 import { studentDashboardCopy } from "@/content/student-dashboard-copy";
+import { studentChecklistCopy } from "@/content/student-checklist-copy";
 import { formatDeadline, isActiveApplication, isPastDeadline, nextActiveDeadline } from "@/lib/phase4";
 
 export const dynamic = "force-dynamic";
@@ -16,6 +17,7 @@ export const dynamic = "force-dynamic";
 export default async function StudentEntry() {
   const { locale, copy } = await getRequestCopy();
   const t = studentDashboardCopy[locale];
+  const checklistCopy = studentChecklistCopy[locale];
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
@@ -35,7 +37,7 @@ export default async function StudentEntry() {
     { data: recommendations, error: recommendationsError },
     { data: applications, error: applicationsError },
   ] = await Promise.all([
-    supabase.from("student_checklist_items").select("title,status").order("created_at"),
+    supabase.from("student_checklist_items").select("title,status,checklist_templates(key)").order("created_at"),
     supabase.from("documents").select("id,status"),
     supabase.from("program_recommendations").select("id,programs(name,universities(name))").eq("is_archived", false),
     supabase.from("applications").select("id,status,deadline,next_action,programs(name)").order("deadline", { ascending: true, nullsFirst: false }),
@@ -45,7 +47,16 @@ export default async function StudentEntry() {
     return <DashboardUnavailable copy={t} />;
   }
 
-  const checklist = items || [];
+  const checklist = (items || []).map((item) => {
+    const relation = Array.isArray(item.checklist_templates)
+      ? item.checklist_templates[0]
+      : item.checklist_templates;
+    const localizedTemplate = relation?.key ? checklistCopy.recorded.items[relation.key] : undefined;
+    return {
+      ...item,
+      title: localizedTemplate?.title || item.title,
+    };
+  });
   const studentDocuments = documents || [];
   const studentRecommendations = recommendations || [];
   const studentApplications = applications || [];

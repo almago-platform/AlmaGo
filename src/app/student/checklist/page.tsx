@@ -51,7 +51,7 @@ export default async function ChecklistPage() {
   ] = await Promise.all([
     supabase
       .from("student_checklist_items")
-      .select("id,title,description,status,completed_at,checklist_templates(category,sort_order)")
+      .select("id,title,description,status,completed_at,checklist_templates(key,category,sort_order)")
       .order("created_at"),
     supabase
       .from("student_projects")
@@ -160,7 +160,25 @@ export default async function ChecklistPage() {
     has_replacement_required: evidenceSummary.has_replacement_required,
   });
 
-  const checklistItems = itemsResult.data || [];
+  const checklistItems = (itemsResult.data || [])
+    .map((item) => {
+      const relation = Array.isArray(item.checklist_templates)
+        ? item.checklist_templates[0]
+        : item.checklist_templates;
+      const templateKey = relation?.key || null;
+      const localizedTemplate = templateKey ? t.recorded.items[templateKey] : undefined;
+      const categoryKey = relation?.category || "Autre";
+      return {
+        ...item,
+        localizedTitle: localizedTemplate?.title || item.title,
+        localizedDescription: localizedTemplate?.description || item.description,
+        localizedCategory:
+          t.recorded.categories[categoryKey]
+          || (categoryKey === "Autre" ? t.recorded.otherCategory : categoryKey),
+        sortOrder: relation?.sort_order ?? 9999,
+      };
+    })
+    .sort((a, b) => a.sortOrder - b.sortOrder);
   const completedCount = checklistItems.filter((item) => item.status === "completed").length;
   const progression = checklistItems.length ? Math.round((completedCount / checklistItems.length) * 100) : 0;
   const actionableItems = checklistItems.filter((item) =>
@@ -173,11 +191,7 @@ export default async function ChecklistPage() {
 
   const groups = new Map<string, (typeof checklistItems)[number][]>();
   for (const item of checklistItems) {
-    const relation = Array.isArray(item.checklist_templates)
-      ? item.checklist_templates[0]
-      : item.checklist_templates;
-    const category = relation?.category || "Autre";
-    groups.set(category, [...(groups.get(category) || []), item]);
+    groups.set(item.localizedCategory, [...(groups.get(item.localizedCategory) || []), item]);
   }
 
   return (
@@ -247,8 +261,8 @@ export default async function ChecklistPage() {
           </div>
           {nextItem ? (
             <>
-              <h2 id="checklist-next-action-title" className="mt-5 text-2xl font-bold tracking-[-0.03em] text-slate-950">{nextItem.title}</h2>
-              {nextItem.description && <p className="mt-3 text-sm leading-6 text-slate-700">{nextItem.description}</p>}
+              <h2 id="checklist-next-action-title" className="mt-5 text-2xl font-bold tracking-[-0.03em] text-slate-950">{nextItem.localizedTitle}</h2>
+              {nextItem.localizedDescription && <p className="mt-3 text-sm leading-6 text-slate-700">{nextItem.localizedDescription}</p>}
               <div className="mt-5 inline-flex items-center gap-2 rounded-[var(--radius-control)] border border-amber-200 bg-white px-3 py-2 text-xs font-bold text-amber-900">
                 <span aria-hidden="true" className="h-2 w-2 rounded-full bg-[var(--accent)]" />
                 {t.statusLabels[nextItem.status] || t.page.ownerStudent}
@@ -313,8 +327,8 @@ export default async function ChecklistPage() {
                             {["waiting_student", "todo", "not_started"].includes(item.status) && <span className="text-xs font-bold uppercase tracking-[0.14em] text-amber-800">{t.page.responsibleStudent}</span>}
                             {item.status === "waiting_almago" && <span className="text-xs font-bold uppercase tracking-[0.14em] text-blue-800">{t.page.responsibleAlmaGo}</span>}
                           </div>
-                          <h3 id={`checklist-item-title-${item.id}`} className="mt-3 font-bold text-slate-950">{item.title}</h3>
-                          {item.description && <p className="mt-1 text-sm leading-6 text-slate-600">{item.description}</p>}
+                          <h3 id={`checklist-item-title-${item.id}`} className="mt-3 font-bold text-slate-950">{item.localizedTitle}</h3>
+                          {item.localizedDescription && <p className="mt-1 text-sm leading-6 text-slate-600">{item.localizedDescription}</p>}
                           {item.completed_at && (
                             <p className="mt-3 text-xs text-slate-500">
                               {t.page.completedOn}{" "}
