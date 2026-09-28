@@ -81,6 +81,27 @@ test.describe("authenticated Student Space quality", () => {
         ).toBeLessThanOrEqual(sidebarBox.x + 1);
       }
 
+      if (target.name === "checklist") {
+        const checklistText = await page.locator("#main-content").innerText();
+        for (const frenchTemplateText of [
+          "Passeport validé",
+          "Ajouter mon passeport",
+          "Traductions nécessaires",
+          "Préparer les traductions demandées",
+          "Orientation universitaire",
+          "Consulter mes programmes proposés",
+          "Préparer mes candidatures",
+          "Suivre les admissions",
+          "Préparer l’arrivée en Allemagne",
+          "Préparer le départ après admission",
+        ]) {
+          expect(checklistText, "Arabic checklist must not expose stored French template copy").not.toContain(frenchTemplateText);
+        }
+        expect(checklistText).toContain("أضف جواز سفرك");
+        expect(checklistText).toContain("جهّز الترجمات المطلوبة");
+        expect(checklistText).toContain("قارن البرامج المناسبة لك");
+      }
+
       const results = await new AxeBuilder({ page }).analyze();
       const severe = results.violations.filter(item => item.impact === "serious" || item.impact === "critical");
       expect(severe, target.path + "\n" + JSON.stringify(severe, null, 2)).toEqual([]);
