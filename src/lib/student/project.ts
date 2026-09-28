@@ -12,10 +12,10 @@ export const projectPathOptions: ReadonlyArray<{
   title: string;
   description: string;
 }> = [
-  { value: "university_search", title: "Trouver une université", description: "Construire un projet d’études et identifier des programmes adaptés en Allemagne." },
-  { value: "german_preparation_and_studies", title: "Allemand + études", description: "Préparer votre allemand avant de commencer ou poursuivre des études." },
-  { value: "master_and_language", title: "Master + langue", description: "Cibler un Master et planifier en parallèle la préparation linguistique nécessaire." },
-  { value: "language_only", title: "Langue uniquement", description: "Organiser un séjour consacré à l’apprentissage de l’allemand, sans candidature universitaire à ce stade." },
+  { value: "university_search", title: "Trouver une université", description: "Chercher des programmes qui correspondent à votre projet." },
+  { value: "german_preparation_and_studies", title: "Allemand + études", description: "Préparer votre allemand avant vos études." },
+  { value: "master_and_language", title: "Master + langue", description: "Chercher un Master et préparer la langue demandée." },
+  { value: "language_only", title: "Langue uniquement", description: "Préparer un séjour pour apprendre l’allemand, sans candidature universitaire pour le moment." },
 ];
 
 export type StudentProjectInput = {
@@ -68,7 +68,7 @@ function budgetAmount(value: unknown) {
 
 export function parseStudentProject(input: StudentProjectInput) {
   if (typeof input.path !== "string" || !projectPaths.includes(input.path as ProjectPath)) {
-    return { error: "Choisissez un parcours valide." } as const;
+    return { error: "Choisissez un objectif valide." } as const;
   }
 
   const targetDegree = optionalText(input.target_degree, 120);
