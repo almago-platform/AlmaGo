@@ -30,3 +30,45 @@ for (const target of pages) {
     });
   });
 }
+
+
+test("native language switch persists and Arabic renders RTL without overflow", async ({ page }, testInfo) => {
+  test.skip(
+    !["desktop-chromium", "mobile-375-chromium"].includes(testInfo.project.name),
+    "Representative desktop and mobile coverage is sufficient for locale switching.",
+  );
+
+  await page.goto("/login", { waitUntil: "networkidle" });
+
+  const switcher = page.locator("select:visible").first();
+  await expect(switcher).toBeVisible();
+
+  await switcher.selectOption("ar");
+  await expect(page.locator("html")).toHaveAttribute("lang", "ar");
+  await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
+  await expect(page.getByRole("heading", { name: "تسجيل الدخول" })).toBeVisible();
+
+  await page.goto("/", { waitUntil: "networkidle" });
+  await expect(page.locator("html")).toHaveAttribute("lang", "ar");
+  await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
+  await expect(page.getByRole("heading", { name: /مشروع دراستك/ })).toBeVisible();
+  const rtlOverflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+  expect(rtlOverflow, "Arabic homepage must not overflow horizontally").toBeLessThanOrEqual(1);
+
+  await page.goto("/login", { waitUntil: "networkidle" });
+  const englishSwitcher = page.locator("select:visible").first();
+  await englishSwitcher.selectOption("en");
+  await expect(page.locator("html")).toHaveAttribute("lang", "en");
+  await expect(page.locator("html")).toHaveAttribute("dir", "ltr");
+  await expect(page.getByRole("heading", { name: "Sign in" })).toBeVisible();
+
+  await page.locator("select:visible").first().selectOption("de");
+  await expect(page.locator("html")).toHaveAttribute("lang", "de");
+  await expect(page.locator("html")).toHaveAttribute("dir", "ltr");
+  await expect(page.getByRole("heading", { name: "Anmelden" })).toBeVisible();
+
+  await page.locator("select:visible").first().selectOption("fr");
+  await expect(page.locator("html")).toHaveAttribute("lang", "fr");
+  await expect(page.locator("html")).toHaveAttribute("dir", "ltr");
+  await expect(page.getByRole("heading", { name: "Se connecter" })).toBeVisible();
+});

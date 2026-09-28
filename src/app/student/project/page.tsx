@@ -2,10 +2,14 @@ import { redirect } from "next/navigation";
 import { StudentProjectForm } from "@/components/student/StudentProjectForm";
 import { StudentJourneyHeader } from "@/components/student/StudentJourneyHeader";
 import { createClient } from "@/lib/supabase/server";
+import { getRequestLocale } from "@/lib/i18n-server";
+import { studentProjectCopy } from "@/content/student-project-copy";
 
 export const dynamic = "force-dynamic";
 
 export default async function StudentProjectPage() {
+  const locale = await getRequestLocale();
+  const t = studentProjectCopy[locale];
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
@@ -18,9 +22,9 @@ export default async function StudentProjectPage() {
   return <main className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 sm:py-7 lg:px-8 lg:py-9">
     <StudentJourneyHeader
       current="project"
-      eyebrow="Mon dossier"
-      title="Quel est votre projet ?"
-      description="Décrivez votre situation et votre objectif. Ces informations servent à afficher les étapes utiles. Vous n’avez pas à choisir un type de visa."
+      eyebrow={t.header.eyebrow}
+      title={t.header.title}
+      description={t.header.description}
     />
     <StudentProjectForm project={project as Parameters<typeof StudentProjectForm>[0]["project"]} />
   </main>;

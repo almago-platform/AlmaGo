@@ -1,55 +1,32 @@
+"use client";
+
+import { useLocale } from "@/components/i18n/LocaleProvider";
 import { HomeIcon } from "./HomeIcons";
 import s from "./Homepage.module.css";
 
-const faqs = [
-  [
-    "Puis-je commencer sans admission ?",
-    "Oui. Commencez par votre projet et les documents que vous avez. Cherchez ensuite une admission adaptée avant les démarches qui en dépendent.",
-  ],
-  [
-    "Que vais-je retrouver dans mon espace ?",
-    "Votre projet, vos documents, vos programmes, vos candidatures et vos prochaines étapes.",
-  ],
-  [
-    "AlmaGo dépose-t-il mes candidatures ?",
-    "Non. AlmaGo vous aide à préparer et suivre vos candidatures. Vous les envoyez par le canal demandé par l’université, par exemple directement ou via uni-assist.",
-  ],
-  [
-    "Les informations sont-elles officielles ?",
-    "AlmaGo indique la source et la date de contrôle quand elles sont disponibles. Vérifiez toujours la source officielle avant une démarche.",
-  ],
-  [
-    "AlmaGo garantit-il une admission ou un visa ?",
-    "Non. AlmaGo organise votre préparation. Les universités, ambassades et autorités prennent les décisions.",
-  ],
-] as const;
-
 export function HomeFaqSection() {
+  const { copy } = useLocale();
+  const faq = copy.home.faq;
+
   return (
-    <section
-      id="faq"
-      className={`${s.section} ${s.faq}`}
-      aria-labelledby="faq-title"
-    >
+    <section id="faq" className={`${s.section} ${s.faq}`} aria-labelledby="faq-title">
       <div className={`${s.container} ${s.faqGrid}`}>
         <div className={s.faqIntro}>
-          <p className={s.eyebrow}>Questions utiles</p>
+          <p className={s.eyebrow}>{faq.eyebrow}</p>
           <h2 id="faq-title" className={s.sectionTitle}>
-            Avant de faire
+            {faq.title1}
             <br />
-            <em>le premier pas.</em>
+            <em>{faq.title2}</em>
           </h2>
-          <p className={s.lead}>
-            Les réponses aux questions les plus fréquentes.
-          </p>
+          <p className={s.lead}>{faq.intro}</p>
           <a className={s.textLink} href="#parcours">
-            Voir les étapes
+            {faq.cta}
             <HomeIcon name="arrow" />
           </a>
         </div>
         <div className={s.faqList}>
-          {faqs.map(([question, answer], i) => (
-            <details key={question} open={i === 0}>
+          {faq.items.map(([question, answer], index) => (
+            <details key={question} open={index === 0}>
               <summary>
                 <span>{question}</span>
                 <HomeIcon name="plus" />

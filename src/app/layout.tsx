@@ -1,54 +1,71 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import { Inter, Source_Serif_4 } from "next/font/google";
 import type { ReactNode } from "react";
+import { LocaleProvider } from "@/components/i18n/LocaleProvider";
+import { getNativeCopy } from "@/content/native-copy";
+import {
+  LOCALE_COOKIE,
+  localeDirection,
+  localeOpenGraph,
+  normalizeLocale,
+} from "@/lib/i18n";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
 const sourceSerif = Source_Serif_4({ subsets: ["latin"], variable: "--font-source-serif", display: "swap" });
 
-const publicTitle = "AlmaGo | Études en Allemagne";
-const publicDescription =
-  "Préparez votre dossier d’études en Allemagne avec AlmaGo : profil, documents, orientation, candidatures et suivi dans un espace structuré.";
+async function requestLocale() {
+  const store = await cookies();
+  return normalizeLocale(store.get(LOCALE_COOKIE)?.value);
+}
 
-export const metadata: Metadata = {
-  title: {
-    default: publicTitle,
-    template: "%s | AlmaGo",
-  },
-  description: publicDescription,
-  applicationName: "AlmaGo",
-  keywords: [
-    "études en Allemagne",
-    "dossier étudiant",
-    "orientation universitaire",
-    "candidatures Allemagne",
-    "AlmaGo",
-  ],
-  robots: {
-    index: true,
-    follow: true,
-  },
-  openGraph: {
-    type: "website",
-    locale: "fr_FR",
-    siteName: "AlmaGo",
-    title: publicTitle,
-    description: publicDescription,
-  },
-  icons: {
-    icon: [{ url: "/brand/almago-symbol.svg", type: "image/svg+xml" }],
-  },
-  twitter: {
-    card: "summary",
-    title: publicTitle,
-    description: publicDescription,
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await requestLocale();
+  const { metadata } = getNativeCopy(locale);
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+  return {
+    title: {
+      default: metadata.title,
+      template: "%s | AlmaGo",
+    },
+    description: metadata.description,
+    applicationName: "AlmaGo",
+    keywords: [...metadata.keywords],
+    robots: {
+      index: true,
+      follow: true,
+    },
+    openGraph: {
+      type: "website",
+      locale: localeOpenGraph(locale),
+      siteName: "AlmaGo",
+      title: metadata.title,
+      description: metadata.description,
+    },
+    icons: {
+      icon: [{ url: "/brand/almago-symbol.svg", type: "image/svg+xml" }],
+    },
+    twitter: {
+      card: "summary",
+      title: metadata.title,
+      description: metadata.description,
+    },
+  };
+}
+
+export default async function RootLayout({ children }: { children: ReactNode }) {
+  const locale = await requestLocale();
+
   return (
-    <html lang="fr" className={`${inter.variable} ${sourceSerif.variable} h-full antialiased`}>
-      <body className="min-h-full">{children}</body>
+    <html
+      lang={locale}
+      dir={localeDirection(locale)}
+      className={`${inter.variable} ${sourceSerif.variable} h-full antialiased`}
+    >
+      <body className="min-h-full">
+        <LocaleProvider initialLocale={locale}>{children}</LocaleProvider>
+      </body>
     </html>
   );
 }

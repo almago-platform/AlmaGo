@@ -3,8 +3,11 @@ import { readFileSync } from "node:fs";
 import test from "node:test";
 
 const page = readFileSync("src/app/student/pathway/page.tsx", "utf8");
+const copy = readFileSync("src/content/student-pathway-copy.ts", "utf8");
 const shell = readFileSync("src/components/layout/AppShell.tsx", "utf8");
 const dashboard = readFileSync("src/app/student/page.tsx", "utf8");
+const nativeCopy = readFileSync("src/content/native-copy.ts", "utf8");
+const dashboardCopy = readFileSync("src/content/student-dashboard-copy.ts", "utf8");
 
 test("student pathway wires real project, evidence and language-course facts into the regulatory engine", () => {
   assert.match(page, /from\("student_projects"\)/);
@@ -25,11 +28,12 @@ test("student pathway wires real project, evidence and language-course facts int
 
 test("student pathway exposes all canonical regulatory routes without claiming an official decision", () => {
   for (const route of ["STUDIUM", "STUDIENVORBEREITUNG", "STUDIENPLATZSUCHE", "SPRACHKURS"]) {
-    assert.match(page, new RegExp(route));
+    assert.ok(copy.includes(route));
   }
-  assert.match(page, /ne constitue ni une décision d’admission ni une décision de visa ou de titre de séjour/);
-  assert.match(page, /décision relative à un visa ou à un titre de séjour restent du ressort/);
+  assert.ok(copy.includes("ne constitue ni une décision d’admission ni une décision de visa ou de titre de séjour"));
+  assert.ok(copy.includes("toute décision relative à un visa ou à un titre de séjour restent du ressort"));
   assert.doesNotMatch(page, /visa garanti|éligible au visa|probabilit[ée] d['’]admission|chance d['’]admission/i);
+  assert.match(page, /decision\.reason_code/);
 });
 
 test("pathway fails closed when a required data source cannot be loaded", () => {
@@ -40,7 +44,8 @@ test("pathway fails closed when a required data source cannot be loaded", () => 
   assert.match(page, /financeResult\.error/);
   assert.match(page, /checklistResult\.error/);
   assert.match(page, /regulatorySourcesResult\.error/);
-  assert.match(page, /AlmaGo ne propose aucun parcours par défaut/);
+  assert.ok(copy.includes("AlmaGo ne propose aucun parcours par défaut"));
+  assert.match(page, /PathwayUnavailable copy=\{t\}/);
 });
 
 test("next actions remain bounded to existing student surfaces", () => {
@@ -52,33 +57,31 @@ test("next actions remain bounded to existing student surfaces", () => {
     "/student/checklist",
     "/student/finance-insurance",
   ]) {
-    assert.match(page, new RegExp(href.replaceAll("/", "\\/")));
+    assert.ok(copy.includes(href) || page.includes(href));
   }
 });
 
 test("the real student shell and dashboard expose the pathway page", () => {
-  assert.match(shell, /Mon parcours/);
-  assert.match(shell, /\/student\/pathway/);
-  assert.match(shell, /Financement & assurance/);
-  assert.match(shell, /\/student\/finance-insurance/);
-  assert.match(dashboard, /Voir mes étapes/);
-  assert.match(dashboard, /\/student\/pathway/);
+  assert.ok(nativeCopy.includes('"Mon parcours"'));
+  assert.ok(shell.includes("/student/pathway"));
+  assert.ok(nativeCopy.includes('"Financement & assurance"'));
+  assert.ok(shell.includes("/student/finance-insurance"));
+  assert.ok(dashboardCopy.includes('pathwayCta: "Voir mes étapes"'));
+  assert.ok(dashboard.includes("/student/pathway"));
 });
 
-
 test("pathway exposes only current official regulatory sources and fails closed on stale data", () => {
-  assert.match(page, /Sources officielles/);
-  assert.match(page, /Règles à vérifier pour votre situation/);
-  assert.match(page, /Revalidation requise/);
-  assert.match(page, /AlmaGo n’affiche donc pas de règle par défaut/);
-  assert.match(page, />\s*Source officielle\s*</);
+  assert.ok(copy.includes('officialEyebrow: "Sources officielles"'));
+  assert.ok(copy.includes('officialTitle: "Règles à vérifier pour votre situation"'));
+  assert.ok(copy.includes('revalidation: "Revalidation requise"'));
+  assert.ok(copy.includes("AlmaGo n’affiche donc pas de règle par défaut"));
+  assert.match(page, /copy\.sources\.official/);
   assert.doesNotMatch(page, /source\.verification_status === "verified" && source\.verified_at/);
 });
 
-
 test("country-specific regulatory sources are never inferred from nationality", () => {
-  assert.match(page, /Pays de résidence \/ dépôt/);
-  assert.match(page, /AlmaGo ne déduit pas ce pays de votre nationalité/);
+  assert.ok(copy.includes('filingCountry: "Pays de résidence \/ dépôt"'));
+  assert.ok(copy.includes("AlmaGo ne déduit pas ce pays de votre nationalité"));
   assert.match(page, /originCountry\.toUpperCase\(\) === filingCountry\.toUpperCase\(\)/);
   assert.doesNotMatch(page, /nationality|nationalité.*===|Tunisienne/i);
 });

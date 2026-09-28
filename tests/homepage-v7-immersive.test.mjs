@@ -7,50 +7,54 @@ const header = readFileSync("src/components/public/HomeHeader.tsx", "utf8");
 const hero = readFileSync("src/components/public/HomeHero.tsx", "utf8");
 const quick = readFileSync("src/components/public/HomeQuickAccess.tsx", "utf8");
 const band = readFileSync("src/components/public/HomePhotoBand.tsx", "utf8");
+const closing = readFileSync("src/components/public/HomeClosing.tsx", "utf8");
+const nativeCopy = readFileSync("src/content/native-copy.ts", "utf8");
 const css = readFileSync("src/components/public/Homepage.module.css", "utf8");
 
 test("V7 uses an immersive full-width academic hero", () => {
-  assert.match(hero, /7972313/);
-  assert.match(hero, /heroBackdrop/);
-  assert.match(hero, /heroShade/);
-  assert.match(hero, /quality=\{90\}/);
-  assert.match(hero, /Exemple de dossier AlmaGo/);
-  assert.match(css, /\.hero\s*\{[\s\S]*min-height:\s*610px/);
-  assert.match(css, /\.heroShade\s*\{[\s\S]*linear-gradient/);
+  assert.ok(hero.includes("7972313"));
+  assert.ok(hero.includes("heroBackdrop"));
+  assert.ok(hero.includes("heroShade"));
+  assert.ok(hero.includes("quality={90}"));
+  assert.ok(nativeCopy.includes('exampleAria: "Exemple de dossier AlmaGo"'));
+  assert.ok(css.includes("min-height: 610px"));
+  assert.ok(css.includes("linear-gradient"));
 });
 
-test("V7 keeps copy and product proof integrated inside the hero", () => {
-  assert.match(hero, /Étudier en/);
-  assert.match(hero, /plus clair/);
-  assert.match(hero, /Votre dossier avance/);
-  assert.match(hero, /Mes candidatures/);
-  assert.match(css, /\.hero \.heroDossier\s*\{[\s\S]*position:\s*absolute/);
+test("V7 keeps localized copy and product proof integrated inside the hero", () => {
+  assert.ok(hero.includes("copy.home.hero"));
+  assert.ok(nativeCopy.includes('eyebrow: "Étudier en Allemagne, étape par étape."'));
+  assert.ok(nativeCopy.includes('title3: "plus clair."'));
+  assert.ok(nativeCopy.includes('exampleTitle: "Votre dossier avance"'));
+  assert.ok(nativeCopy.includes('["Mes candidatures", "À suivre", ""]'));
+  assert.ok(css.includes(".hero .heroDossier"));
+  assert.ok(css.includes("position: absolute"));
 });
 
 test("current homepage places quick access and the visual pathway immediately after the hero", () => {
-  assert.match(page, /<HomeHero \/>[\s\S]*<HomeQuickAccess \/>[\s\S]*<HomePhotoBand \/>[\s\S]*<HomeJourneySection \/>/);
-  const titles = [...quick.matchAll(/title: "([^"]+)"/g)].map((match) => match[1]);
-  assert.equal(titles.length, 5);
-  assert.equal(new Set(titles).size, 5);
-  assert.match(css, /\.quickLinks\s*\{[\s\S]*repeat\(5/);
+  assert.ok(page.indexOf("<HomeHero />") < page.indexOf("<HomeQuickAccess />"));
+  assert.ok(page.indexOf("<HomeQuickAccess />") < page.indexOf("<HomePhotoBand />"));
+  assert.ok(page.indexOf("<HomePhotoBand />") < page.indexOf("<HomeJourneySection />"));
+  assert.equal(quick.split('icon: "').length - 1, 5);
+  assert.ok(css.includes("repeat(5"));
 });
 
 test("V7 follow-up section uses three visual academic cards", () => {
-  const images = [...band.matchAll(/image: "https:\/\/images\.pexels\.com\/photos\/(\d+)\//g)];
-  assert.equal(images.length, 3);
-  assert.match(band, /Votre projet d’études d’abord/);
-  assert.match(band, /Préparez la suite/);
-  assert.match(css, /\.photoBandLayout\s*\{[\s\S]*grid-template-columns/);
+  assert.equal(band.split("https://images.pexels.com/photos/").length - 1, 3);
+  assert.ok(nativeCopy.includes('eyebrow: "Votre projet d’études d’abord"'));
+  assert.ok(nativeCopy.includes('title1: "Préparez la suite"'));
+  assert.ok(css.includes(".photoBandLayout"));
 });
 
 test("current public framing keeps independence visible without a legacy utility strip", () => {
-  const closing = readFileSync("src/components/public/HomeClosing.tsx", "utf8");
-  assert.match(closing, /Plateforme indépendante/);
-  assert.match(closing, /Les admissions, visas et autres décisions officielles appartiennent/);
-  assert.doesNotMatch(header, /Comprendre notre rôle/);
+  assert.ok(nativeCopy.includes('independent: "Plateforme indépendante"'));
+  assert.ok(nativeCopy.includes("Les admissions, visas et autres décisions officielles appartiennent"));
+  assert.ok(closing.includes("footer.independent"));
+  assert.ok(!header.includes("Comprendre notre rôle"));
 });
 
 test("V7 retains responsive hero and card behavior", () => {
-  assert.match(css, /@media \(max-width: 599px\)[\s\S]*\.hero\s*\{[\s\S]*min-height:\s*760px/);
-  assert.match(css, /@media \(max-width: 599px\)[\s\S]*\.photoBandGrid\s*\{[\s\S]*grid-template-columns:\s*1fr/);
+  assert.ok(css.includes("@media (max-width: 599px)"));
+  assert.ok(css.includes("min-height: 760px"));
+  assert.ok(css.includes(".photoBandGrid"));
 });

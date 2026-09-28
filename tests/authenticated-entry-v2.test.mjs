@@ -8,45 +8,51 @@ const authForm = readFileSync("src/components/auth/AuthForm.tsx", "utf8");
 const progress = readFileSync("src/components/student/StudentEntryProgress.tsx", "utf8");
 const onboarding = readFileSync("src/app/student/onboarding/page.tsx", "utf8");
 const onboardingForm = readFileSync("src/components/student/OnboardingForm.tsx", "utf8");
+const onboardingCopy = readFileSync("src/content/student-onboarding-copy.ts", "utf8");
 const profile = readFileSync("src/app/student/profile/page.tsx", "utf8");
 const profileForm = readFileSync("src/components/student/ProfileForm.tsx", "utf8");
+const profileCopy = readFileSync("src/content/student-profile-copy.ts", "utf8");
 
 test("login and signup now share the same professional auth composition", () => {
   for (const source of [login, signup]) {
-    assert.match(source, /linear-gradient/);
-    assert.match(source, /max-w-7xl/);
-    assert.match(source, /max-w-\[36rem\]/);
-    assert.match(source, /AuthStoryPanel/);
+    assert.ok(source.includes("linear-gradient"));
+    assert.ok(source.includes("max-w-7xl"));
+    assert.ok(source.includes("max-w-[36rem]"));
+    assert.ok(source.includes("AuthStoryPanel"));
   }
 });
 
 test("entry progress explicitly connects account, dossier and student space", () => {
-  assert.match(progress, /Compte/);
-  assert.match(progress, /Dossier initial/);
-  assert.match(progress, /Espace étudiant/);
-  assert.match(progress, /aria-label="Progression de création du dossier"/);
-  assert.match(authForm, /StudentEntryProgress current=\{1\} compact/);
-  assert.match(onboarding, /StudentEntryProgress current=\{2\} compact/);
-  assert.match(profile, /StudentEntryProgress current=\{3\} compact/);
+  assert.ok(progress.includes('["Compte", "Créer votre accès"]'));
+  assert.ok(progress.includes('["Dossier initial", "Renseigner votre profil"]'));
+  assert.ok(progress.includes('["Espace étudiant", "Suivre votre parcours"]'));
+  assert.ok(progress.includes('aria: "Progression de création du dossier"'));
+  assert.ok(progress.includes("ar: {"));
+  assert.ok(progress.includes("en: {"));
+  assert.ok(progress.includes("de: {"));
+  assert.ok(authForm.includes("<StudentEntryProgress current={1} compact />"));
+  assert.ok(onboarding.includes("<StudentEntryProgress current={2} compact />"));
+  assert.ok(profile.includes("<StudentEntryProgress current={3} compact />"));
 });
 
 test("onboarding keeps the existing five internal steps and save behavior", () => {
-  assert.match(onboardingForm, /title: "Identité"/);
-  assert.match(onboardingForm, /title: "Validation"/);
-  assert.match(onboardingForm, /fetch\("\/api\/student\/onboarding"/);
-  assert.match(onboardingForm, /if \(nextStep === 6\) router\.push\("\/student"\)/);
+  assert.ok(onboardingCopy.includes('title: "Identité"'));
+  assert.ok(onboardingCopy.includes('title: "Validation"'));
+  assert.equal((onboardingCopy.match(/guidance:/g) || []).length >= 20, true);
+  assert.ok(onboardingForm.includes('fetch("/api/student/onboarding"'));
+  assert.ok(onboardingForm.includes('if (nextStep === 6) router.push("/student")'));
 });
 
 test("onboarding load errors fail visibly without changing data", () => {
-  assert.match(onboarding, /profileError/);
-  assert.match(onboarding, /OnboardingUnavailable/);
-  assert.match(onboarding, /Aucune donnée n’a été modifiée/);
-  assert.match(onboarding, /href="\/student\/onboarding"/);
+  assert.ok(onboarding.includes("profileError"));
+  assert.ok(onboarding.includes("OnboardingUnavailable"));
+  assert.ok(onboardingCopy.includes("Aucune donnée n’a été modifiée"));
+  assert.ok(onboarding.includes('href="/student/onboarding"'));
 });
 
 test("profile remains editable through the same API and returns directly to the dossier", () => {
-  assert.match(profileForm, /fetch\("\/api\/student\/profile"/);
-  assert.match(profile, /Retour à mon dossier/);
-  assert.match(profile, /profileCompletion/);
-  assert.match(profile, /max-w-7xl px-4 py-5/);
+  assert.ok(profileForm.includes('fetch("/api/student/profile"'));
+  assert.ok(profileCopy.includes('back: "Retour à mon dossier"'));
+  assert.ok(profile.includes("profileCompletion"));
+  assert.ok(profile.includes("max-w-7xl px-4 py-5"));
 });

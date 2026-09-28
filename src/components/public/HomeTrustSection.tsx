@@ -1,54 +1,38 @@
-import { HomeIcon } from "./HomeIcons";
+"use client";
+
+import { useLocale } from "@/components/i18n/LocaleProvider";
+import { HomeIcon, type HomeIconName } from "./HomeIcons";
 import s from "./Homepage.module.css";
 
-const tools = [
-  {
-    href: "/signup",
-    icon: "certificate",
-    title: "Voir par où commencer",
-    text: "Indiquez votre diplôme, votre domaine, votre langue et votre rentrée.",
-    cta: "Commencer mon dossier",
-  },
-  {
-    href: "#programmes",
-    icon: "university",
-    title: "Comparer les programmes",
-    text: "Regardez les critères, les dates et la source officielle.",
-    cta: "Voir les programmes",
-  },
-  {
-    href: "#faq",
-    icon: "globe",
-    title: "Vérifier une information",
-    text: "Voyez qui donne l’information et où la confirmer.",
-    cta: "Voir les sources",
-  },
-] as const;
+const meta: Array<{ href: string; icon: HomeIconName }> = [
+  { href: "/signup", icon: "certificate" },
+  { href: "#programmes", icon: "university" },
+  { href: "#faq", icon: "globe" },
+];
 
 export function HomeTrustSection() {
+  const { copy } = useLocale();
+  const tools = copy.home.tools;
+
   return (
-    <section
-      id="outils"
-      className={`${s.section} ${s.helpfulTools}`}
-      aria-labelledby="helpful-tools-title"
-    >
+    <section id="outils" className={`${s.section} ${s.helpfulTools}`} aria-labelledby="helpful-tools-title">
       <div className={s.container}>
         <div className={s.helpfulToolsHeading}>
-          <p className={s.eyebrow}>Pour avancer</p>
-          <h2 id="helpful-tools-title">Choisissez par où commencer.</h2>
-          <p>Trois façons simples d’avancer dans votre projet.</p>
+          <p className={s.eyebrow}>{tools.eyebrow}</p>
+          <h2 id="helpful-tools-title">{tools.title}</h2>
+          <p>{tools.intro}</p>
         </div>
 
         <div className={s.helpfulToolsGrid}>
-          {tools.map((tool) => (
-            <a className={s.helpfulToolCard} href={tool.href} key={tool.title}>
+          {tools.items.map(([title, text, cta], index) => (
+            <a className={s.helpfulToolCard} href={meta[index].href} key={title}>
               <span className={s.helpfulToolIcon} aria-hidden="true">
-                <HomeIcon name={tool.icon} />
+                <HomeIcon name={meta[index].icon} />
               </span>
-              <h3>{tool.title}</h3>
-              <p>{tool.text}</p>
+              <h3>{title}</h3>
+              <p>{text}</p>
               <span className={s.helpfulToolAction}>
-                {tool.cta}
+                {cta}
                 <HomeIcon name="arrow" />
               </span>
             </a>

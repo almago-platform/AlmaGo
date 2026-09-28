@@ -1,44 +1,41 @@
+"use client";
+
 import Link from "next/link";
 import { BrandLogo } from "@/components/brand/BrandLogo";
+import { useLocale } from "@/components/i18n/LocaleProvider";
 import { HomeIcon } from "./HomeIcons";
 import s from "./Homepage.module.css";
 
 export function HomeFinalCta() {
+  const { copy } = useLocale();
+  const closing = copy.home.closing;
+
   return (
     <section className={s.finalCta} aria-labelledby="final-title">
       <div className={`${s.container} ${s.finalInner}`}>
         <div className={s.finalCopy}>
-          <p className={s.eyebrow}>Commencez simplement</p>
+          <p className={s.eyebrow}>{closing.eyebrow}</p>
           <h2 id="final-title">
-            Commencez
+            {closing.title1}
             <br />
-            <em>par votre projet.</em>
+            <em>{closing.title2}</em>
           </h2>
-          <p>
-            Créez votre dossier. Vous ajouterez vos documents et vos prochaines
-            étapes ensuite.
-          </p>
-          <div className={s.finalProof} aria-label="Ce que votre dossier rassemble">
-            <span>
-              <HomeIcon name="check" /> Projet
-            </span>
-            <span>
-              <HomeIcon name="check" /> Documents
-            </span>
-            <span>
-              <HomeIcon name="check" /> Prochaines étapes
-            </span>
+          <p>{closing.text}</p>
+          <div className={s.finalProof} aria-label={closing.proofAria}>
+            {closing.proof.map((item) => (
+              <span key={item}>
+                <HomeIcon name="check" /> {item}
+              </span>
+            ))}
           </div>
         </div>
 
         <div className={s.finalActions}>
           <Link className={s.button} href="/signup">
-            Créer mon dossier
+            {closing.cta}
             <HomeIcon name="arrow" />
           </Link>
-          <p>
-            <Link href="/login">J’ai déjà un compte</Link>
-          </p>
+          <p><Link href="/login">{closing.login}</Link></p>
         </div>
       </div>
     </section>
@@ -46,56 +43,34 @@ export function HomeFinalCta() {
 }
 
 export function HomeFooter() {
+  const { copy } = useLocale();
+  const footer = copy.home.footer;
+
   return (
     <footer className={s.footer}>
       <div className={s.container}>
         <div className={s.footerGrid}>
           <div className={s.footerBrand}>
-            <Link href="/" className={s.logo} aria-label="AlmaGo accueil">
+            <Link href="/" className={s.logo} aria-label={copy.common.homeAria}>
               <BrandLogo variant="reverse" className={s.footerLogoImage} />
             </Link>
-            <p>Votre dossier d’études, étape par étape.</p>
-            <span className={s.footerIndependence}>Plateforme indépendante</span>
+            <p>{footer.tagline}</p>
+            <span className={s.footerIndependence}>{footer.independent}</span>
           </div>
 
-          <FooterColumn
-            title="Parcours"
-            links={[
-              ["Les six étapes", "#parcours"],
-              ["Outils utiles", "#outils"],
-              ["Questions fréquentes", "#faq"],
-            ]}
-          />
-
-          <FooterColumn
-            title="Préparer"
-            links={[
-              ["Mon espace", "/login"],
-              ["Comparer les programmes", "#programmes"],
-              ["Créer mon dossier", "/signup"],
-            ]}
-          />
-
-          <FooterColumn
-            title="Repères"
-            links={[
-              ["Se connecter", "/login"],
-              ["uni-assist · source externe", "https://www.uni-assist.de/en/"],
-            ]}
-          />
+          {footer.columns.map(([title, links]) => (
+            <FooterColumn key={title} title={title} links={links} />
+          ))}
         </div>
 
         <div className={s.footerBottom}>
           <p>© AlmaGo</p>
-          <p>
-            AlmaGo organise votre préparation. Les admissions, visas et autres décisions officielles appartiennent aux organismes compétents.
-          </p>
+          <p>{footer.disclaimer}</p>
         </div>
 
         <p className={s.photoCredit}>
-          Photographies d’illustration :{" "}
-          <a href="https://www.pexels.com/license/">Pexels</a>. Les personnes
-          représentées ne sont pas présentées comme utilisatrices d’AlmaGo.
+          {footer.photoCredit1}{" "}
+          <a href="https://www.pexels.com/license/">Pexels</a>. {footer.photoCredit2}
         </p>
       </div>
     </footer>

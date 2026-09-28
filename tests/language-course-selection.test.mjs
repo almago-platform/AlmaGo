@@ -6,6 +6,7 @@ import { parseLanguageCourseSelectionInput } from "../src/lib/language-course-se
 const migration = readFileSync("supabase/migrations/0025_student_language_course_selection.sql", "utf8");
 const api = readFileSync("src/app/api/student/language-course-selection/route.ts", "utf8");
 const panel = readFileSync("src/components/student/StudentLanguageCoursesPanel.tsx", "utf8");
+const copy = readFileSync("src/content/student-language-courses-copy.ts", "utf8");
 const pathway = readFileSync("src/app/student/pathway/page.tsx", "utf8");
 
 test("selection input is exactly one bounded UUID", () => {
@@ -32,11 +33,14 @@ test("student API supports read upsert and clear without recommendation language
   assert.doesNotMatch(api, /recommended|suitable|visa eligible|guaranteed/i);
 });
 
-test("student UI makes selection explicit and reversible", () => {
-  assert.match(panel, /Choisir pour mon projet/);
-  assert.match(panel, /Cours sélectionné/);
-  assert.match(panel, /Retirer mon choix/);
-  assert.match(panel, /ne constitue ni une décision d’admission/);
+test("student UI makes selection explicit, reversible and localized", () => {
+  assert.ok(copy.includes('choose: "Choisir pour mon projet"'));
+  assert.ok(copy.includes('selected: "Cours sélectionné"'));
+  assert.ok(copy.includes('remove: "Retirer mon choix"'));
+  assert.ok(copy.includes("ne constitue ni une décision d’admission"));
+  assert.match(panel, /t\.choose/);
+  assert.match(panel, /t\.selected/);
+  assert.match(panel, /t\.remove/);
 });
 
 test("regulatory pathway uses the selected course rather than any catalogue item", () => {

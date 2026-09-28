@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/Button";
 import { BrandLogo } from "@/components/brand/BrandLogo";
+import { useLocale } from "@/components/i18n/LocaleProvider";
+import { accountStateCopy } from "@/content/account-state-copy";
 
 export function ResetPasswordForm() {
   const [password, setPassword] = useState("");
@@ -12,6 +14,8 @@ export function ResetPasswordForm() {
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
   const router = useRouter();
+  const { locale } = useLocale();
+  const t = accountStateCopy[locale].reset;
 
   async function submit(event: FormEvent) {
     event.preventDefault();
@@ -23,13 +27,13 @@ export function ResetPasswordForm() {
       const { error: updateError } = await createClient().auth.updateUser({ password });
 
       if (updateError) {
-        setError("Le lien est expiré ou invalide. Demandez un nouveau lien depuis la page de connexion.");
+        setError(t.invalid);
       } else {
-        setMessage("Mot de passe mis à jour. Redirection vers votre espace étudiant...");
+        setMessage(t.saved);
         setTimeout(() => router.push("/student"), 700);
       }
     } catch {
-      setError("Une erreur est survenue. Réessayez dans un instant.");
+      setError(t.genericError);
     } finally {
       setSaving(false);
     }
@@ -39,15 +43,13 @@ export function ResetPasswordForm() {
     <section className="w-full rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] shadow-none">
       <div className="border-b border-[var(--border)] px-6 py-6 sm:px-8">
         <BrandLogo className="h-auto w-36" />
-        <h1 className="editorial-accent mt-3 text-3xl text-[var(--foreground)]">Nouveau mot de passe</h1>
-        <p className="mt-3 text-sm leading-6 text-[var(--muted)]">
-          Saisissez un mot de passe solide pour sécuriser votre accès au dossier.
-        </p>
+        <h1 className="editorial-accent mt-3 text-3xl text-[var(--foreground)]">{t.formTitle}</h1>
+        <p className="mt-3 text-sm leading-6 text-[var(--muted)]">{t.formText}</p>
       </div>
 
       <form onSubmit={submit} aria-busy={saving} className="space-y-5 px-6 py-6 sm:px-8">
         <label className="block text-sm font-semibold text-[var(--foreground)]">
-          Nouveau mot de passe
+          {t.password}
           <input
             required
             minLength={8}
@@ -61,7 +63,7 @@ export function ResetPasswordForm() {
         </label>
 
         <p id="reset-password-hint" className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-3 py-2 text-sm leading-6 text-[var(--muted)]">
-          Utilisez au moins 8 caractères. Un mot de passe long et unique protège mieux votre espace.
+          {t.hint}
         </p>
 
         <p
@@ -87,7 +89,7 @@ export function ResetPasswordForm() {
         </p>
 
         <Button type="submit" disabled={saving} className="min-h-12 w-full justify-center">
-          {saving ? "Enregistrement..." : "Enregistrer le mot de passe"}
+          {saving ? t.saving : t.save}
         </Button>
       </form>
     </section>
