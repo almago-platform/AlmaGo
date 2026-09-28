@@ -23,7 +23,7 @@ test("student dashboard V2 centers the first view on what matters now", () => {
   assert.match(page, /Voici ce qui compte maintenant/);
   assert.match(page, /Prochaine action/);
   assert.match(page, /Préparation du dossier/);
-  assert.match(page, /Votre repère AlmaGo/);
+  assert.match(page, /Votre dossier/);
   assert.match(page, /sm:grid-cols-2 xl:grid-cols-4/);
 });
 
@@ -31,7 +31,7 @@ test("journey overview uses visual cards and remains responsive", () => {
   assert.match(journey, /rounded-\[1rem\]/);
   assert.match(journey, /sm:grid-cols-2 xl:grid-cols-3/);
   assert.match(journey, /Ouvrir →/);
-  assert.match(journey, /Étape active/);
+  assert.match(journey, /Étape en cours/);
 });
 
 test("dashboard retains legal framing around progress and decisions", () => {
