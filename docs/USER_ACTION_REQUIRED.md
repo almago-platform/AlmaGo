@@ -14,7 +14,7 @@ Suivi humain/juridique : #66. La proposition de rétention/suppression et la mat
 - décider les règles de conservation et suppression ;
 - faire relire les textes A38 par un humain compétent ;
 - ne mettre `A38_REVIEW_READY: true` que lorsque les quatre fichiers juridiques ne contiennent plus de placeholders bloquants ;
-- après la vraie relecture, poster exactement `A38 HUMAN REVIEW APPROVED` sur l’issue A38.
+- après la vraie relecture, faire poster exactement `A38 HUMAN REVIEW APPROVED` sur l’issue A38 par un utilisateur disposant de la permission GitHub `admin` sur le repository.
 
 Ne jamais publier un mot de passe, une clé, un document d’identité ou une donnée étudiant dans GitHub.
 
