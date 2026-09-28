@@ -358,7 +358,6 @@ jobs:
 
             const schema = {
               type: "object",
-              additionalProperties: false,
               properties: {
                 decision: {
                   type: "string",
