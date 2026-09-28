@@ -136,3 +136,13 @@ test("Arabic public copy is written as direct native guidance", () => {
   assert.doesNotMatch(copy, /بشكل أوضح/);
   assert.doesNotMatch(copy, /إنشاء ملفي/);
 });
+
+
+test("Arabic homepage mirrors the visual hierarchy and protects tablet RTL layout", () => {
+  assert.match(css, /Arabic Native Layout V3/);
+  assert.match(css, /\.hero \.heroDossier/);
+  assert.match(css, /linear-gradient\(\s*270deg/);
+  assert.match(css, /min-width: 768px\) and \(max-width: 899px\)/);
+  assert.match(css, /\.quickLinks a:first-child/);
+  assert.match(css, /margin-left: -16px/);
+});
