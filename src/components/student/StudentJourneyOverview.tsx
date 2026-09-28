@@ -19,16 +19,16 @@ export function StudentJourneyOverview({ stages }: { stages: StudentJourneyStage
         <div>
           <p className="text-[0.68rem] font-bold uppercase tracking-[0.15em] text-[var(--brand)]">Parcours du dossier</p>
           <h2 id="student-journey-title" className="editorial-accent mt-2 text-[1.7rem] leading-[1.08] text-[var(--foreground)] sm:text-[2rem]">
-            Votre projet Allemagne, étape par étape.
+            Voici où en est votre dossier.
           </h2>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--muted)]">
-            Un repère visuel sur ce qui est déjà enregistré, ce qui est actif et ce qui vient ensuite.
+            Voyez ce qui est fait, ce qui est en cours et votre prochaine étape.
           </p>
         </div>
 
         <div>
           <div className="flex items-center justify-between gap-4 text-xs font-semibold text-[var(--muted)]">
-            <span>{completedStages.length} / {totalStages} repères terminés</span>
+            <span>{completedStages.length} / {totalStages} étapes terminées</span>
             <span className="font-bold text-[var(--brand)]">{progressPercent}%</span>
           </div>
           <div className="mt-2 h-2 overflow-hidden rounded-full bg-[var(--surface-muted)]">
@@ -36,7 +36,7 @@ export function StudentJourneyOverview({ stages }: { stages: StudentJourneyStage
           </div>
           {activeStage && (
             <p className="mt-2 text-xs text-[var(--muted)]">
-              Étape active : <span className="font-bold text-[var(--foreground)]">{activeStage.label}</span>
+              Étape en cours : <span className="font-bold text-[var(--foreground)]">{activeStage.label}</span>
             </p>
           )}
         </div>
