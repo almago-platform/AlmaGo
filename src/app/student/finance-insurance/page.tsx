@@ -17,15 +17,15 @@ export const dynamic = "force-dynamic";
 const kindDetails: Record<FinanceInsuranceKind, { title: string; description: string }> = {
   blocked_account_provider: {
     title: "Compte bloqué",
-    description: "Prestataires enregistrés avec une source officielle vérifiée. La présence dans AlmaGo ne signifie pas qu’un produit est requis ou adapté à votre situation.",
+    description: "Comparez les offres et vérifiez les conditions sur la source officielle.",
   },
   health_insurance_provider: {
     title: "Assurance santé",
-    description: "Options d’assurance publiées à titre factuel. Les conditions applicables doivent être confirmées auprès du fournisseur et des organismes compétents.",
+    description: "Comparez les offres et vérifiez les conditions auprès de l’assureur.",
   },
   student_financing_option: {
     title: "Financement étudiant",
-    description: "Solutions de financement enregistrées sans classement, score ni promesse d’acceptation.",
+    description: "Comparez les solutions et vérifiez qui peut en bénéficier.",
   },
 };
 
@@ -55,18 +55,18 @@ export default async function StudentFinanceInsurancePage() {
       <StudentResourceHeader
         current="finance"
         title="Financement et assurance"
-        description="Consultez uniquement les options factuelles enregistrées avec une source officielle et une vérification datée. AlmaGo ne classe pas les fournisseurs et ne déduit ni votre éligibilité ni une exigence de visa à partir de ce catalogue."
+        description="Comparez des options dont la source et la date de vérification sont visibles. AlmaGo ne dit pas ce qui convient à votre situation ni ce qui est obligatoire pour votre visa."
         actions={<ButtonLink href="/student/pathway" variant="secondary">Retour à mon parcours</ButtonLink>}
       />
 
       <StudentGuidancePanel
         eyebrow="Avant toute démarche ou paiement"
-        title="Comparez les informations, puis revenez toujours à la source officielle."
-        description="Les prix, conditions et règles peuvent changer. AlmaGo organise les options publiées sans les classer et sans décider si elles sont adaptées ou obligatoires pour votre dossier."
+        title="Vérifiez la source officielle avant de choisir."
+        description="Les prix et les conditions peuvent changer. Vérifiez toujours la source officielle avant de choisir."
         points={[
-          "Regarder la date de vérification et la source officielle.",
-          "Relire les conditions directement chez le fournisseur.",
-          "Confirmer les exigences de séjour auprès des autorités compétentes.",
+          "Regarder la date de vérification.",
+          "Lire les conditions du fournisseur.",
+          "Vérifier les exigences auprès de l’autorité compétente.",
         ]}
       />
 
@@ -94,7 +94,7 @@ export default async function StudentFinanceInsurancePage() {
                 <Card className="bg-[var(--surface-subtle)] shadow-none">
                   <Badge variant="neutral">Aucune option publiée</Badge>
                   <p className="mt-3 text-sm leading-6 text-slate-600">
-                    Aucun enregistrement actif et vérifié n’est disponible dans cette catégorie pour le moment.
+                    Aucune option vérifiée n’est disponible dans cette catégorie pour le moment.
                   </p>
                 </Card>
               )}
@@ -104,7 +104,7 @@ export default async function StudentFinanceInsurancePage() {
       </div>
 
       <p className="mt-8 text-xs leading-5 text-slate-500">
-        Les fournisseurs restent responsables de leurs propres conditions. Les autorités compétentes restent seules responsables des exigences de séjour, de visa et d’assurance applicables à un dossier.
+        Les fournisseurs fixent leurs conditions. Les autorités décident des exigences de visa, de séjour et d’assurance.
       </p>
     </main>
   );
@@ -179,7 +179,7 @@ function CatalogueUnavailable() {
         <div role="alert">
           <h2 className="text-xl font-semibold text-slate-950">Catalogue temporairement indisponible</h2>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
-            Les options vérifiées ne peuvent pas être chargées pour le moment. AlmaGo n’affiche aucun fournisseur de remplacement ou non vérifié.
+            Impossible de charger les options vérifiées pour le moment. Réessayez.
           </p>
         </div>
         <div className="mt-5 flex flex-wrap gap-3">
