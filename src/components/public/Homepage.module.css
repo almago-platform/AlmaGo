@@ -4428,3 +4428,96 @@
     right: auto;
   }
 }
+
+
+/* Arabic Native Polish V2: native Arabic typography and RTL composition. */
+:global(html[dir="rtl"]) .home {
+  font-family: var(--font-arabic), Tahoma, Arial, sans-serif;
+  line-height: 1.75;
+}
+
+:global(html[dir="rtl"]) .home :is(
+  h1, h2, h3, h4, p, a, button, span, summary, label, dt, dd
+) {
+  letter-spacing: 0;
+}
+
+:global(html[dir="rtl"]) .home :is(.eyebrow, .overline, .stepDetail, .sample, .footer nav h2) {
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+:global(html[dir="rtl"]) .home :is(
+  .sectionTitle,
+  .hero h1,
+  .hero h1 em,
+  .finalCta h2,
+  .photoBandTitle,
+  .helpfulToolsHeading h2
+) {
+  font-family: var(--font-arabic), Tahoma, Arial, sans-serif;
+  letter-spacing: 0;
+  font-style: normal;
+}
+
+:global(html[dir="rtl"]) .hero h1 {
+  font-size: clamp(48px, 4.2vw, 66px);
+  line-height: 1.28;
+}
+
+:global(html[dir="rtl"]) .hero h1 em {
+  white-space: normal;
+  line-height: 1.35;
+}
+
+:global(html[dir="rtl"]) .sectionTitle,
+:global(html[dir="rtl"]) .photoBandTitle,
+:global(html[dir="rtl"]) .helpfulToolsHeading h2,
+:global(html[dir="rtl"]) .finalCta h2 {
+  line-height: 1.35;
+}
+
+:global(html[dir="rtl"]) .heroCopy {
+  padding-right: 0;
+  padding-left: 18px;
+}
+
+:global(html[dir="rtl"]) .heroPhoto figcaption {
+  left: auto;
+  right: 23px;
+}
+
+:global(html[dir="rtl"]) .heroSideNote {
+  right: auto;
+  left: 0;
+}
+
+:global(html[dir="rtl"]) .helpfulToolsHeading,
+:global(html[dir="rtl"]) .finalActions,
+:global(html[dir="rtl"]) .footerBottom p:last-child {
+  text-align: right;
+}
+
+:global(html[dir="rtl"]) .helpfulToolsHeading .eyebrow {
+  justify-content: flex-start;
+}
+
+:global(html[dir="rtl"]) .stepIndex {
+  left: auto;
+  right: 13px;
+}
+
+@media (max-width: 767px) {
+  :global(html[dir="rtl"]) .quickLinks a {
+    padding: 10px 16px 10px 42px;
+  }
+
+  :global(html[dir="rtl"]) .helpfulToolCard {
+    text-align: right;
+  }
+
+  :global(html[dir="rtl"]) .hero h1 {
+    font-size: clamp(38px, 10.5vw, 48px);
+    line-height: 1.3;
+  }
+}

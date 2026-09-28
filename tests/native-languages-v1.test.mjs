@@ -8,6 +8,7 @@ const switcher = readFileSync("src/components/i18n/LanguageSwitcher.tsx", "utf8"
 const copy = readFileSync("src/content/native-copy.ts", "utf8");
 const layout = readFileSync("src/app/layout.tsx", "utf8");
 const css = readFileSync("src/components/public/Homepage.module.css", "utf8");
+const globalCss = readFileSync("src/app/globals.css", "utf8");
 
 test("Native Languages V1 supports French Arabic English and German", () => {
   assert.match(core, /supportedLocales = \["fr", "ar", "en", "de"\]/);
@@ -113,4 +114,25 @@ test("Arabic project form keeps technical tokens LTR and mirrors the EUR divider
   const project = readFileSync("src/components/student/StudentProjectForm.tsx", "utf8");
   assert.ok(project.includes('inputDir="ltr"'));
   assert.ok(project.includes('direction === "rtl" ? "border-r" : "border-l"'));
+});
+
+
+test("Arabic Native Polish V2 uses Arabic typography instead of Latin tracking", () => {
+  assert.match(layout, /Noto_Sans_Arabic/);
+  assert.match(layout, /--font-arabic/);
+  assert.match(globalCss, /html\[dir="rtl"\] body/);
+  assert.match(globalCss, /font-family: var\(--font-arabic\)/);
+  assert.match(css, /Arabic Native Polish V2/);
+  assert.match(css, /letter-spacing: 0/);
+  assert.match(css, /text-transform: none/);
+});
+
+test("Arabic public copy is written as direct native guidance", () => {
+  assert.match(copy, /طريقك للدراسة في ألمانيا، خطوة بخطوة/);
+  assert.match(copy, /يجمع لك AlmaGo البرامج والمستندات وطلبات التقديم/);
+  assert.match(copy, /ست مراحل واضحة/);
+  assert.match(copy, /اختر نقطة البداية المناسبة لك/);
+  assert.match(copy, /ابدأ ملفي/);
+  assert.doesNotMatch(copy, /بشكل أوضح/);
+  assert.doesNotMatch(copy, /إنشاء ملفي/);
 });
