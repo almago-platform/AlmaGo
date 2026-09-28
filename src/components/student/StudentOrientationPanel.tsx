@@ -211,7 +211,7 @@ export function StudentOrientationPanel({
           </p>
           <div className="mt-5 flex flex-col justify-center gap-3 sm:flex-row">
             <ButtonLink href="/student/profile" variant="secondary">{t.profile}</ButtonLink>
-            <ButtonLink href="/student">Retour à mon dossier</ButtonLink>
+            <ButtonLink href="/student">{studentOrientationCopy[locale].page.back}</ButtonLink>
           </div>
         </Card>
       ) : (
