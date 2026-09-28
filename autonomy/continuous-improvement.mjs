@@ -113,6 +113,16 @@ async function closeResolved(issue) {
   });
 }
 
+function readEvidence(envName) {
+  const configured = process.env[envName];
+  if (!configured) return "";
+  try {
+    return readFileSync(resolve(configured), "utf8").slice(-5500);
+  } catch {
+    return "";
+  }
+}
+
 function readAudit() {
   const path = resolve(process.env.ALMAGO_AUDIT_JSON || "artifacts/continuous-improvement/npm-audit.json");
   try {
@@ -146,6 +156,9 @@ async function publish() {
     typecheckOutcome: process.env.ALMAGO_TYPECHECK_OUTCOME || "success",
     lintOutcome: process.env.ALMAGO_LINT_OUTCOME || "success",
     audit: readAudit(),
+    testEvidence: readEvidence("ALMAGO_TEST_LOG"),
+    typecheckEvidence: readEvidence("ALMAGO_TYPECHECK_LOG"),
+    lintEvidence: readEvidence("ALMAGO_LINT_LOG"),
   });
 
   const existing = await listSignalIssues();
