@@ -139,7 +139,7 @@ export function OnboardingForm({ profile }: { profile: Record<string, unknown> }
 
       if (!response.ok) {
         setError(
-          result.error || t.saveError,
+          locale === "fr" && typeof result.error === "string" ? result.error : t.saveError,
         );
         return;
       }
