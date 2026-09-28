@@ -198,7 +198,7 @@ export function StudentLanguageCoursesPanel() {
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ language_course_id: courseId }),
       });
-      const result = await response.json().catch(() => ({}));
+      await response.json().catch(() => ({}));
       if (!response.ok) {
         setSelectionError(t.selectionSaveError);
         return;
@@ -217,7 +217,7 @@ export function StudentLanguageCoursesPanel() {
     setSelectionError("");
     try {
       const response = await fetch("/api/student/language-course-selection", { method: "DELETE" });
-      const result = await response.json().catch(() => ({}));
+      await response.json().catch(() => ({}));
       if (!response.ok) {
         setSelectionError(t.selectionRemoveError);
         return;
