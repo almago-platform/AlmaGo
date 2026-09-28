@@ -56,3 +56,12 @@ test("owner docs use durable workstream references and completed catalogue clean
     assert.doesNotMatch(source, /1 recommandation test à archiver/);
   }
 });
+
+
+test("owner docs require repository-admin A38 approval", () => {
+  for (const source of [required, minimal]) {
+    assert.match(source, /A38 HUMAN REVIEW APPROVED/);
+    assert.match(source, /permission GitHub `admin`/);
+    assert.doesNotMatch(source, /repository owner/i);
+  }
+});
