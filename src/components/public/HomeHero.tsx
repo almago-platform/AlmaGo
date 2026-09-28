@@ -1,9 +1,15 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { useLocale } from "@/components/i18n/LocaleProvider";
 import { HomeIcon } from "./HomeIcons";
 import s from "./Homepage.module.css";
 
 export function HomeHero() {
+  const { copy } = useLocale();
+  const hero = copy.home.hero;
+
   return (
     <section className={s.hero} aria-labelledby="home-title">
       <div className={s.heroBackdrop} aria-hidden="true">
@@ -20,75 +26,58 @@ export function HomeHero() {
       <div className={`${s.container} ${s.heroImmersiveInner}`}>
         <div className={s.heroCopy}>
           <p className={s.eyebrow}>
-            <span className={s.dot} /> Étudier en Allemagne, étape par étape.
+            <span className={s.dot} /> {hero.eyebrow}
           </p>
           <h1 id="home-title">
-            Votre projet d’études
+            {hero.title1}
             <br />
-            en Allemagne,
+            {hero.title2}
             <br />
-            <em>plus clair.</em>
+            <em>{hero.title3}</em>
           </h1>
-          <p className={s.heroLead}>
-            AlmaGo vous aide à préparer votre dossier, comparer des programmes
-            et savoir quoi faire ensuite.
-          </p>
+          <p className={s.heroLead}>{hero.lead}</p>
           <div className={s.heroActions}>
             <Link className={s.button} href="/signup">
-              Créer mon dossier
+              {hero.primary}
               <HomeIcon name="arrow" />
             </Link>
             <a className={s.heroTextLink} href="#parcours">
-              Voir les étapes
+              {hero.secondary}
               <HomeIcon name="arrow" />
             </a>
           </div>
           <div className={s.heroProof}>
-            <span>
-              <HomeIcon name="check" /> 6 étapes simples
-            </span>
-            <span>
-              <HomeIcon name="check" /> Documents au même endroit
-            </span>
-            <span>
-              <HomeIcon name="check" /> Sources officielles à vérifier
-            </span>
+            {hero.proof.map((item) => (
+              <span key={item}>
+                <HomeIcon name="check" /> {item}
+              </span>
+            ))}
           </div>
         </div>
 
-        <aside className={s.heroDossier} aria-label="Exemple de dossier AlmaGo">
+        <aside className={s.heroDossier} aria-label={hero.exampleAria}>
           <div className={s.miniHead}>
             <span>
-              <HomeIcon name="folder" /> Votre dossier avance
+              <HomeIcon name="folder" /> {hero.exampleTitle}
             </span>
-            <span className={s.sample}>Exemple</span>
+            <span className={s.sample}>{hero.sample}</span>
           </div>
-          <div className={s.miniRow}>
-            <span className={s.miniCheck}>
-              <HomeIcon name="check" />
-            </span>
-            <div>
-              <strong>Mon projet</strong>
-              <span>Objectif indiqué</span>
+          {hero.rows.map(([title, detail, status], index) => (
+            <div className={s.miniRow} key={title}>
+              {index === 0 ? (
+                <span className={s.miniCheck}><HomeIcon name="check" /></span>
+              ) : (
+                <span className={index === 1 ? s.miniNext : s.miniLater}>
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+              )}
+              <div>
+                <strong>{title}</strong>
+                <span>{detail}</span>
+              </div>
+              {status ? <span className={s.miniStatus}>{status}</span> : <HomeIcon name="arrow" />}
             </div>
-            <span className={s.miniStatus}>Indiqué</span>
-          </div>
-          <div className={s.miniRow}>
-            <span className={s.miniNext}>02</span>
-            <div>
-              <strong>Mes documents</strong>
-              <span>À préparer maintenant</span>
-            </div>
-            <HomeIcon name="arrow" />
-          </div>
-          <div className={s.miniRow}>
-            <span className={s.miniLater}>03</span>
-            <div>
-              <strong>Mes candidatures</strong>
-              <span>À suivre</span>
-            </div>
-            <HomeIcon name="arrow" />
-          </div>
+          ))}
         </aside>
       </div>
     </section>
