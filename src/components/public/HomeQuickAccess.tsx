@@ -4,32 +4,32 @@ import s from "./Homepage.module.css";
 const items = [
   {
     href: "#programmes",
-    title: "Découvrir les programmes",
-    detail: "Licences, Masters, écoles",
+    title: "Trouver un programme",
+    detail: "Programmes et critères",
     icon: "book",
   },
   {
     href: "#parcours",
-    title: "Comprendre la procédure",
-    detail: "Étapes et conseils",
+    title: "Voir les étapes",
+    detail: "Ce qu’il faut faire",
     icon: "route",
   },
   {
     href: "#parcours",
     title: "Préparer mes documents",
-    detail: "Listes et suivi",
+    detail: "Documents à ajouter",
     icon: "document",
   },
   {
     href: "#parcours",
-    title: "Organiser ma préparation",
+    title: "Préparer mon départ",
     detail: "Langue, financement, assurance",
     icon: "source",
   },
   {
     href: "#faq",
-    title: "Nos réponses à vos questions",
-    detail: "FAQ",
+    title: "Voir les questions",
+    detail: "Réponses utiles",
     icon: "plus",
   },
 ] as const;
