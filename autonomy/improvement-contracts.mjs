@@ -142,7 +142,11 @@ async function closeContract(issue, reason) {
 
 async function publish() {
   if (!launchComplete(await planIssues())) {
-    console.log("A45 is not complete; no improvement contracts will be created or changed.");
+    const contracts = await contractIssues();
+    for (const contract of contracts) {
+      await closeContract(contract, "A45 is not complete, so post-launch autonomous contracts are invalid.");
+    }
+    console.log("A45 is not complete; ready improvement contracts were invalidated and no new contracts were created.");
     return;
   }
 
