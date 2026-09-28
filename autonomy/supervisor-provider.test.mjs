@@ -17,6 +17,12 @@ test("instant supervisor uses Gemini structured output and no OpenAI API depende
   assert.match(supervisor, /application\/json/);
   assert.doesNotMatch(supervisor, /api\.openai\.com/);
   assert.doesNotMatch(supervisor, /OPENAI_API_KEY/);
+  assert.match(supervisor, /isTransientProviderFailure/);
+  assert.match(supervisor, /\[500, 502, 503, 504\]/);
+  assert.match(supervisor, /high demand/);
+  assert.match(supervisor, /const transientBackoffMs = \[0, 5000, 15000\]/);
+  assert.match(supervisor, /Gemini temporarily unavailable after/);
+  assert.match(supervisor, /publishProviderBlocked/);
 });
 
 test("autonomous recovery classifies Gemini supervisor quota and auth blockers", () => {

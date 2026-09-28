@@ -160,6 +160,13 @@ jobs:
                 /quota|insufficient_quota|credit.?balance|billing|rate.?limit|invalid.?api.?key|authentication|unauthorized/i.test(String(detail || ""));
             }
 
+            function isTransientProviderFailure(status, detail) {
+              return [500, 502, 503, 504].includes(Number(status)) ||
+                /\bUNAVAILABLE\b|high demand|temporar(?:y|ily)|overload|backend error|service unavailable|try again later/i.test(String(detail || ""));
+            }
+
+            const transientBackoffMs = [0, 5000, 15000];
+
             if (alreadyHandled) {
               core.info("Checkpoint " + checkpointId + " for HEAD " + headSha + " is already supervised or blocked. Skipping.");
               return;
@@ -404,7 +411,16 @@ jobs:
                 const errorBody = await response.text();
                 if (isQuotaOrAuthFailure(response.status, errorBody)) {
                   await publishProviderBlocked("Gemini API " + response.status, errorBody);
-                  return null;
+                  return { outputText: null, stop: true, transient: false };
+                }
+                if (isTransientProviderFailure(response.status, errorBody)) {
+                  return {
+                    outputText: null,
+                    stop: false,
+                    transient: true,
+                    status: response.status,
+                    detail: errorBody,
+                  };
                 }
                 throw new Error(
                   "Gemini API " + attemptLabel + " error " + response.status + ": " +
@@ -419,7 +435,7 @@ jobs:
                   "Gemini prompt blocked",
                   JSON.stringify({ blockReason: blocked })
                 );
-                return null;
+                return { outputText: null, stop: true, transient: false };
               }
 
               const outputText = (data?.candidates?.[0]?.content?.parts || [])
@@ -427,20 +443,53 @@ jobs:
                 .join("")
                 .trim();
 
-              return outputText || null;
+              return { outputText: outputText || null, stop: false, transient: false };
             }
 
-            let outputText = await readGeminiResponse(await callGemini(), "request");
-            if (!outputText) {
-              core.info("Gemini returned no structured text. Retrying once.");
-              outputText = await readGeminiResponse(await callGemini(), "retry");
+            let outputText = null;
+            let lastTransient = null;
+            for (let attempt = 0; attempt < transientBackoffMs.length; attempt++) {
+              if (transientBackoffMs[attempt] > 0) {
+                core.info(
+                  "Gemini transient provider failure; retry " + (attempt + 1) + "/" +
+                  transientBackoffMs.length + " after " + transientBackoffMs[attempt] + "ms."
+                );
+                await new Promise((resolve) => setTimeout(resolve, transientBackoffMs[attempt]));
+              }
+
+              const result = await readGeminiResponse(
+                await callGemini(),
+                "attempt " + (attempt + 1) + "/" + transientBackoffMs.length,
+              );
+              if (result.stop) return;
+              if (result.outputText) {
+                outputText = result.outputText;
+                break;
+              }
+              if (result.transient) {
+                lastTransient = result;
+                continue;
+              }
+
+              if (attempt < transientBackoffMs.length - 1) {
+                core.info("Gemini returned no structured text; retrying within the bounded provider budget.");
+              }
+            }
+
+            if (!outputText && lastTransient) {
+              await publishProviderBlocked(
+                "Gemini temporarily unavailable after " + transientBackoffMs.length + " attempts",
+                "HTTP " + lastTransient.status + ": " + redact(lastTransient.detail, 1200)
+              );
+              return;
             }
 
             if (!outputText) {
               if (!comments.some((comment) => comment.body?.includes(apiBlockedMarker))) {
                 await publishProviderBlocked(
                   "Gemini returned no structured output",
-                  "The provider returned no usable JSON text after one retry."
+                  "The provider returned no usable JSON text after " +
+                    transientBackoffMs.length + " bounded attempts."
                 );
               }
               return;
