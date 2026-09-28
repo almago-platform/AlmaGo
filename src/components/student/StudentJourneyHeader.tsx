@@ -6,10 +6,10 @@ type StudentJourneyStep = "project" | "documents" | "orientation" | "checklist" 
 const journeySteps: Array<{ key: StudentJourneyStep; label: string; href: string }> = [
   { key: "project", label: "Mon projet", href: "/student/project" },
   { key: "documents", label: "Documents", href: "/student/documents" },
-  { key: "orientation", label: "Orientation", href: "/student/orientation" },
+  { key: "orientation", label: "Programmes", href: "/student/orientation" },
   { key: "checklist", label: "Démarches", href: "/student/checklist" },
   { key: "applications", label: "Candidatures", href: "/student/applications" },
-  { key: "pathway", label: "Parcours Allemagne", href: "/student/pathway" },
+  { key: "pathway", label: "Parcours", href: "/student/pathway" },
 ];
 
 export function StudentJourneyHeader({
