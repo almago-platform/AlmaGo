@@ -212,12 +212,13 @@ export function OnboardingForm({ profile }: { profile: Record<string, unknown> }
             </div>
 
             <ol className="mobile-nav-scroll mt-5 flex gap-2 overflow-x-auto pb-1 lg:grid lg:overflow-visible">
-              {steps.map((item) => {
-                const active = item.id === step;
-                const done = item.id < step;
+              {steps.map((item, index) => {
+                const itemId = index + 1;
+                const active = itemId === step;
+                const done = itemId < step;
                 return (
                   <li
-                    key={item.id}
+                    key={itemId}
                     className={`min-w-[10.5rem] rounded-[var(--radius-control)] border px-3 py-2.5 lg:min-w-0 ${
                       active
                         ? "border-[var(--brand-border)] bg-[var(--brand-soft)]"
@@ -234,7 +235,7 @@ export function OnboardingForm({ profile }: { profile: Record<string, unknown> }
                             : "bg-[var(--surface-muted)] text-[var(--muted)]"
                         }`}
                       >
-                        {done ? "✓" : item.id}
+                        {done ? "✓" : itemId}
                       </span>
                       <div className="min-w-0">
                         <p className="text-sm font-bold text-[var(--foreground)]">{item.title}</p>
