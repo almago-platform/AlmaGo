@@ -24,6 +24,100 @@ function opportunitySavings(report, id) {
   return items.reduce((sum, item) => sum + Number(item?.wastedBytes || 0), 0);
 }
 
+function reportPathname(report) {
+  try {
+    return new URL(String(report?.finalUrl || report?.requestedUrl || "")).pathname;
+  } catch {
+    return null;
+  }
+}
+
+function median(values = []) {
+  const sorted = values.filter((value) => typeof value === "number").sort((a, b) => a - b);
+  if (!sorted.length) return null;
+  const middle = Math.floor(sorted.length / 2);
+  return sorted.length % 2
+    ? sorted[middle]
+    : (sorted[middle - 1] + sorted[middle]) / 2;
+}
+
+export function aggregateHomepageLighthouseFinding(reports = [], {
+  threshold = PRELAUNCH_PERFORMANCE_THRESHOLD,
+  minRuns = 3,
+} = {}) {
+  const homepageReports = reports.filter((report) => reportPathname(report) === "/");
+  if (homepageReports.length < minRuns) {
+    return {
+      eligible: false,
+      reason: "insufficient_homepage_runs",
+      runCount: homepageReports.length,
+      requiredRuns: minRuns,
+    };
+  }
+
+  const complete = homepageReports.filter((report) => {
+    const categories = report?.categories || {};
+    return [
+      categories.performance?.score,
+      categories.accessibility?.score,
+      categories.seo?.score,
+      categories["best-practices"]?.score,
+    ].every((score) => typeof score === "number");
+  });
+  if (complete.length < minRuns) {
+    return {
+      eligible: false,
+      reason: "insufficient_complete_homepage_runs",
+      runCount: complete.length,
+      requiredRuns: minRuns,
+    };
+  }
+
+  const performanceScores = complete.map((report) => report.categories.performance.score);
+  const accessibility = Math.min(...complete.map((report) => report.categories.accessibility.score));
+  const seo = Math.min(...complete.map((report) => report.categories.seo.score));
+  const bestPractices = Math.min(...complete.map((report) => report.categories["best-practices"].score));
+  const medianPerformance = median(performanceScores);
+
+  if (accessibility < 0.95 || seo < 0.9 || bestPractices < 0.9) {
+    return {
+      eligible: false,
+      reason: "quality_regression_requires_separate_triage",
+      runCount: complete.length,
+      scores: {
+        performance: medianPerformance,
+        accessibility,
+        seo,
+        bestPractices,
+      },
+      performanceRange: [Math.min(...performanceScores), Math.max(...performanceScores)],
+    };
+  }
+
+  const sortedByPerformance = [...complete].sort(
+    (a, b) => a.categories.performance.score - b.categories.performance.score
+  );
+  const representative = sortedByPerformance[Math.floor(sortedByPerformance.length / 2)];
+  const representativeFinding = homepageLighthouseFinding(representative, { threshold });
+
+  return {
+    ...representativeFinding,
+    eligible: medianPerformance < threshold,
+    reason: medianPerformance < threshold
+      ? "homepage_median_performance_below_budget"
+      : "homepage_median_performance_within_budget",
+    runCount: complete.length,
+    scores: {
+      ...representativeFinding.scores,
+      performance: medianPerformance,
+      accessibility,
+      seo,
+      bestPractices,
+    },
+    performanceRange: [Math.min(...performanceScores), Math.max(...performanceScores)],
+  };
+}
+
 export function homepageLighthouseFinding(report, {
   threshold = PRELAUNCH_PERFORMANCE_THRESHOLD,
 } = {}) {
@@ -76,12 +170,9 @@ function metricText(metric) {
   return metric?.displayValue || (metric?.numericValue != null ? String(Math.round(metric.numericValue)) + " ms" : "n/a");
 }
 
-export function buildPrelaunchPerformancePlan({
-  report,
+function buildPlanFromFinding(finding, {
   mainSha = "",
-  threshold = PRELAUNCH_PERFORMANCE_THRESHOLD,
 } = {}) {
-  const finding = homepageLighthouseFinding(report, { threshold });
   if (!finding.eligible) return finding;
 
   const shaSuffix = String(mainSha || "unknown")
@@ -117,7 +208,11 @@ export function buildPrelaunchPerformancePlan({
     stop_condition: "Open one bounded performance PR and reach MERGE_READY; never merge automatically.",
     prompt: [
       "PRE-LAUNCH HOMEPAGE PERFORMANCE IMPROVEMENT.",
-      "The current production-build Lighthouse homepage performance score is " + finding.scores.performance.toFixed(2) +
+      (finding.runCount
+        ? "Across " + finding.runCount + " production-build Lighthouse runs, the median homepage performance score is " +
+          finding.scores.performance.toFixed(2) +
+          " (range " + finding.performanceRange[0].toFixed(2) + "–" + finding.performanceRange[1].toFixed(2) + ")"
+        : "The current production-build Lighthouse homepage performance score is " + finding.scores.performance.toFixed(2)) +
         " with accessibility " + finding.scores.accessibility.toFixed(2) +
         ", SEO " + finding.scores.seo.toFixed(2) +
         ", and best-practices " + finding.scores.bestPractices.toFixed(2) + ".",
@@ -144,4 +239,24 @@ export function buildPrelaunchPerformancePlan({
   };
   validateAutopilotPlan(plan);
   return { ...finding, plan };
+}
+
+export function buildPrelaunchPerformancePlan({
+  report,
+  mainSha = "",
+  threshold = PRELAUNCH_PERFORMANCE_THRESHOLD,
+} = {}) {
+  return buildPlanFromFinding(homepageLighthouseFinding(report, { threshold }), { mainSha });
+}
+
+export function buildStablePrelaunchPerformancePlan({
+  reports = [],
+  mainSha = "",
+  threshold = PRELAUNCH_PERFORMANCE_THRESHOLD,
+  minRuns = 3,
+} = {}) {
+  return buildPlanFromFinding(
+    aggregateHomepageLighthouseFinding(reports, { threshold, minRuns }),
+    { mainSha },
+  );
 }
