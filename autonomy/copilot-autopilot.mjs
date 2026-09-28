@@ -161,7 +161,16 @@ async function postLaunchReady() {
 }
 
 async function openPrScopes() {
-  const pulls = await gh("/repos/" + owner + "/" + repo + "/pulls?state=open&per_page=100");
+  const pulls = [];
+  for (let page = 1; page <= 10; page += 1) {
+    const batch = await gh(
+      "/repos/" + owner + "/" + repo + "/pulls?state=open&per_page=100&page=" + page
+    );
+    pulls.push(...batch);
+    if (batch.length < 100) break;
+    if (page === 10) throw new Error("Open PR list exceeded the bounded 1000-PR collision scan.");
+  }
+
   const scopes = [];
   for (const pr of pulls) {
     scopes.push({
