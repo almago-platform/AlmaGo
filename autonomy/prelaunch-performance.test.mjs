@@ -2,13 +2,16 @@ import assert from "node:assert/strict";
 import { createRequire } from "node:module";
 import test from "node:test";
 import {
+  aggregateHomepageLighthouseFinding,
   buildPrelaunchPerformancePlan,
+  buildStablePrelaunchPerformancePlan,
   homepageLighthouseFinding,
   PERFORMANCE_WRITABLE_PATHS,
 } from "./prelaunch-performance-core.mjs";
 
 const require = createRequire(import.meta.url);
 const lighthouseConfig = require("../lighthouserc.cjs");
+const stablePerformanceConfig = require("../lighthouserc.prelaunch-performance.cjs");
 
 function report({
   url = "http://127.0.0.1:3000/",
@@ -107,4 +110,66 @@ test("Lighthouse budgets distinguish public homepage SEO from deliberate login n
   assert.deepEqual(home.assertions["categories:performance"], ["warn", { minScore: 0.8 }]);
   assert.deepEqual(home.assertions["categories:seo"], ["warn", { minScore: 0.95 }]);
   assert.equal(Object.hasOwn(login.assertions, "categories:seo"), false);
+});
+
+
+test("stable performance signal requires three complete homepage runs", () => {
+  const result = aggregateHomepageLighthouseFinding([
+    report({ performance: 0.71 }),
+    report({ performance: 0.86 }),
+  ]);
+  assert.equal(result.eligible, false);
+  assert.equal(result.reason, "insufficient_homepage_runs");
+  assert.equal(result.runCount, 2);
+  assert.equal(result.requiredRuns, 3);
+});
+
+test("median performance ignores a single noisy low outlier", () => {
+  const result = aggregateHomepageLighthouseFinding([
+    report({ performance: 0.71 }),
+    report({ performance: 0.84 }),
+    report({ performance: 0.86 }),
+  ]);
+  assert.equal(result.eligible, false);
+  assert.equal(result.reason, "homepage_median_performance_within_budget");
+  assert.equal(result.scores.performance, 0.84);
+  assert.deepEqual(result.performanceRange, [0.71, 0.86]);
+});
+
+test("median performance below budget creates one measured plan", () => {
+  const result = buildStablePrelaunchPerformancePlan({
+    reports: [
+      report({ performance: 0.72 }),
+      report({ performance: 0.76 }),
+      report({ performance: 0.86 }),
+    ],
+    mainSha: "abcdefabcdefabcdefabcdefabcdefabcdefabcd",
+  });
+  assert.equal(result.eligible, true);
+  assert.equal(result.runCount, 3);
+  assert.equal(result.scores.performance, 0.76);
+  assert.deepEqual(result.performanceRange, [0.72, 0.86]);
+  assert.match(result.plan.blocks[0].prompt, /Across 3 production-build Lighthouse runs/);
+  assert.match(result.plan.blocks[0].prompt, /median homepage performance score is 0\.76/);
+  assert.match(result.plan.blocks[0].prompt, /range 0\.72–0\.86/);
+});
+
+test("quality regression in any stable run blocks performance optimization", () => {
+  const result = aggregateHomepageLighthouseFinding([
+    report({ performance: 0.72 }),
+    report({ performance: 0.74, accessibility: 0.9 }),
+    report({ performance: 0.76 }),
+  ]);
+  assert.equal(result.eligible, false);
+  assert.equal(result.reason, "quality_regression_requires_separate_triage");
+  assert.equal(result.scores.accessibility, 0.9);
+});
+
+test("dedicated performance profile measures homepage three times without slowing login checks", () => {
+  assert.deepEqual(stablePerformanceConfig.ci.collect.url, ["http://127.0.0.1:3000/"]);
+  assert.equal(stablePerformanceConfig.ci.collect.numberOfRuns, 3);
+  assert.deepEqual(
+    stablePerformanceConfig.ci.assert.assertions["categories:performance"],
+    ["warn", { minScore: 0.8 }],
+  );
 });
