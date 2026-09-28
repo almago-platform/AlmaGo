@@ -107,3 +107,10 @@ test("non-French student interfaces do not surface raw French API errors", () =>
     assert.ok(source.includes('typeof result.error === "string"'));
   }
 });
+
+
+test("Arabic project form keeps technical tokens LTR and mirrors the EUR divider", () => {
+  const project = readFileSync("src/components/student/StudentProjectForm.tsx", "utf8");
+  assert.ok(project.includes('inputDir="ltr"'));
+  assert.ok(project.includes('direction === "rtl" ? "border-r" : "border-l"'));
+});
