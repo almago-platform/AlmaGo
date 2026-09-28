@@ -11,12 +11,25 @@ module.exports = {
       }
     },
     assert: {
-      assertions: {
-        "categories:performance": ["warn", { minScore: 0.65 }],
-        "categories:accessibility": ["warn", { minScore: 0.85 }],
-        "categories:best-practices": ["warn", { minScore: 0.85 }],
-        "categories:seo": ["warn", { minScore: 0.85 }]
-      }
+      assertMatrix: [
+        {
+          matchingUrlPattern: "^http://127\\.0\\.0\\.1:3000/?$",
+          assertions: {
+            "categories:performance": ["warn", { minScore: 0.8 }],
+            "categories:accessibility": ["warn", { minScore: 0.95 }],
+            "categories:best-practices": ["warn", { minScore: 0.95 }],
+            "categories:seo": ["warn", { minScore: 0.95 }]
+          }
+        },
+        {
+          matchingUrlPattern: "^http://127\\.0\\.0\\.1:3000/login/?$",
+          assertions: {
+            "categories:performance": ["warn", { minScore: 0.8 }],
+            "categories:accessibility": ["warn", { minScore: 0.95 }],
+            "categories:best-practices": ["warn", { minScore: 0.95 }]
+          }
+        }
+      ]
     },
     upload: {
       target: "filesystem",
