@@ -46,7 +46,7 @@ export function AuthStoryPanel({ mode }: AuthStoryPanelProps) {
         <Link href="/" className="inline-flex items-center" aria-label="Retour à l'accueil AlmaGo">
           <BrandLogo className="h-auto w-36" />
         </Link>
-        <span className="rounded-full border border-[var(--border)] bg-[var(--surface-subtle)] px-3 py-1.5 text-[0.68rem] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">
+        <span className="rounded-full border border-[var(--border)] bg-[var(--surface-subtle)] px-3 py-1.5 text-[0.68rem] font-bold uppercase tracking-[0.12em] text-slate-600">
           Espace étudiant
         </span>
       </div>
@@ -78,10 +78,10 @@ export function AuthStoryPanel({ mode }: AuthStoryPanelProps) {
               key={number}
               className="grid grid-cols-[2.75rem_1fr] gap-3 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-4 py-3"
             >
-              <span className="pt-0.5 text-xs font-bold tracking-[0.14em] text-[var(--brand)]">{number}</span>
+              <span className="pt-0.5 text-xs font-bold tracking-[0.14em] text-[var(--brand-strong)]">{number}</span>
               <div>
                 <p className="text-sm font-bold text-[var(--foreground)]">{title}</p>
-                <p className="mt-1 text-xs leading-5 text-[var(--muted)]">{detail}</p>
+                <p className="mt-1 text-xs leading-5 text-slate-600">{detail}</p>
               </div>
             </li>
           ))}
