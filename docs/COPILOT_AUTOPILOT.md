@@ -83,7 +83,7 @@ This pre-launch lane does not depend on the repository-wide Autopilot dry-run va
 
 A separate pre-launch performance workflow measures the production build with Lighthouse. It is evidence-driven and does not run after A45.
 
-The homepage budget is 0.80 for the Lighthouse performance category. A task is eligible only when the homepage is below that budget while accessibility remains at least 0.95 and SEO/best-practices remain at least 0.90. The login page is measured for performance/accessibility/best-practices but is not given an SEO category assertion because its deliberate no-index policy is not a public SEO defect.
+The homepage budget is 0.80 for the Lighthouse performance category. The autonomous performance lane uses a dedicated homepage-only profile with three Lighthouse runs and decides from the median performance score; a single noisy outlier cannot launch work. The recorded evidence also includes the min–max performance range, while any accessibility score below 0.95 or SEO/best-practices score below 0.90 fails closed into separate triage. Regular Browser Quality remains a faster one-run check. The login page is measured there for performance/accessibility/best-practices but is not given an SEO category assertion because its deliberate no-index policy is not a public SEO defect.
 
 When eligible, exactly one Codex Agent Task may work on three public files: `HomeHeader.tsx`, `HomeHero.tsx` and `HomeJourneySection.tsx`. The prompt includes measured LCP, Total Blocking Time, Max Potential FID, responsive-image waste and unused-JavaScript evidence. It must preserve content, accessibility, keyboard behavior, SEO and the current visual direction.
 
