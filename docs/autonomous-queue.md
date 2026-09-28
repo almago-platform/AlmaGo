@@ -1,15 +1,22 @@
 # File de tâches AlmaGo avec Gemini et Grok
 
-Le workflow **AlmaGo AI Task Queue** examine au plus une issue par lancement quotidien
-(03:17 UTC). Il appelle Gemini une fois, puis Grok une fois seulement si Gemini répond
+Le **Master Orchestrator** vérifie l’état du plan toutes les **5 minutes**. Lorsqu’une
+tâche prête est routée vers l’IA et que les garde-fous de facturation sont actifs,
+il déclenche **AlmaGo AI Task Queue**. La file IA n’a plus de lancement planifié
+indépendant : elle ne démarre que lorsqu’un travail réel est prêt ou lors d’un
+lancement manuel.
+
+La file appelle Gemini une fois, puis Grok une fois seulement si Gemini répond
 401, 402, 403 ou 429. Si une clé manque, le fournisseur correspondant est ignoré.
 Une réponse invalide ou des tests en échec bloquent la tâche sans nouvelle dépense.
 
 Il ouvre une PR après validation locale, vérifie le HEAD distant et déclenche
 `AlmaGo PR CI`. La revue et la fusion restent humaines. Les autres workflows
 Codex/superviseur sont indépendants et conservent leurs propres clés et quotas.
-GitHub Actions peut être retardé ou indisponible : « quotidien » ne signifie pas
-continu ni garanti en permanence.
+Le polling à 5 minutes ne signifie pas un appel Gemini toutes les 5 minutes :
+sans tâche prête, sans variables d’activation ou lorsque le plafond journalier est
+atteint, aucun travail fournisseur n’est lancé. GitHub Actions peut aussi être
+retardé ou indisponible ; la cadence n’est donc pas une garantie temps réel.
 
 ## Activer avec un budget de 10 € par mois
 
@@ -77,6 +84,6 @@ Le reviewer ne produit pas de code. Il rend `APPROVED` ou `REVISE` en contrôlan
 
 ## Plafond journalier de travail IA
 
-La file applique aussi un plafond journalier de lancements fournisseur. Par défaut, au maximum **4 exécutions de la file IA par jour UTC** peuvent passer le budget gate. Une variable optionnelle `ALMAGO_MAX_AI_TASKS_PER_DAY` permet de choisir une valeur entre 1 et 12. Une fois le plafond atteint, l’Issue reste `almago-ai-ready` et attend le jour suivant ; aucun appel fournisseur supplémentaire n’est effectué.
+La file applique aussi un plafond journalier de lancements fournisseur. Par défaut, au maximum **4 exécutions effectives de la file IA par jour UTC** peuvent passer le budget gate. Le Master Orchestrator peut vérifier le dépôt toutes les 5 minutes sans augmenter ce plafond. Une variable optionnelle `ALMAGO_MAX_AI_TASKS_PER_DAY` permet de choisir une valeur entre 1 et 12. Une fois le plafond atteint, l’Issue reste `almago-ai-ready` et attend le jour suivant ; aucun appel fournisseur supplémentaire n’est effectué.
 
 Ce plafond opérationnel complète — mais ne remplace jamais — le plafond financier configuré directement chez Google/xAI.
