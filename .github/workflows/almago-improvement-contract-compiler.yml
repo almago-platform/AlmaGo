@@ -1,0 +1,44 @@
+name: AlmaGo Improvement Contract Compiler
+
+on:
+  schedule:
+    - cron: "43 5 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: almago-improvement-contract-compiler
+  cancel-in-progress: true
+
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Validate compiler
+        run: node --test autonomy/improvement-contracts.test.mjs
+
+      - name: Compile eligible continuous-improvement signals
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node autonomy/improvement-contracts.mjs publish
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "## AlmaGo Improvement Contract Compiler"
+            echo
+            echo "Only deterministic lint/typecheck signals with 1-3 exact existing non-critical src/** files can become ready contracts."
+            echo "Regression/security/ambiguous/critical-path signals remain planning or human gated."
+            echo "This workflow does not dispatch agents and never merges."
+          } >> "$GITHUB_STEP_SUMMARY"
