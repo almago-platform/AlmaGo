@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
 import { getAgentTask, startAgentTask } from "./copilot-agent-client.mjs";
+import { loadContinuousImprovementBlocks } from "./improvement-intake.mjs";
 import {
   parseReadyDynamicContract,
   sourceSignalStillValid,
@@ -370,12 +371,33 @@ async function advanceLifecycle(issue, block, lock) {
 }
 
 const dynamicContext = await loadDynamicAutopilotContext();
+const aiContinuousBlocks = await loadContinuousImprovementBlocks({
+  owner,
+  repo,
+  gh,
+  listComments,
+});
+
+const seenBlockIds = new Set(staticPlan.blocks.map((block) => block.block_id));
+const acceptedDynamicBlocks = [];
+for (const block of [...dynamicContext.dynamicBlocks, ...aiContinuousBlocks]) {
+  if (seenBlockIds.has(block.block_id)) {
+    console.log("Skipping duplicate runtime block id " + block.block_id + ".");
+    continue;
+  }
+  seenBlockIds.add(block.block_id);
+  acceptedDynamicBlocks.push(block);
+}
+
 plan = {
   ...staticPlan,
-  blocks: [...staticPlan.blocks, ...dynamicContext.dynamicBlocks],
+  blocks: [...staticPlan.blocks, ...acceptedDynamicBlocks],
 };
 validateAutopilotPlan(plan);
 blockById = new Map(plan.blocks.map((block) => [block.block_id, block]));
+if (aiContinuousBlocks.length) {
+  console.log("Loaded " + aiContinuousBlocks.length + " validated AI-planned continuous block(s).");
+}
 
 let issues = await listBlockIssues();
 const byBlock = new Map(issues.map((issue) => [blockIdFromIssue(issue), issue]).filter(([id]) => id));
@@ -450,6 +472,7 @@ if (dryRun) {
   console.log(JSON.stringify({
     eligible: eligible.map((block) => block.block_id),
     dynamicBlocks: dynamicContext.dynamicBlocks.map((block) => block.block_id),
+    aiContinuousBlocks: aiContinuousBlocks.map((block) => block.block_id),
     openPrScopes: dynamicContext.prScopes.map((scope) => ({
       pr_number: scope.pr_number,
       files: scope.files,
