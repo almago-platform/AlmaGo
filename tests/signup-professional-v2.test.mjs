@@ -8,6 +8,8 @@ const story = readFileSync("src/components/auth/AuthStoryPanel.tsx", "utf8");
 const mobileHeader = readFileSync("src/components/auth/AuthMobileHeader.tsx", "utf8");
 const progress = readFileSync("src/components/student/StudentEntryProgress.tsx", "utf8");
 const nativeCopy = readFileSync("src/content/native-copy.ts", "utf8");
+const globals = readFileSync("src/app/globals.css", "utf8");
+const login = readFileSync("src/app/login/page.tsx", "utf8");
 
 test("signup page uses the new student registration composition", () => {
   assert.ok(signup.includes('AuthStoryPanel mode="signup"'));
@@ -45,4 +47,19 @@ test("signup form improves password and account navigation UX", () => {
 test("signup controls retain mobile-friendly minimum heights", () => {
   assert.ok(form.includes("min-h-12"));
   assert.ok(mobileHeader.includes("min-h-11"));
+});
+
+
+test("Arabic auth layout keeps the form primary on desktop RTL", () => {
+  assert.ok(login.includes("auth-page-grid"));
+  assert.ok(signup.includes("auth-page-grid"));
+  assert.ok(login.includes("auth-form-shell"));
+  assert.ok(story.includes("auth-story-panel"));
+  assert.match(globals, /Arabic Auth RTL Polish/);
+  assert.match(globals, /auth-page-grid/);
+  assert.match(globals, /direction: ltr/);
+  assert.match(globals, /auth-story-panel/);
+  assert.match(globals, /min-height: 640px/);
+  assert.ok(form.includes('const passwordButtonSide = "right-2"'));
+  assert.ok(form.includes('const passwordPadding = "pr-24 text-left"'));
 });
