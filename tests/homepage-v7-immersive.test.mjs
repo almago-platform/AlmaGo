@@ -21,8 +21,8 @@ test("V7 uses an immersive full-width academic hero", () => {
 
 test("V7 keeps copy and product proof integrated inside the hero", () => {
   assert.match(hero, /Étudier en/);
-  assert.match(hero, /avec un cap clair/);
-  assert.match(hero, /Votre projet prend forme/);
+  assert.match(hero, /plus clair/);
+  assert.match(hero, /Votre dossier avance/);
   assert.match(hero, /Vos candidatures/);
   assert.match(css, /\.hero \.heroDossier\s*\{[\s\S]*position:\s*absolute/);
 });
@@ -38,8 +38,8 @@ test("current homepage places quick access and the visual pathway immediately af
 test("V7 follow-up section uses three visual academic cards", () => {
   const images = [...band.matchAll(/image: "https:\/\/images\.pexels\.com\/photos\/(\d+)\//g)];
   assert.equal(images.length, 3);
-  assert.match(band, /Un accompagnement à chaque étape/);
-  assert.match(band, /votre projet <em>en Allemagne\.<\/em>/);
+  assert.match(band, /Votre projet d’études d’abord/);
+  assert.match(band, /Préparez la suite/);
   assert.match(css, /\.photoBandLayout\s*\{[\s\S]*grid-template-columns/);
 });
 
