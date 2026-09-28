@@ -92,6 +92,29 @@ export function validateAutopilotPlan(plan) {
   return true;
 }
 
+export function agentTaskPullRequestNumber(task) {
+  const artifact = Array.isArray(task?.artifacts)
+    ? task.artifacts.find((item) => item?.provider === "github" && item?.type === "pull")
+    : null;
+  const value = Number(artifact?.data?.number || 0);
+  return Number.isSafeInteger(value) && value > 0 ? value : null;
+}
+
+export function reconciledPullRequestNumber({
+  resolvedByHead = null,
+  artifactNumber = null,
+  priorPullNumber = null,
+  hasHeadRef = false,
+} = {}) {
+  const valid = (value) => {
+    const number = Number(value || 0);
+    return Number.isSafeInteger(number) && number > 0 ? number : null;
+  };
+  return valid(resolvedByHead) ||
+    valid(artifactNumber) ||
+    (hasHeadRef ? null : valid(priorPullNumber));
+}
+
 export function mapAgentTaskState(state) {
   if (!AGENT_TASK_STATES.has(state)) throw new Error("Unknown Agent Task state: " + state);
   return ({
