@@ -57,3 +57,14 @@ After A45 is complete, the Continuous Improvement discovery/compiler stack may p
 A dynamic block is loaded only when its source signal is still open and non-human-gated, its base is `main`, its merge class is `AUTONOMOUS_SAFE`, and it contains 1–3 exact existing non-critical `src/**` writable files. The controller scans open pull requests and converts their changed files into external path locks; any overlap blocks new dispatch.
 
 Dynamic contracts do not bypass the normal lifecycle. They still create an Autopilot block issue, launch through Agent Tasks, pass exact-HEAD CI/Browser/Supervisor gates, obey the bounded revision budget, and stop at `MERGE_READY`. Automatic merge remains disabled.
+
+
+## Safe merge executor
+
+The optional safe-merge executor is intentionally double-gated. A real merge requires both `ALMAGO_AUTOPILOT_AUTOMERGE_ENABLED=true` and `ALMAGO_AUTOPILOT_AUTOMERGE_DRY_RUN=false`. If the dry-run variable is absent, the executor remains in dry-run mode.
+
+Even with both variables set, the executor refuses to merge unless the active default-branch GitHub ruleset requires pull requests and a **strict required status check for the PR CI job `verify`**. It then rechecks the exact PR HEAD, current `main` HEAD, same-repository branch, writable/forbidden scope, critical paths, canonical PR CI, conditional Browser Quality, exact-HEAD Supervisor approval, dynamic signal/contract provenance when applicable, and collisions with every other open PR.
+
+All mutable evidence is fetched again immediately before merge. At most one PR can be squash-merged per executor run. The normal Autopilot reconciliation records `DONE` on the next cycle.
+
+This executor must stay disabled until repository branch/ruleset protection is hardened and the canonical launch/release gates are settled.
