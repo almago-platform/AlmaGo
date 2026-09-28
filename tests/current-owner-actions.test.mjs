@@ -49,7 +49,7 @@ test("owner docs use durable workstream references and completed catalogue clean
     assert.match(source, /#439/);
     assert.match(source, /#176/);
     assert.match(source, /0 fixture active/);
-    assert.doesNotMatch(source, /PR #(?:424|438|443|445)/);
+    assert.doesNotMatch(source, /PR #\d+/);
     assert.doesNotMatch(source, /Draft #405/);
     assert.doesNotMatch(source, /Draft #407/);
     assert.doesNotMatch(source, /#430/);
