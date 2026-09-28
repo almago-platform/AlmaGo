@@ -6,10 +6,12 @@ import {
   sourceSignalStillValid,
 } from "./dynamic-contracts-core.mjs";
 import {
+  agentTaskPullRequestNumber,
   browserQualityRequirement,
   leaseExpired,
   lifecycleDecision,
   mapAgentTaskState,
+  reconciledPullRequestNumber,
   scopeAssessment,
   selectEligibleBlocks,
   supervisorDecisionForHead,
@@ -125,11 +127,18 @@ function issueBody(block) {
   ].join("\n");
 }
 
-function pullArtifactNumber(task) {
-  const artifact = Array.isArray(task?.artifacts)
-    ? task.artifacts.find((item) => item?.provider === "github" && item?.type === "pull")
-    : null;
-  const value = Number(artifact?.data?.id || 0);
+async function pullNumberForHead(headRef) {
+  if (!headRef) return null;
+  const pulls = await gh(
+    "/repos/" + owner + "/" + repo + "/pulls?state=open&head=" +
+    encodeURIComponent(owner + ":" + headRef) + "&per_page=10"
+  );
+  if (!Array.isArray(pulls)) return null;
+  const match = pulls.find((pr) =>
+    pr?.head?.ref === headRef &&
+    pr?.head?.repo?.full_name === repository
+  );
+  const value = Number(match?.number || 0);
   return Number.isSafeInteger(value) && value > 0 ? value : null;
 }
 
@@ -444,11 +453,19 @@ for (const [id, issue] of byBlock) {
     });
     const nextState = mapAgentTaskState(task.state);
     const session = Array.isArray(task.sessions) ? task.sessions.at(-1) : null;
+    const nextHeadRef = session?.head_ref || lock.head_ref || null;
+    const resolvedByHead = await pullNumberForHead(nextHeadRef);
+    const nextPullNumber = reconciledPullRequestNumber({
+      resolvedByHead,
+      artifactNumber: agentTaskPullRequestNumber(task),
+      priorPullNumber: lock.pull_number,
+      hasHeadRef: Boolean(nextHeadRef),
+    });
     const next = {
       ...lock,
       state: nextState,
-      head_ref: session?.head_ref || lock.head_ref || null,
-      pull_number: pullArtifactNumber(task) || lock.pull_number || null,
+      head_ref: nextHeadRef,
+      pull_number: nextPullNumber,
       expected_head: nextState === "CI" ? null : lock.expected_head || null,
       lease_expires_at: new Date(Date.now() + 75 * 60 * 1000).toISOString(),
     };
