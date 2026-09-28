@@ -49,9 +49,10 @@ Brouillon de finalités correspondant au produit actuel :
 Actuellement visibles dans le projet :
 
 - Supabase — Auth, PostgreSQL et Storage ;
-- Vercel — hébergement/déploiement.
+- Render — hébergement/déploiement canonique actuellement utilisé pour l’application ;
+- une intégration Vercel reste visible/connectée au dépôt ; son rôle technique éventuel et tout traitement de données associé doivent être confirmés avant publication, sans la présenter comme hébergement canonique sans preuve.
 
-Futur analytics/observabilité : **[NON ACTIF / FOURNISSEUR À CONFIRMER]**.
+Analytics/observabilité produit : **non actif à ce jour**. Le fournisseur éventuel sera choisi et validé séparément dans A44 avant toute activation.
 
 Pour chaque fournisseur, confirmer avant publication :
 - rôle contractuel ;
@@ -79,7 +80,7 @@ Certaines tables liées au compte utilisent des suppressions SQL en cascade.
 
 Cela ne suffit pas, à lui seul, à garantir l’effacement complet des objets Storage, sauvegardes ou systèmes tiers.
 
-Procédure finale de suppression : **[À DÉFINIR]**.
+Procédure de suppression : une proposition technique documentée existe dans `docs/A38_RETENTION_POLICY_PROPOSAL.md` ; elle doit encore être approuvée ou modifiée par le propriétaire/relecteur avant publication.
 
 ## 7. Droits
 
