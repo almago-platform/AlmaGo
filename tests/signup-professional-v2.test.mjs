@@ -10,39 +10,39 @@ const progress = readFileSync("src/components/student/StudentEntryProgress.tsx",
 const nativeCopy = readFileSync("src/content/native-copy.ts", "utf8");
 
 test("signup page uses the new student registration composition", () => {
-  assert.match(signup, /AuthStoryPanel mode="signup"/);
-  assert.match(signup, /linear-gradient/);
-  assert.match(form, /StudentEntryProgress current={1} compact/);
-  assert.match(progress, /Progression de création du dossier/);
-  assert.match(signup, /max-w-[36rem]/);
+  assert.ok(signup.includes('AuthStoryPanel mode="signup"'));
+  assert.ok(signup.includes("linear-gradient"));
+  assert.ok(form.includes("<StudentEntryProgress current={1} compact />"));
+  assert.ok(progress.includes("Progression de création du dossier"));
+  assert.ok(signup.includes("max-w-[36rem]"));
 });
 
 test("signup story communicates the three-step account-to-dossier path", () => {
-  assert.match(nativeCopy, /"Créer votre compte"/);
-  assert.match(nativeCopy, /"Définir votre projet"/);
-  assert.match(nativeCopy, /"Préparer votre dossier"/);
-  assert.match(story, /7973208/);
-  assert.match(nativeCopy, /Les universités et les autorités prennent les décisions officielles/);
+  assert.ok(nativeCopy.includes('"Créer votre compte"'));
+  assert.ok(nativeCopy.includes('"Définir votre projet"'));
+  assert.ok(nativeCopy.includes('"Préparer votre dossier"'));
+  assert.ok(story.includes("7973208"));
+  assert.ok(nativeCopy.includes("Les universités et les autorités prennent les décisions officielles"));
 });
 
 test("signup form keeps Supabase auth behavior unchanged", () => {
-  assert.match(form, /supabase.auth.signUp/);
-  assert.match(form, /options: { data: { full_name:/);
-  assert.match(form, /else if (data.session) router.push("/student")/);
-  assert.match(nativeCopy, /checkEmail: "Vérifiez votre adresse email pour continuer."/);
-  assert.doesNotMatch(form, /setError(signUpError.message)/);
+  assert.ok(form.includes("supabase.auth.signUp"));
+  assert.ok(form.includes("options: { data: { full_name:"));
+  assert.ok(form.includes('else if (data.session) router.push("/student")'));
+  assert.ok(nativeCopy.includes('checkEmail: "Vérifiez votre adresse email pour continuer."'));
+  assert.ok(!form.includes("setError(signUpError.message)"));
 });
 
 test("signup form improves password and account navigation UX", () => {
-  assert.match(progress, /{copy.step} {current} {copy.of} 3/);
-  assert.match(form, /showPassword/);
-  assert.match(nativeCopy, /minPassword: "8 caractères minimum"/);
-  assert.match(nativeCopy, /emailConfirmation: "Confirmation par email"/);
-  assert.match(form, /href="/login"/);
-  assert.doesNotMatch(form, /setMode(mode === "login" ? "signup" : "login")/);
+  assert.ok(progress.includes("{copy.step} {current} {copy.of} 3"));
+  assert.ok(form.includes("showPassword"));
+  assert.ok(nativeCopy.includes('minPassword: "8 caractères minimum"'));
+  assert.ok(nativeCopy.includes('emailConfirmation: "Confirmation par email"'));
+  assert.ok(form.includes('href="/login"'));
+  assert.ok(!form.includes('setMode(mode === "login" ? "signup" : "login")'));
 });
 
 test("signup controls retain mobile-friendly minimum heights", () => {
-  assert.match(form, /min-h-12/);
-  assert.match(mobileHeader, /min-h-11/);
+  assert.ok(form.includes("min-h-12"));
+  assert.ok(mobileHeader.includes("min-h-11"));
 });
