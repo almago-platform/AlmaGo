@@ -27,7 +27,12 @@ test("instant supervisor uses Gemini structured output and no OpenAI API depende
   assert.match(supervisor, /\{ model: fallbackModel, waitMs: 5000 \}/);
   assert.match(supervisor, /\{ model: tertiaryModel, waitMs: 5000 \}/);
   assert.match(supervisor, /Gemini temporarily unavailable after/);
-  assert.match(supervisor, /await callGemini\(providerAttempt\.model\)/);
+  assert.match(supervisor, /callGemini\(providerAttempt\.model\)/);
+  assert.match(supervisor, /new AbortController\(\)/);
+  assert.match(supervisor, /setTimeout\(\(\) => controller\.abort\(\), 45000\)/);
+  assert.match(supervisor, /signal: controller\.signal/);
+  assert.match(supervisor, /isTransientFetchError/);
+  assert.match(supervisor, /request_timeout_or_network/);
   assert.match(supervisor, /publishProviderBlocked/);
 });
 
