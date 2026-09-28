@@ -463,6 +463,51 @@ jobs:
               }
             }
 
+            const renderBaseUrl = String(process.env.RENDER_BASE_URL || "").replace(/\/$/, "");
+            if (!renderBaseUrl) {
+              core.setFailed("A45 cannot publish READY: missing Render base URL.");
+              return;
+            }
+
+            let finalRenderHealth;
+            try {
+              const response = await fetch(renderBaseUrl + "/api/health", {
+                headers: { "cache-control": "no-cache" },
+              });
+              if (!response.ok) {
+                core.setFailed(
+                  "A45 cannot publish READY: final Render health check returned HTTP " +
+                    response.status +
+                    ".",
+                );
+                return;
+              }
+              finalRenderHealth = await response.json();
+            } catch (error) {
+              core.setFailed(
+                "A45 cannot publish READY: final Render health check failed: " +
+                  String(error?.message || error),
+              );
+              return;
+            }
+
+            const finalExpectedRevision = sha.slice(0, 12);
+            if (
+              finalRenderHealth?.revision !== finalExpectedRevision ||
+              finalRenderHealth?.branch !== "main"
+            ) {
+              core.setFailed(
+                "A45 cannot publish READY: Render drifted before publication. Expected " +
+                  finalExpectedRevision +
+                  " on main, got " +
+                  String(finalRenderHealth?.revision || "none") +
+                  " on " +
+                  String(finalRenderHealth?.branch || "none") +
+                  ".",
+              );
+              return;
+            }
+
             let a45 = allIssues.find(issue =>
               !issue.pull_request &&
               String(issue.body || "").includes("<!-- almago-plan-task:A45 -->")
