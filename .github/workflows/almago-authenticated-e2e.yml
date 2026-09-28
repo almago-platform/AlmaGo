@@ -229,11 +229,56 @@ jobs:
         uses: actions/github-script@v7
         env:
           A43_TARGET: ${{ env.ALMAGO_E2E_TARGET }}
+          A43_BASE_URL: ${{ env.ALMAGO_BASE_URL }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const owner = context.repo.owner;
             const repo = context.repo.repo;
+            const baseUrl = String(process.env.A43_BASE_URL || "").replace(/\/$/, "");
+            if (!baseUrl) {
+              core.setFailed("A43 completion is missing the Render base URL.");
+              return;
+            }
+
+            let finalHealth;
+            try {
+              const response = await fetch(baseUrl + "/api/health", {
+                headers: { "cache-control": "no-cache" },
+              });
+              if (!response.ok) {
+                core.setFailed(
+                  "A43 cannot close: final Render health check returned HTTP " +
+                    response.status +
+                    ".",
+                );
+                return;
+              }
+              finalHealth = await response.json();
+            } catch (error) {
+              core.setFailed(
+                "A43 cannot close: final Render health check failed: " +
+                  String(error?.message || error),
+              );
+              return;
+            }
+
+            const expectedRenderRevision = context.sha.slice(0, 12);
+            if (
+              finalHealth?.revision !== expectedRenderRevision ||
+              finalHealth?.branch !== "main"
+            ) {
+              core.setFailed(
+                "A43 cannot close: Render drifted after authenticated E2E. Expected " +
+                  expectedRenderRevision +
+                  " on main, got " +
+                  String(finalHealth?.revision || "none") +
+                  " on " +
+                  String(finalHealth?.branch || "none") +
+                  ".",
+              );
+              return;
+            }
 
             const { data: repository } = await github.rest.repos.get({ owner, repo });
             const mainBranch = repository.default_branch || "main";
