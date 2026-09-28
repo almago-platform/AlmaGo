@@ -4,6 +4,8 @@ import { FormEvent, useEffect, useState } from "react";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { useLocale } from "@/components/i18n/LocaleProvider";
+import { studentLanguageCoursesCopy } from "@/content/student-language-courses-copy";
 import { catalogVerificationExpiresAt } from "@/lib/catalog-freshness";
 
 type Course = {
@@ -43,44 +45,59 @@ const emptyFilters: Filters = {
 
 const levels = ["A1", "A2", "B1", "B2", "C1", "C2"];
 
-function purposeLabel(purpose: Course["purpose"]) {
-  return purpose === "study_preparation"
-    ? "Préparation aux études"
-    : "Cours de langue autonome";
+function purposeLabel(
+  purpose: Course["purpose"],
+  copy: (typeof studentLanguageCoursesCopy)["fr"]["panel"],
+) {
+  return copy.purpose[purpose];
 }
 
-function formatDate(value: string | null) {
+function formatDate(
+  value: string | null,
+  copy: (typeof studentLanguageCoursesCopy)["fr"]["panel"],
+) {
   if (!value) return null;
   const date = new Date(`${value}T12:00:00Z`);
   if (Number.isNaN(date.getTime())) return null;
-  return new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium" }).format(date);
+  return new Intl.DateTimeFormat(copy.intlLocale, { dateStyle: "medium" }).format(date);
 }
 
-function formatVerification(value: string | null) {
-  if (!value) return "À confirmer";
+function formatVerification(
+  value: string | null,
+  copy: (typeof studentLanguageCoursesCopy)["fr"]["panel"],
+) {
+  if (!value) return copy.unknown;
   const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "À confirmer";
-  return new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium" }).format(date);
+  if (Number.isNaN(date.getTime())) return copy.unknown;
+  return new Intl.DateTimeFormat(copy.intlLocale, { dateStyle: "medium" }).format(date);
 }
 
-function formatPrice(course: Course) {
-  if (course.price_cents === null || !course.currency) return "À confirmer";
-  return new Intl.NumberFormat("fr-FR", {
+function formatPrice(
+  course: Course,
+  copy: (typeof studentLanguageCoursesCopy)["fr"]["panel"],
+) {
+  if (course.price_cents === null || !course.currency) return copy.unknown;
+  return new Intl.NumberFormat(copy.intlLocale, {
     style: "currency",
     currency: course.currency,
   }).format(course.price_cents / 100);
 }
 
-function levelLabel(course: Course) {
+function levelLabel(
+  course: Course,
+  copy: (typeof studentLanguageCoursesCopy)["fr"]["panel"],
+) {
   if (course.level_from && course.level_to) {
     return course.level_from === course.level_to
       ? course.level_from
       : `${course.level_from} → ${course.level_to}`;
   }
-  return course.level_from || course.level_to || "À confirmer";
+  return course.level_from || course.level_to || copy.unknown;
 }
 
 export function StudentLanguageCoursesPanel() {
+  const { locale } = useLocale();
+  const t = studentLanguageCoursesCopy[locale].panel;
   const [draftFilters, setDraftFilters] = useState<Filters>(emptyFilters);
   const [filters, setFilters] = useState<Filters>(emptyFilters);
   const [courses, setCourses] = useState<Course[]>([]);
