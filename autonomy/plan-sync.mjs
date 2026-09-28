@@ -66,7 +66,6 @@ async function upsertDashboard(plan, issues, selected) {
   const active = p.rows.filter(row => ["READY","RUNNING","REVIEW"].includes(row.status));
   const specialist = p.rows.filter(row => ["CODEX_REQUIRED","SYSTEM_REQUIRED"].includes(row.status));
   const human = p.rows.filter(row => row.status === "BLOCKED" || row.status === "HUMAN_REQUIRED");
-  const blocked = p.rows.filter(row => row.status === "BLOCKED");
   const lines = [
     "<!-- almago-master-dashboard -->",
     "# AlmaGo Master Plan Status",
