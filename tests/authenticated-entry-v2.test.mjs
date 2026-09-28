@@ -15,37 +15,40 @@ test("login and signup now share the same professional auth composition", () => 
   for (const source of [login, signup]) {
     assert.match(source, /linear-gradient/);
     assert.match(source, /max-w-7xl/);
-    assert.match(source, /max-w-\[36rem\]/);
+    assert.match(source, /max-w-[36rem]/);
     assert.match(source, /AuthStoryPanel/);
   }
 });
 
 test("entry progress explicitly connects account, dossier and student space", () => {
-  assert.match(progress, /Compte/);
-  assert.match(progress, /Dossier initial/);
-  assert.match(progress, /Espace étudiant/);
-  assert.match(progress, /aria-label="Progression de création du dossier"/);
-  assert.match(authForm, /StudentEntryProgress current=\{1\} compact/);
-  assert.match(onboarding, /StudentEntryProgress current=\{2\} compact/);
-  assert.match(profile, /StudentEntryProgress current=\{3\} compact/);
+  assert.match(progress, /["Compte", "Créer votre accès"]/);
+  assert.match(progress, /["Dossier initial", "Renseigner votre profil"]/);
+  assert.match(progress, /["Espace étudiant", "Suivre votre parcours"]/);
+  assert.match(progress, /aria: "Progression de création du dossier"/);
+  assert.match(progress, /ar:s*{/);
+  assert.match(progress, /en:s*{/);
+  assert.match(progress, /de:s*{/);
+  assert.match(authForm, /StudentEntryProgress current={1} compact/);
+  assert.match(onboarding, /StudentEntryProgress current={2} compact/);
+  assert.match(profile, /StudentEntryProgress current={3} compact/);
 });
 
 test("onboarding keeps the existing five internal steps and save behavior", () => {
   assert.match(onboardingForm, /title: "Identité"/);
   assert.match(onboardingForm, /title: "Validation"/);
-  assert.match(onboardingForm, /fetch\("\/api\/student\/onboarding"/);
-  assert.match(onboardingForm, /if \(nextStep === 6\) router\.push\("\/student"\)/);
+  assert.match(onboardingForm, /fetch("/api/student/onboarding"/);
+  assert.match(onboardingForm, /if (nextStep === 6) router.push("/student")/);
 });
 
 test("onboarding load errors fail visibly without changing data", () => {
   assert.match(onboarding, /profileError/);
   assert.match(onboarding, /OnboardingUnavailable/);
   assert.match(onboarding, /Aucune donnée n’a été modifiée/);
-  assert.match(onboarding, /href="\/student\/onboarding"/);
+  assert.match(onboarding, /href="/student/onboarding"/);
 });
 
 test("profile remains editable through the same API and returns directly to the dossier", () => {
-  assert.match(profileForm, /fetch\("\/api\/student\/profile"/);
+  assert.match(profileForm, /fetch("/api/student/profile"/);
   assert.match(profile, /Retour à mon dossier/);
   assert.match(profile, /profileCompletion/);
   assert.match(profile, /max-w-7xl px-4 py-5/);
