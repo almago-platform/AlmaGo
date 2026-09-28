@@ -240,7 +240,7 @@ export function StudentLanguageCoursesPanel() {
                     : "Aucun cours n’est encore associé à votre projet."}
             </p>
             <p className="mt-2 text-xs leading-5 text-slate-500">
-              Votre choix indique votre projet. Il ne confirme ni admission ni visa.
+              Ce choix enregistre votre intention. Il ne constitue ni une décision d’admission ni une décision de visa.
             </p>
           </div>
           {selectedCourseId && (
@@ -255,7 +255,7 @@ export function StudentLanguageCoursesPanel() {
       <Card className="border-[var(--brand-border)] bg-[var(--brand-soft)]/55 shadow-none">
         <h2 className="text-lg font-bold text-slate-950">Cours de langue</h2>
         <p className="mt-2 max-w-4xl text-sm leading-6 text-slate-700">
-          Les cours affichés ont une source et une date de vérification. Un cours intensif n’est pas automatiquement une préparation aux études.
+          Les cours affichés ont une source et une date de vérification. Un cours intensif n’est pas automatiquement une préparation universitaire.
         </p>
       </Card>
 
