@@ -13,6 +13,10 @@ import {
   leaseExpired,
   selectEligibleBlocks,
   browserQualityRequirement,
+  pathMatchesPattern,
+  scopeEvidence,
+  workflowState,
+  supervisorDecisionForHead,
   checksValidForHead,
   workflowResult,
   supervisorDecisionForHead,
@@ -96,6 +100,45 @@ test("scheduler respects dependencies and human gates", () => {
 test("browser quality supports strict not-applicable classification", () => {
   assert.equal(browserQualityRequirement(["src/components/X.tsx"]), "REQUIRED");
   assert.equal(browserQualityRequirement(["autonomy/x.mjs", "docs/a.md"]), "NOT_APPLICABLE");
+});
+
+test("scope and workflow evidence stay bound to the exact head", () => {
+  assert.equal(pathMatchesPattern("docs/a.md", "docs/**"), true);
+  assert.equal(pathMatchesPattern("src/app/page.tsx", "docs/**"), false);
+  assert.deepEqual(
+    scopeEvidence(
+      { writable_paths: ["docs/**"], forbidden_paths: [".github/**", "src/**"] },
+      ["docs/a.md"],
+    ),
+    { scopeExact: true, forbiddenTouched: false },
+  );
+  assert.deepEqual(
+    scopeEvidence(
+      { writable_paths: ["docs/**"], forbidden_paths: ["src/**"] },
+      ["docs/a.md", "src/app/page.tsx"],
+    ),
+    { scopeExact: false, forbiddenTouched: true },
+  );
+
+  const runs = [
+    { name: "AlmaGo PR CI", head_sha: "a", status: "completed", conclusion: "failure", created_at: "2026-01-01T00:00:00Z" },
+    { name: "AlmaGo PR CI", head_sha: "a", status: "completed", conclusion: "success", created_at: "2026-01-02T00:00:00Z" },
+    { name: "AlmaGo Browser Quality", head_sha: "a", status: "in_progress", conclusion: null, created_at: "2026-01-02T00:00:00Z" },
+  ];
+  assert.equal(workflowState(runs, "AlmaGo PR CI", "a"), "SUCCESS");
+  assert.equal(workflowState(runs, "AlmaGo Browser Quality", "a"), "PENDING");
+  assert.equal(workflowState(runs, "Missing", "a"), "MISSING");
+
+  const sha = "0123456789abcdef0123456789abcdef01234567";
+  assert.equal(
+    supervisorDecisionForHead([{ body: "SUPERVISOR: APPROVED\nReviewed HEAD: \`" + sha + "\`" }], sha),
+    "APPROVED",
+  );
+  assert.equal(
+    supervisorDecisionForHead([{ body: "SUPERVISOR: REVISE\nReviewed HEAD: \`" + sha + "\`" }], sha),
+    "REVISE",
+  );
+  assert.equal(supervisorDecisionForHead([{ body: "SUPERVISOR: APPROVED" }], sha), null);
 });
 
 test("HEAD changes invalidate check evidence", () => {
