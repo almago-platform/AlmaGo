@@ -14,10 +14,10 @@ test("student checklist derives a personalized Germany plan from real dossier fa
 });
 
 test("personalized plan is visibly separated from persisted operational checklist", () => {
-  assert.match(page, /Plan Allemagne personnalisé/);
-  assert.match(page, /Étapes calculées à partir de votre dossier/);
+  assert.match(page, /Selon votre dossier/);
+  assert.match(page, /Étapes selon votre dossier/);
   assert.match(page, /Démarches enregistrées dans votre dossier/);
-  assert.match(page, /n’inventent ni admission, ni délai, ni éligibilité de visa/);
+  assert.match(page, /ne garantissent ni admission, ni date limite, ni visa/);
 });
 
 test("course-dependent checklist facts come only from the student's explicit selection", () => {
