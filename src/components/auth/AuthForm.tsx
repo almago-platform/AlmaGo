@@ -191,7 +191,7 @@ export function AuthForm({ initialMode = "login" }: { initialMode?: Mode }) {
         {mode === "signup" ? (
           <p className="text-slate-600">
             Déjà un compte ?{" "}
-            <Link href="/login" className="inline-flex min-h-11 items-center text-[var(--brand-strong)] hover:text-[var(--foreground)]">
+            <Link href="/login" className="inline-flex min-h-11 items-center text-[var(--brand-strong)] underline decoration-current underline-offset-4 hover:text-[var(--foreground)]">
               Se connecter
             </Link>
           </p>
