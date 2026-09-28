@@ -92,6 +92,8 @@ test("student priority accents use logical inline positioning for RTL", () => {
 
 test("recorded checklist templates are localized by stable template key", () => {
   assert.ok(checklist.includes("checklist_templates(key,category,sort_order)"));
+  assert.ok(dashboard.includes("checklist_templates(key)"));
+  assert.ok(dashboard.includes("checklistCopy.recorded.items[relation.key]"));
   assert.ok(checklist.includes("localizedTitle"));
   assert.ok(checklist.includes("localizedDescription"));
   assert.ok(checklist.includes("localizedCategory"));
