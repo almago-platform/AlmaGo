@@ -36,11 +36,11 @@ type Recommendation = {
 type Feedback = { message: string; kind: "success" | "error" } | null;
 
 const studentRecommendationLabels: Record<string, string> = {
-  recommended: "Piste recommandée",
-  possible: "Piste possible",
-  ambitious: "Piste ambitieuse",
-  missing_requirements: "Prérequis à compléter",
-  not_recommended: "Piste non recommandée",
+  recommended: "Programme proposé",
+  possible: "Programme possible",
+  ambitious: "Programme ambitieux",
+  missing_requirements: "Conditions à vérifier",
+  not_recommended: "Non recommandé",
 };
 
 function recommendationVariant(status: string): "success" | "warning" | "info" | "neutral" {
@@ -102,7 +102,7 @@ export function StudentOrientationPanel({
       const result = await response.json().catch(() => ({}));
 
       if (!response.ok) {
-        setFeedback({ message: result.error || "Impossible de créer la candidature.", kind: "error" });
+        setFeedback({ message: result.error || "Impossible d’ajouter ce programme aux candidatures.", kind: "error" });
         return;
       }
 
@@ -112,7 +112,7 @@ export function StudentOrientationPanel({
         ),
       );
       setFeedback({
-        message: "Votre intérêt est bien enregistré. Cette piste est maintenant visible dans vos candidatures.",
+        message: "Ce programme a été ajouté à vos candidatures. Il n’a pas été envoyé à l’université.",
         kind: "success",
       });
     } catch {
@@ -176,18 +176,18 @@ export function StudentOrientationPanel({
           <div aria-hidden="true" className="absolute inset-y-0 left-0 w-1 bg-[var(--brand)]" />
           <div className="pl-2 sm:pl-3">
             <div className="flex flex-wrap items-center gap-3">
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Votre orientation</p>
-              <Badge variant={items.length ? "info" : "neutral"}>{items.length ? "Pistes disponibles" : "Aucune piste publiée"}</Badge>
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Vos programmes</p>
+              <Badge variant={items.length ? "info" : "neutral"}>{items.length ? "Programmes disponibles" : "Aucun programme proposé"}</Badge>
             </div>
             <h2 className="mt-4 text-2xl font-semibold tracking-[-0.03em] text-slate-950">Comparez avant de décider.</h2>
             <p className="mt-3 text-sm leading-6 text-slate-600">
               {applicationStateError
                 ? "Vos recommandations restent visibles, mais nous ne pouvons pas confirmer l’état de vos intérêts enregistrés pour le moment."
                 : nextProgram
-                  ? `Commencez par ${nextProgram.name}. Vérifiez les critères visibles et la source officielle avant d’enregistrer votre intérêt.`
+                  ? `Commencez par ${nextProgram.name}. Vérifiez les critères et la source officielle avant de l’ajouter à vos candidatures.`
                   : items.length
-                    ? "Vos intérêts enregistrés sont déjà visibles dans vos candidatures."
-                    : "Aucune recommandation n’est publiée pour le moment. Vérifiez que votre profil contient les informations utiles à l’orientation."}
+                    ? "Les programmes choisis sont déjà visibles dans vos candidatures."
+                    : "Aucun programme n’est proposé pour le moment. Vérifiez que votre profil contient les informations utiles."}
             </p>
             {nextProgram && (
               <div className="mt-6 rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4">
@@ -200,18 +200,18 @@ export function StudentOrientationPanel({
         </Card>
 
         <section aria-label="Résumé de l’orientation" className="grid gap-4 sm:grid-cols-3 lg:grid-cols-1">
-          <SummaryCard title="Recommandations" value={items.length} badge="Publiées" tone="info" />
+          <SummaryCard title="Programmes" value={items.length} badge="Proposés" tone="info" />
           <SummaryCard title="À comparer" value={comparableItems.length - interestedCount} badge="À décider" tone={comparableItems.length - interestedCount > 0 ? "warning" : "success"} />
-          <SummaryCard title="Intérêts enregistrés" value={applicationStateError ? "—" : interestedCount} badge={applicationStateError ? "Indisponible" : interestedCount ? "Suivi démarré" : "Aucun intérêt"} tone={applicationStateError ? "neutral" : interestedCount ? "success" : "neutral"} />
+          <SummaryCard title="Ajoutés aux candidatures" value={applicationStateError ? "—" : interestedCount} badge={applicationStateError ? "Indisponible" : interestedCount ? "Suivi démarré" : "Aucun"} tone={applicationStateError ? "neutral" : interestedCount ? "success" : "neutral"} />
         </section>
       </section>
 
       {!loadError && items.length === 0 ? (
         <Card aria-labelledby="orientation-empty-title" className="border-dashed bg-white/70 py-9 text-center">
           <span aria-hidden="true" className="mx-auto grid h-11 w-11 place-items-center rounded-full bg-[var(--brand-soft)] text-[var(--brand)]">⌁</span>
-          <h2 id="orientation-empty-title" className="mt-4 text-lg font-bold text-slate-950">Aucune piste d’orientation n’est publiée pour le moment.</h2>
+          <h2 id="orientation-empty-title" className="mt-4 text-lg font-bold text-slate-950">Aucun programme n’est proposé pour le moment.</h2>
           <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-slate-600">
-            Cela peut être normal pendant la préparation du dossier. Vérifiez que votre profil est à jour ; les nouvelles pistes apparaîtront ici lorsqu’elles seront enregistrées.
+            Vérifiez que votre profil est à jour. Les nouveaux programmes apparaîtront ici lorsqu’ils seront proposés.
           </p>
           <div className="mt-5 flex flex-col justify-center gap-3 sm:flex-row">
             <ButtonLink href="/student/profile" variant="secondary">Vérifier mon profil</ButtonLink>
@@ -222,9 +222,9 @@ export function StudentOrientationPanel({
         <section aria-labelledby="recommended-programs-title">
           <div className="mb-4 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
             <div>
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Vos pistes</p>
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Vos programmes</p>
               <h2 id="recommended-programs-title" className="mt-1 text-2xl font-semibold tracking-[-0.03em] text-slate-950">Programmes à comparer</h2>
-              <p className="mt-1 text-sm leading-6 text-slate-600">Chaque fiche reprend uniquement les critères enregistrés dans AlmaGo. Vérifiez toujours les informations importantes auprès de la source officielle.</p>
+              <p className="mt-1 text-sm leading-6 text-slate-600">Vérifiez les critères, les dates et la source officielle avant de choisir.</p>
             </div>
             <ButtonLink href="/student/applications" variant="secondary">Mes candidatures</ButtonLink>
           </div>
@@ -252,7 +252,7 @@ export function StudentOrientationPanel({
                         </p>
                       </div>
                       <Badge variant={recommendation.student_interest_at ? "success" : recommendationVariant(recommendation.status)}>
-                        {recommendation.student_interest_at ? "Intérêt enregistré" : studentRecommendationLabels[recommendation.status] || recommendationStatusLabels[recommendation.status] || recommendation.status}
+                        {recommendation.student_interest_at ? "Ajouté aux candidatures" : studentRecommendationLabels[recommendation.status] || recommendationStatusLabels[recommendation.status] || recommendation.status}
                       </Badge>
                     </div>
                     <div>
@@ -268,9 +268,9 @@ export function StudentOrientationPanel({
                   </div>
 
                   <div className="mt-5 rounded-[var(--radius-control)] border border-[var(--brand-border)] bg-[var(--brand-soft)]/45 p-4">
-                    <h4 className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">Pourquoi cette piste apparaît ?</h4>
+                    <h4 className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">Pourquoi ce programme apparaît ?</h4>
                     <p className="mt-2 text-sm leading-6 text-slate-700 [overflow-wrap:anywhere]">
-                      {recommendation.note || "Cette piste a été enregistrée dans votre orientation. Consultez les critères ci-dessous et vérifiez les informations officielles avant de décider."}
+                      {recommendation.note || "Ce programme a été proposé pour votre dossier. Vérifiez les critères et la source officielle avant de décider."}
                     </p>
                   </div>
 
@@ -287,7 +287,7 @@ export function StudentOrientationPanel({
                         {[
                           program.german_level_required && `Allemand ${program.german_level_required}`,
                           program.english_level_required && `Anglais ${program.english_level_required}`,
-                        ].filter(Boolean).join(" · ") || "À confirmer avec AlmaGo"}
+                        ].filter(Boolean).join(" · ") || "À vérifier sur la source officielle"}
                       </dd>
                     </div>
                     </dl>
@@ -296,7 +296,7 @@ export function StudentOrientationPanel({
                   <RequirementAssessment match={recommendation.requirement_match} programName={program.name} />
 
                   <div className="mt-5 rounded-[var(--radius-control)] border border-amber-200 bg-amber-50/60 p-3 text-xs leading-5 text-amber-900">
-                    Cette recommandation est une piste d’orientation. Elle ne garantit ni l’éligibilité finale ni l’admission.
+                    Ce programme est une piste. L’université vérifie les conditions et prend la décision.
                   </div>
 
                   <div className="mt-auto flex flex-col gap-2 border-t border-[var(--border)] pt-5 sm:flex-row sm:flex-wrap">
@@ -318,12 +318,12 @@ export function StudentOrientationPanel({
                       onClick={() => interested(recommendation.id)}
                     >
                       {recommendation.student_interest_at
-                        ? "Intérêt enregistré"
+                        ? "Ajouté aux candidatures"
                         : busy === recommendation.id
                           ? "Enregistrement…"
                           : recommendation.status === "not_recommended"
                             ? "Non disponible"
-                            : "Cette piste m’intéresse"}
+                            : "Ajouter à mes candidatures"}
                     </Button>
                   </div>
                 </Card>
@@ -371,8 +371,8 @@ function RequirementAssessment({ match, programName }: { match?: MasterRequireme
     <section className="mt-5 rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-4" aria-label={`Comparaison avec votre projet - ${programName}`}>
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
-          <h4 className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">Comparaison avec votre projet</h4>
-          <p className="mt-1 text-xs leading-5 text-slate-500">Lecture factuelle des critères vérifiés disponibles. Ce n’est pas une décision d’admission.</p>
+          <h4 className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">Comparaison avec votre dossier</h4>
+          <p className="mt-1 text-xs leading-5 text-slate-500">Comparaison des informations disponibles. L’université décide au final.</p>
         </div>
         <Badge variant={summary.tone}>{summary.label}</Badge>
       </div>
@@ -440,7 +440,7 @@ function criterionStatusLabel(item: RequirementMatchResult) {
     if (item.status === "not_satisfied") return "Échéance dépassée";
   }
   if (item.status === "satisfied") return "Critère rempli";
-  if (item.status === "not_satisfied") return "Écart potentiel";
+  if (item.status === "not_satisfied") return "Point à vérifier";
   if (item.status === "needs_manual_review") return "À vérifier";
   return "Information manquante";
 }
@@ -461,19 +461,19 @@ function criterionExplanation(item: RequirementMatchResult) {
 
   const reason = item.reason;
   if (reason === "Les ECTS totaux de l’étudiant ne sont pas structurés dans le projet.") {
-    return "Vos crédits ECTS totaux ne sont pas encore renseignés de manière structurée dans votre projet.";
+    return "Le total de vos ECTS n’est pas encore indiqué dans votre projet.";
   }
   if (reason === "Les crédits par matière de l’étudiant ne sont pas structurés dans le projet.") {
     return "Vos crédits par matière ne sont pas encore renseignés de manière structurée dans votre projet.";
   }
   if (reason === "Aucune note étudiante comparable et normalisée n’est disponible.") {
-    return "Votre moyenne ou note de référence n’est pas encore saisie de manière comparable.";
+    return "Votre moyenne n’est pas encore indiquée dans un format utilisable pour la comparaison.";
   }
   if (reason === "Diplôme actuel non renseigné.") {
     return "Votre diplôme actuel n’est pas encore renseigné dans votre profil.";
   }
   if (reason === "La compatibilité du diplôme doit être confirmée manuellement.") {
-    return "La compatibilité de votre diplôme avec ce programme doit être confirmée manuellement.";
+    return "L’université doit confirmer si votre diplôme correspond à ce programme.";
   }
   if (reason === "Le niveau étudiant pour cette langue n’est pas structuré.") {
     return "Votre niveau de langue n’est pas encore structuré dans votre projet.";
@@ -482,7 +482,7 @@ function criterionExplanation(item: RequirementMatchResult) {
     return "Votre niveau d’allemand n’est pas renseigné ou n’est pas sous un format comparable.";
   }
   if (reason === "Le niveau requis n’est pas un niveau CEFR comparable.") {
-    return "Le niveau requis par l’établissement n’est pas exprimé selon le cadre CEFR.";
+    return "Le niveau demandé n’utilise pas les niveaux A1–C2. Vérifiez la source officielle.";
   }
   if (reason === "Rentrée étudiante absente ou non structurée.") {
     return "Votre période de rentrée souhaitée n’est pas renseignée ou structurée.";
@@ -500,7 +500,7 @@ function criterionExplanation(item: RequirementMatchResult) {
     return "Les sources officielles de cette information doivent être vérifiées à nouveau.";
   }
   if (reason === "Le prérequis est disponible uniquement en texte libre.") {
-    return "Ce critère est détaillé en texte libre et demande une lecture attentive.";
+    return "La source donne ce critère en texte. Lisez-la avant de décider.";
   }
   if (reason === "Valeur vérifiée absente.") {
     return "L’information vérifiée n’est pas disponible.";
