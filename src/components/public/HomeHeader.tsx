@@ -8,9 +8,9 @@ import s from "./Homepage.module.css";
 
 const navigation = [
   ["Le parcours", "#parcours"],
-  ["L’espace étudiant", "/login"],
-  ["Nos repères", "#outils"],
-  ["FAQ", "#faq"],
+  ["Mon espace", "/login"],
+  ["Pourquoi AlmaGo", "#outils"],
+  ["Questions", "#faq"],
 ] as const;
 
 export function HomeHeader() {
@@ -40,7 +40,7 @@ export function HomeHeader() {
           </nav>
           <div className={s.headerActions}>
             <Link className={s.login} href="/login">
-              Connexion
+              Se connecter
             </Link>
             <Link className={`${s.button} ${s.headerCta}`} href="/signup">
               Créer mon dossier
