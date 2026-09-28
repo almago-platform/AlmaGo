@@ -10,7 +10,6 @@ permissions:
   pull-requests: read
   issues: write
   actions: read
-  statuses: read
 
 concurrency:
   group: almago-merge-readiness-${{ github.event.workflow_run.head_sha }}
@@ -44,6 +43,27 @@ jobs:
             const { data: pr } = await github.rest.pulls.get({ owner, repo, pull_number: pullNumber });
             if (pr.state !== "open" || pr.head.sha !== headSha || pr.head.repo?.full_name !== `${owner}/${repo}`) return;
 
+            const { data: repository } = await github.rest.repos.get({ owner, repo });
+            const mainBranch = repository.default_branch || "main";
+            if (pr.base.ref !== mainBranch || pr.base.repo?.full_name !== `${owner}/${repo}`) return;
+
+            const { data: main } = await github.rest.repos.getBranch({
+              owner,
+              repo,
+              branch: mainBranch,
+            });
+            const mainSha = main.commit.sha;
+
+            const comparison = await github.request(
+              "GET /repos/{owner}/{repo}/compare/{basehead}",
+              {
+                owner,
+                repo,
+                basehead: `${mainSha}...${headSha}`,
+              },
+            );
+            if (Number(comparison.data.behind_by || 0) !== 0) return;
+
             const branchMatch = pr.head.ref.match(/^automation\/issue-([1-9][0-9]*)$/);
             if (!branchMatch) return;
             const issueNumber = Number(branchMatch[1]);
@@ -58,7 +78,7 @@ jobs:
             if (!taskId) return;
 
             const planResponse = await github.rest.repos.getContent({
-              owner, repo, path: "config/almago-master-plan.json", ref: pr.base.ref
+              owner, repo, path: "config/almago-master-plan.json", ref: mainSha
             });
             if (Array.isArray(planResponse.data) || !("content" in planResponse.data)) throw new Error("Unable to load master plan.");
             const plan = JSON.parse(Buffer.from(planResponse.data.content, "base64").toString("utf8"));
@@ -89,11 +109,34 @@ jobs:
             );
             if (!green) return;
 
-            const { data: combined } = await github.rest.repos.getCombinedStatusForRef({ owner, repo, ref: headSha });
-            const vercel = combined.statuses.find(status => status.context === "Vercel");
-            if (vercel?.state !== "success") return;
+            const { data: latestMain } = await github.rest.repos.getBranch({
+              owner,
+              repo,
+              branch: mainBranch,
+            });
+            const { data: latestPr } = await github.rest.pulls.get({
+              owner,
+              repo,
+              pull_number: pullNumber,
+            });
+            if (
+              latestMain.commit.sha !== mainSha ||
+              latestPr.state !== "open" ||
+              latestPr.head.sha !== headSha ||
+              latestPr.base.ref !== mainBranch
+            ) return;
 
-            const marker = `<!-- almago-merge-ready:head=${headSha} -->`;
+            const finalComparison = await github.request(
+              "GET /repos/{owner}/{repo}/compare/{basehead}",
+              {
+                owner,
+                repo,
+                basehead: `${mainSha}...${headSha}`,
+              },
+            );
+            if (Number(finalComparison.data.behind_by || 0) !== 0) return;
+
+            const marker = `<!-- almago-merge-ready:head=${headSha};main=${mainSha} -->`;
             const comments = await github.paginate(github.rest.issues.listComments, {
               owner, repo, issue_number: pullNumber, per_page: 100
             });
@@ -105,11 +148,12 @@ jobs:
                   "",
                   `Plan task: ${taskId}`,
                   `HEAD: ${headSha}`,
+                  `Exact main SHA: ${mainSha}`,
                   marker,
                   "",
-                  "Exact-file scope, canonical CI, browser/accessibility quality and Vercel are green.",
+                  "Exact-file scope, canonical CI and browser/accessibility quality are green, and the branch contains exact current main.",
                   "**No automatic merge is performed.** Merge remains explicitly controlled."
                 ].join("\n")
               });
             }
-            core.summary.addHeading("AlmaGo merge readiness").addRaw(`PR #${pullNumber} is ready for controlled merge.`).write();
+            core.summary.addHeading("AlmaGo merge readiness").addRaw(`PR #${pullNumber} is ready for controlled merge. Render exact-main verification remains an A45 release concern after merge.`).write();
