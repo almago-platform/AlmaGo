@@ -18,33 +18,16 @@ import {
 import { isRegulatoryRuleCurrent } from "@/lib/regulatory";
 import { projectPathOptions } from "@/lib/student/project";
 import { createClient } from "@/lib/supabase/server";
+import { getRequestLocale } from "@/lib/i18n-server";
+import { studentPathwayCopy } from "@/content/student-pathway-copy";
+import { studentProjectCopy } from "@/content/student-project-copy";
 
 export const dynamic = "force-dynamic";
 
-const routeDetails: Record<RegulatoryRoute, { title: string; description: string }> = {
-  STUDIUM: {
-    title: "Études (Studium)",
-    description:
-      "Votre dossier contient une admission définitive vérifiée. L’autorité compétente décide ensuite du visa ou du séjour.",
-  },
-  STUDIENVORBEREITUNG: {
-    title: "Préparation aux études (Studienvorbereitung)",
-    description:
-      "Votre dossier contient un document préparatoire accepté et un cours de préparation vérifié. Vérifiez la suite avec la source officielle.",
-  },
-  STUDIENPLATZSUCHE: {
-    title: "Recherche de place d’études (Studienplatzsuche)",
-    description:
-      "Vous cherchez encore une place d’études. Comparez les programmes et préparez vos candidatures.",
-  },
-  SPRACHKURS: {
-    title: "Cours de langue (Sprachkurs)",
-    description:
-      "Votre objectif actuel est un cours de langue. Vérifiez les conditions pour votre dossier complet.",
-  },
-};
-
 export default async function StudentPathwayPage() {
+  const locale = await getRequestLocale();
+  const t = studentPathwayCopy[locale];
+  const projectCopy = studentProjectCopy[locale];
   const supabase = await createClient();
   const {
     data: { user },
@@ -54,7 +37,7 @@ export default async function StudentPathwayPage() {
 
   const now = new Date();
   const catalogueCutoff = catalogVerificationCutoff(now);
-  if (!catalogueCutoff) return <PathwayUnavailable />;
+  if (!catalogueCutoff) return <PathwayUnavailable copy={t} />;
 
   const [
     projectResult,
@@ -117,7 +100,7 @@ export default async function StudentPathwayPage() {
     || regulatorySourcesResult.error
     || languageSelectionResult.error
   ) {
-    return <PathwayUnavailable />;
+    return <PathwayUnavailable copy={t} />;
   }
 
   const documentStatusById = new Map(
@@ -178,8 +161,11 @@ export default async function StudentPathwayPage() {
   const project = projectPathOptions.find(
     (option) => option.value === projectResult.data?.path,
   );
-  const routeInfo = decision.route ? routeDetails[decision.route] : null;
-  const nextAction = nextActionFor(decision);
+  const projectLabel = projectResult.data?.path
+    ? projectCopy.paths[projectResult.data.path as keyof typeof projectCopy.paths]?.title
+    : null;
+  const routeInfo = decision.route ? t.routes[decision.route] : null;
+  const nextAction = nextActionFor(decision, t);
 
   return (
     <main className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 sm:py-7 lg:px-8 lg:py-9">
