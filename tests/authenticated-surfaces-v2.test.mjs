@@ -5,6 +5,8 @@ import test from "node:test";
 const shell = readFileSync("src/components/layout/AppShell.tsx", "utf8");
 const nativeCopy = readFileSync("src/content/native-copy.ts", "utf8");
 const studentSharedCopy = readFileSync("src/content/student-shared-copy.ts", "utf8");
+const financeCopy = readFileSync("src/content/student-finance-copy.ts", "utf8");
+const accountCopy = readFileSync("src/content/account-state-copy.ts", "utf8");
 const resourceHeader = readFileSync("src/components/student/StudentResourceHeader.tsx", "utf8");
 const language = readFileSync("src/app/student/language-courses/page.tsx", "utf8");
 const finance = readFileSync("src/app/student/finance-insurance/page.tsx", "utf8");
@@ -38,22 +40,25 @@ test("resource redesign preserves factual catalogue boundaries", () => {
   assert.ok(language.includes("StudentLanguageCoursesPanel"));
   assert.ok(finance.includes('from("finance_insurance_catalog")'));
   assert.ok(finance.includes("isPublishableFinanceInsuranceOption"));
-  assert.ok(finance.includes("ne classe pas les fournisseurs"));
+  assert.ok(financeCopy.includes("ne classe pas les fournisseurs"));
 });
 
 test("password reset matches the account entry composition without changing auth behavior", () => {
   assert.ok(resetPage.includes("linear-gradient"));
   assert.ok(resetPage.includes("max-w-7xl"));
   assert.ok(resetPage.includes("max-w-[36rem]"));
+  assert.ok(resetPage.includes("LanguageSwitcher"));
   assert.ok(resetForm.includes("auth.updateUser({ password })"));
   assert.ok(resetForm.includes("aria-busy={saving}"));
   assert.ok(resetForm.includes("min-h-12"));
 });
 
-test("fallback and unauthorized states stay explicit and actionable", () => {
-  assert.ok(unauthorized.includes("Cet espace n’est pas disponible pour ce compte"));
-  assert.ok(unauthorized.includes("Rien n’a été modifié dans votre dossier"));
-  assert.ok(unauthorized.includes("Retour à mon dossier"));
-  assert.ok(fallback.includes("Cette adresse ne correspond pas à une page active"));
-  assert.ok(fallback.includes("Rien n’a été modifié dans votre dossier"));
+test("fallback and unauthorized states stay explicit, actionable and localized", () => {
+  assert.ok(accountCopy.includes("Cet espace n’est pas disponible pour ce compte"));
+  assert.ok(accountCopy.includes("Rien n’a été modifié dans votre dossier"));
+  assert.ok(accountCopy.includes("Retour à mon dossier"));
+  assert.ok(accountCopy.includes("This space is not available for this account"));
+  assert.ok(accountCopy.includes("Diese Adresse gehört zu keiner aktiven Seite"));
+  assert.ok(unauthorized.includes("accountStateCopy[locale].unauthorized"));
+  assert.ok(fallback.includes("accountStateCopy[locale].unknownStudent"));
 });
