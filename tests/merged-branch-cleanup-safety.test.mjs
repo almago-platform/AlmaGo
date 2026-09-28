@@ -51,6 +51,15 @@ test("merged branch cleanup caps destructive batches and rechecks every tip", ()
   assert.match(workflow, /Branch tip changed during deletion preflight/);
 });
 
+test("merged branch cleanup rechecks open PR heads and bases immediately before deletion", () => {
+  assert.match(workflow, /const freshOpenPulls = await github\.paginate/);
+  assert.match(workflow, /const freshOpenHeads = new Set/);
+  assert.match(workflow, /const freshOpenBases = new Set/);
+  assert.match(workflow, /freshOpenHeads\.has\(candidate\.branch\)/);
+  assert.match(workflow, /freshOpenBases\.has\(candidate\.branch\)/);
+  assert.match(workflow, /Branch became active in an open PR during deletion preflight/);
+});
+
 test("merged branch cleanup never deletes archive or backup refs", () => {
   assert.match(
     workflow,
