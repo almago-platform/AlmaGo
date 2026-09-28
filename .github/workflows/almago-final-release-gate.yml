@@ -62,6 +62,27 @@ jobs:
               return;
             }
 
+            const { data: hardeningIssue } = await github.rest.issues.get({
+              owner,
+              repo,
+              issue_number: 336,
+            });
+            const hardeningComplete =
+              hardeningIssue.state === "closed" &&
+              hardeningIssue.state_reason !== "not_planned";
+            if (!hardeningComplete) {
+              core.summary
+                .addHeading("AlmaGo final release gate")
+                .addRaw(
+                  "BLOCKED — repository-hardening issue #336 is not completed. Protection must be reviewed and confirmed before release readiness."
+                )
+                .write();
+              core.setFailed(
+                "A45 requires completed repository-hardening issue #336 before RELEASE GATE: READY."
+              );
+              return;
+            }
+
             core.setOutput("main_sha", mainSha);
 
             const allIssues = await github.paginate(github.rest.issues.listForRepo, {
@@ -310,6 +331,28 @@ jobs:
                 )
                 .write();
               core.setFailed("main changed during the release gate; rerun on the new exact SHA.");
+              return;
+            }
+
+            if (currentMain.protected !== true) {
+              core.setFailed(
+                "A45 cannot publish READY because main protection was removed during the release gate."
+              );
+              return;
+            }
+
+            const { data: finalHardeningIssue } = await github.rest.issues.get({
+              owner,
+              repo,
+              issue_number: 336,
+            });
+            const finalHardeningComplete =
+              finalHardeningIssue.state === "closed" &&
+              finalHardeningIssue.state_reason !== "not_planned";
+            if (!finalHardeningComplete) {
+              core.setFailed(
+                "A45 cannot publish READY because repository-hardening issue #336 is no longer completed."
+              );
               return;
             }
 
