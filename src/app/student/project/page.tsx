@@ -19,8 +19,8 @@ export default async function StudentProjectPage() {
     <StudentJourneyHeader
       current="project"
       eyebrow="Mon dossier"
-      title="Définissons votre point de départ"
-      description="Décrivez votre situation et votre objectif avec vos propres mots. AlmaGo utilise ces informations pour organiser les prochaines étapes sans vous demander de choisir vous-même une catégorie juridique de visa."
+      title="Quel est votre projet ?"
+      description="Décrivez votre situation et votre objectif. Ces informations servent à afficher les étapes utiles. Vous n’avez pas à choisir un type de visa."
     />
     <StudentProjectForm project={project as Parameters<typeof StudentProjectForm>[0]["project"]} />
   </main>;
