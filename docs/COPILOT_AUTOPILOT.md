@@ -68,3 +68,14 @@ Even with both variables set, the executor refuses to merge unless the active de
 All mutable evidence is fetched again immediately before merge. At most one PR can be squash-merged per executor run. The normal Autopilot reconciliation records `DONE` on the next cycle.
 
 This executor must stay disabled until repository branch/ruleset protection is hardened and the canonical launch/release gates are settled.
+
+## Pre-launch self-healing lane
+
+Before A45 is complete, `AlmaGo Prelaunch Self-Heal` runs on pushes to `main`, hourly, and by manual dispatch. This lane is intentionally narrower than post-launch Continuous Improvement.
+
+It observes TypeScript and lint only. A live Agent Task is allowed only when deterministic evidence identifies at most three exact existing non-critical `src/**` files. Ambiguous evidence, missing files, protected paths, API/Auth/Supabase surfaces, workflows, dependencies, tests, migrations and other critical paths fail closed.
+
+The lane builds a temporary one-block Autopilot plan with `maxConcurrentTasks=1`, `maxRevisionAttempts=2`, `noAutomaticMerge=true`, then runs the normal controller with at most one new task. Open pull requests remain external collision locks, and the resulting repair PR must still pass the normal CI/Browser/Supervisor lifecycle.
+
+This pre-launch lane does not depend on the repository-wide Autopilot dry-run variable because its own workflow is the explicit live-dispatch boundary. Its authority stops at a bounded repair PR / `MERGE_READY`: it cannot merge, deploy or bypass A38, A43, A44 or A45. Once A45 is complete, the lane becomes inactive and the post-launch Continuous Improvement stack takes over.
+
