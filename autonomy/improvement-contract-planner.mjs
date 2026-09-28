@@ -16,7 +16,7 @@ if (!token || !repository || !repository.includes("/")) throw new Error("GITHUB_
 if (!openaiKey) throw new Error("OPENAI_API_KEY is required for improvement contract planning.");
 
 const [owner, repo] = repository.split("/");
-const model = process.env.ALMAGO_CONTINUOUS_PLANNER_MODEL || "gpt-5.4-mini";
+const model = process.env.ALMAGO_CONTINUOUS_PLANNER_MODEL || "gpt-5.6-luna";
 if (!/^[A-Za-z0-9_.-]+$/.test(model)) throw new Error("Invalid planner model identifier.");
 const requestedMax = Number.parseInt(process.env.ALMAGO_PLANNER_MAX_PER_RUN || "1", 10);
 const maxPerRun = Number.isFinite(requestedMax) ? Math.max(1, Math.min(3, requestedMax)) : 1;
