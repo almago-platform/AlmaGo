@@ -5,8 +5,10 @@ import { Badge } from "@/components/ui/Badge";
 import { Button, buttonClassName } from "@/components/ui/Button";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Card } from "@/components/ui/Card";
+import { useLocale } from "@/components/i18n/LocaleProvider";
+import { studentOrientationCopy } from "@/content/student-orientation-copy";
 import type { MasterRequirementsMatch, RequirementMatchResult } from "@/lib/master-requirements";
-import { formatDeadline, recommendationStatusLabels } from "@/lib/phase4";
+import { formatDeadline } from "@/lib/phase4";
 
 type University = { name: string; city: string; bundesland?: string | null };
 type Program = {
@@ -34,14 +36,6 @@ type Recommendation = {
 };
 
 type Feedback = { message: string; kind: "success" | "error" } | null;
-
-const studentRecommendationLabels: Record<string, string> = {
-  recommended: "Programme proposé",
-  possible: "Programme possible",
-  ambitious: "Programme ambitieux",
-  missing_requirements: "Conditions à vérifier",
-  not_recommended: "Non recommandé",
-};
 
 function recommendationVariant(status: string): "success" | "warning" | "info" | "neutral" {
   if (status === "recommended" || status === "possible") return "success";
@@ -71,6 +65,8 @@ export function StudentOrientationPanel({
   applicationStateError?: string;
   criteriaStateError?: string;
 }) {
+  const { locale } = useLocale();
+  const t = studentOrientationCopy[locale].panel;
   const [items, setItems] = useState(() =>
     recommendations.map((recommendation) => {
       const program = firstProgram(recommendation);
@@ -102,7 +98,7 @@ export function StudentOrientationPanel({
       const result = await response.json().catch(() => ({}));
 
       if (!response.ok) {
-        setFeedback({ message: result.error || "Impossible d’ajouter ce programme aux candidatures.", kind: "error" });
+        setFeedback({ message: result.error || t.addError, kind: "error" });
         return;
       }
 
@@ -112,11 +108,11 @@ export function StudentOrientationPanel({
         ),
       );
       setFeedback({
-        message: "Ce programme a été ajouté à vos candidatures. Il n’a pas été envoyé à l’université.",
+        message: t.addSuccess,
         kind: "success",
       });
     } catch {
-      setFeedback({ message: "Erreur réseau. Vérifiez votre connexion puis réessayez.", kind: "error" });
+      setFeedback({ message: t.networkError, kind: "error" });
     } finally {
       setBusy(null);
     }
