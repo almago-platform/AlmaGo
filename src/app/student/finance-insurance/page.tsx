@@ -55,7 +55,7 @@ export default async function StudentFinanceInsurancePage() {
       <StudentResourceHeader
         current="finance"
         title="Financement et assurance"
-        description="Comparez des options dont la source et la date de vérification sont visibles. AlmaGo ne dit pas ce qui convient à votre situation ni ce qui est obligatoire pour votre visa."
+        description="Comparez des options dont la source et la date de vérification sont visibles. AlmaGo ne classe pas les fournisseurs et ne déduit ni votre éligibilité ni une exigence de visa."
         actions={<ButtonLink href="/student/pathway" variant="secondary">Retour à mon parcours</ButtonLink>}
       />
 
