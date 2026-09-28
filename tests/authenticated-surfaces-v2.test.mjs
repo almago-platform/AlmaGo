@@ -21,8 +21,8 @@ test("student shell groups navigation by dossier, parcours and resources", () =>
 });
 
 test("language and finance surfaces share resource context", () => {
-  assert.match(resourceHeader, /Ressources du parcours/);
-  assert.match(resourceHeader, /Parcours Allemagne/);
+  assert.match(resourceHeader, /Pour préparer votre projet/);
+  assert.match(resourceHeader, /label: "Parcours"/);
   assert.match(resourceHeader, /Cours de langue/);
   assert.match(resourceHeader, /Finance & assurance/);
   assert.match(language, /StudentResourceHeader/);
