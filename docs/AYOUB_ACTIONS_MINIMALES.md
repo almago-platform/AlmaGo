@@ -20,6 +20,8 @@ GitHub Actions a actuellement un incident séparé : les workflows sont créés 
 
 ### A38 — juridique
 
+Suivi humain/juridique : #66.
+
 Compléter `docs/A38_OWNER_CONFIRMATION.md`, décider conservation/suppression, faire relire les textes, puis n’activer `A38_REVIEW_READY: true` qu’une fois les placeholders réellement résolus.
 
 Après la relecture humaine, poster exactement :
@@ -41,7 +43,7 @@ Les e-mails test sont déjà définis par défaut dans le workflow. Aucune varia
 
 Le workflow ne pourra toutefois produire une vraie preuve tant que #286 empêche le runner GitHub d’exécuter ses étapes.
 
-PR #424 intègre la preuve authentifiée contre Render avec réveil `/api/health`, tout en conservant les garde-fous main-only/A38.
+Suivi durable : #84 (A43), #286 (runner GitHub Actions) et #448 (preuve exact-main). Le workflow en cours de finalisation conserve la cible Render avec réveil `/api/health`, le mode local et les garde-fous main-only/A38.
 
 ### Render
 
@@ -79,6 +81,8 @@ Après A38 + A43 :
 
 Le runtime est Render, pas Vercel.
 
+Intégrité de preuve A44 exact-main : #433.
+
 ### Supabase Auth
 
 #179 suit la décision optionnelle d’un passage Pro pour la protection contre mots de passe compromis.
@@ -91,7 +95,7 @@ Ne pas exiger le check GitHub Actions cassé tant que #286 n’est pas résolu.
 
 ### A45
 
-PR #430 prépare la recette finale Render et exige que le service live rapporte le SHA exact de `main` avant de publier `RELEASE GATE: READY`.
+Suivi durable : #406 (gate final Render) et #439 (protection de `main`). Le gate doit exiger la révision Render correspondant au SHA exact de `main` avant de publier `RELEASE GATE: READY`.
 
 ## Ce qui n’est pas requis maintenant
 
