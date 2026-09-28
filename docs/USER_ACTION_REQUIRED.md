@@ -79,6 +79,8 @@ A44 vient après A38 et A43.
 
 Aucun fournisseur n’est activé automatiquement.
 
+PR #445 exige que la preuve A44 soit liée au SHA exact du `main` courant et revérifie que `main` n’a pas bougé avant clôture.
+
 ## 6. Supabase Auth — décision d’abonnement
 
 Le Security Advisor signale encore la protection contre mots de passe compromis comme désactivée. La décision d’un éventuel passage Supabase Pro est suivie dans #179.
@@ -93,7 +95,7 @@ Ne pas rendre obligatoire un check GitHub Actions tant que #286 n’est pas rés
 
 ## 8. A45 — final release gate
 
-PR #430 prépare le gate final Render :
+PR #443 prépare le gate final Render et refuse de publier la readiness tant que `main` n’est pas protégée (#336) :
 
 - capture du SHA exact de `main` ;
 - preuve `/api/health` de la même révision ;
