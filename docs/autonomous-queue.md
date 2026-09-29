@@ -47,7 +47,13 @@ Goal: Clarify the main action on the home page.
 Acceptance: The primary action is understandable on mobile.
 ```
 
-Pour une tâche précise, lancer aussi **Actions → AlmaGo AI Task Queue → Run workflow**
+Les issues autonomes courtes portant `almago-ai-ready` et le marqueur
+`<!-- almago-ai-task -->` sont aussi prises automatiquement par le Master
+Orchestrator lorsqu'aucune tâche du plan principal n'est à dispatcher. Elles sont
+traitées dans l'ordre de création, une à la fois, avec les mêmes limites de budget,
+de scope et de sécurité.
+
+Pour une tâche précise, il reste possible de lancer **Actions → AlmaGo AI Task Queue → Run workflow**
 avec son numéro d'issue. L'issue doit porter `almago-ai-ready`. Une tâche bloquée
 prend le label `almago-ai-blocked` et demande une inspection avant toute relance.
 Une PR ouverte prend le label `almago-ai-proposed`; le travail suivant se prépare

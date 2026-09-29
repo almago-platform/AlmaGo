@@ -86,6 +86,17 @@ export function dispatchableReadyIssue(plan, issues = []) {
   return null;
 }
 
+export function standaloneAiReadyIssue(issues = []) {
+  for (const issue of issues) {
+    if (issue.state !== "open" || issue.pull_request || issueTaskId(issue)) continue;
+    const labels = new Set((issue.labels || []).map(label => typeof label === "string" ? label : label.name));
+    if (!labels.has("almago-ai-ready") || labels.has("almago-ai-running") || labels.has("almago-ai-blocked") || labels.has("almago-ai-proposed")) continue;
+    if (!String(issue.body || "").includes("<!-- almago-ai-task -->")) continue;
+    return issue;
+  }
+  return null;
+}
+
 export function taskIssueBody(task) {
   const files = (task.files || []).map(file => "- " + file).join("\n");
   const acceptance = task.acceptance.map(item => "- " + item).join("\n");
