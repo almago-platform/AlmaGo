@@ -8,8 +8,8 @@ const meta: Array<{ href: string; icon: HomeIconName }> = [
   { href: "#programmes", icon: "book" },
   { href: "#parcours", icon: "route" },
   { href: "#parcours", icon: "document" },
-  { href: "#parcours", icon: "source" },
-  { href: "#faq", icon: "plus" },
+  { href: "#parcours", icon: "globe" },
+  { href: "#faq", icon: "question" },
 ];
 
 export function HomeQuickAccess() {
