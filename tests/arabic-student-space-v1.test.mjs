@@ -12,6 +12,8 @@ const orientation = readFileSync("src/content/student-orientation-copy.ts", "utf
 const onboarding = readFileSync("src/content/student-onboarding-copy.ts", "utf8");
 const shared = readFileSync("src/content/student-shared-copy.ts", "utf8");
 const shell = readFileSync("src/components/layout/AppShell.tsx", "utf8");
+const guidance = readFileSync("src/components/student/StudentGuidancePanel.tsx", "utf8");
+const onboardingForm = readFileSync("src/components/student/OnboardingForm.tsx", "utf8");
 const pathwayPage = readFileSync("src/app/student/pathway/page.tsx", "utf8");
 const css = readFileSync("src/app/globals.css", "utf8");
 
@@ -40,6 +42,10 @@ test("Arabic Student Space protects RTL typography and mixed-direction terms", (
   assert.match(shell, /shellHomeAria/);
   assert.match(pathwayPage, /<bdi dir="ltr">\{decision\.route\}<\/bdi>/);
   assert.match(pathway, /\\u2066Studium\\u2069/);
+  assert.match(guidance, /student-guidance-panel/);
+  assert.match(onboardingForm, /student-onboarding-grid/);
+  assert.match(css, /html\[dir="rtl"\] \.student-guidance-panel/);
+  assert.match(css, /html\[dir="rtl"\] \.student-onboarding-grid/);
   assert.match(orientation, /\\u2066VPD\\u2069/);
   assert.match(orientation, /\\u2066ECTS\\u2069/);
 });
