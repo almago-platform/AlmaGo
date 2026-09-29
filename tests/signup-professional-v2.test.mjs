@@ -36,7 +36,7 @@ test("signup form keeps Supabase auth behavior unchanged", () => {
 });
 
 test("signup form improves password and account navigation UX", () => {
-  assert.ok(progress.includes("{copy.step} {current} {copy.of} 3"));
+  assert.ok(progress.includes("completed ? copy.completedLabel"));
   assert.ok(form.includes("showPassword"));
   assert.ok(nativeCopy.includes('minPassword: "8 caractères minimum"'));
   assert.ok(nativeCopy.includes('emailConfirmation: "Confirmation par email"'));
