@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/Button";
+import { PreferredCitiesPicker } from "@/components/student/ProfileControls";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { studentProjectCopy } from "@/content/student-project-copy";
 import { projectPathOptions, type ProjectPath } from "@/lib/student/project";
@@ -26,6 +27,7 @@ type Project = {
 
 export function StudentProjectForm({ project }: { project: Project }) {
   const [selected, setSelected] = useState<ProjectPath | null>(project?.path ?? null);
+  const [preferredCities, setPreferredCities] = useState<string[]>(() => project?.preferred_cities ?? []);
   const [status, setStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const [message, setMessage] = useState("");
   const { locale, direction } = useLocale();
@@ -49,7 +51,7 @@ export function StudentProjectForm({ project }: { project: Project }) {
         target_degree: form.get("target_degree"),
         target_field: form.get("target_field"),
         target_intake: form.get("target_intake"),
-        preferred_cities: String(form.get("preferred_cities") || "").split(","),
+        preferred_cities: preferredCities,
         current_german_level: form.get("current_german_level"),
         target_german_level: form.get("target_german_level"),
         current_diploma: form.get("current_diploma"),
@@ -114,7 +116,10 @@ export function StudentProjectForm({ project }: { project: Project }) {
         <Field label={t.fields.targetField} name="target_field" defaultValue={project?.target_field} placeholder={t.fields.targetFieldPlaceholder} maxLength={160} inputDir="auto" />
         <Field label={t.fields.targetIntake} name="target_intake" defaultValue={project?.target_intake} placeholder={t.fields.targetIntakePlaceholder} maxLength={80} inputDir="auto" />
         <Field label={t.fields.studyLanguage} name="preferred_study_language" defaultValue={project?.preferred_study_language} placeholder={t.fields.studyLanguagePlaceholder} maxLength={80} inputDir="auto" />
-        <Field label={t.fields.preferredCities} name="preferred_cities" defaultValue={project?.preferred_cities.join(", ")} placeholder={t.fields.preferredCitiesPlaceholder} hint={t.fields.preferredCitiesHint} inputDir="ltr" />
+        <div className="sm:col-span-2">
+          <PreferredCitiesPicker value={preferredCities} onChange={setPreferredCities} />
+          <p className="mt-2 text-xs leading-5 text-slate-500">{t.fields.preferredCitiesHint}</p>
+        </div>
         <Field label={t.fields.currentGerman} name="current_german_level" defaultValue={project?.current_german_level} placeholder={t.fields.currentGermanPlaceholder} maxLength={40} inputDir="ltr" />
         <Field label={t.fields.targetGerman} name="target_german_level" defaultValue={project?.target_german_level} placeholder={t.fields.targetGermanPlaceholder} maxLength={40} inputDir="ltr" />
 
