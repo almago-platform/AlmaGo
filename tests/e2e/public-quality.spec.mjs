@@ -11,6 +11,19 @@ const pages = [
 
 mkdirSync("artifacts/screenshots", { recursive: true });
 
+
+test("browser exposes the cache-busted Campus Allemagne favicon v3", async ({ page }) => {
+  await page.goto("/", { waitUntil: "networkidle" });
+  const hrefs = await page.locator('link[rel~="icon"]').evaluateAll((links) =>
+    links.map((link) => link.getAttribute("href") || ""),
+  );
+  expect(hrefs.some((href) => href.includes("campus-allemagne-favicon-v3.svg") || href.includes("/icon.svg"))).toBeTruthy();
+
+  const faviconResponse = await page.request.get("/brand/campus-allemagne-favicon-v3.svg?v=3");
+  expect(faviconResponse.ok()).toBeTruthy();
+  expect(faviconResponse.headers()["content-type"]).toContain("image/svg+xml");
+});
+
 for (const target of pages) {
   test(target.name + " renders, fits the viewport and has no serious accessibility violation", async ({ page }, testInfo) => {
     const response = await page.goto(target.path, { waitUntil: "networkidle" });

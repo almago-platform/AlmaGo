@@ -14,7 +14,7 @@ const provider = readFileSync("src/components/i18n/LocaleProvider.tsx", "utf8");
 
 const approvedLogo = "public/brand/campus-allemagne-logo-approved.png";
 const approvedSymbol = "public/brand/campus-allemagne-symbol-approved.png";
-const approvedFavicon = "public/brand/campus-allemagne-favicon.png";
+const approvedFavicon = "public/brand/campus-allemagne-favicon-v3.svg";
 
 test("Campus Allemagne keeps the approved shared application palette", () => {
   assert.match(globals, /--foreground:\s*#1c2124/i);
@@ -57,9 +57,11 @@ test("browser favicon uses the dedicated Campus Allemagne icon while PWA keeps t
   assert.match(layout, /applicationName: BRAND_NAME/);
   assert.match(layout, /siteName: BRAND_NAME/);
   assert.ok(existsSync(approvedFavicon));
-  assert.ok(statSync(approvedFavicon).size > 1000);
-  assert.ok(existsSync("src/app/icon.png"));
-  assert.match(layout, /campus-allemagne-favicon\.png/);
+  assert.ok(statSync(approvedFavicon).size > 200);
+  assert.ok(existsSync("src/app/icon.svg"));
+  assert.ok(!existsSync("src/app/icon.png"));
+  assert.match(layout, /campus-allemagne-favicon-v3\.svg\?v=3/);
+  assert.match(layout, /image\/svg\+xml/);
   assert.match(layout, /shortcut/);
   assert.match(manifest, /name: "Campus Allemagne"/);
   assert.match(manifest, /campus-allemagne-symbol-approved\.png/);
