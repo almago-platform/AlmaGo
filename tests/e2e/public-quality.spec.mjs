@@ -35,9 +35,11 @@ for (const target of pages) {
 test("native language switch persists and Arabic renders RTL without overflow", async ({ page }, testInfo) => {
   test.skip(
     ![
+      "wide-chromium",
       "desktop-chromium",
       "tablet-landscape-chromium",
       "tablet-chromium",
+      "mobile-430-chromium",
       "mobile-375-chromium",
       "mobile-chromium",
     ].includes(testInfo.project.name),
@@ -54,7 +56,7 @@ test("native language switch persists and Arabic renders RTL without overflow", 
   await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
   await expect(page.getByRole("heading", { name: "تسجيل الدخول" })).toBeVisible();
 
-  if (["desktop-chromium", "tablet-landscape-chromium"].includes(testInfo.project.name)) {
+  if (["wide-chromium", "desktop-chromium", "tablet-landscape-chromium"].includes(testInfo.project.name)) {
     const authForm = page.locator(".auth-form-shell");
     const authStory = page.locator(".auth-story-panel");
     await expect(authForm).toBeVisible();
