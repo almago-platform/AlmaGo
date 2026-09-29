@@ -1,8 +1,8 @@
-import type { getNativeCopy } from "@/content/native-copy";
+"use client";
+
+import { useLocale } from "@/components/i18n/LocaleProvider";
 import { HomeIcon, type HomeIconName } from "./HomeIcons";
 import s from "./Homepage.module.css";
-
-type ToolsCopy = ReturnType<typeof getNativeCopy>["home"]["tools"];
 
 const meta: Array<{ href: string; icon: HomeIconName }> = [
   { href: "/signup", icon: "profile" },
@@ -10,7 +10,10 @@ const meta: Array<{ href: string; icon: HomeIconName }> = [
   { href: "#faq", icon: "source" },
 ];
 
-export function HomeTrustSection({ tools }: { tools: ToolsCopy }) {
+export function HomeTrustSection() {
+  const { copy } = useLocale();
+  const tools = copy.home.tools;
+
   return (
     <section id="outils" className={`${s.section} ${s.helpfulTools}`} aria-labelledby="helpful-tools-title">
       <div className={s.container}>

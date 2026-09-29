@@ -1,12 +1,15 @@
+"use client";
+
 import Link from "next/link";
-import type { getNativeCopy } from "@/content/native-copy";
 import { BrandLogo } from "@/components/brand/BrandLogo";
+import { useLocale } from "@/components/i18n/LocaleProvider";
 import { HomeIcon } from "./HomeIcons";
 import s from "./Homepage.module.css";
 
-type HomeCopy = ReturnType<typeof getNativeCopy>["home"];
+export function HomeFinalCta() {
+  const { copy } = useLocale();
+  const closing = copy.home.closing;
 
-export function HomeFinalCta({ closing }: { closing: HomeCopy["closing"] }) {
   return (
     <section className={s.finalCta} aria-labelledby="final-title">
       <div className={`${s.container} ${s.finalInner}`}>
@@ -39,19 +42,16 @@ export function HomeFinalCta({ closing }: { closing: HomeCopy["closing"] }) {
   );
 }
 
-export function HomeFooter({
-  footer,
-  homeAria,
-}: {
-  footer: HomeCopy["footer"];
-  homeAria: string;
-}) {
+export function HomeFooter() {
+  const { copy } = useLocale();
+  const footer = copy.home.footer;
+
   return (
     <footer className={s.footer}>
       <div className={s.container}>
         <div className={s.footerGrid}>
           <div className={s.footerBrand}>
-            <Link href="/" className={`${s.logo} ${s.footerLogoLink}`} aria-label={homeAria}>
+            <Link href="/" className={`${s.logo} ${s.footerLogoLink}`} aria-label={copy.common.homeAria}>
               <BrandLogo className={s.footerLogoImage} />
             </Link>
             <p>{footer.tagline}</p>

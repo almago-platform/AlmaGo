@@ -1,9 +1,9 @@
+"use client";
+
 import Image from "next/image";
-import type { getNativeCopy } from "@/content/native-copy";
+import { useLocale } from "@/components/i18n/LocaleProvider";
 import { HomeIcon } from "./HomeIcons";
 import s from "./Homepage.module.css";
-
-type JourneyCopy = ReturnType<typeof getNativeCopy>["home"]["journey"];
 
 const images = [
   ["https://images.pexels.com/photos/7973208/pexels-photo-7973208.jpeg?auto=compress&cs=tinysrgb&w=1200", "Students reviewing documents outside a university building."],
@@ -14,7 +14,10 @@ const images = [
   ["https://images.pexels.com/photos/7972361/pexels-photo-7972361.jpeg?auto=compress&cs=tinysrgb&w=1200", "Two students talking during a study session."],
 ] as const;
 
-export function HomeJourneySection({ journey }: { journey: JourneyCopy }) {
+export function HomeJourneySection() {
+  const { copy } = useLocale();
+  const journey = copy.home.journey;
+
   return (
     <section id="parcours" className={`${s.section} ${s.journey}`} aria-labelledby="journey-title">
       <div className={s.container}>
