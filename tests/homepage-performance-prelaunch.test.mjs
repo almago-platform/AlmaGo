@@ -18,7 +18,7 @@ const serverSections = [
 ].map((path) => readFileSync(path, "utf8"));
 
 test("homepage keeps the approved logo source while using responsive Next image optimization", () => {
-  assert.match(logo, /campus-allemagne-logo-approved.png/);
+  assert.match(logo, /campus-allemagne-logo-approved\.png/);
   assert.doesNotMatch(logo, /unoptimized/);
   assert.match(logo, /sizes=/);
 });
@@ -30,10 +30,10 @@ test("Arabic fonts remain available without preloading both families on every La
 });
 
 test("locale copy is prepared server-side instead of bundling native-copy at runtime in the provider", () => {
-  assert.match(layout, /rebrandCopy\\(getNativeCopy\\(locale\\)\\)/);
+  assert.match(layout, /rebrandCopy\(getNativeCopy\(locale\)\)/);
   assert.match(provider, /initialCopy/);
-  assert.match(provider, /import type { getNativeCopy }/);
-  assert.doesNotMatch(provider, /import { getNativeCopy }/);
+  assert.match(provider, /import type \{ getNativeCopy \}/);
+  assert.doesNotMatch(provider, /import \{ getNativeCopy \}/);
   assert.doesNotMatch(provider, /rebrandCopy/);
 });
 
@@ -49,6 +49,6 @@ test("homepage static sections render as Server Components while the header stay
 test("hero LCP request remains eager and explicitly high priority", () => {
   assert.match(hero, /priority/);
   assert.match(hero, /fetchPriority="high"/);
-  assert.match(hero, /quality=\\{90\\}/);
+  assert.match(hero, /quality=\{90\}/);
   assert.match(hero, /w=1920/);
 });
