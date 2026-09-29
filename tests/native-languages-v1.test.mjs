@@ -119,7 +119,9 @@ test("Arabic project form keeps technical tokens LTR and mirrors the EUR divider
 
 test("Arabic Native Polish V2 uses Arabic typography instead of Latin tracking", () => {
   assert.match(layout, /Noto_Sans_Arabic/);
+  assert.match(layout, /Noto_Kufi_Arabic/);
   assert.match(layout, /--font-arabic/);
+  assert.match(layout, /--font-arabic-display/);
   assert.match(globalCss, /html\[dir="rtl"\] body/);
   assert.match(globalCss, /font-family: var\(--font-arabic\)/);
   assert.match(css, /Arabic Native Polish V2/);
@@ -128,11 +130,11 @@ test("Arabic Native Polish V2 uses Arabic typography instead of Latin tracking",
 });
 
 test("Arabic public copy is written as direct native guidance", () => {
-  assert.match(copy, /كل ما تحتاجه لتنظيم ملفك الدراسي/);
-  assert.match(copy, /ابحث عن البرنامج المناسب، جهّز مستنداتك/);
-  assert.match(copy, /ست مراحل/);
-  assert.match(copy, /ابدأ من الخطوة التي تناسب وضعك/);
-  assert.match(copy, /ابدأ ملفك/);
+  assert.match(copy, /طريقك إلى الدراسة في ألمانيا/);
+  assert.match(copy, /قارن البرامج، رتّب مستنداتك/);
+  assert.match(copy, /ست خطوات/);
+  assert.match(copy, /اختر نقطة البداية المناسبة لك/);
+  assert.match(copy, /أنشئ ملفك/);
   assert.doesNotMatch(copy, /بشكل أوضح/);
   assert.doesNotMatch(copy, /إنشاء ملفي/);
 });
@@ -140,6 +142,7 @@ test("Arabic public copy is written as direct native guidance", () => {
 
 test("Arabic homepage mirrors the visual hierarchy and protects tablet RTL layout", () => {
   assert.match(css, /Arabic Native Layout V3/);
+  assert.match(css, /Arabic Editorial UX V4/);
   assert.match(css, /\.hero \.heroDossier/);
   assert.match(css, /linear-gradient\(\s*270deg/);
   assert.match(css, /min-width: 768px\) and \(max-width: 899px\)/);
