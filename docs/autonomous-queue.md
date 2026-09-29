@@ -1,14 +1,15 @@
-# File de tâches AlmaGo avec Gemini et Grok
+# File de tâches AlmaGo avec Gemini et Groq
 
-Le **Master Orchestrator** vérifie l’état du plan toutes les **5 minutes**. Lorsqu’une
-tâche prête est routée vers l’IA et que les garde-fous de facturation sont actifs,
-il déclenche **AlmaGo AI Task Queue**. La file IA n’a plus de lancement planifié
-indépendant : elle ne démarre que lorsqu’un travail réel est prêt ou lors d’un
-lancement manuel.
+Le **Master Orchestrator** et le dispatcher autonome vérifient la file toutes les
+**5 minutes**. Une tâche prête peut déclencher **AlmaGo AI Task Queue** uniquement
+quand `ALMAGO_AI_ENABLED=true` et `ALMAGO_AI_FREE_ONLY=true`.
 
-La file appelle Gemini une fois, puis Grok une fois seulement si Gemini répond
-401, 402, 403 ou 429. Si une clé manque, le fournisseur correspondant est ignoré.
-Une réponse invalide ou des tests en échec bloquent la tâche sans nouvelle dépense.
+La file utilise d’abord **Gemini 2.5 Flash**. Si Gemini ne peut pas produire un
+patch utilisable, elle essaie **Groq** avec `openai/gpt-oss-120b` lorsqu’une clé
+Groq est configurée. Aucun xAI/Groq, Claude ou OpenAI API payant n’est utilisé
+dans cette file free-only. Si tous les fournisseurs gratuits configurés sont
+temporairement indisponibles ou limités, l’issue revient à `almago-ai-ready`
+pour un cycle ultérieur au lieu d’être bloquée.
 
 Il ouvre une PR après validation locale, vérifie le HEAD distant et déclenche
 `AlmaGo PR CI`. La revue et la fusion restent humaines. Les autres workflows
@@ -18,23 +19,25 @@ sans tâche prête, sans variables d’activation ou lorsque le plafond journali
 atteint, aucun travail fournisseur n’est lancé. GitHub Actions peut aussi être
 retardé ou indisponible ; la cadence n’est donc pas une garantie temps réel.
 
-## Activer avec un budget de 10 € par mois
+## Activer en mode gratuit
 
-1. Créer des clés API de service chez Google AI Studio et, si souhaité, xAI.
-   Configurer chez chaque fournisseur un plafond de dépenses bloquant
-   compatible avec **10 € au total par mois**, ou un solde prépayé sans recharge
-   automatique. Si un plafond ferme assez bas n'est pas disponible, ne pas activer
-   le fournisseur payant. Vérifier devises, frais, seuils et tarifs dans leurs
-   consoles respectives. Les limites de fréquence du workflow ne constituent
-   pas une garantie de plafond financier.
-2. Dans GitHub, **Settings → Secrets and variables → Actions**, ajouter au moins
-   `GEMINI_API_KEY` ou `XAI_API_KEY` comme *repository secret*. Ne jamais mettre
-   une clé dans une issue, un fichier source ou une variable publique.
-3. Dans *repository variables*, définir `ALMAGO_AI_BILLING_CAP_CONFIRMED=true`
-   seulement une fois les plafonds vérifiés, puis `ALMAGO_AI_ENABLED=true`.
-   Supprimer `ALMAGO_AI_ENABLED` ou le passer à `false` pour arrêter la file.
-   Les variables optionnelles `ALMAGO_GEMINI_MODEL` et `ALMAGO_XAI_MODEL`
-   permettent de choisir un modèle disponible sur le compte.
+1. Créer une clé Gemini dans Google AI Studio. Gemini 2.5 Flash dispose d’un
+   Free Tier, avec des quotas définis par Google.
+2. Facultatif mais recommandé : créer une clé Groq gratuite afin d’utiliser
+   `openai/gpt-oss-120b` comme fallback. Dans GitHub,
+   **Settings → Secrets and variables → Actions**, ajouter :
+   - `GEMINI_API_KEY` ;
+   - `GROQ_API_KEY` si Groq est utilisé.
+   Ne jamais mettre une clé dans une issue, un fichier source ou une variable publique.
+3. Dans *repository variables*, définir :
+   - `ALMAGO_AI_ENABLED=true` ;
+   - `ALMAGO_AI_FREE_ONLY=true` ;
+   - optionnellement `ALMAGO_MAX_AI_TASKS_PER_DAY=10` ou jusqu’à `12`.
+   Il n’est pas nécessaire de définir `ALMAGO_AI_BILLING_CAP_CONFIRMED` pour
+   cette file. Les variables `ALMAGO_GEMINI_MODEL` et `ALMAGO_GROQ_MODEL`
+   restent optionnelles.
+
+
 4. Préparer une issue courte avec le label `almago-ai-ready` et la forme suivante.
    Les chemins doivent viser 1 à 3 fichiers existants dans `src/app/`,
    `src/components/` ou `src/lib/`. Le label est retiré dès la prise en charge.
@@ -61,9 +64,9 @@ avec une nouvelle issue et ne modifie jamais cette PR automatiquement.
 
 ## Limites et contrôle
 
-- Un lancement traite une issue, deux requêtes API au maximum et aucun nouvel
-  appel après une erreur de patch ou de validation. Les lancements manuels
-  peuvent accroître la dépense : le plafond chez les fournisseurs est essentiel.
+- Un lancement traite une issue et utilise au maximum deux appels fournisseur :
+  Gemini puis Groq, ou un constructeur puis un reviewer indépendant. Les quotas
+  gratuits réels des fournisseurs restent prioritaires.
 - Le correctif doit être un diff unifié appliqué seulement aux fichiers désignés.
   Fichiers secrets, workflows, migrations, permissions et création/suppression de
   fichiers sont exclus.
@@ -76,12 +79,12 @@ avec une nouvelle issue et ne modifie jamais cette PR automatiquement.
   rejetés. Une proposition autonome est aussi limitée à 300 lignes modifiées.
 - Tests, TypeScript, lint et build passent avant publication. Le CI distant
   recommence les vérifications sur le vrai commit de la PR.
-- L'historique Actions et les tableaux de facturation des fournisseurs permettent
-  de suivre les échecs et les coûts. L'absence de clés ou de variables garde la
-  file inactive et ne déclenche aucun appel API payant.
+- L'historique Actions permet de suivre les échecs et les quotas. L'absence de
+  clés ou des variables free-only garde la file inactive. La file n'utilise
+  volontairement aucun fournisseur payant.
 
 
-## Revue indépendante Gemini ↔ Grok
+## Revue indépendante Gemini ↔ Groq
 
 Quand les deux fournisseurs sont configurés et que le premier patch a été obtenu au premier appel, AlmaGo utilise le second fournisseur comme reviewer indépendant. Le budget reste borné à **deux appels fournisseur maximum** : un appel de construction + un appel de revue. Si le constructeur a déjà utilisé le fallback (deux appels), la revue croisée est sautée plutôt que de dépenser un troisième appel.
 
@@ -90,6 +93,6 @@ Le reviewer ne produit pas de code. Il rend `APPROVED` ou `REVISE` en contrôlan
 
 ## Plafond journalier de travail IA
 
-La file applique aussi un plafond journalier de lancements fournisseur. Par défaut, au maximum **4 exécutions effectives de la file IA par jour UTC** peuvent passer le budget gate. Le Master Orchestrator peut vérifier le dépôt toutes les 5 minutes sans augmenter ce plafond. Une variable optionnelle `ALMAGO_MAX_AI_TASKS_PER_DAY` permet de choisir une valeur entre 1 et 12. Une fois le plafond atteint, l’Issue reste `almago-ai-ready` et attend le jour suivant ; aucun appel fournisseur supplémentaire n’est effectué.
+La file applique aussi un plafond journalier de lancements fournisseur. Par défaut, au maximum **10 exécutions effectives de la file IA par jour UTC** peuvent passer le plafond journalier. Le Master Orchestrator peut vérifier le dépôt toutes les 5 minutes sans augmenter ce plafond. Une variable optionnelle `ALMAGO_MAX_AI_TASKS_PER_DAY` permet de choisir une valeur entre 1 et 12. Une fois le plafond atteint, l’Issue reste `almago-ai-ready` et attend le jour suivant ; aucun appel fournisseur supplémentaire n’est effectué.
 
-Ce plafond opérationnel complète — mais ne remplace jamais — le plafond financier configuré directement chez Google/xAI.
+Ce plafond opérationnel complète les quotas gratuits imposés par Google et Groq. Si un fournisseur renvoie une limite temporaire, la tâche peut être remise en attente pour un cycle ultérieur.
