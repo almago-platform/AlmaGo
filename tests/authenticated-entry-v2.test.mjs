@@ -32,7 +32,7 @@ test("entry progress explicitly connects account, dossier and student space", ()
   assert.ok(progress.includes("de: {"));
   assert.ok(authForm.includes("<StudentEntryProgress current={1} compact />"));
   assert.ok(onboarding.includes("<StudentEntryProgress current={2} compact />"));
-  assert.ok(profile.includes("<StudentEntryProgress current={3} compact />"));
+  assert.ok(profile.includes("<StudentEntryProgress current={3} compact completed={profileCompletion === 100} />"));
 });
 
 test("onboarding keeps the existing five internal steps and save behavior", () => {
@@ -55,4 +55,13 @@ test("profile remains editable through the same API and returns directly to the 
   assert.ok(profileCopy.includes('back: "Retour à mon dossier"'));
   assert.ok(profile.includes("profileCompletion"));
   assert.ok(profile.includes("max-w-7xl px-4 py-5"));
+});
+
+
+test("completed student setup stops telling a finished Arabic profile to start again", () => {
+  assert.ok(progress.includes('completedTitle: "اكتملت خطوات البداية"'));
+  assert.ok(progress.includes('completedLabel: "مكتمل"'));
+  assert.ok(progress.includes("const done = completed || id < current"));
+  assert.ok(profileForm.includes("sm:justify-start"));
+  assert.ok(profileForm.indexOf("<Button type=\"submit\"") < profileForm.indexOf("t.form.saveHint"));
 });

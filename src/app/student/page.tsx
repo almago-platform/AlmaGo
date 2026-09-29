@@ -36,14 +36,16 @@ export default async function StudentEntry() {
     { data: documents, error: documentsError },
     { data: recommendations, error: recommendationsError },
     { data: applications, error: applicationsError },
+    { data: project, error: projectError },
   ] = await Promise.all([
     supabase.from("student_checklist_items").select("title,status,checklist_templates(key)").order("created_at"),
     supabase.from("documents").select("id,status"),
     supabase.from("program_recommendations").select("id,programs(name,universities(name))").eq("is_archived", false),
     supabase.from("applications").select("id,status,deadline,next_action,programs(name)").order("deadline", { ascending: true, nullsFirst: false }),
+    supabase.from("student_projects").select("path").eq("student_id", user.id).maybeSingle(),
   ]);
 
-  if (itemsError || documentsError || recommendationsError || applicationsError) {
+  if (itemsError || documentsError || recommendationsError || applicationsError || projectError) {
     return <DashboardUnavailable copy={t} />;
   }
 
@@ -60,6 +62,7 @@ export default async function StudentEntry() {
   const studentDocuments = documents || [];
   const studentRecommendations = recommendations || [];
   const studentApplications = applications || [];
+  const hasProjectGoal = Boolean(project?.path);
 
   const completed = checklist.filter((item) => item.status === "completed").length;
   const progression = checklist.length ? Math.round((completed / checklist.length) * 100) : 0;
@@ -85,6 +88,7 @@ export default async function StudentEntry() {
         detail: t.documentsActionDetail(documentsNeedingAction),
         href: "/student/documents",
         owner: t.ownerStudent,
+        cta: t.documentsAction,
       }
     : actionableApplication?.next_action
       ? {
@@ -92,19 +96,22 @@ export default async function StudentEntry() {
           detail: actionableApplication.next_action,
           href: "/student/applications",
           owner: t.ownerStudent,
+          cta: t.applicationAction,
         }
       : nextItem
         ? {
-            label: t.checklistAction,
-            detail: nextItem.title,
+            label: nextItem.title,
+            detail: t.checklistAction,
             href: "/student/checklist",
             owner: t.ownerStudent,
+            cta: t.openStep,
           }
         : {
             label: t.stepsAction,
             detail: t.noPriorityDetail,
             href: "/student/checklist",
             owner: waitingAlmaGo.length ? t.ownerAlmaGo : t.ownerFile,
+            cta: t.stepsAction,
           };
 
   const welcomeMessage = hasActionRequired
@@ -165,7 +172,7 @@ export default async function StudentEntry() {
           <div className="max-w-3xl">
             <p className="text-[0.68rem] font-bold uppercase tracking-[0.16em] text-[#fcb50a]">{t.heroEyebrow}</p>
             <h1 className="editorial-accent mt-2 text-[2rem] leading-[1.05] sm:text-[2.7rem]">
-              {copy.shell.hello} {profile.first_name || t.studentFallback}.
+              {copy.shell.hello} <bdi dir="auto">{profile.first_name || t.studentFallback}</bdi>{locale === "ar" ? "،" : "."}
               <br />
               <span className="text-[#f7f4ec]">{t.heroLead}</span>
             </h1>
@@ -174,9 +181,9 @@ export default async function StudentEntry() {
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-2 lg:min-w-[17rem]">
+          <div className={`grid gap-2 lg:min-w-[17rem] ${waitingAlmaGo.length ? "grid-cols-2" : "grid-cols-1"}`}>
             <StatusPill label={t.statusTodo} value={studentActionCount} tone={studentActionCount ? "warning" : "neutral"} />
-            <StatusPill label={t.statusTracked} value={waitingAlmaGo.length} tone="info" />
+            {waitingAlmaGo.length > 0 && <StatusPill label={t.statusTracked} value={waitingAlmaGo.length} tone="info" />}
           </div>
         </div>
 
@@ -203,7 +210,7 @@ export default async function StudentEntry() {
               </div>
 
               <div className="mt-5 [&_a]:w-full sm:[&_a]:w-auto">
-                <ButtonLink href={nextAction.href}>{hasActionRequired ? nextAction.label : t.stepsAction}</ButtonLink>
+                <ButtonLink href={nextAction.href}>{nextAction.cta || (hasActionRequired ? nextAction.label : t.stepsAction)}</ButtonLink>
               </div>
             </div>
           </section>
@@ -270,20 +277,29 @@ export default async function StudentEntry() {
         />
       </section>
 
-      <StudentJourneyOverview stages={journeyStages} />
+      <StudentJourneyOverview stages={journeyStages} showProgressSummary={false} />
 
       <section className="mt-7 grid gap-4 lg:grid-cols-[minmax(0,1.25fr)_minmax(18rem,0.75fr)]">
         <Card className="border-[var(--brand-border)] bg-[var(--brand-soft)]/55 shadow-none">
           <p className="text-[0.68rem] font-bold uppercase tracking-[0.15em] text-[var(--brand)]">{t.germanyEyebrow}</p>
           <h2 className="editorial-accent mt-2 text-[1.55rem] leading-[1.1] text-[var(--foreground)]">
-            {t.germanyTitle}
+            {hasProjectGoal ? t.germanyReadyTitle : t.germanyTitle}
           </h2>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--muted)]">
-            {t.germanyText}
+            {hasProjectGoal ? t.germanyReadyText : t.germanyText}
           </p>
           <div className="mt-5 flex flex-col gap-2 sm:flex-row">
-            <ButtonLink href="/student/pathway">{t.pathwayCta}</ButtonLink>
-            <ButtonLink href="/student/project" variant="secondary">{t.projectCta}</ButtonLink>
+            {hasProjectGoal ? (
+              <>
+                <ButtonLink href="/student/pathway">{t.pathwayCta}</ButtonLink>
+                <ButtonLink href="/student/project" variant="secondary">{t.editProjectCta}</ButtonLink>
+              </>
+            ) : (
+              <>
+                <ButtonLink href="/student/project">{t.projectCta}</ButtonLink>
+                <ButtonLink href="/student/pathway" variant="secondary">{t.pathwayCta}</ButtonLink>
+              </>
+            )}
           </div>
         </Card>
 

@@ -87,9 +87,9 @@ export function ProfileForm({ profile }: { profile: Record<string, unknown> }) {
     {status && <p role="status" className="rounded-[var(--radius-control)] border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-700">{status}</p>}
 
     <div className="student-sticky-actions sticky bottom-0 -mx-5 border-t border-[var(--border)] bg-white/98 px-5 py-4 sm:-mx-6 sm:px-6">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-sm leading-6 text-slate-500">{t.form.saveHint}</p>
+      <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-start">
         <Button type="submit" disabled={saving} className="w-full sm:w-auto">{saving ? t.form.saving : t.form.save}</Button>
+        <p className="text-sm leading-6 text-slate-500">{t.form.saveHint}</p>
       </div>
     </div>
   </form>;

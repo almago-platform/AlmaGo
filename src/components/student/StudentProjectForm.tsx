@@ -115,8 +115,8 @@ export function StudentProjectForm({ project }: { project: Project }) {
         <Field label={t.fields.targetIntake} name="target_intake" defaultValue={project?.target_intake} placeholder={t.fields.targetIntakePlaceholder} maxLength={80} />
         <Field label={t.fields.studyLanguage} name="preferred_study_language" defaultValue={project?.preferred_study_language} placeholder={t.fields.studyLanguagePlaceholder} maxLength={80} />
         <Field label={t.fields.preferredCities} name="preferred_cities" defaultValue={project?.preferred_cities.join(", ")} placeholder={t.fields.preferredCitiesPlaceholder} hint={t.fields.preferredCitiesHint} />
-        <Field label={t.fields.currentGerman} name="current_german_level" defaultValue={project?.current_german_level} placeholder={t.fields.currentGermanPlaceholder} maxLength={40} />
-        <Field label={t.fields.targetGerman} name="target_german_level" defaultValue={project?.target_german_level} placeholder={t.fields.targetGermanPlaceholder} maxLength={40} />
+        <Field label={t.fields.currentGerman} name="current_german_level" defaultValue={project?.current_german_level} placeholder={t.fields.currentGermanPlaceholder} maxLength={40} inputDir="ltr" />
+        <Field label={t.fields.targetGerman} name="target_german_level" defaultValue={project?.target_german_level} placeholder={t.fields.targetGermanPlaceholder} maxLength={40} inputDir="ltr" />
 
         <label>
           <span className="text-sm font-bold text-slate-800">{t.fields.monthlyBudget}</span>
@@ -128,10 +128,12 @@ export function StudentProjectForm({ project }: { project: Project }) {
               max="100000"
               step="0.01"
               defaultValue={project?.monthly_budget ?? ""}
-              className="min-w-0 flex-1 px-4 py-3 text-slate-950 outline-none"
+              dir="ltr"
+              inputMode="decimal"
+              className="min-w-0 flex-1 px-4 py-3 text-left text-slate-950 outline-none"
               placeholder={t.fields.monthlyBudgetPlaceholder}
             />
-            <span className={`grid place-items-center bg-slate-50 px-4 text-sm font-bold text-slate-700 ${direction === "rtl" ? "border-r" : "border-l"} border-slate-200`}>EUR</span>
+            <span dir="ltr" className={`grid place-items-center bg-slate-50 px-4 text-sm font-bold text-slate-700 ${direction === "rtl" ? "border-r" : "border-l"} border-slate-200`}>EUR</span>
           </div>
           <span className="mt-1 block text-xs text-slate-500">{t.fields.currencyHint}</span>
         </label>
@@ -142,9 +144,9 @@ export function StudentProjectForm({ project }: { project: Project }) {
             name="actual_objective"
             maxLength={1200}
             defaultValue={project?.actual_objective ?? ""}
-            rows={4}
+            rows={3}
             placeholder={t.fields.objectivePlaceholder}
-            className="field mt-2 min-h-28 resize-y"
+            className="field mt-2 min-h-24 resize-y"
           />
         </label>
 
@@ -154,8 +156,8 @@ export function StudentProjectForm({ project }: { project: Project }) {
             name="notes"
             maxLength={2000}
             defaultValue={project?.notes ?? ""}
-            rows={4}
-            className="field mt-2 min-h-28 resize-y"
+            rows={3}
+            className="field mt-2 min-h-24 resize-y"
           />
         </label>
       </div>

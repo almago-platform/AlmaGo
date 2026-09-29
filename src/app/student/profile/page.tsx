@@ -72,7 +72,7 @@ export default async function ProfilePage() {
       <div className="grid gap-5 lg:grid-cols-[minmax(15rem,0.35fr)_minmax(0,1fr)] lg:gap-6">
         <aside className="space-y-4 lg:sticky lg:top-6 lg:self-start" aria-label={t.page.landmarks}>
           <Card className="shadow-none">
-            <StudentEntryProgress current={3} compact />
+            <StudentEntryProgress current={3} compact completed={profileCompletion === 100} />
             <p className="mt-3 text-xs leading-5 text-[var(--muted)]">
               {t.page.accountReady}
             </p>

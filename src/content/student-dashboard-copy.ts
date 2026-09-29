@@ -11,6 +11,7 @@ type DashboardCopy = {
   documentsActionDetail: (count: number) => string;
   applicationAction: string;
   checklistAction: string;
+  openStep: string;
   stepsAction: string;
   noPriorityDetail: string;
   ownerStudent: string;
@@ -60,8 +61,11 @@ type DashboardCopy = {
   germanyEyebrow: string;
   germanyTitle: string;
   germanyText: string;
+  germanyReadyTitle: string;
+  germanyReadyText: string;
   pathwayCta: string;
   projectCta: string;
+  editProjectCta: string;
   deadlineOverdue: string;
   nextDeadline: string;
   noDeadline: string;
@@ -88,7 +92,8 @@ const fr: DashboardCopy = {
   documentsAction: "Corriger mes documents",
   documentsActionDetail: (count) => `${count} document${count > 1 ? "s doivent" : " doit"} être remplacé${count > 1 ? "s" : ""} avant la suite du dossier.`,
   applicationAction: "Voir ma candidature",
-  checklistAction: "Continuer mes démarches",
+  checklistAction: "Commencez par cette étape.",
+  openStep: "Ouvrir cette étape",
   stepsAction: "Voir mes démarches",
   noPriorityDetail: "Aucune action prioritaire n’est enregistrée pour le moment. Consultez les étapes connues de votre dossier.",
   ownerStudent: "À faire par vous",
@@ -138,8 +143,11 @@ const fr: DashboardCopy = {
   germanyEyebrow: "Projet Allemagne",
   germanyTitle: "Choisissez votre objectif pour voir les étapes utiles.",
   germanyText: "Études, préparation aux études ou cours de langue : indiquez ce que vous voulez faire.",
+  germanyReadyTitle: "Votre objectif est enregistré.",
+  germanyReadyText: "Consultez les étapes liées à votre objectif ou modifiez votre projet si votre situation change.",
   pathwayCta: "Voir mes étapes",
   projectCta: "Choisir mon objectif",
+  editProjectCta: "Modifier mon objectif",
   deadlineOverdue: "Échéance dépassée",
   nextDeadline: "Prochaine échéance",
   noDeadline: "Aucune date enregistrée",
@@ -166,7 +174,8 @@ const ar: DashboardCopy = {
   documentsAction: "مراجعة مستنداتي",
   documentsActionDetail: (count) => `هناك ${count} ${count === 1 ? "مستند يجب استبداله" : "مستندات يجب استبدالها"} قبل متابعة الملف.`,
   applicationAction: "عرض طلب التقديم",
-  checklistAction: "متابعة خطواتي",
+  checklistAction: "ابدأ بهذه الخطوة الآن.",
+  openStep: "فتح الخطوة",
   stepsAction: "عرض خطواتي",
   noPriorityDetail: "لا توجد خطوة عاجلة مسجلة الآن. يمكنك مراجعة الخطوات المعروفة في ملفك.",
   ownerStudent: "مطلوب منك",
@@ -189,8 +198,8 @@ const ar: DashboardCopy = {
   nextStage: "الخطوات التالية",
   nextStageActive: "تابعها حسب طلباتك الحالية",
   nextStageLater: "ستظهر حسب مسارك",
-  statusTodo: "مطلوب",
-  statusTracked: "يتابعه AlmaGo",
+  statusTodo: "خطوات مطلوبة",
+  statusTracked: "يتابعها AlmaGo",
   nextActionEyebrow: "خطوتك التالية",
   now: "افعلها الآن",
   tracking: "قيد المتابعة",
@@ -215,9 +224,12 @@ const ar: DashboardCopy = {
   stepsRecorded: "خطوات مسجلة",
   germanyEyebrow: "مشروعي في ألمانيا",
   germanyTitle: "حدد هدفك لتظهر لك الخطوات المناسبة.",
-  germanyText: "سواء كان هدفك دراسة جامعية أو تحضيراً للدراسة أو دورة لغة، حدّد ما تريد فعله في ألمانيا.",
+  germanyText: "سواء كان هدفك دراسة جامعية أو تحضيرًا للدراسة أو دراسة اللغة الألمانية، حدّد ما تريد فعله في ألمانيا.",
+  germanyReadyTitle: "هدفك محفوظ، والخطوات مرتبطة به.",
+  germanyReadyText: "راجع خطواتك الحالية، أو عدّل هدفك إذا تغيّر مشروعك الدراسي.",
   pathwayCta: "عرض خطواتي",
   projectCta: "تحديد هدفي",
+  editProjectCta: "تعديل هدفي",
   deadlineOverdue: "انتهى الموعد",
   nextDeadline: "الموعد القادم",
   noDeadline: "لا يوجد موعد مسجل",
@@ -244,7 +256,8 @@ const en: DashboardCopy = {
   documentsAction: "Fix my documents",
   documentsActionDetail: (count) => `${count} document${count === 1 ? " needs" : "s need"} to be replaced before you continue.`,
   applicationAction: "View my application",
-  checklistAction: "Continue my steps",
+  checklistAction: "Start with this step.",
+  openStep: "Open this step",
   stepsAction: "View my steps",
   noPriorityDetail: "There is no priority action right now. Review the known steps in your file.",
   ownerStudent: "For you to do",
@@ -294,8 +307,11 @@ const en: DashboardCopy = {
   germanyEyebrow: "Germany study plan",
   germanyTitle: "Choose your goal to see the steps that matter.",
   germanyText: "University study, study preparation or a language course: tell us what you want to do.",
+  germanyReadyTitle: "Your goal is saved.",
+  germanyReadyText: "Review the steps linked to your goal, or update your study plan if your situation changes.",
   pathwayCta: "See my steps",
   projectCta: "Choose my goal",
+  editProjectCta: "Edit my goal",
   deadlineOverdue: "Deadline passed",
   nextDeadline: "Next deadline",
   noDeadline: "No date added",
@@ -322,7 +338,8 @@ const de: DashboardCopy = {
   documentsAction: "Unterlagen korrigieren",
   documentsActionDetail: (count) => `${count} Dokument${count === 1 ? " muss" : "e müssen"} ersetzt werden, bevor es weitergeht.`,
   applicationAction: "Bewerbung ansehen",
-  checklistAction: "Meine Schritte fortsetzen",
+  checklistAction: "Starte mit diesem Schritt.",
+  openStep: "Schritt öffnen",
   stepsAction: "Meine Schritte ansehen",
   noPriorityDetail: "Im Moment gibt es keine dringende Aufgabe. Sieh dir die bekannten Schritte deiner Akte an.",
   ownerStudent: "Von dir zu erledigen",
@@ -372,8 +389,11 @@ const de: DashboardCopy = {
   germanyEyebrow: "Studienplan Deutschland",
   germanyTitle: "Wähle dein Ziel, damit du die passenden Schritte siehst.",
   germanyText: "Studium, Studienvorbereitung oder Sprachkurs: Sag uns, was du vorhast.",
+  germanyReadyTitle: "Dein Ziel ist gespeichert.",
+  germanyReadyText: "Sieh dir die Schritte zu deinem Ziel an oder passe deinen Studienplan an, wenn sich etwas ändert.",
   pathwayCta: "Meine Schritte ansehen",
   projectCta: "Mein Ziel wählen",
+  editProjectCta: "Mein Ziel ändern",
   deadlineOverdue: "Frist abgelaufen",
   nextDeadline: "Nächste Frist",
   noDeadline: "Kein Datum gespeichert",
