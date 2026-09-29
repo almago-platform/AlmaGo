@@ -12,6 +12,7 @@ import {
 import { catalogVerificationCutoff, catalogVerificationExpiresAt } from "@/lib/catalog-freshness";
 import { getRequestLocale } from "@/lib/i18n-server";
 import { createClient } from "@/lib/supabase/server";
+import { localizeCatalogueLabel, localizeFinanceCatalogueField } from "@/lib/student/arabic-display";
 
 export const dynamic = "force-dynamic";
 
@@ -71,7 +72,7 @@ export default async function StudentFinanceInsurancePage() {
               {sectionOptions.length ? (
                 <div className="overflow-hidden rounded-[var(--radius-panel)] border border-[var(--border)] bg-white divide-y divide-[var(--border)]">
                   {sectionOptions.map((option) => (
-                    <OptionCard key={option.id} option={option} copy={t} />
+                    <OptionCard key={option.id} option={option} copy={t} locale={locale} />
                   ))}
                 </div>
               ) : (
@@ -93,16 +94,18 @@ export default async function StudentFinanceInsurancePage() {
 function OptionCard({
   option,
   copy,
+  locale,
 }: {
   option: FinanceInsuranceOption;
   copy: (typeof studentFinanceCopy)["fr"];
+  locale: "fr" | "ar" | "en" | "de";
 }) {
   return (
     <article className="grid gap-5 p-5 sm:p-6 lg:grid-cols-[minmax(12rem,0.55fr)_minmax(0,1.45fr)]">
       <div>
         <Badge variant="success">{copy.verified}</Badge>
-        <p className="mt-3 text-lg font-bold text-slate-950">{option.provider_name}</p>
-        {option.product_name && <p className="mt-1 text-sm font-semibold text-slate-700">{option.product_name}</p>}
+        <p className="mt-3 text-lg font-bold text-slate-950"><bdi dir="auto">{option.provider_name}</bdi></p>
+        {option.product_name && <p className="mt-1 text-sm font-semibold text-slate-700"><bdi dir="auto">{localizeCatalogueLabel(locale, option.product_name)}</bdi></p>}
         <div className="mt-5 flex flex-col gap-2">
           <a
             href={option.official_source_url}
@@ -126,10 +129,10 @@ function OptionCard({
       </div>
 
       <div>
-        {option.description && <p className="text-sm leading-6 text-slate-600">{option.description}</p>}
+        {option.description && <p className="text-sm leading-6 text-slate-600">{localizeFinanceCatalogueField(locale, option.provider_name, "description", option.description)}</p>}
         <dl className="mt-4 divide-y divide-[var(--border)] border-y border-[var(--border)]">
-          <Fact label={copy.facts.price} value={option.price_notes || copy.unknownOfficial} />
-          <Fact label={copy.facts.eligibility} value={option.eligibility_notes || copy.unknownProvider} />
+          <Fact label={copy.facts.price} value={option.price_notes ? localizeFinanceCatalogueField(locale, option.provider_name, "price", option.price_notes) : copy.unknownOfficial} />
+          <Fact label={copy.facts.eligibility} value={option.eligibility_notes ? localizeFinanceCatalogueField(locale, option.provider_name, "eligibility", option.eligibility_notes) : copy.unknownProvider} />
           <Fact label={copy.facts.verifiedAt} value={formatVerifiedAt(option.verified_at, copy)} />
           <Fact label={copy.facts.revalidateBefore} value={formatVerifiedAt(catalogVerificationExpiresAt(option.verified_at), copy)} />
         </dl>
@@ -142,7 +145,7 @@ function Fact({ label, value }: { label: string; value: string }) {
   return (
     <div className="grid gap-1 py-3 sm:grid-cols-[10rem_1fr] sm:gap-4">
       <dt className="text-sm font-semibold text-slate-700">{label}</dt>
-      <dd className="text-sm leading-6 text-slate-600">{value}</dd>
+      <dd dir="auto" className="text-sm leading-6 text-slate-600">{value}</dd>
     </div>
   );
 }

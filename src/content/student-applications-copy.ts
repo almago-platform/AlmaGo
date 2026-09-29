@@ -283,7 +283,7 @@ const ar: ApplicationsCopy = {
     messageBoundary: "هذه الرسالة ظاهرة في مساحتك الطلابية. الملاحظات الداخلية للفريق لا تظهر هنا.",
     historyTitle: "سجل التحديثات",
     eventCount: (count) => `${count} تحديث`,
-    noEvents: "لا يوجد حدث ظاهر مسجل حاليًا.",
+    noEvents: "لا توجد تحديثات ظاهرة بعد.",
     intlLocale: "ar-TN",
   },
 };

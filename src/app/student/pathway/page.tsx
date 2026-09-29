@@ -19,8 +19,10 @@ import { isRegulatoryRuleCurrent } from "@/lib/regulatory";
 import { projectPathOptions } from "@/lib/student/project";
 import { createClient } from "@/lib/supabase/server";
 import { getRequestLocale } from "@/lib/i18n-server";
+import type { Locale } from "@/lib/i18n";
 import { studentPathwayCopy } from "@/content/student-pathway-copy";
 import { studentProjectCopy } from "@/content/student-project-copy";
+import { localizeCatalogueLabel, localizeRegulatorySummary } from "@/lib/student/arabic-display";
 
 export const dynamic = "force-dynamic";
 
@@ -222,7 +224,7 @@ export default async function StudentPathwayPage() {
             title={t.cards.project}
             state={project ? t.cards.filled : t.cards.complete}
             detail={project
-              ? (projectLabel || project.title) + (projectResult.data?.target_degree ? " · " + projectResult.data.target_degree : "")
+              ? (projectLabel || project.title) + (projectResult.data?.target_degree ? " · " + localizeCatalogueLabel(locale, projectResult.data.target_degree) : "")
               : t.cards.projectPrompt}
             href="/student/project"
             linkLabel={project ? t.cards.edit : t.cards.defineProject}
@@ -250,7 +252,7 @@ export default async function StudentPathwayPage() {
             title={t.cards.languagePreparation}
             state={selectedLanguageCourse ? t.cards.courseSelected : t.cards.noCourse}
             detail={selectedLanguageCourse
-              ? `${selectedLanguageCourse.provider_name} · ${selectedLanguageCourse.title} · ${selectedLanguageCourse.purpose === "study_preparation" ? t.cards.studyPreparation : t.cards.standaloneLanguage}`
+              ? `\u2066${selectedLanguageCourse.provider_name}\u2069 · \u2066${selectedLanguageCourse.title}\u2069 · ${selectedLanguageCourse.purpose === "study_preparation" ? t.cards.studyPreparation : t.cards.standaloneLanguage}`
               : t.cards.noCourseDetail}
             href="/student/language-courses"
             linkLabel={t.cards.courses}
@@ -318,7 +320,7 @@ export default async function StudentPathwayPage() {
         {relevantRegulatorySources.length ? (
           <div className="overflow-hidden rounded-[var(--radius-panel)] border border-[var(--border)] bg-white divide-y divide-[var(--border)]">
             {relevantRegulatorySources.map((source) => (
-              <RegulatorySourceCard key={source.topic + source.source_url} source={source} copy={t} />
+              <RegulatorySourceCard key={source.topic + source.source_url} source={source} copy={t} locale={locale} />
             ))}
           </div>
         ) : (
@@ -429,11 +431,11 @@ function PathwayCard({
       </span>
       <div>
         <p className="text-sm font-bold text-slate-950">{title}</p>
-        <span className={`mt-2 inline-flex rounded-full border px-2.5 py-1 text-[11px] font-bold ${statusClass}`}>
+        <span dir="auto" className={`mt-2 inline-flex rounded-full border px-2.5 py-1 text-[11px] font-bold ${statusClass}`}>
           {state}
         </span>
       </div>
-      <p className="text-sm leading-6 text-slate-600">{detail}</p>
+      <p dir="auto" className="text-sm leading-6 text-slate-600">{detail}</p>
       <div className="justify-self-start sm:justify-self-end">
         <ButtonLink href={href} variant="secondary">{linkLabel}</ButtonLink>
       </div>
@@ -457,6 +459,7 @@ function regulatoryTopicsForRoute(route: RegulatoryRoute | null) {
 function RegulatorySourceCard({
   source,
   copy,
+  locale,
 }: {
   source: {
     authority: string;
@@ -475,23 +478,24 @@ function RegulatorySourceCard({
     review_due_at: string | null;
   };
   copy: (typeof studentPathwayCopy)["fr"];
+  locale: Locale;
 }) {
   return (
     <article className="grid gap-4 p-5 sm:p-6 lg:grid-cols-[minmax(10rem,0.55fr)_minmax(0,1.45fr)_auto] lg:items-start">
       <div>
         <Badge variant="success">{copy.sources.verified}</Badge>
-        <p className="mt-3 text-xs font-bold uppercase tracking-[0.14em] text-slate-500">{source.authority}</p>
+        <p className="mt-3 text-xs font-bold uppercase tracking-[0.14em] text-slate-500"><bdi dir="auto">{source.authority}</bdi></p>
         <p className="mt-1 text-xs text-slate-500">
           {copy.sources.checkedOn} {formatSourceDate(source.checked_on, copy)}
         </p>
       </div>
 
       <div>
-        <h3 className="text-base font-bold text-slate-950">{source.title}</h3>
-        <p className="mt-2 text-sm leading-6 text-slate-600">{source.summary}</p>
+        <h3 className="text-base font-bold text-slate-950"><bdi dir="auto">{source.title}</bdi></h3>
+        <p className="mt-2 text-sm leading-6 text-slate-600">{localizeRegulatorySummary(locale, source.topic, source.summary)}</p>
         {source.amount !== null && source.currency && (
           <p className="mt-3 text-sm font-semibold text-slate-800">
-            {copy.sources.publishedAmount}: {new Intl.NumberFormat(copy.sources.intlLocale, { style: "currency", currency: source.currency }).format(source.amount)}
+            {copy.sources.publishedAmount}: <bdi dir="ltr">{new Intl.NumberFormat(copy.sources.intlLocale, { style: "currency", currency: source.currency, currencyDisplay: locale === "ar" ? "code" : "symbol" }).format(source.amount)}</bdi>
             {source.periodicity === "monthly" ? copy.sources.monthly : source.periodicity === "yearly" ? copy.sources.yearly : ""}
           </p>
         )}
@@ -524,7 +528,7 @@ function FactRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-center justify-between gap-5 py-3 text-sm">
       <dt className="text-slate-600">{label}</dt>
-      <dd className="font-bold text-slate-900">{value}</dd>
+      <dd className="font-bold text-slate-900"><bdi dir="auto">{value}</bdi></dd>
     </div>
   );
 }

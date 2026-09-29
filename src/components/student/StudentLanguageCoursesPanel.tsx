@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/Card";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { studentLanguageCoursesCopy } from "@/content/student-language-courses-copy";
 import { catalogVerificationExpiresAt } from "@/lib/catalog-freshness";
+import { localizeCatalogueLabel } from "@/lib/student/arabic-display";
 
 type Course = {
   id: string;
@@ -80,6 +81,7 @@ function formatPrice(
   return new Intl.NumberFormat(copy.intlLocale, {
     style: "currency",
     currency: course.currency,
+    currencyDisplay: copy.intlLocale === "ar-TN" ? "code" : "symbol",
   }).format(course.price_cents / 100);
 }
 
@@ -198,7 +200,7 @@ export function StudentLanguageCoursesPanel() {
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ language_course_id: courseId }),
       });
-      const result = await response.json().catch(() => ({}));
+      await response.json().catch(() => ({}));
       if (!response.ok) {
         setSelectionError(t.selectionSaveError);
         return;
@@ -217,7 +219,7 @@ export function StudentLanguageCoursesPanel() {
     setSelectionError("");
     try {
       const response = await fetch("/api/student/language-course-selection", { method: "DELETE" });
-      const result = await response.json().catch(() => ({}));
+      await response.json().catch(() => ({}));
       if (!response.ok) {
         setSelectionError(t.selectionRemoveError);
         return;
@@ -299,6 +301,7 @@ export function StudentLanguageCoursesPanel() {
                 value={draftFilters.city}
                 onChange={(event) => setDraftFilters((current) => ({ ...current, city: event.target.value }))}
                 placeholder={t.cityPlaceholder}
+                dir={locale === "ar" ? "ltr" : undefined}
               />
             </label>
 
@@ -309,6 +312,7 @@ export function StudentLanguageCoursesPanel() {
                 value={draftFilters.language}
                 onChange={(event) => setDraftFilters((current) => ({ ...current, language: event.target.value }))}
                 placeholder={t.languagePlaceholder}
+                dir={locale === "ar" ? "auto" : undefined}
               />
             </label>
 
@@ -316,6 +320,7 @@ export function StudentLanguageCoursesPanel() {
               {t.startLevel}
               <select
                 className="field"
+                dir={locale === "ar" ? "ltr" : undefined}
                 value={draftFilters.level_from}
                 onChange={(event) => setDraftFilters((current) => ({ ...current, level_from: event.target.value }))}
               >
@@ -328,6 +333,7 @@ export function StudentLanguageCoursesPanel() {
               {t.targetLevel}
               <select
                 className="field"
+                dir={locale === "ar" ? "ltr" : undefined}
                 value={draftFilters.level_to}
                 onChange={(event) => setDraftFilters((current) => ({ ...current, level_to: event.target.value }))}
               >
@@ -396,10 +402,10 @@ export function StudentLanguageCoursesPanel() {
                     <div className="flex flex-wrap items-start justify-between gap-3">
                       <div className="min-w-0">
                         <p className="text-sm font-semibold text-[var(--brand)] [overflow-wrap:anywhere]">
-                          {course.provider_name}
+                          <bdi dir="auto">{course.provider_name}</bdi>
                         </p>
                         <h3 className="mt-1 text-xl font-bold text-slate-950 [overflow-wrap:anywhere]">
-                          {course.title}
+                          <bdi dir="auto">{course.title}</bdi>
                         </h3>
                       </div>
                       <Badge variant={course.purpose === "study_preparation" ? "info" : "neutral"}>
@@ -408,9 +414,9 @@ export function StudentLanguageCoursesPanel() {
                     </div>
 
                     <dl className="mt-5 grid gap-3 sm:grid-cols-2">
-                      <Fact label={t.city} value={course.city || t.unknown} />
-                      <Fact label={t.language} value={course.language} />
-                      <Fact label={t.levels} value={levelLabel(course, t)} />
+                      <Fact label={t.city} value={course.city || t.unknown} dir={course.city && locale === "ar" ? "ltr" : "auto"} />
+                      <Fact label={t.language} value={localizeCatalogueLabel(locale, course.language)} />
+                      <Fact label={t.levels} value={levelLabel(course, t)} dir={locale === "ar" ? "ltr" : "auto"} />
                       <Fact
                         label={t.volume}
                         value={course.hours_per_week === null ? t.unknown : t.hoursWeek(course.hours_per_week)}
@@ -419,7 +425,7 @@ export function StudentLanguageCoursesPanel() {
                         label={t.period}
                         value={start || end ? [start, end].filter(Boolean).join(" → ") : t.unknown}
                       />
-                      <Fact label={t.price} value={formatPrice(course, t)} />
+                      <Fact label={t.price} value={formatPrice(course, t)} dir={locale === "ar" ? "ltr" : "auto"} />
                     </dl>
 
                     <p className="mt-4 text-xs leading-5 text-slate-500">
@@ -471,11 +477,11 @@ export function StudentLanguageCoursesPanel() {
   );
 }
 
-function Fact({ label, value }: { label: string; value: string }) {
+function Fact({ label, value, dir = "auto" }: { label: string; value: string; dir?: "ltr" | "rtl" | "auto" }) {
   return (
     <div className="rounded-[var(--radius-control)] bg-[var(--surface-muted)] p-3">
       <dt className="text-xs font-semibold uppercase tracking-[0.1em] text-slate-500">{label}</dt>
-      <dd className="mt-1 text-sm font-medium leading-5 text-slate-900 [overflow-wrap:anywhere]">{value}</dd>
+      <dd dir={dir} className="mt-1 text-sm font-medium leading-5 text-slate-900 [overflow-wrap:anywhere]">{value}</dd>
     </div>
   );
 }
