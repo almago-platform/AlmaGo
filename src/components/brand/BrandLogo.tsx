@@ -22,8 +22,8 @@ export function BrandLogo({
     <Image
       src={src}
       alt="Campus Allemagne"
-      width={symbolOnly ? 192 : 400}
-      height={symbolOnly ? 136 : 103}
+      width={symbolOnly ? 464 : 1340}
+      height={symbolOnly ? 329 : 344}
       priority={priority}
       unoptimized
       className={className}
