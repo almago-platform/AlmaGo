@@ -81,6 +81,15 @@ test.describe("authenticated Student Space quality", () => {
         ).toBeLessThanOrEqual(sidebarBox.x + 1);
       }
 
+      if (target.name === "profile") {
+        const telInput = page.locator('input[type="tel"]');
+        const dateInput = page.locator('input[type="date"]');
+        const autoInputs = page.locator('input[dir="auto"]');
+        await expect(telInput).toHaveAttribute("dir", "ltr");
+        await expect(dateInput).toHaveAttribute("dir", "ltr");
+        expect(await autoInputs.count(), "Arabic profile should auto-detect direction for free-text values").toBeGreaterThan(0);
+      }
+
       if (target.name === "checklist") {
         const checklistText = await page.locator("#main-content").innerText();
         for (const frenchTemplateText of [
