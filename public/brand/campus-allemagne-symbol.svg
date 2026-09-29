@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 420" role="img" aria-labelledby="title desc">
+  <title id="title">Campus Allemagne</title>
+  <desc id="desc">Symbole Campus Allemagne : mortier universitaire et rubans noir, rouge et or.</desc>
+  <g fill="#1C2124">
+    <path d="M42 112 256 24l222 86-214 91L42 112Z"/>
+    <path d="M112 143c78 37 209 39 292 1v46c-90 44-216 43-292 2v-49Z"/>
+    <path d="M431 126h12v84h-12z"/>
+    <circle cx="437" cy="222" r="15"/>
+    <path d="M424 236h26l20 79h-66l20-79Z"/>
+  </g>
+  <path d="M74 233c86 95 250 111 382-35-88 121-236 171-382 35Z" fill="#1C2124"/>
+  <path d="M73 250c102 86 250 83 385-36-96 112-248 157-385 36Z" fill="#DB0423"/>
+  <path d="M82 272c110 66 245 56 375-43-102 104-243 135-375 43Z" fill="#FCB50A"/>
+</svg>
