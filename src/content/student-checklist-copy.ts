@@ -243,7 +243,7 @@ export const studentChecklistCopy: Record<Locale, ChecklistCopy> = {
         replace_academic_evidence: { title: "استبدل المستند المطلوب", explanation: "يجب استبدال هذا المستند قبل استخدامه كأساس لمسارك." },
         academic_evidence_review: { title: "مراجعة الإثبات الأكاديمي", explanation: "تم تسجيل إثبات أكاديمي لكنه يحتاج إلى مراجعة قبل استخدامه كأساس للمسار." },
         definitive_admission_basis: { title: "تم التحقق من القبول النهائي", explanation: "القبول مسجل في ملفك. هذه الخطوة لا تعني قرار تأشيرة." },
-        preparatory_academic_basis: { title: "تم اعتماد الأساس الأكاديمي التحضيري", explanation: "تم اعتماد قبول مشروط أو إثبات من الجامعة (Bewerberbestätigung) أو إثبات تحضيري مناسب آخر في ملفك." },
+        preparatory_academic_basis: { title: "تم اعتماد الأساس الأكاديمي التحضيري", explanation: "تم اعتماد قبول مشروط أو إثبات من الجامعة (\u2066Bewerberbestätigung\u2069) أو إثبات تحضيري مناسب آخر في ملفك." },
         study_preparation_course_selected: { title: "تم اختيار دورة تحضير للدراسة", explanation: "مشروعك يحتوي على دورة تحضير للدراسة ما زالت منشورة كخيار تم التحقق منه." },
         select_study_preparation_course: { title: "اختر دورة تحضير للدراسة تم التحقق منها", explanation: "الأساس الأكاديمي التحضيري مقبول، لكن لا توجد حاليًا دورة تحضيرية تم التحقق منها مرتبطة بمشروعك." },
         standalone_language_course_selected: { title: "تم اختيار دورة لغة مستقلة", explanation: "هناك دورة لغة مستقلة ما زالت منشورة كخيار تم التحقق منه ومرتبطة بمشروعك." },
