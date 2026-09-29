@@ -123,7 +123,7 @@ const fr = {
       columns: [
         ["Parcours", [["Les six étapes", "#parcours"], ["Outils utiles", "#outils"], ["Questions fréquentes", "#faq"]]],
         ["Préparer", [["Mon espace", "/login"], ["Comparer les programmes", "#programmes"], ["Créer mon dossier", "/signup"]]],
-        ["Repères", [["Se connecter", "/login"], ["uni-assist · source externe", "https://www.uni-assist.de/en/"]]],
+        ["Repères", [["Contact", "/contact"], ["Se connecter", "/login"], ["uni-assist · source externe", "https://www.uni-assist.de/en/"]]],
       ],
       disclaimer: "AlmaGo organise votre préparation. Les admissions, visas et autres décisions officielles appartiennent aux organismes compétents.",
       photoCredit1: "Photographies d’illustration :",
@@ -360,7 +360,7 @@ const ar = {
       columns: [
         ["المسار", [["الخطوات الست", "#parcours"], ["أدوات مفيدة", "#outils"], ["الأسئلة الشائعة", "#faq"]]],
         ["التحضير", [["ملفي", "/login"], ["مقارنة البرامج", "#programmes"], ["أنشئ ملفك", "/signup"]]],
-        ["روابط مفيدة", [["تسجيل الدخول", "/login"], ["uni-assist · مصدر خارجي", "https://www.uni-assist.de/en/"]]],
+        ["روابط مفيدة", [["تواصل معنا", "/contact"], ["تسجيل الدخول", "/login"], ["uni-assist · مصدر خارجي", "https://www.uni-assist.de/en/"]]],
       ],
       disclaimer: "AlmaGo ينظم عملية التحضير. القبول والتأشيرة والقرارات الرسمية الأخرى تبقى من اختصاص الجهات المختصة.",
       photoCredit1: "الصور التوضيحية:",
@@ -597,7 +597,7 @@ const en = {
       columns: [
         ["Journey", [["The six steps", "#parcours"], ["Useful tools", "#outils"], ["Common questions", "#faq"]]],
         ["Prepare", [["My workspace", "/login"], ["Compare programmes", "#programmes"], ["Get started", "/signup"]]],
-        ["Useful links", [["Sign in", "/login"], ["uni-assist · external source", "https://www.uni-assist.de/en/"]]],
+        ["Useful links", [["Contact", "/contact"], ["Sign in", "/login"], ["uni-assist · external source", "https://www.uni-assist.de/en/"]]],
       ],
       disclaimer: "AlmaGo organises your preparation. Admission, visa and other official decisions remain with the responsible authorities.",
       photoCredit1: "Illustration photos:",
@@ -834,7 +834,7 @@ const de = {
       columns: [
         ["Mein Weg", [["Die sechs Schritte", "#parcours"], ["Hilfreiche Tools", "#outils"], ["Häufige Fragen", "#faq"]]],
         ["Vorbereiten", [["Mein Bereich", "/login"], ["Studiengänge vergleichen", "#programmes"], ["Jetzt starten", "/signup"]]],
-        ["Hilfreiche Links", [["Anmelden", "/login"], ["uni-assist · externe Quelle", "https://www.uni-assist.de/en/"]]],
+        ["Hilfreiche Links", [["Kontakt", "/contact"], ["Anmelden", "/login"], ["uni-assist · externe Quelle", "https://www.uni-assist.de/en/"]]],
       ],
       disclaimer: "AlmaGo organisiert deine Vorbereitung. Über Zulassung, Visum und andere offizielle Fragen entscheiden die zuständigen Stellen.",
       photoCredit1: "Illustrationsfotos:",
