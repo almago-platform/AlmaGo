@@ -40,6 +40,19 @@ const paths = {
   menu: <path d="M4 6h16M4 12h16M4 18h16" />,
   close: <path d="m6 6 12 12M18 6 6 18" />,
   plus: <path d="M12 5v14M5 12h14" />,
+  question: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M9.8 9a2.45 2.45 0 0 1 4.7 1c0 2-2.5 2.25-2.5 4" />
+      <path d="M12 17h.01" />
+    </>
+  ),
+  profile: (
+    <>
+      <circle cx="12" cy="8" r="3.5" />
+      <path d="M5 20c.8-4 3.2-6 7-6s6.2 2 7 6" />
+    </>
+  ),
   certificate: (
     <>
       <path d="M5 3h10l4 4v9H5Z" />

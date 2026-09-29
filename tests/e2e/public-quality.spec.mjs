@@ -35,9 +35,11 @@ for (const target of pages) {
 test("native language switch persists and Arabic renders RTL without overflow", async ({ page }, testInfo) => {
   test.skip(
     ![
+      "wide-chromium",
       "desktop-chromium",
       "tablet-landscape-chromium",
       "tablet-chromium",
+      "mobile-430-chromium",
       "mobile-375-chromium",
       "mobile-chromium",
     ].includes(testInfo.project.name),
@@ -54,7 +56,7 @@ test("native language switch persists and Arabic renders RTL without overflow", 
   await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
   await expect(page.getByRole("heading", { name: "تسجيل الدخول" })).toBeVisible();
 
-  if (["desktop-chromium", "tablet-landscape-chromium"].includes(testInfo.project.name)) {
+  if (["wide-chromium", "desktop-chromium", "tablet-landscape-chromium"].includes(testInfo.project.name)) {
     const authForm = page.locator(".auth-form-shell");
     const authStory = page.locator(".auth-story-panel");
     await expect(authForm).toBeVisible();
@@ -73,6 +75,17 @@ test("native language switch persists and Arabic renders RTL without overflow", 
     ).toBeLessThanOrEqual(2);
   }
 
+  if ([
+    "tablet-chromium",
+    "mobile-430-chromium",
+    "mobile-375-chromium",
+    "mobile-chromium",
+  ].includes(testInfo.project.name)) {
+    const authShellBox = await page.locator(".auth-form-shell").boundingBox();
+    expect(authShellBox, "Arabic auth shell should have a visible box").not.toBeNull();
+    expect(authShellBox.y, "Arabic auth should start near the top on tablet and mobile").toBeLessThanOrEqual(80);
+  }
+
   await page.screenshot({
     path: "artifacts/screenshots/login-ar-" + testInfo.project.name + ".png",
     fullPage: true,
@@ -81,11 +94,11 @@ test("native language switch persists and Arabic renders RTL without overflow", 
   await page.goto("/", { waitUntil: "networkidle" });
   await expect(page.locator("html")).toHaveAttribute("lang", "ar");
   await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
-  await expect(page.getByRole("heading", { name: /ابدأ دراستك/ })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /خطّط لدراستك/ })).toBeVisible();
   const rtlOverflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   expect(rtlOverflow, "Arabic homepage must not overflow horizontally").toBeLessThanOrEqual(1);
 
-  const heroCopy = page.getByRole("heading", { name: /ابدأ دراستك/ }).locator("..");
+  const heroCopy = page.getByRole("heading", { name: /خطّط لدراستك/ }).locator("..");
   const heroDossier = page.locator('aside[aria-label="مثال على ملف AlmaGo"]');
   await expect(heroDossier).toBeVisible();
   const [heroCopyBox, heroDossierBox] = await Promise.all([

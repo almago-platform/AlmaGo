@@ -148,7 +148,14 @@ html[dir="rtl"] body {
   line-height: 1.7;
 }
 
-html[dir="rtl"] :is(.page-title, .section-title, .editorial-accent, .eyebrow) {
+html[dir="rtl"] :is(.page-title, .section-title, .editorial-accent) {
+  font-family: var(--font-arabic-display), var(--font-arabic), Tahoma, Arial, sans-serif;
+  font-style: normal;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+html[dir="rtl"] .eyebrow {
   font-family: var(--font-arabic), Tahoma, Arial, sans-serif;
   letter-spacing: 0;
   text-transform: none;
@@ -225,6 +232,11 @@ html[dir="rtl"] .auth-story-body > div:last-child {
 @media (max-width: 1023px) {
   html[dir="rtl"] .auth-page {
     padding-inline: 1rem;
+  }
+
+  html[dir="rtl"] .auth-page-grid {
+    min-height: 0;
+    align-items: start;
   }
 }
 

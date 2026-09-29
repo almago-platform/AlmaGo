@@ -22,10 +22,11 @@ test("Brand V2 official palette is the shared application palette", () => {
 });
 
 test("Brand V2 typography loads Latin brand fonts and native Arabic typography", () => {
-  assert.match(layout, /Inter, Noto_Sans_Arabic, Source_Serif_4/);
+  assert.match(layout, /Inter, Noto_Kufi_Arabic, Noto_Sans_Arabic, Source_Serif_4/);
   assert.match(globals, /--font-inter/);
   assert.match(globals, /--font-source-serif/);
   assert.match(layout, /--font-arabic/);
+  assert.match(layout, /--font-arabic-display/);
 });
 
 test("official vector logo is used on public and authenticated shells", () => {
