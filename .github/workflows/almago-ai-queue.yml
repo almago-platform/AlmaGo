@@ -143,6 +143,12 @@ jobs:
           if [ "$status" -ne 0 ]; then
             exit "$status"
           fi
+          if ! git apply --check almago-ai.patch; then
+            echo "retryable=true" >> "$GITHUB_OUTPUT"
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::Provider returned a patch that git cannot apply cleanly; task will be retried later."
+            exit 0
+          fi
           echo "retryable=false" >> "$GITHUB_OUTPUT"
           echo "ready=true" >> "$GITHUB_OUTPUT"
 
