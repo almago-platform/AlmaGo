@@ -12,7 +12,7 @@ test("AI backlog dispatcher polls every five minutes and can react to ready issu
 
 test("AI backlog dispatcher preserves provider and duplicate-run gates", () => {
   assert.match(workflow, /ALMAGO_AI_ENABLED/);
-  assert.match(workflow, /ALMAGO_AI_BILLING_CAP_CONFIRMED/);
+  assert.match(workflow, /ALMAGO_AI_FREE_ONLY/);
   assert.match(workflow, /listWorkflowRuns/);
   assert.match(workflow, /queued/);
   assert.match(workflow, /in_progress/);
@@ -24,4 +24,9 @@ test("AI backlog dispatcher only sends bounded standalone ready tasks to the exi
   assert.match(workflow, /<!-- almago-plan-task:/);
   assert.match(workflow, /workflow_id: "almago-ai-queue\.yml"/);
   assert.match(workflow, /inputs: \{ issue_number: String\(task\.number\) \}/);
+});
+
+
+test("AI backlog dispatcher never requires a paid billing confirmation gate", () => {
+  assert.doesNotMatch(workflow, /ALMAGO_AI_BILLING_CAP_CONFIRMED/);
 });
