@@ -70,7 +70,7 @@ export function AuthForm({ initialMode = "login" }: { initialMode?: Mode }) {
     <section className="auth-form-card w-full overflow-hidden rounded-[1rem] border border-[var(--border)] bg-[var(--surface)] shadow-[0_24px_70px_-54px_rgba(28,33,36,0.5)]">
       <div className="border-b border-[var(--border)] px-5 py-5 sm:px-7 sm:py-6">
         <div className="flex items-center justify-between gap-4">
-          <BrandLogo className="hidden h-auto w-32 lg:block" />
+          <BrandLogo className="hidden h-auto w-44 lg:block" />
           {mode === "signup" && (
             <span className="rounded-full border border-[var(--brand-border)] bg-[var(--brand-soft)] px-3 py-1 text-[0.68rem] font-bold uppercase tracking-[0.12em] text-[var(--brand-strong)]">
               {auth.labels.studentAccount}
