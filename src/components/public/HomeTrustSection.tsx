@@ -5,9 +5,9 @@ import { HomeIcon, type HomeIconName } from "./HomeIcons";
 import s from "./Homepage.module.css";
 
 const meta: Array<{ href: string; icon: HomeIconName }> = [
-  { href: "/signup", icon: "certificate" },
+  { href: "/signup", icon: "profile" },
   { href: "#programmes", icon: "university" },
-  { href: "#faq", icon: "globe" },
+  { href: "#faq", icon: "source" },
 ];
 
 export function HomeTrustSection() {
