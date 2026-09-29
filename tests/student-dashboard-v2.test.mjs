@@ -45,7 +45,7 @@ test("journey overview uses localized visual cards and remains responsive", () =
 
 test("dashboard retains legal framing around progress and decisions in every locale", () => {
   assert.ok(dashboardCopy.includes("ne représente ni une admission ni une validation finale"));
-  assert.ok(dashboardCopy.includes("ولا يعني قبولاً جامعياً أو قراراً نهائياً"));
+  assert.ok(dashboardCopy.includes("ولا يعني قبولًا جامعيًا أو قرارًا رسميًا"));
   assert.ok(dashboardCopy.includes("It is not an admission result or final decision"));
   assert.ok(dashboardCopy.includes("weder eine Zulassung noch eine endgültige Entscheidung"));
   assert.ok(page.includes("t.progressBoundary"));
