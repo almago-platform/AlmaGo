@@ -94,13 +94,15 @@ a, button, input, select, textarea { -webkit-tap-highlight-color: transparent; }
     @apply text-xs font-bold uppercase tracking-[0.16em] text-[var(--accent-strong)];
   }
   .editorial-accent {
-    font-family: var(--font-source-serif), "Source Serif 4", Georgia, "Times New Roman", serif;
-    font-weight: 400;
+    font-family: var(--font-inter), Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-style: normal;
+    font-weight: 650;
     letter-spacing: -0.035em;
   }
   .page-title {
     @apply mt-2 font-semibold tracking-tight text-[var(--foreground)];
-    font-family: var(--font-source-serif), "Source Serif 4", Georgia, serif;
+    font-family: var(--font-inter), Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-style: normal;
     font-size: var(--text-page-title);
     line-height: var(--page-leading);
   }
