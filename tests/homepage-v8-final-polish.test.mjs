@@ -20,13 +20,13 @@ test("V8 strengthens the localized final CTA and footer", () => {
   assert.ok(nativeCopy.includes('"Prochaines étapes"'));
   assert.ok(nativeCopy.includes('independent: "Plateforme indépendante"'));
   assert.ok(nativeCopy.includes('"Outils utiles"'));
-  assert.ok(closing.includes("HomeFinalCta({ closing }"));
+  assert.ok(closing.includes("copy.home.closing"));
 });
 
 test("V8 gives the localized FAQ a compact editorial surface", () => {
   assert.ok(nativeCopy.includes('eyebrow: "Questions utiles"'));
   assert.ok(faq.includes("className={s.faqIntro}"));
-  assert.ok(faq.includes("HomeFaqSection({ faq }"));
+  assert.ok(faq.includes("copy.home.faq"));
   assert.ok(css.includes(".faqIntro {"));
   assert.ok(css.includes("position: sticky"));
   assert.ok(css.includes("border-radius: 10px"));
