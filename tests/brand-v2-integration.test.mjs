@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync, statSync } from "node:fs";
 import test from "node:test";
 
 const globals = readFileSync("src/app/globals.css", "utf8");
@@ -8,11 +8,12 @@ const header = readFileSync("src/components/public/HomeHeader.tsx", "utf8");
 const footer = readFileSync("src/components/public/HomeClosing.tsx", "utf8");
 const shell = readFileSync("src/components/layout/AppShell.tsx", "utf8");
 const manifest = readFileSync("src/app/manifest.ts", "utf8");
-const logo = readFileSync("public/brand/campus-allemagne-logo.svg", "utf8");
-const reverse = readFileSync("public/brand/campus-allemagne-logo-reverse.svg", "utf8");
-const symbol = readFileSync("public/brand/campus-allemagne-symbol.svg", "utf8");
+const brandLogo = readFileSync("src/components/brand/BrandLogo.tsx", "utf8");
 const brand = readFileSync("src/lib/brand.ts", "utf8");
 const provider = readFileSync("src/components/i18n/LocaleProvider.tsx", "utf8");
+
+const approvedLogo = "public/brand/campus-allemagne-logo-approved.webp";
+const approvedSymbol = "public/brand/campus-allemagne-symbol-approved.webp";
 
 test("Campus Allemagne keeps the approved shared application palette", () => {
   assert.match(globals, /--foreground:\s*#1c2124/i);
@@ -29,16 +30,19 @@ test("brand typography loads a unified Latin sans and native Arabic fonts", () =
   assert.match(layout, /--font-arabic-display/);
 });
 
-test("Campus Allemagne is the canonical logo across public and authenticated shells", () => {
+test("exact approved Campus Allemagne artwork is used across public and authenticated shells", () => {
   assert.match(header, /BrandLogo/);
-  assert.match(footer, /variant="reverse"/);
+  assert.match(footer, /BrandLogo/);
   assert.match(shell, /BrandLogo/);
-  assert.match(logo, /Campus Allemagne/);
-  assert.match(logo, /#1C2124/i);
-  assert.match(logo, /#DB0423/i);
-  assert.match(logo, /#FCB50A/i);
-  assert.match(reverse, /#FFFFFF/);
-  assert.match(symbol, /viewBox="0 0 520 420"/);
+  assert.ok(existsSync(approvedLogo));
+  assert.ok(existsSync(approvedSymbol));
+  assert.ok(statSync(approvedLogo).size > 1000);
+  assert.ok(statSync(approvedSymbol).size > 1000);
+  assert.match(brandLogo, /campus-allemagne-logo-approved\.webp/);
+  assert.match(brandLogo, /campus-allemagne-symbol-approved\.webp/);
+  assert.doesNotMatch(brandLogo, /campus-allemagne-logo(?:-reverse)?\.svg/);
+  assert.doesNotMatch(brandLogo, /campus-allemagne-symbol(?:-reverse)?\.svg/);
+  assert.match(footer, /footerLogoLink/);
 });
 
 test("localized public copy is rebranded without rewriting locale source files", () => {
@@ -48,12 +52,11 @@ test("localized public copy is rebranded without rewriting locale source files",
   assert.match(footer, /© Campus Allemagne/);
 });
 
-test("metadata, favicon and PWA manifest use Campus Allemagne", () => {
-  const icon = readFileSync("src/app/icon.svg", "utf8");
+test("favicon metadata and PWA manifest use the exact approved compact mark", () => {
   assert.match(layout, /applicationName: BRAND_NAME/);
   assert.match(layout, /siteName: BRAND_NAME/);
-  assert.match(layout, /campus-allemagne-symbol\.svg/);
+  assert.match(layout, /campus-allemagne-symbol-approved\.webp/);
   assert.match(manifest, /name: "Campus Allemagne"/);
-  assert.match(manifest, /campus-allemagne-symbol\.svg/);
-  assert.match(icon, /Campus Allemagne/);
+  assert.match(manifest, /campus-allemagne-symbol-approved\.webp/);
+  assert.match(manifest, /type: "image\/webp"/);
 });

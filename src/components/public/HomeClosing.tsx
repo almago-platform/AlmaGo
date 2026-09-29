@@ -51,8 +51,8 @@ export function HomeFooter() {
       <div className={s.container}>
         <div className={s.footerGrid}>
           <div className={s.footerBrand}>
-            <Link href="/" className={s.logo} aria-label={copy.common.homeAria}>
-              <BrandLogo variant="reverse" className={s.footerLogoImage} />
+            <Link href="/" className={`${s.logo} ${s.footerLogoLink}`} aria-label={copy.common.homeAria}>
+              <BrandLogo className={s.footerLogoImage} />
             </Link>
             <p>{footer.tagline}</p>
             <span className={s.footerIndependence}>{footer.independent}</span>
