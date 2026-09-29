@@ -11,6 +11,7 @@ import {
   localeOpenGraph,
   normalizeLocale,
 } from "@/lib/i18n";
+import { getPublicOrigin } from "@/lib/public-origin";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
@@ -23,10 +24,13 @@ async function requestLocale() {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-  const locale = await requestLocale();
+  const [locale, publicOrigin] = await Promise.all([requestLocale(), getPublicOrigin()]);
   const { metadata } = getNativeCopy(locale);
+  const homeUrl = new URL("/", publicOrigin).toString();
+  const socialImageUrl = new URL("/opengraph-image", publicOrigin).toString();
 
   return {
+    metadataBase: publicOrigin,
     title: {
       default: brandText(metadata.title),
       template: `%s | ${BRAND_NAME}`,
@@ -38,13 +42,17 @@ export async function generateMetadata(): Promise<Metadata> {
       index: true,
       follow: true,
     },
+    alternates: {
+      canonical: homeUrl,
+    },
     openGraph: {
       type: "website",
+      url: homeUrl,
       locale: localeOpenGraph(locale),
       siteName: BRAND_NAME,
       title: brandText(metadata.title),
       description: brandText(metadata.description),
-      images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: BRAND_NAME }],
+      images: [{ url: socialImageUrl, width: 1200, height: 630, alt: BRAND_NAME }],
     },
     icons: {
       icon: [{ url: "/brand/campus-allemagne-favicon-v4.svg?v=4", type: "image/svg+xml", sizes: "any" }],
@@ -54,7 +62,7 @@ export async function generateMetadata(): Promise<Metadata> {
       card: "summary_large_image",
       title: brandText(metadata.title),
       description: brandText(metadata.description),
-      images: ["/opengraph-image"],
+      images: [socialImageUrl],
     },
   };
 }
