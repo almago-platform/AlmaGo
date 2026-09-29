@@ -1,4 +1,4 @@
-// AlmaGo Brand Identity V2 — canonical website logo renderer.
+// Campus Allemagne — canonical website logo renderer.
 import Image from "next/image";
 
 type BrandLogoProps = {
@@ -16,18 +16,18 @@ export function BrandLogo({
 }: BrandLogoProps) {
   const src = symbolOnly
     ? variant === "reverse"
-      ? "/brand/almago-symbol-reverse.svg"
-      : "/brand/almago-symbol.svg"
+      ? "/brand/campus-allemagne-symbol-reverse.svg"
+      : "/brand/campus-allemagne-symbol.svg"
     : variant === "reverse"
-      ? "/brand/almago-logo-reverse.svg"
-      : "/brand/almago-logo.svg";
+      ? "/brand/campus-allemagne-logo-reverse.svg"
+      : "/brand/campus-allemagne-logo.svg";
 
   return (
     <Image
       src={src}
-      alt="AlmaGo"
-      width={symbolOnly ? 540 : 1410}
-      height={514}
+      alt="Campus Allemagne"
+      width={symbolOnly ? 520 : 1500}
+      height={symbolOnly ? 420 : 520}
       priority={priority}
       className={className}
     />

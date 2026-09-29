@@ -64,7 +64,7 @@ export function HomeFooter() {
         </div>
 
         <div className={s.footerBottom}>
-          <p>© AlmaGo</p>
+          <p>© Campus Allemagne</p>
           <p>{footer.disclaimer}</p>
         </div>
 
