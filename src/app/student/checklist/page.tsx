@@ -238,7 +238,7 @@ export default async function ChecklistPage() {
 
             <div className="mt-7">
               <div className="mb-3 flex items-end justify-between gap-4">
-                <p className="text-4xl font-bold tracking-tight text-slate-950 sm:text-5xl">{checklistItems.length ? `${progression}%` : "—"}</p>
+                <p className="text-4xl font-bold tracking-tight text-slate-950 sm:text-5xl"><bdi dir="ltr">{checklistItems.length ? `${progression}%` : "—"}</bdi></p>
                 <p className="max-w-xs text-end text-sm leading-6 text-slate-600">{t.page.recordedSteps}</p>
               </div>
               {checklistItems.length > 0 && <ProgressBar value={progression} label={t.page.progressLabel} />}
@@ -261,8 +261,8 @@ export default async function ChecklistPage() {
           </div>
           {nextItem ? (
             <>
-              <h2 id="checklist-next-action-title" className="mt-5 text-2xl font-bold tracking-[-0.03em] text-slate-950">{nextItem.localizedTitle}</h2>
-              {nextItem.localizedDescription && <p className="mt-3 text-sm leading-6 text-slate-700">{nextItem.localizedDescription}</p>}
+              <h2 id="checklist-next-action-title" dir="auto" className="mt-5 text-2xl font-bold tracking-[-0.03em] text-slate-950">{nextItem.localizedTitle}</h2>
+              {nextItem.localizedDescription && <p dir="auto" className="mt-3 text-sm leading-6 text-slate-700">{nextItem.localizedDescription}</p>}
               <div className="mt-5 inline-flex items-center gap-2 rounded-[var(--radius-control)] border border-amber-200 bg-white px-3 py-2 text-xs font-bold text-amber-900">
                 <span aria-hidden="true" className="h-2 w-2 rounded-full bg-[var(--accent)]" />
                 {t.statusLabels[nextItem.status] || t.page.ownerStudent}
@@ -311,7 +311,7 @@ export default async function ChecklistPage() {
                 <div className="mb-4 flex flex-col justify-between gap-3 border-b border-[var(--border)] pb-3 sm:flex-row sm:items-end">
                   <div>
                     <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">{t.page.categoryEyebrow}</p>
-                    <h2 id={categoryId} className="mt-1 text-xl font-bold tracking-[-0.02em] text-slate-950">{category}</h2>
+                    <h2 id={categoryId} dir="auto" className="mt-1 text-xl font-bold tracking-[-0.02em] text-slate-950">{category}</h2>
                   </div>
                   <Badge variant={groupCompleted === group.length ? "success" : "neutral"}>{t.page.groupDone(groupCompleted, group.length)}</Badge>
                 </div>
@@ -327,13 +327,13 @@ export default async function ChecklistPage() {
                             {["waiting_student", "todo", "not_started"].includes(item.status) && <span className="text-xs font-bold uppercase tracking-[0.14em] text-amber-800">{t.page.responsibleStudent}</span>}
                             {item.status === "waiting_almago" && <span className="text-xs font-bold uppercase tracking-[0.14em] text-blue-800">{t.page.responsibleAlmaGo}</span>}
                           </div>
-                          <h3 id={`checklist-item-title-${item.id}`} className="mt-3 font-bold text-slate-950">{item.localizedTitle}</h3>
-                          {item.localizedDescription && <p className="mt-1 text-sm leading-6 text-slate-600">{item.localizedDescription}</p>}
+                          <h3 id={`checklist-item-title-${item.id}`} dir="auto" className="mt-3 font-bold text-slate-950">{item.localizedTitle}</h3>
+                          {item.localizedDescription && <p dir="auto" className="mt-1 text-sm leading-6 text-slate-600">{item.localizedDescription}</p>}
                           {item.completed_at && (
                             <p className="mt-3 text-xs text-slate-500">
                               {t.page.completedOn}{" "}
                               <time dateTime={item.completed_at}>
-                                {new Intl.DateTimeFormat(t.page.intlLocale, { dateStyle: "medium" }).format(new Date(item.completed_at))}
+                                <bdi dir="auto">{new Intl.DateTimeFormat(t.page.intlLocale, { dateStyle: "medium" }).format(new Date(item.completed_at))}</bdi>
                               </time>
                             </p>
                           )}

@@ -65,15 +65,15 @@ test("student workspace uses explicit native copy contracts across core surfaces
   }
 });
 
-test("dynamic official and user-entered records stay separate from localized UI copy", () => {
+test("dynamic official and user-entered records keep their semantics while Arabic system copy can localize at render time", () => {
   const finance = readFileSync("src/app/student/finance-insurance/page.tsx", "utf8");
   const applications = readFileSync("src/components/student/StudentApplicationsPanel.tsx", "utf8");
   const orientation = readFileSync("src/components/student/StudentOrientationPanel.tsx", "utf8");
 
-  assert.ok(finance.includes("{option.description}"));
+  assert.ok(finance.includes("localizeFinanceCatalogueField"));
   assert.ok(finance.includes("option.eligibility_notes"));
-  assert.ok(applications.includes("{application.student_notes}"));
-  assert.ok(applications.includes("{event.message}"));
+  assert.ok(applications.includes("application.student_notes"));
+  assert.ok(applications.includes("localizeApplicationStoredText(locale, event.message)"));
   assert.ok(orientation.includes("program?.name") || orientation.includes("program.name"));
   assert.ok(orientation.includes("university?.name") || orientation.includes("university.name"));
 });

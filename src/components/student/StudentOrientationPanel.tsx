@@ -9,6 +9,7 @@ import { useLocale } from "@/components/i18n/LocaleProvider";
 import { studentOrientationCopy } from "@/content/student-orientation-copy";
 import type { MasterRequirementsMatch, RequirementMatchResult } from "@/lib/master-requirements";
 import { formatDeadline } from "@/lib/phase4";
+import { localizeCatalogueLabel, localizeProgramRequirement } from "@/lib/student/arabic-display";
 
 type University = { name: string; city: string; bundesland?: string | null };
 type Program = {
@@ -188,8 +189,8 @@ export function StudentOrientationPanel({
             {nextProgram && (
               <div className="mt-6 rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4">
                 <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--accent-strong)]">{t.lookNow}</p>
-                <p className="mt-2 font-bold text-slate-950">{nextProgram.name}</p>
-                <p className="mt-1 text-sm text-slate-600">{nextProgram.degree_level} · {nextProgram.field || t.fieldUnknown}</p>
+                <p className="mt-2 font-bold text-slate-950"><bdi dir="auto">{nextProgram.name}</bdi></p>
+                <p className="mt-1 text-sm text-slate-600"><bdi dir="auto">{localizeCatalogueLabel(locale, nextProgram.degree_level)}</bdi> · <bdi dir="auto">{localizeCatalogueLabel(locale, nextProgram.field) || t.fieldUnknown}</bdi></p>
               </div>
             )}
           </div>
@@ -244,7 +245,7 @@ export function StudentOrientationPanel({
                       <div className="min-w-0">
                         <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">{t.institution}</p>
                         <p className="mt-1 text-sm font-bold leading-5 text-slate-900 [overflow-wrap:anywhere]">
-                          {university?.name || t.universityUnknown}{university?.city ? ` · ${university.city}` : ""}
+                          <bdi dir="auto">{university?.name || t.universityUnknown}</bdi>{university?.city ? <> · <bdi dir="ltr">{university.city}</bdi></> : ""}
                         </p>
                       </div>
                       <Badge variant={recommendation.student_interest_at ? "success" : recommendationVariant(recommendation.status)}>
@@ -253,19 +254,19 @@ export function StudentOrientationPanel({
                     </div>
                     <div>
                       <h3 id={`student-recommendation-title-${recommendation.id}`} className="text-xl font-bold leading-7 tracking-[-0.02em] text-slate-950 [overflow-wrap:anywhere]">
-                        {program.name}
+                        <bdi dir="auto">{program.name}</bdi>
                       </h3>
                       <div className="mt-3 flex flex-wrap gap-2 text-xs font-semibold text-slate-600">
-                        <span className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-2.5 py-1.5">{program.degree_level}</span>
-                        <span className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-2.5 py-1.5">{program.field || t.fieldUnknown}</span>
-                        {program.teaching_language && <span className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-2.5 py-1.5">{program.teaching_language}</span>}
+                        <span className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-2.5 py-1.5"><bdi dir="auto">{localizeCatalogueLabel(locale, program.degree_level)}</bdi></span>
+                        <span className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-2.5 py-1.5"><bdi dir="auto">{localizeCatalogueLabel(locale, program.field) || t.fieldUnknown}</bdi></span>
+                        {program.teaching_language && <span className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-2.5 py-1.5"><bdi dir="auto">{localizeCatalogueLabel(locale, program.teaching_language)}</bdi></span>}
                       </div>
                     </div>
                   </div>
 
                   <div className="mt-5 rounded-[var(--radius-control)] border border-[var(--brand-border)] bg-[var(--brand-soft)]/45 p-4">
                     <h4 className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">{t.whyProgram}</h4>
-                    <p className="mt-2 text-sm leading-6 text-slate-700 [overflow-wrap:anywhere]">
+                    <p dir="auto" className="mt-2 text-sm leading-6 text-slate-700 [overflow-wrap:anywhere]">
                       {recommendation.note || t.proposedBoundary}
                     </p>
                   </div>
@@ -273,16 +274,16 @@ export function StudentOrientationPanel({
                   <div className="mt-5">
                     <h4 className="text-xs font-bold uppercase tracking-[0.14em] text-slate-500">{t.recordedCriteria}</h4>
                     <dl className="mt-3 grid gap-3 text-sm sm:grid-cols-2">
-                    <InfoItem label={t.teachingLanguage} value={program.teaching_language || studentOrientationCopy[locale].panel.routeUnknown} />
+                    <InfoItem label={t.teachingLanguage} value={localizeCatalogueLabel(locale, program.teaching_language) || studentOrientationCopy[locale].panel.routeUnknown} />
                     <InfoItem label={t.winterDeadline} value={formatDeadline(program.winter_deadline, locale)} />
                     <InfoItem label={t.summerDeadline} value={formatDeadline(program.summer_deadline || null, locale)} />
-                    <InfoItem label={t.diplomaRequired} value={program.diploma_required || t.routeUnknown} />
+                    <InfoItem label={t.diplomaRequired} value={localizeProgramRequirement(locale, program.diploma_required) || t.routeUnknown} />
                     <div className="rounded-[var(--radius-control)] bg-[var(--surface-muted)] p-3 sm:col-span-2">
                       <dt className="text-slate-500">{t.languageLevels}</dt>
                       <dd className="mt-1 text-slate-900">
                         {[
-                          program.german_level_required && `${t.german} ${program.german_level_required}`,
-                          program.english_level_required && `${t.english} ${program.english_level_required}`,
+                          program.german_level_required && `${t.german} \u2066${program.german_level_required}\u2069`,
+                          program.english_level_required && `${t.english} \u2066${program.english_level_required}\u2069`,
                         ].filter(Boolean).join(" · ") || t.officialCheck}
                       </dd>
                     </div>
@@ -346,7 +347,7 @@ function InfoItem({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-[var(--radius-control)] border border-[var(--border)] bg-white p-3">
       <dt className="text-xs font-semibold text-slate-500">{label}</dt>
-      <dd className="mt-1 text-sm font-medium text-slate-900 [overflow-wrap:anywhere]">{value}</dd>
+      <dd dir="auto" className="mt-1 text-sm font-medium text-slate-900 [overflow-wrap:anywhere]">{value}</dd>
     </div>
   );
 }

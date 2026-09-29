@@ -11,6 +11,7 @@ import { getRequestCopy } from "@/lib/i18n-server";
 import { studentDashboardCopy } from "@/content/student-dashboard-copy";
 import { studentChecklistCopy } from "@/content/student-checklist-copy";
 import { formatDeadline, isActiveApplication, isPastDeadline, nextActiveDeadline } from "@/lib/phase4";
+import { localizeApplicationStoredText } from "@/lib/student/arabic-display";
 
 export const dynamic = "force-dynamic";
 
@@ -93,7 +94,7 @@ export default async function StudentEntry() {
     : actionableApplication?.next_action
       ? {
           label: t.applicationAction,
-          detail: actionableApplication.next_action,
+          detail: localizeApplicationStoredText(locale, actionableApplication.next_action),
           href: "/student/applications",
           owner: t.ownerStudent,
           cta: t.applicationAction,
@@ -200,7 +201,7 @@ export default async function StudentEntry() {
               <h2 className="editorial-accent mt-3 text-[1.7rem] leading-[1.08] text-[var(--foreground)] sm:text-[2.15rem]">
                 {hasActionRequired ? nextAction.label : t.fileUpToDate}
               </h2>
-              <p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--muted)] sm:text-base">
+              <p dir="auto" className="mt-3 max-w-2xl text-sm leading-6 text-[var(--muted)] sm:text-base">
                 {nextAction.detail}
               </p>
 
@@ -308,10 +309,10 @@ export default async function StudentEntry() {
             {deadlineOverdue ? t.deadlineOverdue : t.nextDeadline}
           </Badge>
           <h2 className="mt-3 text-xl font-bold text-[var(--foreground)]">
-            {nextApplication?.deadline ? formatDeadline(nextApplication.deadline, locale) : t.noDeadline}
+            <bdi dir="auto">{nextApplication?.deadline ? formatDeadline(nextApplication.deadline, locale) : t.noDeadline}</bdi>
           </h2>
           <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
-            {nextApplication?.next_action || (nextApplication
+            {localizeApplicationStoredText(locale, nextApplication?.next_action) || (nextApplication
               ? t.applicationFallback
               : t.noActiveDeadline)}
           </p>
