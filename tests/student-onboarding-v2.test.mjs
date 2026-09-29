@@ -38,7 +38,7 @@ test("onboarding V2 provides localized premium guidance and mobile-friendly acti
   assert.ok(form.includes("w-full sm:w-auto"));
   assert.ok(form.includes("t.finish"));
   assert.ok(form.includes("7973208"));
-  assert.ok(copy.includes("تأكيد وفتح ملفك"));
+  assert.ok(copy.includes("أكّد وافتح ملفك"));
   assert.ok(copy.includes("Confirm and open my space"));
   assert.ok(copy.includes("Bestätigen und Bereich öffnen"));
 });
