@@ -19,7 +19,7 @@ test("AI task queue keeps a bounded daily cap above two tasks", () => {
 });
 
 test("temporary free-provider exhaustion returns the task to ready instead of blocking it", () => {
-  assert.match(workflow, /status="\$\?"/);
+  assert.match(workflow, /status=\$\?/);
   assert.match(workflow, /"\$status" -eq 75/);
   assert.match(workflow, /labels: \["almago-ai-ready"\]/);
   assert.match(workflow, /steps\.provider\.outputs\.retryable == 'true'/);
