@@ -12,7 +12,6 @@ export default function manifest(): MetadataRoute.Manifest {
     icons: [
       {
         src: "/brand/campus-allemagne-symbol-approved.webp",
-        sizes: "160x117",
         type: "image/webp",
         purpose: "any",
       },
