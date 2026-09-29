@@ -139,3 +139,20 @@ test('provider-output validation errors can be classified for retry by the propo
   error.retryable = true;
   assert.equal(isRetryableProviderError(error), true);
 });
+
+
+test('Gemini prompt budget can carry the larger bounded orientation task without free-provider compaction', () => {
+  const task = {
+    number: 527,
+    title: 'Arabic UX audit — Orientation',
+    body: '<!-- almago-ai-task -->\nFiles:\n- src/content/student-orientation-copy.ts\n- src/components/student/StudentOrientationPanel.tsx\nGoal: polish Arabic UX.',
+    files: [
+      'src/content/student-orientation-copy.ts',
+      'src/components/student/StudentOrientationPanel.tsx',
+    ],
+  };
+  const prompt = promptFor(task, 120000);
+  assert.doesNotMatch(prompt, /context compacted for free-provider limit/);
+  assert.match(prompt, /FILE src\/content\/student-orientation-copy\.ts/);
+  assert.match(prompt, /FILE src\/components\/student\/StudentOrientationPanel\.tsx/);
+});
