@@ -20,7 +20,7 @@ export default async function UnauthorizedPage() {
         <section className="w-full rounded-[1rem] border border-[var(--border)] bg-[var(--surface)] p-7 text-center shadow-[0_24px_70px_-54px_rgba(28,33,36,0.45)] sm:p-10">
           <div className="flex items-center justify-between gap-3">
             <Link href="/" className="inline-flex min-h-11 items-center" aria-label={t.homeAria}>
-              <BrandLogo className="h-auto w-64" />
+              <BrandLogo className="h-auto w-40 sm:w-56" />
             </Link>
             <LanguageSwitcher compact />
           </div>
