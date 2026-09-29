@@ -116,3 +116,19 @@ test('Groq fallback prompt compacts large Arabic UX sources under the free-tier 
   assert.match(prompt, /const ar/);
   assert.ok(prompt.length < 20000, `compact prompt too large: ${prompt.length}`);
 });
+
+
+test('rejects provider diffs without a standard unified-diff hunk header', () => {
+  const malformed = [
+    'diff --git a/src/app/page.tsx b/src/app/page.tsx',
+    '--- a/src/app/page.tsx',
+    '+++ b/src/app/page.tsx',
+    '-old',
+    '+new',
+    '',
+  ].join('\n');
+  assert.throws(
+    () => validatePatch(malformed, ['src/app/page.tsx']),
+    /missing a valid unified-diff hunk header/,
+  );
+});
