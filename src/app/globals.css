@@ -319,3 +319,54 @@ html[dir="rtl"] .student-overview-card:hover .student-overview-arrow {
     border-inline-end-width: 0;
   }
 }
+
+
+/* Arabic Student Space Editorial V1 */
+html[dir="rtl"] .student-shell {
+  text-align: right;
+}
+
+html[dir="rtl"] .student-shell #main-content :is(h1, h2) {
+  font-family: var(--font-arabic-display), var(--font-arabic), Tahoma, Arial, sans-serif;
+  font-style: normal;
+  letter-spacing: 0;
+  line-height: 1.42;
+}
+
+html[dir="rtl"] .student-shell #main-content h3 {
+  letter-spacing: 0;
+  line-height: 1.55;
+}
+
+html[dir="rtl"] .student-shell :is(p, li, label, button, a) {
+  letter-spacing: 0;
+}
+
+html[dir="rtl"] .student-shell-sidebar nav,
+html[dir="rtl"] .student-shell header,
+html[dir="rtl"] .student-shell main {
+  text-align: right;
+}
+
+html[dir="rtl"] .student-shell bdi[dir="ltr"],
+html[dir="rtl"] .student-shell [dir="ltr"] {
+  unicode-bidi: isolate;
+}
+
+@media (max-width: 639px) {
+  html[dir="rtl"] .student-shell #main-content :is(h1, h2) {
+    line-height: 1.5;
+  }
+}
+
+@media (min-width: 1024px) {
+  html[dir="rtl"] .student-guidance-panel,
+  html[dir="rtl"] .student-onboarding-grid {
+    direction: ltr;
+  }
+
+  html[dir="rtl"] .student-guidance-panel > *,
+  html[dir="rtl"] .student-onboarding-grid > * {
+    direction: rtl;
+  }
+}

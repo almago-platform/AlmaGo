@@ -88,6 +88,7 @@ export function AppShell({
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { copy, direction } = useLocale();
   const shell = copy.shell;
+  const shellHomeAria = role === "student" ? copy.common.homeAria : "Accueil AlmaGo";
   const localizedStudentItems = studentItems.map((item, index) => ({
     ...item,
     label: shell.items[index][0],
@@ -116,7 +117,7 @@ export function AppShell({
 
       <aside className="student-shell-sidebar hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-40 lg:flex lg:w-[15.5rem] lg:flex-col lg:border-r lg:border-[var(--border)] lg:bg-[var(--surface)]">
         <div className="flex min-h-20 items-center border-b border-[var(--border)] px-5">
-          <Link href={role === "admin" ? "/admin" : "/student"} className="flex items-center" aria-label="Accueil AlmaGo">
+          <Link href={role === "admin" ? "/admin" : "/student"} className="flex items-center" aria-label={shellHomeAria}>
             <BrandLogo className="h-auto w-[9.5rem]" />
           </Link>
         </div>
@@ -225,7 +226,7 @@ export function AppShell({
           <>
             <header className="sticky top-0 z-30 border-b border-[var(--border)] bg-[#fffdf8]/95 pt-[env(safe-area-inset-top)] shadow-[0_8px_24px_-22px_rgba(28,33,36,0.24)] backdrop-blur lg:hidden">
               <div className="flex min-h-16 items-center justify-between gap-3 px-3 py-2.5 min-[360px]:px-4">
-                <Link href="/student" onClick={() => setMobileMenuOpen(false)} className="flex min-w-0 items-center gap-2.5" aria-label="Accueil AlmaGo">
+                <Link href="/student" onClick={() => setMobileMenuOpen(false)} className="flex min-w-0 items-center gap-2.5" aria-label={shellHomeAria}>
                   <span className="grid h-10 w-10 shrink-0 place-items-center"><BrandLogo symbolOnly className="h-10 w-10 object-contain" /></span>
                   <span className="min-w-0">
                     <span className="block text-sm font-bold leading-4 text-[var(--foreground)]">AlmaGo</span>
@@ -316,7 +317,7 @@ export function AppShell({
           <>
             <header className="sticky top-0 z-30 border-b border-[var(--border)] bg-[#fffdf8]/95 pt-[env(safe-area-inset-top)] shadow-[0_8px_24px_-22px_rgba(28,33,36,0.24)] backdrop-blur lg:hidden">
               <div className="flex min-h-16 items-center justify-between gap-3 px-3 py-2.5 min-[360px]:px-4">
-                <Link href="/admin" onClick={() => setMobileMenuOpen(false)} className="flex min-w-0 items-center gap-2.5" aria-label="Accueil AlmaGo">
+                <Link href="/admin" onClick={() => setMobileMenuOpen(false)} className="flex min-w-0 items-center gap-2.5" aria-label={shellHomeAria}>
                   <span className="grid h-10 w-10 shrink-0 place-items-center"><BrandLogo symbolOnly className="h-10 w-10 object-contain" /></span>
                   <span className="min-w-0">
                     <span className="block text-sm font-bold leading-4 text-[var(--foreground)]">AlmaGo</span>

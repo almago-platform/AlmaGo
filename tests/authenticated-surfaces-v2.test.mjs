@@ -122,8 +122,8 @@ test("Arabic dashboard V3 prioritizes the concrete next action and one progress 
   assert.ok(dashboard.includes("showProgressSummary={false}"));
   assert.ok(journeyOverview.includes("showProgressSummary = true"));
   assert.ok(dashboardCopy.includes('statusTodo: "خطوات مطلوبة"'));
-  assert.ok(dashboardCopy.includes('openStep: "فتح الخطوة"'));
-  assert.ok(dashboardCopy.includes('germanyReadyTitle: "هدفك محفوظ، والخطوات مرتبطة به."'));
+  assert.ok(dashboardCopy.includes('openStep: "افتح الخطوة"'));
+  assert.ok(dashboardCopy.includes('germanyReadyTitle: "هدفك محفوظ، والخطوات المناسبة مرتبطة به."'));
 });
 
 test("Arabic profile and project V3 isolate Latin data instead of mixing scripts", () => {
@@ -134,7 +134,7 @@ test("Arabic profile and project V3 isolate Latin data instead of mixing scripts
   assert.ok(profileCopy.includes('Dresde: "Dresden"'));
   assert.ok(profileCopy.includes("\\u2066800–1,000 €\\u2069 شهريًا"));
   assert.ok(profileControls.includes('<bdi dir={locale === "ar" ? "ltr" : undefined}>'));
-  assert.ok(projectCopy.includes('language_only: { title: "دراسة اللغة الألمانية فقط"'));
+  assert.ok(projectCopy.includes('language_only: { title: "تعلّم الألمانية فقط"'));
   assert.ok(projectCopy.includes('filingCountry: "البلد الذي ستقدّم منه"'));
   assert.ok(projectForm.includes('name="current_german_level"'));
   assert.ok(projectForm.includes('inputDir="ltr"'));
