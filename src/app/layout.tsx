@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import { Inter, Noto_Kufi_Arabic, Noto_Sans_Arabic, Source_Serif_4 } from "next/font/google";
 import type { ReactNode } from "react";
 import { LocaleProvider } from "@/components/i18n/LocaleProvider";
-import { getNativeCopy } from "@/content/native-copy";
+import { getNativeCopy } from "@/content/native-copy";\nimport { BRAND_NAME, brandText } from "@/lib/brand";
 import { BRAND_NAME, brandText } from "@/lib/brand";
 import {
   LOCALE_COOKIE,
