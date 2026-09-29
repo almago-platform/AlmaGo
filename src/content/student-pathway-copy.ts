@@ -218,10 +218,10 @@ const ar: PathwayCopy = {
   },
   cards: {
     project: "المشروع الأكاديمي", filled: "تم إدخاله", complete: "يحتاج إلى استكمال", projectPrompt: "حدّد ما تريد فعله في ألمانيا قبل المتابعة.", defineProject: "حدّد هدفك", edit: "تعديل",
-    academicBasis: "الأساس الأكاديمي", evidence: "استعرض إثباتاتك",
+    academicBasis: "الإثبات الأكاديمي", evidence: "استعرض إثباتاتك",
     languagePreparation: "التحضير اللغوي", courseSelected: "تم اختيار دورة", noCourse: "لم يتم اختيار دورة", studyPreparation: "تحضير للدراسة", standaloneLanguage: "دورة لغة مستقلة", noCourseDetail: "اختر بنفسك دورة تم التحقق منها من الكتالوج. AlmaGo لا يختار دورة نيابةً عنك.", courses: "استعرض الدورات",
     administrativeStep: "المسار الذي يجب التحقق منه", notDetermined: "غير محدد", confirmedDetail: "توجد وقائع تم التحقق منها تسمح بتحديد هذا المسار داخل AlmaGo، من دون أن تستبدل القرار الرسمي.", candidateDetail: "هذا المسار يحتاج إلى مراجعة بناءً على المعلومات المسجلة حاليًا في ملفك.", blockedDetail: "هناك عنصر ناقص أو يحتاج إلى مراجعة قبل المتابعة.",
-    finance: "التمويل والتأمين", verifiedOptions: (count) => `${count} ${count === 1 ? "خيار تم التحقق منه" : "خيارات تم التحقق منها"}`, catalogueIncomplete: "الكتالوج يحتاج إلى استكمال", financeAvailable: "راجع الخيارات المنشورة ومصادرها الرسمية. AlmaGo لا يرتبها ولا يستنتج أهليتك.", financeEmpty: "لا يوجد خيار تم التحقق منه منشور حاليًا. لا يتم اقتراح مقدم خدمة تلقائيًا.", options: "استعرض الخيارات",
+    finance: "التمويل والتأمين", verifiedOptions: (count) => `${count} ${count === 1 ? "خيار تم التحقق منه" : "خيارات تم التحقق منها"}`, catalogueIncomplete: "لا توجد خيارات كافية بعد", financeAvailable: "راجع الخيارات المنشورة ومصادرها الرسمية. AlmaGo لا يرتبها ولا يستنتج أهليتك.", financeEmpty: "لا يوجد خيار تم التحقق منه منشور حاليًا. لا يتم اقتراح مقدم خدمة تلقائيًا.", options: "استعرض الخيارات",
     finalSteps: "الخطوات النهائية", checklistProgress: (done, total) => `${done}/${total} مكتملة`, noChecklist: "لا توجد خطوات مسجلة", checklistAvailable: "تجمع قائمة الخطوات الإجراءات العملية المسجلة فعليًا في ملفك.", checklistEmpty: "ستظهر الخطوات هنا عندما تتم إضافتها إلى ملفك.", checklist: "استعرض خطواتك",
   },
   nextActions: {
