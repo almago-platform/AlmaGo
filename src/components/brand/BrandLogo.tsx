@@ -1,5 +1,5 @@
 // Campus Allemagne — canonical website logo renderer.
-// The full lockup uses the exact approved master artwork supplied by the brand owner.
+// Both assets below are crops of the exact approved master artwork supplied by the brand owner.
 import Image from "next/image";
 
 type BrandLogoProps = {
@@ -10,25 +10,23 @@ type BrandLogoProps = {
 };
 
 export function BrandLogo({
-  variant = "primary",
+  variant: _variant = "primary",
   symbolOnly = false,
   className = "",
   priority = false,
 }: BrandLogoProps) {
   const src = symbolOnly
-    ? variant === "reverse"
-      ? "/brand/campus-allemagne-symbol-reverse.svg"
-      : "/brand/campus-allemagne-symbol.svg"
+    ? "/brand/campus-allemagne-symbol-approved.webp"
     : "/brand/campus-allemagne-logo-approved.webp";
 
   return (
     <Image
       src={src}
       alt="Campus Allemagne"
-      width={symbolOnly ? 520 : 420}
-      height={symbolOnly ? 420 : 106}
+      width={symbolOnly ? 160 : 420}
+      height={symbolOnly ? 117 : 106}
       priority={priority}
-      unoptimized={!symbolOnly}
+      unoptimized
       className={className}
     />
   );
