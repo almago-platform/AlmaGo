@@ -23,7 +23,9 @@ test("public homepage uses the scoped AlmaGo module and current Brand V2 tokens"
   assert.match(workCss, /--home-gold:\s*#fcb50a/i);
   assert.doesNotMatch(workCss, /Source Serif 4/);
   assert.doesNotMatch(workCss, /font-style:\s*italic/);
-  assert.match(workCss, /\.sectionTitle em,[\s\S]*?font-family:\s*inherit;[\s\S]*?font-style:\s*normal;/);
+  assert.match(workCss, /\.sectionTitle em,[\s\S]*?font-family:\s*inherit;[\s\S]*?font-style:\s*normal;[\s\S]*?font-weight:\s*inherit;/);
+  assert.match(workCss, /\.photoBandTitle em\s*\{[\s\S]*?font-weight:\s*inherit;/);
+  assert.match(workCss, /\.finalCta h2 em\s*\{[\s\S]*?font-weight:\s*inherit;/);
 });
 
 test("student and admin share the current Brand V2 shell tokens", () => {
