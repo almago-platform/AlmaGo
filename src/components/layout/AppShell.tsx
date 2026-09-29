@@ -118,7 +118,7 @@ export function AppShell({
       <aside className="student-shell-sidebar hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-40 lg:flex lg:w-[15.5rem] lg:flex-col lg:border-r lg:border-[var(--border)] lg:bg-[var(--surface)]">
         <div className="flex min-h-20 items-center border-b border-[var(--border)] px-5">
           <Link href={role === "admin" ? "/admin" : "/student"} className="flex items-center" aria-label={shellHomeAria}>
-            <BrandLogo className="h-auto w-[9.5rem]" />
+            <BrandLogo className="h-auto w-[13rem]" />
           </Link>
         </div>
 
