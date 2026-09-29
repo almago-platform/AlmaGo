@@ -171,7 +171,7 @@ jobs:
           git apply --check almago-ai.patch
           git apply almago-ai.patch
           git diff --check
-          git diff --exit-code -- . ':!src/app' ':!src/components' ':!src/lib'
+          git diff --exit-code -- . ':!src/app' ':!src/components' ':!src/content' ':!src/lib'
       - name: Independent cross-provider review
         if: steps.pick.outputs.number != '' && steps.provider.outputs.retryable != 'true'
         env:
