@@ -18,6 +18,12 @@ const globals = readFileSync("src/app/globals.css", "utf8");
 const dashboard = readFileSync("src/app/student/page.tsx", "utf8");
 const checklist = readFileSync("src/app/student/checklist/page.tsx", "utf8");
 const checklistCopy = readFileSync("src/content/student-checklist-copy.ts", "utf8");
+const dashboardCopy = readFileSync("src/content/student-dashboard-copy.ts", "utf8");
+const profileCopy = readFileSync("src/content/student-profile-copy.ts", "utf8");
+const profileControls = readFileSync("src/components/student/ProfileControls.tsx", "utf8");
+const projectCopy = readFileSync("src/content/student-project-copy.ts", "utf8");
+const projectForm = readFileSync("src/components/student/StudentProjectForm.tsx", "utf8");
+const journeyOverview = readFileSync("src/components/student/StudentJourneyOverview.tsx", "utf8");
 
 test("student shell groups navigation by dossier, parcours and resources", () => {
   assert.ok(shell.includes("const studentGroupIndexes"));
@@ -105,4 +111,33 @@ test("recorded checklist templates are localized by stable template key", () => 
   assert.ok(checklistCopy.includes('Traduction: "الترجمات"'));
   assert.ok(checklistCopy.includes('Orientation: "اختيار البرامج"'));
   assert.ok(checklistCopy.includes('Candidatures: "طلبات التقديم"'));
+});
+
+
+test("Arabic dashboard V3 prioritizes the concrete next action and one progress source", () => {
+  assert.ok(dashboard.includes('select("path").eq("student_id", user.id).maybeSingle()'));
+  assert.ok(dashboard.includes("waitingAlmaGo.length > 0"));
+  assert.ok(dashboard.includes("label: nextItem.title"));
+  assert.ok(dashboard.includes("cta: t.openStep"));
+  assert.ok(dashboard.includes("showProgressSummary={false}"));
+  assert.ok(journeyOverview.includes("showProgressSummary = true"));
+  assert.ok(dashboardCopy.includes('statusTodo: "خطوات مطلوبة"'));
+  assert.ok(dashboardCopy.includes('openStep: "فتح الخطوة"'));
+  assert.ok(dashboardCopy.includes('germanyReadyTitle: "هدفك محفوظ، والخطوات مرتبطة به."'));
+});
+
+test("Arabic profile and project V3 isolate Latin data instead of mixing scripts", () => {
+  assert.ok(profileCopy.includes('Bachelor: "بكالوريوس"'));
+  assert.ok(profileCopy.includes('Master: "ماجستير"'));
+  assert.ok(profileCopy.includes('Brême: "Bremen"'));
+  assert.ok(profileCopy.includes('Cologne: "Köln"'));
+  assert.ok(profileCopy.includes('Dresde: "Dresden"'));
+  assert.ok(profileCopy.includes("\\u2066800–1,000 €\\u2069 شهريًا"));
+  assert.ok(profileControls.includes('<bdi dir={locale === "ar" ? "ltr" : undefined}>'));
+  assert.ok(projectCopy.includes('language_only: { title: "دراسة اللغة الألمانية فقط"'));
+  assert.ok(projectCopy.includes('filingCountry: "البلد الذي ستقدّم منه"'));
+  assert.ok(projectForm.includes('name="current_german_level"'));
+  assert.ok(projectForm.includes('inputDir="ltr"'));
+  assert.ok(projectForm.includes('dir="ltr"'));
+  assert.ok(projectForm.includes('rows={3}'));
 });
