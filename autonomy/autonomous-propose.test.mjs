@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { isProtectedPath, isRetryableProviderError, parseTask, promptFor, validatePatch } from './autonomous-propose.mjs';
+import { readFileSync } from 'node:fs';
+import { buildPatchFromStructuredEdits, isProtectedPath, isRetryableProviderError, parseTask, promptFor, validatePatch } from './autonomous-propose.mjs';
 
 const issue = {
   number: 17,
@@ -155,4 +156,31 @@ test('Gemini prompt budget can carry the larger bounded orientation task without
   assert.doesNotMatch(prompt, /context compacted for free-provider limit/);
   assert.match(prompt, /FILE src\/content\/student-orientation-copy\.ts/);
   assert.match(prompt, /FILE src\/components\/student\/StudentOrientationPanel\.tsx/);
+});
+
+
+test('builds a valid git patch from strict Groq structured edits and restores the working tree', () => {
+  const file = 'src/lib/phase4.ts';
+  const original = 'export const universityTypes = ["Universität", "TU", "Hochschule", "FH"] as const;';
+  const task = { files:[file] };
+  const patch = buildPatchFromStructuredEdits(task, {
+    edits:[{
+      path:file,
+      old_text:original,
+      new_text:'export const universityTypes = ["Universität", "TU", "Hochschule", "FH"] as const; // bounded-test',
+    }],
+  });
+  assert.match(patch, /^diff --git a\/src\/lib\/phase4\.ts b\/src\/lib\/phase4\.ts/m);
+  assert.match(patch, /^@@ -\d+(?:,\d+)? \+\d+(?:,\d+)? @@/m);
+  assert.doesNotMatch(readFileSync(file, 'utf8'), /bounded-test/);
+});
+
+test('rejects ambiguous or out-of-scope Groq structured edits', () => {
+  const file = 'src/lib/phase4.ts';
+  assert.throws(() => buildPatchFromStructuredEdits({ files:[file] }, {
+    edits:[{ path:'src/lib/i18n.ts', old_text:'x', new_text:'y' }],
+  }), /outside the approved file list/);
+  assert.throws(() => buildPatchFromStructuredEdits({ files:[file] }, {
+    edits:[{ path:file, old_text:'export', new_text:'changed' }],
+  }), /match exactly once/);
 });
