@@ -14,6 +14,7 @@ const provider = readFileSync("src/components/i18n/LocaleProvider.tsx", "utf8");
 
 const approvedLogo = "public/brand/campus-allemagne-logo-approved.png";
 const approvedSymbol = "public/brand/campus-allemagne-symbol-approved.png";
+const approvedFavicon = "public/brand/campus-allemagne-favicon.png";
 
 test("Campus Allemagne keeps the approved shared application palette", () => {
   assert.match(globals, /--foreground:\s*#1c2124/i);
@@ -52,7 +53,7 @@ test("localized public copy is rebranded without rewriting locale source files",
   assert.match(footer, /© Campus Allemagne/);
 });
 
-test("favicon metadata and PWA manifest use the exact approved compact mark", () => {
+test("browser favicon uses the dedicated Campus Allemagne icon while PWA keeps the approved compact mark", () => {
   assert.match(layout, /applicationName: BRAND_NAME/);
   assert.match(layout, /siteName: BRAND_NAME/);
   assert.match(layout, /campus-allemagne-symbol-approved\.png/);
