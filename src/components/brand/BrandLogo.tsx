@@ -15,15 +15,15 @@ export function BrandLogo({
   priority = false,
 }: BrandLogoProps) {
   const src = symbolOnly
-    ? "/brand/campus-allemagne-symbol-approved.webp"
-    : "/brand/campus-allemagne-logo-approved.webp";
+    ? "/brand/campus-allemagne-symbol-approved.png"
+    : "/brand/campus-allemagne-logo-approved.png";
 
   return (
     <Image
       src={src}
       alt="Campus Allemagne"
-      width={symbolOnly ? 160 : 420}
-      height={symbolOnly ? 117 : 106}
+      width={symbolOnly ? 192 : 400}
+      height={symbolOnly ? 136 : 103}
       priority={priority}
       unoptimized
       className={className}
