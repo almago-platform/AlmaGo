@@ -36,7 +36,7 @@ export default async function OnboardingPage() {
       <header className="border-b border-[var(--border)] bg-[rgba(255,253,248,0.96)] backdrop-blur">
         <div className="mx-auto flex min-h-16 w-full max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
           <Link href="/" className="inline-flex min-h-11 items-center" aria-label={t.homeAria}>
-            <BrandLogo className="h-auto w-32 sm:w-36" />
+            <BrandLogo className="h-auto w-44 sm:w-48" />
           </Link>
           <div className="flex items-center gap-3">
             <LanguageSwitcher compact />
@@ -63,7 +63,7 @@ function OnboardingUnavailable({ copy }: { copy: (typeof studentOnboardingCopy)[
       <div className="mx-auto w-full max-w-3xl">
         <div className="flex items-center justify-between gap-3">
           <Link href="/" className="inline-flex min-h-11 items-center" aria-label={copy.homeAria}>
-            <BrandLogo className="h-auto w-32 sm:w-36" />
+            <BrandLogo className="h-auto w-44 sm:w-48" />
           </Link>
           <LanguageSwitcher compact />
         </div>
