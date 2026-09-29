@@ -47,8 +47,8 @@ export async function generateMetadata(): Promise<Metadata> {
       images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: BRAND_NAME }],
     },
     icons: {
-      icon: [{ url: "/brand/campus-allemagne-favicon.png", type: "image/png", sizes: "1254x1254" }],
-      shortcut: ["/brand/campus-allemagne-favicon.png"],
+      icon: [{ url: "/brand/campus-allemagne-favicon-v3.svg?v=3", type: "image/svg+xml", sizes: "any" }],
+      shortcut: ["/brand/campus-allemagne-favicon-v3.svg?v=3"],
     },
     twitter: {
       card: "summary_large_image",
