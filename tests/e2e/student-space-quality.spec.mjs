@@ -50,6 +50,20 @@ test.describe("authenticated Student Space quality", () => {
 
       await expect(page.locator("html")).toHaveAttribute("lang", "ar");
       await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
+      await expect(page.getByRole("link", { name: "الصفحة الرئيسية لـ AlmaGo" }).first()).toBeVisible();
+
+      if (target.name === "project") {
+        await expect(page.getByRole("heading", { name: "حدّد هدفك في ألمانيا" })).toBeVisible();
+      }
+      if (target.name === "applications") {
+        await expect(page.getByText("قبل التقديم", { exact: true })).toBeVisible();
+      }
+      if (target.name === "pathway") {
+        await expect(page.getByText("المعلومات الرسمية التي يجب التحقق منها", { exact: true })).toBeVisible();
+      }
+      if (target.name === "language-courses") {
+        await expect(page.getByRole("heading", { name: "دورات لغة بمصادر واضحة" })).toBeVisible();
+      }
 
       const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
       expect(overflow, target.path + " must not overflow horizontally").toBeLessThanOrEqual(1);
