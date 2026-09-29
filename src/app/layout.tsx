@@ -4,6 +4,7 @@ import { Inter, Noto_Kufi_Arabic, Noto_Sans_Arabic, Source_Serif_4 } from "next/
 import type { ReactNode } from "react";
 import { LocaleProvider } from "@/components/i18n/LocaleProvider";
 import { getNativeCopy } from "@/content/native-copy";
+import { BRAND_NAME, brandText } from "@/lib/brand";
 import {
   LOCALE_COOKIE,
   localeDirection,
@@ -28,12 +29,12 @@ export async function generateMetadata(): Promise<Metadata> {
 
   return {
     title: {
-      default: metadata.title,
-      template: "%s | AlmaGo",
+      default: brandText(metadata.title),
+      template: `%s | ${BRAND_NAME}`,
     },
-    description: metadata.description,
-    applicationName: "AlmaGo",
-    keywords: [...metadata.keywords],
+    description: brandText(metadata.description),
+    applicationName: BRAND_NAME,
+    keywords: metadata.keywords.map(brandText),
     robots: {
       index: true,
       follow: true,
@@ -41,17 +42,19 @@ export async function generateMetadata(): Promise<Metadata> {
     openGraph: {
       type: "website",
       locale: localeOpenGraph(locale),
-      siteName: "AlmaGo",
-      title: metadata.title,
-      description: metadata.description,
+      siteName: BRAND_NAME,
+      title: brandText(metadata.title),
+      description: brandText(metadata.description),
+      images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: BRAND_NAME }],
     },
     icons: {
-      icon: [{ url: "/brand/almago-symbol.svg", type: "image/svg+xml" }],
+      icon: [{ url: "/brand/campus-allemagne-symbol.svg", type: "image/svg+xml" }],
     },
     twitter: {
-      card: "summary",
-      title: metadata.title,
-      description: metadata.description,
+      card: "summary_large_image",
+      title: brandText(metadata.title),
+      description: brandText(metadata.description),
+      images: ["/opengraph-image"],
     },
   };
 }
