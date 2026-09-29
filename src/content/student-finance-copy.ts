@@ -92,7 +92,7 @@ export const studentFinanceCopy: Record<Locale, FinanceCopy> = {
     unknownProvider: "تحقق لدى مقدم الخدمة",
     unknown: "يحتاج إلى تأكيد",
     unavailableDescription: "الخيارات التي تم التحقق منها غير متاحة مؤقتًا.",
-    unavailableTitle: "الكتالوج غير متاح مؤقتًا",
+    unavailableTitle: "قائمة الخيارات غير متاحة مؤقتًا",
     unavailableText: "تعذر تحميل الخيارات التي تم التحقق منها الآن. حاول مرة أخرى.",
     retry: "إعادة المحاولة",
     intlLocale: "ar-TN",
