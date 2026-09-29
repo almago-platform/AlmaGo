@@ -20,7 +20,7 @@ export default async function ResetPasswordPage() {
         <section className="hidden min-h-[620px] overflow-hidden rounded-[1rem] border border-[var(--border)] bg-[var(--surface)] shadow-[0_28px_70px_-52px_rgba(28,33,36,0.55)] lg:flex lg:flex-col">
           <div className="flex items-center justify-between gap-3 border-b border-[var(--border)] bg-[var(--surface)] p-7">
             <Link href="/" className="inline-flex items-center" aria-label={t.homeAria}>
-              <BrandLogo className="h-auto w-40" />
+              <BrandLogo className="h-auto w-56" />
             </Link>
             <LanguageSwitcher compact />
           </div>
@@ -54,7 +54,7 @@ export default async function ResetPasswordPage() {
         <section className="mx-auto w-full max-w-[36rem]">
           <div className="mb-5 flex items-center justify-between lg:hidden">
             <Link href="/" className="inline-flex min-h-11 items-center" aria-label={t.homeAria}>
-              <BrandLogo className="h-auto w-32" />
+              <BrandLogo className="h-auto w-44" />
             </Link>
             <div className="flex items-center gap-2">
               <LanguageSwitcher compact />
