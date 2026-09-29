@@ -71,8 +71,8 @@
 .finalCta h2 em {
   font-family: inherit;
   font-style: normal;
-  font-weight: 650;
-  letter-spacing: -0.045em;
+  font-weight: inherit;
+  letter-spacing: inherit;
 }
 .lead {
   margin-top: 22px;
@@ -2573,8 +2573,9 @@
 .photoBandTitle em {
   color: #db0423;
   font-family: inherit;
-  font-weight: 650;
+  font-weight: inherit;
   font-style: normal;
+  letter-spacing: inherit;
 }
 .photoBandHeading > p:last-child {
   max-width: 500px;
@@ -3499,8 +3500,9 @@
 .finalCta h2 em {
   color: #db0423;
   font-family: inherit;
-  font-weight: 650;
+  font-weight: inherit;
   font-style: normal;
+  letter-spacing: inherit;
 }
 .finalCta h2 + p {
   max-width: 560px;
