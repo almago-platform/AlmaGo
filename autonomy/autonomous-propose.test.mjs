@@ -132,3 +132,10 @@ test('rejects provider diffs without a standard unified-diff hunk header', () =>
     /missing a valid unified-diff hunk header/,
   );
 });
+
+
+test('provider-output validation errors can be classified for retry by the proposal loop', () => {
+  const error = new Error('Patch is missing a valid unified-diff hunk header.');
+  error.retryable = true;
+  assert.equal(isRetryableProviderError(error), true);
+});
