@@ -11,7 +11,13 @@ export type StudentJourneyStage = {
   tone?: "done" | "active" | "neutral";
 };
 
-export function StudentJourneyOverview({ stages }: { stages: StudentJourneyStage[] }) {
+export function StudentJourneyOverview({
+  stages,
+  showProgressSummary = true,
+}: {
+  stages: StudentJourneyStage[];
+  showProgressSummary?: boolean;
+}) {
   const { locale, direction } = useLocale();
   const copy = studentSharedCopy[locale].overview;
   const totalStages = stages.length;
@@ -22,7 +28,7 @@ export function StudentJourneyOverview({ stages }: { stages: StudentJourneyStage
 
   return (
     <section aria-labelledby="student-journey-title" className="mt-7 overflow-hidden rounded-[1rem] border border-[var(--border)] bg-[var(--surface)] shadow-[0_24px_64px_-54px_rgba(28,33,36,0.45)]">
-      <div className="grid gap-5 border-b border-[var(--border)] bg-[var(--surface-subtle)] px-5 py-5 sm:px-6 lg:grid-cols-[minmax(0,1fr)_17rem] lg:items-end">
+      <div className={`grid gap-5 border-b border-[var(--border)] bg-[var(--surface-subtle)] px-5 py-5 sm:px-6 ${showProgressSummary ? "lg:grid-cols-[minmax(0,1fr)_17rem] lg:items-end" : ""}`}>
         <div>
           <p className="text-[0.68rem] font-bold uppercase tracking-[0.15em] text-[var(--brand)]">{copy.eyebrow}</p>
           <h2 id="student-journey-title" className="editorial-accent mt-2 text-[1.7rem] leading-[1.08] text-[var(--foreground)] sm:text-[2rem]">
@@ -31,20 +37,22 @@ export function StudentJourneyOverview({ stages }: { stages: StudentJourneyStage
           <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--muted)]">{copy.intro}</p>
         </div>
 
-        <div>
-          <div className="flex items-center justify-between gap-4 text-xs font-semibold text-[var(--muted)]">
-            <span>{completedStages.length} / {totalStages} {copy.completed}</span>
-            <span className="font-bold text-[var(--brand)]">{progressPercent}%</span>
+        {showProgressSummary && (
+          <div>
+            <div className="flex items-center justify-between gap-4 text-xs font-semibold text-[var(--muted)]">
+              <span>{completedStages.length} / {totalStages} {copy.completed}</span>
+              <span className="font-bold text-[var(--brand)]">{progressPercent}%</span>
+            </div>
+            <div className="mt-2 h-2 overflow-hidden rounded-full bg-[var(--surface-muted)]">
+              <div className="h-full rounded-full bg-[var(--brand)] transition-[width]" style={{ width: `${progressPercent}%` }} />
+            </div>
+            {activeStage && (
+              <p className="mt-2 text-xs text-[var(--muted)]">
+                {copy.active}: <span className="font-bold text-[var(--foreground)]">{activeStage.label}</span>
+              </p>
+            )}
           </div>
-          <div className="mt-2 h-2 overflow-hidden rounded-full bg-[var(--surface-muted)]">
-            <div className="h-full rounded-full bg-[var(--brand)] transition-[width]" style={{ width: `${progressPercent}%` }} />
-          </div>
-          {activeStage && (
-            <p className="mt-2 text-xs text-[var(--muted)]">
-              {copy.active}: <span className="font-bold text-[var(--foreground)]">{activeStage.label}</span>
-            </p>
-          )}
-        </div>
+        )}
       </div>
 
       <ol className="grid gap-0 sm:grid-cols-2 xl:grid-cols-3">
