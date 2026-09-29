@@ -26,8 +26,8 @@ test("student shell groups navigation by dossier, parcours and resources", () =>
   assert.ok(shell.includes("shell.studentMobileNavigation"));
   assert.ok(nativeCopy.includes('groups: ["Dossier", "Parcours", "Ressources"]'));
   assert.ok(nativeCopy.includes('groups: ["ملفي", "خطواتي", "الموارد"]'));
-  assert.ok(nativeCopy.includes('groups: ["My file", "My journey", "Resources"]'));
-  assert.ok(nativeCopy.includes('groups: ["Meine Akte", "Mein Weg", "Ressourcen"]'));
+  assert.ok(nativeCopy.includes('groups: ["My workspace", "My journey", "Resources"]'));
+  assert.ok(nativeCopy.includes('groups: ["Mein Bereich", "Mein Weg", "Ressourcen"]'));
 });
 
 test("language and finance surfaces share localized resource context", () => {

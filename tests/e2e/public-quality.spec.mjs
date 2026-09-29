@@ -116,15 +116,15 @@ test("native language switch persists and Arabic renders RTL without overflow", 
   await englishSwitcher.selectOption("en");
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
   await expect(page.locator("html")).toHaveAttribute("dir", "ltr");
-  await expect(page.getByRole("heading", { name: "Sign in" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Sign in", exact: true })).toBeVisible();
 
   await page.locator("select:visible").first().selectOption("de");
   await expect(page.locator("html")).toHaveAttribute("lang", "de");
   await expect(page.locator("html")).toHaveAttribute("dir", "ltr");
-  await expect(page.getByRole("heading", { name: "Anmelden" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Anmelden", exact: true })).toBeVisible();
 
   await page.locator("select:visible").first().selectOption("fr");
   await expect(page.locator("html")).toHaveAttribute("lang", "fr");
   await expect(page.locator("html")).toHaveAttribute("dir", "ltr");
-  await expect(page.getByRole("heading", { name: "Se connecter" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Se connecter", exact: true })).toBeVisible();
 });
