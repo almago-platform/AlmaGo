@@ -28,7 +28,7 @@ async function post(url, headers, data) {
 }
 
 async function askGemini(prompt) {
-  const model = process.env.ALMAGO_GEMINI_MODEL || "gemini-2.5-flash";
+  const model = process.env.ALMAGO_GEMINI_MODEL || "gemini-3.8-flash";
   const data = await post("https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent",
     {"x-goog-api-key":process.env.GEMINI_API_KEY},
     {contents:[{role:"user",parts:[{text:prompt}]}],generationConfig:{maxOutputTokens:1800,temperature:0.1}});
@@ -40,7 +40,7 @@ async function askGroq(prompt) {
   if (!/^[a-zA-Z0-9_./-]+$/.test(model)) throw new Error("Invalid Groq model identifier.");
   const data = await post("https://api.groq.com/openai/v1/chat/completions",
     {Authorization:"Bearer " + process.env.GROQ_API_KEY},
-    {model,messages:[{role:"user",content:prompt}],max_completion_tokens:1800,reasoning_effort:"low"});
+    {model,messages:[{role:"user",content:prompt}],max_completion_tokens:1200,reasoning_effort:"low"});
   return data.choices?.[0]?.message?.content || "";
 }
 
