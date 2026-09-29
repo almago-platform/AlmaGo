@@ -149,7 +149,9 @@ test("Arabic project V4 isolates mixed free-text values and official city names"
   assert.ok(projectForm.includes('name="target_field"'));
   assert.ok(projectForm.includes('name="target_intake"'));
   assert.ok(projectForm.includes('name="preferred_study_language"'));
-  assert.ok(projectForm.includes('name="preferred_cities"'));
+  assert.ok(projectForm.includes("PreferredCitiesPicker"));
+  assert.ok(projectForm.includes("preferred_cities: preferredCities"));
+  assert.doesNotMatch(projectForm, /String\(form\.get\("preferred_cities"\)/);
   assert.ok(projectForm.includes('inputDir="auto"'));
   assert.ok(projectForm.includes('inputDir="ltr"'));
   assert.ok(projectForm.includes('dir="auto"'));

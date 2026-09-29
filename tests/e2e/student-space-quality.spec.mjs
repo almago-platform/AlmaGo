@@ -91,7 +91,9 @@ test.describe("authenticated Student Space quality", () => {
       }
 
       if (target.name === "project") {
-        await expect(page.locator('input[name="preferred_cities"]')).toHaveAttribute("dir", "ltr");
+        const citySearch = page.getByPlaceholder("ابحث عن مدينة في ألمانيا");
+        await expect(citySearch).toBeVisible();
+        await expect(citySearch).toHaveAttribute("dir", "ltr");
         await expect(page.locator('input[name="current_german_level"]')).toHaveAttribute("dir", "ltr");
         await expect(page.locator('input[name="target_german_level"]')).toHaveAttribute("dir", "ltr");
         expect(
