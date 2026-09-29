@@ -10,6 +10,8 @@ const progressCopy = {
     title: "Parcours de démarrage",
     step: "Étape",
     of: "sur",
+    completedTitle: "Étapes de départ terminées",
+    completedLabel: "Terminé",
     stages: [
       ["Compte", "Créer votre accès"],
       ["Dossier initial", "Renseigner votre profil"],
@@ -21,6 +23,8 @@ const progressCopy = {
     title: "ابدأ في ثلاث خطوات",
     step: "الخطوة",
     of: "من",
+    completedTitle: "اكتملت خطوات البداية",
+    completedLabel: "مكتمل",
     stages: [
       ["الحساب", "أنشئ بيانات الدخول"],
       ["معلوماتك", "أضف بياناتك الأساسية"],
@@ -32,6 +36,8 @@ const progressCopy = {
     title: "Getting started",
     step: "Step",
     of: "of",
+    completedTitle: "Setup complete",
+    completedLabel: "Complete",
     stages: [
       ["Account", "Create your access"],
       ["Initial file", "Add your profile"],
@@ -43,6 +49,8 @@ const progressCopy = {
     title: "Erste Schritte",
     step: "Schritt",
     of: "von",
+    completedTitle: "Einrichtung abgeschlossen",
+    completedLabel: "Abgeschlossen",
     stages: [
       ["Konto", "Zugang erstellen"],
       ["Erste Angaben", "Profil ausfüllen"],
@@ -54,9 +62,11 @@ const progressCopy = {
 export function StudentEntryProgress({
   current,
   compact = false,
+  completed = false,
 }: {
   current: EntryStage;
   compact?: boolean;
+  completed?: boolean;
 }) {
   const { locale } = useLocale();
   const copy = progressCopy[locale];
@@ -65,18 +75,18 @@ export function StudentEntryProgress({
     <div aria-label={copy.aria}>
       <div className="flex items-center justify-between gap-3">
         <p className="text-[0.66rem] font-bold uppercase tracking-[0.14em] text-[var(--brand)]">
-          {copy.title}
+          {completed ? copy.completedTitle : copy.title}
         </p>
         <span className="text-xs font-semibold text-[var(--muted)]">
-          {copy.step} {current} {copy.of} 3
+          {completed ? copy.completedLabel : `${copy.step} ${current} ${copy.of} 3`}
         </span>
       </div>
 
       <ol className={compact ? "mt-2 grid grid-cols-3 gap-1.5" : "mt-3 grid gap-2 sm:grid-cols-3"}>
         {copy.stages.map(([label, detail], index) => {
           const id = (index + 1) as EntryStage;
-          const active = id === current;
-          const done = id < current;
+          const active = !completed && id === current;
+          const done = completed || id < current;
           return (
             <li
               key={label}
