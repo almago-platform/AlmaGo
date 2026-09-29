@@ -14,7 +14,7 @@ const provider = readFileSync("src/components/i18n/LocaleProvider.tsx", "utf8");
 
 const approvedLogo = "public/brand/campus-allemagne-logo-approved.png";
 const approvedSymbol = "public/brand/campus-allemagne-symbol-approved.png";
-const approvedFavicon = "public/brand/campus-allemagne-favicon-v3.svg";
+const approvedFavicon = "public/brand/campus-allemagne-favicon-v4.svg";
 
 test("Campus Allemagne keeps the approved shared application palette", () => {
   assert.match(globals, /--foreground:\s*#1c2124/i);
