@@ -1,6 +1,8 @@
 import type { MetadataRoute } from "next";
 import { getPublicOrigin } from "@/lib/public-origin";
 
+export const dynamic = "force-dynamic";
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const publicOrigin = await getPublicOrigin();
 
