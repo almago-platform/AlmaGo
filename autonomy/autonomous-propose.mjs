@@ -1,4 +1,5 @@
 import { readFileSync, writeFileSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
@@ -162,18 +163,98 @@ async function askGemini(prompt) {
   return data.candidates?.[0]?.content?.parts?.map(part => part.text || '').join('') || '';
 }
 
-async function askGroq(prompt) {
+export function buildPatchFromStructuredEdits(task, payload) {
+  const edits = payload?.edits;
+  if (!Array.isArray(edits) || edits.length < 1 || edits.length > 12) {
+    throw new Error('Groq structured output needs 1–12 edits.');
+  }
+
+  const originals = new Map();
+  const nextByFile = new Map();
+  for (const file of task.files) {
+    const content = readFileSync(resolve(file), 'utf8');
+    originals.set(file, content);
+    nextByFile.set(file, content);
+  }
+
+  for (const edit of edits) {
+    const file = String(edit?.path || '');
+    const oldText = String(edit?.old_text || '');
+    const newText = String(edit?.new_text ?? '');
+    if (!task.files.includes(file) || !oldText || oldText === newText) {
+      throw new Error('Groq structured edit is unsafe, empty, or outside the approved file list.');
+    }
+    const current = nextByFile.get(file);
+    const first = current.indexOf(oldText);
+    const second = first >= 0 ? current.indexOf(oldText, first + oldText.length) : -1;
+    if (first < 0 || second >= 0) {
+      throw new Error('Groq structured edit old_text must match exactly once.');
+    }
+    nextByFile.set(file, current.slice(0, first) + newText + current.slice(first + oldText.length));
+  }
+
+  const changedFiles = [...nextByFile.entries()]
+    .filter(([file, content]) => content !== originals.get(file))
+    .map(([file]) => file);
+  if (!changedFiles.length) throw new Error('Groq structured edits produced no change.');
+
+  try {
+    for (const file of changedFiles) writeFileSync(resolve(file), nextByFile.get(file), 'utf8');
+    const patch = execFileSync(
+      'git',
+      ['diff', '--no-ext-diff', '--no-color', '--', ...changedFiles],
+      { encoding:'utf8', maxBuffer:MAX_PATCH_CHARS * 2 }
+    );
+    validatePatch(patch, task.files);
+    return patch;
+  } finally {
+    for (const file of changedFiles) writeFileSync(resolve(file), originals.get(file), 'utf8');
+  }
+}
+
+async function askGroq(task, prompt) {
   const model = process.env.ALMAGO_GROQ_MODEL || 'openai/gpt-oss-120b';
   if (!/^[a-zA-Z0-9_./-]+$/.test(model)) throw new Error('Invalid Groq model identifier.');
+  const schema = {
+    type:'object',
+    properties:{
+      edits:{
+        type:'array',
+        items:{
+          type:'object',
+          properties:{
+            path:{ type:'string', enum:task.files },
+            old_text:{ type:'string' },
+            new_text:{ type:'string' },
+          },
+          required:['path','old_text','new_text'],
+          additionalProperties:false,
+        },
+      },
+    },
+    required:['edits'],
+    additionalProperties:false,
+  };
   const data = await post('https://api.groq.com/openai/v1/chat/completions',
     { Authorization: `Bearer ${process.env.GROQ_API_KEY}` },
     {
       model,
-      messages: [{ role: 'user', content: prompt }],
-      max_completion_tokens: 2800,
-      reasoning_effort: 'low',
+      messages: [
+        { role:'system', content:'Return only structured edits. Each old_text must be an exact, unique substring copied verbatim from the provided file. Keep edits minimal and preserve all unrelated content.' },
+        { role:'user', content:prompt },
+      ],
+      max_completion_tokens: 3200,
+      reasoning_effort:'low',
+      response_format:{
+        type:'json_schema',
+        json_schema:{ name:'almago_bounded_edits', strict:true, schema },
+      },
     });
-  return data.choices?.[0]?.message?.content || '';
+  const raw = data.choices?.[0]?.message?.content || '';
+  let payload;
+  try { payload = JSON.parse(raw); }
+  catch { throw new Error('Groq structured output was not valid JSON.'); }
+  return buildPatchFromStructuredEdits(task, payload);
 }
 
 export function isRetryableProviderError(error) {
