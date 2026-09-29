@@ -60,7 +60,7 @@ export function HomeFooter({ footer, homeAria }: { footer: FooterCopy; homeAria:
         </div>
 
         <div className={s.footerBottom}>
-          <p>© Campus Allemagne</p>
+          <p>\n            © Campus Allemagne ·{" "}\n            <a href="mailto:contact@campus-allemagne.info">contact@campus-allemagne.info</a>\n          </p>
           <p>{footer.disclaimer}</p>
         </div>
 

@@ -192,12 +192,12 @@ export function DocumentsPanel({
                 <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">{t.priority.tracked}</p>
                 <Badge variant={statusVariant(priorityDocument.status)}>{t.statuses[priorityDocument.status] || priorityDocument.status}</Badge>
               </div>
-              <p className="mt-3 [overflow-wrap:anywhere] font-bold text-slate-950">{priorityDocument.original_filename}</p>
+              <p className="mt-3 [overflow-wrap:anywhere] font-bold text-slate-950"><bdi dir="auto">{priorityDocument.original_filename}</bdi></p>
               <p className="mt-1 text-sm text-slate-600">{t.categories[priorityDocument.category] || t.categories.other}</p>
               {correctionCount > 0 && priorityDocument.admin_comment && (
                 <div className="mt-4 rounded-[var(--radius-control)] border border-amber-200 bg-amber-50 p-3.5">
                   <p className="text-xs font-bold uppercase tracking-[0.12em] text-amber-900">{t.priority.correctionWhy}</p>
-                  <p className="mt-1.5 text-sm leading-6 text-amber-900">{priorityDocument.admin_comment}</p>
+                  <p dir="auto" className="mt-1.5 text-sm leading-6 text-amber-900">{priorityDocument.admin_comment}</p>
                 </div>
               )}
             </div>
@@ -265,11 +265,11 @@ export function DocumentsPanel({
                 <dl className="mt-3 grid gap-3 sm:grid-cols-2">
                   <div>
                     <dt className="text-xs font-semibold uppercase tracking-[0.1em] text-slate-500">{t.evidence.institution}</dt>
-                    <dd className="mt-1 text-sm text-slate-800">{item.institution || t.unknown}</dd>
+                    <dd className="mt-1 text-sm text-slate-800"><bdi dir="auto">{item.institution || t.unknown}</bdi></dd>
                   </div>
                   <div>
                     <dt className="text-xs font-semibold uppercase tracking-[0.1em] text-slate-500">{t.evidence.date}</dt>
-                    <dd className="mt-1 text-sm text-slate-800">{formatEvidenceDate(item.evidence_date, t)}</dd>
+                    <dd className="mt-1 text-sm text-slate-800"><bdi dir="auto">{formatEvidenceDate(item.evidence_date, t)}</bdi></dd>
                   </div>
                 </dl>
 
@@ -382,7 +382,7 @@ export function DocumentsPanel({
                       <Badge variant={statusVariant(document.status)}>{t.statuses[document.status] || document.status}</Badge>
                       <span className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-2.5 py-1 text-xs font-semibold text-slate-600">{t.categories[document.category] || t.categories.other}</span>
                     </div>
-                    <h3 id={`student-document-title-${document.id}`} className="mt-3 [overflow-wrap:anywhere] text-lg font-semibold text-slate-950">{document.original_filename}</h3>
+                    <h3 id={`student-document-title-${document.id}`} className="mt-3 [overflow-wrap:anywhere] text-lg font-semibold text-slate-950"><bdi dir="auto">{document.original_filename}</bdi></h3>
                     <p className="mt-1 text-sm text-slate-500">
                       {formatFileSize(document.size_bytes, t)} · {t.sentOn}{" "}
                       <time dateTime={document.created_at}>
@@ -392,7 +392,7 @@ export function DocumentsPanel({
                     {document.admin_comment && (
                       <div className="mt-4 rounded-[var(--radius-control)] border border-amber-200 bg-amber-50 p-4">
                         <h4 className="text-sm font-semibold text-amber-950">{t.list.commentTitle}</h4>
-                        <p className="mt-1 text-sm leading-6 text-amber-900">{document.admin_comment}</p>
+                        <p dir="auto" className="mt-1 text-sm leading-6 text-amber-900">{document.admin_comment}</p>
                         <p className="mt-2 text-xs leading-5 text-amber-800">
                           {t.list.commentBoundary}
                         </p>
@@ -453,7 +453,7 @@ export function DocumentsPanel({
           ) : (
             history.map((event) => (
               <Card as="article" key={event.id} aria-labelledby={`document-event-title-${event.id}`} className="p-4 shadow-none">
-                <h3 id={`document-event-title-${event.id}`} className="text-sm font-medium text-slate-700">{event.message}</h3>
+                <h3 id={`document-event-title-${event.id}`} dir="auto" className="text-sm font-medium text-slate-700">{event.message}</h3>
                 <time dateTime={event.created_at} className="mt-1 block text-xs text-slate-500">
                   {new Intl.DateTimeFormat(t.intlLocale, {
                     dateStyle: "medium",

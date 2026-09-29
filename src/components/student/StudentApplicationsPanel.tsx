@@ -11,6 +11,7 @@ import {
   normalizeApplicationStatus,
 } from "@/lib/application-workflow";
 import { formatDeadline, isActiveApplication, isPastDeadline, nextActiveDeadline } from "@/lib/phase4";
+import { localizeApplicationStoredText, localizeCatalogueLabel } from "@/lib/student/arabic-display";
 
 function applicationVariant(status: string): "success" | "warning" | "info" | "neutral" {
   if (status === "admission" || status === "accepted") return "success";
@@ -172,7 +173,7 @@ export function StudentApplicationsPanel({
               {loadError
                 ? t.loadText
                 : priorityApplication?.next_action
-                  ? priorityApplication.next_action
+                  ? localizeApplicationStoredText(locale, priorityApplication.next_action)
                   : priorityApplication
                     ? t.noSpecificAction
                     : t.noApplicationsText}
@@ -180,9 +181,9 @@ export function StudentApplicationsPanel({
             {priorityApplication && (
               <div className="mt-5 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4">
                 <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">{t.trackedApplication}</p>
-                <p className="mt-2 font-bold text-slate-950">{priorityProgram?.name || t.programFallback}</p>
+                <p className="mt-2 font-bold text-slate-950"><bdi dir="auto">{priorityProgram?.name || t.programFallback}</bdi></p>
                 <p className="mt-1 text-sm text-slate-600">
-                  {priorityApplication.intake_term || t.intakeUnknown} · {t.deadlineWord} {formatDeadline(priorityApplication.deadline, locale)}
+                  <bdi dir="auto">{localizeCatalogueLabel(locale, priorityApplication.intake_term) || t.intakeUnknown}</bdi> · {t.deadlineWord} <bdi dir="auto">{formatDeadline(priorityApplication.deadline, locale)}</bdi>
                 </p>
               </div>
             )}
@@ -211,7 +212,7 @@ export function StudentApplicationsPanel({
                   : t.noConfirmedDate}
             </h2>
             {!loadError && nextDeadlineApplication && (
-              <p className="mt-1 text-sm text-slate-600">{firstProgram(nextDeadlineApplication)?.name || t.programFallback}{overdue ? ` · ${t.checkApplication}` : ""}</p>
+              <p className="mt-1 text-sm text-slate-600"><bdi dir="auto">{firstProgram(nextDeadlineApplication)?.name || t.programFallback}</bdi>{overdue ? ` · ${t.checkApplication}` : ""}</p>
             )}
           </div>
           <ButtonLink href="/student/checklist" variant="secondary">{t.steps}</ButtonLink>
@@ -249,7 +250,7 @@ export function StudentApplicationsPanel({
               const active = isActiveApplication(application.status);
               const applicationOverdue = Boolean(application.deadline && isPastDeadline(application.deadline));
               const nextAction = active
-                ? application.next_action ||
+                ? localizeApplicationStoredText(locale, application.next_action) ||
                   (applicationOverdue
                     ? t.overdueAction
                     : t.noAction)
@@ -266,14 +267,14 @@ export function StudentApplicationsPanel({
                     <div className="min-w-0">
                       <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">{t.institution}</p>
                       <p className="mt-1 text-sm font-bold text-slate-900 [overflow-wrap:anywhere]">
-                        {university?.name || t.universityUnknown}{university?.city ? ` · ${university.city}` : ""}
+                        <bdi dir="auto">{university?.name || t.universityUnknown}</bdi>{university?.city ? <> · <bdi dir="ltr">{university.city}</bdi></> : ""}
                       </p>
-                      <h3 id={`student-application-title-${application.id}`} className="mt-3 text-xl font-bold tracking-[-0.02em] text-slate-950 [overflow-wrap:anywhere]">{program?.name || t.programFallback}</h3>
+                      <h3 id={`student-application-title-${application.id}`} className="mt-3 text-xl font-bold tracking-[-0.02em] text-slate-950 [overflow-wrap:anywhere]"><bdi dir="auto">{program?.name || t.programFallback}</bdi></h3>
                       <div className="mt-2 flex flex-wrap gap-2 text-xs font-semibold text-slate-600">
-                        {program?.degree_level && <span className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-2.5 py-1.5">{program.degree_level}</span>}
-                        <span className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-2.5 py-1.5">{application.intake_term || t.intakeUnknown}</span>
+                        {program?.degree_level && <span className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-2.5 py-1.5"><bdi dir="auto">{localizeCatalogueLabel(locale, program.degree_level)}</bdi></span>}
+                        <span className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-2.5 py-1.5"><bdi dir="auto">{localizeCatalogueLabel(locale, application.intake_term) || t.intakeUnknown}</bdi></span>
                         <span className={`rounded-full px-3 py-1.5 ${applicationOverdue ? "bg-amber-100 text-amber-900" : "bg-slate-100"}`}>
-                          {t.deadlineWord} {formatDeadline(application.deadline, locale)}
+                          {t.deadlineWord} <bdi dir="auto">{formatDeadline(application.deadline, locale)}</bdi>
                         </span>
                       </div>
                     </div>
@@ -297,7 +298,7 @@ export function StudentApplicationsPanel({
                       <h4 className="text-xs font-bold uppercase tracking-[0.16em] text-slate-600">{t.whatNext}</h4>
                       {active && applicationOverdue && <Badge variant="warning">{t.deadlinePassed}</Badge>}
                     </div>
-                    <p className="mt-2 text-sm font-semibold leading-6 text-slate-950 [overflow-wrap:anywhere]">{nextAction}</p>
+                    <p dir="auto" className="mt-2 text-sm font-semibold leading-6 text-slate-950 [overflow-wrap:anywhere]">{nextAction}</p>
                   </section>
 
                   <div className="mt-4 grid gap-4 sm:grid-cols-2">
@@ -308,7 +309,7 @@ export function StudentApplicationsPanel({
                   {application.student_notes && (
                     <div className="mt-5 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-muted)] p-4">
                       <h4 className="text-sm font-semibold text-slate-900">{t.messageForYou}</h4>
-                      <p className="mt-1 text-sm leading-6 text-slate-700 [overflow-wrap:anywhere]">{application.student_notes}</p>
+                      <p dir="auto" className="mt-1 text-sm leading-6 text-slate-700 [overflow-wrap:anywhere]">{application.student_notes}</p>
                       <p className="mt-2 text-xs leading-5 text-slate-500">
                         {t.messageBoundary}
                       </p>
@@ -334,7 +335,7 @@ export function StudentApplicationsPanel({
                             <p className="text-sm font-medium text-slate-900">
                               {studentEventLabel(event.event_type, t)}
                             </p>
-                            {event.message && <p className="mt-1 text-sm leading-6 text-slate-700 [overflow-wrap:anywhere]">{event.message}</p>}
+                            {event.message && <p dir="auto" className="mt-1 text-sm leading-6 text-slate-700 [overflow-wrap:anywhere]">{localizeApplicationStoredText(locale, event.message)}</p>}
                             <time dateTime={event.created_at} className="mt-1 block text-xs text-slate-500">
                               {new Intl.DateTimeFormat(t.intlLocale, { dateStyle: "medium" }).format(new Date(event.created_at))}
                             </time>
@@ -368,7 +369,7 @@ function InfoCard({ title, value }: { title: string; value: string }) {
   return (
     <div className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-muted)] p-4">
       <h4 className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">{title}</h4>
-      <p className="mt-2 text-sm font-medium leading-6 text-slate-900">{value}</p>
+      <p dir="auto" className="mt-2 text-sm font-medium leading-6 text-slate-900">{value}</p>
     </div>
   );
 }

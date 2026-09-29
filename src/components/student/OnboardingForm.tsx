@@ -192,7 +192,7 @@ export function OnboardingForm({ profile }: { profile: Record<string, unknown> }
                 <p className="mt-1 text-xl font-bold text-[var(--foreground)]">{currentStep.title}</p>
               </div>
               <span className="rounded-full border border-[var(--brand-border)] bg-[var(--brand-soft)] px-3 py-1.5 text-xs font-bold text-[var(--brand)]">
-                {step}/5
+                <bdi dir="ltr">{step}/5</bdi>
               </span>
             </div>
 
@@ -201,7 +201,7 @@ export function OnboardingForm({ profile }: { profile: Record<string, unknown> }
             <div className="mt-5 grid gap-2">
               <div className="flex items-center justify-between text-xs font-semibold text-[var(--muted)]">
                 <span>{t.progress}</span>
-                <span>{progress}</span>
+                <span><bdi dir="ltr">{progress}</bdi></span>
               </div>
               <div className="h-2 overflow-hidden rounded-full bg-[var(--surface-subtle)]">
                 <div
@@ -239,7 +239,7 @@ export function OnboardingForm({ profile }: { profile: Record<string, unknown> }
                       </span>
                       <div className="min-w-0">
                         <p className="text-sm font-bold text-[var(--foreground)]">{item.title}</p>
-                        <p className="mt-0.5 truncate text-[0.68rem] text-[var(--muted)]">{item.description}</p>
+                        <p className={locale === "ar" ? "mt-0.5 text-[0.68rem] leading-4 text-[var(--muted)]" : "mt-0.5 truncate text-[0.68rem] text-[var(--muted)]"}>{item.description}</p>
                       </div>
                     </div>
                   </li>
@@ -280,12 +280,12 @@ export function OnboardingForm({ profile }: { profile: Record<string, unknown> }
                 text={t.sections.identity.text}
               />
               <div className="grid gap-4 sm:grid-cols-2">
-                <TextInput label={t.fields.firstName} required value={String(data.first_name)} onChange={(v) => set("first_name", v)} />
-                <TextInput label={t.fields.lastName} required value={String(data.last_name)} onChange={(v) => set("last_name", v)} />
-                <TextInput label={t.fields.birthDate} type="date" value={String(data.birth_date)} onChange={(v) => set("birth_date", v)} />
+                <TextInput label={t.fields.firstName} required inputDir={locale === "ar" ? "auto" : undefined} value={String(data.first_name)} onChange={(v) => set("first_name", v)} />
+                <TextInput label={t.fields.lastName} required inputDir={locale === "ar" ? "auto" : undefined} value={String(data.last_name)} onChange={(v) => set("last_name", v)} />
+                <TextInput label={t.fields.birthDate} type="date" inputDir={locale === "ar" ? "ltr" : undefined} value={String(data.birth_date)} onChange={(v) => set("birth_date", v)} />
                 <SearchableDatalistInput label={t.fields.nationality} required value={String(data.nationality)} onChange={(v) => set("nationality", v)} options={nationalityOptions} />
-                <TextInput label={t.fields.city} value={String(data.current_city)} onChange={(v) => set("current_city", v)} />
-                <TextInput label={t.fields.phone} value={String(data.phone)} onChange={(v) => set("phone", v)} />
+                <TextInput label={t.fields.city} inputDir={locale === "ar" ? "auto" : undefined} value={String(data.current_city)} onChange={(v) => set("current_city", v)} />
+                <TextInput label={t.fields.phone} inputDir={locale === "ar" ? "ltr" : undefined} value={String(data.phone)} onChange={(v) => set("phone", v)} />
               </div>
             </div>
           )}
@@ -299,12 +299,12 @@ export function OnboardingForm({ profile }: { profile: Record<string, unknown> }
               <div className="grid gap-4 sm:grid-cols-2">
                 <SelectInput label={t.fields.lastDiploma} value={String(data.last_diploma)} onChange={(v) => set("last_diploma", v)} options={diplomaOptions} />
                 <SelectInput label={t.fields.bacTrack} value={String(data.bac_track)} onChange={(v) => set("bac_track", v)} options={tunisianBacTrackOptions} />
-                <TextInput label={t.fields.bacYear} type="number" value={String(data.bac_year)} onChange={(v) => set("bac_year", v)} />
-                <TextInput label={t.fields.average} type="number" placeholder={t.fields.averagePlaceholder} value={String(data.general_average)} onChange={(v) => set("general_average", v)} />
-                <TextInput label={t.fields.institution} value={String(data.institution)} onChange={(v) => set("institution", v)} />
-                <TextInput label={t.fields.currentStudies} value={String(data.current_university_studies)} onChange={(v) => set("current_university_studies", v)} />
-                <TextInput label={t.fields.currentField} value={String(data.current_field)} onChange={(v) => set("current_field", v)} />
-                <TextInput label={t.fields.semesters} type="number" value={String(data.university_semesters)} onChange={(v) => set("university_semesters", v)} />
+                <TextInput label={t.fields.bacYear} type="number" inputDir={locale === "ar" ? "ltr" : undefined} value={String(data.bac_year)} onChange={(v) => set("bac_year", v)} />
+                <TextInput label={t.fields.average} type="number" inputDir={locale === "ar" ? "ltr" : undefined} placeholder={t.fields.averagePlaceholder} value={String(data.general_average)} onChange={(v) => set("general_average", v)} />
+                <TextInput label={t.fields.institution} inputDir={locale === "ar" ? "auto" : undefined} value={String(data.institution)} onChange={(v) => set("institution", v)} />
+                <TextInput label={t.fields.currentStudies} inputDir={locale === "ar" ? "auto" : undefined} value={String(data.current_university_studies)} onChange={(v) => set("current_university_studies", v)} />
+                <TextInput label={t.fields.currentField} inputDir={locale === "ar" ? "auto" : undefined} value={String(data.current_field)} onChange={(v) => set("current_field", v)} />
+                <TextInput label={t.fields.semesters} type="number" inputDir={locale === "ar" ? "ltr" : undefined} value={String(data.university_semesters)} onChange={(v) => set("university_semesters", v)} />
               </div>
             </div>
           )}
@@ -322,7 +322,7 @@ export function OnboardingForm({ profile }: { profile: Record<string, unknown> }
                 <SelectInput label={t.fields.languageCertificate} value={String(data.language_certificate)} onChange={(v) => set("language_certificate", v)} options={certificateOptions} />
               </div>
               {data.language_certificate === "other" && (
-                <TextInput label={t.fields.otherCertificate} value={String(data.language_certificate_other)} onChange={(v) => set("language_certificate_other", v)} />
+                <TextInput label={t.fields.otherCertificate} inputDir={locale === "ar" ? "auto" : undefined} value={String(data.language_certificate_other)} onChange={(v) => set("language_certificate_other", v)} />
               )}
             </div>
           )}
@@ -337,7 +337,7 @@ export function OnboardingForm({ profile }: { profile: Record<string, unknown> }
                 <SelectInput label={t.fields.targetDegree} required value={String(data.target_degree)} onChange={(v) => set("target_degree", v)} options={degreeOptions} />
                 <SelectInput label={t.fields.targetField} required value={String(data.target_field)} onChange={(v) => set("target_field", v)} options={studyFieldOptions} />
                 <SelectInput label={t.fields.studyLanguage} required value={String(data.study_language)} onChange={(v) => set("study_language", v)} options={studyLanguageOptions} />
-                <TextInput label={t.fields.targetIntake} required value={String(data.target_intake)} onChange={(v) => set("target_intake", v)} placeholder={t.fields.targetIntakePlaceholder} />
+                <TextInput label={t.fields.targetIntake} required inputDir={locale === "ar" ? "auto" : undefined} value={String(data.target_intake)} onChange={(v) => set("target_intake", v)} placeholder={t.fields.targetIntakePlaceholder} />
                 <PreferredCitiesPicker value={Array.isArray(data.preferred_cities) ? data.preferred_cities : []} onChange={(v) => set("preferred_cities", v)} />
                 <SelectInput label={t.fields.budget} value={String(data.budget_range)} onChange={(v) => set("budget_range", v)} options={budgetOptions} />
               </div>
@@ -364,7 +364,7 @@ export function OnboardingForm({ profile }: { profile: Record<string, unknown> }
                     className="grid gap-1.5 border-b border-[var(--border)] px-4 py-3.5 text-sm last:border-b-0 sm:grid-cols-[8rem_1fr] sm:gap-4"
                   >
                     <dt className="font-bold text-[var(--muted)]">{label}</dt>
-                    <dd className="text-[var(--foreground)]">{value}</dd>
+                    <dd dir={locale === "ar" ? "auto" : undefined} className="text-[var(--foreground)]">{value}</dd>
                   </div>
                 ))}
               </dl>

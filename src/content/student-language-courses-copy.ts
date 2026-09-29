@@ -153,7 +153,7 @@ export const studentLanguageCoursesCopy: Record<Locale, LanguageCoursesCopy> = {
       courseType: "نوع الدورة",
       all: "الكل",
       city: "المدينة",
-      cityPlaceholder: "مثال: برلين",
+      cityPlaceholder: "Berlin",
       language: "اللغة",
       languagePlaceholder: "مثال: الألمانية",
       startLevel: "مستوى البداية",
