@@ -1,8 +1,9 @@
 "use client";
 
-import { createContext, useContext, useState, type ReactNode } from "react";
+import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { getNativeCopy } from "@/content/native-copy";
+import { rebrandCopy } from "@/lib/brand";
 import {
   LOCALE_COOKIE,
   localeDirection,
@@ -28,6 +29,7 @@ export function LocaleProvider({
 }) {
   const router = useRouter();
   const [locale, setLocaleState] = useState<Locale>(normalizeLocale(initialLocale));
+  const copy = useMemo(() => rebrandCopy(getNativeCopy(locale)), [locale]);
 
   function setLocale(nextLocale: Locale) {
     setLocaleState(nextLocale);
@@ -42,7 +44,7 @@ export function LocaleProvider({
       value={{
         locale,
         direction: localeDirection(locale),
-        copy: getNativeCopy(locale),
+        copy,
         setLocale,
       }}
     >
