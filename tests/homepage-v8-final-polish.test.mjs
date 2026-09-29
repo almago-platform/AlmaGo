@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
 
+const page = readFileSync("src/app/page.tsx", "utf8");
 const header = readFileSync("src/components/public/HomeHeader.tsx", "utf8");
 const hero = readFileSync("src/components/public/HomeHero.tsx", "utf8");
 const quick = readFileSync("src/components/public/HomeQuickAccess.tsx", "utf8");
@@ -20,13 +21,14 @@ test("V8 strengthens the localized final CTA and footer", () => {
   assert.ok(nativeCopy.includes('"Prochaines étapes"'));
   assert.ok(nativeCopy.includes('independent: "Plateforme indépendante"'));
   assert.ok(nativeCopy.includes('"Outils utiles"'));
-  assert.ok(closing.includes("copy.home.closing"));
+  assert.ok(page.includes("closing={copy.home.closing}"));
+  assert.ok(closing.includes("closing.cta"));
 });
 
 test("V8 gives the localized FAQ a compact editorial surface", () => {
   assert.ok(nativeCopy.includes('eyebrow: "Questions utiles"'));
   assert.ok(faq.includes("className={s.faqIntro}"));
-  assert.ok(faq.includes("copy.home.faq"));
+  assert.ok(page.includes("faq={copy.home.faq}"));
   assert.ok(css.includes(".faqIntro {"));
   assert.ok(css.includes("position: sticky"));
   assert.ok(css.includes("border-radius: 10px"));

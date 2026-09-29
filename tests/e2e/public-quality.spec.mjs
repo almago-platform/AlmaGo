@@ -165,3 +165,22 @@ test("native language switch persists and Arabic renders RTL without overflow", 
   await expect(page.locator("html")).toHaveAttribute("dir", "ltr");
   await expect(page.getByRole("heading", { name: "Se connecter", exact: true })).toBeVisible();
 });
+
+
+test("homepage smoke covers all four locales", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop-chromium", "One desktop smoke is sufficient for the four locale variants.");
+
+  await page.goto("/", { waitUntil: "networkidle" });
+  const switcher = page.locator("header select:visible").first();
+  await expect(switcher).toBeVisible();
+
+  for (const [locale, direction] of [["fr", "ltr"], ["en", "ltr"], ["de", "ltr"], ["ar", "rtl"]]) {
+    await switcher.selectOption(locale);
+    await expect(page.locator("html")).toHaveAttribute("lang", locale);
+    await expect(page.locator("html")).toHaveAttribute("dir", direction);
+    await expect(page.locator("main h1")).toBeVisible();
+
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+    expect(overflow, `homepage must not overflow in ${locale}`).toBeLessThanOrEqual(1);
+  }
+});

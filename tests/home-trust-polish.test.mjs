@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
 
+const page = readFileSync("src/app/page.tsx", "utf8");
 const tools = readFileSync("src/components/public/HomeTrustSection.tsx", "utf8");
 const closing = readFileSync("src/components/public/HomeClosing.tsx", "utf8");
 const nativeCopy = readFileSync("src/content/native-copy.ts", "utf8");
@@ -13,7 +14,8 @@ test("public trust framing keeps AlmaGo independent and official decisions exter
   assert.ok(nativeCopy.includes("Les admissions, visas et autres décisions officielles appartiennent"));
   assert.ok(nativeCopy.includes('"Vérifier une information"'));
   assert.ok(closing.includes("footer.disclaimer"));
-  assert.ok(tools.includes("copy.home.tools"));
+  assert.ok(page.includes("tools={copy.home.tools}"));
+  assert.ok(tools.includes("tools.items.map"));
 });
 
 test("helpful tools use the current three-column desktop layout", () => {

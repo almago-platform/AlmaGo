@@ -1,15 +1,12 @@
-"use client";
-
 import Image from "next/image";
 import Link from "next/link";
-import { useLocale } from "@/components/i18n/LocaleProvider";
+import type { getNativeCopy } from "@/content/native-copy";
 import { HomeIcon } from "./HomeIcons";
 import s from "./Homepage.module.css";
 
-export function HomeHero() {
-  const { copy } = useLocale();
-  const hero = copy.home.hero;
+type HeroCopy = ReturnType<typeof getNativeCopy>["home"]["hero"];
 
+export function HomeHero({ hero }: { hero: HeroCopy }) {
   return (
     <section className={s.hero} aria-labelledby="home-title">
       <div className={s.heroBackdrop} aria-hidden="true">
@@ -18,6 +15,7 @@ export function HomeHero() {
           alt=""
           fill
           priority
+          fetchPriority="high"
           quality={90}
           sizes="100vw"
         />
