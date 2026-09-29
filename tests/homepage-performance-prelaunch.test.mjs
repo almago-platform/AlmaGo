@@ -30,7 +30,7 @@ test("Arabic fonts remain available without preloading both families on every La
 });
 
 test("locale copy is prepared server-side instead of bundling native-copy at runtime in the provider", () => {
-  assert.match(layout, /rebrandCopy(getNativeCopy(locale))/);
+  assert.match(layout, /rebrandCopy\\(getNativeCopy\\(locale\\)\\)/);
   assert.match(provider, /initialCopy/);
   assert.match(provider, /import type { getNativeCopy }/);
   assert.doesNotMatch(provider, /import { getNativeCopy }/);
@@ -49,6 +49,6 @@ test("homepage static sections render as Server Components while the header stay
 test("hero LCP request remains eager and explicitly high priority", () => {
   assert.match(hero, /priority/);
   assert.match(hero, /fetchPriority="high"/);
-  assert.match(hero, /quality={90}/);
+  assert.match(hero, /quality=\\{90\\}/);
   assert.match(hero, /w=1920/);
 });
