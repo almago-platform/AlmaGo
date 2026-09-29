@@ -12,8 +12,8 @@ const brandLogo = readFileSync("src/components/brand/BrandLogo.tsx", "utf8");
 const brand = readFileSync("src/lib/brand.ts", "utf8");
 const provider = readFileSync("src/components/i18n/LocaleProvider.tsx", "utf8");
 
-const approvedLogo = "public/brand/campus-allemagne-logo-approved.webp";
-const approvedSymbol = "public/brand/campus-allemagne-symbol-approved.webp";
+const approvedLogo = "public/brand/campus-allemagne-logo-approved.png";
+const approvedSymbol = "public/brand/campus-allemagne-symbol-approved.png";
 
 test("Campus Allemagne keeps the approved shared application palette", () => {
   assert.match(globals, /--foreground:\s*#1c2124/i);
