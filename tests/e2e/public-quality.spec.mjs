@@ -75,6 +75,17 @@ test("native language switch persists and Arabic renders RTL without overflow", 
     ).toBeLessThanOrEqual(2);
   }
 
+  if ([
+    "tablet-chromium",
+    "mobile-430-chromium",
+    "mobile-375-chromium",
+    "mobile-chromium",
+  ].includes(testInfo.project.name)) {
+    const authShellBox = await page.locator(".auth-form-shell").boundingBox();
+    expect(authShellBox, "Arabic auth shell should have a visible box").not.toBeNull();
+    expect(authShellBox.y, "Arabic auth should start near the top on tablet and mobile").toBeLessThanOrEqual(80);
+  }
+
   await page.screenshot({
     path: "artifacts/screenshots/login-ar-" + testInfo.project.name + ".png",
     fullPage: true,
