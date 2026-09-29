@@ -21,8 +21,10 @@ test("Campus Allemagne keeps the approved shared application palette", () => {
   assert.match(globals, /--background:\s*#f7f4ec/i);
 });
 
-test("brand typography still loads Latin and native Arabic fonts", () => {
-  assert.match(layout, /Inter, Noto_Kufi_Arabic, Noto_Sans_Arabic, Source_Serif_4/);
+test("brand typography loads a unified Latin sans and native Arabic fonts", () => {
+  assert.match(layout, /Inter, Noto_Kufi_Arabic, Noto_Sans_Arabic/);
+  assert.doesNotMatch(layout, /Source_Serif_4/);
+  assert.doesNotMatch(layout, /--font-source-serif/);
   assert.match(layout, /--font-arabic/);
   assert.match(layout, /--font-arabic-display/);
 });

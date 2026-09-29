@@ -21,7 +21,9 @@ test("public homepage uses the scoped AlmaGo module and current Brand V2 tokens"
   assert.match(workCss, /--home-green:\s*#db0423/i);
   assert.match(workCss, /--home-terra:\s*#db0423/i);
   assert.match(workCss, /--home-gold:\s*#fcb50a/i);
-  assert.match(workCss, /Source Serif 4/);
+  assert.doesNotMatch(workCss, /Source Serif 4/);
+  assert.doesNotMatch(workCss, /font-style:\s*italic/);
+  assert.match(workCss, /\.sectionTitle em,[\s\S]*?font-family:\s*inherit;[\s\S]*?font-style:\s*normal;/);
 });
 
 test("student and admin share the current Brand V2 shell tokens", () => {
@@ -29,4 +31,12 @@ test("student and admin share the current Brand V2 shell tokens", () => {
   assert.match(shell, /bg-\[#fffdf8\]\/95/);
   assert.match(shell, /bg-\[var\(--brand-soft\)\]/);
   assert.match(shell, /text-\[var\(--foreground\)\]/);
+});
+
+
+test("Latin public and authenticated headings use one upright sans-serif system", () => {
+  assert.match(globals, /\.editorial-accent\s*\{[\s\S]*var\(--font-inter\)[\s\S]*font-style:\s*normal/);
+  assert.match(globals, /\.page-title\s*\{[\s\S]*var\(--font-inter\)[\s\S]*font-style:\s*normal/);
+  assert.doesNotMatch(globals, /Source Serif 4/);
+  assert.doesNotMatch(globals, /font-source-serif/);
 });
