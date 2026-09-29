@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { isProtectedPath, parseTask, validatePatch } from './autonomous-propose.mjs';
+import { isProtectedPath, isRetryableProviderError, parseTask, validatePatch } from './autonomous-propose.mjs';
 
 const issue = {
   number: 17,
@@ -70,6 +70,7 @@ test('refuses secret-like and authorization-sensitive additions', () => {
   const base = 'diff --git a/src/app/page.tsx b/src/app/page.tsx\n--- a/src/app/page.tsx\n+++ b/src/app/page.tsx\n@@ -1 +1 @@\n-old\n';
   for (const addition of [
     '+const key = process.env.OPENAI_API_KEY;\n',
+    '+const key = process.env.GROQ_API_KEY;\n',
     '+const role = "service_role";\n',
     '+const table = "user_roles";\n',
     '+const admin = auth.admin;\n',
@@ -85,4 +86,12 @@ test('refuses dynamic code execution and oversized autonomous edits', () => {
   const lines = Array.from({ length: 301 }, (_, index) => `+line ${index}`).join('\n');
   const largePatch = `diff --git a/src/app/page.tsx b/src/app/page.tsx\n--- a/src/app/page.tsx\n+++ b/src/app/page.tsx\n@@ -1,0 +1,301 @@\n${lines}\n`;
   assert.throws(() => validatePatch(largePatch, ['src/app/page.tsx']));
+});
+
+
+test('classifies only transient provider failures as retryable', () => {
+  assert.equal(isRetryableProviderError({ retryable:true, message:'Provider HTTP 429' }), true);
+  assert.equal(isRetryableProviderError({ name:'AbortError', message:'aborted' }), true);
+  assert.equal(isRetryableProviderError({ message:'network connection failed' }), true);
+  assert.equal(isRetryableProviderError({ status:401, message:'Provider HTTP 401' }), false);
 });
