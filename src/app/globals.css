@@ -358,3 +358,15 @@ html[dir="rtl"] .student-shell [dir="ltr"] {
     line-height: 1.5;
   }
 }
+
+@media (min-width: 1024px) {
+  html[dir="rtl"] .student-guidance-panel,
+  html[dir="rtl"] .student-onboarding-grid {
+    direction: ltr;
+  }
+
+  html[dir="rtl"] .student-guidance-panel > *,
+  html[dir="rtl"] .student-onboarding-grid > * {
+    direction: rtl;
+  }
+}
