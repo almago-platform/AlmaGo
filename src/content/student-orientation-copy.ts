@@ -82,6 +82,7 @@ type OrientationCopy = {
     pointToCheck: string;
     check: string;
     missing: string;
+    unknownReason: string;
     comparisonAria: string;
     comparisonBoundary: string;
     applicationRoute: string;
@@ -198,6 +199,7 @@ const fr: OrientationCopy = {
     pointToCheck: "Point à vérifier",
     check: "À vérifier",
     missing: "Information manquante",
+    unknownReason: "Information à vérifier",
     comparisonAria: "Comparaison avec votre projet",
     comparisonBoundary: "Comparaison des informations disponibles. L’université décide au final.",
     applicationRoute: "Mode de candidature",
@@ -348,6 +350,7 @@ const ar: OrientationCopy = {
     pointToCheck: "نقطة تحتاج إلى مراجعة",
     check: "تحقق",
     missing: "معلومة ناقصة",
+    unknownReason: "هذه المعلومة تحتاج إلى تحقق.",
     comparisonAria: "مقارنة مع مشروعك",
     comparisonBoundary: "هذه مقارنة للمعلومات المتاحة فقط. الجامعة هي التي تتخذ القرار النهائي.",
     applicationRoute: "طريقة التقديم",
@@ -498,6 +501,7 @@ const en: OrientationCopy = {
     pointToCheck: "Point to check",
     check: "Check",
     missing: "Missing information",
+    unknownReason: "This information needs verification.",
     comparisonAria: "Comparison with your study plan",
     comparisonBoundary: "Comparison based on the information available. The university makes the final decision.",
     applicationRoute: "Application route",
@@ -648,6 +652,7 @@ const de: OrientationCopy = {
     pointToCheck: "Zu prüfen",
     check: "Prüfen",
     missing: "Fehlende Angabe",
+    unknownReason: "Diese Angabe muss geprüft werden.",
     comparisonAria: "Vergleich mit deinem Studienplan",
     comparisonBoundary: "Vergleich auf Basis der verfügbaren Angaben. Die Hochschule trifft die endgültige Entscheidung.",
     applicationRoute: "Bewerbungsweg",
