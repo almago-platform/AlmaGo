@@ -24,7 +24,7 @@ export default function OpenGraphImage() {
           <div style={{ fontSize: 34, fontWeight: 800, color: "#1C2124", letterSpacing: -1 }}>
             {BRAND_NAME}
           </div>
-          <div style={{ marginTop: 56, fontSize: 72, lineHeight: 1.06, fontWeight: 800, color: "#1C2124", maxWidth: 880 }}>
+          <div style={{ display: "flex", flexWrap: "wrap", marginTop: 56, fontSize: 72, lineHeight: 1.06, fontWeight: 800, color: "#1C2124", maxWidth: 880 }}>
             Étudier en Allemagne,
             <span style={{ color: "#DB0423" }}> étape par étape.</span>
           </div>
