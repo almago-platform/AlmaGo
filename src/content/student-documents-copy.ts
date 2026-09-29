@@ -261,7 +261,7 @@ const ar: DocumentsCopy = {
   evidenceTypes: {
     definitive_admission: "قبول نهائي",
     conditional_admission: "قبول مشروط",
-    bewerberbestaetigung: "إثبات من الجامعة (Bewerberbestätigung)",
+    bewerberbestaetigung: "إثبات من الجامعة (\u2066Bewerberbestätigung\u2069)",
     admissible_university_correspondence: "مراسلة جامعية مقبولة للمسار",
     other: "إثبات أكاديمي",
   },
