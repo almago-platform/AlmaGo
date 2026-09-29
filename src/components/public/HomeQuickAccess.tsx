@@ -1,8 +1,8 @@
-import type { getNativeCopy } from "@/content/native-copy";
+"use client";
+
+import { useLocale } from "@/components/i18n/LocaleProvider";
 import { HomeIcon, type HomeIconName } from "./HomeIcons";
 import s from "./Homepage.module.css";
-
-type QuickCopy = ReturnType<typeof getNativeCopy>["home"]["quick"];
 
 const meta: Array<{ href: string; icon: HomeIconName }> = [
   { href: "#programmes", icon: "book" },
@@ -12,7 +12,10 @@ const meta: Array<{ href: string; icon: HomeIconName }> = [
   { href: "#faq", icon: "question" },
 ];
 
-export function HomeQuickAccess({ quick }: { quick: QuickCopy }) {
+export function HomeQuickAccess() {
+  const { copy } = useLocale();
+  const quick = copy.home.quick;
+
   return (
     <section className={s.quick} aria-label={quick.aria}>
       <div className={`${s.container} ${s.quickImmersive}`}>
