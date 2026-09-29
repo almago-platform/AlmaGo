@@ -11,7 +11,7 @@ export function AuthMobileHeader({ mode }: { mode: "login" | "signup" }) {
   return (
     <div className="mb-5 flex items-center justify-between gap-3 lg:hidden">
       <Link href="/" className="inline-flex min-h-11 items-center" aria-label={copy.common.homeAria}>
-        <BrandLogo className="h-auto w-32 sm:w-44" />
+        <BrandLogo className="h-auto w-28 min-[360px]:w-32 sm:w-44" />
       </Link>
       <div className="flex items-center gap-2">
         <LanguageSwitcher compact />
