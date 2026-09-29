@@ -147,7 +147,7 @@ export function PreferredCitiesPicker({ value, onChange }: { value: string[]; on
           {controls.legacyCities}:{" "}
           {legacyCities.map((city) => (
             <button type="button" key={city} onClick={() => toggle(city)} className="mx-1 min-h-9 rounded-[var(--radius-control)] bg-white px-2 py-1 underline">
-              {city} ×
+              <bdi dir={locale === "ar" ? "ltr" : undefined}>{city}</bdi> ×
             </button>
           ))}
         </div>
@@ -163,14 +163,22 @@ export function PreferredCitiesPicker({ value, onChange }: { value: string[]; on
               value.includes(city) ? "bg-[var(--brand)] text-white" : "bg-[var(--surface-muted)] text-slate-700 hover:bg-slate-200"
             }`}
           >
-            {localizePreferredCity(locale, city)}
+            <bdi dir={locale === "ar" ? "ltr" : undefined}>{localizePreferredCity(locale, city)}</bdi>
           </button>
         ))}
       </div>
       {value.length > 0 && (
-        <p className="mt-2 text-sm text-slate-600">
-          {controls.selection}: {value.map((city) => localizePreferredCity(locale, city)).join(", ")}
-        </p>
+        <div className="mt-3 flex flex-wrap items-center gap-2 text-sm text-slate-600">
+          <span>{controls.selection}:</span>
+          {value.map((city) => (
+            <span
+              key={city}
+              className="rounded-full border border-[var(--border)] bg-[var(--surface-subtle)] px-2.5 py-1 text-xs font-semibold text-slate-700"
+            >
+              <bdi dir={locale === "ar" ? "ltr" : undefined}>{localizePreferredCity(locale, city)}</bdi>
+            </span>
+          ))}
+        </div>
       )}
     </fieldset>
   );
