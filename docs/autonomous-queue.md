@@ -6,7 +6,7 @@ quand `ALMAGO_AI_ENABLED=true` et `ALMAGO_AI_FREE_ONLY=true`.
 
 La file utilise d’abord **Gemini 2.5 Flash**. Si Gemini ne peut pas produire un
 patch utilisable, elle essaie **Groq** avec `openai/gpt-oss-120b` lorsqu’une clé
-Groq est configurée. Aucun xAI/Groq, Claude ou OpenAI API payant n’est utilisé
+Groq est configurée. Aucun xAI/Grok, Claude ou OpenAI API payant n’est utilisé
 dans cette file free-only. Si tous les fournisseurs gratuits configurés sont
 temporairement indisponibles ou limités, l’issue revient à `almago-ai-ready`
 pour un cycle ultérieur au lieu d’être bloquée.
@@ -53,7 +53,7 @@ Acceptance: The primary action is understandable on mobile.
 Les issues autonomes courtes portant `almago-ai-ready` et le marqueur
 `<!-- almago-ai-task -->` sont aussi prises automatiquement par le Master
 Orchestrator lorsqu'aucune tâche du plan principal n'est à dispatcher. Elles sont
-traitées dans l'ordre de création, une à la fois, avec les mêmes limites de budget,
+traitées dans l'ordre de création, une à la fois, avec les mêmes limites de quota,
 de scope et de sécurité.
 
 Pour une tâche précise, il reste possible de lancer **Actions → AlmaGo AI Task Queue → Run workflow**
