@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { isProtectedPath, isRetryableProviderError, parseTask, validatePatch } from './autonomous-propose.mjs';
+import { isProtectedPath, isRetryableProviderError, parseTask, promptFor, validatePatch } from './autonomous-propose.mjs';
 
 const issue = {
   number: 17,
@@ -98,4 +98,21 @@ test('classifies only transient provider failures as retryable', () => {
   assert.equal(isRetryableProviderError({ name:'AbortError', message:'aborted' }), true);
   assert.equal(isRetryableProviderError({ message:'network connection failed' }), true);
   assert.equal(isRetryableProviderError({ status:401, message:'Provider HTTP 401' }), false);
+});
+
+
+test('Groq fallback prompt compacts large Arabic UX sources under the free-tier budget', () => {
+  const compactTask = {
+    number: 526,
+    title: 'Arabic UX audit — Applications',
+    body: '<!-- almago-ai-task -->\nFiles:\n- src/content/student-applications-copy.ts\n- src/components/student/StudentApplicationsPanel.tsx\nGoal: polish Arabic UX.',
+    files: [
+      'src/content/student-applications-copy.ts',
+      'src/components/student/StudentApplicationsPanel.tsx',
+    ],
+  };
+  const prompt = promptFor(compactTask, 15000);
+  assert.match(prompt, /context compacted for free-provider limit/);
+  assert.match(prompt, /const ar/);
+  assert.ok(prompt.length < 20000, `compact prompt too large: ${prompt.length}`);
 });

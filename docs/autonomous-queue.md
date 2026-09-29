@@ -4,7 +4,7 @@ Le **Master Orchestrator** et le dispatcher autonome vérifient la file toutes l
 **5 minutes**. Une tâche prête peut déclencher **AlmaGo AI Task Queue** uniquement
 quand `ALMAGO_AI_ENABLED=true` et `ALMAGO_AI_FREE_ONLY=true`.
 
-La file utilise d’abord **Gemini 2.5 Flash**. Si Gemini ne peut pas produire un
+La file utilise d’abord **Gemini 3.8 Flash**. Si Gemini ne peut pas produire un
 patch utilisable, elle essaie **Groq** avec `openai/gpt-oss-120b` lorsqu’une clé
 Groq est configurée. Aucun xAI/Grok, Claude ou OpenAI API payant n’est utilisé
 dans cette file free-only. Si tous les fournisseurs gratuits configurés sont
@@ -21,7 +21,7 @@ retardé ou indisponible ; la cadence n’est donc pas une garantie temps réel.
 
 ## Activer en mode gratuit
 
-1. Créer une clé Gemini dans Google AI Studio. Gemini 2.5 Flash dispose d’un
+1. Créer une clé Gemini dans Google AI Studio. Gemini 3.8 Flash dispose d’un
    Free Tier, avec des quotas définis par Google.
 2. Facultatif mais recommandé : créer une clé Groq gratuite afin d’utiliser
    `openai/gpt-oss-120b` comme fallback. Dans GitHub,

@@ -87,10 +87,32 @@ export function validatePatch(patch, files) {
   return changed;
 }
 
-function promptFor(task) {
-  const sources = task.files.map(file => {
-    const content = readFileSync(resolve(file), 'utf8');
-    return `FILE ${file}\n${content}\nEND FILE`;
+function compactSource(file, content, budget) {
+  if (content.length <= budget) return content;
+  const marker = '\n/* ... context compacted for free-provider limit ... */\n';
+
+  if (file.startsWith('src/content/')) {
+    const arStart = content.indexOf('const ar');
+    const enStart = arStart >= 0 ? content.indexOf('\nconst en', arStart) : -1;
+    if (arStart >= 0 && enStart > arStart) {
+      const headBudget = Math.min(2200, Math.floor(budget * 0.3));
+      const head = content.slice(0, headBudget);
+      const remaining = Math.max(0, budget - head.length - marker.length);
+      return head + marker + content.slice(arStart, arStart + remaining);
+    }
+  }
+
+  const half = Math.max(1, Math.floor((budget - marker.length) / 2));
+  return content.slice(0, half) + marker + content.slice(-half);
+}
+
+export function promptFor(task, maxSourceChars = MAX_CONTEXT_CHARS) {
+  const files = task.files.map(file => ({ file, content: readFileSync(resolve(file), 'utf8') }));
+  const rawSize = files.reduce((sum, item) => sum + item.content.length, 0);
+  const perFileBudget = Math.max(1200, Math.floor(maxSourceChars / files.length));
+  const sources = files.map(({ file, content }) => {
+    const selected = rawSize <= maxSourceChars ? content : compactSource(file, content, perFileBudget);
+    return `FILE ${file}\n${selected}\nEND FILE`;
   }).join('\n\n');
   if (sources.length > MAX_CONTEXT_CHARS) throw new Error('Task context exceeds 45,000 characters.');
   return [
@@ -125,7 +147,7 @@ async function post(url, headers, data) {
 }
 
 async function askGemini(prompt) {
-  const model = process.env.ALMAGO_GEMINI_MODEL || 'gemini-2.5-flash';
+  const model = process.env.ALMAGO_GEMINI_MODEL || 'gemini-3.8-flash';
   if (!/^[a-zA-Z0-9_.-]+$/.test(model)) throw new Error('Invalid Gemini model identifier.');
   const data = await post(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
     { 'x-goog-api-key': process.env.GEMINI_API_KEY },
@@ -141,7 +163,7 @@ async function askGroq(prompt) {
     {
       model,
       messages: [{ role: 'user', content: prompt }],
-      max_completion_tokens: 6000,
+      max_completion_tokens: 2800,
       reasoning_effort: 'low',
     });
   return data.choices?.[0]?.message?.content || '';
@@ -154,16 +176,16 @@ export function isRetryableProviderError(error) {
 }
 
 export async function propose(task) {
-  const prompt = promptFor(task);
   const providers = [
-    ...(process.env.GEMINI_API_KEY ? [['Gemini', askGemini]] : []),
-    ...(process.env.GROQ_API_KEY ? [['Groq', askGroq]] : []),
+    ...(process.env.GEMINI_API_KEY ? [['Gemini', askGemini, MAX_CONTEXT_CHARS]] : []),
+    ...(process.env.GROQ_API_KEY ? [['Groq', askGroq, 15000]] : []),
   ];
   if (!providers.length) throw new Error('No Gemini or Groq API key configured.');
 
   const errors = [];
-  for (const [index, [name, ask]] of providers.entries()) {
+  for (const [index, [name, ask, maxSourceChars]] of providers.entries()) {
     try {
+      const prompt = promptFor(task, maxSourceChars);
       const patch = (await ask(prompt)).trim().replace(/^```diff\s*\n|\n```$/g, '');
       validatePatch(patch, task.files);
       return { patch: `${patch}\n`, provider: name, attempts: index + 1 };
