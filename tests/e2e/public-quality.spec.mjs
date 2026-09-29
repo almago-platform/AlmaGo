@@ -12,14 +12,14 @@ const pages = [
 mkdirSync("artifacts/screenshots", { recursive: true });
 
 
-test("browser exposes the cache-busted Campus Allemagne favicon v3", async ({ page }) => {
+test("browser exposes the cache-busted Campus Allemagne favicon v4", async ({ page }) => {
   await page.goto("/", { waitUntil: "networkidle" });
   const hrefs = await page.locator('link[rel~="icon"]').evaluateAll((links) =>
     links.map((link) => link.getAttribute("href") || ""),
   );
-  expect(hrefs.some((href) => href.includes("campus-allemagne-favicon-v3.svg") || href.includes("/icon.svg"))).toBeTruthy();
+  expect(hrefs.some((href) => href.includes("campus-allemagne-favicon-v4.svg") || href.includes("/icon.svg"))).toBeTruthy();
 
-  const faviconResponse = await page.request.get("/brand/campus-allemagne-favicon-v3.svg?v=3");
+  const faviconResponse = await page.request.get("/brand/campus-allemagne-favicon-v4.svg?v=4");
   expect(faviconResponse.ok()).toBeTruthy();
   expect(faviconResponse.headers()["content-type"]).toContain("image/svg+xml");
 });
