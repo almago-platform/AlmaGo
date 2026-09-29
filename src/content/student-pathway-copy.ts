@@ -196,10 +196,10 @@ const ar: PathwayCopy = {
     facts: { project: "تم تحديد المشروع", filingCountry: "بلد الإقامة / التقديم", admission: "قبول نهائي مقبول", preparatoryBasis: "أساس تحضيري مقبول", preparationCourse: "دورة تحضير منشورة وتم التحقق منها", pendingEvidence: "إثبات قيد المراجعة", replacementEvidence: "إثبات يجب استبداله" },
   },
   routes: {
-    STUDIUM: { title: "الدراسة (Studium)", description: "ملفك يحتوي على قبول نهائي تم التحقق منه. الجهة المختصة هي التي تقرر بعد ذلك بشأن التأشيرة أو الإقامة." },
-    STUDIENVORBEREITUNG: { title: "التحضير للدراسة (Studienvorbereitung)", description: "ملفك يحتوي على أساس تحضيري مقبول ودورة تحضير تم التحقق منها. راجع المصدر الرسمي للخطوات التالية." },
-    STUDIENPLATZSUCHE: { title: "البحث عن مقعد دراسي (Studienplatzsuche)", description: "ما زلت تبحث عن مقعد دراسي. قارن البرامج وجهّز طلبات التقديم." },
-    SPRACHKURS: { title: "دورة لغة (Sprachkurs)", description: "هدفك الحالي هو دورة لغة. تحقق من الشروط المطلوبة لملفك الكامل." },
+    STUDIUM: { title: "الدراسة (\u2066Studium\u2069)", description: "ملفك يحتوي على قبول نهائي تم التحقق منه. الجهة المختصة هي التي تقرر بعد ذلك بشأن التأشيرة أو الإقامة." },
+    STUDIENVORBEREITUNG: { title: "التحضير للدراسة (\u2066Studienvorbereitung\u2069)", description: "ملفك يحتوي على أساس تحضيري مقبول ودورة تحضير تم التحقق منها. راجع المصدر الرسمي للخطوات التالية." },
+    STUDIENPLATZSUCHE: { title: "البحث عن مقعد دراسي (\u2066Studienplatzsuche\u2069)", description: "ما زلت تبحث عن مقعد دراسي. قارن البرامج وجهّز طلبات التقديم." },
+    SPRACHKURS: { title: "دورة لغة (\u2066Sprachkurs\u2069)", description: "هدفك الحالي هو دورة لغة. تحقق من الشروط المطلوبة لملفك الكامل." },
   },
   decisionStatus: { confirmed_basis: "أساس موثّق", candidate: "مسار يحتاج إلى مراجعة", blocked: "أكمل هذه الخطوة" },
   decisionExplanations: {
@@ -214,7 +214,7 @@ const ar: PathwayCopy = {
   },
   academic: {
     labels: { definitive: "قبول نهائي مقبول", preparatory: "أساس تحضيري مقبول", replacement: "مستند يجب استبداله", pending: "المراجعة جارية", none: "لا يوجد أساس مقبول" },
-    details: { definitive: "تم التحقق من قبول نهائي رسمي وقبوله كإثبات للمسار.", preparatory: "تم اعتماد قبول مشروط أو إثبات من الجامعة (Bewerberbestätigung) أو مراسلة جامعية مناسبة كأساس تحضيري.", replacement: "يجب استبدال إثبات أكاديمي قبل استخدامه.", pending: "هناك إثبات أكاديمي مسجل لكنه ما زال يحتاج إلى مراجعة أو استكمال.", none: "لا يوجد في هذه المرحلة إثبات أكاديمي مقبول للمسار." },
+    details: { definitive: "تم التحقق من قبول نهائي رسمي وقبوله كإثبات للمسار.", preparatory: "تم اعتماد قبول مشروط أو إثبات من الجامعة (\u2066Bewerberbestätigung\u2069) أو مراسلة جامعية مناسبة كأساس تحضيري.", replacement: "يجب استبدال إثبات أكاديمي قبل استخدامه.", pending: "هناك إثبات أكاديمي مسجل لكنه ما زال يحتاج إلى مراجعة أو استكمال.", none: "لا يوجد في هذه المرحلة إثبات أكاديمي مقبول للمسار." },
   },
   cards: {
     project: "المشروع الأكاديمي", filled: "تم إدخاله", complete: "يحتاج إلى استكمال", projectPrompt: "حدّد ما تريد فعله في ألمانيا قبل المتابعة.", defineProject: "حدّد هدفك", edit: "تعديل",
