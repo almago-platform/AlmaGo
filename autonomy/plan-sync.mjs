@@ -1,4 +1,4 @@
-import { loadPlan, validatePlan, nextEligibleTask, routeTask, taskIssueBody, progress, issueTaskId, dispatchableReadyIssue } from "./plan-core.mjs";
+import { loadPlan, validatePlan, nextEligibleTask, routeTask, taskIssueBody, progress, issueTaskId, dispatchableReadyIssue, standaloneAiReadyIssue } from "./plan-core.mjs";
 
 const token = process.env.GITHUB_TOKEN;
 const repository = process.env.GITHUB_REPOSITORY;
@@ -41,6 +41,11 @@ async function ensureLabels() {
 async function listPlanIssues() {
   const issues = await gh("/repos/" + owner + "/" + repo + "/issues?state=all&labels=almago-plan&per_page=100");
   return issues.filter(issue => !issue.pull_request && issueTaskId(issue));
+}
+
+async function listStandaloneReadyAiIssues() {
+  const issues = await gh("/repos/" + owner + "/" + repo + "/issues?state=open&labels=almago-ai-ready&sort=created&direction=asc&per_page=100");
+  return issues.filter(issue => !issue.pull_request && !issueTaskId(issue));
 }
 
 function labelsForRoute(route) {
@@ -113,9 +118,12 @@ if (next) {
 }
 
 const ready = dispatchableReadyIssue(plan, issues);
-const dispatchIssue = created || ready?.issue || null;
+const standaloneReady = !created && !ready
+  ? standaloneAiReadyIssue(await listStandaloneReadyAiIssues())
+  : null;
+const dispatchIssue = created || ready?.issue || standaloneReady || null;
 const dispatchTask = created ? next : ready?.task || null;
-const dispatchRoute = dispatchTask ? routeTask(dispatchTask) : null;
+const dispatchRoute = dispatchTask ? routeTask(dispatchTask) : (standaloneReady ? "ai" : null);
 
 await upsertDashboard(plan, issues, next);
 
@@ -128,4 +136,5 @@ if (process.env.GITHUB_OUTPUT) {
 }
 if (created) console.log("Created #" + created.number + " for " + next.id + " via " + route + ".");
 else if (ready) console.log("Existing ready issue #" + ready.issue.number + " is dispatchable for " + ready.task.id + ".");
+else if (standaloneReady) console.log("Standalone AI-ready issue #" + standaloneReady.number + " is dispatchable.");
 else console.log("No new or dispatchable task.");
