@@ -90,6 +90,20 @@ test.describe("authenticated Student Space quality", () => {
         expect(await autoInputs.count(), "Arabic profile should auto-detect direction for free-text values").toBeGreaterThan(0);
       }
 
+      if (target.name === "project") {
+        await expect(page.locator('input[name="preferred_cities"]')).toHaveAttribute("dir", "ltr");
+        await expect(page.locator('input[name="current_german_level"]')).toHaveAttribute("dir", "ltr");
+        await expect(page.locator('input[name="target_german_level"]')).toHaveAttribute("dir", "ltr");
+        expect(
+          await page.locator('input[dir="auto"]').count(),
+          "Arabic project should auto-detect direction for mixed free-text values",
+        ).toBeGreaterThan(0);
+        expect(
+          await page.locator('textarea[dir="auto"]').count(),
+          "Arabic project textareas should auto-detect user content direction",
+        ).toBeGreaterThanOrEqual(2);
+      }
+
       if (target.name === "checklist") {
         const checklistText = await page.locator("#main-content").innerText();
         for (const frenchTemplateText of [
