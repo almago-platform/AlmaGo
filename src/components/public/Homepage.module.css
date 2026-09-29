@@ -173,11 +173,15 @@
   display: inline-flex;
   align-items: center;
   min-height: 44px;
+  flex: 0 0 auto;
+  direction: ltr;
 }
 .logoImage {
   width: 216px;
+  max-width: none;
   height: auto;
   display: block;
+  object-fit: contain;
 }
 .footerLogoImage {
   width: 236px;
