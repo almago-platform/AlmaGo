@@ -10,7 +10,6 @@ type BrandLogoProps = {
 };
 
 export function BrandLogo({
-  variant: _variant = "primary",
   symbolOnly = false,
   className = "",
   priority = false,
