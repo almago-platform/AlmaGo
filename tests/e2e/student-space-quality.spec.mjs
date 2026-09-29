@@ -104,6 +104,22 @@ test.describe("authenticated Student Space quality", () => {
         expect(await autoInputs.count(), "Arabic profile should auto-detect direction for free-text values").toBeGreaterThan(0);
       }
 
+      if (target.name === "orientation" && viewportWidth >= 1024) {
+        const guidancePanel = page.locator(".student-guidance-panel");
+        const guidanceFigure = guidancePanel.locator("figure");
+        const guidanceContent = guidancePanel.locator(".student-guidance-content");
+        const [figureBox, contentBox] = await Promise.all([
+          guidanceFigure.boundingBox(),
+          guidanceContent.boundingBox(),
+        ]);
+        expect(figureBox, "Arabic orientation guidance image should have a visible box").not.toBeNull();
+        expect(contentBox, "Arabic orientation guidance copy should have a visible box").not.toBeNull();
+        expect(
+          contentBox.x,
+          "Arabic orientation guidance copy should sit to the right of its supporting image",
+        ).toBeGreaterThan(figureBox.x);
+      }
+
       if (target.name === "project") {
         const citySearch = page.getByPlaceholder("ابحث عن مدينة في ألمانيا");
         await expect(citySearch).toBeVisible();
