@@ -60,7 +60,7 @@ test("browser favicon uses the dedicated Campus Allemagne icon while PWA keeps t
   assert.ok(statSync(approvedFavicon).size > 200);
   assert.ok(existsSync("src/app/icon.svg"));
   assert.ok(!existsSync("src/app/icon.png"));
-  assert.match(layout, /campus-allemagne-favicon-v4\\.svg\\?v=4/);
+  assert.match(layout, /campus-allemagne-favicon-v4\.svg\?v=4/);
   assert.match(layout, /image\/svg\+xml/);
   assert.match(layout, /shortcut/);
   assert.match(manifest, /name: "Campus Allemagne"/);
