@@ -11,9 +11,9 @@ export default function manifest(): MetadataRoute.Manifest {
     theme_color: "#DB0423",
     icons: [
       {
-        src: "/brand/campus-allemagne-symbol.svg",
-        sizes: "any",
-        type: "image/svg+xml",
+        src: "/brand/campus-allemagne-symbol-approved.webp",
+        sizes: "160x117",
+        type: "image/webp",
         purpose: "any",
       },
     ],
