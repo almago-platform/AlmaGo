@@ -40,7 +40,7 @@ retardé ou indisponible ; la cadence n’est donc pas une garantie temps réel.
 
 4. Préparer une issue courte avec le label `almago-ai-ready` et la forme suivante.
    Les chemins doivent viser 1 à 3 fichiers existants dans `src/app/`,
-   `src/components/` ou `src/lib/`. Le label est retiré dès la prise en charge.
+   `src/components/`, `src/content/` ou `src/lib/`. Le label est retiré dès la prise en charge.
 
 ```md
 <!-- almago-ai-task -->
