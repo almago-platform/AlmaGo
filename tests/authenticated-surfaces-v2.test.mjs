@@ -141,3 +141,17 @@ test("Arabic profile and project V3 isolate Latin data instead of mixing scripts
   assert.ok(projectForm.includes('dir="ltr"'));
   assert.ok(projectForm.includes('rows={3}'));
 });
+
+
+test("Arabic project V4 isolates mixed free-text values and official city names", () => {
+  assert.ok(projectForm.includes('name="current_diploma"'));
+  assert.ok(projectForm.includes('name="target_degree"'));
+  assert.ok(projectForm.includes('name="target_field"'));
+  assert.ok(projectForm.includes('name="target_intake"'));
+  assert.ok(projectForm.includes('name="preferred_study_language"'));
+  assert.ok(projectForm.includes('name="preferred_cities"'));
+  assert.ok(projectForm.includes('inputDir="auto"'));
+  assert.ok(projectForm.includes('inputDir="ltr"'));
+  assert.ok(projectForm.includes('dir="auto"'));
+  assert.ok(projectForm.includes('inputDir?: "ltr" | "rtl" | "auto"'));
+});
