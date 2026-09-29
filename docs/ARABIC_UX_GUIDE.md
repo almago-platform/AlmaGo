@@ -162,3 +162,55 @@ The homepage should prioritize:
 programme choice → documents → applications → preparation → progress.
 
 The Arabic homepage may change line breaks, spacing, emphasis, and information order when needed for Arabic comprehension, while preserving the same product meaning and capabilities.
+
+
+## Authenticated Student Space
+
+The student workspace is action-oriented. It should tell the student what is known, what needs attention, and what to do next without sounding like an administrative decision.
+
+### Desktop composition
+
+For Arabic desktop layouts:
+- the Student Space sidebar sits on the right;
+- the primary reading/form area should also occupy the natural Arabic reading side when a two-panel composition allows it;
+- supporting photography, story panels, or secondary guidance may sit on the left;
+- do not rely on inherited CSS Grid `direction: rtl` when DOM order would place secondary media before primary content;
+- use an explicit composition direction when necessary, then restore `direction: rtl` inside each child panel.
+
+### Status and decision language
+
+Prefer concrete status language:
+- مطلوب منك
+- قيد المتابعة
+- مكتمل
+- يحتاج إلى مراجعة
+- الموعد النهائي
+- الخطوة التالية
+
+Avoid wording that could make an internal AlmaGo state sound like an official admission, visa, or authority decision.
+
+When document file status and academic-evidence status differ, explain the distinction in plain Arabic.
+
+### Mixed-direction data
+
+Keep technical values readable inside RTL:
+- route codes;
+- ECTS;
+- VPD;
+- EUR;
+- two-letter country codes;
+- official German terms such as Studium, Studienvorbereitung, Studienplatzsuche, Sprachkurs, and Bewerberbestätigung.
+
+Use `bdi dir="ltr"`, explicit `dir="ltr"`, or Unicode isolation as appropriate. Free-text student values should generally use `dir="auto"`.
+
+### Student CTAs
+
+Prefer direct actions:
+- افتح الخطوة
+- استعرض مستنداتك
+- استعرض برامجك
+- استعرض طلباتك
+- تحقق من المصدر الرسمي
+- ابدأ الآن
+
+Avoid noun-only actions when an imperative is clearer.
