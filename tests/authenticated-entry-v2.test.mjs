@@ -65,3 +65,14 @@ test("completed student setup stops telling a finished Arabic profile to start a
   assert.ok(profileForm.includes("sm:justify-start"));
   assert.ok(profileForm.indexOf("<Button type=\"submit\"") < profileForm.indexOf("t.form.saveHint"));
 });
+
+
+test("Arabic profile fields isolate Latin and numeric values from RTL labels", () => {
+  assert.ok(profileForm.includes('inputDir="auto"'));
+  assert.ok(profileForm.includes('inputDir="ltr"'));
+  assert.ok(profileForm.includes('type="tel"'));
+  assert.ok(profileForm.includes('type="date"'));
+  assert.ok(profileForm.includes('type="number"'));
+  assert.ok(profileForm.includes('label={f.first_name}'));
+  assert.ok(profileForm.includes('label={f.phone}'));
+});
