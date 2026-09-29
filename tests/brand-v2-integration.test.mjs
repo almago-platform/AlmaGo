@@ -12,8 +12,8 @@ const brandLogo = readFileSync("src/components/brand/BrandLogo.tsx", "utf8");
 const brand = readFileSync("src/lib/brand.ts", "utf8");
 const provider = readFileSync("src/components/i18n/LocaleProvider.tsx", "utf8");
 
-const approvedLogo = "public/brand/campus-allemagne-logo-approved.webp";
-const approvedSymbol = "public/brand/campus-allemagne-symbol-approved.webp";
+const approvedLogo = "public/brand/campus-allemagne-logo-approved.png";
+const approvedSymbol = "public/brand/campus-allemagne-symbol-approved.png";
 
 test("Campus Allemagne keeps the approved shared application palette", () => {
   assert.match(globals, /--foreground:\s*#1c2124/i);
@@ -38,8 +38,8 @@ test("exact approved Campus Allemagne artwork is used across public and authenti
   assert.ok(existsSync(approvedSymbol));
   assert.ok(statSync(approvedLogo).size > 1000);
   assert.ok(statSync(approvedSymbol).size > 1000);
-  assert.match(brandLogo, /campus-allemagne-logo-approved\.webp/);
-  assert.match(brandLogo, /campus-allemagne-symbol-approved\.webp/);
+  assert.match(brandLogo, /campus-allemagne-logo-approved\.png/);
+  assert.match(brandLogo, /campus-allemagne-symbol-approved\.png/);
   assert.doesNotMatch(brandLogo, /campus-allemagne-logo(?:-reverse)?\.svg/);
   assert.doesNotMatch(brandLogo, /campus-allemagne-symbol(?:-reverse)?\.svg/);
   assert.match(footer, /footerLogoLink/);
@@ -55,8 +55,8 @@ test("localized public copy is rebranded without rewriting locale source files",
 test("favicon metadata and PWA manifest use the exact approved compact mark", () => {
   assert.match(layout, /applicationName: BRAND_NAME/);
   assert.match(layout, /siteName: BRAND_NAME/);
-  assert.match(layout, /campus-allemagne-symbol-approved\.webp/);
+  assert.match(layout, /campus-allemagne-symbol-approved\.png/);
   assert.match(manifest, /name: "Campus Allemagne"/);
-  assert.match(manifest, /campus-allemagne-symbol-approved\.webp/);
-  assert.match(manifest, /type: "image\/webp"/);
+  assert.match(manifest, /campus-allemagne-symbol-approved\.png/);
+  assert.match(manifest, /type: "image\/png"/);
 });

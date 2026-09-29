@@ -101,6 +101,8 @@ test("native language switch persists and Arabic renders RTL without overflow", 
   const headerLogoBox = await headerLogo.boundingBox();
   expect(headerLogoBox, "Arabic header logo should have a visible box").not.toBeNull();
   expect(headerLogoBox.width, "Arabic header logo must not collapse in RTL flex layout").toBeGreaterThan(100);
+  const decodedLogoWidth = await headerLogo.evaluate((image) => image.naturalWidth);
+  expect(decodedLogoWidth, "Arabic header logo asset must decode successfully").toBeGreaterThan(0);
 
   const rtlOverflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   expect(rtlOverflow, "Arabic homepage must not overflow horizontally").toBeLessThanOrEqual(1);
