@@ -22,7 +22,8 @@ test("V7 uses an immersive full-width academic hero", () => {
 });
 
 test("V7 keeps localized copy and product proof integrated inside the hero", () => {
-  assert.ok(hero.includes("copy.home.hero"));
+  assert.ok(page.includes("hero={copy.home.hero}"));
+  assert.ok(hero.includes("hero.exampleTitle"));
   assert.ok(nativeCopy.includes('eyebrow: "Étudier en Allemagne, étape par étape."'));
   assert.ok(nativeCopy.includes('title3: "plus clair."'));
   assert.ok(nativeCopy.includes('exampleTitle: "Votre dossier avance"'));
@@ -32,9 +33,9 @@ test("V7 keeps localized copy and product proof integrated inside the hero", () 
 });
 
 test("current homepage places quick access and the visual pathway immediately after the hero", () => {
-  assert.ok(page.indexOf("<HomeHero />") < page.indexOf("<HomeQuickAccess />"));
-  assert.ok(page.indexOf("<HomeQuickAccess />") < page.indexOf("<HomePhotoBand />"));
-  assert.ok(page.indexOf("<HomePhotoBand />") < page.indexOf("<HomeJourneySection />"));
+  assert.ok(page.indexOf("<HomeHero hero={copy.home.hero} />") < page.indexOf("<HomeQuickAccess quick={copy.home.quick} />"));
+  assert.ok(page.indexOf("<HomeQuickAccess quick={copy.home.quick} />") < page.indexOf("<HomePhotoBand photo={copy.home.photo} />"));
+  assert.ok(page.indexOf("<HomePhotoBand photo={copy.home.photo} />") < page.indexOf("<HomeJourneySection journey={copy.home.journey} />"));
   assert.equal(quick.split('icon: "').length - 1, 5);
   assert.ok(css.includes("repeat(5"));
 });
