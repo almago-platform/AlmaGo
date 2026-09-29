@@ -183,8 +183,9 @@ export async function propose(task) {
   if (!providers.length) throw new Error('No Gemini or Groq API key configured.');
 
   const errors = [];
-  for (const [index, [name, ask]] of providers.entries()) {
+  for (const [index, [name, ask, maxSourceChars]] of providers.entries()) {
     try {
+      const prompt = promptFor(task, maxSourceChars);
       const patch = (await ask(prompt)).trim().replace(/^```diff\s*\n|\n```$/g, '');
       validatePatch(patch, task.files);
       return { patch: `${patch}\n`, provider: name, attempts: index + 1 };
