@@ -160,7 +160,7 @@ export function OnboardingForm({ profile }: { profile: Record<string, unknown> }
   const currentStep = steps[step - 1];
 
   return (
-    <section className="grid w-full gap-5 lg:grid-cols-[0.78fr_1.22fr] lg:gap-7">
+    <section className="student-onboarding-grid grid w-full gap-5 lg:grid-cols-[0.78fr_1.22fr] lg:gap-7">
       <aside className="lg:sticky lg:top-6 lg:self-start">
         <div className="overflow-hidden rounded-[1rem] border border-[var(--border)] bg-[var(--surface)] shadow-[0_24px_70px_-58px_rgba(28,33,36,0.55)]">
           <div className="relative h-40 overflow-hidden sm:h-48 lg:h-56">
