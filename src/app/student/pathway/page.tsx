@@ -185,7 +185,7 @@ export default async function StudentPathwayPage() {
               <Badge variant={statusVariant(decision.status)}>{t.decisionStatus[decision.status]}</Badge>
               {decision.route && (
                 <span className="text-xs font-bold uppercase tracking-[0.14em] text-slate-500">
-                  {decision.route}
+                  <bdi dir="ltr">{decision.route}</bdi>
                 </span>
               )}
             </div>
