@@ -89,3 +89,18 @@ test("existing ready AI issue can be dispatched after provider activation", () =
   assert.equal(ready?.issue.number, 18);
   assert.equal(ready?.task.id, "A09");
 });
+
+
+test("standalone bounded AI-ready issues can feed the five-minute worker", () => {
+  const ready = {
+    number: 520,
+    state: "open",
+    body: "<!-- almago-ai-task -->\nFiles:\n- src/components/student/DocumentsPanel.tsx\nGoal: polish Arabic UX.",
+    labels: [{ name: "almago-ai-ready" }],
+  };
+  assert.equal(standaloneAiReadyIssue([ready])?.number, 520);
+  assert.equal(standaloneAiReadyIssue([{ ...ready, body: "<!-- almago-plan-task:A01 -->" }]), null);
+  assert.equal(standaloneAiReadyIssue([{ ...ready, labels: [{ name: "almago-ai-running" }, { name: "almago-ai-ready" }] }]), null);
+  assert.equal(standaloneAiReadyIssue([{ ...ready, labels: [{ name: "almago-ai-blocked" }, { name: "almago-ai-ready" }] }]), null);
+  assert.equal(standaloneAiReadyIssue([{ ...ready, body: "missing task marker" }]), null);
+});
