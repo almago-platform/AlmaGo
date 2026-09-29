@@ -8,8 +8,12 @@ const issue = {
   body: '<!-- almago-ai-task -->\nFiles:\n- src/app/page.tsx\nGoal: make the next action clear.',
 };
 
-test('accepts a bounded task with an exact safe source path', () => {
+test('accepts bounded tasks with exact safe app and content source paths', () => {
   assert.deepEqual(parseTask(issue).files, ['src/app/page.tsx']);
+  assert.deepEqual(parseTask({
+    ...issue,
+    body: '<!-- almago-ai-task -->\nFiles:\n- src/content/student-documents-copy.ts\nGoal: improve Arabic copy.',
+  }).files, ['src/content/student-documents-copy.ts']);
 });
 
 test('rejects protected paths, infrastructure and traversal', () => {
