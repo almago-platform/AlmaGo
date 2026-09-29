@@ -1,20 +1,20 @@
 "use client";
 
-import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
+import { createContext, useContext, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
-import { getNativeCopy } from "@/content/native-copy";
-import { rebrandCopy } from "@/lib/brand";
+import type { getNativeCopy } from "@/content/native-copy";
 import {
   LOCALE_COOKIE,
   localeDirection,
-  normalizeLocale,
   type Locale,
 } from "@/lib/i18n";
+
+type NativeCopy = ReturnType<typeof getNativeCopy>;
 
 type LocaleContextValue = {
   locale: Locale;
   direction: "ltr" | "rtl";
-  copy: ReturnType<typeof getNativeCopy>;
+  copy: NativeCopy;
   setLocale: (locale: Locale) => void;
 };
 
@@ -22,17 +22,18 @@ const LocaleContext = createContext<LocaleContextValue | null>(null);
 
 export function LocaleProvider({
   initialLocale,
+  initialCopy,
   children,
 }: {
   initialLocale: Locale;
+  initialCopy: NativeCopy;
   children: ReactNode;
 }) {
   const router = useRouter();
-  const [locale, setLocaleState] = useState<Locale>(normalizeLocale(initialLocale));
-  const copy = useMemo(() => rebrandCopy(getNativeCopy(locale)), [locale]);
+  const locale = initialLocale;
 
   function setLocale(nextLocale: Locale) {
-    setLocaleState(nextLocale);
+    if (nextLocale === locale) return;
     document.cookie = `${LOCALE_COOKIE}=${nextLocale}; Path=/; Max-Age=31536000; SameSite=Lax`;
     document.documentElement.lang = nextLocale;
     document.documentElement.dir = localeDirection(nextLocale);
@@ -44,7 +45,7 @@ export function LocaleProvider({
       value={{
         locale,
         direction: localeDirection(locale),
-        copy,
+        copy: initialCopy,
         setLocale,
       }}
     >

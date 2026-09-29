@@ -13,7 +13,7 @@ test("public trust framing keeps AlmaGo independent and official decisions exter
   assert.ok(nativeCopy.includes("Les admissions, visas et autres décisions officielles appartiennent"));
   assert.ok(nativeCopy.includes('"Vérifier une information"'));
   assert.ok(closing.includes("footer.disclaimer"));
-  assert.ok(tools.includes("copy.home.tools"));
+  assert.ok(tools.includes("tools.items.map"));
 });
 
 test("helpful tools use the current three-column desktop layout", () => {

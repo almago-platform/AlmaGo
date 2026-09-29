@@ -25,7 +25,7 @@ export function BrandLogo({
       width={symbolOnly ? 464 : 1340}
       height={symbolOnly ? 329 : 344}
       priority={priority}
-      unoptimized
+      sizes={symbolOnly ? "64px" : "(max-width: 390px) 168px, (max-width: 767px) 186px, 240px"}
       className={className}
     />
   );

@@ -1,8 +1,8 @@
-"use client";
-
 import Image from "next/image";
-import { useLocale } from "@/components/i18n/LocaleProvider";
+import type { getNativeCopy } from "@/content/native-copy";
 import s from "./Homepage.module.css";
+
+type PhotoCopy = ReturnType<typeof getNativeCopy>["home"]["photo"];
 
 const images = [
   "https://images.pexels.com/photos/5965674/pexels-photo-5965674.jpeg?auto=compress&cs=tinysrgb&w=1200",
@@ -10,10 +10,7 @@ const images = [
   "https://images.pexels.com/photos/5553958/pexels-photo-5553958.jpeg?auto=compress&cs=tinysrgb&w=1200",
 ] as const;
 
-export function HomePhotoBand() {
-  const { copy } = useLocale();
-  const photo = copy.home.photo;
-
+export function HomePhotoBand({ photo }: { photo: PhotoCopy }) {
   return (
     <section className={s.photoBand} aria-labelledby="photo-band-title">
       <div className={`${s.container} ${s.photoBandLayout}`}>

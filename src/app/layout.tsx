@@ -4,7 +4,7 @@ import { Inter, Noto_Kufi_Arabic, Noto_Sans_Arabic } from "next/font/google";
 import type { ReactNode } from "react";
 import { LocaleProvider } from "@/components/i18n/LocaleProvider";
 import { getNativeCopy } from "@/content/native-copy";
-import { BRAND_NAME, brandText } from "@/lib/brand";
+import { BRAND_NAME, brandText, rebrandCopy } from "@/lib/brand";
 import {
   LOCALE_COOKIE,
   localeDirection,
@@ -15,8 +15,18 @@ import { getPublicOrigin } from "@/lib/public-origin";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
-const notoSansArabic = Noto_Sans_Arabic({ subsets: ["arabic"], variable: "--font-arabic", display: "swap" });
-const notoKufiArabic = Noto_Kufi_Arabic({ subsets: ["arabic"], variable: "--font-arabic-display", display: "swap" });
+const notoSansArabic = Noto_Sans_Arabic({
+  subsets: ["arabic"],
+  variable: "--font-arabic",
+  display: "swap",
+  preload: false,
+});
+const notoKufiArabic = Noto_Kufi_Arabic({
+  subsets: ["arabic"],
+  variable: "--font-arabic-display",
+  display: "swap",
+  preload: false,
+});
 
 async function requestLocale() {
   const store = await cookies();
@@ -69,6 +79,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function RootLayout({ children }: { children: ReactNode }) {
   const locale = await requestLocale();
+  const copy = rebrandCopy(getNativeCopy(locale));
 
   return (
     <html
@@ -77,7 +88,9 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
       className={`${inter.variable} ${notoSansArabic.variable} ${notoKufiArabic.variable} h-full antialiased`}
     >
       <body className="min-h-full">
-        <LocaleProvider initialLocale={locale}>{children}</LocaleProvider>
+        <LocaleProvider initialLocale={locale} initialCopy={copy}>
+          {children}
+        </LocaleProvider>
       </body>
     </html>
   );

@@ -49,7 +49,8 @@ test("exact approved Campus Allemagne artwork is used across public and authenti
 test("localized public copy is rebranded without rewriting locale source files", () => {
   assert.match(brand, /BRAND_NAME = "Campus Allemagne"/);
   assert.match(brand, /LEGACY_BRAND_NAME = "AlmaGo"/);
-  assert.match(provider, /rebrandCopy\(getNativeCopy\(locale\)\)/);
+  assert.match(layout, /rebrandCopy\(getNativeCopy\(locale\)\)/);
+  assert.doesNotMatch(provider, /rebrandCopy\(getNativeCopy\(locale\)\)/);
   assert.match(footer, /© Campus Allemagne/);
 });
 

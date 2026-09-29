@@ -1,13 +1,10 @@
-"use client";
-
-import { useLocale } from "@/components/i18n/LocaleProvider";
+import type { getNativeCopy } from "@/content/native-copy";
 import { HomeIcon } from "./HomeIcons";
 import s from "./Homepage.module.css";
 
-export function HomeFaqSection() {
-  const { copy } = useLocale();
-  const faq = copy.home.faq;
+type FaqCopy = ReturnType<typeof getNativeCopy>["home"]["faq"];
 
+export function HomeFaqSection({ faq }: { faq: FaqCopy }) {
   return (
     <section id="faq" className={`${s.section} ${s.faq}`} aria-labelledby="faq-title">
       <div className={`${s.container} ${s.faqGrid}`}>
