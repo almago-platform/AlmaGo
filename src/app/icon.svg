@@ -1,7 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
   <title id="title">Campus Allemagne</title>
   <rect x="2" y="2" width="60" height="60" rx="14" fill="#F7F4EC"/>
-  <path d="M46 18a20 20 0 1 0 0 28" fill="none" stroke="#1C2124" stroke-width="10" stroke-linecap="round"/>
-  <path d="M42 28h14" fill="none" stroke="#DB0423" stroke-width="7" stroke-linecap="round"/>
-  <path d="M42 38h11" fill="none" stroke="#FCB50A" stroke-width="7" stroke-linecap="round"/>
+  <path d="M8 22.5 32 12l24 10.5L32 33 8 22.5Z" fill="#1C2124"/>
+  <path d="M17 28.5v8.5c8.5 5.5 21.5 5.5 30 0v-8.5L32 35l-15-6.5Z" fill="#1C2124"/>
+  <path d="M11.5 43c11 9.5 30.5 10.5 42-1.5" fill="none" stroke="#DB0423" stroke-width="6" stroke-linecap="round"/>
+  <path d="M16 51c10 5.5 24.5 5.5 35-2.5" fill="none" stroke="#FCB50A" stroke-width="5" stroke-linecap="round"/>
 </svg>
