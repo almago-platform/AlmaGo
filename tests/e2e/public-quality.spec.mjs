@@ -95,6 +95,13 @@ test("native language switch persists and Arabic renders RTL without overflow", 
   await expect(page.locator("html")).toHaveAttribute("lang", "ar");
   await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
   await expect(page.getByRole("heading", { name: /خطّط لدراستك/ })).toBeVisible();
+
+  const headerLogo = page.locator('header img[alt="Campus Allemagne"]').first();
+  await expect(headerLogo).toBeVisible();
+  const headerLogoBox = await headerLogo.boundingBox();
+  expect(headerLogoBox, "Arabic header logo should have a visible box").not.toBeNull();
+  expect(headerLogoBox.width, "Arabic header logo must not collapse in RTL flex layout").toBeGreaterThan(100);
+
   const rtlOverflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   expect(rtlOverflow, "Arabic homepage must not overflow horizontally").toBeLessThanOrEqual(1);
 
