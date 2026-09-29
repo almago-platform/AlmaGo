@@ -31,3 +31,9 @@ test("master orchestrator uses the same free-only gate", () => {
   assert.doesNotMatch(orchestrator, /ALMAGO_AI_BILLING_CAP_CONFIRMED/);
   assert.match(orchestrator, /Gemini\/Groq free worker/);
 });
+
+
+test("provider output is git-apply checked before a task becomes deliverable", () => {
+  assert.match(workflow, /git apply --check almago-ai\.patch/);
+  assert.match(workflow, /Provider returned a patch that git cannot apply cleanly/);
+});
