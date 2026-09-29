@@ -78,7 +78,7 @@ export function validatePatch(patch, files) {
     .filter(line => line.startsWith('+') && !line.startsWith('+++'))
     .map(line => line.slice(1))
     .join('\n');
-  if (/(?:service_role|SUPABASE_SERVICE_ROLE|OPENAI_API_KEY|GEMINI_API_KEY|XAI_API_KEY|auth\.admin|user_roles|public\.is_admin|private\.is_admin|gh[pousr]_[A-Za-z0-9]{20,}|sk-[A-Za-z0-9_-]{20,})/i.test(additions)) {
+  if (/(?:service_role|SUPABASE_SERVICE_ROLE|OPENAI_API_KEY|GEMINI_API_KEY|GROQ_API_KEY|XAI_API_KEY|auth\.admin|user_roles|public\.is_admin|private\.is_admin|gh[pousr]_[A-Za-z0-9]{20,}|sk-[A-Za-z0-9_-]{20,})/i.test(additions)) {
     throw new Error('Patch adds secret-like or authorization-sensitive content.');
   }
   if (/\beval\s*\(|\bnew\s+Function\s*\(/.test(additions)) {
@@ -114,7 +114,8 @@ async function post(url, headers, data) {
     });
     if (!response.ok) {
       const error = new Error(`Provider HTTP ${response.status}`);
-      error.fallback = [401, 402, 403, 429].includes(response.status);
+      error.status = response.status;
+      error.retryable = [408, 425, 429, 500, 502, 503, 504].includes(response.status);
       throw error;
     }
     return await response.json();
@@ -132,35 +133,52 @@ async function askGemini(prompt) {
   return data.candidates?.[0]?.content?.parts?.map(part => part.text || '').join('') || '';
 }
 
-async function askGrok(prompt) {
-  const model = process.env.ALMAGO_XAI_MODEL || 'grok-4.3';
-  if (!/^[a-zA-Z0-9_.-]+$/.test(model)) throw new Error('Invalid xAI model identifier.');
-  const data = await post('https://api.x.ai/v1/responses',
-    { Authorization: `Bearer ${process.env.XAI_API_KEY}` },
-    { model, input: prompt, max_output_tokens: 6000, store: false });
-  return data.output?.filter(item => item.type === 'message')
-    .flatMap(item => item.content || []).filter(item => item.type === 'output_text')
-    .map(item => item.text || '').join('') || '';
+async function askGroq(prompt) {
+  const model = process.env.ALMAGO_GROQ_MODEL || 'openai/gpt-oss-120b';
+  if (!/^[a-zA-Z0-9_./-]+$/.test(model)) throw new Error('Invalid Groq model identifier.');
+  const data = await post('https://api.groq.com/openai/v1/chat/completions',
+    { Authorization: `Bearer ${process.env.GROQ_API_KEY}` },
+    {
+      model,
+      messages: [{ role: 'user', content: prompt }],
+      max_completion_tokens: 6000,
+      reasoning_effort: 'low',
+    });
+  return data.choices?.[0]?.message?.content || '';
+}
+
+export function isRetryableProviderError(error) {
+  return Boolean(error?.retryable)
+    || error?.name === 'AbortError'
+    || /(?:timed? ?out|timeout|network|fetch failed|socket|connection)/i.test(String(error?.message || ''));
 }
 
 export async function propose(task) {
   const prompt = promptFor(task);
   const providers = [
     ...(process.env.GEMINI_API_KEY ? [['Gemini', askGemini]] : []),
-    ...(process.env.XAI_API_KEY ? [['Grok', askGrok]] : []),
+    ...(process.env.GROQ_API_KEY ? [['Groq', askGroq]] : []),
   ];
-  if (!providers.length) throw new Error('No Gemini or xAI API key configured.');
+  if (!providers.length) throw new Error('No Gemini or Groq API key configured.');
+
+  const errors = [];
   for (const [index, [name, ask]] of providers.entries()) {
     try {
       const patch = (await ask(prompt)).trim().replace(/^```diff\s*\n|\n```$/g, '');
       validatePatch(patch, task.files);
       return { patch: `${patch}\n`, provider: name, attempts: index + 1 };
     } catch (error) {
-      if (!error.fallback || index === providers.length - 1) throw error;
-      process.stderr.write(`${name} unavailable (${error.message}); trying next configured provider.\n`);
+      errors.push(error);
+      if (index < providers.length - 1) {
+        process.stderr.write(`${name} could not produce a usable patch (${error.message}); trying next configured free provider.\n`);
+        continue;
+      }
     }
   }
-  throw new Error('No provider returned a usable patch.');
+
+  const final = new Error('No configured provider returned a usable patch: ' + errors.map(error => error.message).join('; '));
+  final.retryable = errors.length > 0 && errors.every(isRetryableProviderError);
+  throw final;
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
@@ -176,6 +194,6 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
     }
   } catch (error) {
     process.stderr.write(`AlmaGo worker stopped: ${error.message}\n`);
-    process.exitCode = 1;
+    process.exitCode = error.retryable ? 75 : 1;
   }
 }

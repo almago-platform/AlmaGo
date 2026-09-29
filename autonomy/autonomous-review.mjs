@@ -4,8 +4,8 @@ import { pathToFileURL } from "node:url";
 
 export function chooseReviewer(metadata, env = process.env) {
   if (!metadata || metadata.attempts !== 1) return null;
-  if (metadata.provider === "Gemini" && env.XAI_API_KEY) return "Grok";
-  if (metadata.provider === "Grok" && env.GEMINI_API_KEY) return "Gemini";
+  if (metadata.provider === "Gemini" && env.GROQ_API_KEY) return "Groq";
+  if (metadata.provider === "Groq" && env.GEMINI_API_KEY) return "Gemini";
   return null;
 }
 
@@ -35,12 +35,13 @@ async function askGemini(prompt) {
   return data.candidates?.[0]?.content?.parts?.map(part => part.text || "").join("") || "";
 }
 
-async function askGrok(prompt) {
-  const model = process.env.ALMAGO_XAI_MODEL || "grok-4.3";
-  const data = await post("https://api.x.ai/v1/responses",
-    {Authorization:"Bearer " + process.env.XAI_API_KEY},
-    {model,input:prompt,max_output_tokens:1800,store:false});
-  return data.output?.filter(item => item.type === "message").flatMap(item => item.content || []).filter(item => item.type === "output_text").map(item => item.text || "").join("") || "";
+async function askGroq(prompt) {
+  const model = process.env.ALMAGO_GROQ_MODEL || "openai/gpt-oss-120b";
+  if (!/^[a-zA-Z0-9_./-]+$/.test(model)) throw new Error("Invalid Groq model identifier.");
+  const data = await post("https://api.groq.com/openai/v1/chat/completions",
+    {Authorization:"Bearer " + process.env.GROQ_API_KEY},
+    {model,messages:[{role:"user",content:prompt}],max_completion_tokens:1800,reasoning_effort:"low"});
+  return data.choices?.[0]?.message?.content || "";
 }
 
 export async function review(task, patch, metadata) {
@@ -61,7 +62,7 @@ export async function review(task, patch, metadata) {
     patch
   ].join("\n");
   let raw;
-  try { raw = reviewer === "Gemini" ? await askGemini(prompt) : await askGrok(prompt); }
+  try { raw = reviewer === "Gemini" ? await askGemini(prompt) : await askGroq(prompt); }
   catch (error) { return { skipped:true, reviewer, approved:true, text:"SKIPPED: independent reviewer unavailable: " + error.message }; }
   return { skipped:false, reviewer, ...parseReview(raw) };
 }

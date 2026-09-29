@@ -3,12 +3,12 @@ import test from "node:test";
 import { chooseReviewer, parseReview } from "./autonomous-review.mjs";
 
 test("independent reviewer uses the opposite configured provider", () => {
-  assert.equal(chooseReviewer({provider:"Gemini",attempts:1},{XAI_API_KEY:"x"}), "Grok");
-  assert.equal(chooseReviewer({provider:"Grok",attempts:1},{GEMINI_API_KEY:"g"}), "Gemini");
+  assert.equal(chooseReviewer({provider:"Gemini",attempts:1},{GROQ_API_KEY:"x"}), "Groq");
+  assert.equal(chooseReviewer({provider:"Groq",attempts:1},{GEMINI_API_KEY:"g"}), "Gemini");
 });
 
 test("review is skipped after a builder fallback to keep the two-call budget", () => {
-  assert.equal(chooseReviewer({provider:"Grok",attempts:2},{GEMINI_API_KEY:"g",XAI_API_KEY:"x"}), null);
+  assert.equal(chooseReviewer({provider:"Groq",attempts:2},{GEMINI_API_KEY:"g",GROQ_API_KEY:"x"}), null);
 });
 
 test("review is skipped when no independent provider exists", () => {
