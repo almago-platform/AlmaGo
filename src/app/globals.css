@@ -233,6 +233,11 @@ html[dir="rtl"] .auth-story-body > div:last-child {
   html[dir="rtl"] .auth-page {
     padding-inline: 1rem;
   }
+
+  html[dir="rtl"] .auth-page-grid {
+    min-height: 0;
+    align-items: start;
+  }
 }
 
 
