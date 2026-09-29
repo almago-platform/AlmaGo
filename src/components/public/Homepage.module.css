@@ -184,6 +184,13 @@
   height: auto;
   display: block;
 }
+.footerLogoLink {
+  width: fit-content;
+  min-height: 0;
+  padding: 7px 9px;
+  border-radius: 8px;
+  background: var(--home-cream);
+}
 .logoMark {
   width: 39px;
   height: 43px;
