@@ -21,7 +21,7 @@ export function StudentGuidancePanel({
 }) {
   return (
     <section
-      className={`mb-8 overflow-hidden rounded-[var(--radius-panel)] border border-[#ded7cd] bg-[#f7f4ef] ${
+      className={`student-guidance-panel mb-8 overflow-hidden rounded-[var(--radius-panel)] border border-[#ded7cd] bg-[#f7f4ef] ${
         image ? "grid lg:grid-cols-[minmax(19rem,0.72fr)_minmax(0,1.28fr)]" : ""
       }`}
       aria-label={title}
@@ -36,14 +36,14 @@ export function StudentGuidancePanel({
             sizes="(min-width: 1024px) 34vw, 100vw"
           />
           {image.credit && (
-            <figcaption className="absolute bottom-3 left-3 rounded-[var(--radius-control)] bg-black/55 px-2.5 py-1 text-[10px] text-white backdrop-blur">
+            <figcaption className="absolute bottom-3 start-3 rounded-[var(--radius-control)] bg-black/55 px-2.5 py-1 text-[10px] text-white backdrop-blur">
               {image.credit}
             </figcaption>
           )}
         </figure>
       )}
 
-      <div className="p-5 sm:p-6 lg:p-7">
+      <div className="student-guidance-content p-5 sm:p-6 lg:p-7">
         <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--accent-strong)]">{eyebrow}</p>
         <h2 className="mt-2 max-w-3xl text-2xl font-bold tracking-[-0.03em] text-slate-950">{title}</h2>
         <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-600">{description}</p>

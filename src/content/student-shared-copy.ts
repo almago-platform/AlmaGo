@@ -44,14 +44,14 @@ export const studentSharedCopy: Record<Locale, {
     resourceLinks: ["المسار", "دورات اللغة", "التمويل والتأمين"],
     overview: {
       eyebrow: "تقدم الملف",
-      title: "اعرف أين وصل ملفك.",
+      title: "اعرف أين وصلت.",
       intro: "راجع ما أنجزته، وما يجري الآن، وما الخطوة التالية.",
       completed: "خطوات مكتملة",
       active: "الخطوة الحالية",
       done: "مكتمل",
       inProgress: "قيد المتابعة",
-      upcoming: "لاحقاً",
-      open: "فتح",
+      upcoming: "لاحقًا",
+      open: "افتح",
     },
   },
   en: {
