@@ -99,7 +99,7 @@ export function StudentProjectForm({ project }: { project: Project }) {
       </fieldset>
 
       <div className="grid gap-5 rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-5 sm:grid-cols-2 sm:p-6">
-        <Field label={t.fields.currentDiploma} name="current_diploma" defaultValue={project?.current_diploma} placeholder={t.fields.currentDiplomaPlaceholder} maxLength={160} />
+        <Field label={t.fields.currentDiploma} name="current_diploma" defaultValue={project?.current_diploma} placeholder={t.fields.currentDiplomaPlaceholder} maxLength={160} inputDir="auto" />
         <Field label={t.fields.diplomaCountry} name="diploma_country" defaultValue={project?.diploma_country} placeholder={t.fields.diplomaCountryPlaceholder} hint={t.fields.diplomaCountryHint} maxLength={2} inputDir="ltr" />
         <Field
           label={t.fields.filingCountry}
@@ -110,11 +110,11 @@ export function StudentProjectForm({ project }: { project: Project }) {
           maxLength={2}
           inputDir="ltr"
         />
-        <Field label={t.fields.targetDegree} name="target_degree" defaultValue={project?.target_degree} placeholder={t.fields.targetDegreePlaceholder} maxLength={120} />
-        <Field label={t.fields.targetField} name="target_field" defaultValue={project?.target_field} placeholder={t.fields.targetFieldPlaceholder} maxLength={160} />
-        <Field label={t.fields.targetIntake} name="target_intake" defaultValue={project?.target_intake} placeholder={t.fields.targetIntakePlaceholder} maxLength={80} />
-        <Field label={t.fields.studyLanguage} name="preferred_study_language" defaultValue={project?.preferred_study_language} placeholder={t.fields.studyLanguagePlaceholder} maxLength={80} />
-        <Field label={t.fields.preferredCities} name="preferred_cities" defaultValue={project?.preferred_cities.join(", ")} placeholder={t.fields.preferredCitiesPlaceholder} hint={t.fields.preferredCitiesHint} />
+        <Field label={t.fields.targetDegree} name="target_degree" defaultValue={project?.target_degree} placeholder={t.fields.targetDegreePlaceholder} maxLength={120} inputDir="auto" />
+        <Field label={t.fields.targetField} name="target_field" defaultValue={project?.target_field} placeholder={t.fields.targetFieldPlaceholder} maxLength={160} inputDir="auto" />
+        <Field label={t.fields.targetIntake} name="target_intake" defaultValue={project?.target_intake} placeholder={t.fields.targetIntakePlaceholder} maxLength={80} inputDir="auto" />
+        <Field label={t.fields.studyLanguage} name="preferred_study_language" defaultValue={project?.preferred_study_language} placeholder={t.fields.studyLanguagePlaceholder} maxLength={80} inputDir="auto" />
+        <Field label={t.fields.preferredCities} name="preferred_cities" defaultValue={project?.preferred_cities.join(", ")} placeholder={t.fields.preferredCitiesPlaceholder} hint={t.fields.preferredCitiesHint} inputDir="ltr" />
         <Field label={t.fields.currentGerman} name="current_german_level" defaultValue={project?.current_german_level} placeholder={t.fields.currentGermanPlaceholder} maxLength={40} inputDir="ltr" />
         <Field label={t.fields.targetGerman} name="target_german_level" defaultValue={project?.target_german_level} placeholder={t.fields.targetGermanPlaceholder} maxLength={40} inputDir="ltr" />
 
@@ -145,6 +145,7 @@ export function StudentProjectForm({ project }: { project: Project }) {
             maxLength={1200}
             defaultValue={project?.actual_objective ?? ""}
             rows={3}
+            dir="auto"
             placeholder={t.fields.objectivePlaceholder}
             className="field mt-2 min-h-24 resize-y"
           />
@@ -157,6 +158,7 @@ export function StudentProjectForm({ project }: { project: Project }) {
             maxLength={2000}
             defaultValue={project?.notes ?? ""}
             rows={3}
+            dir="auto"
             className="field mt-2 min-h-24 resize-y"
           />
         </label>
@@ -187,7 +189,7 @@ function Field({
   placeholder?: string;
   hint?: string;
   maxLength?: number;
-  inputDir?: "ltr" | "rtl";
+  inputDir?: "ltr" | "rtl" | "auto";
 }) {
   return (
     <label>
