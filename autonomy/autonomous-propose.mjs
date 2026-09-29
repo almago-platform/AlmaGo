@@ -35,7 +35,7 @@ export function parseTask(issue) {
   const files = match[1].trim().split('\n').map(line => line.slice(2).trim());
   if (new Set(files).size !== files.length || files.length > MAX_FILES ||
       files.some(file =>
-        !/^src\/(?:app|components|lib)\/[a-zA-Z0-9_./-]+\.(?:tsx?|css)$/.test(file)
+        !/^src\/(?:app|components|content|lib)\/[a-zA-Z0-9_./-]+\.(?:tsx?|css)$/.test(file)
         || file.includes('..')
         || isProtectedPath(file)
       )) {
