@@ -175,12 +175,12 @@
   min-height: 44px;
 }
 .logoImage {
-  width: 158px;
+  width: 216px;
   height: auto;
   display: block;
 }
 .footerLogoImage {
-  width: 184px;
+  width: 236px;
   height: auto;
   display: block;
 }
@@ -1988,8 +1988,8 @@
 .footer li a { color: var(--home-cream); }
 
 @media (max-width: 599px) {
-  .logoImage { width: 136px; }
-  .footerLogoImage { width: 166px; }
+  .logoImage { width: 186px; }
+  .footerLogoImage { width: 218px; }
 }
 
 
@@ -3718,7 +3718,7 @@
   }
 
   .logoImage {
-    width: 132px;
+    width: 180px;
   }
 
   .headerActions {
@@ -4261,7 +4261,7 @@
   }
 
   .footerLogoImage {
-    width: 160px;
+    width: 210px;
   }
 
   .footerGrid {
@@ -4333,7 +4333,7 @@
 
 @media (max-width: 390px) {
   .logoImage {
-    width: 124px;
+    width: 168px;
   }
 
   .heroImmersiveInner {
@@ -4371,7 +4371,7 @@
   }
 
   .logoImage {
-    width: 116px;
+    width: 156px;
   }
 
   .hero h1 {
