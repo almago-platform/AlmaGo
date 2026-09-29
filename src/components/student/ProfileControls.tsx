@@ -20,6 +20,7 @@ export function TextInput({
   type = "text",
   required = false,
   placeholder = "",
+  inputDir,
 }: {
   label: string;
   value: string;
@@ -27,6 +28,7 @@ export function TextInput({
   type?: string;
   required?: boolean;
   placeholder?: string;
+  inputDir?: "ltr" | "rtl" | "auto";
 }) {
   return (
     <label className="block text-sm font-medium leading-6 text-slate-700">
@@ -34,6 +36,7 @@ export function TextInput({
       <input
         required={required}
         type={type}
+        dir={inputDir}
         placeholder={placeholder}
         value={value}
         onChange={(event) => onChange(event.target.value)}
@@ -138,6 +141,7 @@ export function PreferredCitiesPicker({ value, onChange }: { value: string[]; on
       <legend className="text-sm font-medium text-slate-700"><FieldLabel label={controls.preferredCities} /></legend>
       <input
         value={query}
+        dir={locale === "ar" ? "ltr" : undefined}
         onChange={(event) => setQuery(event.target.value)}
         placeholder={controls.citySearch}
         className="field"
