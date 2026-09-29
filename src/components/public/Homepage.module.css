@@ -69,8 +69,9 @@
 .sectionTitle em,
 .hero h1 em,
 .finalCta h2 em {
-  font-family: var(--font-source-serif), "Source Serif 4", Georgia, "Times New Roman", serif;
-  font-weight: 400;
+  font-family: inherit;
+  font-style: normal;
+  font-weight: 650;
   letter-spacing: -0.045em;
 }
 .lead {
@@ -526,8 +527,8 @@
   padding: 17px 0;
 }
 .benefits li > span {
-  font-family: var(--font-source-serif), "Source Serif 4", Georgia, serif;
-  font-style: italic;
+  font-family: inherit;
+  font-style: normal;
   font-size: 17px;
   color: var(--home-terra);
 }
@@ -817,9 +818,9 @@
   margin-bottom: 14px;
 }
 .stepNumber span {
-  font-family: var(--font-source-serif), "Source Serif 4", Georgia, serif;
+  font-family: inherit;
   font-size: 47px;
-  font-style: italic;
+  font-style: normal;
   line-height: 1;
   color: #fcb50a;
 }
@@ -2163,9 +2164,9 @@
   border-radius: 50%;
   background: #fcb50a;
   color: #1c2124;
-  font-family: var(--font-source-serif), "Source Serif 4", Georgia, serif;
+  font-family: inherit;
   font-size: 20px;
-  font-style: italic;
+  font-style: normal;
   font-weight: 600;
 }
 .stepBody {
@@ -2571,9 +2572,9 @@
 }
 .photoBandTitle em {
   color: #db0423;
-  font-family: var(--font-source-serif), "Source Serif 4", Georgia, serif;
-  font-weight: 400;
-  font-style: italic;
+  font-family: inherit;
+  font-weight: 650;
+  font-style: normal;
 }
 .photoBandHeading > p:last-child {
   max-width: 500px;
@@ -2915,9 +2916,9 @@
   border-radius: 50%;
   background: #fce5e9;
   color: #db0423;
-  font-family: var(--font-source-serif), "Source Serif 4", Georgia, serif;
+  font-family: inherit;
   font-size: 15px;
-  font-style: italic;
+  font-style: normal;
   font-weight: 650;
 }
 .productBenefits h3 {
@@ -3497,9 +3498,9 @@
 }
 .finalCta h2 em {
   color: #db0423;
-  font-family: var(--font-source-serif), "Source Serif 4", Georgia, serif;
-  font-weight: 400;
-  font-style: italic;
+  font-family: inherit;
+  font-weight: 650;
+  font-style: normal;
 }
 .finalCta h2 + p {
   max-width: 560px;
