@@ -56,7 +56,11 @@ test("localized public copy is rebranded without rewriting locale source files",
 test("browser favicon uses the dedicated Campus Allemagne icon while PWA keeps the approved compact mark", () => {
   assert.match(layout, /applicationName: BRAND_NAME/);
   assert.match(layout, /siteName: BRAND_NAME/);
-  assert.match(layout, /campus-allemagne-symbol-approved\.png/);
+  assert.ok(existsSync(approvedFavicon));
+  assert.ok(statSync(approvedFavicon).size > 1000);
+  assert.ok(existsSync("src/app/icon.png"));
+  assert.match(layout, /campus-allemagne-favicon\.png/);
+  assert.match(layout, /shortcut/);
   assert.match(manifest, /name: "Campus Allemagne"/);
   assert.match(manifest, /campus-allemagne-symbol-approved\.png/);
   assert.match(manifest, /type: "image\/png"/);
