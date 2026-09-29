@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { loadPlan, validatePlan, nextEligibleTask, routeTask, taskIssueBody, progress, dispatchableReadyIssue } from "./plan-core.mjs";
+import { loadPlan, validatePlan, nextEligibleTask, routeTask, taskIssueBody, progress, dispatchableReadyIssue, standaloneAiReadyIssue } from "./plan-core.mjs";
 
 const plan = loadPlan();
 
