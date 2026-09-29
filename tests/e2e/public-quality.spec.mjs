@@ -81,11 +81,11 @@ test("native language switch persists and Arabic renders RTL without overflow", 
   await page.goto("/", { waitUntil: "networkidle" });
   await expect(page.locator("html")).toHaveAttribute("lang", "ar");
   await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
-  await expect(page.getByRole("heading", { name: /ابدأ دراستك/ })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /خطّط لدراستك/ })).toBeVisible();
   const rtlOverflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   expect(rtlOverflow, "Arabic homepage must not overflow horizontally").toBeLessThanOrEqual(1);
 
-  const heroCopy = page.getByRole("heading", { name: /ابدأ دراستك/ }).locator("..");
+  const heroCopy = page.getByRole("heading", { name: /خطّط لدراستك/ }).locator("..");
   const heroDossier = page.locator('aside[aria-label="مثال على ملف AlmaGo"]');
   await expect(heroDossier).toBeVisible();
   const [heroCopyBox, heroDossierBox] = await Promise.all([
