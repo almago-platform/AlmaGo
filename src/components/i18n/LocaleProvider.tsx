@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
-import { getNativeCopy } from "@/content/native-copy";\nimport { rebrandCopy } from "@/lib/brand";
+import { getNativeCopy } from "@/content/native-copy";
 import { rebrandCopy } from "@/lib/brand";
 import {
   LOCALE_COOKIE,
@@ -28,7 +28,7 @@ export function LocaleProvider({
   children: ReactNode;
 }) {
   const router = useRouter();
-  const [locale, setLocaleState] = useState<Locale>(normalizeLocale(initialLocale));\n  const copy = useMemo(() => rebrandCopy(getNativeCopy(locale)), [locale]);
+  const [locale, setLocaleState] = useState<Locale>(normalizeLocale(initialLocale));
   const copy = useMemo(() => rebrandCopy(getNativeCopy(locale)), [locale]);
 
   function setLocale(nextLocale: Locale) {
