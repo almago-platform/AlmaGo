@@ -99,7 +99,7 @@ test("native language switch persists and Arabic renders RTL without overflow", 
   expect(rtlOverflow, "Arabic homepage must not overflow horizontally").toBeLessThanOrEqual(1);
 
   const heroCopy = page.getByRole("heading", { name: /خطّط لدراستك/ }).locator("..");
-  const heroDossier = page.locator('aside[aria-label="مثال على ملف AlmaGo"]');
+  const heroDossier = page.locator('aside[aria-label="مثال على ملف Campus Allemagne"]');
   await expect(heroDossier).toBeVisible();
   const [heroCopyBox, heroDossierBox] = await Promise.all([
     heroCopy.boundingBox(),
