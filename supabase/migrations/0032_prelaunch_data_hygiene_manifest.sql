@@ -1,20 +1,23 @@
 -- Pre-launch Supabase data-hygiene manifest.
 -- This migration is intentionally non-destructive.
--- Residual test catalogue rows were found in production, but at least one test
--- program is still referenced by program_recommendations. Keep the rows inactive
--- until a human confirms whether the historical recommendation may be removed.
+-- Residual test catalogue rows were found in production and remain inactive.
 --
--- Verified on 2026-09-29:
+-- Reverified on 2026-09-30:
 --   8 inactive universities matching "AlmaGo Test University %"
 --   6 inactive programs matching "AlmaGo Test Program %"
 --   1 inactive program named "aa"
---   0 applications reference those test programs
---   1 program_recommendation references a test program
+--   0 applications reference those inactive test programs
+--   1 archived program_recommendation references a test program
 --
--- Cleanup rule: do not delete any of these rows until all referencing rows have
--- been reviewed and a backup/manifest has been retained. Their inactive state
--- keeps them outside the publishable catalogue.
+-- The historical recommendation belongs to an account that is not manifestly
+-- a test account. Preserve that archived history and therefore preserve the
+-- referenced test programme/university rows rather than deleting production data.
+-- Their inactive state keeps them outside the publishable catalogue.
 --
 -- technical_logs intentionally has RLS enabled with no client policy:
 -- INTENTIONAL SECURITY BOUNDARY.
+--
+-- Supabase Leaked Password Protection remains unavailable on the current Free
+-- organization plan; it is therefore documented as a plan limitation, not worked
+-- around in application code.
 select 1;
