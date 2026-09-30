@@ -6,7 +6,18 @@ import { useLocale } from "@/components/i18n/LocaleProvider";
 import { orientationProspectCopy } from "@/content/orientation-prospect-copy";
 import type { PublicOrientationAnswers } from "@/lib/orientation/public";
 
-export function ProspectCaptureCard({ answers }: { answers: PublicOrientationAnswers }) {
+type ProspectCaptureResponse = {
+  saved?: boolean;
+  delivery?: "sent" | "disabled" | "unavailable" | "failed";
+};
+
+export function ProspectCaptureCard({
+  answers,
+  emailDeliveryEnabled = false,
+}: {
+  answers: PublicOrientationAnswers;
+  emailDeliveryEnabled?: boolean;
+}) {
   const { locale } = useLocale();
   const copy = orientationProspectCopy[locale].capture;
   const [email, setEmail] = useState("");
@@ -41,14 +52,25 @@ export function ProspectCaptureCard({ answers }: { answers: PublicOrientationAns
         }),
       });
 
-      if (!response.ok) throw new Error("save_failed");
+      const payload = await response.json().catch(() => null) as ProspectCaptureResponse | null;
+      if (!response.ok || !payload?.saved) throw new Error("save_failed");
+
       setStatus("success");
-      setMessage(copy.success);
+      if (payload.delivery === "sent") {
+        setMessage(copy.emailSent);
+      } else if (emailDeliveryEnabled) {
+        setMessage(copy.deliveryFailure);
+      } else {
+        setMessage(copy.success);
+      }
     } catch {
       setStatus("error");
       setMessage(copy.failure);
     }
   }
+
+  const submitLabel = emailDeliveryEnabled ? copy.emailSubmit : copy.submit;
+  const pendingLabel = emailDeliveryEnabled ? copy.sendingEmail : copy.sending;
 
   return (
     <section className="orientation-print-hide mt-8 rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface-subtle)] p-5 sm:p-6">
@@ -90,7 +112,7 @@ export function ProspectCaptureCard({ answers }: { answers: PublicOrientationAns
           disabled={!privacyAcknowledged || status === "saving" || status === "success"}
           className="rounded-[var(--radius-control)] bg-[var(--brand)] px-5 py-2.5 text-sm font-bold text-white disabled:cursor-not-allowed disabled:opacity-50"
         >
-          {status === "saving" ? copy.sending : copy.submit}
+          {status === "saving" ? pendingLabel : submitLabel}
         </button>
       </form>
 
