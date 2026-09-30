@@ -1,33 +1,43 @@
-# AlmaGo — brouillon Mentions / Informations éditeur
+# Campus Allemagne — brouillon Mentions / Informations éditeur
 
-**NE PAS PUBLIER TEL QUEL — champs à confirmer + relecture humaine requise.**
+**NE PAS PUBLIER TEL QUEL — champs restants à confirmer + relecture humaine requise.**
 
 ## Éditeur / exploitant
 
-Nom légal : **[À CONFIRMER]**
+Nom légal : **Ayoub Tayari**
 
-Forme juridique : **[À CONFIRMER / NON APPLICABLE]**
+Forme juridique actuelle : **personne physique**
 
-Adresse : **[À CONFIRMER]**
+Pays principal d’établissement prévu : **Tunisie**
 
-E-mail : **[À CONFIRMER]**
+Adresse publique : **[À CONFIRMER AVANT PUBLICATION APRÈS ÉTABLISSEMENT EN TUNISIE]**
 
-Représentant légal, si applicable : **[À CONFIRMER / NON APPLICABLE]**
+E-mail : **contact@campus-allemagne.info**
 
-Registre / numéro, si applicable : **[À CONFIRMER / NON APPLICABLE]**
+Représentant légal distinct : **non applicable à ce stade**
 
-Numéro de TVA / W-IdNr, si applicable : **[À CONFIRMER / NON APPLICABLE]**
+Registre / numéro, si applicable : **[À CONFIRMER SELON IMMATRICULATION / STATUT FINAL EN TUNISIE]**
 
-Autorité ou informations professionnelles supplémentaires, si applicables : **[À CONFIRMER / NON APPLICABLE]**
+Numéro fiscal / TVA, si applicable : **[À CONFIRMER SELON STATUT FINAL EN TUNISIE]**
+
+Autorité ou informations professionnelles supplémentaires, si applicables : **[À CONFIRMER PAR LE RELECTEUR]**
 
 ## Service
 
-Nom : AlmaGo
+Nom public : **Campus Allemagne**
 
-Objet factuel actuel : plateforme permettant d’organiser un dossier étudiant pour des études en Allemagne — profil, documents, orientation, démarches et suivi de candidatures.
+Objet factuel actuel : plateforme permettant d’organiser un projet d’études en Allemagne — orientation, profil, documents, démarches et suivi de candidatures.
 
-AlmaGo ne doit pas présenter une recommandation, une progression de dossier ou un statut interne comme une décision d’admission d’une université.
+L’orientation en ligne est actuellement gratuite.
+
+Des services payants d’accompagnement et de préparation de dossier sont envisagés, mais ils ne sont pas encore activés, tarifés ni proposés à la vente.
+
+Campus Allemagne ne doit pas présenter une recommandation, une progression de dossier ou un statut interne comme une décision d’admission d’une université.
 
 ## Validation
 
-Dernière relecture humaine : **[DATE / PERSONNE À CONFIRMER]**
+Dernière relecture humaine/juridique : **[À CONFIRMER]**
+
+Date de relecture : **[À CONFIRMER]**
+
+Version / date d’entrée en vigueur : **[À CONFIRMER]**
