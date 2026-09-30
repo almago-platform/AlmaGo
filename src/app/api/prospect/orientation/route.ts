@@ -3,6 +3,9 @@ import { normalizeLocale } from "@/lib/i18n";
 import { buildPublicOrientationDiagnostic } from "@/lib/orientation/diagnostic";
 import { restorePublicOrientationAnswers } from "@/lib/orientation/public";
 import { getPhase2StudentAccess } from "@/lib/phase2/access";
+import {
+  evaluateProspectQualification,
+} from "@/lib/phase2/qualification";
 import { createPrivilegedSupabaseClient } from "@/lib/supabase/privileged";
 import {
   budgetOptions,
@@ -106,7 +109,21 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "No linked prospect." }, { status: 409 });
   }
 
+  const { data: latestOrientation, error: latestOrientationError } = await access.supabase
+    .from("orientations")
+    .select("id")
+    .eq("prospect_id", prospect.id)
+    .order("created_at", { ascending: false })
+    .order("id", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (latestOrientationError) {
+    return NextResponse.json({ error: "Unable to resolve the current project." }, { status: 500 });
+  }
+
   const diagnostic = buildPublicOrientationDiagnostic(answers);
+  const qualification = evaluateProspectQualification(answers, diagnostic);
 
   let privileged;
   try {
@@ -115,21 +132,41 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Prospect persistence is not configured." }, { status: 503 });
   }
 
-  const { error: insertError } = await privileged
-    .from("orientations")
-    .insert({
-      prospect_id: prospect.id,
-      engine_version: ENGINE_VERSION,
-      input: {
+  const { data: persisted, error: persistError } = await privileged.rpc(
+    "append_phase2_orientation_qualification",
+    {
+      p_prospect_id: prospect.id,
+      p_user_id: access.user.id,
+      p_expected_latest_orientation_id: latestOrientation?.id ?? null,
+      p_orientation_engine_version: ENGINE_VERSION,
+      p_orientation_input: {
         answers,
         locale,
         source: "prospect_account_update",
       },
-      result: diagnostic,
-    });
+      p_orientation_result: diagnostic,
+      p_qualification_engine_version: qualification.engineVersion,
+      p_qualification_state: qualification.state,
+      p_reason_codes: qualification.reasonCodes,
+      p_missing_fields: qualification.missingFields,
+      p_verification_requirements: qualification.verificationRequirements,
+      p_next_action: qualification.nextAction,
+    },
+  );
 
-  if (insertError) {
-    return NextResponse.json({ error: "Unable to save the orientation." }, { status: 500 });
+  if (persistError) {
+    return NextResponse.json(
+      { error: "Unable to save the project evaluation." },
+      { status: 500 },
+    );
+  }
+
+  const saved = Array.isArray(persisted) ? persisted[0] : persisted;
+  if (!saved?.orientation_id || !saved?.qualification_id) {
+    return NextResponse.json(
+      { error: "Project changed while this update was being saved." },
+      { status: 409 },
+    );
   }
 
   return NextResponse.json({ saved: true }, { status: 201 });
