@@ -28,6 +28,14 @@ test("admin command center uses the compact workspace header", () => {
 test("admin overview keeps small text on subtle surfaces above the A43 contrast floor", () => {
   assert.match(shell, /text-slate-700">\s*Espace équipe/);
   assert.match(dashboard, /text-slate-700">Ordre de traitement/);
+  assert.match(
+    programsPanel,
+    /<dt className="text-xs font-semibold text-slate-700">\{label\}<\/dt>/,
+  );
+  assert.doesNotMatch(
+    programsPanel,
+    /<dt className="text-xs font-semibold text-slate-500">\{label\}<\/dt>/,
+  );
 });
 
 test("documents and applications load profiles explicitly instead of invalid embedded joins", () => {
