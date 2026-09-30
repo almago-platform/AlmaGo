@@ -14,6 +14,7 @@ const selector = readFileSync("src/components/prospect/ProspectOfferSelector.tsx
 const copy = readFileSync("src/content/prospect-offers-copy.ts", "utf8");
 const prospectShell = readFileSync("src/components/layout/ProspectShell.tsx", "utf8");
 const appShell = readFileSync("src/components/layout/AppShell.tsx", "utf8");
+const adminQuality = readFileSync("tests/e2e/admin-space-quality.spec.mjs", "utf8");
 
 test("P2.8B offer publication is audited, versioned and admin-verified", () => {
   assert.match(migration, /create or replace function public\.configure_phase2_commercial_offer/i);
@@ -143,4 +144,11 @@ test("localized offer copy forbids admission and visa guarantees", () => {
   assert.match(copy, /لا يضمن أي عرض من AlmaGo القبول الجامعي أو التأشيرة/);
   assert.match(copy, /No AlmaGo offer guarantees university admission or a visa/);
   assert.match(copy, /Kein AlmaGo-Angebot garantiert eine Hochschulzulassung oder ein Visum/);
+});
+
+
+test("authenticated admin quality matrix covers the commercial offer surface", () => {
+  assert.match(adminQuality, /path: "\/admin\/offers", name: "offers"/);
+  assert.match(adminQuality, /new AxeBuilder\(\{ page \}\)\.analyze\(\)/);
+  assert.match(adminQuality, /item\.impact === "serious" \|\| item\.impact === "critical"/);
 });
