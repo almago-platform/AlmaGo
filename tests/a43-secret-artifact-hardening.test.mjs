@@ -26,6 +26,7 @@ test("Playwright traces are disabled when A43 secret redaction is enabled", () =
 });
 
 test("A43 clears password fields before surfacing authentication failures", () => {
-  assert.match(helper, /finally \{\s*await passwordInput\.fill\(""\)\.catch/);
+  assert.match(helper, /pathname === "\/login"/);
+  assert.match(helper, /passwordInput\.fill\("", \{ timeout: 500 \}\)\.catch/);
   assert.match(helper, /Dedicated E2E credentials were rejected/);
 });
