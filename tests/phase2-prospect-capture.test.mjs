@@ -56,7 +56,7 @@ test("orientation report can be saved through the browser print-to-PDF path", ()
 });
 
 test("email capture is optional and shown only when the server flag enables it", () => {
-  assert.match(form, /prospectCaptureEnabled \? <ProspectCaptureCard/);
+  assert.match(form, /prospectCaptureEnabled\s*\?\s*\([\s\S]*<ProspectCaptureCard/);
   assert.match(capture, /type="email"/);
   assert.match(capture, /privacyAcknowledged/);
   assert.match(capture, /\/legal\/privacy/);
