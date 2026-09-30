@@ -9,6 +9,7 @@ const read = (path) => readFileSync(join(root, path), "utf8");
 
 const page = read("src/app/orientation/page.tsx");
 const form = read("src/components/orientation/PublicOrientationForm.tsx");
+const publicOrientation = read("src/lib/orientation/public.ts");
 const copy = read("src/content/orientation-copy.ts");
 const home = read("src/app/page.tsx");
 const hero = read("src/components/public/HomeHero.tsx");
@@ -26,7 +27,8 @@ test("public orientation is feature-gated and does not alter the current homepag
 
 test("orientation keeps P2.1 answers browser-only", () => {
   assert.match(form, /sessionStorage/);
-  assert.match(form, /almago_phase2_orientation_v1/);
+  assert.match(form, /PUBLIC_ORIENTATION_SESSION_KEY as SESSION_KEY/);
+  assert.match(publicOrientation, /PUBLIC_ORIENTATION_SESSION_KEY = "almago_phase2_orientation_v1"/);
   assert.doesNotMatch(form, /fetch\s*\(/);
   assert.doesNotMatch(form, /supabase/i);
   assert.doesNotMatch(form, /email/i);

@@ -1,5 +1,3 @@
-import { preferredCityOptions } from "@/lib/student/profile-options";
-
 export const PUBLIC_ORIENTATION_SESSION_KEY = "almago_phase2_orientation_v1";
 
 export type PublicOrientationBacStatus = "" | "obtained" | "preparing";
@@ -50,7 +48,8 @@ export function restorePublicOrientationAnswers(value: unknown): PublicOrientati
         .filter(
           (city): city is string =>
             typeof city === "string"
-            && preferredCityOptions.includes(city as (typeof preferredCityOptions)[number]),
+            && city.trim().length > 0
+            && city.length <= 80,
         )
         .slice(0, 3)
     : [];
