@@ -255,7 +255,7 @@ export default async function ChecklistPage() {
             <Badge variant={nextItem ? "warning" : waitingAlmaGoCount ? "info" : "neutral"}>
               {nextItem ? t.page.doNow : waitingAlmaGoCount ? t.page.tracking : t.page.noAction}
             </Badge>
-            <span className="text-xs font-bold uppercase tracking-[0.14em] text-slate-500">
+            <span className="text-xs font-bold uppercase tracking-[0.14em] text-slate-600">
               {nextItem ? t.page.ownerStudent : waitingAlmaGoCount ? t.page.ownerAlmaGo : t.page.file}
             </span>
           </div>
