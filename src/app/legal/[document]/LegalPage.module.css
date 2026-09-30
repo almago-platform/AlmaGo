@@ -1,0 +1,150 @@
+.page {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 90% 8%, rgba(252, 181, 10, 0.16), transparent 30%),
+    #f7f4ec;
+  color: #1c2124;
+}
+
+.header {
+  border-bottom: 1px solid rgba(28, 33, 36, 0.14);
+  background: rgba(247, 244, 236, 0.96);
+}
+
+.headerInner {
+  width: min(1120px, calc(100% - 48px));
+  min-height: 88px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.logoLink {
+  display: inline-flex;
+}
+
+.logo {
+  width: auto;
+  height: 46px;
+}
+
+.backLink {
+  color: #1c2124;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.main {
+  padding: 72px 24px 96px;
+}
+
+.card {
+  width: min(860px, 100%);
+  margin: 0 auto;
+  padding: clamp(28px, 5vw, 56px);
+  border: 1px solid rgba(28, 33, 36, 0.14);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 24px 70px rgba(28, 33, 36, 0.08);
+}
+
+.eyebrow {
+  margin: 0 0 16px;
+  color: #db0423;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.card h1 {
+  margin: 0;
+  font-size: clamp(2.2rem, 6vw, 4.4rem);
+  line-height: 1;
+  letter-spacing: -0.045em;
+}
+
+.pending {
+  margin-top: 38px;
+  padding: 26px;
+  border-inline-start: 5px solid #fcb50a;
+  background: #fff9df;
+}
+
+.pending h2 {
+  margin: 0 0 12px;
+  font-size: 1.25rem;
+}
+
+.pending p {
+  margin: 10px 0 0;
+  line-height: 1.7;
+  color: #555d61;
+}
+
+.pending a,
+.legalNav a {
+  color: #1c2124;
+  font-weight: 700;
+  text-underline-offset: 4px;
+}
+
+.sections {
+  margin-top: 42px;
+  display: grid;
+  gap: 34px;
+}
+
+.sections h2 {
+  margin: 0 0 10px;
+}
+
+.sections p {
+  margin: 8px 0 0;
+  line-height: 1.75;
+  color: #4d5559;
+}
+
+.legalNav {
+  margin-top: 42px;
+  padding-top: 22px;
+  border-top: 1px solid rgba(28, 33, 36, 0.14);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 24px;
+}
+
+.logoLink:focus-visible,
+.backLink:focus-visible,
+.pending a:focus-visible,
+.legalNav a:focus-visible {
+  outline: 3px solid #fcb50a;
+  outline-offset: 4px;
+}
+
+@media (max-width: 599px) {
+  .headerInner {
+    width: min(100% - 32px, 1120px);
+    min-height: 74px;
+  }
+
+  .logo {
+    height: 38px;
+  }
+
+  .backLink {
+    font-size: 0.88rem;
+  }
+
+  .main {
+    padding: 44px 16px 64px;
+  }
+
+  .card {
+    padding: 24px 18px;
+    border-radius: 16px;
+  }
+}
