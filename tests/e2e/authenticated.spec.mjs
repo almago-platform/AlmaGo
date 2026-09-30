@@ -15,9 +15,12 @@ test.describe("authenticated role journeys", () => {
     await loginWithRedactedPassword(page, studentEmail, studentPassword, "student");
     expect(new URL(page.url()).pathname).toMatch(/^\/student(?:\/|$)/);
 
-    await page.goto("/admin", { waitUntil: "domcontentloaded" });
-    await page.waitForURL(/\/unauthorized$/, { timeout: 20_000 });
-    expect(new URL(page.url()).pathname).toBe("/unauthorized");
+    const deniedPage = await page.request.get(
+      new URL("/admin", page.url()).toString(),
+      { maxRedirects: 0 },
+    );
+    expect([303, 307, 308]).toContain(deniedPage.status());
+    expect(deniedPage.headers().location || "").toMatch(/\/unauthorized$/);
 
     const deniedApi = await page.request.post("/api/admin/orientation", {
       data: {},
@@ -27,9 +30,8 @@ test.describe("authenticated role journeys", () => {
 
   test("admin account passes server-side page and API role guards", async ({ page }) => {
     await loginWithRedactedPassword(page, adminEmail, adminPassword, "admin");
-    const response = await page.goto("/admin", { waitUntil: "domcontentloaded" });
-    expect(response?.ok()).toBeTruthy();
     expect(new URL(page.url()).pathname).toMatch(/^\/admin(?:\/|$)/);
+    await expect(page.locator("#main-content")).toBeVisible();
 
     const authorizedApi = await page.request.post("/api/admin/orientation", {
       data: {},
