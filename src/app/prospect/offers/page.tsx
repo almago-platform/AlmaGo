@@ -70,7 +70,7 @@ export default async function ProspectOffersPage() {
         </header>
         <section className="rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--brand-soft)] p-5 sm:p-6">
           <h2 className="text-xl font-bold text-[var(--foreground)]">{copy.lockedTitle}</h2>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--muted)]">{copy.lockedBody}</p>
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-700">{copy.lockedBody}</p>
         </section>
       </main>
     );
