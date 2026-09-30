@@ -94,6 +94,25 @@ test("admin API derives admin identity from session and validates owner-controll
   assert.match(route, /hasForbiddenGuarantee\(combinedCopy\)/);
 });
 
+test("brand-soft offer guidance keeps normal text above the contrast floor", () => {
+  assert.match(
+    adminPage,
+    /bg-\[var\(--brand-soft\)\][\s\S]*text-slate-700/,
+  );
+  assert.match(
+    prospectPage,
+    /bg-\[var\(--brand-soft\)\][\s\S]*text-slate-700/,
+  );
+  assert.doesNotMatch(
+    adminPage,
+    /bg-\[var\(--brand-soft\)\][\s\S]{0,500}text-\[var\(--muted\)\]/,
+  );
+  assert.doesNotMatch(
+    prospectPage,
+    /lockedTitle[\s\S]{0,500}text-\[var\(--muted\)\]/,
+  );
+});
+
 test("offer configuration UI never hardcodes price or service promises", () => {
   assert.match(adminPage, /CommercialOfferEditor/);
   assert.match(editor, /priceMinor/);
