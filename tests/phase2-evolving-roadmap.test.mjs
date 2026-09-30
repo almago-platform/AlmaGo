@@ -24,14 +24,20 @@ test("authenticated prospect update resolves identity from auth and never trusts
   assert.doesNotMatch(route, /user_metadata|raw_user_meta_data/);
 });
 
-test("authenticated update validates and recomputes before appending a new orientation", () => {
+test("authenticated update validates, recalculates and persists orientation plus qualification atomically", () => {
   assert.match(route, /MAX_BODY_BYTES = 24_000/);
   assert.match(route, /validAnswers/);
   assert.match(route, /buildPublicOrientationDiagnostic\(answers\)/);
+  assert.match(route, /evaluateProspectQualification\(answers, diagnostic\)/);
   assert.match(route, /createPrivilegedSupabaseClient/);
-  assert.match(route, /from\("orientations"\)[\s\S]*?\.insert\(/);
+  assert.match(route, /from\("orientations"\)/);
+  assert.match(route, /\.order\("created_at", \{ ascending: false \}\)/);
+  assert.match(route, /\.order\("id", \{ ascending: false \}\)/);
+  assert.match(route, /\.rpc\(\s*"append_phase2_orientation_qualification"/);
+  assert.match(route, /p_expected_latest_orientation_id: latestOrientation\?\.id \?\? null/);
+  assert.match(route, /p_qualification_state: qualification\.state/);
   assert.match(route, /source: "prospect_account_update"/);
-  assert.doesNotMatch(route, /from\("orientations"\)[\s\S]{0,300}?\.update\(/);
+  assert.doesNotMatch(route, /from\("orientations"\)[\s\S]{0,300}?\.(?:insert|update)\(/);
   assert.doesNotMatch(route, /sendTransactionalEmail|resume_token|delivery_message_id/);
 });
 
