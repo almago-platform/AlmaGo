@@ -1,8 +1,14 @@
 import { NextResponse } from "next/server";
+import { sendTransactionalEmail } from "@/lib/email/transactional";
 import { normalizeLocale } from "@/lib/i18n";
 import { buildPublicOrientationDiagnostic } from "@/lib/orientation/diagnostic";
+import { buildOrientationProspectEmail } from "@/lib/orientation/prospect-email";
 import { restorePublicOrientationAnswers } from "@/lib/orientation/public";
-import { isPhase2ProspectCaptureEnabled } from "@/lib/phase2/config";
+import { createOrientationResumeToken } from "@/lib/orientation/resume-token";
+import {
+  isPhase2EmailDeliveryEnabled,
+  isPhase2ProspectCaptureEnabled,
+} from "@/lib/phase2/config";
 import { createPrivilegedSupabaseClient } from "@/lib/supabase/privileged";
 import {
   budgetOptions,
@@ -59,6 +65,22 @@ function validAnswers(value: unknown) {
   return answers;
 }
 
+function publicSiteUrl() {
+  const raw = process.env.SITE_URL?.trim();
+  if (!raw) return null;
+
+  try {
+    const url = new URL(raw);
+    if (url.protocol !== "https:" && url.hostname !== "localhost") return null;
+    url.pathname = "/";
+    url.search = "";
+    url.hash = "";
+    return url;
+  } catch {
+    return null;
+  }
+}
+
 async function findProspectId(
   supabase: ReturnType<typeof createPrivilegedSupabaseClient>,
   email: string,
@@ -110,6 +132,7 @@ export async function POST(request: Request) {
   }
 
   const diagnostic = buildPublicOrientationDiagnostic(answers);
+  const resume = createOrientationResumeToken();
 
   let supabase;
   try {
@@ -147,21 +170,80 @@ export async function POST(request: Request) {
 
     if (!prospectId) throw new Error("Prospect identity could not be resolved.");
 
-    const { error: orientationError } = await supabase.from("orientations").insert({
-      prospect_id: prospectId,
-      engine_version: ENGINE_VERSION,
-      input: {
-        answers,
-        locale,
-        privacy_notice_version: PRIVACY_NOTICE_VERSION,
-        privacy_acknowledged: true,
-      },
-      result: diagnostic,
-    });
+    const { data: orientation, error: orientationError } = await supabase
+      .from("orientations")
+      .insert({
+        prospect_id: prospectId,
+        engine_version: ENGINE_VERSION,
+        input: {
+          answers,
+          locale,
+          privacy_notice_version: PRIVACY_NOTICE_VERSION,
+          privacy_acknowledged: true,
+        },
+        result: diagnostic,
+        resume_token_hash: resume.hash,
+        resume_token_expires_at: resume.expiresAt,
+      })
+      .select("id")
+      .single();
 
     if (orientationError) throw orientationError;
 
-    return NextResponse.json({ saved: true }, { status: 201 });
+    if (!isPhase2EmailDeliveryEnabled()) {
+      return NextResponse.json({ saved: true, delivery: "disabled" }, { status: 201 });
+    }
+
+    const baseUrl = publicSiteUrl();
+    if (!baseUrl) {
+      await supabase
+        .from("orientations")
+        .update({ delivery_attempted_at: new Date().toISOString() })
+        .eq("id", orientation.id);
+      return NextResponse.json({ saved: true, delivery: "unavailable" }, { status: 201 });
+    }
+
+    const reportUrl = new URL(
+      `/orientation/report/${encodeURIComponent(resume.token)}`,
+      baseUrl,
+    ).toString();
+    const signupUrl = new URL("/signup", baseUrl);
+    signupUrl.searchParams.set("orientation_token", resume.token);
+
+    const emailContent = buildOrientationProspectEmail({
+      locale,
+      diagnostic,
+      reportUrl,
+      signupUrl: signupUrl.toString(),
+    });
+
+    const delivery = await sendTransactionalEmail({
+      to: email,
+      subject: emailContent.subject,
+      html: emailContent.html,
+      text: emailContent.text,
+      idempotencyKey: `phase2-orientation/${orientation.id}`,
+    });
+
+    const deliveryMetadata: Record<string, string> = {
+      delivery_attempted_at: new Date().toISOString(),
+    };
+
+    if (delivery.status === "sent") {
+      deliveryMetadata.delivery_provider = delivery.provider;
+      deliveryMetadata.delivery_message_id = delivery.messageId;
+      deliveryMetadata.delivered_at = new Date().toISOString();
+    }
+
+    await supabase
+      .from("orientations")
+      .update(deliveryMetadata)
+      .eq("id", orientation.id);
+
+    return NextResponse.json(
+      { saved: true, delivery: delivery.status },
+      { status: 201 },
+    );
   } catch {
     return NextResponse.json({ error: "Unable to save the orientation." }, { status: 500 });
   }
