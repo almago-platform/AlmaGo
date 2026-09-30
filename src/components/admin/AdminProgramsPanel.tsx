@@ -569,7 +569,7 @@ function ToggleField({ label, checked, onChange }: { label: string; checked: boo
 function Info({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-muted)]/45 p-3">
-      <dt className="text-xs font-semibold text-slate-500">{label}</dt>
+      <dt className="text-xs font-semibold text-slate-700">{label}</dt>
       <dd className="mt-1 text-sm font-medium text-slate-900 [overflow-wrap:anywhere]">{value}</dd>
     </div>
   );
