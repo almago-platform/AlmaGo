@@ -31,7 +31,7 @@ import {
   type SelectOption,
 } from "@/lib/student/profile-options";
 
-function localizedValue(value: string, options: readonly SelectOption[]) {
+type Step = 1 | 2 | 3 | 4 | 5;\n\nfunction localizedValue(value: string, options: readonly SelectOption[]) {
   return options.find((option) => option.value === value)?.label || value || "—";
 }
 
