@@ -1,7 +1,11 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PublicOrientationForm } from "@/components/orientation/PublicOrientationForm";
-import { isPhase2AccessEnabled, isPhase2ProspectCaptureEnabled } from "@/lib/phase2/config";
+import {
+  isPhase2AccessEnabled,
+  isPhase2EmailDeliveryEnabled,
+  isPhase2ProspectCaptureEnabled,
+} from "@/lib/phase2/config";
 
 export const metadata: Metadata = {
   title: "Orientation gratuite",
@@ -10,5 +14,10 @@ export const metadata: Metadata = {
 
 export default function OrientationPage() {
   if (!isPhase2AccessEnabled()) notFound();
-  return <PublicOrientationForm prospectCaptureEnabled={isPhase2ProspectCaptureEnabled()} />;
+  return (
+    <PublicOrientationForm
+      prospectCaptureEnabled={isPhase2ProspectCaptureEnabled()}
+      emailDeliveryEnabled={isPhase2EmailDeliveryEnabled()}
+    />
+  );
 }
