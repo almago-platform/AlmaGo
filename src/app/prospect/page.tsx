@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { orientationDiagnosticCopy } from "@/content/orientation-diagnostic-copy";
 import { prospectDashboardCopy } from "@/content/prospect-dashboard-copy";
+import { prospectQualificationCopy } from "@/content/prospect-qualification-copy";
 import {
   publicDiagnosticCodes,
   publicDiagnosticHeadlineCodes,
@@ -13,8 +14,15 @@ import { restorePublicOrientationAnswers } from "@/lib/orientation/public";
 import { buildProspectRoadmap, type ProspectRoadmap } from "@/lib/orientation/roadmap";
 import { getRequestLocale } from "@/lib/i18n-server";
 import { getPhase2StudentAccess } from "@/lib/phase2/access";
+import {
+  prospectQualificationNextActions,
+  prospectQualificationStates,
+  type ProspectQualificationNextAction,
+  type ProspectQualificationState,
+} from "@/lib/phase2/qualification";
 
 type StoredOrientation = {
+  id: string;
   engine_version: string;
   input: unknown;
   result: unknown;
@@ -24,6 +32,32 @@ type StoredOrientation = {
 type ValidStoredOrientation = StoredOrientation & {
   diagnostic: PublicOrientationDiagnostic;
 };
+
+type StoredQualification = {
+  state: ProspectQualificationState;
+  next_action: ProspectQualificationNextAction | null;
+};
+
+function validStoredQualification(value: unknown): value is StoredQualification {
+  if (!value || typeof value !== "object") return false;
+  const qualification = value as Record<string, unknown>;
+  const state = qualification.state;
+  const nextAction = qualification.next_action;
+
+  return (
+    typeof state === "string"
+    && prospectQualificationStates.includes(state as ProspectQualificationState)
+    && (
+      nextAction === null
+      || (
+        typeof nextAction === "string"
+        && prospectQualificationNextActions.includes(
+          nextAction as ProspectQualificationNextAction,
+        )
+      )
+    )
+  );
+}
 
 function validDiagnosticItem(value: unknown): value is PublicDiagnosticItem {
   if (!value || typeof value !== "object") return false;
@@ -134,6 +168,75 @@ function DiagnosticCards({
   );
 }
 
+function QualificationPanel({
+  qualification,
+  copy,
+}: {
+  qualification: StoredQualification | null;
+  copy: (typeof prospectQualificationCopy)[keyof typeof prospectQualificationCopy];
+}) {
+  if (!qualification) {
+    return (
+      <section
+        id="qualification"
+        className="mt-6 scroll-mt-6 rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 sm:p-6"
+      >
+        <p className="text-[0.68rem] font-bold uppercase tracking-[0.15em] text-[var(--brand)]">
+          {copy.eyebrow}
+        </p>
+        <h2 className="mt-2 text-xl font-bold text-[var(--foreground)]">
+          {copy.unavailableTitle}
+        </h2>
+        <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
+          {copy.unavailableBody}
+        </p>
+      </section>
+    );
+  }
+
+  const stateCopy = copy.states[qualification.state];
+  const actionCopy = qualification.next_action
+    ? copy.actions[qualification.next_action]
+    : null;
+
+  return (
+    <section
+      id="qualification"
+      className="mt-6 scroll-mt-6 rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--surface)] p-5 sm:p-6"
+    >
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <p className="text-[0.68rem] font-bold uppercase tracking-[0.15em] text-[var(--brand)]">
+            {copy.eyebrow}
+          </p>
+          <h2 className="mt-2 text-xl font-bold text-[var(--foreground)]">
+            {stateCopy.title}
+          </h2>
+          <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
+            {stateCopy.body}
+          </p>
+        </div>
+        <span className="rounded-full bg-[var(--brand-soft)] px-3 py-1.5 text-xs font-bold text-[var(--brand-strong)]">
+          {stateCopy.label}
+        </span>
+      </div>
+
+      {actionCopy ? (
+        <div className="mt-5 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4">
+          <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--brand)]">
+            {actionCopy.label}
+          </p>
+          <p className="mt-2 text-sm leading-6 text-[var(--foreground)]">
+            {actionCopy.body}
+          </p>
+        </div>
+      ) : null}
+
+      <p className="mt-4 text-xs leading-5 text-[var(--muted)]">{copy.disclaimer}</p>
+    </section>
+  );
+}
+
 function RoadmapPanel({
   roadmap,
   copy,
@@ -186,6 +289,7 @@ export default async function ProspectDashboardPage() {
 
   const t = prospectDashboardCopy[locale].page;
   const diagnosticCopy = orientationDiagnosticCopy[locale];
+  const qualificationCopy = prospectQualificationCopy[locale];
   const dateFormatter = new Intl.DateTimeFormat(locale, {
     day: "2-digit",
     month: "long",
@@ -203,7 +307,7 @@ export default async function ProspectDashboardPage() {
   if (prospect?.id) {
     const { data } = await access.supabase
       .from("orientations")
-      .select("engine_version,input,result,created_at")
+      .select("id,engine_version,input,result,created_at")
       .eq("prospect_id", prospect.id)
       .order("created_at", { ascending: false })
       .limit(5);
@@ -234,6 +338,20 @@ export default async function ProspectDashboardPage() {
   const savedOn = current?.created_at
     ? dateFormatter.format(new Date(current.created_at))
     : null;
+
+  let qualification: StoredQualification | null = null;
+
+  if (current?.id) {
+    const { data } = await access.supabase
+      .from("prospect_qualifications")
+      .select("state,next_action")
+      .eq("orientation_id", current.id)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (validStoredQualification(data)) qualification = data;
+  }
 
   return (
     <main>
@@ -284,6 +402,8 @@ export default async function ProspectDashboardPage() {
               </p>
             ) : null}
           </section>
+
+          <QualificationPanel qualification={qualification} copy={qualificationCopy} />
 
           <div className="mt-6 grid gap-5">
             <DiagnosticCards
