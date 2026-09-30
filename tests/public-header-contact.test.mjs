@@ -7,6 +7,7 @@ const copy = readFileSync("src/content/native-copy.ts", "utf8");
 
 test("public header exposes the contact route", () => {
   assert.match(header, /\[nav\.contact, "\/contact"\]/);
+  assert.equal((header.match(/navigation\.map/g) || []).length, 2, "contact navigation must feed both desktop and mobile menus");
 });
 
 test("contact header label exists in all four locales", () => {
