@@ -9,6 +9,8 @@ import { orientationCopy } from "@/content/orientation-copy";
 import { orientationDiagnosticCopy } from "@/content/orientation-diagnostic-copy";
 import { orientationProspectCopy } from "@/content/orientation-prospect-copy";
 import { ProspectCaptureCard } from "@/components/orientation/ProspectCaptureCard";
+import { ProspectOrientationUpdateCard } from "@/components/orientation/ProspectOrientationUpdateCard";
+import { prospectDashboardCopy } from "@/content/prospect-dashboard-copy";
 import {
   localizePreferredCity,
   localizeProfileOptions,
@@ -86,20 +88,29 @@ function DiagnosticSection({
 export function PublicOrientationForm({
   prospectCaptureEnabled = false,
   emailDeliveryEnabled = false,
+  initialAnswers = null,
+  authenticatedUpdate = false,
 }: {
   prospectCaptureEnabled?: boolean;
   emailDeliveryEnabled?: boolean;
+  initialAnswers?: Answers | null;
+  authenticatedUpdate?: boolean;
 }) {
   const { locale, direction } = useLocale();
   const copy = orientationCopy[locale];
   const profileCopy = studentProfileCopy[locale];
   const diagnosticCopy = orientationDiagnosticCopy[locale];
   const prospectCopy = orientationProspectCopy[locale];
+  const prospectDashboard = prospectDashboardCopy[locale];
   const headingRef = useRef<HTMLHeadingElement>(null);
-  const [answers, setAnswers] = useState<Answers>(() => createEmptyPublicOrientationAnswers());
+  const [answers, setAnswers] = useState<Answers>(() =>
+    initialAnswers
+      ? restorePublicOrientationAnswers(initialAnswers)
+      : createEmptyPublicOrientationAnswers(),
+  );
   const [step, setStep] = useState<Step>(1);
   const [error, setError] = useState("");
-  const [hydrated, setHydrated] = useState(false);
+  const [hydrated, setHydrated] = useState(authenticatedUpdate);
 
   const bacTracks = useMemo(() => localizeProfileOptions(locale, tunisianBacTrackOptions), [locale]);
   const diplomas = useMemo(() => localizeProfileOptions(locale, diplomaOptions), [locale]);
@@ -111,6 +122,8 @@ export function PublicOrientationForm({
   const diagnostic = useMemo(() => buildPublicOrientationDiagnostic(answers), [answers]);
 
   useEffect(() => {
+    if (authenticatedUpdate) return;
+
     const timer = window.setTimeout(() => {
       try {
         const stored = window.sessionStorage.getItem(SESSION_KEY);
@@ -129,12 +142,12 @@ export function PublicOrientationForm({
     }, 0);
 
     return () => window.clearTimeout(timer);
-  }, []);
+  }, [authenticatedUpdate]);
 
   useEffect(() => {
-    if (!hydrated) return;
+    if (!hydrated || authenticatedUpdate) return;
     window.sessionStorage.setItem(SESSION_KEY, JSON.stringify({ answers, step }));
-  }, [answers, step, hydrated]);
+  }, [answers, step, hydrated, authenticatedUpdate]);
 
   useEffect(() => {
     if (hydrated) headingRef.current?.focus();
@@ -192,10 +205,14 @@ export function PublicOrientationForm({
   }
 
   function restart() {
-    setAnswers(createEmptyPublicOrientationAnswers());
+    setAnswers(
+      authenticatedUpdate && initialAnswers
+        ? restorePublicOrientationAnswers(initialAnswers)
+        : createEmptyPublicOrientationAnswers(),
+    );
     setStep(1);
     setError("");
-    window.sessionStorage.removeItem(SESSION_KEY);
+    if (!authenticatedUpdate) window.sessionStorage.removeItem(SESSION_KEY);
   }
 
   const stepCopy = [
@@ -236,8 +253,11 @@ export function PublicOrientationForm({
           </Link>
           <div className="flex items-center gap-2 sm:gap-4">
             <LanguageSwitcher compact />
-            <Link href="/login" className="text-sm font-semibold text-[var(--foreground)] underline-offset-4 hover:underline">
-              {copy.header.login}
+            <Link
+              href={authenticatedUpdate ? "/prospect" : "/login"}
+              className="text-sm font-semibold text-[var(--foreground)] underline-offset-4 hover:underline"
+            >
+              {authenticatedUpdate ? prospectDashboard.shell.area : copy.header.login}
             </Link>
           </div>
         </div>
@@ -539,7 +559,9 @@ export function PublicOrientationForm({
                   <p className="mt-2 text-xs leading-5 text-[var(--muted)]">{prospectCopy.report.printHelp}</p>
                 </div>
 
-                {prospectCaptureEnabled ? (
+                {authenticatedUpdate ? (
+                  <ProspectOrientationUpdateCard answers={answers} />
+                ) : prospectCaptureEnabled ? (
                   <ProspectCaptureCard
                     answers={answers}
                     emailDeliveryEnabled={emailDeliveryEnabled}
