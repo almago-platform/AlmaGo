@@ -1,16 +1,20 @@
-# AlmaGo — brouillon de notice de confidentialité
+# Campus Allemagne — brouillon de notice de confidentialité
 
-**NE PAS PUBLIER TEL QUEL — base juridique, durées, responsable et fournisseurs à confirmer humainement.**
+**NE PAS PUBLIER TEL QUEL — bases juridiques, transferts et relecture finale restent à confirmer humainement.**
 
 ## 1. Responsable
 
-Responsable du traitement : **[NOM LÉGAL À CONFIRMER]**
+Responsable du traitement prévu : **Ayoub Tayari**
 
-Adresse : **[À CONFIRMER]**
+Forme actuelle : **personne physique**
 
-Contact : **[EMAIL À CONFIRMER]**
+Pays principal d’établissement prévu : **Tunisie**
 
-DPO : **[À CONFIRMER / NON APPLICABLE]**
+Adresse : **[À CONFIRMER AVANT PUBLICATION]**
+
+Contact : **contact@campus-allemagne.info**
+
+DPO : **[À CONFIRMER PAR LE RELECTEUR SELON APPLICABILITÉ]**
 
 ## 2. Données traitées
 
@@ -30,14 +34,14 @@ Grandes catégories observées :
 - notes internes réservées à l’équipe ;
 - journaux techniques internes.
 
-## 3. Finalités à valider
+## 3. Finalités
 
-Brouillon de finalités correspondant au produit actuel :
+Finalités correspondant au produit actuel :
 
 - créer et maintenir l’espace étudiant ;
 - organiser le dossier académique ;
 - recevoir, stocker et vérifier les documents ;
-- présenter des recommandations d’orientation préparées dans AlmaGo ;
+- présenter des recommandations d’orientation préparées dans Campus Allemagne ;
 - suivre les candidatures et leurs prochaines actions ;
 - assurer l’administration, la sécurité et le fonctionnement technique ;
 - gérer les consentements lorsque nécessaire.
@@ -48,60 +52,76 @@ Brouillon de finalités correspondant au produit actuel :
 
 Actuellement visibles dans le projet :
 
-- Supabase — Auth, PostgreSQL et Storage ;
-- Render — hébergement/déploiement canonique actuellement utilisé pour l’application ;
-- une intégration Vercel reste visible/connectée au dépôt ; son rôle technique éventuel et tout traitement de données associé doivent être confirmés avant publication, sans la présenter comme hébergement canonique sans preuve.
+- **Supabase** — Auth, PostgreSQL et Storage ;
+- **Render** — hébergement/déploiement canonique de l’application.
+
+Une intégration Vercel reste liée au dépôt pour des usages de développement/preview historiques ou futurs. Son éventuel rôle de traitement de données en production ne doit être décrit qu’après vérification contractuelle et technique.
 
 Analytics/observabilité produit : **non actif à ce jour**. Le fournisseur éventuel sera choisi et validé séparément dans A44 avant toute activation.
 
 Pour chaque fournisseur, confirmer avant publication :
+
 - rôle contractuel ;
 - lieu(x) de traitement ;
 - transferts internationaux éventuels ;
 - garanties applicables ;
 - durée de conservation.
 
-## 5. Durées de conservation
+## 5. Durées de conservation — décision propriétaire approuvée
 
-Les migrations actuelles ne définissent pas de politique métier complète de rétention.
+Le propriétaire a approuvé la politique opérationnelle suivante, sous réserve de validation juridique finale :
 
-À décider :
-
-- compte/profil : **[DURÉE OU CRITÈRE]** ;
-- documents : **[DURÉE OU CRITÈRE]** ;
-- candidatures/historique : **[DURÉE OU CRITÈRE]** ;
-- notes internes : **[DURÉE OU CRITÈRE]** ;
-- logs techniques : **[DURÉE OU CRITÈRE]** ;
-- analytics/observabilité : **[DURÉE OU CRITÈRE]**.
+- compte/profil : conservation pendant l’utilisation active ; revue après **24 mois d’inactivité** ;
+- documents : conservation tant qu’ils sont utiles au dossier actif ; suppression avec le compte ou dès qu’ils ne sont plus nécessaires ;
+- candidatures/historique/notes internes : suppression ou anonymisation avec le dossier, sauf obligation légale ou litige documenté ;
+- logs techniques ordinaires : **30 jours** ;
+- logs liés à l’investigation d’un incident : jusqu’à **90 jours** ;
+- suppression des données actives après demande confirmée : objectif opérationnel de **30 jours maximum**.
 
 ## 6. Suppression
 
-Certaines tables liées au compte utilisent des suppressions SQL en cascade.
+Procédure approuvée par le propriétaire :
 
-Cela ne suffit pas, à lui seul, à garantir l’effacement complet des objets Storage, sauvegardes ou systèmes tiers.
+1. confirmer l’identité et la demande ;
+2. supprimer les objets du bucket privé via l’API Supabase Storage ;
+3. vérifier l’absence d’objets utilisateur résiduels ;
+4. supprimer/anonymiser les données applicatives selon les règles validées ;
+5. supprimer l’utilisateur via l’API d’administration Supabase Auth côté serveur ;
+6. laisser expirer sauvegardes/logs fournisseurs selon leur rotation documentée, avec réapplication des suppressions en cas de restauration.
 
-Procédure de suppression : une proposition technique documentée existe dans `docs/A38_RETENTION_POLICY_PROPOSAL.md` ; elle doit encore être approuvée ou modifiée par le propriétaire/relecteur avant publication.
+Cette procédure reste soumise à la validation juridique finale quant aux éventuelles obligations de conservation.
 
 ## 7. Droits
 
-Le texte final doit décrire les droits applicables au contexte réel et la manière de les exercer, après relecture humaine.
+Le texte final doit décrire les droits applicables au contexte réel après relecture humaine.
 
-Canal de demande : **[EMAIL / PROCÉDURE À CONFIRMER]**.
+Canal de demande prévu : **contact@campus-allemagne.info**
 
-Autorité de contrôle / réclamation : **[À CONFIRMER SELON ÉTABLISSEMENT]**.
+Autorité de contrôle / réclamation : **[À CONFIRMER SELON L’ÉTABLISSEMENT FINAL EN TUNISIE ET LES RÈGLES APPLICABLES AUX PERSONNES CONCERNÉES]**
 
 ## 8. Cookies et analytics
 
-Aucun fournisseur analytics n’est actuellement codé comme actif dans AlmaGo.
+Aucun fournisseur analytics n’est actuellement actif dans Campus Allemagne.
 
-Avant A44 :
-- examiner les cookies/stockages utilisés ;
-- appliquer `config/telemetry-events.json` ;
+Avant toute activation A44 :
+
+- inventorier cookies/localStorage/identifiants du fournisseur ;
+- appliquer la politique d’événements prévue ;
 - décider si un consentement est nécessaire ;
-- documenter le fournisseur et la rétention.
+- documenter fournisseur, transferts et rétention.
 
-## 9. Modifications de la notice
+## 9. Statut commercial actuel
+
+L’orientation en ligne est actuellement **gratuite**.
+
+Des services payants d’accompagnement et de préparation de dossier sont envisagés mais ne sont **pas encore activés, tarifés ni proposés à la vente**.
+
+Toute activation commerciale devra être accompagnée d’une mise à jour des conditions applicables et de la présente notice si nécessaire.
+
+## 10. Modifications de la notice
 
 Version : **[À CONFIRMER]**
 
 Date d’entrée en vigueur : **[À CONFIRMER]**
+
+Relecteur humain/juridique : **[À CONFIRMER]**
