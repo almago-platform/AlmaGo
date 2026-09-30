@@ -538,7 +538,7 @@ export function PublicOrientationForm({ prospectCaptureEnabled = false }: { pros
                 <div className="orientation-print-hide mt-7 flex flex-wrap gap-3">
                   <button
                     type="button"
-                    onClick={() => setStep(1)
+                    onClick={() => setStep(1)}
                     className="rounded-[var(--radius-control)] bg-[var(--brand)] px-5 py-2.5 text-sm font-bold text-white hover:bg-[var(--brand-strong)]"
                   >
                     {copy.summary.edit}
