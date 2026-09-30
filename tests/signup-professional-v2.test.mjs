@@ -27,10 +27,11 @@ test("signup story communicates the three-step account-to-dossier path", () => {
   assert.ok(nativeCopy.includes("Les universités et les autorités prennent les décisions officielles"));
 });
 
-test("signup form keeps Supabase auth behavior unchanged", () => {
+test("signup keeps the default Supabase auth behavior while supporting optional orientation activation", () => {
   assert.ok(form.includes("supabase.auth.signUp"));
-  assert.ok(form.includes("options: { data: { full_name:"));
-  assert.ok(form.includes('else if (data.session) router.push("/student")'));
+  assert.ok(form.includes("data: { full_name:"));
+  assert.ok(form.includes('router.push(activationClaimPath ?? "/student")'));
+  assert.ok(form.includes("emailRedirectTo"));
   assert.ok(nativeCopy.includes('checkEmail: "Vérifiez votre adresse email pour continuer."'));
   assert.ok(!form.includes("setError(signUpError.message)"));
 });
@@ -40,7 +41,7 @@ test("signup form improves password and account navigation UX", () => {
   assert.ok(form.includes("showPassword"));
   assert.ok(nativeCopy.includes('minPassword: "8 caractères minimum"'));
   assert.ok(nativeCopy.includes('emailConfirmation: "Confirmation par email"'));
-  assert.ok(form.includes('href="/login"'));
+  assert.ok(form.includes("href={loginHref}"));
   assert.ok(!form.includes('setMode(mode === "login" ? "signup" : "login")'));
 });
 
