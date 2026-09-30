@@ -217,7 +217,7 @@ export default async function StudentEntry() {
           </section>
 
           <section className="bg-[var(--surface-subtle)] p-5 sm:p-6">
-            <p className="text-[0.68rem] font-bold uppercase tracking-[0.15em] text-[var(--muted)]">{t.preparation}</p>
+            <p className="text-[0.68rem] font-bold uppercase tracking-[0.15em] text-[var(--brand-strong)]">{t.preparation}</p>
             <div className="mt-3 flex items-end justify-between gap-3">
               <div>
                 <p className="text-3xl font-bold tracking-[-0.04em] text-[var(--foreground)]">
