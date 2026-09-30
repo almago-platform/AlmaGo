@@ -26,7 +26,7 @@ export function ProspectShell({
     { href: "/prospect#possibilities", label: t.links.possibilities },
     { href: "/prospect#roadmap", label: t.links.roadmap },
     { href: "/prospect#missing", label: t.links.missing },
-    { href: "/orientation", label: t.links.update },
+    { href: "/orientation?mode=update", label: t.links.update },
   ];
 
   async function signOut() {

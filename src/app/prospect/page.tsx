@@ -9,8 +9,21 @@ import {
   type PublicDiagnosticItem,
   type PublicOrientationDiagnostic,
 } from "@/lib/orientation/diagnostic";
+import { restorePublicOrientationAnswers } from "@/lib/orientation/public";
+import { buildProspectRoadmap, type ProspectRoadmap } from "@/lib/orientation/roadmap";
 import { getRequestLocale } from "@/lib/i18n-server";
 import { getPhase2StudentAccess } from "@/lib/phase2/access";
+
+type StoredOrientation = {
+  engine_version: string;
+  input: unknown;
+  result: unknown;
+  created_at: string;
+};
+
+type ValidStoredOrientation = StoredOrientation & {
+  diagnostic: PublicOrientationDiagnostic;
+};
 
 function validDiagnosticItem(value: unknown): value is PublicDiagnosticItem {
   if (!value || typeof value !== "object") return false;
@@ -46,6 +59,11 @@ function validDiagnostic(value: unknown): value is PublicOrientationDiagnostic {
   );
 }
 
+function orientationAnswers(input: unknown) {
+  if (!input || typeof input !== "object") return restorePublicOrientationAnswers(null);
+  return restorePublicOrientationAnswers((input as Record<string, unknown>).answers);
+}
+
 function StatusBadge({
   item,
   label,
@@ -68,6 +86,35 @@ function StatusBadge({
   );
 }
 
+function DiagnosticItems({
+  items,
+  copy,
+}: {
+  items: PublicDiagnosticItem[];
+  copy: (typeof orientationDiagnosticCopy)[keyof typeof orientationDiagnosticCopy];
+}) {
+  if (!items.length) {
+    return <p className="mt-3 text-sm leading-6 text-[var(--muted)]">—</p>;
+  }
+
+  return (
+    <div className="mt-4 grid gap-3">
+      {items.map((item) => {
+        const message = copy.items[item.code];
+        return (
+          <article key={item.code} className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <h3 className="font-semibold text-[var(--foreground)]">{message.title}</h3>
+              <StatusBadge item={item} label={copy.status[item.status]} />
+            </div>
+            <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{message.body}</p>
+          </article>
+        );
+      })}
+    </div>
+  );
+}
+
 function DiagnosticCards({
   id,
   title,
@@ -82,24 +129,47 @@ function DiagnosticCards({
   return (
     <section id={id} className="scroll-mt-6 rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 sm:p-6">
       <h2 className="text-xl font-bold text-[var(--foreground)]">{title}</h2>
-      {items.length ? (
-        <div className="mt-4 grid gap-3">
-          {items.map((item) => {
-            const message = copy.items[item.code];
-            return (
-              <article key={item.code} className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4">
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <h3 className="font-semibold text-[var(--foreground)]">{message.title}</h3>
-                  <StatusBadge item={item} label={copy.status[item.status]} />
-                </div>
-                <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{message.body}</p>
-              </article>
-            );
-          })}
+      <DiagnosticItems items={items} copy={copy} />
+    </section>
+  );
+}
+
+function RoadmapPanel({
+  roadmap,
+  copy,
+  labels,
+}: {
+  roadmap: ProspectRoadmap;
+  copy: (typeof orientationDiagnosticCopy)[keyof typeof orientationDiagnosticCopy];
+  labels: {
+    title: string;
+    now: string;
+    afterResults: string;
+    verifyNext: string;
+  };
+}) {
+  return (
+    <section id="roadmap" className="scroll-mt-6 rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 sm:p-6">
+      <h2 className="text-xl font-bold text-[var(--foreground)]">{labels.title}</h2>
+
+      <div className="mt-5 grid gap-6">
+        <div>
+          <h3 className="text-sm font-bold uppercase tracking-[0.08em] text-[var(--brand)]">{labels.now}</h3>
+          <DiagnosticItems items={roadmap.now} copy={copy} />
         </div>
-      ) : (
-        <p className="mt-3 text-sm leading-6 text-[var(--muted)]">—</p>
-      )}
+
+        {roadmap.afterResults.length ? (
+          <div>
+            <h3 className="text-sm font-bold uppercase tracking-[0.08em] text-[var(--brand)]">{labels.afterResults}</h3>
+            <DiagnosticItems items={roadmap.afterResults} copy={copy} />
+          </div>
+        ) : null}
+
+        <div id="missing" className="scroll-mt-6">
+          <h3 className="text-sm font-bold uppercase tracking-[0.08em] text-[var(--brand)]">{labels.verifyNext}</h3>
+          <DiagnosticItems items={roadmap.verifyNext} copy={copy} />
+        </div>
+      </div>
     </section>
   );
 }
@@ -116,6 +186,11 @@ export default async function ProspectDashboardPage() {
 
   const t = prospectDashboardCopy[locale].page;
   const diagnosticCopy = orientationDiagnosticCopy[locale];
+  const dateFormatter = new Intl.DateTimeFormat(locale, {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  });
 
   const { data: prospect } = await access.supabase
     .from("prospects")
@@ -123,35 +198,41 @@ export default async function ProspectDashboardPage() {
     .eq("user_id", access.user.id)
     .maybeSingle();
 
-  let orientation: {
-    engine_version: string;
-    result: unknown;
-    created_at: string;
-  } | null = null;
+  let orientations: StoredOrientation[] = [];
 
   if (prospect?.id) {
     const { data } = await access.supabase
       .from("orientations")
-      .select("engine_version,result,created_at")
+      .select("engine_version,input,result,created_at")
       .eq("prospect_id", prospect.id)
       .order("created_at", { ascending: false })
-      .limit(1)
-      .maybeSingle();
+      .limit(5);
 
-    if (data) orientation = data;
+    if (data) orientations = data as StoredOrientation[];
   }
 
-  const diagnostic = orientation?.engine_version === "public-orientation-v1"
-    && validDiagnostic(orientation.result)
-    ? orientation.result
-    : null;
+  const validOrientations: ValidStoredOrientation[] = orientations.flatMap((orientation) => {
+    if (
+      orientation.engine_version !== "public-orientation-v1"
+      || !validDiagnostic(orientation.result)
+    ) {
+      return [];
+    }
 
-  const savedOn = orientation?.created_at
-    ? new Intl.DateTimeFormat(locale, {
-        day: "2-digit",
-        month: "long",
-        year: "numeric",
-      }).format(new Date(orientation.created_at))
+    return [{
+      ...orientation,
+      diagnostic: orientation.result,
+    }];
+  });
+
+  const current = validOrientations[0] ?? null;
+  const diagnostic = current?.diagnostic ?? null;
+  const answers = current ? orientationAnswers(current.input) : null;
+  const roadmap = diagnostic && answers
+    ? buildProspectRoadmap(answers, diagnostic)
+    : null;
+  const savedOn = current?.created_at
+    ? dateFormatter.format(new Date(current.created_at))
     : null;
 
   return (
@@ -169,7 +250,7 @@ export default async function ProspectDashboardPage() {
         </div>
       </section>
 
-      {!diagnostic ? (
+      {!diagnostic || !roadmap ? (
         <section className="mt-6 rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-6">
           <h2 className="text-xl font-bold">{t.noOrientationTitle}</h2>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--muted)]">{t.noOrientationText}</p>
@@ -211,25 +292,57 @@ export default async function ProspectDashboardPage() {
               items={diagnostic.paths}
               copy={diagnosticCopy}
             />
-            <DiagnosticCards
-              id="roadmap"
-              title={t.roadmap}
-              items={diagnostic.priorities}
+            <RoadmapPanel
+              roadmap={roadmap}
               copy={diagnosticCopy}
-            />
-            <DiagnosticCards
-              id="missing"
-              title={t.missing}
-              items={diagnostic.checks}
-              copy={diagnosticCopy}
+              labels={{
+                title: t.roadmap,
+                now: t.roadmapNow,
+                afterResults: t.roadmapAfterResults,
+                verifyNext: t.roadmapVerifyNext,
+              }}
             />
           </div>
+
+          {validOrientations.length ? (
+            <section className="mt-6 rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 sm:p-6">
+              <h2 className="text-xl font-bold">{t.historyTitle}</h2>
+              <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">{t.historyText}</p>
+              <div className="mt-4 grid gap-3">
+                {validOrientations.map((orientation, index) => (
+                  <article
+                    key={`${orientation.created_at}-${index}`}
+                    className="flex flex-col gap-2 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4 sm:flex-row sm:items-center sm:justify-between"
+                  >
+                    <div>
+                      <p className="font-semibold">
+                        {diagnosticCopy.headlines[orientation.diagnostic.headlineCode].title}
+                      </p>
+                      <p className="mt-1 text-xs text-[var(--muted)]">
+                        <bdi dir="auto">{dateFormatter.format(new Date(orientation.created_at))}</bdi>
+                      </p>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2">
+                      {index === 0 ? (
+                        <span className="rounded-full bg-[var(--brand-soft)] px-2.5 py-1 text-[11px] font-bold text-[var(--brand-strong)]">
+                          {t.historyCurrent}
+                        </span>
+                      ) : null}
+                      <span className="rounded-full bg-[var(--surface)] px-2.5 py-1 text-[11px] font-bold text-[var(--muted)]">
+                        {diagnosticCopy.status[orientation.diagnostic.overallStatus]}
+                      </span>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </section>
+          ) : null}
 
           <section className="mt-6 rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 sm:p-6">
             <h2 className="text-xl font-bold">{t.updateProject}</h2>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">{t.updateProjectText}</p>
             <Link
-              href="/orientation"
+              href="/orientation?mode=update"
               className="mt-5 inline-flex min-h-11 items-center rounded-[var(--radius-control)] bg-[var(--brand)] px-5 text-sm font-bold text-white"
             >
               {t.updateProjectCta}

@@ -51,7 +51,7 @@ test("prospect navigation exposes free-space actions and no client routes", () =
   assert.match(prospectShell, /\/prospect#possibilities/);
   assert.match(prospectShell, /\/prospect#roadmap/);
   assert.match(prospectShell, /\/prospect#missing/);
-  assert.match(prospectShell, /href: "\/orientation"/);
+  assert.match(prospectShell, /href: "\/orientation\?mode=update"/);
   assert.doesNotMatch(prospectShell, /\/student\/documents|\/student\/applications|\/student\/checklist|\/student\/finance-insurance/);
 });
 
