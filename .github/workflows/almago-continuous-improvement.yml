@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Check post-launch activation
         id: activation
@@ -26,7 +26,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: node autonomy/continuous-improvement.mjs activation
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         if: steps.activation.outputs.active == 'true'
         with:
           node-version: 22
