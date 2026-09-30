@@ -117,20 +117,24 @@ export function PublicOrientationForm() {
   const budgets = useMemo(() => localizeProfileOptions(locale, budgetOptions), [locale]);
 
   useEffect(() => {
-    try {
-      const stored = window.sessionStorage.getItem(SESSION_KEY);
-      if (stored) {
-        const parsed = JSON.parse(stored) as { answers?: unknown; step?: unknown };
-        setAnswers(restoreAnswers(parsed.answers));
-        if (typeof parsed.step === "number" && parsed.step >= 1 && parsed.step <= 5) {
-          setStep(parsed.step as Step);
+    const timer = window.setTimeout(() => {
+      try {
+        const stored = window.sessionStorage.getItem(SESSION_KEY);
+        if (stored) {
+          const parsed = JSON.parse(stored) as { answers?: unknown; step?: unknown };
+          setAnswers(restoreAnswers(parsed.answers));
+          if (typeof parsed.step === "number" && parsed.step >= 1 && parsed.step <= 5) {
+            setStep(parsed.step as Step);
+          }
         }
+      } catch {
+        window.sessionStorage.removeItem(SESSION_KEY);
+      } finally {
+        setHydrated(true);
       }
-    } catch {
-      window.sessionStorage.removeItem(SESSION_KEY);
-    } finally {
-      setHydrated(true);
-    }
+    }, 0);
+
+    return () => window.clearTimeout(timer);
   }, []);
 
   useEffect(() => {
