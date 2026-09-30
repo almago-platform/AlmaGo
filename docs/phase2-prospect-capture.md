@@ -83,6 +83,6 @@ Do not enable public transactional delivery until all of the following are compl
 4. `SITE_URL` points to the final canonical HTTPS domain;
 5. A38/privacy language for prospect retention + transactional email is approved;
 6. one real FR and one real AR/RTL delivery test is completed;
-7. P2.4 account-linking consumes the resume token before the email CTA is exposed publicly.
+7. P2.4 account-linking is merged and its feature gate is enabled only after P2.5 protects the free-prospect experience.
 
-Therefore #592 remains open after code merge until operational delivery is proven.
+Therefore #592 remains open after code merge until operational delivery is proven. P2.4 code does not by itself authorize public activation.
