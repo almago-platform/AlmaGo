@@ -25,6 +25,13 @@ test("admin command center uses the compact workspace header", () => {
   assert.match(dashboard, /max-w-\[92rem\]/);
 });
 
+test("admin finance catalogue filter has an accessible name", () => {
+  assert.match(
+    financePanel,
+    /<select aria-label="Filtrer le catalogue finance et assurance par catégorie" className="field max-w-xs"/,
+  );
+});
+
 test("admin overview keeps small text on subtle surfaces above the A43 contrast floor", () => {
   assert.match(shell, /text-slate-700">\s*Espace équipe/);
   assert.match(dashboard, /text-slate-700">Ordre de traitement/);
