@@ -1,6 +1,11 @@
 -- P2.7C: atomically append an authenticated project update and its automatic qualification.
 -- The RPC is service-role-only. Browser callers cannot supply or execute this boundary directly.
 
+-- Cover the append-only superseding relation introduced by P2.7B.
+create index if not exists prospect_qualifications_supersedes_idx
+  on public.prospect_qualifications (supersedes_id)
+  where supersedes_id is not null;
+
 create or replace function public.append_phase2_orientation_qualification(
   p_prospect_id uuid,
   p_user_id uuid,
@@ -21,7 +26,7 @@ returns table (
 )
 language plpgsql
 security definer
-set search_path = public
+set search_path = ''
 as $$
 declare
   v_linked_user_id uuid;
