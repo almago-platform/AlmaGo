@@ -18,6 +18,7 @@ export function HomeHeader() {
     [nav.space, "/login"],
     [nav.why, "#outils"],
     [nav.questions, "#faq"],
+    [nav.contact, "/contact"],
   ] as const;
 
   return (
