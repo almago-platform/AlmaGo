@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { loginWithRedactedPassword } from "./auth-test-helpers.mjs";
 
 const studentEmail = process.env.ALMAGO_E2E_STUDENT_EMAIL;
 const studentPassword = process.env.ALMAGO_E2E_STUDENT_PASSWORD;
@@ -9,16 +10,8 @@ const configured = Boolean(studentEmail && studentPassword && adminEmail && admi
 test.describe("authenticated role journeys", () => {
   test.skip(!configured, "Authenticated E2E requires dedicated test-account secrets.");
 
-  async function login(page, email, password) {
-    await page.goto("/login", { waitUntil: "networkidle" });
-    await page.getByLabel("Email").fill(email);
-    await page.getByLabel("Mot de passe").fill(password);
-    await page.getByRole("button", { name: "Se connecter" }).click();
-    await page.waitForURL(/\/student(?:\/.*)?$/, { timeout: 20_000 });
-  }
-
   test("student account reaches only the student area", async ({ page }) => {
-    await login(page, studentEmail, studentPassword);
+    await loginWithRedactedPassword(page, studentEmail, studentPassword);
     expect(new URL(page.url()).pathname).toMatch(/^\/student(?:\/|$)/);
 
     await page.goto("/admin", { waitUntil: "networkidle" });
@@ -32,7 +25,7 @@ test.describe("authenticated role journeys", () => {
   });
 
   test("admin account passes server-side page and API role guards", async ({ page }) => {
-    await login(page, adminEmail, adminPassword);
+    await loginWithRedactedPassword(page, adminEmail, adminPassword);
     const response = await page.goto("/admin", { waitUntil: "networkidle" });
     expect(response?.ok()).toBeTruthy();
     expect(new URL(page.url()).pathname).toMatch(/^\/admin(?:\/|$)/);
