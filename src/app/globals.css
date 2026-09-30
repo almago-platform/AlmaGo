@@ -372,3 +372,37 @@ html[dir="rtl"] .student-shell [dir="ltr"] {
     direction: rtl;
   }
 }
+
+
+@media print {
+  @page {
+    margin: 14mm;
+  }
+
+  .orientation-print-page {
+    background: white !important;
+    color: #0f172a !important;
+  }
+
+  .orientation-print-page .orientation-print-hide {
+    display: none !important;
+  }
+
+  .orientation-print-page main {
+    max-width: none !important;
+    padding: 0 !important;
+  }
+
+  .orientation-print-page .professional-panel,
+  .orientation-print-page .orientation-print-report {
+    border: 0 !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+  }
+
+  .orientation-print-page .orientation-print-report article,
+  .orientation-print-page .orientation-print-report section,
+  .orientation-print-page .orientation-print-report dl {
+    break-inside: avoid;
+  }
+}

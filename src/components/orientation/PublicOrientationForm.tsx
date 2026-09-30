@@ -7,6 +7,8 @@ import { LanguageSwitcher } from "@/components/i18n/LanguageSwitcher";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { orientationCopy } from "@/content/orientation-copy";
 import { orientationDiagnosticCopy } from "@/content/orientation-diagnostic-copy";
+import { orientationProspectCopy } from "@/content/orientation-prospect-copy";
+import { ProspectCaptureCard } from "@/components/orientation/ProspectCaptureCard";
 import {
   localizePreferredCity,
   localizeProfileOptions,
@@ -81,11 +83,12 @@ function DiagnosticSection({
   );
 }
 
-export function PublicOrientationForm() {
+export function PublicOrientationForm({ prospectCaptureEnabled = false }: { prospectCaptureEnabled?: boolean }) {
   const { locale, direction } = useLocale();
   const copy = orientationCopy[locale];
   const profileCopy = studentProfileCopy[locale];
   const diagnosticCopy = orientationDiagnosticCopy[locale];
+  const prospectCopy = orientationProspectCopy[locale];
   const headingRef = useRef<HTMLHeadingElement>(null);
   const [answers, setAnswers] = useState<Answers>(() => createEmptyPublicOrientationAnswers());
   const [step, setStep] = useState<Step>(1);
@@ -217,10 +220,10 @@ export function PublicOrientationForm() {
   ] as const;
 
   return (
-    <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)]" dir={direction}>
+    <div className="orientation-print-page min-h-screen bg-[var(--background)] text-[var(--foreground)]" dir={direction}>
       <a className="skip-link" href="#orientation-main">{profileCopy.page.back}</a>
 
-      <header className="border-b border-[var(--border)] bg-[var(--surface)]">
+      <header className="orientation-print-hide border-b border-[var(--border)] bg-[var(--surface)]">
         <div className="mx-auto flex min-h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
           <Link href="/" aria-label={copy.header.home} className="inline-flex items-center">
             <BrandLogo className="h-9 w-auto" priority />
@@ -235,7 +238,7 @@ export function PublicOrientationForm() {
       </header>
 
       <main id="orientation-main" className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-12">
-        <section className="mx-auto max-w-3xl">
+        <section className="orientation-print-hide mx-auto max-w-3xl">
           <p className="eyebrow">{copy.intro.eyebrow}</p>
           <h1 className="page-title max-w-3xl">{copy.intro.title}</h1>
           <p className="page-subtitle">{copy.intro.lead}</p>
@@ -251,7 +254,7 @@ export function PublicOrientationForm() {
             aria-valuemin={1}
             aria-valuemax={4}
             aria-valuenow={Math.min(step, 4)}
-            className="mb-6"
+            className="orientation-print-hide mb-6"
           >
             <div className="mb-2 flex items-center justify-between text-xs font-semibold text-[var(--muted)]">
               <span>{copy.progress.step} {Math.min(step, 4)} / 4</span>
@@ -460,7 +463,12 @@ export function PublicOrientationForm() {
                 </div>
               </form>
             ) : (
-              <div>
+              <div id="orientation-report" className="orientation-print-report">
+                <div className="mb-6 border-b border-[var(--border)] pb-5">
+                  <p className="eyebrow">{prospectCopy.report.label}</p>
+                  <h2 className="mt-2 text-2xl font-bold">{prospectCopy.report.title}</h2>
+                  <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{prospectCopy.report.subtitle}</p>
+                </div>
                 <p className="eyebrow">{copy.summary.eyebrow}</p>
                 <h2 ref={headingRef} tabIndex={-1} className="section-title mt-2 mb-1">{copy.summary.title}</h2>
                 <p className="mb-6 text-sm leading-6 text-[var(--muted)]">{copy.summary.text}</p>
@@ -514,10 +522,23 @@ export function PublicOrientationForm() {
                   </div>
                 </div>
 
-                <div className="mt-7 flex flex-wrap gap-3">
+                <div className="orientation-print-hide mt-7 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4">
                   <button
                     type="button"
-                    onClick={() => setStep(1)}
+                    onClick={() => window.print()}
+                    className="rounded-[var(--radius-control)] bg-[var(--brand)] px-5 py-2.5 text-sm font-bold text-white hover:bg-[var(--brand-strong)]"
+                  >
+                    {prospectCopy.report.print}
+                  </button>
+                  <p className="mt-2 text-xs leading-5 text-[var(--muted)]">{prospectCopy.report.printHelp}</p>
+                </div>
+
+                {prospectCaptureEnabled ? <ProspectCaptureCard answers={answers} /> : null}
+
+                <div className="orientation-print-hide mt-7 flex flex-wrap gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setStep(1)
                     className="rounded-[var(--radius-control)] bg-[var(--brand)] px-5 py-2.5 text-sm font-bold text-white hover:bg-[var(--brand-strong)]"
                   >
                     {copy.summary.edit}
