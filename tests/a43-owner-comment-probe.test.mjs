@@ -16,3 +16,11 @@ test("A43 probe keeps existing safe workflow dispatch and main push paths", () =
   assert.match(workflow, /branches: \[main\]/);
   assert.match(workflow, /needs\.configuration\.outputs\.ready == 'true'/);
 });
+
+
+test("A43 comment probes cannot cancel an active evidence run", () => {
+  assert.match(
+    workflow,
+    /concurrency:\s*\n\s*group: almago-authenticated-e2e\s*\n\s*cancel-in-progress: \$\{\{ github\.event_name != 'issue_comment' \}\}/,
+  );
+});
