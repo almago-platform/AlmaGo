@@ -66,6 +66,14 @@ test("P2.8B published offers are RLS-gated by qualification and drafts remain ad
     migration,
     /status = 'published'::public\.commercial_offer_version_status[\s\S]*or \(select public\.is_admin\(\)\)/i,
   );
+  assert.match(
+    migration,
+    /v\.offer_id = public\.commercial_offers\.id/i,
+  );
+  assert.doesNotMatch(
+    migration,
+    /v\.offer_id = id\b/i,
+  );
   assert.doesNotMatch(
     migration,
     /client_active|client_completed/i,
