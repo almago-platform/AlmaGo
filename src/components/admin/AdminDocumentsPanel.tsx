@@ -320,7 +320,7 @@ export function AdminDocumentsPanel({
 
                 {document.admin_comment && (
                   <div className="mt-5 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4">
-                    <p className="text-xs font-bold uppercase tracking-[0.14em] text-slate-500">Message actuellement enregistré</p>
+                    <p className="text-xs font-bold uppercase tracking-[0.14em] text-slate-700">Message actuellement enregistré</p>
                     <p className="mt-2 text-sm leading-6 text-slate-700 [overflow-wrap:anywhere]">{document.admin_comment}</p>
                   </div>
                 )}
@@ -357,7 +357,7 @@ export function AdminDocumentsPanel({
                 >
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                     <div>
-                      <p className="text-xs font-bold uppercase tracking-[0.14em] text-slate-500">
+                      <p className="text-xs font-bold uppercase tracking-[0.14em] text-slate-700">
                         Classification académique
                       </p>
                       <h3 id={`academic-evidence-admin-${document.id}`} className="mt-1 text-lg font-bold text-slate-950">
