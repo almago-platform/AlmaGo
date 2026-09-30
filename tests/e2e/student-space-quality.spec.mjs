@@ -1,6 +1,7 @@
 import { mkdirSync } from "node:fs";
 import AxeBuilder from "@axe-core/playwright";
 import { test, expect } from "@playwright/test";
+import { loginWithRedactedPassword } from "./auth-test-helpers.mjs";
 
 const studentEmail = process.env.ALMAGO_E2E_STUDENT_EMAIL;
 const studentPassword = process.env.ALMAGO_E2E_STUDENT_PASSWORD;
@@ -25,11 +26,7 @@ test.describe("authenticated Student Space quality", () => {
   test.skip(!configured, "Student Space quality requires the dedicated student E2E account.");
 
   test("all student pages fit, remain accessible and capture responsive evidence", async ({ page }, testInfo) => {
-    await page.goto("/login", { waitUntil: "networkidle" });
-    await page.getByLabel("Email").fill(studentEmail);
-    await page.getByLabel("Mot de passe").fill(studentPassword);
-    await page.getByRole("button", { name: "Se connecter" }).click();
-    await page.waitForURL(/\/student(?:\/.*)?$/, { timeout: 20_000 });
+    await loginWithRedactedPassword(page, studentEmail, studentPassword);
 
     const viewportWidth = testInfo.project.use.viewport?.width || 1440;
     if (viewportWidth < 1024) {
