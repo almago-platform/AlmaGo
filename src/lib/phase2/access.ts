@@ -1,4 +1,4 @@
-import { getStudentUser } from "@/lib/auth/access";
+import { getTechnicalStudentUser } from "@/lib/auth/access";
 import { isPhase2AccessEnabled } from "@/lib/phase2/config";
 
 export const customerLifecycleStatuses = [
@@ -22,7 +22,7 @@ export function canUseClientFeatures(status: CustomerLifecycleStatus | null) {
 }
 
 export async function getPhase2StudentAccess() {
-  const auth = await getStudentUser();
+  const auth = await getTechnicalStudentUser();
 
   if (!auth.user || !auth.isStudent) {
     return {
