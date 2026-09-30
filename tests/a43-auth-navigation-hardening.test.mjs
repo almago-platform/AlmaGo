@@ -53,3 +53,9 @@ test("A43 secret cleanup never waits on a stale login locator after navigation",
   assert.match(helper, /pathname === "\/login"/);
   assert.match(helper, /fill\("", \{ timeout: 500 \}\)/);
 });
+
+
+test("A43 Student Space assertions follow the public Campus Allemagne brand", () => {
+  assert.match(student, /الصفحة الرئيسية لـ Campus Allemagne/);
+  assert.doesNotMatch(student, /الصفحة الرئيسية لـ AlmaGo/);
+});
