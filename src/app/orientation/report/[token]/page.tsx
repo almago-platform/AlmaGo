@@ -20,7 +20,10 @@ import {
 import { localeDirection, normalizeLocale } from "@/lib/i18n";
 import { restorePublicOrientationAnswers } from "@/lib/orientation/public";
 import { hashOrientationResumeToken } from "@/lib/orientation/resume-token";
-import { isPhase2AccessEnabled } from "@/lib/phase2/config";
+import {
+  isPhase2AccessEnabled,
+  isPhase2AccountLinkingEnabled,
+} from "@/lib/phase2/config";
 import { createPrivilegedSupabaseClient } from "@/lib/supabase/privileged";
 import {
   budgetOptions,
@@ -198,6 +201,7 @@ export default async function OrientationReportPage({
   });
   const created = dateFormatter.format(new Date(data.created_at));
   const expires = dateFormatter.format(new Date(data.resume_token_expires_at));
+  const accountLinkingEnabled = isPhase2AccountLinkingEnabled();
   const signupHref = `/signup?orientation_token=${encodeURIComponent(token)}`;
 
   return (
@@ -267,15 +271,17 @@ export default async function OrientationReportPage({
             <p className="mt-2 text-xs leading-5 text-[var(--muted)]">{prospectCopy.report.printHelp}</p>
           </div>
 
-          <div className="orientation-print-hide mt-6 border-t border-[var(--border)] pt-6">
-            <Link
-              href={signupHref}
-              className="inline-flex rounded-[var(--radius-control)] border border-[var(--border-strong)] bg-[var(--surface)] px-5 py-2.5 text-sm font-bold"
-            >
-              {resumeCopy.signup}
-            </Link>
-            <p className="mt-2 text-xs leading-5 text-[var(--muted)]">{resumeCopy.signupNote}</p>
-          </div>
+          {accountLinkingEnabled ? (
+            <div className="orientation-print-hide mt-6 border-t border-[var(--border)] pt-6">
+              <Link
+                href={signupHref}
+                className="inline-flex rounded-[var(--radius-control)] border border-[var(--border-strong)] bg-[var(--surface)] px-5 py-2.5 text-sm font-bold"
+              >
+                {resumeCopy.signup}
+              </Link>
+              <p className="mt-2 text-xs leading-5 text-[var(--muted)]">{resumeCopy.signupNote}</p>
+            </div>
+          ) : null}
         </article>
       </main>
     </div>
