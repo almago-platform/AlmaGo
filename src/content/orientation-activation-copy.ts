@@ -7,6 +7,7 @@ type OrientationActivationCopy = {
   success: string;
   failure: string;
   viewOrientation: string;
+  openSpace: string;
   freeAccountNote: string;
 };
 
@@ -17,6 +18,7 @@ const fr: OrientationActivationCopy = {
   success: "Votre orientation est maintenant rattachée à votre compte.",
   failure: "Le rattachement n’a pas pu être effectué. Vérifiez que vous utilisez le même e-mail que celui de l’orientation et que le lien est encore valide.",
   viewOrientation: "Retrouver mon orientation",
+  openSpace: "Ouvrir mon espace gratuit",
   freeAccountNote: "Votre compte reste un compte gratuit. Aucun accompagnement payant n’est activé.",
 };
 
@@ -27,6 +29,7 @@ const ar: OrientationActivationCopy = {
   success: "تم ربط توجيهك بحسابك.",
   failure: "تعذر ربط التوجيه. تأكد من استعمال نفس البريد الإلكتروني وأن الرابط ما زال صالحًا.",
   viewOrientation: "عرض توجيهي",
+  openSpace: "فتح مساحتي المجانية",
   freeAccountNote: "يبقى حسابك مجانيًا. لم يتم تفعيل أي خدمة مرافقة مدفوعة.",
 };
 
@@ -37,6 +40,7 @@ const en: OrientationActivationCopy = {
   success: "Your orientation is now linked to your account.",
   failure: "The orientation could not be linked. Make sure you are using the same email address and that the link is still valid.",
   viewOrientation: "View my orientation",
+  openSpace: "Open my free space",
   freeAccountNote: "Your account remains free. No paid support has been activated.",
 };
 
@@ -47,6 +51,7 @@ const de: OrientationActivationCopy = {
   success: "Deine Orientierung ist jetzt mit deinem Konto verknüpft.",
   failure: "Die Orientierung konnte nicht verknüpft werden. Verwende dieselbe E-Mail-Adresse und prüfe, ob der Link noch gültig ist.",
   viewOrientation: "Meine Orientierung ansehen",
+  openSpace: "Kostenlosen Bereich öffnen",
   freeAccountNote: "Dein Konto bleibt kostenlos. Es wurde keine kostenpflichtige Begleitung aktiviert.",
 };
 
