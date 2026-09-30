@@ -55,7 +55,7 @@ jobs:
 
     steps:
       - name: Review AlmaGo checkpoint immediately
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         env:
           CHECKPOINT_COMMENT_ID: ${{ github.event.comment.id }}
           CHECKPOINT_CREATED_AT: ${{ github.event.comment.created_at }}
