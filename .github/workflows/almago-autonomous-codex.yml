@@ -60,7 +60,7 @@ jobs:
 
       - name: Read and validate PR metadata
         id: pr
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         env:
           PR_NUMBER: ${{ env.PR_NUMBER }}
           EXPECTED_HEAD: ${{ env.EXPECTED_HEAD }}
@@ -93,7 +93,7 @@ jobs:
             core.setOutput("head_sha", pr.head.sha);
 
       - name: Checkout PR branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: ${{ steps.pr.outputs.head_ref }}
           fetch-depth: 0
@@ -182,7 +182,7 @@ jobs:
           git diff --check
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
@@ -232,7 +232,7 @@ jobs:
           test -s almago.patch
 
       - name: Upload implementation patch
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: almago-patch-${{ github.run_id }}
           path: almago.patch
@@ -249,7 +249,7 @@ jobs:
     steps:
       - name: Revalidate PR head
         id: pr
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         env:
           PR_NUMBER: ${{ env.PR_NUMBER }}
           EXPECTED_HEAD: ${{ env.EXPECTED_HEAD }}
@@ -277,14 +277,14 @@ jobs:
             core.setOutput("head_ref", pr.head.ref);
 
       - name: Checkout clean PR branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: ${{ steps.pr.outputs.head_ref }}
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Download implementation patch
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: almago-patch-${{ github.run_id }}
           path: .autonomous-artifact
@@ -317,7 +317,7 @@ jobs:
           echo "head_sha=$new_head" >> "$GITHUB_OUTPUT"
 
       - name: Publish delivery and request supervision
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         env:
           PR_NUMBER: ${{ env.PR_NUMBER }}
           NEW_HEAD: ${{ steps.delivery.outputs.head_sha }}
@@ -415,7 +415,7 @@ jobs:
           rm -f "$log_path"
           echo "classification=$classification" >> "$GITHUB_OUTPUT"
       - name: Schedule bounded technical recovery
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         env:
           PR_NUMBER: ${{ env.PR_NUMBER }}
           EXPECTED_HEAD: ${{ env.EXPECTED_HEAD }}

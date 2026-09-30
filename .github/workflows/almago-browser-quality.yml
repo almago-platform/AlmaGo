@@ -43,8 +43,8 @@ jobs:
       NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
       NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
@@ -56,7 +56,7 @@ jobs:
         run: npm install --no-save --package-lock=false @playwright/test@1.55.0 @axe-core/playwright@4.10.2 @lhci/cli@0.15.1
 
       - name: Cache Playwright browser
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.cache/ms-playwright
           key: ${{ runner.os }}-playwright-1.55.0-chromium
@@ -106,7 +106,7 @@ jobs:
 
       - name: Store browser-quality artifacts
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: almago-browser-quality-${{ github.run_id }}
           path: |

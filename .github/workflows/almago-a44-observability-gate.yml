@@ -26,7 +26,7 @@ jobs:
     steps:
       - name: Verify exact-main activation and prerequisites
         id: preflight
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         env:
           CONFIRMATION: ${{ inputs.confirmation }}
           OBS_ENABLED: ${{ env.ALMAGO_OBSERVABILITY_ENABLED }}
@@ -112,11 +112,11 @@ jobs:
               mainSha,
             );
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           ref: ${{ steps.preflight.outputs.main_sha }}
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
@@ -144,7 +144,7 @@ jobs:
           node --test tests/telemetry-boundary.test.mjs
 
       - name: Close A44 with exact-main evidence
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         env:
           OBS_PROVIDER: ${{ env.ALMAGO_OBSERVABILITY_PROVIDER }}
           EXPECTED_MAIN_SHA: ${{ steps.preflight.outputs.main_sha }}

@@ -26,16 +26,16 @@ jobs:
       base: ${{ steps.pick.outputs.base }}
       deliver: ${{ steps.provider.outputs.ready }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           persist-credentials: false
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
       - name: Enforce daily AI task cap
         id: budget
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         env:
           MAX_DAILY_TASKS: ${{ vars.ALMAGO_MAX_AI_TASKS_PER_DAY }}
         with:
@@ -73,7 +73,7 @@ jobs:
       - name: Pick one ready issue
         if: steps.budget.outputs.allowed == 'true'
         id: pick
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         env:
           REQUESTED_ISSUE: ${{ inputs.issue_number }}
         with:
@@ -154,7 +154,7 @@ jobs:
 
       - name: Return task to queue when free providers are temporarily unavailable
         if: steps.pick.outputs.number != '' && steps.provider.outputs.retryable == 'true'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         env:
           ISSUE_NUMBER: ${{ steps.pick.outputs.number }}
         with:
@@ -199,7 +199,7 @@ jobs:
           npm run build
       - name: Store verified patch
         if: steps.pick.outputs.number != '' && steps.provider.outputs.retryable != 'true'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: almago-ai-proposal-${{ github.run_id }}
           path: |
@@ -211,7 +211,7 @@ jobs:
           retention-days: 1
       - name: Report proposal failure
         if: failure() && steps.pick.outputs.number != ''
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         env:
           ISSUE_NUMBER: ${{ steps.pick.outputs.number }}
         with:
@@ -245,11 +245,11 @@ jobs:
       issues: write
       pull-requests: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           ref: ${{ needs.propose.outputs.base }}
           persist-credentials: false
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: almago-ai-proposal-${{ github.run_id }}
           path: .ai-artifact
@@ -270,7 +270,7 @@ jobs:
           git -c http.extraheader="AUTHORIZATION: basic $(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)" push origin "HEAD:refs/heads/$branch"
           echo "head=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
       - name: Open PR and request canonical CI
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         env:
           ISSUE_NUMBER: ${{ needs.propose.outputs.number }}
           HEAD_SHA: ${{ steps.commit.outputs.head }}
@@ -302,7 +302,7 @@ jobs:
             core.info("PR #" + pr.number + " opened at verified HEAD " + head);
       - name: Report delivery failure
         if: failure()
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         env:
           ISSUE_NUMBER: ${{ needs.propose.outputs.number }}
         with:
