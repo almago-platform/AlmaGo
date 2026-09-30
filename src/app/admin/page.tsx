@@ -133,7 +133,7 @@ export default async function AdminEntry() {
         </Card>
 
         <Card className="bg-[var(--surface-subtle)] shadow-none">
-          <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">Ordre de traitement</p>
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-700">Ordre de traitement</p>
           <ol className="mt-5 space-y-4 text-sm leading-6 text-slate-600">
             <li className="flex gap-3">
               <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-[var(--brand)] text-xs font-bold text-white">1</span>
