@@ -1,0 +1,34 @@
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { join } from "node:path";
+import test from "node:test";
+
+const root = fileURLToPath(new URL("../", import.meta.url));
+const read = (path) => readFileSync(join(root, path), "utf8");
+
+const form = read("src/components/orientation/PublicOrientationForm.tsx");
+const engine = read("src/lib/orientation/diagnostic.ts");
+const copy = read("src/content/orientation-diagnostic-copy.ts");
+
+test("public orientation summary renders the deterministic diagnostic", () => {
+  assert.match(form, /buildPublicOrientationDiagnostic/);
+  assert.match(form, /diagnostic\.paths/);
+  assert.match(form, /diagnostic\.priorities/);
+  assert.match(form, /diagnostic\.checks/);
+  assert.match(form, /orientationDiagnosticCopy/);
+});
+
+test("diagnostic engine is pure and contains no database or network calls", () => {
+  assert.doesNotMatch(engine, /supabase|fetch\s*\(|service_role|process\.env/i);
+  assert.match(engine, /paths:\s*paths\.slice\(0, 3\)/);
+  assert.match(engine, /ruleTrace/);
+});
+
+test("diagnostic copy exists for all supported locales and avoids guarantees", () => {
+  for (const locale of ["fr", "ar", "en", "de"]) {
+    assert.match(copy, new RegExp(`const ${locale}: DiagnosticCopy`));
+  }
+  assert.doesNotMatch(copy, /100%|garanti(?:e)? d.admission|guaranteed admission/i);
+  assert.match(copy, /ni une décision d’admission, ni une décision de visa/);
+});

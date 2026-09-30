@@ -92,8 +92,8 @@ const fr: OrientationCopy = {
     eyebrow: "Votre point de départ",
     title: "Voici ce que vous nous avez indiqué.",
     text: "Ceci est un récapitulatif de vos réponses, pas encore une évaluation d’admission.",
-    noticeTitle: "Étape suivante : le diagnostic",
-    noticeText: "P2.2 utilisera ces informations pour expliquer les pistes à explorer, les éléments manquants et ce qui doit encore être vérifié.",
+    noticeTitle: "À garder en tête",
+    noticeText: "Cette orientation aide à organiser votre recherche. Les critères exacts doivent être vérifiés sur les sources des programmes et organismes concernés.",
     edit: "Modifier mes réponses",
     restart: "Recommencer",
     labels: {
@@ -140,8 +140,8 @@ const ar: OrientationCopy = {
     eyebrow: "نقطة البداية",
     title: "هذا ملخص المعلومات التي أدخلتها.",
     text: "هذا ملخص فقط، وليس قرار قبول أو تقييمًا نهائيًا.",
-    noticeTitle: "الخطوة التالية: التشخيص",
-    noticeText: "في P2.2 سنستخدم هذه المعلومات لشرح المسارات التي يمكن استكشافها وما ينقص وما يحتاج إلى تحقق.",
+    noticeTitle: "مهم",
+    noticeText: "هذا التوجيه يساعد على تنظيم البحث. الشروط الدقيقة يجب التحقق منها من المصادر الرسمية للبرامج والجهات المعنية.",
     edit: "تعديل إجاباتي",
     restart: "البدء من جديد",
     labels: {
@@ -188,8 +188,8 @@ const en: OrientationCopy = {
     eyebrow: "Your starting point",
     title: "Here is what you told us.",
     text: "This is a summary of your answers, not an admission assessment.",
-    noticeTitle: "Next: your diagnostic",
-    noticeText: "P2.2 will use these answers to explain paths to explore, missing information and points that still need checking.",
+    noticeTitle: "Keep in mind",
+    noticeText: "This orientation helps organise your research. Exact criteria still need to be checked on official programme and authority sources.",
     edit: "Edit my answers",
     restart: "Start again",
     labels: {
@@ -236,8 +236,8 @@ const de: OrientationCopy = {
     eyebrow: "Dein Ausgangspunkt",
     title: "Das hast du uns angegeben.",
     text: "Dies ist nur eine Zusammenfassung deiner Antworten, noch keine Zulassungsbewertung.",
-    noticeTitle: "Als Nächstes: dein Check",
-    noticeText: "P2.2 nutzt diese Angaben, um mögliche Wege, fehlende Informationen und noch zu prüfende Punkte zu erklären.",
+    noticeTitle: "Wichtig",
+    noticeText: "Diese Orientierung hilft, deine Recherche zu strukturieren. Genaue Kriterien müssen in offiziellen Programm- und Behördenquellen geprüft werden.",
     edit: "Antworten bearbeiten",
     restart: "Neu beginnen",
     labels: {
