@@ -45,12 +45,20 @@ export function OrientationClaimCard({ token }: { token: string }) {
             {copy.success}
           </p>
           <p className="mt-3 text-sm leading-6 text-[var(--muted)]">{copy.freeAccountNote}</p>
-          <Link
-            href={`/orientation/report/${encodeURIComponent(token)}`}
-            className="mt-5 inline-flex rounded-[var(--radius-control)] bg-[var(--brand)] px-5 py-2.5 text-sm font-bold text-white"
-          >
-            {copy.viewOrientation}
-          </Link>
+          <div className="mt-5 flex flex-col gap-2 sm:flex-row">
+            <Link
+              href="/prospect"
+              className="inline-flex min-h-11 items-center justify-center rounded-[var(--radius-control)] bg-[var(--brand)] px-5 text-sm font-bold text-white"
+            >
+              {copy.openSpace}
+            </Link>
+            <Link
+              href={`/orientation/report/${encodeURIComponent(token)}`}
+              className="inline-flex min-h-11 items-center justify-center rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface)] px-5 text-sm font-bold text-[var(--foreground)]"
+            >
+              {copy.viewOrientation}
+            </Link>
+          </div>
         </div>
       ) : null}
 
