@@ -12,7 +12,11 @@ const form = read("src/components/orientation/PublicOrientationForm.tsx");
 const publicOrientation = read("src/lib/orientation/public.ts");
 const copy = read("src/content/orientation-copy.ts");
 const home = read("src/app/page.tsx");
+const header = read("src/components/public/HomeHeader.tsx");
 const hero = read("src/components/public/HomeHero.tsx");
+const journey = read("src/components/public/HomeJourneySection.tsx");
+const tools = read("src/components/public/HomeTrustSection.tsx");
+const closing = read("src/components/public/HomeClosing.tsx");
 const nativeCopy = read("src/content/native-copy.ts");
 const sitemap = read("src/app/sitemap.ts");
 const env = read(".env.example");
@@ -22,6 +26,15 @@ test("public orientation is feature-gated and does not alter the current homepag
   assert.match(page, /notFound\(\)/);
   assert.match(home, /phase2Enabled \? "\/orientation" : "\/signup"/);
   assert.match(hero, /primaryHref/);
+  assert.match(home, /<HomeHeader phase2Enabled=\{phase2Enabled\} \/>/);
+  assert.match(header, /phase2Enabled \? "\/orientation" : "\/signup"/);
+  assert.match(header, /nav\.orientation/);
+  assert.match(home, /<HomeJourneySection[\s\S]*primaryHref=\{phase2Enabled \? "\/orientation" : "\/signup"\}/);
+  assert.match(home, /<HomeTrustSection[\s\S]*primaryHref=\{phase2Enabled \? "\/orientation" : "\/signup"\}/);
+  assert.match(home, /<HomeFinalCta[\s\S]*primaryHref=\{phase2Enabled \? "\/orientation" : "\/signup"\}/);
+  assert.match(journey, /primaryHref = "\/signup"/);
+  assert.match(tools, /index === 0 \? primaryHref/);
+  assert.match(closing, /primaryHref = "\/signup"/);
   assert.match(env, /ALMAGO_PHASE2_ENABLED=false/);
 });
 
@@ -67,6 +80,10 @@ test("orientation provides native copy for all supported locales", () => {
   assert.match(nativeCopy, /orientationPrimary: "ابدأ توجيهي المجاني"/);
   assert.match(nativeCopy, /orientationPrimary: "Start my free orientation"/);
   assert.match(nativeCopy, /orientationPrimary: "Kostenlose Orientierung starten"/);
+  assert.match(nativeCopy, /orientation: "Orientation gratuite"/);
+  assert.match(nativeCopy, /orientation: "توجيه مجاني"/);
+  assert.match(nativeCopy, /orientation: "Free orientation"/);
+  assert.match(nativeCopy, /orientation: "Kostenlose Orientierung"/);
 });
 
 test("orientation is added to the sitemap only when Phase 2 is enabled", () => {
