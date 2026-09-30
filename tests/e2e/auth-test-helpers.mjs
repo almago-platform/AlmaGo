@@ -29,6 +29,9 @@ export async function loginWithRedactedPassword(
   expectedArea = "student",
 ) {
   await page.goto("/login", { waitUntil: "domcontentloaded" });
+  await expect(page.locator('form[data-auth-ready="true"]')).toBeVisible({
+    timeout: 20_000,
+  });
 
   const passwordInput = page.getByLabel("Mot de passe");
   await page.getByLabel("Email").fill(email);
