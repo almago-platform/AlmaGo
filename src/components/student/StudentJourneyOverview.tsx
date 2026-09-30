@@ -30,7 +30,7 @@ export function StudentJourneyOverview({
     <section aria-labelledby="student-journey-title" className="mt-7 overflow-hidden rounded-[1rem] border border-[var(--border)] bg-[var(--surface)] shadow-[0_24px_64px_-54px_rgba(28,33,36,0.45)]">
       <div className={`grid gap-5 border-b border-[var(--border)] bg-[var(--surface-subtle)] px-5 py-5 sm:px-6 ${showProgressSummary ? "lg:grid-cols-[minmax(0,1fr)_17rem] lg:items-end" : ""}`}>
         <div>
-          <p className="text-[0.68rem] font-bold uppercase tracking-[0.15em] text-[var(--brand)]">{copy.eyebrow}</p>
+          <p className="text-[0.68rem] font-bold uppercase tracking-[0.15em] text-[var(--brand-strong)]">{copy.eyebrow}</p>
           <h2 id="student-journey-title" className="editorial-accent mt-2 text-[1.7rem] leading-[1.08] text-[var(--foreground)] sm:text-[2rem]">
             {copy.title}
           </h2>
