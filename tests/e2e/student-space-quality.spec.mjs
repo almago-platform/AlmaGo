@@ -52,7 +52,7 @@ test.describe("authenticated Student Space quality", () => {
 
       await expect(page.locator("html")).toHaveAttribute("lang", "ar");
       await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
-      await expect(page.getByRole("link", { name: "الصفحة الرئيسية لـ AlmaGo" }).first()).toBeVisible();
+      await expect(page.getByRole("link", { name: "الصفحة الرئيسية لـ Campus Allemagne" }).first()).toBeVisible();
 
       if (target.name === "project") {
         await expect(page.getByRole("heading", { name: "حدّد هدفك في ألمانيا" })).toBeVisible();
