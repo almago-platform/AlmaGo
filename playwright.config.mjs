@@ -9,7 +9,7 @@ export default defineConfig({
   outputDir: "artifacts/playwright",
   use: {
     baseURL: process.env.ALMAGO_BASE_URL || "http://127.0.0.1:3000",
-    trace: "retain-on-failure",
+    trace: process.env.ALMAGO_E2E_REDACT_SECRETS === "true" ? "off" : "retain-on-failure",
     screenshot: "only-on-failure",
   },
   projects: [

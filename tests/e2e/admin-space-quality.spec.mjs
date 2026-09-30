@@ -1,6 +1,7 @@
 import { mkdirSync } from "node:fs";
 import AxeBuilder from "@axe-core/playwright";
 import { test, expect } from "@playwright/test";
+import { loginWithRedactedPassword } from "./auth-test-helpers.mjs";
 
 const adminEmail = process.env.ALMAGO_E2E_ADMIN_EMAIL;
 const adminPassword = process.env.ALMAGO_E2E_ADMIN_PASSWORD;
@@ -23,11 +24,7 @@ test.describe("authenticated Admin Space quality", () => {
   test.skip(!configured, "Admin Space quality requires the dedicated admin E2E account.");
 
   test("all admin pages fit, remain accessible and capture responsive evidence", async ({ page }, testInfo) => {
-    await page.goto("/login", { waitUntil: "networkidle" });
-    await page.getByLabel("Email").fill(adminEmail);
-    await page.getByLabel("Mot de passe").fill(adminPassword);
-    await page.getByRole("button", { name: "Se connecter" }).click();
-    await page.waitForURL(/\/student(?:\/.*)?$/, { timeout: 20_000 });
+    await loginWithRedactedPassword(page, adminEmail, adminPassword);
 
     for (const target of pages) {
       const response = await page.goto(target.path, { waitUntil: "networkidle" });
