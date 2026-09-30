@@ -195,7 +195,7 @@ create policy "qualified prospect published offers read"
       and exists (
         select 1
         from public.commercial_offer_versions v
-        where v.offer_id = id
+        where v.offer_id = public.commercial_offers.id
           and v.status = 'published'::public.commercial_offer_version_status
       )
     )
