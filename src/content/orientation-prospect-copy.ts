@@ -20,6 +20,10 @@ export type OrientationProspectCopy = {
     success: string;
     failure: string;
     invalidEmail: string;
+    emailSubmit: string;
+    sendingEmail: string;
+    emailSent: string;
+    deliveryFailure: string;
   };
 };
 
@@ -43,6 +47,10 @@ const fr: OrientationProspectCopy = {
     success: "Orientation sauvegardée. Aucun compte n’a été créé.",
     failure: "La sauvegarde n’a pas fonctionné. Votre résultat reste disponible dans cet onglet.",
     invalidEmail: "Indiquez une adresse e-mail valide.",
+    emailSubmit: "Recevoir mon orientation par e-mail",
+    sendingEmail: "Envoi…",
+    emailSent: "Orientation sauvegardée et e-mail envoyé. Aucun compte n’a été créé.",
+    deliveryFailure: "Orientation sauvegardée, mais l’e-mail n’a pas pu être envoyé. Vous pouvez toujours enregistrer le rapport en PDF depuis cette page.",
   },
 };
 
@@ -66,6 +74,10 @@ const ar: OrientationProspectCopy = {
     success: "تم حفظ التوجيه. لم يتم إنشاء أي حساب.",
     failure: "تعذر الحفظ. نتيجتك ما زالت متاحة في هذا التبويب.",
     invalidEmail: "أدخل بريدًا إلكترونيًا صحيحًا.",
+    emailSubmit: "إرسال توجيهي إلى بريدي الإلكتروني",
+    sendingEmail: "جارٍ الإرسال…",
+    emailSent: "تم حفظ التوجيه وإرسال البريد الإلكتروني. لم يتم إنشاء أي حساب.",
+    deliveryFailure: "تم حفظ التوجيه، لكن تعذر إرسال البريد الإلكتروني. يمكنك ما زلت حفظ التقرير بصيغة PDF من هذه الصفحة.",
   },
 };
 
@@ -89,6 +101,10 @@ const en: OrientationProspectCopy = {
     success: "Orientation saved. No account was created.",
     failure: "Saving failed. Your result is still available in this browser tab.",
     invalidEmail: "Enter a valid email address.",
+    emailSubmit: "Email me my orientation",
+    sendingEmail: "Sending…",
+    emailSent: "Orientation saved and email sent. No account was created.",
+    deliveryFailure: "Orientation saved, but the email could not be sent. You can still save the report as a PDF from this page.",
   },
 };
 
@@ -112,6 +128,10 @@ const de: OrientationProspectCopy = {
     success: "Orientierung gespeichert. Es wurde kein Konto erstellt.",
     failure: "Die Speicherung ist fehlgeschlagen. Dein Ergebnis bleibt in diesem Browser-Tab verfügbar.",
     invalidEmail: "Gib eine gültige E-Mail-Adresse ein.",
+    emailSubmit: "Orientierung per E-Mail erhalten",
+    sendingEmail: "Wird gesendet…",
+    emailSent: "Orientierung gespeichert und E-Mail gesendet. Es wurde kein Konto erstellt.",
+    deliveryFailure: "Orientierung gespeichert, aber die E-Mail konnte nicht gesendet werden. Du kannst den Bericht weiterhin auf dieser Seite als PDF speichern.",
   },
 };
 
