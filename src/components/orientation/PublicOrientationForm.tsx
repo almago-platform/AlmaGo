@@ -6,11 +6,19 @@ import { BrandLogo } from "@/components/brand/BrandLogo";
 import { LanguageSwitcher } from "@/components/i18n/LanguageSwitcher";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { orientationCopy } from "@/content/orientation-copy";
+import { orientationDiagnosticCopy } from "@/content/orientation-diagnostic-copy";
 import {
   localizePreferredCity,
   localizeProfileOptions,
   studentProfileCopy,
 } from "@/content/student-profile-copy";
+import { buildPublicOrientationDiagnostic, type PublicDiagnosticStatus } from "@/lib/orientation/diagnostic";
+import {
+  PUBLIC_ORIENTATION_SESSION_KEY as SESSION_KEY,
+  createEmptyPublicOrientationAnswers,
+  restorePublicOrientationAnswers,
+  type PublicOrientationAnswers as Answers,
+} from "@/lib/orientation/public";
 import {
   budgetOptions,
   degreeOptions,
@@ -23,87 +31,61 @@ import {
   type SelectOption,
 } from "@/lib/student/profile-options";
 
-const SESSION_KEY = "almago_phase2_orientation_v1";
-
-type BacStatus = "" | "obtained" | "preparing";
-
-type Answers = {
-  bacStatus: BacStatus;
-  bacYear: string;
-  bacTrack: string;
-  generalAverage: string;
-  lastDiploma: string;
-  targetDegree: string;
-  targetField: string;
-  germanLevel: string;
-  englishLevel: string;
-  studyLanguage: string;
-  budgetRange: string;
-  preferredCities: string[];
-};
-
-type Step = 1 | 2 | 3 | 4 | 5;
-
-const emptyAnswers: Answers = {
-  bacStatus: "",
-  bacYear: "",
-  bacTrack: "",
-  generalAverage: "",
-  lastDiploma: "",
-  targetDegree: "",
-  targetField: "",
-  germanLevel: "",
-  englishLevel: "",
-  studyLanguage: "",
-  budgetRange: "",
-  preferredCities: [],
-};
-
-const stringKeys: (keyof Omit<Answers, "preferredCities">)[] = [
-  "bacStatus",
-  "bacYear",
-  "bacTrack",
-  "generalAverage",
-  "lastDiploma",
-  "targetDegree",
-  "targetField",
-  "germanLevel",
-  "englishLevel",
-  "studyLanguage",
-  "budgetRange",
-];
-
-function restoreAnswers(value: unknown): Answers {
-  if (!value || typeof value !== "object") return emptyAnswers;
-  const record = value as Record<string, unknown>;
-  const restored: Answers = { ...emptyAnswers };
-
-  for (const key of stringKeys) {
-    const item = record[key];
-    if (typeof item === "string") {
-      (restored as Record<string, string | string[]>)[key] = item;
-    }
-  }
-
-  if (Array.isArray(record.preferredCities)) {
-    restored.preferredCities = record.preferredCities
-      .filter((city): city is string => typeof city === "string" && preferredCityOptions.includes(city as (typeof preferredCityOptions)[number]))
-      .slice(0, 3);
-  }
-
-  return restored;
-}
-
 function localizedValue(value: string, options: readonly SelectOption[]) {
   return options.find((option) => option.value === value)?.label || value || "—";
+}
+
+function DiagnosticStatusBadge({ status, label }: { status: PublicDiagnosticStatus; label: string }) {
+  const className = status === "needs_verification"
+    ? "bg-amber-100 text-amber-900"
+    : status === "known_gap"
+      ? "bg-orange-100 text-orange-900"
+      : status === "needs_information"
+        ? "bg-slate-100 text-slate-700"
+        : "bg-blue-100 text-blue-900";
+
+  return <span className={`status-badge ${className}`}>{label}</span>;
+}
+
+function DiagnosticSection({
+  title,
+  items,
+  copy,
+}: {
+  title: string;
+  items: ReturnType<typeof buildPublicOrientationDiagnostic>["paths"];
+  copy: (typeof orientationDiagnosticCopy)[keyof typeof orientationDiagnosticCopy];
+}) {
+  if (!items.length) return null;
+
+  return (
+    <section>
+      <h3 className="text-base font-bold">{title}</h3>
+      <div className="mt-3 grid gap-3">
+        {items.map((item) => {
+          const message = copy.items[item.code];
+          return (
+            <article key={item.code} className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface)] p-4">
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <h4 className="font-semibold">{message.title}</h4>
+                <DiagnosticStatusBadge status={item.status} label={copy.status[item.status]} />
+              </div>
+              <p className="mt-1 text-sm leading-6 text-[var(--muted)]">{message.body}</p>
+            </article>
+          );
+        })}
+      </div>
+    </section>
+  );
 }
 
 export function PublicOrientationForm() {
   const { locale, direction } = useLocale();
   const copy = orientationCopy[locale];
   const profileCopy = studentProfileCopy[locale];
+  const diagnosticCopy = orientationDiagnosticCopy[locale];
   const headingRef = useRef<HTMLHeadingElement>(null);
-  const [answers, setAnswers] = useState<Answers>(emptyAnswers);
+  const [answers, setAnswers] = useState<Answers>(() => createEmptyPublicOrientationAnswers());
   const [step, setStep] = useState<Step>(1);
   const [error, setError] = useState("");
   const [hydrated, setHydrated] = useState(false);
@@ -115,6 +97,7 @@ export function PublicOrientationForm() {
   const levels = useMemo(() => localizeProfileOptions(locale, languageLevelOptions), [locale]);
   const studyLanguages = useMemo(() => localizeProfileOptions(locale, studyLanguageOptions), [locale]);
   const budgets = useMemo(() => localizeProfileOptions(locale, budgetOptions), [locale]);
+  const diagnostic = useMemo(() => buildPublicOrientationDiagnostic(answers), [answers]);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -122,7 +105,7 @@ export function PublicOrientationForm() {
         const stored = window.sessionStorage.getItem(SESSION_KEY);
         if (stored) {
           const parsed = JSON.parse(stored) as { answers?: unknown; step?: unknown };
-          setAnswers(restoreAnswers(parsed.answers));
+          setAnswers(restorePublicOrientationAnswers(parsed.answers));
           if (typeof parsed.step === "number" && parsed.step >= 1 && parsed.step <= 5) {
             setStep(parsed.step as Step);
           }
@@ -198,7 +181,7 @@ export function PublicOrientationForm() {
   }
 
   function restart() {
-    setAnswers(emptyAnswers);
+    setAnswers(createEmptyPublicOrientationAnswers());
     setStep(1);
     setError("");
     window.sessionStorage.removeItem(SESSION_KEY);
@@ -489,9 +472,44 @@ export function PublicOrientationForm() {
                   ))}
                 </dl>
 
-                <div className="mt-6 rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--brand-soft)] p-5">
-                  <h3 className="font-bold">{copy.summary.noticeTitle}</h3>
-                  <p className="mt-1 text-sm leading-6">{copy.summary.noticeText}</p>
+                <div className="mt-8 space-y-7">
+                  <section aria-labelledby="orientation-diagnostic-title">
+                    <p className="eyebrow">{diagnosticCopy.sections.headline}</p>
+                    <div className="mt-3 rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface-subtle)] p-5">
+                      <div className="flex flex-wrap items-start justify-between gap-3">
+                        <h3 id="orientation-diagnostic-title" className="text-lg font-bold">
+                          {diagnosticCopy.headlines[diagnostic.headlineCode].title}
+                        </h3>
+                        <DiagnosticStatusBadge
+                          status={diagnostic.overallStatus}
+                          label={diagnosticCopy.status[diagnostic.overallStatus]}
+                        />
+                      </div>
+                      <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
+                        {diagnosticCopy.headlines[diagnostic.headlineCode].body}
+                      </p>
+                    </div>
+                  </section>
+
+                  <DiagnosticSection
+                    title={diagnosticCopy.sections.paths}
+                    items={diagnostic.paths}
+                    copy={diagnosticCopy}
+                  />
+                  <DiagnosticSection
+                    title={diagnosticCopy.sections.priorities}
+                    items={diagnostic.priorities}
+                    copy={diagnosticCopy}
+                  />
+                  <DiagnosticSection
+                    title={diagnosticCopy.sections.checks}
+                    items={diagnostic.checks}
+                    copy={diagnosticCopy}
+                  />
+
+                  <div className="rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--brand-soft)] p-5 text-sm leading-6">
+                    {diagnosticCopy.disclaimer}
+                  </div>
                 </div>
 
                 <div className="mt-7 flex flex-wrap gap-3">
