@@ -14,6 +14,11 @@ test("P2.7C RPC is service-role-only and verifies the linked prospect owner", ()
     /create or replace function public\.append_phase2_orientation_qualification/i,
   );
   assert.match(migration, /security definer/i);
+  assert.match(migration, /set search_path = ''/i);
+  assert.match(
+    migration,
+    /create index if not exists prospect_qualifications_supersedes_idx[\s\S]*public\.prospect_qualifications \(supersedes_id\)/i,
+  );
   assert.match(migration, /select p\.user_id[\s\S]*from public\.prospects p[\s\S]*for update/i);
   assert.match(migration, /v_linked_user_id <> p_user_id/i);
   assert.match(
