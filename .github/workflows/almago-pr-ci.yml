@@ -41,7 +41,7 @@ jobs:
     steps:
       - name: Revalidate exact PR head
         id: pr
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -63,14 +63,14 @@ jobs:
             core.setOutput("head_sha", pr.head.sha);
 
       - name: Checkout PR
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: ${{ steps.pr.outputs.head_sha }}
           fetch-depth: 0
 
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
@@ -111,7 +111,7 @@ jobs:
 
       - name: Publish verified review checkpoint
         if: success()
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         env:
           VERIFIED_HEAD: ${{ steps.pr.outputs.head_sha }}
         with:
@@ -162,7 +162,7 @@ jobs:
 
       - name: Publish CI failure handoff
         if: failure()
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         env:
           FAILED_HEAD: ${{ steps.pr.outputs.head_sha }}
         with:
