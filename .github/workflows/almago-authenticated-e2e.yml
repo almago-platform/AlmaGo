@@ -115,6 +115,7 @@ jobs:
       ALMAGO_E2E_ADMIN_PASSWORD: ${{ secrets.ALMAGO_E2E_ADMIN_PASSWORD }}
       CI: "true"
       ALMAGO_E2E_TARGET: ${{ inputs.target || 'local' }}
+      ALMAGO_E2E_REDACT_SECRETS: "true"
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
@@ -394,6 +395,6 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: almago-auth-e2e-${{ github.run_id }}
-          path: artifacts/
+          path: artifacts/auth-e2e/
           retention-days: 7
           if-no-files-found: warn
