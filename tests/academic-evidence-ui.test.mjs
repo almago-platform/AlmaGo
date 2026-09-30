@@ -55,6 +55,11 @@ test("Admin evidence acceptance and replacement require explicit confirmation", 
   assert.match(adminPanel, /window\.confirm\("Confirmer que cette classification académique doit être marquée comme preuve à remplacer/);
 });
 
+test("Admin document evidence labels keep accessible contrast on subtle surfaces", () => {
+  assert.match(adminPanel, /text-slate-700">Message actuellement enregistré/);
+  assert.match(adminPanel, /text-slate-700">\s*Classification académique/);
+});
+
 test("Admin evidence write uses only the bounded backend contract and connected student/document context", () => {
   const saveEvidence = adminPanel.match(
     /async function saveEvidence\([\s\S]*?\n  \}\n\n  return \(\n    <div>/,
