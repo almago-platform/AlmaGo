@@ -8,7 +8,7 @@ import { BrandLogo } from "@/components/brand/BrandLogo";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { accountStateCopy } from "@/content/account-state-copy";
 
-export function ResetPasswordForm() {
+export function ResetPasswordForm({ orientationToken }: { orientationToken?: string }) {
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -30,7 +30,10 @@ export function ResetPasswordForm() {
         setError(t.invalid);
       } else {
         setMessage(t.saved);
-        setTimeout(() => router.push("/student"), 700);
+        const next = orientationToken
+          ? `/orientation/claim/${encodeURIComponent(orientationToken)}`
+          : "/student";
+        setTimeout(() => router.push(next), 700);
       }
     } catch {
       setError(t.genericError);

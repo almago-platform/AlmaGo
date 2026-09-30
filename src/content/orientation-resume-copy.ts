@@ -13,7 +13,7 @@ const fr: OrientationResumeCopy = {
   validUntil: "Lien sécurisé valable jusqu’au",
   home: "Retour à Campus Allemagne",
   signup: "Créer mon espace gratuit",
-  signupNote: "Facultatif. Le rattachement automatique de cette orientation au compte sera activé dans l’étape P2.4 avant toute mise en production.",
+  signupNote: "Facultatif. Si vous créez ou utilisez un compte avec ce lien, cette orientation y sera rattachée. Aucun accompagnement payant n’est activé.",
 };
 
 const ar: OrientationResumeCopy = {
@@ -21,7 +21,7 @@ const ar: OrientationResumeCopy = {
   validUntil: "الرابط الآمن صالح حتى",
   home: "العودة إلى Campus Allemagne",
   signup: "إنشاء مساحتي المجانية",
-  signupNote: "اختياري. سيتم تفعيل الربط التلقائي بين هذا التوجيه والحساب في مرحلة P2.4 قبل أي إطلاق عام.",
+  signupNote: "اختياري. إذا أنشأت حسابًا أو استخدمت حسابك عبر هذا الرابط، فسيتم ربط هذا التوجيه به. لا يتم تفعيل أي خدمة مدفوعة.",
 };
 
 const en: OrientationResumeCopy = {
@@ -29,7 +29,7 @@ const en: OrientationResumeCopy = {
   validUntil: "Secure link valid until",
   home: "Back to Campus Allemagne",
   signup: "Create my free space",
-  signupNote: "Optional. Automatic linking of this orientation to the account will be enabled in P2.4 before any public rollout.",
+  signupNote: "Optional. If you create or use an account through this link, this orientation will be linked to it. No paid support is activated.",
 };
 
 const de: OrientationResumeCopy = {
@@ -37,7 +37,7 @@ const de: OrientationResumeCopy = {
   validUntil: "Sicherer Link gültig bis",
   home: "Zurück zu Campus Allemagne",
   signup: "Kostenlosen Bereich erstellen",
-  signupNote: "Freiwillig. Die automatische Verknüpfung dieser Orientierung mit dem Konto wird in P2.4 vor jeder öffentlichen Aktivierung ergänzt.",
+  signupNote: "Freiwillig. Wenn du über diesen Link ein Konto erstellst oder nutzt, wird diese Orientierung damit verknüpft. Es wird keine kostenpflichtige Begleitung aktiviert.",
 };
 
 export const orientationResumeCopy: Record<Locale, OrientationResumeCopy> = { fr, ar, en, de };

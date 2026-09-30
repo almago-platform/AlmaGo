@@ -5,14 +5,29 @@ import { BrandLogo } from "@/components/brand/BrandLogo";
 import { LanguageSwitcher } from "@/components/i18n/LanguageSwitcher";
 import { accountStateCopy } from "@/content/account-state-copy";
 import { getRequestLocale } from "@/lib/i18n-server";
+import { resolveOrientationActivation } from "@/lib/orientation/account-activation";
+import { isPhase2AccountLinkingEnabled } from "@/lib/phase2/config";
 
 export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default async function ResetPasswordPage() {
-  const locale = await getRequestLocale();
+export default async function ResetPasswordPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ orientation_token?: string | string[] }>;
+}) {
+  const [locale, params] = await Promise.all([getRequestLocale(), searchParams]);
+  const rawToken = Array.isArray(params.orientation_token)
+    ? params.orientation_token[0]
+    : params.orientation_token;
+  const orientationActivation = isPhase2AccountLinkingEnabled()
+    ? await resolveOrientationActivation(rawToken)
+    : null;
   const t = accountStateCopy[locale].reset;
+  const loginHref = orientationActivation
+    ? `/login?orientation_token=${encodeURIComponent(orientationActivation.token)}`
+    : "/login";
 
   return (
     <main className="min-h-screen bg-[linear-gradient(180deg,#fffdf8_0%,#f7f4ec_48%,#f1ece4_100%)] px-4 py-5 text-[var(--foreground)] sm:px-6 sm:py-8 lg:px-8 lg:py-10">
@@ -58,12 +73,12 @@ export default async function ResetPasswordPage() {
             </Link>
             <div className="flex items-center gap-2">
               <LanguageSwitcher compact />
-              <Link href="/login" className="inline-flex min-h-11 items-center rounded-[var(--radius-control)] px-2 text-sm font-semibold text-[var(--muted)] hover:text-[var(--brand)]">
+              <Link href={loginHref} className="inline-flex min-h-11 items-center rounded-[var(--radius-control)] px-2 text-sm font-semibold text-[var(--muted)] hover:text-[var(--brand)]">
                 {t.login}
               </Link>
             </div>
           </div>
-          <ResetPasswordForm />
+          <ResetPasswordForm orientationToken={orientationActivation?.token} />
         </section>
       </div>
     </main>
