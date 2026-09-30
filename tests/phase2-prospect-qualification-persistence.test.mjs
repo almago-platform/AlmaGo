@@ -22,6 +22,26 @@ test("P2.7B database state model stays aligned with the deterministic domain", (
   }
 });
 
+test("qualification persistence rejects unknown semantic codes", () => {
+  for (const constraint of [
+    "prospect_qualifications_reason_codes_known",
+    "prospect_qualifications_missing_fields_known",
+    "prospect_qualifications_verification_known",
+    "prospect_qualifications_next_action_known",
+  ]) {
+    assert.match(migration, new RegExp(constraint));
+  }
+
+  for (const value of [
+    "ready_for_human_review",
+    "targetDegree",
+    "application_route_and_deadline",
+    "request_human_review",
+  ]) {
+    assert.match(migration, new RegExp(`'${value}'`));
+  }
+});
+
 test("qualification history is orientation-linked and append-only", () => {
   assert.match(migration, /create table if not exists public\.prospect_qualifications/i);
   assert.match(
