@@ -1,6 +1,10 @@
 import type { Locale } from "@/lib/i18n";
 
 export type ProspectOrientationUpdateCopy = {
+  introEyebrow: string;
+  introTitle: string;
+  introLead: string;
+  introNotice: string;
   eyebrow: string;
   title: string;
   text: string;
@@ -13,6 +17,10 @@ export type ProspectOrientationUpdateCopy = {
 };
 
 const fr: ProspectOrientationUpdateCopy = {
+  introEyebrow: "Mettre à jour mon projet",
+  introTitle: "Actualisez uniquement ce qui a changé.",
+  introLead: "Votre dernière orientation est préremplie. Modifiez votre Bac, votre moyenne, vos langues, votre budget ou votre objectif si nécessaire.",
+  introNotice: "L’enregistrement ajoute une nouvelle version à votre historique. Votre orientation précédente n’est pas écrasée.",
   eyebrow: "Mise à jour du projet",
   title: "Enregistrer cette nouvelle orientation",
   text: "Votre orientation précédente restera dans votre historique. Cette version deviendra la plus récente dans votre espace gratuit.",
@@ -25,6 +33,10 @@ const fr: ProspectOrientationUpdateCopy = {
 };
 
 const ar: ProspectOrientationUpdateCopy = {
+  introEyebrow: "تحديث مشروعي",
+  introTitle: "عدّل فقط المعلومات التي تغيّرت.",
+  introLead: "تم ملء آخر توجيه تلقائيًا. عدّل البكالوريا أو المعدل أو اللغات أو الميزانية أو الهدف عند الحاجة.",
+  introNotice: "عند الحفظ تُضاف نسخة جديدة إلى السجل، ولا يتم حذف التوجيه السابق أو الكتابة فوقه.",
   eyebrow: "تحديث المشروع",
   title: "حفظ هذا التوجيه الجديد",
   text: "سيبقى توجيهك السابق في السجل، وستصبح هذه النسخة هي الأحدث في مساحتك المجانية.",
@@ -37,6 +49,10 @@ const ar: ProspectOrientationUpdateCopy = {
 };
 
 const en: ProspectOrientationUpdateCopy = {
+  introEyebrow: "Update my project",
+  introTitle: "Change only what is new.",
+  introLead: "Your latest orientation is prefilled. Update your Baccalaureate, average, languages, budget or study goal where needed.",
+  introNotice: "Saving adds a new version to your history. Your previous orientation is not overwritten.",
   eyebrow: "Project update",
   title: "Save this new orientation",
   text: "Your previous orientation will stay in your history. This version will become the latest one in your free space.",
@@ -49,6 +65,10 @@ const en: ProspectOrientationUpdateCopy = {
 };
 
 const de: ProspectOrientationUpdateCopy = {
+  introEyebrow: "Projekt aktualisieren",
+  introTitle: "Ändere nur, was sich verändert hat.",
+  introLead: "Deine letzte Orientierung ist vorausgefüllt. Aktualisiere Baccalauréat, Durchschnitt, Sprachen, Budget oder Studienziel bei Bedarf.",
+  introNotice: "Beim Speichern wird eine neue Version zum Verlauf hinzugefügt. Die bisherige Orientierung wird nicht überschrieben.",
   eyebrow: "Projekt aktualisieren",
   title: "Diese neue Orientierung speichern",
   text: "Deine bisherige Orientierung bleibt im Verlauf. Diese Version wird die aktuelle Orientierung im kostenlosen Bereich.",
