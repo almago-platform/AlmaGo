@@ -22,7 +22,7 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: Validate exact A38 human approval
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
