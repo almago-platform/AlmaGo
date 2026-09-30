@@ -161,7 +161,7 @@ export function AppShell({
                           <span className={`grid h-7 w-7 shrink-0 place-items-center rounded-[var(--radius-control)] ${active ? "text-[var(--accent-strong)]" : "text-[var(--muted)]"}`}>{item.icon}</span>
                           <span className="min-w-0">
                             <span className="block text-[0.82rem] font-semibold [overflow-wrap:anywhere]">{item.label}</span>
-                            {item.helper && <span className="mt-0.5 block text-[10px] leading-3.5 text-[var(--muted)]">{item.helper}</span>}
+                            {item.helper && <span className="mt-0.5 block text-[10px] leading-3.5 text-[var(--brand-strong)]">{item.helper}</span>}
                           </span>
                           {active && <span aria-hidden="true" className="student-shell-active-edge absolute inset-y-2 left-0 w-0.5 rounded-r-full bg-[var(--accent)]" />}
                         </Link>
@@ -189,7 +189,7 @@ export function AppShell({
                           <span className={`grid h-7 w-7 shrink-0 place-items-center rounded-[var(--radius-control)] ${active ? "text-[var(--accent-strong)]" : "text-[var(--muted)]"}`}>{item.icon}</span>
                           <span className="min-w-0">
                             <span className="block text-[0.82rem] font-semibold [overflow-wrap:anywhere]">{item.label}</span>
-                            {item.helper && <span className="mt-0.5 block text-[10px] leading-3.5 text-[var(--muted)]">{item.helper}</span>}
+                            {item.helper && <span className="mt-0.5 block text-[10px] leading-3.5 text-[var(--brand-strong)]">{item.helper}</span>}
                           </span>
                           {active && <span aria-hidden="true" className="student-shell-active-edge absolute inset-y-2 left-0 w-0.5 rounded-r-full bg-[var(--accent)]" />}
                         </Link>
