@@ -11,6 +11,7 @@ import { orientationProspectCopy } from "@/content/orientation-prospect-copy";
 import { ProspectCaptureCard } from "@/components/orientation/ProspectCaptureCard";
 import { ProspectOrientationUpdateCard } from "@/components/orientation/ProspectOrientationUpdateCard";
 import { prospectDashboardCopy } from "@/content/prospect-dashboard-copy";
+import { prospectOrientationUpdateCopy } from "@/content/prospect-orientation-update-copy";
 import {
   localizePreferredCity,
   localizeProfileOptions,
@@ -102,6 +103,7 @@ export function PublicOrientationForm({
   const diagnosticCopy = orientationDiagnosticCopy[locale];
   const prospectCopy = orientationProspectCopy[locale];
   const prospectDashboard = prospectDashboardCopy[locale];
+  const updateCopy = prospectOrientationUpdateCopy[locale];
   const headingRef = useRef<HTMLHeadingElement>(null);
   const [answers, setAnswers] = useState<Answers>(() =>
     initialAnswers
@@ -265,11 +267,17 @@ export function PublicOrientationForm({
 
       <main id="orientation-main" className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-12">
         <section className="orientation-print-hide mx-auto max-w-3xl">
-          <p className="eyebrow">{copy.intro.eyebrow}</p>
-          <h1 className="page-title max-w-3xl">{copy.intro.title}</h1>
-          <p className="page-subtitle">{copy.intro.lead}</p>
+          <p className="eyebrow">
+            {authenticatedUpdate ? updateCopy.introEyebrow : copy.intro.eyebrow}
+          </p>
+          <h1 className="page-title max-w-3xl">
+            {authenticatedUpdate ? updateCopy.introTitle : copy.intro.title}
+          </h1>
+          <p className="page-subtitle">
+            {authenticatedUpdate ? updateCopy.introLead : copy.intro.lead}
+          </p>
           <div className="mt-5 rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--brand-soft)] px-4 py-3 text-sm leading-6">
-            {copy.intro.privacy}
+            {authenticatedUpdate ? updateCopy.introNotice : copy.intro.privacy}
           </div>
         </section>
 
