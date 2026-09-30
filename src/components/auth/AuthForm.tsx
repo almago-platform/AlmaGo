@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { FormEvent, useState } from "react";
+import { FormEvent, useState, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { buttonClassName } from "@/components/ui/Button";
@@ -10,6 +10,10 @@ import { useLocale } from "@/components/i18n/LocaleProvider";
 import { StudentEntryProgress } from "@/components/student/StudentEntryProgress";
 
 type Mode = "login" | "signup" | "forgot";
+
+const subscribeHydration = () => () => {};
+const getClientHydrationSnapshot = () => true;
+const getServerHydrationSnapshot = () => false;
 
 export function AuthForm({ initialMode = "login" }: { initialMode?: Mode }) {
   const [mode, setMode] = useState<Mode>(initialMode);
@@ -21,6 +25,11 @@ export function AuthForm({ initialMode = "login" }: { initialMode?: Mode }) {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const hydrated = useSyncExternalStore(
+    subscribeHydration,
+    getClientHydrationSnapshot,
+    getServerHydrationSnapshot,
+  );
   const router = useRouter();
   const { copy } = useLocale();
   const auth = copy.auth;
@@ -86,7 +95,7 @@ export function AuthForm({ initialMode = "login" }: { initialMode?: Mode }) {
         )}
       </div>
 
-      <form onSubmit={submit} aria-busy={loading} className="space-y-4 px-5 py-5 sm:px-7 sm:py-6">
+      <form onSubmit={submit} aria-busy={loading} data-auth-ready={hydrated ? "true" : "false"} className="space-y-4 px-5 py-5 sm:px-7 sm:py-6">
         {mode === "signup" && (
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="block text-sm font-semibold text-[var(--foreground)]">
@@ -173,7 +182,7 @@ export function AuthForm({ initialMode = "login" }: { initialMode?: Mode }) {
           </p>
         )}
 
-        <button type="submit" disabled={loading} className={buttonClassName("primary", "w-full min-h-12 justify-center py-3 text-base")}>
+        <button type="submit" disabled={loading || !hydrated} className={buttonClassName("primary", "w-full min-h-12 justify-center py-3 text-base")}>
           {loading
             ? auth.labels.loading
             : mode === "login"
