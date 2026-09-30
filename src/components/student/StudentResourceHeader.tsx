@@ -59,7 +59,7 @@ export function StudentResourceHeader({
                 className={
                   "inline-flex min-h-10 items-center rounded-[var(--radius-control)] px-3 py-2 text-xs font-semibold transition-colors " +
                   (active
-                    ? "bg-[var(--brand-soft)] text-[var(--brand)] ring-1 ring-[var(--brand-border)]"
+                    ? "bg-[var(--brand-soft)] text-[var(--brand-strong)] ring-1 ring-[var(--brand-border)]"
                     : "text-[var(--muted)] hover:bg-[var(--surface-subtle)] hover:text-[var(--foreground)]")
                 }
               >
