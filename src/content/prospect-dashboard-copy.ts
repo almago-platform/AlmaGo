@@ -28,7 +28,13 @@ export type ProspectDashboardCopy = {
     latestOrientation: string;
     possibilities: string;
     roadmap: string;
+    roadmapNow: string;
+    roadmapAfterResults: string;
+    roadmapVerifyNext: string;
     missing: string;
+    historyTitle: string;
+    historyText: string;
+    historyCurrent: string;
     updateProject: string;
     updateProjectText: string;
     updateProjectCta: string;
@@ -65,7 +71,13 @@ const fr: ProspectDashboardCopy = {
     latestOrientation: "Mon orientation",
     possibilities: "Mes possibilités",
     roadmap: "Ma roadmap",
+    roadmapNow: "À faire maintenant",
+    roadmapAfterResults: "Après vos résultats du Bac",
+    roadmapVerifyNext: "À vérifier ensuite",
     missing: "Ce qu’il me manque",
+    historyTitle: "Historique de mes orientations",
+    historyText: "Chaque mise à jour crée une nouvelle version. Les versions précédentes restent conservées.",
+    historyCurrent: "Version actuelle",
     updateProject: "Mettre à jour mon projet",
     updateProjectText: "Refaites le questionnaire lorsque votre Bac, votre moyenne, vos langues ou votre projet évoluent.",
     updateProjectCta: "Mettre à jour mon projet",
@@ -102,7 +114,13 @@ const ar: ProspectDashboardCopy = {
     latestOrientation: "توجيهي",
     possibilities: "إمكانياتي",
     roadmap: "خارطة الطريق",
+    roadmapNow: "ما يمكن القيام به الآن",
+    roadmapAfterResults: "بعد نتائج البكالوريا",
+    roadmapVerifyNext: "ما يجب التحقق منه لاحقًا",
     missing: "ما الذي ينقصني",
+    historyTitle: "سجل التوجيهات",
+    historyText: "كل تحديث ينشئ نسخة جديدة، مع الاحتفاظ بالنسخ السابقة.",
+    historyCurrent: "النسخة الحالية",
     updateProject: "تحديث مشروعي",
     updateProjectText: "أعد الاستبيان عندما تتغير نتيجة البكالوريا أو المعدل أو اللغة أو هدفك.",
     updateProjectCta: "تحديث مشروعي",
@@ -139,7 +157,13 @@ const en: ProspectDashboardCopy = {
     latestOrientation: "My orientation",
     possibilities: "My possibilities",
     roadmap: "My roadmap",
+    roadmapNow: "What to do now",
+    roadmapAfterResults: "After your Baccalaureate results",
+    roadmapVerifyNext: "What to verify next",
     missing: "What I still need",
+    historyTitle: "My orientation history",
+    historyText: "Each update creates a new version while earlier orientations remain available in your history.",
+    historyCurrent: "Current version",
     updateProject: "Update my project",
     updateProjectText: "Run the questionnaire again when your Baccalaureate results, average, languages or study goal change.",
     updateProjectCta: "Update my project",
@@ -176,7 +200,13 @@ const de: ProspectDashboardCopy = {
     latestOrientation: "Meine Orientierung",
     possibilities: "Meine Möglichkeiten",
     roadmap: "Meine Roadmap",
+    roadmapNow: "Was du jetzt tun kannst",
+    roadmapAfterResults: "Nach deinen Baccalauréat-Ergebnissen",
+    roadmapVerifyNext: "Danach prüfen",
     missing: "Was noch fehlt",
+    historyTitle: "Verlauf meiner Orientierungen",
+    historyText: "Jede Aktualisierung erstellt eine neue Version. Frühere Orientierungen bleiben erhalten.",
+    historyCurrent: "Aktuelle Version",
     updateProject: "Projekt aktualisieren",
     updateProjectText: "Fülle den Fragebogen erneut aus, wenn sich Bac-Ergebnis, Durchschnitt, Sprachen oder Studienziel ändern.",
     updateProjectCta: "Projekt aktualisieren",
