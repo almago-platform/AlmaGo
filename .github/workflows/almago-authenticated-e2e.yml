@@ -54,7 +54,7 @@ permissions:
 
 concurrency:
   group: almago-authenticated-e2e
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name != 'issue_comment' }}
 
 jobs:
   configuration:
