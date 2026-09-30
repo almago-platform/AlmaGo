@@ -48,10 +48,79 @@ create table if not exists public.prospect_qualifications (
 
   constraint prospect_qualifications_reason_codes_bounded
     check (cardinality(reason_codes) <= 32),
+  constraint prospect_qualifications_reason_codes_known
+    check (
+      reason_codes <@ array[
+        'orientation_missing',
+        'bac_status_missing',
+        'target_degree_missing',
+        'target_field_missing',
+        'study_language_missing',
+        'german_level_missing',
+        'english_level_missing',
+        'average_missing',
+        'prior_diploma_missing',
+        'bac_in_preparation',
+        'first_degree_incomplete',
+        'german_language_gap',
+        'english_language_gap',
+        'unsupported_project',
+        'verification_required',
+        'ready_for_human_review'
+      ]::text[]
+    ),
   constraint prospect_qualifications_missing_fields_bounded
     check (cardinality(missing_fields) <= 16),
+  constraint prospect_qualifications_missing_fields_known
+    check (
+      missing_fields <@ array[
+        'bacStatus',
+        'targetDegree',
+        'targetField',
+        'studyLanguage',
+        'germanLevel',
+        'englishLevel',
+        'generalAverage',
+        'lastDiploma'
+      ]::text[]
+    ),
   constraint prospect_qualifications_verification_bounded
     check (cardinality(verification_requirements) <= 32),
+  constraint prospect_qualifications_verification_known
+    check (
+      verification_requirements <@ array[
+        'future_bac_roadmap',
+        'bachelor_program_search',
+        'master_program_search',
+        'other_study_search',
+        'german_preparation',
+        'english_preparation',
+        'finish_bac',
+        'add_average',
+        'add_prior_diploma',
+        'complete_prior_degree',
+        'strengthen_german',
+        'strengthen_english',
+        'compare_verified_programs',
+        'academic_access',
+        'master_entry_requirements',
+        'language_requirement',
+        'budget_requirement',
+        'application_route_and_deadline'
+      ]::text[]
+    ),
+  constraint prospect_qualifications_next_action_known
+    check (
+      next_action is null
+      or next_action = any (
+        array[
+          'complete_project_information',
+          'continue_preparation',
+          'resolve_project_verification',
+          'request_human_review'
+        ]::text[]
+      )
+    ),
   constraint prospect_qualifications_automatic_never_qualified
     check (
       not (
