@@ -225,7 +225,7 @@ export default async function StudentEntry() {
                 </p>
                 <p className="mt-1 text-xs text-[var(--muted)]">{t.completedSteps}</p>
               </div>
-              {checklist.length > 0 && <span className="text-lg font-bold text-[var(--brand)]">{progression}%</span>}
+              {checklist.length > 0 && <span className="text-lg font-bold text-[var(--brand-strong)]">{progression}%</span>}
             </div>
 
             {checklist.length > 0 && (
