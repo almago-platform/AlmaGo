@@ -51,6 +51,7 @@ test("StudentApplicationsPanel has localized progress tracking and RTL-aware lay
   assert.ok(applicationsPanel.includes('normalizedStatus === "withdrawn"'));
   assert.ok(applicationsCopy.includes("Le suivi de cette candidature a été retiré."));
   assert.doesNotMatch(applicationsPanel, /"withdrawn"\].*currentIndex/);
+  assert.ok(applicationsPanel.includes("application?.programs"));
 });
 
 test("StudentJourneyOverview calculates progress and shows localized visual badges", () => {
