@@ -6,6 +6,10 @@ const migration = readFileSync(
   "supabase/migrations/0040_phase2_offer_configuration_rpc.sql",
   "utf8",
 );
+const policyRepair = readFileSync(
+  "supabase/migrations/0041_phase2_offer_policy_correlation_fix.sql",
+  "utf8",
+);
 const route = readFileSync("src/app/api/admin/offers/route.ts", "utf8");
 const adminPage = readFileSync("src/app/admin/offers/page.tsx", "utf8");
 const editor = readFileSync("src/components/admin/CommercialOfferEditor.tsx", "utf8");
@@ -78,6 +82,21 @@ test("P2.8B published offers are RLS-gated by qualification and drafts remain ad
   assert.doesNotMatch(
     migration,
     /client_active|client_completed/i,
+  );
+});
+
+test("already-migrated environments receive an additive offer RLS correlation repair", () => {
+  assert.match(
+    policyRepair,
+    /drop policy if exists "qualified prospect published offers read"/i,
+  );
+  assert.match(
+    policyRepair,
+    /v\.offer_id = public\.commercial_offers\.id/i,
+  );
+  assert.doesNotMatch(
+    policyRepair,
+    /v\.offer_id = id\b/i,
   );
 });
 
