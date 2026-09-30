@@ -25,13 +25,13 @@ test("public orientation is feature-gated and does not alter the current homepag
   assert.match(env, /ALMAGO_PHASE2_ENABLED=false/);
 });
 
-test("orientation keeps P2.1 answers browser-only", () => {
+test("orientation keeps P2.1 questionnaire state browser-only", () => {
   assert.match(form, /sessionStorage/);
   assert.match(form, /PUBLIC_ORIENTATION_SESSION_KEY as SESSION_KEY/);
   assert.match(publicOrientation, /PUBLIC_ORIENTATION_SESSION_KEY = "almago_phase2_orientation_v1"/);
   assert.doesNotMatch(form, /fetch\s*\(/);
   assert.doesNotMatch(form, /supabase/i);
-  assert.doesNotMatch(form, /email/i);
+  assert.match(form, /prospectCaptureEnabled\s*\?\s*\([\s\S]*<ProspectCaptureCard/);
 });
 
 test("orientation reuses the existing controlled profile option sets", () => {
