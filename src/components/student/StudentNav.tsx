@@ -60,7 +60,7 @@ export function StudentNav() {
                 key={href}
                 href={href}
                 aria-current={active ? "page" : undefined}
-                className={`min-h-11 max-w-[11rem] shrink-0 snap-start whitespace-nowrap rounded-[var(--radius-control)] px-3 py-2.5 text-sm font-medium transition-colors duration-150 ${active ? "bg-[var(--brand-soft)] font-semibold text-[var(--brand)]" : "text-slate-600 hover:bg-slate-50 hover:text-slate-950"}`}
+                className={`min-h-11 max-w-[11rem] shrink-0 snap-start whitespace-nowrap rounded-[var(--radius-control)] px-3 py-2.5 text-sm font-medium transition-colors duration-150 ${active ? "bg-[var(--brand-soft)] font-semibold text-[var(--brand-strong)]" : "text-slate-600 hover:bg-slate-50 hover:text-slate-950"}`}
               >
                 {label}
               </Link>
