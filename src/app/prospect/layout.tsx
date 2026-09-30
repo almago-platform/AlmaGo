@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { AppShell } from "@/components/layout/AppShell";
+import { ProspectShell } from "@/components/layout/ProspectShell";
 import { getPhase2StudentAccess } from "@/lib/phase2/access";
 
 export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default async function StudentLayout({
+export default async function ProspectLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   const access = await getPhase2StudentAccess();
@@ -26,8 +26,8 @@ export default async function StudentLayout({
     redirect("/unauthorized");
   }
 
-  if (access.phase2Enabled && !access.canUseClientFeatures) {
-    redirect("/prospect");
+  if (!access.phase2Enabled || access.canUseClientFeatures) {
+    redirect("/student");
   }
 
   const { data: profile } = await supabase
@@ -37,8 +37,8 @@ export default async function StudentLayout({
     .maybeSingle();
 
   return (
-    <AppShell role="student" displayName={profile?.first_name || null}>
+    <ProspectShell displayName={profile?.first_name || null}>
       {children}
-    </AppShell>
+    </ProspectShell>
   );
 }

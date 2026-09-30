@@ -13,18 +13,25 @@ const migrations = migrationFiles.map((name) => readFileSync(join(migrationDir, 
 test("admin and student areas keep server-side authentication and role guards", () => {
   const adminLayout = read("src/app/admin/layout.tsx");
   const studentLayout = read("src/app/student/layout.tsx");
+  const authAccess = read("src/lib/auth/access.ts");
+  const phase2Access = read("src/lib/phase2/access.ts");
 
   assert.match(adminLayout, /auth\.getUser\(\)/);
   assert.match(adminLayout, /from\("user_roles"\)/);
   assert.match(adminLayout, /role\?\.role !== "admin"/);
   assert.match(adminLayout, /redirect\("\/unauthorized"\)/);
 
-  assert.match(studentLayout, /auth\.getUser\(\)/);
+  assert.match(authAccess, /auth\.getUser\(\)/);
+  assert.match(authAccess, /export async function getTechnicalStudentUser/);
+  assert.match(authAccess, /from\("user_roles"\)/);
+  assert.match(authAccess, /role\?\.role === "student"/);
+  assert.match(phase2Access, /getTechnicalStudentUser/);
+  assert.match(studentLayout, /getPhase2StudentAccess/);
   assert.match(studentLayout, /if \(!user\) redirect\("\/login"\)/);
   assert.match(studentLayout, /from\("user_roles"\)/);
   assert.match(studentLayout, /role\?\.role === "admin"/);
   assert.match(studentLayout, /redirect\("\/admin"\)/);
-  assert.match(studentLayout, /role\?\.role !== "student"/);
+  assert.match(studentLayout, /if \(!access\.isStudent\)/);
   assert.match(studentLayout, /redirect\("\/unauthorized"\)/);
 });
 

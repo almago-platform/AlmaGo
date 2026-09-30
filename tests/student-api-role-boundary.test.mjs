@@ -14,10 +14,15 @@ const studentRoutes = [
   "src/app/api/student/project/route.ts",
 ];
 
-test("shared auth access exposes an explicit student-role helper", () => {
+test("shared auth access separates technical student role from client entitlement", () => {
+  assert.match(access, /export async function getTechnicalStudentUser/);
   assert.match(access, /export async function getStudentUser/);
   assert.match(access, /from\("user_roles"\)/);
   assert.match(access, /role\?\.role === "student"/);
+  assert.match(access, /from\("customer_access"\)/);
+  assert.match(access, /client_active/);
+  assert.match(access, /client_completed/);
+  assert.match(access, /isPhase2AccessEnabled/);
 });
 
 test("student API routes require the shared student-role boundary", () => {
@@ -28,8 +33,9 @@ test("student API routes require the shared student-role boundary", () => {
   }
 });
 
-test("student document view keeps its intentional authenticated owner-or-admin boundary", () => {
+test("student document view also requires the shared client boundary", () => {
   const source = readFileSync("src/app/api/documents/[id]/view/route.ts", "utf8");
-  assert.match(source, /getAuthenticatedUser/);
-  assert.doesNotMatch(source, /getStudentUser/);
+  assert.match(source, /getStudentUser/);
+  assert.match(source, /Accès client requis/);
+  assert.doesNotMatch(source, /getAuthenticatedUser/);
 });
