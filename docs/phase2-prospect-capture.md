@@ -1,13 +1,30 @@
-# P2.3A — Prospect capture and printable report
+# P2.3 — Prospect capture, resumable report and transactional email
 
 Issue: #592
 
-## What ships in P2.3A
+## P2.3A — merged foundation
 
 - the orientation result can be printed/saved as a branded PDF through the browser print dialog;
-- optional prospect capture can persist the email + orientation without creating an Auth account;
+- optional prospect capture persists the email + orientation without creating an Auth account;
 - the capture endpoint recomputes the diagnostic server-side instead of trusting client result JSON;
 - direct `anon` access to `prospects` and `orientations` remains closed.
+
+## P2.3B — code path
+
+P2.3B adds a secure resume and email-delivery path while keeping production delivery disabled by default:
+
+- each newly persisted orientation receives a 256-bit random resume token;
+- only the SHA-256 token hash is stored;
+- resume links expire after 90 days;
+- the public report page resolves the token server-side and never queries by email or predictable database ID;
+- the report can again be printed/saved as PDF;
+- transactional delivery is behind its own feature gate;
+- the current provider adapter is Resend over its HTTPS API;
+- provider requests use an idempotency key derived from the persisted orientation ID;
+- a provider failure never deletes the saved orientation and never turns a successful persistence into a 500;
+- delivery metadata stores provider/message ID/timestamps, not provider error payloads.
+
+The emailed URL contains only the opaque resume token. It contains no email address, prospect ID or orientation ID.
 
 ## Server-only Supabase boundary
 
@@ -18,27 +35,54 @@ A separate `src/lib/supabase/privileged.ts` client:
 - imports `server-only`;
 - reads `SUPABASE_SECRET_KEY` only on the backend;
 - disables session persistence;
-- is used only by the bounded prospect submission route.
+- is used only by bounded Phase 2 server paths.
 
-Supabase currently recommends modern `sb_secret_*` keys for trusted backend components. These keys bypass RLS, so the route validates and bounds every submitted field before writing.
+Supabase modern `sb_secret_*` keys are intended for trusted backend components. These keys bypass RLS, so every public input is validated/bounded before any privileged query or write.
 
 ## Feature gates
 
-Both must be true before persistence can run:
+Prospect persistence requires:
 
 - `ALMAGO_PHASE2_ENABLED=true`
 - `ALMAGO_PHASE2_PROSPECT_CAPTURE_ENABLED=true`
 
-The capture flag remains false by default.
+Transactional delivery additionally requires:
 
-The backend additionally requires `SUPABASE_SECRET_KEY`. If missing, the route fails closed with 503.
+- `ALMAGO_PHASE2_EMAIL_DELIVERY_ENABLED=true`
+- `ALMAGO_TRANSACTIONAL_EMAIL_PROVIDER=resend`
+- `RESEND_API_KEY`
+- `ALMAGO_TRANSACTIONAL_EMAIL_FROM`
+- canonical HTTPS `SITE_URL`
+
+All Phase 2 gates remain false by default.
 
 ## Privacy boundary
 
 The capture UI is shown only after the diagnostic. It is optional and explicitly says no account is created.
 
-The submission records the notice marker `orientation-prospect-v1` inside the persisted orientation input. This is a temporary bounded audit marker; it is not marketing consent.
+The submission records the notice marker `orientation-prospect-v1` inside the persisted orientation input. This is a bounded audit marker; it is not marketing consent.
 
-## P2.3B still required
+The email is transactional and sent only because the visitor explicitly requested persistence/delivery. No marketing consent is inferred.
 
-P2.3 is not complete until a transactional email provider and sending domain are configured and the delivery path is tested. P2.3A deliberately does not claim that an email was sent.
+## Failure strategy
+
+Persistence is the primary operation.
+
+- database failure: request fails;
+- email provider disabled/unconfigured: orientation stays saved and the response reports delivery unavailable;
+- provider request failure: orientation stays saved and the UI tells the visitor that the report remains printable;
+- provider success: delivery metadata is recorded best-effort without exposing provider response bodies to the browser.
+
+## Production activation still blocked
+
+Do not enable public transactional delivery until all of the following are complete:
+
+1. Resend account/API key selected for the production owner;
+2. Campus Allemagne sending domain verified with the provider (SPF/DKIM as required);
+3. sender address approved;
+4. `SITE_URL` points to the final canonical HTTPS domain;
+5. A38/privacy language for prospect retention + transactional email is approved;
+6. one real FR and one real AR/RTL delivery test is completed;
+7. P2.4 account-linking consumes the resume token before the email CTA is exposed publicly.
+
+Therefore #592 remains open after code merge until operational delivery is proven.

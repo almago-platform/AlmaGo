@@ -83,7 +83,13 @@ function DiagnosticSection({
   );
 }
 
-export function PublicOrientationForm({ prospectCaptureEnabled = false }: { prospectCaptureEnabled?: boolean }) {
+export function PublicOrientationForm({
+  prospectCaptureEnabled = false,
+  emailDeliveryEnabled = false,
+}: {
+  prospectCaptureEnabled?: boolean;
+  emailDeliveryEnabled?: boolean;
+}) {
   const { locale, direction } = useLocale();
   const copy = orientationCopy[locale];
   const profileCopy = studentProfileCopy[locale];
@@ -533,7 +539,12 @@ export function PublicOrientationForm({ prospectCaptureEnabled = false }: { pros
                   <p className="mt-2 text-xs leading-5 text-[var(--muted)]">{prospectCopy.report.printHelp}</p>
                 </div>
 
-                {prospectCaptureEnabled ? <ProspectCaptureCard answers={answers} /> : null}
+                {prospectCaptureEnabled ? (
+                  <ProspectCaptureCard
+                    answers={answers}
+                    emailDeliveryEnabled={emailDeliveryEnabled}
+                  />
+                ) : null}
 
                 <div className="orientation-print-hide mt-7 flex flex-wrap gap-3">
                   <button
