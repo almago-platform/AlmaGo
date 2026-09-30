@@ -156,7 +156,7 @@ export function AppShell({
                           key={item.href}
                           href={item.href}
                           aria-current={active ? "page" : undefined}
-                          className={`group relative flex min-h-10 items-center gap-2.5 rounded-[var(--radius-control)] px-2.5 py-1.5 transition-colors duration-150 ${active ? "bg-[var(--brand-soft)] text-[var(--brand)] ring-1 ring-[var(--brand-border)]" : "text-[var(--muted)] hover:bg-[var(--surface-subtle)] hover:text-[var(--foreground)]"}`}
+                          className={`group relative flex min-h-10 items-center gap-2.5 rounded-[var(--radius-control)] px-2.5 py-1.5 transition-colors duration-150 ${active ? "bg-[var(--brand-soft)] text-[var(--brand-strong)] ring-1 ring-[var(--brand-border)]" : "text-[var(--muted)] hover:bg-[var(--surface-subtle)] hover:text-[var(--foreground)]"}`}
                         >
                           <span className={`grid h-7 w-7 shrink-0 place-items-center rounded-[var(--radius-control)] ${active ? "text-[var(--accent-strong)]" : "text-[var(--muted)]"}`}>{item.icon}</span>
                           <span className="min-w-0">
@@ -184,7 +184,7 @@ export function AppShell({
                           key={item.href}
                           href={item.href}
                           aria-current={active ? "page" : undefined}
-                          className={`group relative flex min-h-10 items-center gap-2.5 rounded-[var(--radius-control)] px-2.5 py-1.5 transition-colors duration-150 ${active ? "bg-[var(--brand-soft)] text-[var(--brand)] ring-1 ring-[var(--brand-border)]" : "text-[var(--muted)] hover:bg-[var(--surface-subtle)] hover:text-[var(--foreground)]"}`}
+                          className={`group relative flex min-h-10 items-center gap-2.5 rounded-[var(--radius-control)] px-2.5 py-1.5 transition-colors duration-150 ${active ? "bg-[var(--brand-soft)] text-[var(--brand-strong)] ring-1 ring-[var(--brand-border)]" : "text-[var(--muted)] hover:bg-[var(--surface-subtle)] hover:text-[var(--foreground)]"}`}
                         >
                           <span className={`grid h-7 w-7 shrink-0 place-items-center rounded-[var(--radius-control)] ${active ? "text-[var(--accent-strong)]" : "text-[var(--muted)]"}`}>{item.icon}</span>
                           <span className="min-w-0">
