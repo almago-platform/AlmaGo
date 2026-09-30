@@ -167,3 +167,58 @@ grant execute on function public.configure_phase2_commercial_offer(
   bigint,
   text
 ) to service_role;
+
+
+-- P2.8 is available only after qualification. Keep this boundary in RLS too,
+-- so an authenticated free prospect cannot bypass the product flow via direct API access.
+drop policy if exists "published commercial offers authenticated read"
+  on public.commercial_offers;
+drop policy if exists "published commercial offer versions authenticated read"
+  on public.commercial_offer_versions;
+
+create policy "qualified prospect published offers read"
+  on public.commercial_offers
+  for select
+  to authenticated
+  using (
+    (
+      exists (
+        select 1
+        from public.customer_access ca
+        where ca.user_id = (select auth.uid())
+          and ca.status in (
+            'qualified_prospect'::public.customer_lifecycle_status,
+            'payment_pending'::public.customer_lifecycle_status,
+            'paid_pending_validation'::public.customer_lifecycle_status
+          )
+      )
+      and exists (
+        select 1
+        from public.commercial_offer_versions v
+        where v.offer_id = id
+          and v.status = 'published'::public.commercial_offer_version_status
+      )
+    )
+    or (select public.is_admin())
+  );
+
+create policy "qualified prospect published offer versions read"
+  on public.commercial_offer_versions
+  for select
+  to authenticated
+  using (
+    (
+      status = 'published'::public.commercial_offer_version_status
+      and exists (
+        select 1
+        from public.customer_access ca
+        where ca.user_id = (select auth.uid())
+          and ca.status in (
+            'qualified_prospect'::public.customer_lifecycle_status,
+            'payment_pending'::public.customer_lifecycle_status,
+            'paid_pending_validation'::public.customer_lifecycle_status
+          )
+      )
+    )
+    or (select public.is_admin())
+  );
