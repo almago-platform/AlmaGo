@@ -45,7 +45,9 @@ export async function loginWithRedactedPassword(
       .not.toBe("pending");
     state = await authState(page, expectedArea);
   } finally {
-    await passwordInput.fill("").catch(() => null);
+    if (new URL(page.url()).pathname === "/login") {
+      await passwordInput.fill("", { timeout: 500 }).catch(() => null);
+    }
   }
 
   expect(
