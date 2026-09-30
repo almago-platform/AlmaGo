@@ -205,7 +205,7 @@ export default async function StudentEntry() {
                 {nextAction.detail}
               </p>
 
-              <div className="mt-4 inline-flex min-h-9 items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface-subtle)] px-3 text-xs font-bold text-[var(--muted)]">
+              <div className="mt-4 inline-flex min-h-9 items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface-subtle)] px-3 text-xs font-bold text-[var(--brand-strong)]">
                 <span aria-hidden="true" className={`h-2 w-2 rounded-full ${hasActionRequired ? "bg-[var(--accent)]" : "bg-[var(--brand)]"}`} />
                 {nextAction.owner}
               </div>
