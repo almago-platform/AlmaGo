@@ -13,7 +13,7 @@ type LegalDocument = {
   sections: readonly LegalSection[];
 };
 
-export const a38ReviewReady = false;
+export const a38ReviewReady: boolean = false;
 
 export const legalDocuments: Record<LegalDocumentKey, LegalDocument> = {
   imprint: {
