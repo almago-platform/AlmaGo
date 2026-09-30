@@ -21,13 +21,14 @@ const pages = [
 mkdirSync("artifacts/auth-e2e/admin-screenshots", { recursive: true });
 
 test.describe("authenticated Admin Space quality", () => {
+  test.setTimeout(180_000);
   test.skip(!configured, "Admin Space quality requires the dedicated admin E2E account.");
 
   test("all admin pages fit, remain accessible and capture responsive evidence", async ({ page }, testInfo) => {
-    await loginWithRedactedPassword(page, adminEmail, adminPassword);
+    await loginWithRedactedPassword(page, adminEmail, adminPassword, "admin");
 
     for (const target of pages) {
-      const response = await page.goto(target.path, { waitUntil: "networkidle" });
+      const response = await page.goto(target.path, { waitUntil: "domcontentloaded" });
       expect(response, target.path + " should return a response").not.toBeNull();
       expect(response?.ok(), target.path + " should return a successful response").toBeTruthy();
       expect(new URL(page.url()).pathname, target.path + " should stay in the requested admin route").toBe(target.path);

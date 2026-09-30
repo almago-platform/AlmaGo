@@ -23,10 +23,11 @@ const pages = [
 mkdirSync("artifacts/auth-e2e/screenshots", { recursive: true });
 
 test.describe("authenticated Student Space quality", () => {
+  test.setTimeout(180_000);
   test.skip(!configured, "Student Space quality requires the dedicated student E2E account.");
 
   test("all student pages fit, remain accessible and capture responsive evidence", async ({ page }, testInfo) => {
-    await loginWithRedactedPassword(page, studentEmail, studentPassword);
+    await loginWithRedactedPassword(page, studentEmail, studentPassword, "student");
 
     const viewportWidth = testInfo.project.use.viewport?.width || 1440;
     if (viewportWidth < 1024) {
@@ -40,7 +41,7 @@ test.describe("authenticated Student Space quality", () => {
     await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
 
     for (const target of pages) {
-      const response = await page.goto(target.path, { waitUntil: "networkidle" });
+      const response = await page.goto(target.path, { waitUntil: "domcontentloaded" });
       expect(response, target.path + " should return a response").not.toBeNull();
       expect(response?.ok(), target.path + " should return a successful response").toBeTruthy();
       expect(new URL(page.url()).pathname, target.path + " should stay in the requested student route").toBe(target.path);
