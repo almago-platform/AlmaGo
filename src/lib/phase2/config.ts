@@ -22,3 +22,11 @@ export function isPhase2EmailDeliveryEnabled(
   const raw = env.ALMAGO_PHASE2_EMAIL_DELIVERY_ENABLED?.trim().toLowerCase();
   return raw ? ENABLED_VALUES.has(raw) : false;
 }
+
+export function isPhase2AccountLinkingEnabled(
+  env: Record<string, string | undefined> = process.env,
+) {
+  if (!isPhase2AccessEnabled(env)) return false;
+  const raw = env.ALMAGO_PHASE2_ACCOUNT_LINKING_ENABLED?.trim().toLowerCase();
+  return raw ? ENABLED_VALUES.has(raw) : false;
+}
