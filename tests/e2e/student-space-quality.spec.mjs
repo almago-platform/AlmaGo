@@ -41,9 +41,13 @@ test.describe("authenticated Student Space quality", () => {
     await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
 
     for (const target of pages) {
-      const response = await page.goto(target.path, { waitUntil: "domcontentloaded" });
-      expect(response, target.path + " should return a response").not.toBeNull();
-      expect(response?.ok(), target.path + " should return a successful response").toBeTruthy();
+      if (new URL(page.url()).pathname !== target.path) {
+        const response = await page.goto(target.path, { waitUntil: "commit", timeout: 20_000 });
+        expect(response, target.path + " should return a response").not.toBeNull();
+        expect(response?.ok(), target.path + " should return a successful response").toBeTruthy();
+      }
+      await page.waitForURL((url) => url.pathname === target.path, { timeout: 20_000 });
+      await expect(page.locator("#main-content")).toBeVisible({ timeout: 20_000 });
       expect(new URL(page.url()).pathname, target.path + " should stay in the requested student route").toBe(target.path);
 
       await expect(page.locator("html")).toHaveAttribute("lang", "ar");
