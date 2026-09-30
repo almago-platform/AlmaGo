@@ -24,7 +24,7 @@ export default async function Home() {
       <a className={s.skipLink} href="#main-content">
         {copy.common.skip}
       </a>
-      <HomeHeader />
+      <HomeHeader phase2Enabled={phase2Enabled} />
       <main id="main-content" tabIndex={-1}>
         <HomeHero
           hero={copy.home.hero}
@@ -33,10 +33,22 @@ export default async function Home() {
         />
         <HomeQuickAccess quick={copy.home.quick} />
         <HomePhotoBand photo={copy.home.photo} />
-        <HomeJourneySection journey={copy.home.journey} />
-        <HomeTrustSection tools={copy.home.tools} />
+        <HomeJourneySection
+          journey={copy.home.journey}
+          primaryHref={phase2Enabled ? "/orientation" : "/signup"}
+          primaryLabel={phase2Enabled ? copy.home.hero.orientationPrimary : copy.home.journey.cta}
+        />
+        <HomeTrustSection
+          tools={copy.home.tools}
+          primaryHref={phase2Enabled ? "/orientation" : "/signup"}
+          primaryLabel={phase2Enabled ? copy.home.hero.orientationPrimary : undefined}
+        />
         <HomeFaqSection faq={copy.home.faq} />
-        <HomeFinalCta closing={copy.home.closing} />
+        <HomeFinalCta
+          closing={copy.home.closing}
+          primaryHref={phase2Enabled ? "/orientation" : "/signup"}
+          primaryLabel={phase2Enabled ? copy.home.hero.orientationPrimary : copy.home.closing.cta}
+        />
       </main>
       <HomeFooter footer={copy.home.footer} homeAria={copy.common.homeAria} />
     </div>
