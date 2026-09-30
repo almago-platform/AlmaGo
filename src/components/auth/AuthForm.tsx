@@ -11,13 +11,24 @@ import { StudentEntryProgress } from "@/components/student/StudentEntryProgress"
 
 type Mode = "login" | "signup" | "forgot";
 
+type OrientationActivation = {
+  token: string;
+  email: string;
+};
+
 const subscribeHydration = () => () => {};
 const getClientHydrationSnapshot = () => true;
 const getServerHydrationSnapshot = () => false;
 
-export function AuthForm({ initialMode = "login" }: { initialMode?: Mode }) {
+export function AuthForm({
+  initialMode = "login",
+  orientationActivation,
+}: {
+  initialMode?: Mode;
+  orientationActivation?: OrientationActivation;
+}) {
   const [mode, setMode] = useState<Mode>(initialMode);
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(orientationActivation?.email ?? "");
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -33,6 +44,16 @@ export function AuthForm({ initialMode = "login" }: { initialMode?: Mode }) {
   const router = useRouter();
   const { copy } = useLocale();
   const auth = copy.auth;
+  const activationToken = orientationActivation?.token;
+  const activationClaimPath = activationToken
+    ? `/orientation/claim/${encodeURIComponent(activationToken)}`
+    : null;
+  const loginHref = activationToken
+    ? `/login?orientation_token=${encodeURIComponent(activationToken)}`
+    : "/login";
+  const signupHref = activationToken
+    ? `/signup?orientation_token=${encodeURIComponent(activationToken)}`
+    : "/signup";
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -44,8 +65,11 @@ export function AuthForm({ initialMode = "login" }: { initialMode?: Mode }) {
       const supabase = createClient();
 
       if (mode === "forgot") {
+        const resetNext = activationToken
+          ? `/reset-password?orientation_token=${encodeURIComponent(activationToken)}`
+          : "/reset-password";
         const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: `${window.location.origin}/auth/callback?next=/reset-password`,
+          redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(resetNext)}`,
         });
         if (resetError) setError(auth.messages.resetError);
         else setMessage(auth.messages.resetSent);
@@ -53,15 +77,22 @@ export function AuthForm({ initialMode = "login" }: { initialMode?: Mode }) {
         const { data, error: signUpError } = await supabase.auth.signUp({
           email,
           password,
-          options: { data: { full_name: `${firstName} ${lastName}`.trim() } },
+          options: {
+            data: { full_name: `${firstName} ${lastName}`.trim() },
+            ...(activationClaimPath
+              ? {
+                  emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(activationClaimPath)}`,
+                }
+              : {}),
+          },
         });
         if (signUpError) setError(auth.messages.signupError);
-        else if (data.session) router.push("/student");
+        else if (data.session) router.push(activationClaimPath ?? "/student");
         else setMessage(auth.messages.checkEmail);
       } else {
         const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
         if (signInError) setError(auth.messages.invalidLogin);
-        else router.push("/student");
+        else router.push(activationClaimPath ?? "/student");
       }
     } catch {
       setError(auth.messages.generic);
@@ -132,6 +163,7 @@ export function AuthForm({ initialMode = "login" }: { initialMode?: Mode }) {
             autoComplete="email"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
+            readOnly={Boolean(orientationActivation)}
             placeholder={auth.placeholders.email}
             className="field mt-2 min-h-12 text-left"
           />
@@ -197,12 +229,12 @@ export function AuthForm({ initialMode = "login" }: { initialMode?: Mode }) {
         {mode === "signup" ? (
           <p className="text-slate-600">
             {auth.labels.alreadyAccount}{" "}
-            <Link href="/login" className="inline-flex min-h-11 items-center text-[var(--brand-strong)] underline decoration-current underline-offset-4 hover:text-[var(--foreground)]">
+            <Link href={loginHref} className="inline-flex min-h-11 items-center text-[var(--brand-strong)] underline decoration-current underline-offset-4 hover:text-[var(--foreground)]">
               {auth.labels.login}
             </Link>
           </p>
         ) : (
-          <Link href="/signup" className="inline-flex min-h-11 items-center text-[var(--brand-strong)] hover:text-[var(--foreground)]">
+          <Link href={signupHref} className="inline-flex min-h-11 items-center text-[var(--brand-strong)] hover:text-[var(--foreground)]">
             {auth.labels.createAccount}
           </Link>
         )}
