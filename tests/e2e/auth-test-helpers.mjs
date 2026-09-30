@@ -2,9 +2,15 @@ import { expect } from "@playwright/test";
 
 const invalidCredentialsMessage = "Email ou mot de passe incorrect.";
 
-async function authState(page) {
+function expectedAreaPattern(expectedArea) {
+  return expectedArea === "admin"
+    ? /^\/admin(?:\/|$)/
+    : /^\/student(?:\/|$)/;
+}
+
+async function authState(page, expectedArea) {
   const path = new URL(page.url()).pathname;
-  if (/^\/student(?:\/|$)/.test(path)) {
+  if (expectedAreaPattern(expectedArea).test(path)) {
     return "authenticated";
   }
 
@@ -16,8 +22,13 @@ async function authState(page) {
   return rejected ? "rejected" : "pending";
 }
 
-export async function loginWithRedactedPassword(page, email, password) {
-  await page.goto("/login", { waitUntil: "networkidle" });
+export async function loginWithRedactedPassword(
+  page,
+  email,
+  password,
+  expectedArea = "student",
+) {
+  await page.goto("/login", { waitUntil: "domcontentloaded" });
 
   const passwordInput = page.getByLabel("Mot de passe");
   await page.getByLabel("Email").fill(email);
@@ -27,12 +38,12 @@ export async function loginWithRedactedPassword(page, email, password) {
   let state = "pending";
   try {
     await expect
-      .poll(() => authState(page), {
+      .poll(() => authState(page, expectedArea), {
         timeout: 20_000,
-        message: "Waiting for the dedicated E2E identity to authenticate.",
+        message: `Waiting for the dedicated E2E identity to reach /${expectedArea}.`,
       })
       .not.toBe("pending");
-    state = await authState(page);
+    state = await authState(page, expectedArea);
   } finally {
     await passwordInput.fill("").catch(() => null);
   }
