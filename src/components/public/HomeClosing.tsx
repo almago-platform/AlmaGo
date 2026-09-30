@@ -8,7 +8,15 @@ type NativeCopy = ReturnType<typeof getNativeCopy>;
 type ClosingCopy = NativeCopy["home"]["closing"];
 type FooterCopy = NativeCopy["home"]["footer"];
 
-export function HomeFinalCta({ closing }: { closing: ClosingCopy }) {
+export function HomeFinalCta({
+  closing,
+  primaryHref = "/signup",
+  primaryLabel,
+}: {
+  closing: ClosingCopy;
+  primaryHref?: string;
+  primaryLabel?: string;
+}) {
   return (
     <section className={s.finalCta} aria-labelledby="final-title">
       <div className={`${s.container} ${s.finalInner}`}>
@@ -30,8 +38,8 @@ export function HomeFinalCta({ closing }: { closing: ClosingCopy }) {
         </div>
 
         <div className={s.finalActions}>
-          <Link className={s.button} href="/signup">
-            {closing.cta}
+          <Link className={s.button} href={primaryHref}>
+            {primaryLabel || closing.cta}
             <HomeIcon name="arrow" />
           </Link>
           <p><Link href="/login">{closing.login}</Link></p>
