@@ -47,3 +47,9 @@ test("A43 matrices use commit navigation and settle on main content", () => {
   assert.match(student, /locator\("#main-content"\).*toBeVisible/);
   assert.match(admin, /locator\("#main-content"\).*toBeVisible/);
 });
+
+
+test("A43 secret cleanup never waits on a stale login locator after navigation", () => {
+  assert.match(helper, /pathname === "\/login"/);
+  assert.match(helper, /fill\("", \{ timeout: 500 \}\)/);
+});
