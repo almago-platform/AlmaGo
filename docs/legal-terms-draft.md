@@ -1,52 +1,64 @@
-# AlmaGo — brouillon de conditions d’utilisation
+# Campus Allemagne — brouillon de conditions d’utilisation
 
-**NE PAS PUBLIER TEL QUEL — modèle de travail uniquement.**
-
-Le contenu final dépend notamment du statut juridique de l’exploitant et du fait qu’AlmaGo soit gratuit ou payant.
+**NE PAS PUBLIER TEL QUEL — modèle de travail soumis à relecture humaine/juridique finale.**
 
 ## 1. Objet du service
 
-AlmaGo fournit un espace de préparation et de suivi d’un projet d’études en Allemagne.
+Campus Allemagne fournit un espace d’orientation, de préparation et de suivi d’un projet d’études en Allemagne.
 
 Fonctions actuellement prévues :
+
+- orientation en ligne ;
 - profil étudiant ;
 - documents ;
 - checklist/démarches ;
-- orientation ;
+- recommandations d’orientation ;
 - suivi de candidatures.
 
 ## 2. Nature des informations
 
-Les recommandations AlmaGo sont des pistes de travail.
+Les recommandations Campus Allemagne sont des pistes de travail.
 
 À conserver dans la version finale :
+
 - aucune recommandation ne constitue une garantie d’admission ;
 - l’état d’avancement du dossier n’est pas une probabilité d’admission ;
+- les admissions, visas et autres décisions officielles appartiennent aux organismes compétents ;
 - les critères et délais importants doivent pouvoir être vérifiés auprès de la source officielle lorsqu’elle est disponible.
 
 ## 3. Compte utilisateur
 
-À préciser après relecture :
+À finaliser après relecture :
+
 - conditions de création du compte ;
-- obligation d’informations exactes ;
+- obligation de fournir des informations exactes ;
 - sécurité des identifiants ;
 - suspension/suppression ;
 - procédure en cas de perte d’accès.
 
+Ne jamais demander à l’utilisateur d’envoyer son mot de passe par e-mail.
+
 ## 4. Documents transmis
 
-À préciser :
+À finaliser après relecture :
+
 - formats/taille acceptés ;
 - responsabilité de l’utilisateur sur les documents transmis ;
-- traitements de vérification réalisés par AlmaGo ;
+- traitements de vérification réalisés par Campus Allemagne ;
 - durée de conservation ;
 - procédure de suppression.
 
-## 5. Service gratuit ou payant
+La politique de conservation approuvée par le propriétaire prévoit la suppression des documents avec le compte ou lorsqu’ils ne sont plus utiles, sous réserve des obligations légales finales.
 
-Statut actuel : **[À CONFIRMER]**.
+## 5. Service gratuit et services payants futurs
 
-Si payant, ne pas publier ce brouillon avant ajout et relecture des conditions commerciales/consommateur applicables.
+Statut actuel confirmé :
+
+- l’orientation en ligne est **gratuite** ;
+- des services payants d’accompagnement et de préparation de dossier sont envisagés ;
+- aucune offre payante, aucun pack, aucun tarif et aucune modalité de paiement ne sont encore activés, finalisés ni proposés à la vente.
+
+Avant toute activation d’un service payant, Campus Allemagne devra définir et publier les conditions commerciales/consommateur applicables, les prestations, le prix, les modalités de paiement, d’annulation et de remboursement si applicables.
 
 ## 6. Disponibilité et maintenance
 
@@ -58,14 +70,26 @@ Ne pas promettre une disponibilité absolue.
 
 **[RÉDACTION JURIDIQUE À FAIRE / RELIRE]**
 
-Ne pas ajouter automatiquement de clause d’exclusion de responsabilité sans validation juridique.
+Ne pas ajouter automatiquement de clause d’exclusion ou limitation de responsabilité sans validation juridique.
 
 ## 8. Droit applicable / règlement des litiges
 
-**[À DÉTERMINER SELON L’EXPLOITANT ET LE PUBLIC VISÉ]**
+**[À DÉTERMINER SELON L’ÉTABLISSEMENT FINAL EN TUNISIE, LE PUBLIC VISÉ ET LE STATUT COMMERCIAL RÉEL]**
 
 ## 9. Contact
 
-**[EMAIL PUBLIC À CONFIRMER]**
+**contact@campus-allemagne.info**
 
-Version/date : **[À CONFIRMER]**
+## 10. Éditeur
+
+Exploitant prévu : **Ayoub Tayari**, personne physique.
+
+Pays principal d’établissement prévu : **Tunisie**.
+
+Adresse publique, immatriculation et identifiant fiscal éventuels : **[À CONFIRMER AVANT PUBLICATION]**
+
+## 11. Version et validation
+
+Version/date d’entrée en vigueur : **[À CONFIRMER]**
+
+Relecteur humain/juridique final : **[À CONFIRMER]**
