@@ -14,3 +14,11 @@ export function isPhase2ProspectCaptureEnabled(
   const raw = env.ALMAGO_PHASE2_PROSPECT_CAPTURE_ENABLED?.trim().toLowerCase();
   return raw ? ENABLED_VALUES.has(raw) : false;
 }
+
+export function isPhase2EmailDeliveryEnabled(
+  env: Record<string, string | undefined> = process.env,
+) {
+  if (!isPhase2ProspectCaptureEnabled(env)) return false;
+  const raw = env.ALMAGO_PHASE2_EMAIL_DELIVERY_ENABLED?.trim().toLowerCase();
+  return raw ? ENABLED_VALUES.has(raw) : false;
+}
