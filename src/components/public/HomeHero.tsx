@@ -6,7 +6,15 @@ import s from "./Homepage.module.css";
 
 type HeroCopy = ReturnType<typeof getNativeCopy>["home"]["hero"];
 
-export function HomeHero({ hero }: { hero: HeroCopy }) {
+export function HomeHero({
+  hero,
+  primaryHref = "/signup",
+  primaryLabel,
+}: {
+  hero: HeroCopy;
+  primaryHref?: string;
+  primaryLabel?: string;
+}) {
   return (
     <section className={s.hero} aria-labelledby="home-title">
       <div className={s.heroBackdrop} aria-hidden="true">
@@ -35,8 +43,8 @@ export function HomeHero({ hero }: { hero: HeroCopy }) {
           </h1>
           <p className={s.heroLead}>{hero.lead}</p>
           <div className={s.heroActions}>
-            <Link className={s.button} href="/signup">
-              {hero.primary}
+            <Link className={s.button} href={primaryHref}>
+              {primaryLabel || hero.primary}
               <HomeIcon name="arrow" />
             </Link>
             <a className={s.heroTextLink} href="#parcours">

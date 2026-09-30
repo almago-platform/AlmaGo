@@ -1,0 +1,251 @@
+import type { Locale } from "@/lib/i18n";
+
+export type OrientationCopy = {
+  header: { home: string; login: string };
+  intro: { eyebrow: string; title: string; lead: string; privacy: string };
+  progress: { label: string; step: string };
+  steps: {
+    situation: { title: string; text: string };
+    project: { title: string; text: string };
+    languages: { title: string; text: string };
+    resources: { title: string; text: string };
+  };
+  bacStatus: { label: string; obtained: string; preparing: string };
+  fields: {
+    yearHelp: string;
+    averageHelp: string;
+    lastDiplomaHelp: string;
+    cities: string;
+    citiesHelp: string;
+  };
+  controls: {
+    choose: string;
+    optional: string;
+    previous: string;
+    next: string;
+    summary: string;
+    selected: string;
+  };
+  validation: {
+    required: string;
+    year: string;
+    average: string;
+  };
+  summary: {
+    eyebrow: string;
+    title: string;
+    text: string;
+    noticeTitle: string;
+    noticeText: string;
+    edit: string;
+    restart: string;
+    labels: {
+      bacStatus: string;
+      bacYear: string;
+      bacTrack: string;
+      average: string;
+      diploma: string;
+      degree: string;
+      field: string;
+      german: string;
+      english: string;
+      studyLanguage: string;
+      budget: string;
+      cities: string;
+    };
+  };
+};
+
+const fr: OrientationCopy = {
+  header: { home: "Accueil", login: "Se connecter" },
+  intro: {
+    eyebrow: "Orientation gratuite",
+    title: "Par où commencer pour étudier en Allemagne ?",
+    lead: "Répondez à quelques questions simples. Aucun compte n’est nécessaire.",
+    privacy: "Pour le moment, vos réponses restent uniquement dans cet onglet. Rien n’est envoyé à AlmaGo.",
+  },
+  progress: { label: "Progression de l’orientation", step: "Étape" },
+  steps: {
+    situation: { title: "Votre situation scolaire", text: "Commençons par votre Bac et votre moyenne." },
+    project: { title: "Votre projet d’études", text: "Dites-nous ce que vous souhaitez étudier en Allemagne." },
+    languages: { title: "Vos langues", text: "Indiquez vos niveaux actuels, même si vous débutez." },
+    resources: { title: "Budget et villes", text: "Ces informations nous aideront ensuite à mieux organiser les pistes." },
+  },
+  bacStatus: { label: "Votre Bac", obtained: "Je l’ai déjà obtenu", preparing: "Je le prépare encore" },
+  fields: {
+    yearHelp: "Année obtenue ou prévue.",
+    averageHelp: "Facultatif. Moyenne sur 20, réelle ou estimée.",
+    lastDiplomaHelp: "Facultatif si le Bac est votre dernier diplôme.",
+    cities: "Villes qui vous intéressent",
+    citiesHelp: "Facultatif · jusqu’à 3 villes. Vous pourrez changer plus tard.",
+  },
+  controls: {
+    choose: "Choisir…", optional: "Facultatif", previous: "Retour", next: "Continuer",
+    summary: "Voir mon récapitulatif", selected: "sélectionnée(s)",
+  },
+  validation: {
+    required: "Complétez les champs demandés pour continuer.",
+    year: "Indiquez une année valide entre 2000 et 2035.",
+    average: "La moyenne doit être comprise entre 0 et 20.",
+  },
+  summary: {
+    eyebrow: "Votre point de départ",
+    title: "Voici ce que vous nous avez indiqué.",
+    text: "Ceci est un récapitulatif de vos réponses, pas encore une évaluation d’admission.",
+    noticeTitle: "Étape suivante : le diagnostic",
+    noticeText: "P2.2 utilisera ces informations pour expliquer les pistes à explorer, les éléments manquants et ce qui doit encore être vérifié.",
+    edit: "Modifier mes réponses",
+    restart: "Recommencer",
+    labels: {
+      bacStatus: "Bac", bacYear: "Année du Bac", bacTrack: "Section", average: "Moyenne",
+      diploma: "Dernier diplôme", degree: "Niveau visé", field: "Domaine", german: "Allemand",
+      english: "Anglais", studyLanguage: "Langue d’études", budget: "Budget", cities: "Villes",
+    },
+  },
+};
+
+const ar: OrientationCopy = {
+  header: { home: "الرئيسية", login: "تسجيل الدخول" },
+  intro: {
+    eyebrow: "توجيه مجاني",
+    title: "من أين تبدأ مشروع الدراسة في ألمانيا؟",
+    lead: "أجب عن أسئلة بسيطة حول دراستك ولغتك. لا تحتاج إلى إنشاء حساب.",
+    privacy: "في هذه المرحلة تبقى إجاباتك داخل هذا التبويب فقط، ولا يتم إرسالها إلى AlmaGo.",
+  },
+  progress: { label: "تقدم التوجيه", step: "الخطوة" },
+  steps: {
+    situation: { title: "وضعك الدراسي", text: "نبدأ بالبكالوريا والمعدل." },
+    project: { title: "مشروعك الدراسي", text: "اختر ما تريد دراسته في ألمانيا." },
+    languages: { title: "اللغات", text: "أدخل مستواك الحالي كما هو، حتى إذا كنت في البداية." },
+    resources: { title: "الميزانية والمدن", text: "هذه المعلومات ستساعدنا لاحقًا على ترتيب الخيارات المناسبة." },
+  },
+  bacStatus: { label: "البكالوريا", obtained: "تحصلت عليها", preparing: "ما زلت أستعد لها" },
+  fields: {
+    yearHelp: "سنة الحصول عليها أو السنة المتوقعة.",
+    averageHelp: "اختياري. المعدل من 20، الفعلي أو المتوقع.",
+    lastDiplomaHelp: "اختياري إذا كانت البكالوريا آخر شهادة لديك.",
+    cities: "مدن تهمك",
+    citiesHelp: "اختياري · حتى 3 مدن. يمكنك تغييرها لاحقًا.",
+  },
+  controls: {
+    choose: "اختر…", optional: "اختياري", previous: "رجوع", next: "متابعة",
+    summary: "عرض ملخصي", selected: "تم اختيارها",
+  },
+  validation: {
+    required: "أكمل الحقول المطلوبة للمتابعة.",
+    year: "أدخل سنة صحيحة بين 2000 و2035.",
+    average: "يجب أن يكون المعدل بين 0 و20.",
+  },
+  summary: {
+    eyebrow: "نقطة البداية",
+    title: "هذا ملخص المعلومات التي أدخلتها.",
+    text: "هذا ملخص فقط، وليس قرار قبول أو تقييمًا نهائيًا.",
+    noticeTitle: "الخطوة التالية: التشخيص",
+    noticeText: "في P2.2 سنستخدم هذه المعلومات لشرح المسارات التي يمكن استكشافها وما ينقص وما يحتاج إلى تحقق.",
+    edit: "تعديل إجاباتي",
+    restart: "البدء من جديد",
+    labels: {
+      bacStatus: "البكالوريا", bacYear: "سنة البكالوريا", bacTrack: "الشعبة", average: "المعدل",
+      diploma: "آخر شهادة", degree: "الدرجة المستهدفة", field: "المجال", german: "الألمانية",
+      english: "الإنجليزية", studyLanguage: "لغة الدراسة", budget: "الميزانية", cities: "المدن",
+    },
+  },
+};
+
+const en: OrientationCopy = {
+  header: { home: "Home", login: "Sign in" },
+  intro: {
+    eyebrow: "Free orientation",
+    title: "Where should you start for studying in Germany?",
+    lead: "Answer a few simple questions about your studies and languages. No account is required.",
+    privacy: "For now, your answers stay only in this browser tab. Nothing is sent to AlmaGo.",
+  },
+  progress: { label: "Orientation progress", step: "Step" },
+  steps: {
+    situation: { title: "Your school situation", text: "Start with your Baccalaureate and overall average." },
+    project: { title: "Your study plan", text: "Tell us what you would like to study in Germany." },
+    languages: { title: "Your languages", text: "Enter your current levels, even if you are just starting." },
+    resources: { title: "Budget and cities", text: "These details will later help us organise relevant paths." },
+  },
+  bacStatus: { label: "Your Baccalaureate", obtained: "I already have it", preparing: "I am still preparing it" },
+  fields: {
+    yearHelp: "Year completed or expected.",
+    averageHelp: "Optional. Actual or estimated average out of 20.",
+    lastDiplomaHelp: "Optional if the Baccalaureate is your latest qualification.",
+    cities: "Cities you are interested in",
+    citiesHelp: "Optional · up to 3 cities. You can change this later.",
+  },
+  controls: {
+    choose: "Choose…", optional: "Optional", previous: "Back", next: "Continue",
+    summary: "See my summary", selected: "selected",
+  },
+  validation: {
+    required: "Complete the required fields to continue.",
+    year: "Enter a valid year between 2000 and 2035.",
+    average: "The average must be between 0 and 20.",
+  },
+  summary: {
+    eyebrow: "Your starting point",
+    title: "Here is what you told us.",
+    text: "This is a summary of your answers, not an admission assessment.",
+    noticeTitle: "Next: your diagnostic",
+    noticeText: "P2.2 will use these answers to explain paths to explore, missing information and points that still need checking.",
+    edit: "Edit my answers",
+    restart: "Start again",
+    labels: {
+      bacStatus: "Baccalaureate", bacYear: "Baccalaureate year", bacTrack: "Track", average: "Average",
+      diploma: "Latest qualification", degree: "Target degree", field: "Subject", german: "German",
+      english: "English", studyLanguage: "Study language", budget: "Budget", cities: "Cities",
+    },
+  },
+};
+
+const de: OrientationCopy = {
+  header: { home: "Startseite", login: "Anmelden" },
+  intro: {
+    eyebrow: "Kostenlose Orientierung",
+    title: "Wo solltest du für ein Studium in Deutschland anfangen?",
+    lead: "Beantworte ein paar einfache Fragen zu deiner Ausbildung und deinen Sprachen. Ein Konto ist nicht nötig.",
+    privacy: "Deine Antworten bleiben vorerst nur in diesem Browser-Tab. Es wird nichts an AlmaGo gesendet.",
+  },
+  progress: { label: "Fortschritt der Orientierung", step: "Schritt" },
+  steps: {
+    situation: { title: "Deine schulische Situation", text: "Wir beginnen mit dem Baccalauréat und deiner Durchschnittsnote." },
+    project: { title: "Dein Studienplan", text: "Sag uns, was du in Deutschland studieren möchtest." },
+    languages: { title: "Deine Sprachen", text: "Gib deine aktuellen Niveaus an, auch wenn du gerade erst anfängst." },
+    resources: { title: "Budget und Städte", text: "Diese Angaben helfen später, passende Wege besser einzuordnen." },
+  },
+  bacStatus: { label: "Dein Baccalauréat", obtained: "Ich habe es bereits", preparing: "Ich bereite mich noch darauf vor" },
+  fields: {
+    yearHelp: "Abschlussjahr oder erwartetes Jahr.",
+    averageHelp: "Optional. Tatsächlicher oder geschätzter Durchschnitt von 20.",
+    lastDiplomaHelp: "Optional, wenn das Baccalauréat dein letzter Abschluss ist.",
+    cities: "Städte, die dich interessieren",
+    citiesHelp: "Optional · bis zu 3 Städte. Du kannst das später ändern.",
+  },
+  controls: {
+    choose: "Auswählen…", optional: "Optional", previous: "Zurück", next: "Weiter",
+    summary: "Meine Zusammenfassung", selected: "ausgewählt",
+  },
+  validation: {
+    required: "Fülle die erforderlichen Felder aus, um fortzufahren.",
+    year: "Gib ein gültiges Jahr zwischen 2000 und 2035 ein.",
+    average: "Der Durchschnitt muss zwischen 0 und 20 liegen.",
+  },
+  summary: {
+    eyebrow: "Dein Ausgangspunkt",
+    title: "Das hast du uns angegeben.",
+    text: "Dies ist nur eine Zusammenfassung deiner Antworten, noch keine Zulassungsbewertung.",
+    noticeTitle: "Als Nächstes: dein Check",
+    noticeText: "P2.2 nutzt diese Angaben, um mögliche Wege, fehlende Informationen und noch zu prüfende Punkte zu erklären.",
+    edit: "Antworten bearbeiten",
+    restart: "Neu beginnen",
+    labels: {
+      bacStatus: "Baccalauréat", bacYear: "Jahr des Baccalauréat", bacTrack: "Fachrichtung", average: "Durchschnitt",
+      diploma: "Letzter Abschluss", degree: "Gewünschter Abschluss", field: "Fach", german: "Deutsch",
+      english: "Englisch", studyLanguage: "Studiensprache", budget: "Budget", cities: "Städte",
+    },
+  },
+};
+
+export const orientationCopy: Record<Locale, OrientationCopy> = { fr, ar, en, de };
