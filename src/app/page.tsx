@@ -10,12 +10,14 @@ import { HomeFinalCta, HomeFooter } from "@/components/public/HomeClosing";
 import { getNativeCopy } from "@/content/native-copy";
 import { rebrandCopy } from "@/lib/brand";
 import { LOCALE_COOKIE, normalizeLocale } from "@/lib/i18n";
+import { isPhase2AccessEnabled } from "@/lib/phase2/config";
 import s from "@/components/public/Homepage.module.css";
 
 export default async function Home() {
   const store = await cookies();
   const locale = normalizeLocale(store.get(LOCALE_COOKIE)?.value);
   const copy = rebrandCopy(getNativeCopy(locale));
+  const phase2Enabled = isPhase2AccessEnabled();
 
   return (
     <div className={s.home}>
@@ -24,7 +26,11 @@ export default async function Home() {
       </a>
       <HomeHeader />
       <main id="main-content" tabIndex={-1}>
-        <HomeHero hero={copy.home.hero} />
+        <HomeHero
+          hero={copy.home.hero}
+          primaryHref={phase2Enabled ? "/orientation" : "/signup"}
+          primaryLabel={phase2Enabled ? copy.home.hero.orientationPrimary : copy.home.hero.primary}
+        />
         <HomeQuickAccess quick={copy.home.quick} />
         <HomePhotoBand photo={copy.home.photo} />
         <HomeJourneySection journey={copy.home.journey} />
