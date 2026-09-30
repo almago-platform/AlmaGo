@@ -5,8 +5,9 @@ import test from "node:test";
 const header = readFileSync("src/components/public/HomeHeader.tsx", "utf8");
 const css = readFileSync("src/components/public/Homepage.module.css", "utf8");
 
-test("mobile navigation closes after signup tap", () => {
-  assert.match(header, /mobileSignup[^>]*href="\/signup"[^>]*onClick=\{\(\) => setOpen\(false\)\}/);
+test("mobile navigation closes after the primary action tap", () => {
+  assert.match(header, /const primaryHref = phase2Enabled \? "\/orientation" : "\/signup"/);
+  assert.match(header, /mobileSignup[^>]*href=\{primaryHref\}[^>]*onClick=\{\(\) => setOpen\(false\)\}/);
 });
 
 test("phone layout prevents horizontal overflow and uses compact header", () => {

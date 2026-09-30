@@ -8,18 +8,21 @@ import { useLocale } from "@/components/i18n/LocaleProvider";
 import { HomeIcon } from "./HomeIcons";
 import s from "./Homepage.module.css";
 
-export function HomeHeader() {
+export function HomeHeader({ phase2Enabled = false }: { phase2Enabled?: boolean }) {
   const [open, setOpen] = useState(false);
   const toggle = useRef<HTMLButtonElement>(null);
   const { copy } = useLocale();
   const nav = copy.home.nav;
-  const navigation = [
+  const primaryHref = phase2Enabled ? "/orientation" : "/signup";
+  const primaryLabel = phase2Enabled ? nav.orientation : nav.signup;
+  const navigation: Array<readonly [string, string]> = [
+    ...(phase2Enabled ? [[nav.orientation, "/orientation"] as const] : []),
     [nav.journey, "#parcours"],
     [nav.space, "/login"],
     [nav.why, "#outils"],
     [nav.questions, "#faq"],
     [nav.contact, "/contact"],
-  ] as const;
+  ];
 
   return (
     <header
@@ -47,8 +50,8 @@ export function HomeHeader() {
           <Link className={s.login} href="/login">
             {nav.login}
           </Link>
-          <Link className={`${s.button} ${s.headerCta}`} href="/signup">
-            {nav.signup}
+          <Link className={`${s.button} ${s.headerCta}`} href={primaryHref}>
+            {primaryLabel}
             <HomeIcon name="arrow" />
           </Link>
           <button
@@ -82,8 +85,8 @@ export function HomeHeader() {
           {nav.login}
           <HomeIcon name="arrow" />
         </Link>
-        <Link className={s.mobileSignup} href="/signup" onClick={() => setOpen(false)}>
-          {nav.signup}
+        <Link className={s.mobileSignup} href={primaryHref} onClick={() => setOpen(false)}>
+          {primaryLabel}
           <HomeIcon name="arrow" />
         </Link>
       </nav>

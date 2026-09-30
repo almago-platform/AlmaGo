@@ -35,7 +35,7 @@ test("V7 keeps localized copy and product proof integrated inside the hero", () 
 test("current homepage places quick access and the visual pathway immediately after the hero", () => {
   assert.ok(page.indexOf("<HomeHero hero={copy.home.hero} />") < page.indexOf("<HomeQuickAccess quick={copy.home.quick} />"));
   assert.ok(page.indexOf("<HomeQuickAccess quick={copy.home.quick} />") < page.indexOf("<HomePhotoBand photo={copy.home.photo} />"));
-  assert.ok(page.indexOf("<HomePhotoBand photo={copy.home.photo} />") < page.indexOf("<HomeJourneySection journey={copy.home.journey} />"));
+  assert.ok(page.indexOf("<HomePhotoBand photo={copy.home.photo} />") < page.indexOf("<HomeJourneySection"));
   assert.equal(quick.split('icon: "').length - 1, 5);
   assert.ok(css.includes("repeat(5"));
 });

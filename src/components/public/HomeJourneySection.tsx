@@ -14,7 +14,15 @@ const images = [
   ["https://images.pexels.com/photos/7972361/pexels-photo-7972361.jpeg?auto=compress&cs=tinysrgb&w=1200", "Two students talking during a study session."],
 ] as const;
 
-export function HomeJourneySection({ journey }: { journey: JourneyCopy }) {
+export function HomeJourneySection({
+  journey,
+  primaryHref = "/signup",
+  primaryLabel,
+}: {
+  journey: JourneyCopy;
+  primaryHref?: string;
+  primaryLabel?: string;
+}) {
   return (
     <section id="parcours" className={`${s.section} ${s.journey}`} aria-labelledby="journey-title">
       <div className={s.container}>
@@ -56,8 +64,8 @@ export function HomeJourneySection({ journey }: { journey: JourneyCopy }) {
           <span>
             <HomeIcon name="source" /> {journey.foot}
           </span>
-          <a href="/signup">
-            {journey.cta}
+          <a href={primaryHref}>
+            {primaryLabel || journey.cta}
             <HomeIcon name="arrow" />
           </a>
         </div>

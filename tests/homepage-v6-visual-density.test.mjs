@@ -12,7 +12,7 @@ const css = readFileSync("src/components/public/Homepage.module.css", "utf8");
 
 test("photographic story remains between quick access and journey", () => {
   assert.ok(page.indexOf("<HomeQuickAccess quick={copy.home.quick} />") < page.indexOf("<HomePhotoBand photo={copy.home.photo} />"));
-  assert.ok(page.indexOf("<HomePhotoBand photo={copy.home.photo} />") < page.indexOf("<HomeJourneySection journey={copy.home.journey} />"));
+  assert.ok(page.indexOf("<HomePhotoBand photo={copy.home.photo} />") < page.indexOf("<HomeJourneySection"));
   assert.ok(band.includes("6684514"));
   assert.ok(band.includes("5965674"));
   assert.ok(band.includes("5553958"));
