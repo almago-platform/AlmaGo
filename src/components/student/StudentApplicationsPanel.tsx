@@ -21,7 +21,7 @@ function applicationVariant(status: string): "success" | "warning" | "info" | "n
 }
 
 function firstProgram(application: any) {
-  return Array.isArray(application.programs) ? application.programs[0] : application.programs;
+  return Array.isArray(application?.programs) ? application.programs[0] : application?.programs;
 }
 
 function firstUniversity(program: any) {
