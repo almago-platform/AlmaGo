@@ -28,9 +28,13 @@ test.describe("authenticated Admin Space quality", () => {
     await loginWithRedactedPassword(page, adminEmail, adminPassword, "admin");
 
     for (const target of pages) {
-      const response = await page.goto(target.path, { waitUntil: "domcontentloaded" });
-      expect(response, target.path + " should return a response").not.toBeNull();
-      expect(response?.ok(), target.path + " should return a successful response").toBeTruthy();
+      if (new URL(page.url()).pathname !== target.path) {
+        const response = await page.goto(target.path, { waitUntil: "commit", timeout: 20_000 });
+        expect(response, target.path + " should return a response").not.toBeNull();
+        expect(response?.ok(), target.path + " should return a successful response").toBeTruthy();
+      }
+      await page.waitForURL((url) => url.pathname === target.path, { timeout: 20_000 });
+      await expect(page.locator("#main-content")).toBeVisible({ timeout: 20_000 });
       expect(new URL(page.url()).pathname, target.path + " should stay in the requested admin route").toBe(target.path);
 
       const overflow = await page.evaluate(

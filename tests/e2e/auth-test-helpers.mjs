@@ -52,4 +52,6 @@ export async function loginWithRedactedPassword(
     state,
     "Dedicated E2E credentials were rejected. Rotate/reset the test-account password and the matching GitHub Actions secret before rerunning A43.",
   ).toBe("authenticated");
+
+  await expect(page.locator("#main-content")).toBeVisible({ timeout: 30_000 });
 }

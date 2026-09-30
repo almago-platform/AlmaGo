@@ -29,3 +29,21 @@ test("A43 admin login explicitly waits for the admin area", () => {
   assert.match(isolation, /adminPassword, "admin"/);
   assert.match(admin, /adminPassword, "admin"/);
 });
+
+
+test("A43 waits for the protected shell before continuing", () => {
+  assert.match(helper, /locator\("#main-content"\).*toBeVisible/);
+});
+
+test("A43 student admin denial is checked through the authenticated request context", () => {
+  assert.match(isolation, /page\.request\.get/);
+  assert.match(isolation, /maxRedirects:\s*0/);
+  assert.match(isolation, /unauthorized/);
+});
+
+test("A43 matrices use commit navigation and settle on main content", () => {
+  assert.match(student, /waitUntil:\s*"commit"/);
+  assert.match(admin, /waitUntil:\s*"commit"/);
+  assert.match(student, /locator\("#main-content"\).*toBeVisible/);
+  assert.match(admin, /locator\("#main-content"\).*toBeVisible/);
+});
