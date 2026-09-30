@@ -45,7 +45,7 @@ function formatMinorPrice(
       style: "currency",
       currency,
     });
-    const digits = formatter.resolvedOptions().maximumFractionDigits;
+    const digits = formatter.resolvedOptions().maximumFractionDigits ?? 2;
     return formatter.format(amount / 10 ** digits);
   } catch {
     return null;
