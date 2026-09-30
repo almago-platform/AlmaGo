@@ -393,7 +393,7 @@ function OverviewCard({
         </div>
         <span
           aria-hidden="true"
-          className={`student-overview-arrow grid h-9 w-9 place-items-center rounded-full text-sm transition-transform group-hover:translate-x-0.5 ${
+                {checklist.length > 0 && <span className="text-lg font-bold text-[var(--brand-strong)]">{progression}%</span>}
             tone === "warning"
               ? "bg-amber-50 text-amber-800"
               : "bg-[var(--brand-soft)] text-[var(--brand)]"
