@@ -58,6 +58,7 @@ const adminItems: NavItem[] = [
   { label: "Candidatures", href: "/admin/applications", icon: icons.applications, helper: "Dossiers et échéances" },
   { label: "Orientation", href: "/admin/orientation", icon: icons.orientation, helper: "Recommandations étudiants" },
   { label: "Prospects", href: "/admin/prospects", icon: icons.profile, helper: "Qualification des projets" },
+  { label: "Offres", href: "/admin/offers", icon: icons.applications, helper: "Bronze, Silver et Gold" },
   { label: "Universités", href: "/admin/universities", icon: icons.universities, helper: "Établissements" },
   { label: "Programmes", href: "/admin/programs", icon: icons.programs, helper: "Formations" },
   { label: "Cours de langue", href: "/admin/language-courses", icon: icons.programs, helper: "Préparation linguistique" },
@@ -66,8 +67,8 @@ const adminItems: NavItem[] = [
 
 const adminGroups = [
   { label: "Pilotage", items: adminItems.slice(0, 1) },
-  { label: "Opérations", items: adminItems.slice(1, 5) },
-  { label: "Catalogue Allemagne", items: adminItems.slice(5) },
+  { label: "Opérations", items: adminItems.slice(1, 6) },
+  { label: "Catalogue Allemagne", items: adminItems.slice(6) },
 ];
 
 function isActive(pathname: string, href: string) {

@@ -7,6 +7,7 @@ import { BrandLogo } from "@/components/brand/BrandLogo";
 import { LanguageSwitcher } from "@/components/i18n/LanguageSwitcher";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { prospectDashboardCopy } from "@/content/prospect-dashboard-copy";
+import { prospectOffersCopy } from "@/content/prospect-offers-copy";
 import { createClient } from "@/lib/supabase/client";
 
 export function ProspectShell({
@@ -19,6 +20,7 @@ export function ProspectShell({
   const router = useRouter();
   const { locale, direction, copy } = useLocale();
   const t = prospectDashboardCopy[locale].shell;
+  const offersCopy = prospectOffersCopy[locale];
   const name = displayName?.trim();
 
   const links = [
@@ -27,6 +29,7 @@ export function ProspectShell({
     { href: "/prospect#roadmap", label: t.links.roadmap },
     { href: "/prospect#missing", label: t.links.missing },
     { href: "/orientation?mode=update", label: t.links.update },
+    { href: "/prospect/offers", label: offersCopy.nav },
   ];
 
   async function signOut() {
