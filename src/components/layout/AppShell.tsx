@@ -206,12 +206,12 @@ export function AppShell({
           {role === "student" ? (
             <>
               <div className="mb-3 px-1"><LanguageSwitcher /></div>
-              <p className="mb-3 px-1 text-[11px] leading-4 text-[var(--muted)]">
+              <p className="mb-3 px-1 text-[11px] leading-4 text-slate-600">
                 {shell.footer}
               </p>
             </>
           ) : (
-            <p className="mb-3 px-1 text-[11px] leading-4 text-[var(--muted)]">
+            <p className="mb-3 px-1 text-[11px] leading-4 text-slate-600">
               Les actions d’administration peuvent modifier ce qui est visible dans l’espace étudiant.
             </p>
           )}
