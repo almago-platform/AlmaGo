@@ -39,6 +39,13 @@ test.describe("authenticated Student Space quality", () => {
     await languageSwitcher.selectOption("ar");
     await expect(page.locator("html")).toHaveAttribute("lang", "ar");
     await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
+    if (viewportWidth < 1024) {
+      const mobileMenuButton = page.locator('button[aria-controls="student-mobile-menu"]');
+      await expect(mobileMenuButton).toBeVisible();
+      if ((await mobileMenuButton.getAttribute("aria-expanded")) === "true") {
+        await mobileMenuButton.click();
+      }
+    }
 
     for (const target of pages) {
       if (new URL(page.url()).pathname !== target.path) {
