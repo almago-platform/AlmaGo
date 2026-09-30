@@ -67,7 +67,7 @@ export default async function AdminOffersPage() {
 
       <section className="mb-6 rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--brand-soft)] p-5">
         <p className="text-sm font-bold text-[var(--foreground)]">Règles de publication</p>
-        <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
+        <p className="mt-2 text-sm leading-6 text-slate-700">
           Une publication exige un nom, un résumé, au moins un service, un montant et une devise ISO.
           Une nouvelle publication retire automatiquement l’ancienne version publiée sans supprimer l’historique.
           Ne promettez jamais admission ou visa.
