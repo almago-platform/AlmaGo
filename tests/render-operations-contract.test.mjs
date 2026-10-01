@@ -13,15 +13,17 @@ test("Render blueprint keeps the intended health and auto-deploy contract", () =
   assert.match(renderYaml, /runtime:\s*node/);
 });
 
-test("runbook records dashboard-vs-blueprint drift instead of assuming sync", () => {
-  assert.match(runbook, /live Render dashboard configuration is authoritative/i);
-  assert.match(runbook, /Known configuration drift/);
-  assert.match(runbook, /service-level health check path: currently empty/);
-  assert.match(runbook, /Track this operational fix in GitHub issue #389/);
-  assert.match(runbook, /Do not upgrade the plan automatically/);
+test("runbook records the resolved live Render contract without assuming blueprint ownership", () => {
+  assert.match(runbook, /dashboard.*source de vérité/i);
+  assert.match(runbook, /Health Check Path.*\/api\/health/i);
+  assert.match(runbook, /auto-deploy.*activé/i);
+  assert.match(runbook, /new_commit/);
+  assert.match(runbook, /#389.*résolu/i);
+  assert.match(runbook, /plan.*Free/i);
+  assert.match(runbook, /décision propriétaire/i);
 });
 
-test("observability activation now targets Render rather than Vercel", () => {
+test("observability activation targets Render rather than Vercel", () => {
   assert.match(observability, /Render environment variables and GitHub Actions secrets/);
   assert.match(observability, /keep Render as the canonical runtime/);
   assert.doesNotMatch(observability, /Vercel runtime context/);
