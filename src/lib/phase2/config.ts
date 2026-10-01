@@ -1,6 +1,9 @@
-import { isPartnerPrelaunchModeEnabled } from "@/lib/prelaunch";
-
 const ENABLED_VALUES = new Set(["1", "true", "yes", "on"]);
+
+function isPartnerPrelaunchEnabled(env: Record<string, string | undefined>) {
+  const raw = env.ALMAGO_PARTNER_PRELAUNCH_MODE?.trim().toLowerCase();
+  return raw ? ["1", "true", "yes", "on"].includes(raw) : false;
+}
 
 export function isPhase2AccessEnabled(
   env: Record<string, string | undefined> = process.env,
@@ -12,7 +15,7 @@ export function isPhase2AccessEnabled(
 export function isPhase2ProspectCaptureEnabled(
   env: Record<string, string | undefined> = process.env,
 ) {
-  if (isPartnerPrelaunchModeEnabled(env) || !isPhase2AccessEnabled(env)) return false;
+  if (isPartnerPrelaunchEnabled(env) || !isPhase2AccessEnabled(env)) return false;
   const raw = env.ALMAGO_PHASE2_PROSPECT_CAPTURE_ENABLED?.trim().toLowerCase();
   return raw ? ENABLED_VALUES.has(raw) : false;
 }
@@ -28,7 +31,7 @@ export function isPhase2EmailDeliveryEnabled(
 export function isPhase2AccountLinkingEnabled(
   env: Record<string, string | undefined> = process.env,
 ) {
-  if (isPartnerPrelaunchModeEnabled(env) || !isPhase2AccessEnabled(env)) return false;
+  if (isPartnerPrelaunchEnabled(env) || !isPhase2AccessEnabled(env)) return false;
   const raw = env.ALMAGO_PHASE2_ACCOUNT_LINKING_ENABLED?.trim().toLowerCase();
   return raw ? ENABLED_VALUES.has(raw) : false;
 }
@@ -37,7 +40,7 @@ export function isPhase2AccountLinkingEnabled(
 export function isPhase2PaymentOrchestrationEnabled(
   env: Record<string, string | undefined> = process.env,
 ) {
-  if (isPartnerPrelaunchModeEnabled(env) || !isPhase2AccessEnabled(env)) return false;
+  if (isPartnerPrelaunchEnabled(env) || !isPhase2AccessEnabled(env)) return false;
   const raw = env.ALMAGO_PHASE2_PAYMENT_ORCHESTRATION_ENABLED?.trim().toLowerCase();
   return raw ? ENABLED_VALUES.has(raw) : false;
 }
