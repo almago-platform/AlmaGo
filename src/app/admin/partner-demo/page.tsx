@@ -71,7 +71,7 @@ export default function PartnerDemoPage() {
         <PartnerPaymentSandbox />
       </div>
 
-      <section className="mt-6 rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface-subtle)] p-5 text-sm leading-6 text-[var(--muted)]">
+      <section className="mt-6 rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface-subtle)] p-5 text-sm leading-6 text-[var(--foreground)]">
         <h2 className="font-bold text-[var(--foreground)]">Garde-fous de cette démonstration</h2>
         <ul className="mt-3 list-disc space-y-1 ps-5">
           <li>liens e-mail factices sur le domaine réservé <code>.invalid</code> ;</li>
