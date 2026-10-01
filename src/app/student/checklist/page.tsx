@@ -10,6 +10,7 @@ import { buildGermanyChecklist, type GermanyChecklistItem } from "@/lib/germany-
 import { determineRegulatoryPath } from "@/lib/regulatory-path-engine";
 import { getRequestLocale } from "@/lib/i18n-server";
 import { studentChecklistCopy } from "@/content/student-checklist-copy";
+import { rebrandCopy } from "@/lib/brand";
 
 const badgeVariants = {
   completed: "success",
@@ -24,7 +25,7 @@ export const dynamic = "force-dynamic";
 
 export default async function ChecklistPage() {
   const locale = await getRequestLocale();
-  const t = studentChecklistCopy[locale];
+  const t = rebrandCopy(studentChecklistCopy[locale]);
   const supabase = await createClient();
   const {
     data: { user },

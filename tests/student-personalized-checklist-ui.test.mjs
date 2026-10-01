@@ -28,3 +28,8 @@ test("course-dependent checklist facts come only from the student's explicit sel
   assert.match(page, /selectedCourse\?\.purpose === "standalone_language"/);
   assert.doesNotMatch(page, /from\("language_courses"\)[\s\S]*\.limit\(1\)/);
 });
+
+test("student checklist renders localized copy through the canonical brand layer", () => {
+  assert.match(page, /const t = rebrandCopy\(studentChecklistCopy\[locale\]\)/);
+  assert.match(copy, /AlmaGo/);
+});
