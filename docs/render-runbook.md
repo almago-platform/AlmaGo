@@ -19,7 +19,7 @@ Le repository contient aussi `render.yaml`. Le dashboard du service existant res
 
 ## GitHub → Render auto-deploy
 
-L'incident historique de permission GitHub est résolu (#389).
+L'incident historique de permission GitHub est résolu. Issue #389 : résolue.
 
 Preuve enregistrée :
 - Render GitHub App réautorisée pour `almago-platform/AlmaGo` ;
