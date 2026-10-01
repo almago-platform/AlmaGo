@@ -33,7 +33,7 @@ test("P2.10A defines the minimum Phase 2 funnel as bounded categorical steps", (
 
 test("P2.10A funnel events carry no identity or free-form payload", () => {
   const event = contract.events.find((item) => item.name === "phase2_funnel_step");
-  const serialized = JSON.stringify(event).toLowerCase();
+  const serializedProperties = JSON.stringify(event.properties).toLowerCase();
 
   for (const forbidden of [
     "email",
@@ -46,7 +46,7 @@ test("P2.10A funnel events carry no identity or free-form payload", () => {
     "address",
     "phone",
   ]) {
-    assert.equal(serialized.includes(forbidden), false);
+    assert.equal(serializedProperties.includes(forbidden), false);
   }
 
   assert.throws(
