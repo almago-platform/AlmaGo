@@ -45,7 +45,7 @@ test("qualification copy exists in all supported locales and keeps admission/vis
     assert.match(copy, new RegExp(`${state}:`));
   }
   assert.match(copy, /ne constitue ni une admission, ni une décision de visa/);
-  assert.match(copy, /لا يمثل قبولًا جامعيًا أو قرار تأشيرة/);
+  assert.match(copy, /لا تمثل قبولًا جامعيًا أو قرار تأشيرة/);
   assert.match(copy, /not an admission or visa decision/);
   assert.match(copy, /weder eine Zulassungs- noch eine Visumentscheidung/);
 });
@@ -53,4 +53,19 @@ test("qualification copy exists in all supported locales and keeps admission/vis
 test("P2.7D does not unlock Phase 1 or implement offers", () => {
   assert.doesNotMatch(page, /client_active|payment_pending|paid_pending_validation/);
   assert.doesNotMatch(page, /Bronze|Silver|Gold|checkout|payment/i);
+});
+
+test("qualification copy uses student-facing language instead of internal workflow jargon", () => {
+  assert.match(copy, /Avancement du projet/);
+  assert.match(copy, /Prêt pour la suite/);
+  assert.match(copy, /تقدّم المشروع/);
+  assert.match(copy, /جاهز للخطوة التالية/);
+  assert.match(copy, /Project progress/);
+  assert.match(copy, /Ready for the next step/);
+  assert.match(copy, /Projektfortschritt/);
+  assert.match(copy, /Bereit für den nächsten Schritt/);
+  assert.doesNotMatch(copy, /Qualification pas encore calculée|Projet qualifié|étape commerciale suivante|La qualification AlmaGo/);
+  assert.doesNotMatch(copy, /حالة تأهيل محفوظة|مشروع مؤهل|المرحلة التجارية التالية|تأهيل AlmaGo/);
+  assert.doesNotMatch(copy, /Qualification not calculated yet|Project qualified|next commercial step|AlmaGo qualification/);
+  assert.doesNotMatch(copy, /Qualifikation noch nicht berechnet|Projekt qualifiziert|nächste kommerzielle Phase|AlmaGo-Qualifikation/);
 });
