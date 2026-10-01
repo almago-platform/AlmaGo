@@ -106,7 +106,7 @@ export function AppShell({
   const currentAdminItems = partnerPrelaunch
     ? [...adminItems, partnerDemoItem]
     : adminItems;
-  const currentAdminGroups = [
+  const adminGroups = [
     { label: "Pilotage", items: currentAdminItems.slice(0, 1) },
     { label: "Opérations", items: currentAdminItems.slice(1, 7) },
     { label: "Catalogue Allemagne", items: currentAdminItems.slice(7, 11) },
@@ -161,7 +161,7 @@ export function AppShell({
           </p>
           {role === "admin" ? (
             <div className="space-y-4">
-              {currentAdminGroups.map((group) => (
+              {adminGroups.map((group) => (
                 <div key={group.label}>
                   <p className="mb-1.5 px-3 text-[9px] font-bold uppercase tracking-[0.16em] text-[var(--muted)]">{group.label}</p>
                   <div className="space-y-1">
