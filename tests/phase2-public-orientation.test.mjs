@@ -137,3 +137,10 @@ test("orientation has a localized accessible loading state", () => {
   assert.match(loading, /Deine Orientierung wird geladen/);
   assert.match(loading, /orientationCopy\[locale\]/);
 });
+
+test("French orientation summary keeps the admission boundary in plain language", () => {
+  assert.match(copy, /Voici le résumé de vos réponses\. Il ne confirme pas une admission\./);
+  assert.match(copy, /noticeTitle: "Important"/);
+  assert.match(copy, /vérifiez toujours les conditions sur le site officiel/);
+  assert.doesNotMatch(copy, /pas encore une évaluation d’admission/);
+});

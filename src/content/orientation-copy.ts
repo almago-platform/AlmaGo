@@ -92,9 +92,9 @@ const fr: OrientationCopy = {
   summary: {
     eyebrow: "Votre point de départ",
     title: "Voici ce que vous nous avez indiqué.",
-    text: "Ceci est un récapitulatif de vos réponses, pas encore une évaluation d’admission.",
-    noticeTitle: "À garder en tête",
-    noticeText: "Cette orientation aide à organiser votre recherche. Les critères exacts doivent être vérifiés sur les sources des programmes et organismes concernés.",
+    text: "Voici le résumé de vos réponses. Il ne confirme pas une admission.",
+    noticeTitle: "Important",
+    noticeText: "Avant de décider, vérifiez toujours les conditions sur le site officiel du programme ou de l’organisme concerné.",
     edit: "Modifier mes réponses",
     restart: "Recommencer",
     home: "Retour à l’accueil",

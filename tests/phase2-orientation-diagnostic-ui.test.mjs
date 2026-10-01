@@ -32,3 +32,15 @@ test("diagnostic copy exists for all supported locales and avoids guarantees", (
   assert.doesNotMatch(copy, /100%|garanti(?:e)? d.admission|guaranteed admission/i);
   assert.match(copy, /ni une décision d’admission, ni une décision de visa/);
 });
+
+test("French diagnostic copy uses simple student-facing language", () => {
+  assert.match(copy, /Ce que votre projet montre maintenant/);
+  assert.match(copy, /Avant et après le Bac/);
+  assert.match(copy, /Accès aux études/);
+  assert.match(copy, /Conditions d’accès au Master/);
+  assert.match(copy, /Où et quand candidater/);
+  assert.doesNotMatch(copy, /programmes sourcés/);
+  assert.doesNotMatch(copy, /Roadmap avant et après le Bac/);
+  assert.doesNotMatch(copy, /Canal et date de candidature/);
+  assert.doesNotMatch(copy, /la langue reste un chantier important/);
+});
