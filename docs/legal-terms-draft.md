@@ -55,7 +55,7 @@ La politique de conservation approuvée par le propriétaire prévoit la suppres
 Statut actuel confirmé :
 
 - l’orientation en ligne est **gratuite** ;
-- le propriétaire prévoit de rendre cette version gratuite publique avant immatriculation en Tunisie, sous réserve de la relecture juridique finale ;
+- avant immatriculation/licence, la version fonctionnelle est réservée au pré-lancement, aux tests et aux démonstrations partenaires avec des données synthétiques ;
 - des services payants d’accompagnement et de préparation de dossier sont envisagés ;
 - aucune offre payante, aucun pack, aucun tarif et aucune modalité de paiement ne sont encore activés, finalisés ni proposés à la vente.
 
@@ -75,7 +75,7 @@ Ne pas ajouter automatiquement de clause d’exclusion ou limitation de responsa
 
 ## 8. Droit applicable / règlement des litiges
 
-**[À DÉTERMINER PAR LE RELECTEUR EN TENANT COMPTE DE L’EXPLOITATION AU LANCEMENT DEPUIS L’ALLEMAGNE, DE L’ÉTABLISSEMENT FUTUR ENVISAGÉ EN TUNISIE, DU PUBLIC VISÉ ET DU STATUT COMMERCIAL RÉEL]**
+**[À DÉTERMINER AVANT OUVERTURE RÉELLE SELON L’ÉTABLISSEMENT LÉGAL, LE PUBLIC VISÉ ET LE STATUT COMMERCIAL RÉEL]**
 
 ## 9. Contact
 
@@ -85,9 +85,9 @@ Ne pas ajouter automatiquement de clause d’exclusion ou limitation de responsa
 
 Exploitant prévu : **Ayoub Tayari**, personne physique.
 
-Pays d’exploitation au lancement public : **Allemagne**.
+Pays de développement / démonstration partenaire avant ouverture : **Allemagne**.
 
-Pays principal d’établissement prévu à terme : **Tunisie**.
+Pays prévu pour l’établissement légal et l’ouverture du service : **Tunisie**.
 
 Adresse publique, immatriculation et identifiant fiscal éventuels : **[À CONFIRMER AVANT PUBLICATION]**
 
