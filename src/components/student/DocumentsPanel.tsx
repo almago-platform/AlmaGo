@@ -7,6 +7,7 @@ import { Button, buttonClassName } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { studentDocumentsCopy } from "@/content/student-documents-copy";
+import { rebrandCopy } from "@/lib/brand";
 import {
   documentCategories,
   removableDocumentStatuses,
@@ -93,7 +94,7 @@ export function DocumentsPanel({
 }) {
   const router = useRouter();
   const { locale } = useLocale();
-  const t = studentDocumentsCopy[locale];
+  const t = rebrandCopy(studentDocumentsCopy[locale]);
   const fileInput = useRef<HTMLInputElement>(null);
   const [category, setCategory] = useState("passport");
   const [feedback, setFeedback] = useState<Feedback>(null);
