@@ -5,7 +5,11 @@ import test from "node:test";
 const read = (path) => readFileSync(path, "utf8");
 
 const origin = read("src/lib/public-origin.ts");
+const indexing = read("src/lib/public-indexing.ts");
 const layout = read("src/app/layout.tsx");
+const contact = read("src/app/contact/page.tsx");
+const legal = read("src/app/legal/[document]/page.tsx");
+const env = read(".env.example");
 const sitemap = read("src/app/sitemap.ts");
 const robots = read("src/app/robots.ts");
 const nextConfig = read("next.config.ts");
@@ -26,7 +30,21 @@ test("public metadata resolves an absolute non-local production origin", () => {
   assert.doesNotMatch(layout, /localhost|alma-go\.vercel\.app/i);
 });
 
-test("sitemap exposes only the public indexable homepage", () => {
+
+test("public indexing is an explicit launch gate and defaults off", () => {
+  assert.match(indexing, /process\.env\.ALMAGO_PUBLIC_INDEXING_ENABLED === "true"/);
+  assert.match(env, /ALMAGO_PUBLIC_INDEXING_ENABLED=false/);
+  assert.match(layout, /const indexingEnabled = isPublicIndexingEnabled\(\)/);
+  assert.match(layout, /index: indexingEnabled/);
+  assert.match(layout, /follow: indexingEnabled/);
+  assert.match(contact, /const indexingEnabled = isPublicIndexingEnabled\(\)/);
+  assert.match(contact, /index: indexingEnabled/);
+  assert.match(legal, /const indexable = ready && isPublicIndexingEnabled\(\)/);
+  assert.match(legal, /index: indexable/);
+});
+
+test("sitemap is empty before launch and exposes public routes only after indexing is enabled", () => {
+  assert.match(sitemap, /if \(!isPublicIndexingEnabled\(\)\) return \[\]/);
   assert.match(sitemap, /new URL\("\/", publicOrigin\)\.toString\(\)/);
   assert.match(sitemap, /changeFrequency: "weekly"/);
   assert.match(sitemap, /priority: 1/);
@@ -45,7 +63,9 @@ test("sitemap exposes only the public indexable homepage", () => {
   }
 });
 
-test("robots advertises sitemap while preserving private route blocks", () => {
+test("robots blocks all crawling before launch and preserves private route blocks when enabled", () => {
+  assert.match(robots, /if \(!isPublicIndexingEnabled\(\)\)/);
+  assert.match(robots, /disallow: \["\/"\]/);
   assert.match(robots, /allow: \["\/"\]/);
   assert.match(robots, /sitemap: new URL\("\/sitemap\.xml", publicOrigin\)\.toString\(\)/);
 
