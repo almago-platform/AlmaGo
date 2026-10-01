@@ -1,12 +1,14 @@
 export const PUBLIC_ORIENTATION_SESSION_KEY = "almago_phase2_orientation_v1";
 
 export type PublicOrientationBacStatus = "" | "obtained" | "preparing";
+export type PublicOrientationAverageType = "" | "official" | "current_estimate";
 
 export type PublicOrientationAnswers = {
   bacStatus: PublicOrientationBacStatus;
   bacYear: string;
   bacTrack: string;
   generalAverage: string;
+  averageType: PublicOrientationAverageType;
   lastDiploma: string;
   targetDegree: string;
   targetField: string;
@@ -23,6 +25,7 @@ export function createEmptyPublicOrientationAnswers(): PublicOrientationAnswers 
     bacYear: "",
     bacTrack: "",
     generalAverage: "",
+    averageType: "",
     lastDiploma: "",
     targetDegree: "",
     targetField: "",
@@ -39,10 +42,34 @@ function readString(record: Record<string, unknown>, key: keyof PublicOrientatio
   return typeof value === "string" ? value : "";
 }
 
+export function normalizePublicOrientationAverageType({
+  bacStatus,
+  generalAverage,
+  averageType,
+}: {
+  bacStatus: PublicOrientationBacStatus;
+  generalAverage: string;
+  averageType?: unknown;
+}): PublicOrientationAverageType {
+  if (!generalAverage) return "";
+
+  if (bacStatus === "obtained") return "official";
+  if (bacStatus === "preparing") return "current_estimate";
+
+  return averageType === "official" || averageType === "current_estimate"
+    ? averageType
+    : "";
+}
+
 export function restorePublicOrientationAnswers(value: unknown): PublicOrientationAnswers {
   if (!value || typeof value !== "object") return createEmptyPublicOrientationAnswers();
   const record = value as Record<string, unknown>;
-  const bacStatus = readString(record, "bacStatus");
+  const rawBacStatus = readString(record, "bacStatus");
+  const bacStatus: PublicOrientationBacStatus =
+    rawBacStatus === "obtained" || rawBacStatus === "preparing"
+      ? rawBacStatus
+      : "";
+  const generalAverage = readString(record, "generalAverage");
   const preferredCities = Array.isArray(record.preferredCities)
     ? record.preferredCities
         .filter(
@@ -55,10 +82,15 @@ export function restorePublicOrientationAnswers(value: unknown): PublicOrientati
     : [];
 
   return {
-    bacStatus: bacStatus === "obtained" || bacStatus === "preparing" ? bacStatus : "",
+    bacStatus,
     bacYear: readString(record, "bacYear"),
     bacTrack: readString(record, "bacTrack"),
-    generalAverage: readString(record, "generalAverage"),
+    generalAverage,
+    averageType: normalizePublicOrientationAverageType({
+      bacStatus,
+      generalAverage,
+      averageType: record.averageType,
+    }),
     lastDiploma: readString(record, "lastDiploma"),
     targetDegree: readString(record, "targetDegree"),
     targetField: readString(record, "targetField"),
