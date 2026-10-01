@@ -235,7 +235,7 @@ export default async function StudentEntry() {
               </div>
             )}
 
-            <p className="mt-4 text-xs leading-5 text-[var(--muted)]">
+            <p className="mt-4 text-xs leading-5 text-[#626669]">
               {t.progressBoundary}
             </p>
 
