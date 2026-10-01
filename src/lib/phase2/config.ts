@@ -30,3 +30,22 @@ export function isPhase2AccountLinkingEnabled(
   const raw = env.ALMAGO_PHASE2_ACCOUNT_LINKING_ENABLED?.trim().toLowerCase();
   return raw ? ENABLED_VALUES.has(raw) : false;
 }
+
+
+export function isPhase2PaymentOrchestrationEnabled(
+  env: Record<string, string | undefined> = process.env,
+) {
+  if (!isPhase2AccessEnabled(env)) return false;
+  const raw = env.ALMAGO_PHASE2_PAYMENT_ORCHESTRATION_ENABLED?.trim().toLowerCase();
+  return raw ? ENABLED_VALUES.has(raw) : false;
+}
+
+export function isPhase2DevPaymentAdapterEnabled(
+  env: Record<string, string | undefined> = process.env,
+) {
+  if (env.NODE_ENV === "production" || !isPhase2PaymentOrchestrationEnabled(env)) {
+    return false;
+  }
+  const raw = env.ALMAGO_PHASE2_DEV_PAYMENT_ADAPTER_ENABLED?.trim().toLowerCase();
+  return raw ? ENABLED_VALUES.has(raw) : false;
+}
