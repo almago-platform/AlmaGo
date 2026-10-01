@@ -16,7 +16,8 @@ Les éléments suivants ont été confirmés par le propriétaire pour la prépa
 - exploitant actuel prévu : **Ayoub Tayari** ;
 - forme actuelle : **personne physique** ;
 - représentant légal distinct : **non applicable à ce stade** ;
-- pays principal d’établissement prévu : **Tunisie** ;
+- pays d’exploitation au lancement public : **Allemagne** ;
+- pays principal d’établissement prévu à terme : **Tunisie** ;
 - e-mail public : **contact@campus-allemagne.info** ;
 - orientation en ligne actuellement proposée gratuitement ;
 - le propriétaire souhaite lancer publiquement **la version gratuite avant toute immatriculation/identifiant fiscal en Tunisie** ;
@@ -46,7 +47,7 @@ A38 OWNER CONFIRMATION
 5. E-mail public de contact : contact@campus-allemagne.info
 6. Registre + numéro, si applicable : À CONFIRMER SELON IMMATRICULATION / STATUT FINAL EN TUNISIE
 7. TVA / identifiant fiscal, si applicable : À CONFIRMER SELON STATUT FINAL EN TUNISIE
-8. Pays principal d’établissement : Tunisie
+8. Exploitation au lancement public : Allemagne ; établissement prévu à terme : Tunisie
 9. Statut commercial actuel : orientation gratuite ; lancement public gratuit prévu avant immatriculation en Tunisie ; services payants d’accompagnement/préparation envisagés mais non encore activés, tarifés ni proposés à la vente
 10. DPO : À CONFIRMER PAR LE RELECTEUR SELON APPLICABILITÉ
 11. Activité soumise à autorisation ou profession réglementée : À CONFIRMER PAR LE RELECTEUR
@@ -89,8 +90,8 @@ Pour la Phase 1 :
 
 A38 n’est pas prête à être publiée tant que les points suivants ne sont pas réellement résolus :
 
-1. déterminer avec le relecteur quelle adresse publique peut/doit être publiée pour un lancement gratuit avant établissement/immatriculation en Tunisie ;
-2. confirmer avec le relecteur le cadre applicable au lancement public gratuit avant immatriculation, puis compléter immatriculation / registre / identifiant fiscal lorsqu’ils existent ;
+1. déterminer avec le relecteur quelle adresse publique peut/doit être publiée pour un lancement exploité depuis l’Allemagne avant établissement/immatriculation en Tunisie ;
+2. confirmer avec le relecteur le cadre applicable à une exploitation publique gratuite depuis l’Allemagne avant immatriculation en Tunisie, puis compléter immatriculation / registre / identifiant fiscal lorsqu’ils existent ;
 3. détermination de l’existence ou non d’un DPO ;
 4. détermination d’une éventuelle activité réglementée/autorisation ;
 5. bases juridiques des traitements ;
