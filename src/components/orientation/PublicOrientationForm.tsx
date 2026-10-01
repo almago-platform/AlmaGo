@@ -122,6 +122,10 @@ export function PublicOrientationForm({
   const studyLanguages = useMemo(() => localizeProfileOptions(locale, studyLanguageOptions), [locale]);
   const budgets = useMemo(() => localizeProfileOptions(locale, budgetOptions), [locale]);
   const diagnostic = useMemo(() => buildPublicOrientationDiagnostic(answers), [answers]);
+  const selectedCitiesLabel =
+    locale === "ar"
+      ? `${copy.controls.selected} ${answers.preferredCities.length}`
+      : `${answers.preferredCities.length} ${copy.controls.selected}`;
 
   useEffect(() => {
     if (authenticatedUpdate) return;
@@ -447,7 +451,7 @@ export function PublicOrientationForm({
 
                     <details className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)]">
                       <summary className="cursor-pointer px-4 py-3 text-sm font-semibold">
-                        {copy.fields.cities} · {answers.preferredCities.length} {copy.controls.selected}
+                        {copy.fields.cities} · {selectedCitiesLabel}
                       </summary>
                       <div className="border-t border-[var(--border)] p-4">
                         <p className="mb-3 text-xs leading-5 text-[var(--muted)]">{copy.fields.citiesHelp}</p>
