@@ -120,17 +120,11 @@ function proofTokenHash(linkData) {
 }
 
 async function verifyProofLink(page, { tokenHash, type, next }) {
-  const url = new URL("/api/e2e/p24-confirm", "http://127.0.0.1:3000");
+  const url = new URL("/e2e/p24-confirm", "http://127.0.0.1:3000");
   url.searchParams.set("token_hash", tokenHash);
   url.searchParams.set("type", type);
   url.searchParams.set("next", next);
   await page.goto(url.pathname + url.search, { waitUntil: "domcontentloaded" });
-}
-
-async function getUserByEmail(email) {
-  const { data, error } = await adminClient.auth.admin.listUsers({ page: 1, perPage: 1000 });
-  expect(error).toBeNull();
-  return data.users.find((user) => user.email?.toLowerCase() === email.toLowerCase()) || null;
 }
 
 async function cleanup() {
@@ -138,10 +132,6 @@ async function cleanup() {
 
   for (const id of orientationIds) {
     await adminClient.from("orientations").delete().eq("id", id);
-  }
-
-  if (disposableUserId) {
-    await adminClient.from("customer_access").delete().eq("user_id", disposableUserId);
   }
 
   for (const id of prospectIds) {
@@ -172,16 +162,18 @@ test.describe("P2.4 real Supabase/Auth closure proof", () => {
     expect(repeated.status()).toBe(200);
     expect(await repeated.json()).toEqual({ linked: true });
 
-    const studentUser = await getUserByEmail(studentEmail);
-    expect(studentUser).not.toBeNull();
-
     const { data: prospect, error: prospectError } = await adminClient
       .from("prospects")
       .select("id,user_id")
       .eq("id", fixture.prospectId)
       .single();
     expect(prospectError).toBeNull();
-    expect(prospect.user_id).toBe(studentUser.id);
+    expect(prospect.user_id).toMatch(/^[0-9a-f-]{36}$/);
+
+    const { data: studentUser, error: studentUserError } =
+      await adminClient.auth.admin.getUserById(prospect.user_id);
+    expect(studentUserError).toBeNull();
+    expect(studentUser.user?.email?.toLowerCase()).toBe(studentEmail.toLowerCase());
 
     const { count, error: countError } = await adminClient
       .from("prospects")
@@ -204,7 +196,7 @@ test.describe("P2.4 real Supabase/Auth closure proof", () => {
       .select("user_id")
       .eq("id", fixture.prospectId)
       .single();
-    expect(unchanged.user_id).toBe(studentUser.id);
+    expect(unchanged.user_id).toBe(prospect.user_id);
   });
 
   test("signup confirmation creates a free prospect account and password recovery preserves claim context", async ({ page, request }) => {
@@ -235,9 +227,6 @@ test.describe("P2.4 real Supabase/Auth closure proof", () => {
     });
     await expect(page.locator('a[href="/prospect"]')).toBeVisible({ timeout: 25_000 });
 
-    if (!disposableUserId) {
-      disposableUserId = (await getUserByEmail(disposableEmail))?.id || null;
-    }
     expect(disposableUserId).toBeTruthy();
 
     const { data: freeProspect, error: freeProspectError } = await adminClient
