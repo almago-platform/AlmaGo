@@ -3,6 +3,9 @@ import { readFileSync } from "node:fs";
 import test from "node:test";
 
 const page = readFileSync("src/app/student/pathway/page.tsx", "utf8");
+const projectPage = readFileSync("src/app/student/project/page.tsx", "utf8");
+const projectForm = readFileSync("src/components/student/StudentProjectForm.tsx", "utf8");
+const projectCopy = readFileSync("src/content/student-project-copy.ts", "utf8");
 const copy = readFileSync("src/content/student-pathway-copy.ts", "utf8");
 const shell = readFileSync("src/components/layout/AppShell.tsx", "utf8");
 const dashboard = readFileSync("src/app/student/page.tsx", "utf8");
@@ -84,4 +87,13 @@ test("country-specific regulatory sources are never inferred from nationality", 
   assert.ok(copy.includes("AlmaGo ne déduit pas ce pays de votre nationalité"));
   assert.match(page, /originCountry\.toUpperCase\(\) === filingCountry\.toUpperCase\(\)/);
   assert.doesNotMatch(page, /nationality|nationalité.*===|Tunisienne/i);
+});
+
+test("student project and pathway render localized copy through the canonical brand layer", () => {
+  assert.match(projectPage, /const t = rebrandCopy\(studentProjectCopy\[locale\]\)/);
+  assert.match(projectForm, /const t = rebrandCopy\(studentProjectCopy\[locale\]\)/);
+  assert.match(page, /const t = rebrandCopy\(studentPathwayCopy\[locale\]\)/);
+  assert.match(page, /const projectCopy = rebrandCopy\(studentProjectCopy\[locale\]\)/);
+  assert.match(projectCopy, /AlmaGo/);
+  assert.match(copy, /AlmaGo/);
 });

@@ -4,12 +4,13 @@ import { StudentJourneyHeader } from "@/components/student/StudentJourneyHeader"
 import { createClient } from "@/lib/supabase/server";
 import { getRequestLocale } from "@/lib/i18n-server";
 import { studentProjectCopy } from "@/content/student-project-copy";
+import { rebrandCopy } from "@/lib/brand";
 
 export const dynamic = "force-dynamic";
 
 export default async function StudentProjectPage() {
   const locale = await getRequestLocale();
-  const t = studentProjectCopy[locale];
+  const t = rebrandCopy(studentProjectCopy[locale]);
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
