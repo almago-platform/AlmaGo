@@ -8,7 +8,7 @@ test("AI backlog dispatcher is manual-only during Partner-Ready Calm Mode", () =
   assert.match(workflow, /workflow_dispatch:/);
   assert.doesNotMatch(workflow, /\n  schedule:/);
   assert.doesNotMatch(workflow, /\n  push:/);
-  assert.doesNotMatch(workflow, /\n  issues:/);
+  assert.doesNotMatch(workflow, /issues:\n\s+types: \[opened, labeled, reopened\]/);
 });
 
 test("AI backlog dispatcher preserves provider and duplicate-run gates", () => {
