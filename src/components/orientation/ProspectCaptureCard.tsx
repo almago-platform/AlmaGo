@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { orientationProspectCopy } from "@/content/orientation-prospect-copy";
 import type { PublicOrientationAnswers } from "@/lib/orientation/public";
+import type { AcquisitionContext } from "@/lib/phase2/acquisition";
 
 type ProspectCaptureResponse = {
   saved?: boolean;
@@ -14,9 +15,11 @@ type ProspectCaptureResponse = {
 export function ProspectCaptureCard({
   answers,
   emailDeliveryEnabled = false,
+  acquisitionContext = null,
 }: {
   answers: PublicOrientationAnswers;
   emailDeliveryEnabled?: boolean;
+  acquisitionContext?: AcquisitionContext | null;
 }) {
   const { locale } = useLocale();
   const copy = orientationProspectCopy[locale].capture;
@@ -49,6 +52,7 @@ export function ProspectCaptureCard({
           locale,
           answers,
           privacyAcknowledged: true,
+          ...(acquisitionContext ? { acquisition: acquisitionContext } : {}),
         }),
       });
 
