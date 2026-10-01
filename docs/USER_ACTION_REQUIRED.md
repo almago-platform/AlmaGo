@@ -4,16 +4,15 @@ Ce fichier ne liste que les actions qui nécessitent le compte, une décision, u
 
 Source opérationnelle de suivi : GitHub issue #22.
 
-## Séquence de fermeture — garder un release candidate stable
+## Deux jalons distincts : Partner-Ready puis Public Live
 
-Avant les preuves finales A38 → A43 → A44 → A45 :
+Le travail technique continue jusqu'à obtenir un produit **Partner-Ready** : démonstrable aux banques, assurances et autres partenaires avec données synthétiques, sans exploitation réelle du service.
 
-1. terminer et merger uniquement les changements réellement retenus pour le lancement ;
-2. fermer ou différer les PR/tickets superseded ;
-3. relever le SHA exact du release candidate sur `main` ;
-4. éviter tout changement non indispensable pendant la chaîne de preuve.
+Avant l'ouverture réelle au public, figer ensuite un release candidate et exécuter la chaîne finale sur un même SHA :
 
-Si `main` change après une preuve exact-SHA, cette preuve doit être rejouée sur le nouveau SHA.
+**A38 → A43 → A44 → A45**
+
+Si `main` change après une preuve exact-SHA, la preuve concernée doit être rejouée.
 
 ## État infrastructure déjà résolu
 
@@ -70,6 +69,8 @@ Reste humain :
 - date, version et date d'entrée en vigueur.
 
 Après vraie relecture, suivre le gate A38 prévu. Ne jamais inventer ces champs.
+
+A38 reste obligatoire avant l'ouverture réelle du service, mais ne bloque pas la préparation Partner-Ready avec comptes/données de démonstration.
 
 ## 3. P2.3 — email transactionnel réel
 
