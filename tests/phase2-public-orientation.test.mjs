@@ -151,3 +151,12 @@ test("Phase 2 footer does not bypass orientation through the legacy signup link"
   assert.match(closing, /const resolvedHref = orientationLink \? "\/orientation" : href/);
   assert.match(closing, /const resolvedLabel = orientationLink && orientationLabel \? orientationLabel : label/);
 });
+
+test("Arabic orientation copy uses natural MSA for visible questionnaire guidance", () => {
+  assert.match(copy, /obtained: "حصلت عليها"/);
+  assert.match(copy, /اختر مستواك الحالي كما هو، حتى لو كنت في البداية/);
+  assert.match(copy, /ستساعدنا هذه المعلومات لاحقًا على ترتيب الخيارات المناسبة/);
+  assert.match(copy, /cities: "المدن التي تهمك"/);
+  assert.match(copy, /يجب التحقق من الشروط الدقيقة عبر المصادر الرسمية/);
+  assert.doesNotMatch(copy, /تحصلت عليها|أدخل مستواك الحالي كما هو/);
+});
