@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import type { ProspectOffersCopy } from "@/content/prospect-offers-copy";
 
@@ -26,6 +27,12 @@ export function ProspectOfferSelector({
       <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 sm:p-6">
         <h2 className="text-xl font-bold text-[var(--foreground)]">{copy.emptyTitle}</h2>
         <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--muted)]">{copy.emptyBody}</p>
+        <Link
+          href="/prospect"
+          className="mt-5 inline-flex min-h-11 items-center rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-4 text-sm font-bold text-[var(--foreground)]"
+        >
+          {copy.backToSpace}
+        </Link>
       </section>
     );
   }

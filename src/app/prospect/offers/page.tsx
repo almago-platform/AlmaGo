@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { ProspectOfferSelector, type PublishedOfferCard } from "@/components/prospect/ProspectOfferSelector";
 import { prospectOffersCopy } from "@/content/prospect-offers-copy";
 import { getRequestLocale } from "@/lib/i18n-server";
@@ -71,6 +72,12 @@ export default async function ProspectOffersPage() {
         <section className="rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--brand-soft)] p-5 sm:p-6">
           <h2 className="text-xl font-bold text-[var(--foreground)]">{copy.lockedTitle}</h2>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-700">{copy.lockedBody}</p>
+          <Link
+            href="/prospect"
+            className="mt-5 inline-flex min-h-11 items-center rounded-[var(--radius-control)] border border-[var(--brand-border)] bg-[var(--surface)] px-4 text-sm font-bold text-[var(--brand-strong)]"
+          >
+            {copy.backToSpace}
+          </Link>
         </section>
       </main>
     );

@@ -204,3 +204,21 @@ test("prospect offers has a localized neutral loading state", () => {
   assert.match(prospectLoading, /prospectOffersCopy\[locale\]/);
   assert.doesNotMatch(prospectLoading, /€\s*\d|EUR\s*\d|admission garantie|visa garanti/i);
 });
+
+test("locked and empty offer states provide a clear way back to the prospect space", () => {
+  assert.match(prospectPage, /href="\/prospect"[\s\S]*\{copy\.backToSpace\}/);
+  assert.match(selector, /href="\/prospect"[\s\S]*\{copy\.backToSpace\}/);
+  assert.match(copy, /backToSpace: "Retour à mon espace"/);
+  assert.match(copy, /backToSpace: "العودة إلى مساحتي"/);
+  assert.match(copy, /backToSpace: "Back to my space"/);
+  assert.match(copy, /backToSpace: "Zurück zu meinem Bereich"/);
+});
+
+test("offer empty states use student-facing language instead of internal product jargon", () => {
+  assert.match(copy, /Vos offres seront disponibles après vérification de votre projet/);
+  assert.match(copy, /ستظهر عروضك بعد مراجعة مشروعك/);
+  assert.match(copy, /Your offers will appear after your project is reviewed/);
+  assert.match(copy, /Deine Angebote erscheinen nach der Prüfung deines Projekts/);
+  assert.doesNotMatch(copy, /qualification humaine|human qualification stage|تأهيل المشروع|menschliche Qualifikationsstufe/);
+  assert.doesNotMatch(copy, /Aucun prix ni service n’est inventé|No price or service is invented/);
+});
