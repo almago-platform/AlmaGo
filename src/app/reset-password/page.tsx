@@ -4,13 +4,14 @@ import { ResetPasswordForm } from "@/components/auth/ResetPasswordForm";
 import { BrandLogo } from "@/components/brand/BrandLogo";
 import { LanguageSwitcher } from "@/components/i18n/LanguageSwitcher";
 import { accountStateCopy } from "@/content/account-state-copy";
+import { rebrandCopy } from "@/lib/brand";
 import { getRequestLocale } from "@/lib/i18n-server";
 import { resolveOrientationActivation } from "@/lib/orientation/account-activation";
 import { isPhase2AccountLinkingEnabled } from "@/lib/phase2/config";
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getRequestLocale();
-  const t = accountStateCopy[locale].reset;
+  const t = rebrandCopy(accountStateCopy[locale].reset);
 
   return {
     title: t.formTitle,
@@ -31,7 +32,7 @@ export default async function ResetPasswordPage({
   const orientationActivation = isPhase2AccountLinkingEnabled()
     ? await resolveOrientationActivation(rawToken)
     : null;
-  const t = accountStateCopy[locale].reset;
+  const t = rebrandCopy(accountStateCopy[locale].reset);
   const loginHref = orientationActivation
     ? `/login?orientation_token=${encodeURIComponent(orientationActivation.token)}`
     : "/login";
