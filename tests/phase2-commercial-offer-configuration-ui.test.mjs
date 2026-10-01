@@ -204,3 +204,12 @@ test("prospect offers has a localized neutral loading state", () => {
   assert.match(prospectLoading, /prospectOffersCopy\[locale\]/);
   assert.doesNotMatch(prospectLoading, /€\s*\d|EUR\s*\d|admission garantie|visa garanti/i);
 });
+
+test("locked and empty offer states provide a clear way back to the prospect space", () => {
+  assert.match(prospectPage, /href="\/prospect"[\s\S]*\{copy\.backToSpace\}/);
+  assert.match(selector, /href="\/prospect"[\s\S]*\{copy\.backToSpace\}/);
+  assert.match(copy, /backToSpace: "Retour à mon espace"/);
+  assert.match(copy, /backToSpace: "العودة إلى مساحتي"/);
+  assert.match(copy, /backToSpace: "Back to my space"/);
+  assert.match(copy, /backToSpace: "Zurück zu meinem Bereich"/);
+});
