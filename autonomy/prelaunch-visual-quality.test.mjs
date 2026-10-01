@@ -55,9 +55,11 @@ test("invalid visual review fails closed", () => {
 });
 
 
-test("visual workflow is billing-gated, main-only and cannot auto-merge", () => {
+test("visual workflow is manual, billing-gated and cannot auto-merge", () => {
   const workflow = readFileSync(".github/workflows/almago-prelaunch-visual-quality.yml", "utf8");
-  assert.match(workflow, /branches: \[main\]/);
+  assert.match(workflow, /workflow_dispatch:/);
+  assert.doesNotMatch(workflow, /\n  push:/);
+  assert.doesNotMatch(workflow, /\n  schedule:/);
   assert.match(workflow, /ALMAGO_AI_ENABLED == 'true'/);
   assert.match(workflow, /ALMAGO_AI_BILLING_CAP_CONFIRMED == 'true'/);
   assert.match(workflow, /ALMAGO_COPILOT_AUTOPILOT_DRY_RUN: "false"/);
