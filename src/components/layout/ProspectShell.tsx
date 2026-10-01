@@ -2,13 +2,26 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState, type ReactNode } from "react";
+import { useSyncExternalStore, type ReactNode } from "react";
 import { BrandLogo } from "@/components/brand/BrandLogo";
 import { LanguageSwitcher } from "@/components/i18n/LanguageSwitcher";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { prospectDashboardCopy } from "@/content/prospect-dashboard-copy";
 import { prospectOffersCopy } from "@/content/prospect-offers-copy";
 import { createClient } from "@/lib/supabase/client";
+
+function subscribeToHash(onStoreChange: () => void) {
+  window.addEventListener("hashchange", onStoreChange);
+  return () => window.removeEventListener("hashchange", onStoreChange);
+}
+
+function getHashSnapshot() {
+  return window.location.hash || "#orientation";
+}
+
+function getServerHashSnapshot() {
+  return "";
+}
 
 export function ProspectShell({
   children,
@@ -19,7 +32,12 @@ export function ProspectShell({
 }>) {
   const pathname = usePathname();
   const router = useRouter();
-  const [activeHash, setActiveHash] = useState("");
+  const hashSnapshot = useSyncExternalStore(
+    subscribeToHash,
+    getHashSnapshot,
+    getServerHashSnapshot,
+  );
+  const activeHash = pathname === "/prospect" ? hashSnapshot : "";
   const { locale, direction, copy } = useLocale();
   const t = prospectDashboardCopy[locale].shell;
   const offersCopy = prospectOffersCopy[locale];
@@ -33,18 +51,6 @@ export function ProspectShell({
     { href: "/orientation?mode=update", label: t.links.update },
     { href: "/prospect/offers", label: offersCopy.nav },
   ];
-
-  useEffect(() => {
-    if (pathname !== "/prospect") {
-      setActiveHash("");
-      return;
-    }
-
-    const syncHash = () => setActiveHash(window.location.hash || "#orientation");
-    syncHash();
-    window.addEventListener("hashchange", syncHash);
-    return () => window.removeEventListener("hashchange", syncHash);
-  }, [pathname]);
 
   async function signOut() {
     await createClient().auth.signOut();
@@ -99,7 +105,6 @@ export function ProspectShell({
                   <Link
                     key={item.href}
                     href={item.href}
-                    onClick={hash ? () => setActiveHash(hash) : undefined}
                     aria-current={active ? (hash ? "location" : "page") : undefined}
                     className={`rounded-[var(--radius-control)] border px-3 py-2.5 text-sm font-semibold transition-colors ${active ? "border-[var(--brand-border)] bg-[var(--brand-soft)] text-[var(--brand-strong)]" : "border-transparent text-[var(--foreground)] hover:border-[var(--brand-border)] hover:bg-[var(--brand-soft)] hover:text-[var(--brand-strong)]"}`}
                   >
