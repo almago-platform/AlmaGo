@@ -7,8 +7,8 @@ type QuickCopy = ReturnType<typeof getNativeCopy>["home"]["quick"];
 const meta: Array<{ href: string; icon: HomeIconName }> = [
   { href: "#programmes", icon: "book" },
   { href: "#parcours", icon: "route" },
-  { href: "#parcours", icon: "document" },
-  { href: "#parcours", icon: "globe" },
+  { href: "#documents", icon: "document" },
+  { href: "#depart", icon: "globe" },
   { href: "#faq", icon: "question" },
 ];
 
