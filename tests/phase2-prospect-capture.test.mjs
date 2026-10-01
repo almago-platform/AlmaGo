@@ -62,3 +62,17 @@ test("email capture is optional and shown only when the server flag enables it",
   assert.match(capture, /\/legal\/privacy/);
   assert.match(capture, /fetch\("\/api\/orientation\/prospect"/);
 });
+
+test("prospect email capture is mobile-friendly and accessibly validates without enabling the feature", () => {
+  assert.match(capture, /noValidate aria-busy=\{status === "saving"\}/);
+  assert.match(capture, /name="email"/);
+  assert.match(capture, /inputMode="email"/);
+  assert.match(capture, /autoCapitalize="none"/);
+  assert.match(capture, /spellCheck=\{false\}/);
+  assert.match(capture, /required/);
+  assert.match(capture, /aria-invalid=\{status === "error" && message === copy\.invalidEmail\}/);
+  assert.match(capture, /aria-describedby=\{message \? "orientation-capture-message" : undefined\}/);
+  assert.match(capture, /id="orientation-capture-message"/);
+  assert.match(capture, /name="privacyAcknowledged"/);
+  assert.match(capture, /rel="noopener noreferrer"/);
+});
