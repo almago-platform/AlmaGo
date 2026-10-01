@@ -4,6 +4,10 @@ import { buildPublicOrientationDiagnostic } from "@/lib/orientation/diagnostic";
 import { restorePublicOrientationAnswers } from "@/lib/orientation/public";
 import { getPhase2StudentAccess } from "@/lib/phase2/access";
 import {
+  acquisitionContextFromStoredInput,
+  isPhase2AttributionEnabled,
+} from "@/lib/phase2/acquisition";
+import {
   evaluateProspectQualification,
 } from "@/lib/phase2/qualification";
 import { createPrivilegedSupabaseClient } from "@/lib/supabase/privileged";
@@ -111,7 +115,7 @@ export async function POST(request: Request) {
 
   const { data: latestOrientation, error: latestOrientationError } = await access.supabase
     .from("orientations")
-    .select("id")
+    .select("id,input")
     .eq("prospect_id", prospect.id)
     .order("created_at", { ascending: false })
     .order("id", { ascending: false })
@@ -124,6 +128,9 @@ export async function POST(request: Request) {
 
   const diagnostic = buildPublicOrientationDiagnostic(answers);
   const qualification = evaluateProspectQualification(answers, diagnostic);
+  const acquisition = isPhase2AttributionEnabled()
+    ? acquisitionContextFromStoredInput(latestOrientation?.input)
+    : null;
 
   let privileged;
   try {
@@ -143,6 +150,7 @@ export async function POST(request: Request) {
         answers,
         locale,
         source: "prospect_account_update",
+        ...(acquisition ? { acquisition } : {}),
       },
       p_orientation_result: diagnostic,
       p_qualification_engine_version: qualification.engineVersion,
