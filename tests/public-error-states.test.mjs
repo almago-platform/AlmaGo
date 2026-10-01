@@ -12,14 +12,14 @@ test("public 404 is branded, localized and offers safe recovery", () => {
   assert.match(notFound, /BrandLogo/);
   assert.match(notFound, /LanguageSwitcher/);
   assert.match(notFound, /getRequestLocale\(\)/);
-  assert.match(notFound, /publicStateCopy\[locale\]\.notFound/);
+  assert.match(notFound, /rebrandCopy\(publicStateCopy\[locale\]\.notFound\)/);
   assert.match(notFound, /<ButtonLink href="\/">\{t\.home\}<\/ButtonLink>/);
   assert.match(notFound, /<ButtonLink href="\/contact" variant="secondary">\{t\.contact\}<\/ButtonLink>/);
 });
 
 test("public route error offers retry without exposing technical error details", () => {
   assert.match(errorPage, /^"use client";/);
-  assert.match(errorPage, /const \{ locale \} = useLocale\(\)/);
+  assert.match(errorPage, /const \{ locale \} = useLocale\(\)/);\n  assert.match(errorPage, /rebrandCopy\(publicStateCopy\[locale\]\.error\)/);
   assert.match(errorPage, /onClick=\{reset\}/);
   assert.match(errorPage, /<ButtonLink href="\/" variant="secondary">\{t\.home\}<\/ButtonLink>/);
   assert.doesNotMatch(errorPage, /error\.message|error\.stack|error\.digest|digest\}/);
