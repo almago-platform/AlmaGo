@@ -4,10 +4,11 @@ import test from "node:test";
 
 const workflow = readFileSync(".github/workflows/almago-ai-backlog-dispatch.yml", "utf8");
 
-test("AI backlog dispatcher polls every five minutes and can react to ready issues", () => {
-  assert.match(workflow, /cron: "\*\/5 \* \* \* \*"/);
-  assert.match(workflow, /issues:\n\s+types: \[opened, labeled, reopened\]/);
+test("AI backlog dispatcher is manual-only during Partner-Ready Calm Mode", () => {
   assert.match(workflow, /workflow_dispatch:/);
+  assert.doesNotMatch(workflow, /\n  schedule:/);
+  assert.doesNotMatch(workflow, /\n  push:/);
+  assert.doesNotMatch(workflow, /\n  issues:/);
 });
 
 test("AI backlog dispatcher preserves provider and duplicate-run gates", () => {
