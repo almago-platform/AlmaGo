@@ -28,7 +28,7 @@ test("current quick access exposes five actions", () => {
   assert.equal(quick.split('icon: "').length - 1, 5);
   assert.ok(quick.includes("quick.items.map"));
   assert.ok(quick.includes("key={title}"));
-  assert.ok(nativeCopy.includes('"Trouver un programme"'));
+  assert.ok(nativeCopy.includes('"Comparer les programmes"'));
   assert.ok(nativeCopy.includes('"Voir les questions"'));
 });
 
