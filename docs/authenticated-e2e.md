@@ -43,7 +43,11 @@ Render mode:
 6. checks Render again immediately before A43 closure;
 7. re-reads current `main` and refuses closure if it moved.
 
-A successful local run is useful regression evidence but **cannot close A43**.
+During Partner-Ready, a relevant push to `main` targets **Render by default**. This is a rehearsal against the canonical runtime: it proves the exact deployed SHA and the authenticated matrices, but A43 remains open while A38 is incomplete.
+
+Manual dispatch still exposes the explicit `render/local` choice. Probe/comment flows keep the local fallback unless a target input exists.
+
+A successful local run is useful regression evidence but **cannot close A43**. A successful Render rehearsal before A38 is also not the final release proof; it must be replayed on the final release candidate after A38.
 
 ## A43 closure
 
