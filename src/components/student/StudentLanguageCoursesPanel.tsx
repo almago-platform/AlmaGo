@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { studentLanguageCoursesCopy } from "@/content/student-language-courses-copy";
+import { rebrandCopy } from "@/lib/brand";
 import { catalogVerificationExpiresAt } from "@/lib/catalog-freshness";
 import { localizeCatalogueLabel } from "@/lib/student/arabic-display";
 
@@ -99,7 +100,7 @@ function levelLabel(
 
 export function StudentLanguageCoursesPanel() {
   const { locale } = useLocale();
-  const t = studentLanguageCoursesCopy[locale].panel;
+  const t = rebrandCopy(studentLanguageCoursesCopy[locale]).panel;
   const [draftFilters, setDraftFilters] = useState<Filters>(emptyFilters);
   const [filters, setFilters] = useState<Filters>(emptyFilters);
   const [courses, setCourses] = useState<Course[]>([]);

@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/Card";
 import { createClient } from "@/lib/supabase/server";
 import { getRequestLocale } from "@/lib/i18n-server";
 import { studentDocumentsCopy } from "@/content/student-documents-copy";
+import { rebrandCopy } from "@/lib/brand";
 import {
   toStudentAcademicEvidenceView,
   type AcademicEvidenceStoreRow,
@@ -15,7 +16,7 @@ export const dynamic = "force-dynamic";
 
 export default async function StudentDocumentsPage() {
   const locale = await getRequestLocale();
-  const t = studentDocumentsCopy[locale];
+  const t = rebrandCopy(studentDocumentsCopy[locale]);
   const supabase = await createClient();
   const {
     data: { user },

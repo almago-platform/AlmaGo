@@ -63,3 +63,10 @@ test("loading, error and empty catalogue states remain explicit", () => {
   assert.match(panel, /role="alert"/);
   assert.match(panel, /aria-live="polite"/);
 });
+
+
+test("student language-course surfaces render localized copy through the canonical brand layer", () => {
+  assert.match(page, /const t = rebrandCopy\(studentLanguageCoursesCopy\[locale\]\)/);
+  assert.match(panel, /const t = rebrandCopy\(studentLanguageCoursesCopy\[locale\]\)\.panel/);
+  assert.match(copy, /AlmaGo/);
+});
