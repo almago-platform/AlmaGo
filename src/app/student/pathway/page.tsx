@@ -22,14 +22,15 @@ import { getRequestLocale } from "@/lib/i18n-server";
 import type { Locale } from "@/lib/i18n";
 import { studentPathwayCopy } from "@/content/student-pathway-copy";
 import { studentProjectCopy } from "@/content/student-project-copy";
+import { rebrandCopy } from "@/lib/brand";
 import { localizeCatalogueLabel, localizeRegulatorySummary } from "@/lib/student/arabic-display";
 
 export const dynamic = "force-dynamic";
 
 export default async function StudentPathwayPage() {
   const locale = await getRequestLocale();
-  const t = studentPathwayCopy[locale];
-  const projectCopy = studentProjectCopy[locale];
+  const t = rebrandCopy(studentPathwayCopy[locale]);
+  const projectCopy = rebrandCopy(studentProjectCopy[locale]);
   const supabase = await createClient();
   const {
     data: { user },
