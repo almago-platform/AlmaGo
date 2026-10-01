@@ -24,10 +24,10 @@ test("Partner-Ready Calm Mode keeps heavy/autonomous workflows manual", () => {
   }
 });
 
-test("Browser Quality stays on PRs but does not duplicate on main push", () => {
+test("Browser Quality is explicit and milestone-driven during Calm Mode", () => {
   const workflow = readFileSync(".github/workflows/almago-browser-quality.yml", "utf8");
-  assert.match(workflow, /pull_request:/);
   assert.match(workflow, /workflow_dispatch:/);
+  assert.doesNotMatch(workflow, /\n  pull_request:/);
   assert.doesNotMatch(workflow, /\n  push:/);
 });
 
@@ -43,7 +43,7 @@ test("Vercel automatic Git deployments are disabled during Calm Mode", () => {
   assert.equal(config.git?.deploymentEnabled, false);
 });
 
-test("Canonical PR CI remains automatic", () => {
+test("Canonical PR CI is the only automatic PR quality gate", () => {
   const workflow = readFileSync(".github/workflows/almago-pr-ci.yml", "utf8");
   assert.match(workflow, /pull_request:/);
   assert.match(workflow, /Tests/);
