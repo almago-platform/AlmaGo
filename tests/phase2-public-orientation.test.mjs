@@ -167,3 +167,8 @@ test("Arabic city selection count uses natural word order", () => {
   assert.match(copy, /summary: "عرض توجيهي", selected: "تم اختيار"/);
   assert.doesNotMatch(copy, /selected: "تم اختيارها"/);
 });
+
+test("public orientation renders legacy source copy through the canonical brand layer", () => {
+  assert.match(form, /const copy = rebrandCopy\(orientationCopy\[locale\]\)/);
+  assert.match(copy, /Rien n’est envoyé à AlmaGo/);
+});
