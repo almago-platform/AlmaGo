@@ -14,8 +14,9 @@ test("public contact route uses only the confirmed Campus Allemagne email", () =
 
 test("contact route keeps a dedicated canonical URL", () => {
   assert.match(page, /new URL\("\/contact", publicOrigin\)/);
-  assert.match(page, /index: true/);
-  assert.match(page, /follow: true/);
+  assert.match(page, /const indexingEnabled = isPublicIndexingEnabled\(\)/);
+  assert.match(page, /index: indexingEnabled/);
+  assert.match(page, /follow: indexingEnabled/);
 });
 
 test("all four public footer locales expose the contact route", () => {
