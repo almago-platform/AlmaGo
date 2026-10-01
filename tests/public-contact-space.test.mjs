@@ -31,3 +31,9 @@ test("contact route reuses the approved public brand and footer", () => {
   assert.match(page, /HomeFooter/);
   assert.match(page, /rebrandCopy\(getNativeCopy\(locale\)\)/);
 });
+
+test("contact footer follows the Phase 2 orientation funnel when enabled", () => {
+  assert.match(page, /const phase2Enabled = isPhase2AccessEnabled\(\)/);
+  assert.match(page, /<HomeFooter[\s\S]*phase2Enabled=\{phase2Enabled\}/);
+  assert.match(page, /orientationLabel=\{copy\.home\.nav\.orientation\}/);
+});
