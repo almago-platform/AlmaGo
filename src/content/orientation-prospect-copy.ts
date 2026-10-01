@@ -15,6 +15,8 @@ export type OrientationProspectCopy = {
     emailLabel: string;
     privacyLabel: string;
     privacyLink: string;
+    contactConsentLabel: string;
+    contactConsentHelp: string;
     submit: string;
     sending: string;
     success: string;
@@ -42,6 +44,8 @@ const fr: OrientationProspectCopy = {
     emailLabel: "Adresse e-mail",
     privacyLabel: "J’ai lu l’information de confidentialité et je demande la sauvegarde de cette orientation.",
     privacyLink: "Confidentialité",
+    contactConsentLabel: "J’accepte que Campus Allemagne me contacte au sujet de mon projet d’études.",
+    contactConsentHelp: "Facultatif. Ce choix n’est pas nécessaire pour sauvegarder ou recevoir votre orientation.",
     submit: "Sauvegarder mon orientation",
     sending: "Sauvegarde…",
     success: "Orientation sauvegardée. Aucun compte n’a été créé.",
@@ -69,6 +73,8 @@ const ar: OrientationProspectCopy = {
     emailLabel: "البريد الإلكتروني",
     privacyLabel: "قرأت معلومات الخصوصية وأطلب حفظ هذا التوجيه.",
     privacyLink: "الخصوصية",
+    contactConsentLabel: "أوافق على أن يتواصل معي Campus Allemagne بخصوص مشروعي الدراسي.",
+    contactConsentHelp: "اختياري. لا يلزم هذا الاختيار لحفظ توجيهك أو استلامه.",
     submit: "حفظ توجيهي",
     sending: "جارٍ الحفظ…",
     success: "تم حفظ التوجيه. لم يتم إنشاء أي حساب.",
@@ -96,6 +102,8 @@ const en: OrientationProspectCopy = {
     emailLabel: "Email address",
     privacyLabel: "I have read the privacy information and request that this orientation be saved.",
     privacyLink: "Privacy",
+    contactConsentLabel: "I agree that Campus Allemagne may contact me about my study project.",
+    contactConsentHelp: "Optional. This is not required to save or receive your orientation.",
     submit: "Save my orientation",
     sending: "Saving…",
     success: "Orientation saved. No account was created.",
@@ -123,6 +131,8 @@ const de: OrientationProspectCopy = {
     emailLabel: "E-Mail-Adresse",
     privacyLabel: "Ich habe die Datenschutzhinweise gelesen und bitte um Speicherung dieser Orientierung.",
     privacyLink: "Datenschutz",
+    contactConsentLabel: "Ich bin damit einverstanden, dass Campus Allemagne mich zu meinem Studienprojekt kontaktiert.",
+    contactConsentHelp: "Optional. Diese Zustimmung ist nicht nötig, um deine Orientierung zu speichern oder zu erhalten.",
     submit: "Orientierung speichern",
     sending: "Wird gespeichert…",
     success: "Orientierung gespeichert. Es wurde kein Konto erstellt.",
