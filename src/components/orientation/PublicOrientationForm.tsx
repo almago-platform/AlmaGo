@@ -545,7 +545,7 @@ export function PublicOrientationForm({
                           label={diagnosticCopy.status[diagnostic.overallStatus]}
                         />
                       </div>
-                      <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
+                      <p className="mt-2 text-sm leading-6 text-[var(--foreground)]">
                         {diagnosticCopy.headlines[diagnostic.headlineCode].body}
                       </p>
                     </div>
