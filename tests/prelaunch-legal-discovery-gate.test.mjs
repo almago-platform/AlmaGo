@@ -17,7 +17,12 @@ test("A38 legal discovery stays closed until the existing readiness gate passes"
 
 test("public launch sitemap includes contact while keeping private routes out", () => {
   assert.match(sitemap, /new URL\("\/contact", publicOrigin\)/);
-  for (const privatePath of ["/admin/", "/student/", "/login", "/signup", "/api/"]) {
+  for (const privatePath of ["/admin/", "/student/", "/prospect", "/orientation/report/", "/login", "/signup", "/api/"]) {
     assert.doesNotMatch(sitemap, new RegExp(privatePath.replaceAll("/", "\\/")));
   }
+});
+
+test("robots always blocks authenticated prospect and private report routes", () => {
+  assert.match(robots, /"\/prospect"/);
+  assert.match(robots, /"\/orientation\/report\/"/);
 });
