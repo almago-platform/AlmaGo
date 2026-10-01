@@ -51,3 +51,8 @@ test("dashboard retains legal framing around progress and decisions in every loc
   assert.ok(page.includes("t.progressBoundary"));
   assert.ok(page.includes("t.dossierText"));
 });
+
+test("student dashboard renders localized copy through the canonical brand layer", () => {
+  assert.match(page, /const t = rebrandCopy\(studentDashboardCopy\[locale\]\)/);
+  assert.match(dashboardCopy, /AlmaGo/);
+});
