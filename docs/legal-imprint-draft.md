@@ -8,11 +8,11 @@ Nom légal : **Ayoub Tayari**
 
 Forme juridique actuelle : **personne physique**
 
-Pays d’exploitation au lancement public : **Allemagne**
+Pays de développement / démonstration partenaire avant ouverture : **Allemagne**
 
-Pays principal d’établissement prévu à terme : **Tunisie**
+Pays prévu pour l’établissement légal et l’ouverture du service : **Tunisie**
 
-Adresse publique : **[À CONFIRMER POUR LE LANCEMENT EXPLOITÉ DEPUIS L’ALLEMAGNE]**
+Adresse publique finale : **[À CONFIRMER AVANT OUVERTURE RÉELLE]**
 
 E-mail : **contact@campus-allemagne.info**
 
@@ -32,7 +32,7 @@ Objet factuel actuel : plateforme permettant d’organiser un projet d’études
 
 L’orientation en ligne est actuellement gratuite.
 
-Le propriétaire prévoit un lancement public de cette version gratuite avant immatriculation en Tunisie. Cette intention doit encore être vérifiée par la relecture juridique finale et ne dispense pas des informations éditeur effectivement applicables.
+Avant immatriculation/licence, le site est destiné au pré-lancement et aux démonstrations partenaires avec des données de test. L’ouverture réelle du service au public est prévue seulement après finalisation de l’établissement légal et des informations éditeur applicables.
 
 Des services payants d’accompagnement et de préparation de dossier sont envisagés, mais ils ne sont pas encore activés, tarifés ni proposés à la vente.
 
