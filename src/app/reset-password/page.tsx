@@ -8,9 +8,16 @@ import { getRequestLocale } from "@/lib/i18n-server";
 import { resolveOrientationActivation } from "@/lib/orientation/account-activation";
 import { isPhase2AccountLinkingEnabled } from "@/lib/phase2/config";
 
-export const metadata: Metadata = {
-  robots: { index: false, follow: false },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getRequestLocale();
+  const t = accountStateCopy[locale].reset;
+
+  return {
+    title: t.formTitle,
+    description: t.formText,
+    robots: { index: false, follow: false },
+  };
+}
 
 export default async function ResetPasswordPage({
   searchParams,
