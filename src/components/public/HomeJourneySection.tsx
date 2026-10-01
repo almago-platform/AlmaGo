@@ -6,12 +6,12 @@ import s from "./Homepage.module.css";
 type JourneyCopy = ReturnType<typeof getNativeCopy>["home"]["journey"];
 
 const images = [
-  ["https://images.pexels.com/photos/7973208/pexels-photo-7973208.jpeg?auto=compress&cs=tinysrgb&w=1200", "Students reviewing documents outside a university building."],
-  ["https://images.pexels.com/photos/6207367/pexels-photo-6207367.jpeg?auto=compress&cs=tinysrgb&w=1200", "Documents and a pen on a desk."],
-  ["https://images.pexels.com/photos/31039023/pexels-photo-31039023.jpeg?auto=compress&cs=tinysrgb&w=1200", "Students walking outside a modern university campus."],
-  ["https://images.pexels.com/photos/5306450/pexels-photo-5306450.jpeg?auto=compress&cs=tinysrgb&w=1200", "Students working together with a laptop and notes."],
-  ["https://images.pexels.com/photos/5940705/pexels-photo-5940705.jpeg?auto=compress&cs=tinysrgb&w=1200", "Students working on laptops in a library."],
-  ["https://images.pexels.com/photos/7972361/pexels-photo-7972361.jpeg?auto=compress&cs=tinysrgb&w=1200", "Two students talking during a study session."],
+  "https://images.pexels.com/photos/7973208/pexels-photo-7973208.jpeg?auto=compress&cs=tinysrgb&w=1200",
+  "https://images.pexels.com/photos/6207367/pexels-photo-6207367.jpeg?auto=compress&cs=tinysrgb&w=1200",
+  "https://images.pexels.com/photos/31039023/pexels-photo-31039023.jpeg?auto=compress&cs=tinysrgb&w=1200",
+  "https://images.pexels.com/photos/5306450/pexels-photo-5306450.jpeg?auto=compress&cs=tinysrgb&w=1200",
+  "https://images.pexels.com/photos/5940705/pexels-photo-5940705.jpeg?auto=compress&cs=tinysrgb&w=1200",
+  "https://images.pexels.com/photos/7972361/pexels-photo-7972361.jpeg?auto=compress&cs=tinysrgb&w=1200",
 ] as const;
 
 const stepIds = ["projet", "documents", "programmes", "candidatures", "depart", "suivi"] as const;
@@ -44,8 +44,8 @@ export function HomeJourneySection({
             <li key={title} id={stepIds[index]} className={s.stepCard}>
               <div className={s.stepMedia}>
                 <Image
-                  src={images[index][0]}
-                  alt={images[index][1]}
+                  src={images[index]}
+                  alt={journey.imageAlts[index]}
                   fill
                   sizes="(min-width: 1200px) 31vw, (min-width: 700px) 48vw, 100vw"
                 />
