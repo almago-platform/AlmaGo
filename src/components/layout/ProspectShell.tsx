@@ -1,14 +1,27 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { type ReactNode } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { useSyncExternalStore, type ReactNode } from "react";
 import { BrandLogo } from "@/components/brand/BrandLogo";
 import { LanguageSwitcher } from "@/components/i18n/LanguageSwitcher";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { prospectDashboardCopy } from "@/content/prospect-dashboard-copy";
 import { prospectOffersCopy } from "@/content/prospect-offers-copy";
 import { createClient } from "@/lib/supabase/client";
+
+function subscribeToHash(onStoreChange: () => void) {
+  window.addEventListener("hashchange", onStoreChange);
+  return () => window.removeEventListener("hashchange", onStoreChange);
+}
+
+function getHashSnapshot() {
+  return window.location.hash || "#orientation";
+}
+
+function getServerHashSnapshot() {
+  return "";
+}
 
 export function ProspectShell({
   children,
@@ -17,7 +30,14 @@ export function ProspectShell({
   children: ReactNode;
   displayName?: string | null;
 }>) {
+  const pathname = usePathname();
   const router = useRouter();
+  const hashSnapshot = useSyncExternalStore(
+    subscribeToHash,
+    getHashSnapshot,
+    getServerHashSnapshot,
+  );
+  const activeHash = pathname === "/prospect" ? hashSnapshot : "";
   const { locale, direction, copy } = useLocale();
   const t = prospectDashboardCopy[locale].shell;
   const offersCopy = prospectOffersCopy[locale];
@@ -71,15 +91,27 @@ export function ProspectShell({
 
           <nav className="mt-5" aria-label={t.navigation}>
             <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-1">
-              {links.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="rounded-[var(--radius-control)] border border-transparent px-3 py-2.5 text-sm font-semibold text-[var(--foreground)] hover:border-[var(--brand-border)] hover:bg-[var(--brand-soft)] hover:text-[var(--brand-strong)]"
-                >
-                  {item.label}
-                </Link>
-              ))}
+              {links.map((item) => {
+                const hash = item.href.startsWith("/prospect#")
+                  ? item.href.slice("/prospect".length)
+                  : null;
+                const active = hash
+                  ? pathname === "/prospect" && activeHash === hash
+                  : item.href === "/prospect/offers"
+                    ? pathname === "/prospect/offers" || pathname.startsWith("/prospect/offers/")
+                    : false;
+
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    aria-current={active ? (hash ? "location" : "page") : undefined}
+                    className={`rounded-[var(--radius-control)] border px-3 py-2.5 text-sm font-semibold transition-colors ${active ? "border-[var(--brand-border)] bg-[var(--brand-soft)] text-[var(--brand-strong)]" : "border-transparent text-[var(--foreground)] hover:border-[var(--brand-border)] hover:bg-[var(--brand-soft)] hover:text-[var(--brand-strong)]"}`}
+                  >
+                    {item.label}
+                  </Link>
+                );
+              })}
             </div>
           </nav>
         </aside>
