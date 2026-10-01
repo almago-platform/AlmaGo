@@ -86,3 +86,19 @@ Do not enable public transactional delivery until all of the following are compl
 7. P2.4 account-linking is merged and its feature gate is enabled only after P2.5 protects the free-prospect experience.
 
 Therefore #592 remains open after code merge until operational delivery is proven. P2.4 code does not by itself authorize public activation.
+
+## Smart Orientation contact consent (SO-3)
+
+The email used to save or deliver an orientation remains transactional. It is **not** contact/marketing consent.
+
+SO-3 adds an independent, optional checkbox:
+
+- it is unchecked by default;
+- it is not required to save the orientation or receive the transactional email;
+- consent is stored on the prospect as `contact_consent`, `contact_consent_at` and a bounded version marker;
+- the orientation input also records whether that specific submission included consent;
+- a later submission with the box unchecked does not silently revoke a previously granted consent;
+- no campaign, reminder, marketing email or other outreach is sent by SO-3.
+
+A dedicated withdrawal/revocation mechanism and the final retention/legal wording must be in place before real outreach is activated. Until A38 is approved, Partner-Ready keeps real public prospect capture fail-closed and uses synthetic data only.
+
