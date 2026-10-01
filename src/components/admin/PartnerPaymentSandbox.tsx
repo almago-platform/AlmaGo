@@ -68,7 +68,7 @@ export function PartnerPaymentSandbox() {
       </div>
 
       <div className="mt-5 rounded-[var(--radius-control)] bg-[var(--surface-subtle)] p-4">
-        <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--muted)]">État courant</p>
+        <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--foreground)]">État courant</p>
         <p role="status" className="mt-2 text-base font-bold text-[var(--foreground)]">
           {labels[state]}
         </p>
