@@ -107,9 +107,12 @@ test("orientation result has correct skip-link semantics and a way back home", (
 
 test("orientation metadata follows the active locale instead of staying French-only", () => {
   assert.match(page, /export async function generateMetadata\(\): Promise<Metadata>/);
-  assert.match(page, /const store = await cookies\(\)/);
+  assert.match(page, /const \[store, publicOrigin\] = await Promise\.all\(\[cookies\(\), getPublicOrigin\(\)\]\)/);
   assert.match(page, /normalizeLocale\(store\.get\(LOCALE_COOKIE\)\?\.value\)/);
   assert.match(page, /const copy = orientationCopy\[locale\]/);
+  assert.match(page, /title: copy\.intro\.eyebrow/);
   assert.match(page, /description: copy\.intro\.lead/);
+  assert.match(page, /canonical: new URL\("\/orientation", publicOrigin\)\.toString\(\)/);
+  assert.doesNotMatch(page, /title: `\$\{copy\.intro\.eyebrow\} \| AlmaGo`/);
   assert.doesNotMatch(page, /export const metadata: Metadata/);
 });
