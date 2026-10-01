@@ -4,11 +4,11 @@
 
 Le compteur historique Phase 1 est **41/45 — 91 %**. Ce n'est pas un score de readiness produit.
 
-Chaîne de fermeture :
+Jalon immédiat :
 
-**freeze → P2.4 → A38 → P2.3 email → A43 Render → offres/paiement → A44/P2.10 → QA finale → A45**
+**Partner-Ready → produit complet, démontrable et sécurisé avec données de test uniquement.**
 
-Chaîne de preuve Phase 1 sur un même SHA :
+Chaîne finale avant ouverture réelle au public, sur un même SHA :
 
 **A38 → A43 → A44 → A45**
 
@@ -38,7 +38,7 @@ Ne jamais copier sa valeur dans le chat ou une Issue.
 
 Ensuite la preuve #674 pourra tester signup, confirmation, login, reset, claim, idempotence et rejet d'un autre utilisateur.
 
-### 2. A38 — finir les décisions juridiques humaines
+### 2. A38 — gate final avant ouverture réelle
 
 À confirmer/finaliser :
 - adresse publique ;
@@ -51,13 +51,13 @@ Ensuite la preuve #674 pourra tester signup, confirmation, login, reset, claim, 
 - relecteur compétent ;
 - version/date d'entrée en vigueur.
 
-Puis faire relire les textes et utiliser le gate A38.
+Puis faire relire les textes et utiliser le gate A38 avant l'ouverture réelle. La préparation Partner-Ready peut continuer avant cette étape.
 
 ### 3. Email transactionnel
 
 Configurer le compte Resend, le domaine d'envoi et l'expéditeur. Les secrets vont dans l'environnement, jamais dans le repo/chat.
 
-Après A38 : test réel FR + AR/RTL.
+Avant A38 : tests uniquement avec adresses synthétiques/de test. Après A38 : preuve finale FR + AR/RTL.
 
 ### 4. A43
 
