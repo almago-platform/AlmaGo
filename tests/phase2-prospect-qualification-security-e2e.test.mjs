@@ -203,7 +203,7 @@ test("P2.7 prospect UI exposes only safe current qualification information", () 
   }
 
   assert.match(prospectCopy, /ne constitue ni une admission, ni une décision de visa/);
-  assert.match(prospectCopy, /لا يمثل قبولًا جامعيًا أو قرار تأشيرة/);
+  assert.match(prospectCopy, /لا تمثل قبولًا جامعيًا أو قرار تأشيرة/);
   assert.match(prospectCopy, /not an admission or visa decision/);
   assert.match(prospectCopy, /weder eine Zulassungs- noch eine Visumentscheidung/);
 });
