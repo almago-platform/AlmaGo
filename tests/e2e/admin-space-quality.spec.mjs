@@ -17,6 +17,7 @@ const pages = [
   { path: "/admin/language-courses", name: "language-courses" },
   { path: "/admin/finance-insurance", name: "finance-insurance" },
   { path: "/admin/offers", name: "offers" },
+  { path: "/admin/payments", name: "payments" },
 ];
 
 mkdirSync("artifacts/auth-e2e/admin-screenshots", { recursive: true });
