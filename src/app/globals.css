@@ -374,14 +374,25 @@ html[dir="rtl"] .student-shell [dir="ltr"] {
 }
 
 
+.orientation-print-only {
+  display: none;
+}
+
 @media print {
   @page {
+    size: A4;
     margin: 14mm;
   }
 
   .orientation-print-page {
     background: white !important;
     color: #0f172a !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .orientation-print-page .orientation-print-only {
+    display: flex !important;
   }
 
   .orientation-print-page .orientation-print-hide {

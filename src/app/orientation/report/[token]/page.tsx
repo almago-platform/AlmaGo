@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BrandLogo } from "@/components/brand/BrandLogo";
+import { rebrandCopy } from "@/lib/brand";
 import { OrientationReportActions } from "@/components/orientation/OrientationReportActions";
 import { orientationCopy } from "@/content/orientation-copy";
 import { orientationDiagnosticCopy } from "@/content/orientation-diagnostic-copy";
@@ -169,10 +170,10 @@ export default async function OrientationReportPage({
   const locale = normalizeLocale(typeof input.locale === "string" ? input.locale : null);
   const direction = localeDirection(locale);
   const answers = restorePublicOrientationAnswers(input.answers);
-  const copy = orientationCopy[locale];
-  const diagnosticCopy = orientationDiagnosticCopy[locale];
-  const prospectCopy = orientationProspectCopy[locale];
-  const resumeCopy = orientationResumeCopy[locale];
+  const copy = rebrandCopy(orientationCopy[locale]);
+  const diagnosticCopy = rebrandCopy(orientationDiagnosticCopy[locale]);
+  const prospectCopy = rebrandCopy(orientationProspectCopy[locale]);
+  const resumeCopy = rebrandCopy(orientationResumeCopy[locale]);
 
   const bacTracks = localizeProfileOptions(locale, tunisianBacTrackOptions);
   const diplomas = localizeProfileOptions(locale, diplomaOptions);
@@ -227,6 +228,14 @@ export default async function OrientationReportPage({
 
       <main id="orientation-main" className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-12">
         <article id="orientation-report" className="orientation-print-report professional-panel rounded-[var(--radius-panel)] p-5 sm:p-7">
+          <div className="orientation-print-only mb-6 items-center justify-between gap-6 border-b border-slate-300 pb-5">
+            <BrandLogo className="h-10 w-auto" priority />
+            <div className="text-end text-xs leading-5 text-slate-600">
+              <p className="font-bold text-slate-900">{prospectCopy.report.label}</p>
+              <p>{resumeCopy.created} <bdi dir="auto">{created}</bdi></p>
+            </div>
+          </div>
+
           <div className="mb-6 border-b border-[var(--border)] pb-5">
             <p className="eyebrow">{prospectCopy.report.label}</p>
             <h1 className="mt-2 text-2xl font-bold">{prospectCopy.report.title}</h1>
