@@ -76,7 +76,7 @@ const optionLabels: Record<Locale, Record<string, string>> = {
     Baccalauréat: "البكالوريا",
     "Bac + 1": "سنة بعد البكالوريا",
     "Bac + 2": "سنتان بعد البكالوريا",
-    Licence: "إجازة / Bachelor",
+    Licence: "إجازة / بكالوريوس",
     Bachelor: "بكالوريوس",
     Master: "ماجستير",
     Allemand: "الألمانية",
