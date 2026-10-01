@@ -77,7 +77,7 @@ export function ProspectCaptureCard({
   const pendingLabel = emailDeliveryEnabled ? copy.sendingEmail : copy.sending;
 
   return (
-    <section className="orientation-print-hide mt-8 rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface-subtle)] p-5 sm:p-6">
+    <section id="orientation-prospect-capture" className="orientation-print-hide mt-8 scroll-mt-6 rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface-subtle)] p-5 sm:p-6">
       <p className="eyebrow">{copy.eyebrow}</p>
       <h3 className="mt-2 text-xl font-bold">{copy.title}</h3>
       <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{copy.text}</p>
