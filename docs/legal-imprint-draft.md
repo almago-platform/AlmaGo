@@ -8,9 +8,11 @@ Nom légal : **Ayoub Tayari**
 
 Forme juridique actuelle : **personne physique**
 
-Pays principal d’établissement prévu : **Tunisie**
+Pays d’exploitation au lancement public : **Allemagne**
 
-Adresse publique : **[À CONFIRMER AVANT PUBLICATION APRÈS ÉTABLISSEMENT EN TUNISIE]**
+Pays principal d’établissement prévu à terme : **Tunisie**
+
+Adresse publique : **[À CONFIRMER POUR LE LANCEMENT EXPLOITÉ DEPUIS L’ALLEMAGNE]**
 
 E-mail : **contact@campus-allemagne.info**
 
