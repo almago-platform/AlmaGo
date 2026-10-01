@@ -9,6 +9,10 @@ import {
   isPhase2EmailDeliveryEnabled,
   isPhase2ProspectCaptureEnabled,
 } from "@/lib/phase2/config";
+import {
+  isPhase2AttributionEnabled,
+  normalizeAcquisitionContext,
+} from "@/lib/phase2/acquisition";
 import { createPrivilegedSupabaseClient } from "@/lib/supabase/privileged";
 import {
   budgetOptions,
@@ -126,6 +130,12 @@ export async function POST(request: Request) {
   const answers = validAnswers(record.answers);
   const privacyAcknowledged = record.privacyAcknowledged === true;
   const locale = normalizeLocale(typeof record.locale === "string" ? record.locale : null);
+  const acquisitionRecord = record.acquisition && typeof record.acquisition === "object"
+    ? record.acquisition as Record<string, unknown>
+    : null;
+  const acquisition = isPhase2AttributionEnabled() && acquisitionRecord
+    ? normalizeAcquisitionContext(acquisitionRecord.kind, acquisitionRecord.sourceId)
+    : null;
 
   if (!email || !answers || !privacyAcknowledged) {
     return NextResponse.json({ error: "Invalid orientation submission." }, { status: 400 });
@@ -180,6 +190,7 @@ export async function POST(request: Request) {
           locale,
           privacy_notice_version: PRIVACY_NOTICE_VERSION,
           privacy_acknowledged: true,
+          ...(acquisition ? { acquisition } : {}),
         },
         result: diagnostic,
         resume_token_hash: resume.hash,
