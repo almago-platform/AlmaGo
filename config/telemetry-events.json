@@ -3,26 +3,145 @@
   "defaultMode": "disabled",
   "policy": "allowlist-only",
   "events": [
-    { "name": "route_render_failed", "properties": ["route_group", "error_code"] },
-    { "name": "api_request_failed", "properties": ["route_group", "method", "http_status", "error_code"] },
-    { "name": "form_submit_result", "properties": ["surface", "result", "error_code"] },
-    { "name": "navigation_action", "properties": ["destination_group"] },
-    { "name": "web_vital", "properties": ["metric", "value_bucket"] }
+    {
+      "name": "route_render_failed",
+      "properties": [
+        "route_group",
+        "error_code"
+      ]
+    },
+    {
+      "name": "api_request_failed",
+      "properties": [
+        "route_group",
+        "method",
+        "http_status",
+        "error_code"
+      ]
+    },
+    {
+      "name": "form_submit_result",
+      "properties": [
+        "surface",
+        "result",
+        "error_code"
+      ]
+    },
+    {
+      "name": "navigation_action",
+      "properties": [
+        "destination_group"
+      ]
+    },
+    {
+      "name": "web_vital",
+      "properties": [
+        "metric",
+        "value_bucket"
+      ]
+    },
+    {
+      "name": "phase2_funnel_step",
+      "properties": [
+        "step"
+      ]
+    }
   ],
   "allowedValues": {
-    "route_group": ["public", "auth", "student", "admin", "api", "other"],
-    "error_code": ["unknown", "auth_required", "admin_required", "access_denied", "validation_failed", "not_found", "network_error", "server_error"],
-    "method": ["GET", "POST", "PUT", "PATCH", "DELETE"],
-    "surface": ["login", "signup", "profile", "onboarding", "documents", "orientation", "applications", "other"],
-    "result": ["success", "failure"],
-    "destination_group": ["public", "auth", "student", "admin", "other"],
-    "metric": ["LCP", "INP", "CLS", "FCP", "TTFB"],
-    "value_bucket": ["good", "needs_improvement", "poor"]
+    "route_group": [
+      "public",
+      "auth",
+      "student",
+      "admin",
+      "api",
+      "other"
+    ],
+    "error_code": [
+      "unknown",
+      "auth_required",
+      "admin_required",
+      "access_denied",
+      "validation_failed",
+      "not_found",
+      "network_error",
+      "server_error"
+    ],
+    "method": [
+      "GET",
+      "POST",
+      "PUT",
+      "PATCH",
+      "DELETE"
+    ],
+    "surface": [
+      "login",
+      "signup",
+      "profile",
+      "onboarding",
+      "documents",
+      "orientation",
+      "applications",
+      "other"
+    ],
+    "result": [
+      "success",
+      "failure"
+    ],
+    "destination_group": [
+      "public",
+      "auth",
+      "student",
+      "admin",
+      "other"
+    ],
+    "metric": [
+      "LCP",
+      "INP",
+      "CLS",
+      "FCP",
+      "TTFB"
+    ],
+    "value_bucket": [
+      "good",
+      "needs_improvement",
+      "poor"
+    ],
+    "step": [
+      "orientation_started",
+      "orientation_completed",
+      "report_requested",
+      "account_activated",
+      "prospect_qualified",
+      "offer_viewed",
+      "offer_selected",
+      "payment_confirmed"
+    ]
   },
   "forbiddenPropertyPatterns": [
-    "email", "e-mail", "name", "first_name", "last_name", "user_id", "student_id",
-    "password", "token", "secret", "key", "authorization", "cookie", "document",
-    "filename", "file_name", "content", "notes", "note", "message", "address",
-    "phone", "birth", "nationality", "ip"
+    "email",
+    "e-mail",
+    "name",
+    "first_name",
+    "last_name",
+    "user_id",
+    "student_id",
+    "password",
+    "token",
+    "secret",
+    "key",
+    "authorization",
+    "cookie",
+    "document",
+    "filename",
+    "file_name",
+    "content",
+    "notes",
+    "note",
+    "message",
+    "address",
+    "phone",
+    "birth",
+    "nationality",
+    "ip"
   ]
 }
