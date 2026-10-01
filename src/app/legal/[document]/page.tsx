@@ -7,6 +7,7 @@ import {
   legalDocuments,
   type LegalDocumentKey,
 } from "@/content/legal-content";
+import { isPublicIndexingEnabled } from "@/lib/public-indexing";
 import s from "./LegalPage.module.css";
 
 type LegalPageProps = {
@@ -32,13 +33,14 @@ export async function generateMetadata({
 }: LegalPageProps): Promise<Metadata> {
   const document = await getDocument(params);
   const ready = isLegalPublicationReady();
+  const indexable = ready && isPublicIndexingEnabled();
 
   return {
     title: `${document.title} | Campus Allemagne`,
     description: document.description,
     robots: {
-      index: ready,
-      follow: ready,
+      index: indexable,
+      follow: indexable,
     },
   };
 }
