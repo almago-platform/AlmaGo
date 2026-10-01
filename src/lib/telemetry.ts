@@ -4,6 +4,7 @@ export const telemetryEventProperties = {
   form_submit_result: ["surface", "result", "error_code"],
   navigation_action: ["destination_group"],
   web_vital: ["metric", "value_bucket"],
+  phase2_funnel_step: ["step"],
 } as const;
 
 // Values are bounded too: a safe property name cannot make free-form data safe.
@@ -19,6 +20,16 @@ export const telemetryAllowedValues = {
   destination_group: ["public", "auth", "student", "admin", "other"],
   metric: ["LCP", "INP", "CLS", "FCP", "TTFB"],
   value_bucket: ["good", "needs_improvement", "poor"],
+  step: [
+    "orientation_started",
+    "orientation_completed",
+    "report_requested",
+    "account_activated",
+    "prospect_qualified",
+    "offer_viewed",
+    "offer_selected",
+    "payment_confirmed",
+  ],
 } as const;
 
 export type TelemetryEventName = keyof typeof telemetryEventProperties;
