@@ -57,10 +57,16 @@ test("prospect navigation exposes free-space actions and no client routes", () =
 });
 
 test("prospect copy is localized and states the free-versus-paid boundary", () => {
-  assert.match(prospectCopy, /Compte gratuit ≠ accompagnement payé/);
+  assert.match(prospectCopy, /Ce qui est gratuit et ce qui est réservé aux clients/);
   assert.match(prospectCopy, /الحساب المجاني لا يعني مرافقة مدفوعة/);
   assert.match(prospectCopy, /Free account ≠ paid support/);
   assert.match(prospectCopy, /Kostenloses Konto ≠ bezahlte Begleitung/);
+});
+
+test("French prospect copy avoids internal or anglicized dashboard jargon", () => {
+  assert.match(prospectCopy, /Mes prochaines étapes/);
+  assert.match(prospectCopy, /liste complète du dossier/);
+  assert.doesNotMatch(prospectCopy, /Ma roadmap|checklist dossier|Compte gratuit ≠ accompagnement payé/);
 });
 
 test("direct document viewing requires the same client entitlement as student APIs", () => {
