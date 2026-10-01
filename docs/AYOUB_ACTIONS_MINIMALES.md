@@ -8,6 +8,10 @@ Chaîne de fermeture :
 
 **freeze → P2.4 → A38 → P2.3 email → A43 Render → offres/paiement → A44/P2.10 → QA finale → A45**
 
+Chaîne de preuve Phase 1 sur un même SHA :
+
+**A38 → A43 → A44 → A45**
+
 Runtime canonique :
 
 `https://almago-dev.onrender.com`
@@ -107,3 +111,11 @@ Le gate doit confirmer le SHA exact de Render avant `RELEASE GATE: READY`.
 - aucune publication commerciale avant CGV/prix réels ;
 - aucune activation marketing/analytics avant A38/A44 ;
 - pas de modification non indispensable après le freeze.
+
+
+## Non requis maintenant
+
+- activer Gemini/Grok ou un autre fournisseur IA externe ;
+- changer de plan Render/Supabase sans besoin validé ;
+- recréer les comptes E2E ;
+- réouvrir les incidents #286/#389/#336 déjà résolus.
