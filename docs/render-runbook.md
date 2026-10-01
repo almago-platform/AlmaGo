@@ -1,121 +1,85 @@
 # AlmaGo Render runbook
 
-Render is the canonical runtime used to validate AlmaGo before public launch.
+Render est le runtime canonique utilisé pour valider AlmaGo avant lancement public.
 
-## Canonical service
+## Service canonique
 
-Verified on 27 September 2026:
+État opérationnel confirmé :
+- service : `almago-dev`
+- URL : `https://almago-dev.onrender.com`
+- région : Frankfurt
+- branche : `main`
+- runtime : Node
+- plan : Free
+- auto-deploy : activé sur commit
+- previews PR : désactivées
+- Health Check Path : `/api/health`
 
-- Render service: `almago-dev`
-- URL: `https://almago-dev.onrender.com`
-- region: Frankfurt
-- branch: `main`
-- runtime: Node
-- current service plan: Free
-- auto-deploy setting: enabled on commit
-- pull-request previews: disabled
-- service-level health check path: currently empty
+Le repository contient aussi `render.yaml`. Le dashboard du service existant reste la source de vérité pour sa configuration live.
 
-The repository also contains `render.yaml`. It describes the intended application contract, including:
+## GitHub → Render auto-deploy
 
-- `healthCheckPath: /api/health`
-- `autoDeployTrigger: commit`
-- Frankfurt region
-- Node runtime
+L'incident historique de permission GitHub est résolu (#389).
 
-The live Render dashboard configuration is authoritative for the existing service. A value in `render.yaml` does not prove that the already-created service has adopted it.
+Preuve enregistrée :
+- Render GitHub App réautorisée pour `almago-platform/AlmaGo` ;
+- un merge réel sur `main` a créé automatiquement un deploy avec trigger `new_commit` ;
+- Render a cloné le SHA exact ;
+- le build a réussi et le deploy a atteint `live`.
 
-## Known configuration drift
+Ne pas utiliser un deploy manuel/API pour masquer un futur échec d'auto-deploy.
 
-At the time of this runbook:
+## Contrat de build
 
-| Setting | Existing Render service | `render.yaml` |
-| --- | --- | --- |
-| name | `almago-dev` | `almago` |
-| plan | Free | `1c-2g` |
-| build command | `npm ci --include=dev && npm run build` | `npm ci && npm run build` |
-| health check | empty | `/api/health` |
-| auto deploy | commit | commit |
+Le build Render conserve les gates du repository. Une build défaillante ne doit pas être contournée en retirant les tests ou protections.
 
-Do not change the paid plan or service identity merely to remove this drift. Plan changes are an owner/cost decision.
+Pour chaque changement destiné à la production :
+1. relever le commit `main` ;
+2. vérifier qu'un deploy `new_commit` démarre ;
+3. attendre `live` ;
+4. vérifier `/api/health` ;
+5. comparer `revision` au SHA attendu ;
+6. inspecter les erreurs runtime/build ;
+7. tester la surface touchée avec données synthétiques/comptes E2E.
 
-## Current release gate
+## Health endpoint
 
-`package.json` runs the source-contract suite before the production build through the `prebuild` hook. On Render this means:
+`/api/health` est no-store et ne doit exposer que des métadonnées de déploiement bornées.
 
-1. dependencies install;
-2. `npm test` runs;
-3. only if tests pass does the Next.js production build run;
-4. only a successful build can replace the current live revision.
-
-A failed build must leave the previous live deploy serving traffic. Do not bypass failing tests by removing the prebuild gate.
-
-## Deploy verification
-
-For every production-intended change:
-
-1. confirm the target commit on `main`;
-2. confirm Render starts a deploy for that commit;
-3. wait for status `live`;
-4. check `/api/health`;
-5. verify that the reported shortened revision corresponds to the deployed commit;
-6. inspect build/runtime logs for errors;
-7. test the affected public or authenticated surface with synthetic/test accounts only.
-
-The health endpoint is deliberately no-store and exposes only bounded deployment metadata. It must not contain secrets, user identifiers, database values, or environment-variable contents.
-
-## Auto-deploy incident
-
-The current service reports auto-deploy enabled, but recent pushes to `main` did not reliably start deployments. Manual API-triggered deploys succeeded. Render build logs also reported that repository access appeared limited.
-
-Track this operational fix in GitHub issue #389:
-
-- reconnect or re-authorize the GitHub repository in Render;
-- confirm a new `main` commit starts a deploy without a manual trigger;
-- set the service health check path to `/api/health`;
-- verify the deployed revision through the health endpoint.
-
-Until that is fixed, do not describe auto-deploy as proven even though the service setting says it is enabled.
-
-
-## Remote image timeout incident
-
-On 27 September 2026 at 19:19:33 UTC, the live Render service emitted three concurrent `TimeoutError: The operation was aborted due to timeout` entries while serving the self-hosted Next.js application.
-
-The public/authenticated entry surfaces use remote Pexels images through `next/image`. On self-hosted Next.js, the image optimizer fetches remote upstream assets at request time and aborts slow upstream responses. Track the AlmaGo mitigation in #402 / current-main integration PR #425.
-
-The mitigation deliberately keeps `next/image` proxying and reduces the upstream Pexels payload size. Do not switch the whole application to unoptimized third-party images as a quick workaround without separately reviewing performance and privacy implications.
+Il ne doit jamais contenir :
+- secrets ;
+- identifiants utilisateurs ;
+- données base ;
+- valeurs d'environnement protégées.
 
 ## Free-plan cold start
 
-The current service is on Render Free and can display Render's wake-up screen after inactivity before Next.js becomes ready. This is acceptable for development/recette, but it is a launch-quality decision for the owner before public traffic.
+Le service peut s'endormir après inactivité. Les workflows A43/A45 utilisent des retries bornés.
 
-Do not upgrade the plan automatically.
+Le passage à un plan payant reste une décision propriétaire séparée.
 
-## Rollback principle
+## Rollback
 
-If a new deploy fails to build, leave the previous live deploy untouched.
+Si un deploy échoue au build, conserver le dernier deploy live.
 
-If a new deploy becomes live and introduces a verified regression:
+Si une régression atteint `live` :
+- identifier le dernier commit connu sain ;
+- préférer un revert dans Git puis un deploy normal afin de garder Git/Render alignés ;
+- utiliser rollback/redeploy dashboard seulement en urgence puis réconcilier `main`.
 
-- identify the last known-good deploy in Render;
-- prefer a code revert on `main` followed by a normal deploy so Git history and runtime stay aligned;
-- use dashboard rollback/redeploy only as an emergency operational action, then reconcile `main` immediately.
+Ne jamais corriger une régression en affaiblissant RLS, Auth, validation de fichiers ou gestion des secrets.
 
-Never solve a production regression by weakening RLS, removing auth guards, disabling file validation, or exposing secrets.
+## Secrets
 
-## Secrets and environment variables
+Les secrets appartiennent à Render Environment ou GitHub Actions Secrets.
 
-Secrets belong in Render environment configuration or the appropriate GitHub Actions secrets, never in commits, issues, logs, screenshots, or chat.
+Ne jamais mettre une clé serveur Supabase dans `NEXT_PUBLIC_*`.
 
-The public Supabase URL/publishable key are configured separately from protected credentials. Never add the service-role key to client-exposed `NEXT_PUBLIC_*` variables.
+## Gates liés
 
-## Related gates
-
-- A38: legal/privacy human review
-- A43: authenticated student/admin E2E with dedicated test accounts
-- A44: observability provider activation after A38 + A43
-- A45: final release gate
-- #389: Render repository connection + health-check configuration
-- #179: optional Supabase leaked-password protection decision
-- #180: post-A43 database/RLS performance hardening
+- P2.4 : preuve Auth/Supabase cible
+- A38 : revue juridique humaine
+- P2.3 : livraison e-mail réelle
+- A43 : E2E authentifiés exact-SHA sur Render
+- A44 : observabilité après A38 + A43
+- A45 : release gate final exact-SHA
