@@ -39,3 +39,8 @@ test("real student shell exposes finance and insurance and remains scrollable", 
   assert.match(shell, /\/student\/finance-insurance/);
   assert.match(shell, /overflow-y-auto/);
 });
+
+test("student finance renders localized copy through the canonical brand layer", () => {
+  assert.match(page, /const t = rebrandCopy\(studentFinanceCopy\[locale\]\)/);
+  assert.match(copy, /AlmaGo/);
+});

@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/Card";
 import { StudentResourceHeader } from "@/components/student/StudentResourceHeader";
 import { StudentGuidancePanel } from "@/components/student/StudentGuidancePanel";
 import { studentFinanceCopy } from "@/content/student-finance-copy";
+import { rebrandCopy } from "@/lib/brand";
 import {
   financeInsuranceKinds,
   isPublishableFinanceInsuranceOption,
@@ -18,7 +19,7 @@ export const dynamic = "force-dynamic";
 
 export default async function StudentFinanceInsurancePage() {
   const locale = await getRequestLocale();
-  const t = studentFinanceCopy[locale];
+  const t = rebrandCopy(studentFinanceCopy[locale]);
   const supabase = await createClient();
   const now = new Date();
   const cutoff = catalogVerificationCutoff(now);
