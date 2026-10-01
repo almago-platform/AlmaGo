@@ -282,9 +282,13 @@ test.describe("P2.4 real Supabase/Auth closure proof", () => {
     expect(resetLogin.user?.id).toBe(disposableUserId);
     await publicClient.auth.signOut();
 
+    await page.context().clearCookies();
+    await login(page, disposableEmail, resetPassword, recoveryFixture.token);
+
     const repeatedAfterReset = await page.request.post("/api/orientation/claim", {
       data: { token: recoveryFixture.token },
     });
     expect(repeatedAfterReset.status()).toBe(200);
+    expect(await repeatedAfterReset.json()).toEqual({ linked: true });
   });
 });
