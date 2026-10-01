@@ -14,6 +14,7 @@ const route = readFileSync("src/app/api/admin/offers/route.ts", "utf8");
 const adminPage = readFileSync("src/app/admin/offers/page.tsx", "utf8");
 const editor = readFileSync("src/components/admin/CommercialOfferEditor.tsx", "utf8");
 const prospectPage = readFileSync("src/app/prospect/offers/page.tsx", "utf8");
+const prospectLoading = readFileSync("src/app/prospect/offers/loading.tsx", "utf8");
 const selector = readFileSync("src/components/prospect/ProspectOfferSelector.tsx", "utf8");
 const copy = readFileSync("src/content/prospect-offers-copy.ts", "utf8");
 const prospectShell = readFileSync("src/components/layout/ProspectShell.tsx", "utf8");
@@ -189,4 +190,17 @@ test("authenticated admin quality matrix covers the commercial offer surface", (
   assert.match(adminQuality, /path: "\/admin\/offers", name: "offers"/);
   assert.match(adminQuality, /new AxeBuilder\(\{ page \}\)\.analyze\(\)/);
   assert.match(adminQuality, /item\.impact === "serious" \|\| item\.impact === "critical"/);
+});
+
+test("prospect offers has a localized neutral loading state", () => {
+  assert.match(prospectLoading, /"use client"/);
+  assert.match(prospectLoading, /useLocale\(\)/);
+  assert.match(prospectLoading, /aria-busy="true"/);
+  assert.match(prospectLoading, /role="status"/);
+  assert.match(prospectLoading, /Chargement des offres/);
+  assert.match(prospectLoading, /جارٍ تحميل العروض/);
+  assert.match(prospectLoading, /Loading offers/);
+  assert.match(prospectLoading, /Angebote werden geladen/);
+  assert.match(prospectLoading, /prospectOffersCopy\[locale\]/);
+  assert.doesNotMatch(prospectLoading, /€\s*\d|EUR\s*\d|admission garantie|visa garanti/i);
 });
