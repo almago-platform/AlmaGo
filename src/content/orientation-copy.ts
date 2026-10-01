@@ -1,7 +1,7 @@
 import type { Locale } from "@/lib/i18n";
 
 export type OrientationCopy = {
-  header: { home: string; login: string };
+  header: { home: string; login: string; skip: string };
   intro: { eyebrow: string; title: string; lead: string; privacy: string };
   progress: { label: string; step: string };
   steps: {
@@ -39,6 +39,7 @@ export type OrientationCopy = {
     noticeText: string;
     edit: string;
     restart: string;
+    home: string;
     labels: {
       bacStatus: string;
       bacYear: string;
@@ -57,7 +58,7 @@ export type OrientationCopy = {
 };
 
 const fr: OrientationCopy = {
-  header: { home: "Accueil", login: "Se connecter" },
+  header: { home: "Accueil", login: "Se connecter", skip: "Aller au contenu" },
   intro: {
     eyebrow: "Orientation gratuite",
     title: "Par où commencer pour étudier en Allemagne ?",
@@ -96,6 +97,7 @@ const fr: OrientationCopy = {
     noticeText: "Cette orientation aide à organiser votre recherche. Les critères exacts doivent être vérifiés sur les sources des programmes et organismes concernés.",
     edit: "Modifier mes réponses",
     restart: "Recommencer",
+    home: "Retour à l’accueil",
     labels: {
       bacStatus: "Bac", bacYear: "Année du Bac", bacTrack: "Section", average: "Moyenne",
       diploma: "Dernier diplôme", degree: "Niveau visé", field: "Domaine", german: "Allemand",
@@ -105,7 +107,7 @@ const fr: OrientationCopy = {
 };
 
 const ar: OrientationCopy = {
-  header: { home: "الرئيسية", login: "تسجيل الدخول" },
+  header: { home: "الرئيسية", login: "تسجيل الدخول", skip: "الانتقال إلى المحتوى" },
   intro: {
     eyebrow: "توجيه مجاني",
     title: "من أين تبدأ مشروع الدراسة في ألمانيا؟",
@@ -144,6 +146,7 @@ const ar: OrientationCopy = {
     noticeText: "هذا التوجيه يساعد على تنظيم البحث. الشروط الدقيقة يجب التحقق منها من المصادر الرسمية للبرامج والجهات المعنية.",
     edit: "تعديل إجاباتي",
     restart: "البدء من جديد",
+    home: "العودة إلى الرئيسية",
     labels: {
       bacStatus: "البكالوريا", bacYear: "سنة البكالوريا", bacTrack: "الشعبة", average: "المعدل",
       diploma: "آخر شهادة", degree: "الدرجة المستهدفة", field: "المجال", german: "الألمانية",
@@ -153,7 +156,7 @@ const ar: OrientationCopy = {
 };
 
 const en: OrientationCopy = {
-  header: { home: "Home", login: "Sign in" },
+  header: { home: "Home", login: "Sign in", skip: "Skip to content" },
   intro: {
     eyebrow: "Free orientation",
     title: "Where should you start for studying in Germany?",
@@ -192,6 +195,7 @@ const en: OrientationCopy = {
     noticeText: "This orientation helps organise your research. Exact criteria still need to be checked on official programme and authority sources.",
     edit: "Edit my answers",
     restart: "Start again",
+    home: "Back to home",
     labels: {
       bacStatus: "Baccalaureate", bacYear: "Baccalaureate year", bacTrack: "Track", average: "Average",
       diploma: "Latest qualification", degree: "Target degree", field: "Subject", german: "German",
@@ -201,7 +205,7 @@ const en: OrientationCopy = {
 };
 
 const de: OrientationCopy = {
-  header: { home: "Startseite", login: "Anmelden" },
+  header: { home: "Startseite", login: "Anmelden", skip: "Zum Inhalt springen" },
   intro: {
     eyebrow: "Kostenlose Orientierung",
     title: "Wo solltest du für ein Studium in Deutschland anfangen?",
@@ -240,6 +244,7 @@ const de: OrientationCopy = {
     noticeText: "Diese Orientierung hilft, deine Recherche zu strukturieren. Genaue Kriterien müssen in offiziellen Programm- und Behördenquellen geprüft werden.",
     edit: "Antworten bearbeiten",
     restart: "Neu beginnen",
+    home: "Zurück zur Startseite",
     labels: {
       bacStatus: "Baccalauréat", bacYear: "Jahr des Baccalauréat", bacTrack: "Fachrichtung", average: "Durchschnitt",
       diploma: "Letzter Abschluss", degree: "Gewünschter Abschluss", field: "Fach", german: "Deutsch",

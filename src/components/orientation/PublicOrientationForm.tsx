@@ -246,7 +246,7 @@ export function PublicOrientationForm({
 
   return (
     <div className="orientation-print-page min-h-screen bg-[var(--background)] text-[var(--foreground)]" dir={direction}>
-      <a className="skip-link" href="#orientation-main">{profileCopy.page.back}</a>
+      <a className="skip-link" href="#orientation-main">{copy.header.skip}</a>
 
       <header className="orientation-print-hide border-b border-[var(--border)] bg-[var(--surface)]">
         <div className="mx-auto flex min-h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
@@ -591,6 +591,12 @@ export function PublicOrientationForm({
                   >
                     {copy.summary.restart}
                   </button>
+                  <Link
+                    href="/"
+                    className="inline-flex items-center rounded-[var(--radius-control)] px-3 py-2.5 text-sm font-semibold text-[var(--foreground)] underline underline-offset-4"
+                  >
+                    {copy.summary.home}
+                  </Link>
                 </div>
               </div>
             )}

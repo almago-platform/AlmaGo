@@ -90,3 +90,17 @@ test("orientation is added to the sitemap only when Phase 2 is enabled", () => {
   assert.match(sitemap, /isPhase2AccessEnabled\(\)/);
   assert.match(sitemap, /new URL\("\/orientation", publicOrigin\)/);
 });
+
+test("orientation result has correct skip-link semantics and a way back home", () => {
+  assert.match(form, /href="#orientation-main">\{copy\.header\.skip\}<\/a>/);
+  assert.doesNotMatch(form, /href="#orientation-main">\{profileCopy\.page\.back\}<\/a>/);
+  assert.match(form, /href="\/"[\s\S]*\{copy\.summary\.home\}/);
+  assert.match(copy, /skip: "Aller au contenu"/);
+  assert.match(copy, /skip: "الانتقال إلى المحتوى"/);
+  assert.match(copy, /skip: "Skip to content"/);
+  assert.match(copy, /skip: "Zum Inhalt springen"/);
+  assert.match(copy, /home: "Retour à l’accueil"/);
+  assert.match(copy, /home: "العودة إلى الرئيسية"/);
+  assert.match(copy, /home: "Back to home"/);
+  assert.match(copy, /home: "Zurück zur Startseite"/);
+});
