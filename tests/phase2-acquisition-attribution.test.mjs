@@ -66,18 +66,20 @@ test("P2.10B reads only src/ref from a link and does not retain arbitrary query 
 test("P2.10B attribution is explicitly disabled by default", () => {
   assert.match(env, /ALMAGO_PHASE2_ATTRIBUTION_ENABLED=false/);
 
-  const previous = process.env.ALMAGO_PHASE2_ATTRIBUTION_ENABLED;
-  delete process.env.ALMAGO_PHASE2_ATTRIBUTION_ENABLED;
-  assert.equal(isPhase2AttributionEnabled(), false);
-
-  process.env.ALMAGO_PHASE2_ATTRIBUTION_ENABLED = "true";
-  assert.equal(isPhase2AttributionEnabled(), true);
-
-  if (previous === undefined) {
-    delete process.env.ALMAGO_PHASE2_ATTRIBUTION_ENABLED;
-  } else {
-    process.env.ALMAGO_PHASE2_ATTRIBUTION_ENABLED = previous;
-  }
+  assert.equal(isPhase2AttributionEnabled({}), false);
+  assert.equal(
+    isPhase2AttributionEnabled({
+      ALMAGO_PHASE2_ATTRIBUTION_ENABLED: "true",
+    }),
+    true,
+  );
+  assert.equal(
+    isPhase2AttributionEnabled({
+      ALMAGO_PARTNER_PRELAUNCH_MODE: "true",
+      ALMAGO_PHASE2_ATTRIBUTION_ENABLED: "true",
+    }),
+    false,
+  );
 });
 
 test("P2.10C builds stable bounded orientation links for QR and referral sources", () => {
