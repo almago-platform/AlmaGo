@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/Button";
 import { PreferredCitiesPicker } from "@/components/student/ProfileControls";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { studentProjectCopy } from "@/content/student-project-copy";
+import { rebrandCopy } from "@/lib/brand";
 import { projectPathOptions, type ProjectPath } from "@/lib/student/project";
 
 type Project = {
@@ -31,7 +32,7 @@ export function StudentProjectForm({ project }: { project: Project }) {
   const [status, setStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const [message, setMessage] = useState("");
   const { locale, direction } = useLocale();
-  const t = studentProjectCopy[locale];
+  const t = rebrandCopy(studentProjectCopy[locale]);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
