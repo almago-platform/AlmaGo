@@ -19,6 +19,8 @@ export default async function robots(): Promise<MetadataRoute.Robots> {
   const disallow = [
     "/admin/",
     "/student/",
+    "/prospect",
+    "/orientation/report/",
     "/login",
     "/signup",
     "/reset-password",
