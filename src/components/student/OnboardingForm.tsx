@@ -12,6 +12,7 @@ import {
 import { Button } from "@/components/ui/Button";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { studentOnboardingCopy } from "@/content/student-onboarding-copy";
+import { rebrandCopy } from "@/lib/brand";
 import {
   budgetOptions,
   certificateOptions,
@@ -109,7 +110,7 @@ export function OnboardingForm({ profile }: { profile: Record<string, unknown> }
   const [saving, setSaving] = useState(false);
   const router = useRouter();
   const { locale } = useLocale();
-  const t = studentOnboardingCopy[locale];
+  const t = rebrandCopy(studentOnboardingCopy[locale]);
   const steps = t.steps;
 
   const set = (key: string, value: string | string[]) =>

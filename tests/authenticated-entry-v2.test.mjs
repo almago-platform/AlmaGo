@@ -76,3 +76,9 @@ test("Arabic profile fields isolate Latin and numeric values from RTL labels", (
   assert.ok(profileForm.includes('label={f.first_name}'));
   assert.ok(profileForm.includes('label={f.phone}'));
 });
+
+test("student onboarding renders all localized copy through the canonical brand layer", () => {
+  assert.match(onboarding, /const t = rebrandCopy\(studentOnboardingCopy\[locale\]\)/);
+  assert.match(onboardingForm, /const t = rebrandCopy\(studentOnboardingCopy\[locale\]\)/);
+  assert.match(onboardingCopy, /AlmaGo/);
+});
