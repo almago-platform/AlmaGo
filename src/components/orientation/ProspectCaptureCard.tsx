@@ -25,6 +25,7 @@ export function ProspectCaptureCard({
   const copy = orientationProspectCopy[locale].capture;
   const [email, setEmail] = useState("");
   const [privacyAcknowledged, setPrivacyAcknowledged] = useState(false);
+  const [contactConsent, setContactConsent] = useState(false);
   const [status, setStatus] = useState<"idle" | "saving" | "success" | "error">("idle");
   const [message, setMessage] = useState("");
 
@@ -52,6 +53,7 @@ export function ProspectCaptureCard({
           locale,
           answers,
           privacyAcknowledged: true,
+          contactConsent,
           ...(acquisitionContext ? { acquisition: acquisitionContext } : {}),
         }),
       });
@@ -128,6 +130,23 @@ export function ProspectCaptureCard({
             >
               {copy.privacyLink}
             </Link>
+          </span>
+        </label>
+
+        <label className="flex items-start gap-3 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface)] p-3 text-sm leading-6">
+          <input
+            type="checkbox"
+            name="contactConsent"
+            className="mt-1"
+            checked={contactConsent}
+            onChange={(event) => setContactConsent(event.target.checked)}
+            disabled={status === "saving" || status === "success"}
+          />
+          <span>
+            <span className="font-medium">{copy.contactConsentLabel}</span>
+            <span className="mt-1 block text-xs leading-5 text-[var(--muted)]">
+              {copy.contactConsentHelp}
+            </span>
           </span>
         </label>
 
