@@ -35,13 +35,16 @@ test("baseline browser security headers apply to every route", () => {
   assert.match(nextConfig, /source: "\/:path\*"/);
 });
 
-test("robots keeps public root crawlable and blocks private application routes", () => {
+test("robots blocks pre-launch crawling and preserves private-route blocks after launch", () => {
+  assert.match(robots, /if \(!isPublicIndexingEnabled\(\)\)/);
+  assert.match(robots, /disallow: \["\/"\]/);
   assert.match(robots, /allow: \["\/"\]/);
   for (const path of ["/admin/", "/student/", "/login", "/signup", "/reset-password", "/unauthorized", "/auth/", "/api/"]) {
     assert.match(robots, new RegExp(path.replaceAll("/", "\\/")));
   }
-  assert.match(rootLayout, /index: true/);
-  assert.match(rootLayout, /follow: true/);
+  assert.match(rootLayout, /const indexingEnabled = isPublicIndexingEnabled\(\)/);
+  assert.match(rootLayout, /index: indexingEnabled/);
+  assert.match(rootLayout, /follow: indexingEnabled/);
 });
 
 test("authenticated and account-management surfaces explicitly noindex", () => {
