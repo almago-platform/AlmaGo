@@ -4,6 +4,7 @@ import test from "node:test";
 
 const page = readFileSync("src/app/student/page.tsx", "utf8");
 const dashboardCopy = readFileSync("src/content/student-dashboard-copy.ts", "utf8");
+const checklistCopy = readFileSync("src/content/student-checklist-copy.ts", "utf8");
 const journey = readFileSync("src/components/student/StudentJourneyOverview.tsx", "utf8");
 const shared = readFileSync("src/content/student-shared-copy.ts", "utf8");
 
@@ -55,4 +56,9 @@ test("dashboard retains legal framing around progress and decisions in every loc
 test("student dashboard renders localized copy through the canonical brand layer", () => {
   assert.match(page, /const t = rebrandCopy\(studentDashboardCopy\[locale\]\)/);
   assert.match(dashboardCopy, /AlmaGo/);
+});
+
+test("student dashboard rebrands checklist labels through the same canonical layer", () => {
+  assert.match(page, /const checklistCopy = rebrandCopy\(studentChecklistCopy\[locale\]\)/);
+  assert.match(checklistCopy, /AlmaGo/);
 });
