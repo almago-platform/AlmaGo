@@ -33,6 +33,7 @@ test("public orientation is feature-gated and does not alter the current homepag
   assert.match(home, /<HomeJourneySection[\s\S]*primaryHref=\{phase2Enabled \? "\/orientation" : "\/signup"\}/);
   assert.match(home, /<HomeTrustSection[\s\S]*primaryHref=\{phase2Enabled \? "\/orientation" : "\/signup"\}/);
   assert.match(home, /<HomeFinalCta[\s\S]*primaryHref=\{phase2Enabled \? "\/orientation" : "\/signup"\}/);
+  assert.match(home, /<HomeFooter[\s\S]*phase2Enabled=\{phase2Enabled\}[\s\S]*orientationLabel=\{copy\.home\.nav\.orientation\}/);
   assert.match(journey, /primaryHref = "\/signup"/);
   assert.match(tools, /index === 0 \? primaryHref/);
   assert.match(closing, /primaryHref = "\/signup"/);
@@ -143,4 +144,10 @@ test("French orientation summary keeps the admission boundary in plain language"
   assert.match(copy, /noticeTitle: "Important"/);
   assert.match(copy, /vérifiez toujours les conditions sur le site officiel/);
   assert.doesNotMatch(copy, /pas encore une évaluation d’admission/);
+});
+
+test("Phase 2 footer does not bypass orientation through the legacy signup link", () => {
+  assert.match(closing, /phase2Enabled && href === "\/signup"/);
+  assert.match(closing, /const resolvedHref = orientationLink \? "\/orientation" : href/);
+  assert.match(closing, /const resolvedLabel = orientationLink && orientationLabel \? orientationLabel : label/);
 });

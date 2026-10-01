@@ -50,7 +50,12 @@ export default async function Home() {
           primaryLabel={phase2Enabled ? copy.home.hero.orientationPrimary : copy.home.closing.cta}
         />
       </main>
-      <HomeFooter footer={copy.home.footer} homeAria={copy.common.homeAria} />
+      <HomeFooter
+        footer={copy.home.footer}
+        homeAria={copy.common.homeAria}
+        phase2Enabled={phase2Enabled}
+        orientationLabel={copy.home.nav.orientation}
+      />
     </div>
   );
 }
