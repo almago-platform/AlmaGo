@@ -95,7 +95,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const indexingEnabled = isPublicIndexingEnabled();
 
   return {
-    title: `${contact.metaTitle} | Campus Allemagne`,
+    title: contact.metaTitle,
     description: contact.metaDescription,
     alternates: {
       canonical: new URL("/contact", publicOrigin).toString(),

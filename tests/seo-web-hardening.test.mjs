@@ -119,3 +119,11 @@ test("approved branding and baseline security headers stay intact", () => {
     assert.match(nextConfig, new RegExp(header));
   }
 });
+
+test("child metadata relies on the root title template without duplicating the brand", () => {
+  assert.match(layout, /template: `%s \| \$\{BRAND_NAME\}`/);
+  assert.match(contact, /title: contact\.metaTitle/);
+  assert.doesNotMatch(contact, /contact\.metaTitle\} \| Campus Allemagne/);
+  assert.match(legal, /title: document\.title/);
+  assert.doesNotMatch(legal, /document\.title\} \| Campus Allemagne/);
+});
