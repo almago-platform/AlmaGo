@@ -3,13 +3,14 @@ import { ButtonLink } from "@/components/ui/ButtonLink";
 import { StudentLanguageCoursesPanel } from "@/components/student/StudentLanguageCoursesPanel";
 import { StudentGuidancePanel } from "@/components/student/StudentGuidancePanel";
 import { studentLanguageCoursesCopy } from "@/content/student-language-courses-copy";
+import { rebrandCopy } from "@/lib/brand";
 import { getRequestLocale } from "@/lib/i18n-server";
 
 export const dynamic = "force-dynamic";
 
 export default async function StudentLanguageCoursesPage() {
   const locale = await getRequestLocale();
-  const t = studentLanguageCoursesCopy[locale];
+  const t = rebrandCopy(studentLanguageCoursesCopy[locale]);
 
   return (
     <main className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 sm:py-7 lg:px-8 lg:py-9">
