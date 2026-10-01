@@ -6,6 +6,7 @@ import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Card } from "@/components/ui/Card";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { studentApplicationsCopy } from "@/content/student-applications-copy";
+import { rebrandCopy } from "@/lib/brand";
 import {
   isSubmittedApplicationStatus,
   normalizeApplicationStatus,
@@ -133,7 +134,7 @@ export function StudentApplicationsPanel({
   loadError?: string;
 }) {
   const { locale, direction } = useLocale();
-  const t = studentApplicationsCopy[locale].panel;
+  const t = rebrandCopy(studentApplicationsCopy[locale]).panel;
   const actionable = applications.filter((application) => isActiveApplication(application.status) && Boolean(application.next_action));
   const submitted = applications.filter(
     (application) => Boolean(application.submitted_at) || isSubmittedApplicationStatus(application.status),
