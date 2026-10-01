@@ -12,6 +12,8 @@ Chaîne de preuve Phase 1 sur un même SHA :
 
 **A38 → A43 → A44 → A45**
 
+Si `main` change après une de ces preuves, ne pas réutiliser l'ancienne preuve : rejouer la chaîne nécessaire sur le nouveau SHA.
+
 Runtime canonique :
 
 `https://almago-dev.onrender.com`
