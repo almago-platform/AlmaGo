@@ -18,8 +18,9 @@ test("A38 legal publication fails closed until explicit review readiness", () =>
   assert.match(content, /export const a38ReviewReady: boolean = false/);
   assert.match(content, /document\.status === "approved"/);
   assert.match(content, /document\.sections\.length > 0/);
-  assert.match(page, /index: ready/);
-  assert.match(page, /follow: ready/);
+  assert.match(page, /const indexable = ready && isPublicIndexingEnabled\(\)/);
+  assert.match(page, /index: indexable/);
+  assert.match(page, /follow: indexable/);
 });
 
 test("draft legal substance is not rendered while A38 is blocked", () => {

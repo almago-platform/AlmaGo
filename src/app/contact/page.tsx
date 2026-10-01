@@ -6,6 +6,7 @@ import { HomeFooter } from "@/components/public/HomeClosing";
 import { getNativeCopy } from "@/content/native-copy";
 import { rebrandCopy } from "@/lib/brand";
 import { LOCALE_COOKIE, normalizeLocale, type Locale } from "@/lib/i18n";
+import { isPublicIndexingEnabled } from "@/lib/public-indexing";
 import { getPublicOrigin } from "@/lib/public-origin";
 import s from "./ContactPage.module.css";
 
@@ -90,6 +91,7 @@ async function requestLocale() {
 export async function generateMetadata(): Promise<Metadata> {
   const [locale, publicOrigin] = await Promise.all([requestLocale(), getPublicOrigin()]);
   const contact = contactCopy[locale];
+  const indexingEnabled = isPublicIndexingEnabled();
 
   return {
     title: `${contact.metaTitle} | Campus Allemagne`,
@@ -98,8 +100,8 @@ export async function generateMetadata(): Promise<Metadata> {
       canonical: new URL("/contact", publicOrigin).toString(),
     },
     robots: {
-      index: true,
-      follow: true,
+      index: indexingEnabled,
+      follow: indexingEnabled,
     },
   };
 }
