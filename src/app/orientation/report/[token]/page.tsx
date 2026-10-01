@@ -268,7 +268,7 @@ export default async function OrientationReportPage({
                     label={diagnosticCopy.status[data.result.overallStatus]}
                   />
                 </div>
-                <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
+                <p className="mt-2 text-sm leading-6 text-[var(--foreground)]">
                   {diagnosticCopy.headlines[data.result.headlineCode].body}
                 </p>
               </div>
