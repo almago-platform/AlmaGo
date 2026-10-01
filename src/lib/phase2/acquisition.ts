@@ -51,3 +51,18 @@ export function acquisitionContextFromSearchParams(
     searchParams.get("ref"),
   );
 }
+
+export function buildAcquisitionOrientationHref(
+  kindValue: unknown,
+  sourceIdValue: unknown,
+): string | null {
+  const context = normalizeAcquisitionContext(kindValue, sourceIdValue);
+  if (!context) return null;
+
+  const params = new URLSearchParams({
+    src: context.kind,
+    ref: context.sourceId,
+  });
+
+  return `/orientation?${params.toString()}`;
+}

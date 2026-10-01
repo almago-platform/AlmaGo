@@ -4,6 +4,7 @@ import test from "node:test";
 import {
   acquisitionContextFromSearchParams,
   acquisitionSourceKinds,
+  buildAcquisitionOrientationHref,
   isPhase2AttributionEnabled,
   normalizeAcquisitionContext,
 } from "../src/lib/phase2/acquisition.ts";
@@ -76,5 +77,37 @@ test("P2.10B attribution is explicitly disabled by default", () => {
     delete process.env.ALMAGO_PHASE2_ATTRIBUTION_ENABLED;
   } else {
     process.env.ALMAGO_PHASE2_ATTRIBUTION_ENABLED = previous;
+  }
+});
+
+test("P2.10C builds stable bounded orientation links for QR and referral sources", () => {
+  assert.equal(
+    buildAcquisitionOrientationHref(" QR ", " School_Tunis_01 "),
+    "/orientation?src=qr&ref=school_tunis_01",
+  );
+  assert.equal(
+    buildAcquisitionOrientationHref("referral", "student-amb-7"),
+    "/orientation?src=referral&ref=student-amb-7",
+  );
+
+  const href = buildAcquisitionOrientationHref("campaign", "autumn_26");
+  assert.ok(href);
+  const url = new URL(href, "https://example.invalid");
+
+  assert.deepEqual(acquisitionContextFromSearchParams(url.searchParams), {
+    kind: "campaign",
+    sourceId: "autumn_26",
+  });
+});
+
+test("P2.10C never serializes invalid or private attribution values into links", () => {
+  for (const [kind, sourceId] of [
+    ["qr", "person@example.com"],
+    ["qr", "https://example.com/private"],
+    ["referral", "../secret"],
+    ["campaign", "contains space"],
+    ["other", "school_01"],
+  ]) {
+    assert.equal(buildAcquisitionOrientationHref(kind, sourceId), null);
   }
 });
