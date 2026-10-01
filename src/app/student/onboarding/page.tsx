@@ -9,12 +9,13 @@ import { Card } from "@/components/ui/Card";
 import { createClient } from "@/lib/supabase/server";
 import { getRequestLocale } from "@/lib/i18n-server";
 import { studentOnboardingCopy } from "@/content/student-onboarding-copy";
+import { rebrandCopy } from "@/lib/brand";
 
 export const dynamic = "force-dynamic";
 
 export default async function OnboardingPage() {
   const locale = await getRequestLocale();
-  const t = studentOnboardingCopy[locale];
+  const t = rebrandCopy(studentOnboardingCopy[locale]);
   const supabase = await createClient();
   const {
     data: { user },
