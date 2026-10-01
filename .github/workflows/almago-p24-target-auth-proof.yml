@@ -1,0 +1,90 @@
+name: AlmaGo P2.4 Target Auth Proof
+
+on:
+  push:
+    branches:
+      - phase2/p2-4-e2e-proof
+
+permissions:
+  contents: read
+
+jobs:
+  target-auth-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
+      SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY || secrets.SUPABASE_SERVICE_ROLE_KEY || secrets.SERVICE_ROLE_KEY }}
+      ALMAGO_E2E_STUDENT_EMAIL: ${{ vars.ALMAGO_E2E_STUDENT_EMAIL || 'phase3.student.c@almago.test' }}
+      ALMAGO_E2E_STUDENT_PASSWORD: ${{ secrets.ALMAGO_E2E_STUDENT_PASSWORD }}
+      ALMAGO_E2E_ADMIN_EMAIL: ${{ vars.ALMAGO_E2E_ADMIN_EMAIL || 'phase3.admin.b@almago.test' }}
+      ALMAGO_E2E_ADMIN_PASSWORD: ${{ secrets.ALMAGO_E2E_ADMIN_PASSWORD }}
+      ALMAGO_P24_E2E_PROOF: "true"
+      ALMAGO_PHASE2_EMAIL_DELIVERY_ENABLED: "false"
+      ALMAGO_BASE_URL: http://127.0.0.1:3000
+      ALMAGO_E2E_REDACT_SECRETS: "true"
+      CI: "true"
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Require target proof configuration
+        shell: bash
+        run: |
+          missing=()
+          for name in NEXT_PUBLIC_SUPABASE_URL NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY SUPABASE_SECRET_KEY ALMAGO_E2E_STUDENT_EMAIL ALMAGO_E2E_STUDENT_PASSWORD ALMAGO_E2E_ADMIN_EMAIL ALMAGO_E2E_ADMIN_PASSWORD; do
+            if [ -z "${!name}" ]; then missing+=("$name"); fi
+          done
+          if [ "${#missing[@]}" -gt 0 ]; then
+            echo "::error::P2.4 target proof is missing required configuration names: ${missing[*]}"
+            exit 1
+          fi
+          echo "P2.4 target proof configuration detected."
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright tooling
+        run: npm install --no-save --package-lock=false @playwright/test@1.55.0
+
+      - name: Cache Chromium
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-1.55.0-chromium
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Build and start proof app
+        shell: bash
+        run: |
+          mkdir -p artifacts/p24-target-auth
+          npm run build
+          npm start -- -p 3000 > artifacts/p24-target-auth/server.log 2>&1 &
+          for i in {1..45}; do
+            if curl --fail --silent http://127.0.0.1:3000/login > /dev/null; then
+              exit 0
+            fi
+            sleep 2
+          done
+          cat artifacts/p24-target-auth/server.log
+          exit 1
+
+      - name: Run real target Supabase/Auth P2.4 proof
+        run: npx playwright test tests/e2e/p24-target-auth-proof.spec.mjs --project=desktop-chromium
+
+      - name: Upload proof artifacts
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: p24-target-auth-${{ github.run_id }}
+          path: artifacts/p24-target-auth/
+          retention-days: 7
+          if-no-files-found: warn
