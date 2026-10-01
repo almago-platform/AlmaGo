@@ -32,7 +32,8 @@ test("public metadata resolves an absolute non-local production origin", () => {
 
 
 test("public indexing is an explicit launch gate and defaults off", () => {
-  assert.match(indexing, /process\.env\.ALMAGO_PUBLIC_INDEXING_ENABLED === "true"/);
+  assert.match(indexing, /env\.ALMAGO_PUBLIC_INDEXING_ENABLED === "true"/);
+  assert.match(indexing, /isPartnerPrelaunchEnabled\(env\)[\s\S]*return false/);
   assert.match(env, /ALMAGO_PUBLIC_INDEXING_ENABLED=false/);
   assert.match(layout, /const indexingEnabled = isPublicIndexingEnabled\(\)/);
   assert.match(layout, /index: indexingEnabled/);
