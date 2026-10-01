@@ -66,8 +66,9 @@ test("P2.10A analytics transport remains explicitly disabled by default", () => 
   assert.match(env, /ALMAGO_PHASE2_FUNNEL_TELEMETRY_ENABLED=false/);
   assert.match(
     helper,
-    /process\.env\.ALMAGO_PHASE2_FUNNEL_TELEMETRY_ENABLED === "true"/,
+    /env\.ALMAGO_PHASE2_FUNNEL_TELEMETRY_ENABLED === "true"/,
   );
+  assert.match(helper, /isPartnerPrelaunchEnabled\(env\)[\s\S]*return false/);
   assert.match(
     helper,
     /prepareTelemetryEvent\("phase2_funnel_step", \{ step \}\)/,

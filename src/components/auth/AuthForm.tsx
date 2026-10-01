@@ -23,9 +23,11 @@ const getServerHydrationSnapshot = () => false;
 export function AuthForm({
   initialMode = "login",
   orientationActivation,
+  partnerPrelaunch = false,
 }: {
   initialMode?: Mode;
   orientationActivation?: OrientationActivation;
+  partnerPrelaunch?: boolean;
 }) {
   const [mode, setMode] = useState<Mode>(initialMode);
   const [email, setEmail] = useState(orientationActivation?.email ?? "");
@@ -42,8 +44,12 @@ export function AuthForm({
     getServerHydrationSnapshot,
   );
   const router = useRouter();
-  const { copy } = useLocale();
+  const { copy, locale } = useLocale();
   const auth = copy.auth;
+  const restrictedAction = partnerPrelaunch && mode !== "login";
+  const prelaunchNotice = locale === "ar"
+    ? "هذه بيئة عرض للشركاء. إنشاء الحساب واسترجاع كلمة المرور متوقفان مؤقتًا. استخدم حساب العرض المخصص."
+    : "Environnement de démonstration partenaire : création de compte et récupération de mot de passe temporairement désactivées. Utilisez le compte de démonstration fourni.";
   const activationToken = orientationActivation?.token;
   const activationClaimPath = activationToken
     ? `/orientation/claim/${encodeURIComponent(activationToken)}`
@@ -59,6 +65,12 @@ export function AuthForm({
     event.preventDefault();
     setError("");
     setMessage("");
+
+    if (restrictedAction) {
+      setError(prelaunchNotice);
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -127,6 +139,12 @@ export function AuthForm({
       </div>
 
       <form onSubmit={submit} aria-busy={loading} data-auth-ready={hydrated ? "true" : "false"} className="space-y-4 px-5 py-5 sm:px-7 sm:py-6">
+        {restrictedAction && (
+          <p role="status" data-partner-auth-restricted="true" className="rounded-[var(--radius-control)] border border-amber-200 bg-amber-50 p-4 text-sm font-medium leading-6 text-amber-950">
+            {prelaunchNotice}
+          </p>
+        )}
+
         {mode === "signup" && (
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="block text-sm font-semibold text-[var(--foreground)]">
@@ -215,7 +233,7 @@ export function AuthForm({
           </p>
         )}
 
-        <button type="submit" disabled={loading || !hydrated} className={buttonClassName("primary", "w-full min-h-12 justify-center py-3 text-base")}>
+        <button type="submit" disabled={loading || !hydrated || restrictedAction} className={buttonClassName("primary", "w-full min-h-12 justify-center py-3 text-base")}>
           {loading
             ? auth.labels.loading
             : mode === "login"

@@ -1,3 +1,8 @@
+function isPartnerPrelaunchEnabled(env: Record<string, string | undefined>) {
+  const raw = env.ALMAGO_PARTNER_PRELAUNCH_MODE?.trim().toLowerCase();
+  return raw ? ["1", "true", "yes", "on"].includes(raw) : false;
+}
+
 export const acquisitionSourceKinds = [
   "qr",
   "referral",
@@ -14,8 +19,11 @@ export type AcquisitionContext = {
 
 const SOURCE_ID_RE = /^[a-z0-9][a-z0-9_-]{0,31}$/;
 
-export function isPhase2AttributionEnabled() {
-  return process.env.ALMAGO_PHASE2_ATTRIBUTION_ENABLED === "true";
+export function isPhase2AttributionEnabled(
+  env: Record<string, string | undefined> = process.env,
+) {
+  if (isPartnerPrelaunchEnabled(env)) return false;
+  return env.ALMAGO_PHASE2_ATTRIBUTION_ENABLED === "true";
 }
 
 export function normalizeAcquisitionContext(

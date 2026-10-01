@@ -8,7 +8,7 @@ const helper = readFileSync("tests/e2e/auth-test-helpers.mjs", "utf8");
 test("auth submit is disabled until the client hydration boundary is ready", () => {
   assert.match(form, /useSyncExternalStore/);
   assert.match(form, /data-auth-ready=\{hydrated \? "true" : "false"\}/);
-  assert.match(form, /disabled=\{loading \|\| !hydrated\}/);
+  assert.match(form, /disabled=\{loading \|\| !hydrated \|\| restrictedAction\}/);
 });
 
 test("A43 waits for the hydrated auth form before submitting credentials", () => {
