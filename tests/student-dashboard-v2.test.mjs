@@ -53,6 +53,17 @@ test("dashboard retains legal framing around progress and decisions in every loc
   assert.ok(page.includes("t.dossierText"));
 });
 
+test("student dashboard progress disclaimer keeps WCAG AA contrast on the subtle panel", () => {
+  assert.match(
+    page,
+    /<p className="mt-4 text-xs leading-5 text-\[#626669\]">\s*\{t\.progressBoundary\}/,
+  );
+  assert.doesNotMatch(
+    page,
+    /<p className="mt-4 text-xs leading-5 text-\[var\(--muted\)\]">\s*\{t\.progressBoundary\}/,
+  );
+});
+
 test("student dashboard renders localized copy through the canonical brand layer", () => {
   assert.match(page, /const t = rebrandCopy\(studentDashboardCopy\[locale\]\)/);
   assert.match(dashboardCopy, /AlmaGo/);
