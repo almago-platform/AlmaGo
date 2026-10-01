@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BrandLogo } from "@/components/brand/BrandLogo";
@@ -35,6 +36,13 @@ import {
   tunisianBacTrackOptions,
   type SelectOption,
 } from "@/lib/student/profile-options";
+
+export const metadata: Metadata = {
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 function localizedValue(value: string, options: readonly SelectOption[]) {
   return options.find((option) => option.value === value)?.label || value || "—";
