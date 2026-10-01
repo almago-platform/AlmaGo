@@ -10,6 +10,7 @@ import {
 import {
   evaluateProspectQualification,
 } from "@/lib/phase2/qualification";
+import { evaluateSmartOrientationPriority } from "@/lib/phase2/smart-orientation";
 import { createPrivilegedSupabaseClient } from "@/lib/supabase/privileged";
 import {
   budgetOptions,
@@ -128,6 +129,7 @@ export async function POST(request: Request) {
 
   const diagnostic = buildPublicOrientationDiagnostic(answers);
   const qualification = evaluateProspectQualification(answers, diagnostic);
+  const smartPriority = evaluateSmartOrientationPriority(answers);
   const acquisition = isPhase2AttributionEnabled()
     ? acquisitionContextFromStoredInput(latestOrientation?.input)
     : null;
@@ -150,6 +152,7 @@ export async function POST(request: Request) {
         answers,
         locale,
         source: "prospect_account_update",
+        smart_priority: smartPriority,
         ...(acquisition ? { acquisition } : {}),
       },
       p_orientation_result: diagnostic,

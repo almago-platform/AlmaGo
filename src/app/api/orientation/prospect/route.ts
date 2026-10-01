@@ -5,6 +5,7 @@ import { buildPublicOrientationDiagnostic } from "@/lib/orientation/diagnostic";
 import { buildOrientationProspectEmail } from "@/lib/orientation/prospect-email";
 import { restorePublicOrientationAnswers } from "@/lib/orientation/public";
 import { createOrientationResumeToken } from "@/lib/orientation/resume-token";
+import { evaluateSmartOrientationPriority } from "@/lib/phase2/smart-orientation";
 import {
   isPhase2EmailDeliveryEnabled,
   isPhase2ProspectCaptureEnabled,
@@ -144,6 +145,7 @@ export async function POST(request: Request) {
   }
 
   const diagnostic = buildPublicOrientationDiagnostic(answers);
+  const smartPriority = evaluateSmartOrientationPriority(answers);
   const resume = createOrientationResumeToken();
 
   let supabase;
@@ -203,6 +205,7 @@ export async function POST(request: Request) {
           locale,
           privacy_notice_version: PRIVACY_NOTICE_VERSION,
           privacy_acknowledged: true,
+          smart_priority: smartPriority,
           contact_consent: contactConsent,
           contact_consent_version: contactConsent ? CONTACT_CONSENT_VERSION : null,
           ...(acquisition ? { acquisition } : {}),
