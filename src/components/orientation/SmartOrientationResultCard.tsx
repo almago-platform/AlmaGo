@@ -60,7 +60,7 @@ export function SmartOrientationResultCard({
         </a>
       ) : null}
 
-      <p className="mt-4 text-xs leading-5 text-[var(--muted)]">
+      <p className="mt-4 text-xs leading-5 text-[var(--foreground)]">
         {copy.disclaimer}
       </p>
     </section>
