@@ -104,3 +104,12 @@ test("orientation result has correct skip-link semantics and a way back home", (
   assert.match(copy, /home: "Back to home"/);
   assert.match(copy, /home: "Zurück zur Startseite"/);
 });
+
+test("orientation metadata follows the active locale instead of staying French-only", () => {
+  assert.match(page, /export async function generateMetadata\(\): Promise<Metadata>/);
+  assert.match(page, /const store = await cookies\(\)/);
+  assert.match(page, /normalizeLocale\(store\.get\(LOCALE_COOKIE\)\?\.value\)/);
+  assert.match(page, /const copy = orientationCopy\[locale\]/);
+  assert.match(page, /description: copy\.intro\.lead/);
+  assert.doesNotMatch(page, /export const metadata: Metadata/);
+});
