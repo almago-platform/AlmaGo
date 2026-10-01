@@ -4,10 +4,17 @@ import { AuthMobileHeader } from "@/components/auth/AuthMobileHeader";
 import { AuthStoryPanel } from "@/components/auth/AuthStoryPanel";
 import { resolveOrientationActivation } from "@/lib/orientation/account-activation";
 import { isPhase2AccountLinkingEnabled } from "@/lib/phase2/config";
+import { getRequestCopy } from "@/lib/i18n-server";
 
-export const metadata: Metadata = {
-  robots: { index: false, follow: false },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { copy } = await getRequestCopy();
+
+  return {
+    title: copy.auth.titles.login,
+    description: copy.auth.subtitles.login,
+    robots: { index: false, follow: false },
+  };
+}
 
 export default async function LoginPage({
   searchParams,
