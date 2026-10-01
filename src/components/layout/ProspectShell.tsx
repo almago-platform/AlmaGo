@@ -8,6 +8,7 @@ import { LanguageSwitcher } from "@/components/i18n/LanguageSwitcher";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { prospectDashboardCopy } from "@/content/prospect-dashboard-copy";
 import { prospectOffersCopy } from "@/content/prospect-offers-copy";
+import { prospectPaymentCopy } from "@/content/prospect-payment-copy";
 import { createClient } from "@/lib/supabase/client";
 
 function subscribeToHash(onStoreChange: () => void) {
@@ -41,6 +42,7 @@ export function ProspectShell({
   const { locale, direction, copy } = useLocale();
   const t = prospectDashboardCopy[locale].shell;
   const offersCopy = prospectOffersCopy[locale];
+  const paymentCopy = prospectPaymentCopy[locale];
   const name = displayName?.trim();
 
   const links = [
@@ -50,6 +52,7 @@ export function ProspectShell({
     { href: "/prospect#missing", label: t.links.missing },
     { href: "/orientation?mode=update", label: t.links.update },
     { href: "/prospect/offers", label: offersCopy.nav },
+    { href: "/prospect/payment", label: paymentCopy.nav },
   ];
 
   async function signOut() {
@@ -97,9 +100,7 @@ export function ProspectShell({
                   : null;
                 const active = hash
                   ? pathname === "/prospect" && activeHash === hash
-                  : item.href === "/prospect/offers"
-                    ? pathname === "/prospect/offers" || pathname.startsWith("/prospect/offers/")
-                    : false;
+                  : pathname === item.href || pathname.startsWith(`${item.href}/`);
 
                 return (
                   <Link
