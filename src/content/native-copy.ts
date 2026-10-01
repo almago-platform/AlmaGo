@@ -111,10 +111,10 @@ const fr = {
       intro: "Les réponses aux questions les plus fréquentes.",
       cta: "Voir les étapes",
       items: [
-        ["Puis-je commencer sans admission ?", "Oui. Commencez par votre projet et les documents que vous avez. Cherchez ensuite une admission adaptée avant les démarches qui en dépendent."],
+        ["Puis-je commencer sans admission ?", "Oui. Commencez par votre projet et les documents que vous avez. Cherchez ensuite des programmes adaptés. Attendez d’avoir une admission avant les démarches qui en dépendent."],
         ["Que vais-je retrouver dans mon espace ?", "Votre projet, vos documents, vos programmes, vos candidatures et vos prochaines étapes."],
-        ["AlmaGo dépose-t-il mes candidatures ?", "Non. AlmaGo vous aide à préparer et suivre vos candidatures. Vous les envoyez par le canal demandé par l’université, par exemple directement ou via uni-assist."],
-        ["Les informations sont-elles officielles ?", "AlmaGo indique la source et la date de contrôle quand elles sont disponibles. Vérifiez toujours la source officielle avant une démarche."],
+        ["AlmaGo dépose-t-il mes candidatures ?", "Non. AlmaGo vous aide à préparer et suivre vos candidatures. Vous les envoyez de la façon demandée par l’université, par exemple directement ou via uni-assist."],
+        ["Les informations sont-elles officielles ?", "AlmaGo indique la source et la date de vérification lorsqu’elles sont disponibles. Vérifiez toujours la source officielle avant une démarche."],
         ["AlmaGo garantit-il une admission ou un visa ?", "Non. AlmaGo organise votre préparation. Les universités, ambassades et autorités prennent les décisions."],
       ],
     },
