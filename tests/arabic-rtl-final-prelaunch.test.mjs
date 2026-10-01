@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import test from "node:test";
 
 const helper = readFileSync("src/lib/student/arabic-display.ts", "utf8");
+const profileCopy = readFileSync("src/content/student-profile-copy.ts", "utf8");
 const dashboard = readFileSync("src/app/student/page.tsx", "utf8");
 const applications = readFileSync("src/components/student/StudentApplicationsPanel.tsx", "utf8");
 const documents = readFileSync("src/components/student/DocumentsPanel.tsx", "utf8");
@@ -74,4 +75,15 @@ test("responsive browser matrix explicitly covers release widths", () => {
   for (const width of [360, 390, 768, 1440]) {
     assert.match(playwright, new RegExp(`width: ${width}\\b`));
   }
+});
+
+test("Arabic degree option labels avoid unnecessary Latin degree names", () => {
+  const arabicProfile = profileCopy.slice(
+    profileCopy.indexOf("const optionLabels"),
+    profileCopy.indexOf("const cityLabels"),
+  );
+  assert.match(arabicProfile, /Licence: "إجازة \/ بكالوريوس"/);
+  assert.match(arabicProfile, /Bachelor: "بكالوريوس"/);
+  assert.match(arabicProfile, /Master: "ماجستير"/);
+  assert.doesNotMatch(arabicProfile, /"إجازة \/ Bachelor"/);
 });
