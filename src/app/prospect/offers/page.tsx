@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ProspectOfferSelector, type PublishedOfferCard } from "@/components/prospect/ProspectOfferSelector";
 import { prospectOffersCopy } from "@/content/prospect-offers-copy";
+import { rebrandCopy } from "@/lib/brand";
 import { getRequestLocale } from "@/lib/i18n-server";
 import { getPhase2StudentAccess } from "@/lib/phase2/access";
 
@@ -58,7 +59,7 @@ export const dynamic = "force-dynamic";
 export default async function ProspectOffersPage() {
   const access = await getPhase2StudentAccess();
   const locale = await getRequestLocale();
-  const copy = prospectOffersCopy[locale];
+  const copy = rebrandCopy(prospectOffersCopy[locale]);
 
   if (access.customerStatus !== "qualified_prospect"
     && access.customerStatus !== "payment_pending"

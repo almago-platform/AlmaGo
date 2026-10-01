@@ -222,3 +222,8 @@ test("offer empty states use student-facing language instead of internal product
   assert.doesNotMatch(copy, /qualification humaine|human qualification stage|تأهيل المشروع|menschliche Qualifikationsstufe/);
   assert.doesNotMatch(copy, /Aucun prix ni service n’est inventé|No price or service is invented/);
 });
+
+test("prospect offer page renders localized offer copy through the canonical brand layer", () => {
+  assert.match(prospectPage, /const copy = rebrandCopy\(prospectOffersCopy\[locale\]\)/);
+  assert.match(copy, /No AlmaGo offer guarantees university admission or a visa/);
+});
