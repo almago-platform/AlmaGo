@@ -1,5 +1,6 @@
 import { ProspectQualificationReviewForm } from "@/components/admin/ProspectQualificationReviewForm";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
+import { acquisitionContextFromStoredInput } from "@/lib/phase2/acquisition";
 import { createClient } from "@/lib/supabase/server";
 
 type ProspectRow = {
@@ -12,6 +13,7 @@ type ProspectRow = {
 type OrientationRow = {
   id: string;
   prospect_id: string;
+  input: unknown;
   created_at: string;
 };
 
@@ -68,7 +70,7 @@ export default async function AdminProspectsPage() {
   if (prospectIds.length) {
     const { data } = await supabase
       .from("orientations")
-      .select("id,prospect_id,created_at")
+      .select("id,prospect_id,input,created_at")
       .in("prospect_id", prospectIds)
       .order("created_at", { ascending: false })
       .limit(250);
@@ -162,6 +164,9 @@ export default async function AdminProspectsPage() {
             const accessStatus = prospect.user_id
               ? accessByUser.get(prospect.user_id) ?? null
               : null;
+            const acquisition = orientation
+              ? acquisitionContextFromStoredInput(orientation.input)
+              : null;
             const canReview =
               qualification?.state === "ready_for_review"
               && accessStatus === "prospect_account";
@@ -191,6 +196,12 @@ export default async function AdminProspectsPage() {
                     </span>
                   </div>
                 </div>
+
+                {acquisition ? (
+                  <p className="mt-4 text-xs font-semibold text-slate-600">
+                    Acquisition : <bdi dir="auto">{acquisition.kind} · {acquisition.sourceId}</bdi>
+                  </p>
+                ) : null}
 
                 {!orientation ? (
                   <p className="mt-4 text-sm text-slate-600">Aucune orientation enregistrée.</p>
