@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { AppShell } from "@/components/layout/AppShell";
+import { isPartnerPrelaunchModeEnabled } from "@/lib/prelaunch";
 import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -27,5 +28,9 @@ export default async function AdminLayout({
 
   if (role?.role !== "admin") redirect("/unauthorized");
 
-  return <AppShell role="admin">{children}</AppShell>;
+  return (
+    <AppShell role="admin" partnerPrelaunch={isPartnerPrelaunchModeEnabled()}>
+      {children}
+    </AppShell>
+  );
 }

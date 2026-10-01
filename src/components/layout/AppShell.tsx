@@ -66,12 +66,6 @@ const adminItems: NavItem[] = [
   { label: "Finance & assurance", href: "/admin/finance-insurance", icon: icons.applications, helper: "Options factuelles" },
 ];
 
-const adminGroups = [
-  { label: "Pilotage", items: adminItems.slice(0, 1) },
-  { label: "Opérations", items: adminItems.slice(1, 7) },
-  { label: "Catalogue Allemagne", items: adminItems.slice(7) },
-];
-
 function isActive(pathname: string, href: string) {
   if (href === "/student" || href === "/admin") return pathname === href;
   return pathname === href || pathname.startsWith(`${href}/`);
@@ -81,10 +75,12 @@ export function AppShell({
   role,
   children,
   displayName,
+  partnerPrelaunch = false,
 }: Readonly<{
   role: AppShellRole;
   children: ReactNode;
   displayName?: string | null;
+  partnerPrelaunch?: boolean;
 }>) {
   const pathname = usePathname();
   const router = useRouter();
@@ -101,7 +97,24 @@ export function AppShell({
     label: shell.groups[groupIndex],
     items: indexes.map((index) => localizedStudentItems[index]),
   }));
-  const items = role === "admin" ? adminItems : localizedStudentItems;
+  const partnerDemoItem: NavItem = {
+    label: "Démo partenaires",
+    href: "/admin/partner-demo",
+    icon: icons.orientation,
+    helper: "E-mail & paiement sandbox",
+  };
+  const currentAdminItems = partnerPrelaunch
+    ? [...adminItems, partnerDemoItem]
+    : adminItems;
+  const adminGroups = [
+    { label: "Pilotage", items: currentAdminItems.slice(0, 1) },
+    { label: "Opérations", items: currentAdminItems.slice(1, 7) },
+    { label: "Catalogue Allemagne", items: currentAdminItems.slice(7, 11) },
+    ...(partnerPrelaunch
+      ? [{ label: "Pré-lancement", items: currentAdminItems.slice(11) }]
+      : []),
+  ];
+  const items = role === "admin" ? currentAdminItems : localizedStudentItems;
   const currentItem = items.find((item) => isActive(pathname, item.href)) || items[0];
   const studentName = displayName?.trim() || shell.studentNameFallback;
 
@@ -349,7 +362,7 @@ export function AppShell({
                   </div>
 
                   <nav className="grid gap-2 sm:grid-cols-2" aria-label="Navigation administration mobile">
-                    {adminItems.map((item) => {
+                    {currentAdminItems.map((item) => {
                       const active = isActive(pathname, item.href);
                       return (
                         <Link
