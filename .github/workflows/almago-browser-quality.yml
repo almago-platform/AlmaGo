@@ -40,6 +40,7 @@ jobs:
     timeout-minutes: 25
     env:
       CI: "true"
+      ALMAGO_PHASE2_ENABLED: "true"
       NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
       NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
     steps:

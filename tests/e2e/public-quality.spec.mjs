@@ -2,11 +2,14 @@ import { mkdirSync } from "node:fs";
 import AxeBuilder from "@axe-core/playwright";
 import { test, expect } from "@playwright/test";
 
+const phase2Enabled = process.env.ALMAGO_PHASE2_ENABLED === "true";
+
 const pages = [
   { path: "/", name: "home" },
   { path: "/login", name: "login" },
   { path: "/signup", name: "signup" },
   { path: "/unauthorized", name: "unauthorized" },
+  ...(phase2Enabled ? [{ path: "/orientation", name: "orientation" }] : []),
 ];
 
 mkdirSync("artifacts/screenshots", { recursive: true });
@@ -147,6 +150,29 @@ test("native language switch persists and Arabic renders RTL without overflow", 
     path: "artifacts/screenshots/home-ar-" + testInfo.project.name + ".png",
     fullPage: true,
   });
+
+  if (phase2Enabled) {
+    await page.goto("/orientation", { waitUntil: "networkidle" });
+    await expect(page.locator("html")).toHaveAttribute("lang", "ar");
+    await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
+    await expect(page.getByRole("heading", { name: "من أين تبدأ مشروع الدراسة في ألمانيا؟" })).toBeVisible();
+
+    const orientationOverflow = await page.evaluate(
+      () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+    );
+    expect(orientationOverflow, "Arabic orientation must not overflow horizontally").toBeLessThanOrEqual(1);
+
+    const orientationAxe = await new AxeBuilder({ page }).analyze();
+    const orientationSevere = orientationAxe.violations.filter(
+      item => item.impact === "serious" || item.impact === "critical",
+    );
+    expect(orientationSevere, JSON.stringify(orientationSevere, null, 2)).toEqual([]);
+
+    await page.screenshot({
+      path: "artifacts/screenshots/orientation-ar-" + testInfo.project.name + ".png",
+      fullPage: true,
+    });
+  }
 
   await page.goto("/login", { waitUntil: "networkidle" });
   const englishSwitcher = page.locator("select:visible").first();
