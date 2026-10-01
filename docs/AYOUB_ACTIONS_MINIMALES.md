@@ -1,128 +1,109 @@
 # AYOUB — Actions minimales requises avant lancement
 
-Le système AlmaGo est conçu pour réduire l’intervention propriétaire, mais certaines étapes ne peuvent pas être automatisées de façon sûre.
-
 ## État actuel
 
-Master Plan : **41/45 — 91 %** *(compteur historique du plan A01–A45, pas un score de readiness lancement)*.
+Le compteur historique Phase 1 est **41/45 — 91 %**. Ce n'est pas un score de readiness produit.
 
-Chaîne de release :
+Chaîne de fermeture :
 
-**A38 juridique → A43 E2E authentifiés → A44 observabilité → A45 gate final Render**
+**freeze → P2.4 → A38 → P2.3 email → A43 Render → offres/paiement → A44/P2.10 → QA finale → A45**
 
-Runtime canonique de recette :
+Runtime canonique :
 
 `https://almago-dev.onrender.com`
 
-GitHub Actions a actuellement un incident séparé : les workflows sont créés mais certains jobs échouent avant toute étape avec `steps: null`. Suivi : #286.
+Infrastructure déjà résolue :
+- GitHub Actions fonctionne ;
+- `main` est protégé ;
+- le check global requis est `verify` ;
+- Render auto-deploy est restauré ;
+- `/api/health` est configuré ;
+- Vercel reste un miroir/preview utile mais n'est pas le runtime canonique ni un required check.
 
-## Séquence release candidate — un seul SHA
+## Ce qu'il te reste réellement à faire
 
-Avant l’approbation finale A38, terminer et merger uniquement les changements réellement destinés au lancement, puis finaliser la protection de `main` suivie dans #336.
+### 1. P2.4 — ajouter un secret serveur GitHub
 
-Ensuite :
+Dans GitHub Actions Secrets, ajouter :
 
-1. relever le **SHA exact** du release candidate sur `main` ;
-2. ne plus merger ni pousser sur `main` pendant la séquence de preuve ;
-3. exécuter **A38 → A43 → A44 → A45** contre ce même SHA ;
-4. si `main` change avant A45, considérer les preuves exact-SHA précédentes comme périmées et recommencer la chaîne de preuve sur le nouveau SHA.
+`SUPABASE_SECRET_KEY`
 
-C’est une règle d’intégrité de preuve. Elle ne déclenche aucun verrouillage, merge ou déploiement automatique.
+Ne jamais copier sa valeur dans le chat ou une Issue.
 
-## Ce qu’il te reste réellement à faire
+Ensuite la preuve #674 pourra tester signup, confirmation, login, reset, claim, idempotence et rejet d'un autre utilisateur.
 
-### A38 — juridique
+### 2. A38 — finir les décisions juridiques humaines
 
-Suivi humain/juridique : #66. La proposition de rétention/suppression, la matrice de finalisation et les faits Render/Vercel doivent rester alignés avec le `main` courant.
+À confirmer/finaliser :
+- adresse publique ;
+- identifiants légaux/fiscaux si applicables ;
+- DPO ;
+- activité réglementée éventuelle ;
+- bases juridiques ;
+- transferts internationaux ;
+- autorité/droit/litiges ;
+- relecteur compétent ;
+- version/date d'entrée en vigueur.
 
-Compléter `docs/A38_OWNER_CONFIRMATION.md`, décider conservation/suppression, faire relire les textes, puis n’activer `A38_REVIEW_READY: true` qu’une fois les placeholders réellement résolus.
+Puis faire relire les textes et utiliser le gate A38.
 
-Après la relecture humaine, poster exactement :
+### 3. Email transactionnel
 
-`A38 HUMAN REVIEW APPROVED`
+Configurer le compte Resend, le domaine d'envoi et l'expéditeur. Les secrets vont dans l'environnement, jamais dans le repo/chat.
 
-sur l’issue A38.
+Après A38 : test réel FR + AR/RTL.
 
-### A43 — E2E étudiant/admin
+### 4. A43
 
-Les comptes test existent déjà.
+Après A38, lancer **AlmaGo Authenticated E2E** sur `main` avec cible **Render**. Le workflow vérifie le SHA exact et peut fermer A43 automatiquement si tout passe.
 
-Il manque uniquement deux GitHub Actions Secrets :
+### 5. Offres commerciales
 
-- `ALMAGO_E2E_STUDENT_PASSWORD`
-- `ALMAGO_E2E_ADMIN_PASSWORD`
+Décider pour Bronze / Silver / Gold :
+- services ;
+- limites ;
+- support ;
+- prix ;
+- devise.
 
-Les e-mails test sont déjà définis par défaut dans le workflow. Aucune variable d’activation supplémentaire n’est nécessaire.
+Aucune offre n'est encore publiée dans le Supabase cible.
 
-Le workflow ne pourra toutefois produire une vraie preuve tant que #286 empêche le runner GitHub d’exécuter ses étapes.
+### 6. Paiement
 
-Suivi durable : #84 (A43), #286 (runner GitHub Actions) et #448 (preuve exact-main). Le workflow conserve la cible Render avec réveil `/api/health`, le mode local et les garde-fous main-only/A38.
+Choisir/onboarder un prestataire compatible avec ton établissement réel. La base et la machine d'état P2.9 sont déjà déployées et testées ; il manque le vrai checkout/webhook et la preuve fournisseur.
 
-### Render
-
-Suivi : #389.
-
-Dans le dashboard Render :
-
-- reconnecter/réautoriser GitHub si nécessaire ;
-- vérifier qu’un push sur `main` déclenche réellement un deploy ;
-- définir `/api/health` comme health check.
-
-Le service est Free et peut afficher un écran de réveil après inactivité. Un éventuel plan payant est une décision séparée.
-
-### Catalogue production — terminé
-
-#176 est clôturée. Le journal de clôture indique :
-
-- 1 recommandation test archivée ;
-- 7 programmes test désactivés ;
-- 8 universités test désactivées ;
-- aucun DELETE ;
-- post-contrôle : 0 fixture active.
-
-**Ne pas rejouer cette opération depuis ce document.**
-
-### A44 — observabilité
+### 7. A44 / analytics
 
 Après A38 + A43 :
-
 - choisir le fournisseur ;
-- définir rétention/consentement ;
-- stocker les secrets dans Render/GitHub ;
-- tester avec données synthétiques ;
-- activer seulement après vérification de l’allow-list et de la confidentialité.
+- garder l'auto-capture intrusive désactivée ;
+- appliquer la rétention/consentement ;
+- tester uniquement avec événements allow-listés et données synthétiques.
 
-Le runtime est Render, pas Vercel.
+### 8. Sécurité finale
 
-Intégrité de preuve A44 exact-main : #433. La preuve doit être produite depuis le SHA exact du `main` courant, puis `main` revérifié avant toute clôture A44.
+Traiter les derniers advisors Supabase pertinents, notamment la protection contre mots de passe compromis si disponible sur le plan retenu.
 
-### Supabase Auth
+### 9. A45
 
-#179 suit la décision optionnelle d’un passage Pro pour la protection contre mots de passe compromis.
+Quand toutes les preuves sont sur le même release candidate, lancer le Final Release Gate et saisir `RELEASE`.
 
-### Protection GitHub
+Le gate doit confirmer le SHA exact de Render avant `RELEASE GATE: READY`.
 
-#336 suit la protection de `main`.
+## Ce que tu n'as plus à refaire
 
-Ne pas exiger le check GitHub Actions cassé tant que #286 n’est pas résolu.
-
-### A45
-
-Suivi durable : #406 (gate final Render) et #439 (protection de `main`). Le gate doit exiger que `main` soit protégée (#336) et que le service live rapporte le SHA exact de `main` avant de publier `RELEASE GATE: READY`.
-
-## Ce qui n’est pas requis maintenant
-
-- activer Gemini/Grok ;
-- connecter Figma ;
-- passer Render ou Supabase sur un plan payant ;
-- créer de nouveaux comptes E2E ;
-- fournir les e-mails E2E comme secrets ;
-- créer une variable `ALMAGO_AUTH_E2E_ENABLED`.
+- réparer GitHub Actions ;
+- créer les comptes E2E étudiant/admin ;
+- reconnecter Render GitHub ;
+- configurer le health check Render ;
+- protéger `main` ;
+- nettoyer les anciennes fixtures catalogue ;
+- activer Gemini/Grok pour pouvoir lancer le produit.
 
 ## Garde-fous
 
-- aucun secret dans GitHub Issues, commits, logs ou chat ;
-- aucune vraie donnée étudiant dans les E2E ;
-- aucune modification Auth/RLS/Storage pour faire passer un test ;
-- aucune fusion automatique ;
-- aucune montée de plan payant automatique.
+- aucun secret dans le chat ;
+- aucune donnée étudiante réelle pour les tests ;
+- aucune publication commerciale avant CGV/prix réels ;
+- aucune activation marketing/analytics avant A38/A44 ;
+- pas de modification non indispensable après le freeze.
