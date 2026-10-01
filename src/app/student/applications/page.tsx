@@ -6,12 +6,13 @@ import { StudentGuidancePanel } from "@/components/student/StudentGuidancePanel"
 import { createClient } from "@/lib/supabase/server";
 import { getRequestLocale } from "@/lib/i18n-server";
 import { studentApplicationsCopy } from "@/content/student-applications-copy";
+import { rebrandCopy } from "@/lib/brand";
 
 export const dynamic = "force-dynamic";
 
 export default async function StudentApplicationsPage() {
   const locale = await getRequestLocale();
-  const t = studentApplicationsCopy[locale];
+  const t = rebrandCopy(studentApplicationsCopy[locale]);
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("applications")
