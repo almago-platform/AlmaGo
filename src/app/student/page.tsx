@@ -9,6 +9,7 @@ import { StudentJourneyOverview, type StudentJourneyStage } from "@/components/s
 import { createClient } from "@/lib/supabase/server";
 import { getRequestCopy } from "@/lib/i18n-server";
 import { studentDashboardCopy } from "@/content/student-dashboard-copy";
+import { rebrandCopy } from "@/lib/brand";
 import { studentChecklistCopy } from "@/content/student-checklist-copy";
 import { formatDeadline, isActiveApplication, isPastDeadline, nextActiveDeadline } from "@/lib/phase4";
 import { localizeApplicationStoredText } from "@/lib/student/arabic-display";
@@ -17,7 +18,7 @@ export const dynamic = "force-dynamic";
 
 export default async function StudentEntry() {
   const { locale, copy } = await getRequestCopy();
-  const t = studentDashboardCopy[locale];
+  const t = rebrandCopy(studentDashboardCopy[locale]);
   const checklistCopy = studentChecklistCopy[locale];
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
