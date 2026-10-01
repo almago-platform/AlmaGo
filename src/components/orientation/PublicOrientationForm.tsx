@@ -10,6 +10,7 @@ import { orientationDiagnosticCopy } from "@/content/orientation-diagnostic-copy
 import { orientationProspectCopy } from "@/content/orientation-prospect-copy";
 import { rebrandCopy } from "@/lib/brand";
 import { ProspectCaptureCard } from "@/components/orientation/ProspectCaptureCard";
+import { SmartOrientationResultCard } from "@/components/orientation/SmartOrientationResultCard";
 import { ProspectOrientationUpdateCard } from "@/components/orientation/ProspectOrientationUpdateCard";
 import { prospectDashboardCopy } from "@/content/prospect-dashboard-copy";
 import { prospectOrientationUpdateCopy } from "@/content/prospect-orientation-update-copy";
@@ -20,6 +21,7 @@ import {
 } from "@/content/student-profile-copy";
 import { buildPublicOrientationDiagnostic, type PublicDiagnosticStatus } from "@/lib/orientation/diagnostic";
 import type { AcquisitionContext } from "@/lib/phase2/acquisition";
+import { evaluateSmartOrientationPriority } from "@/lib/phase2/smart-orientation";
 import {
   PUBLIC_ORIENTATION_SESSION_KEY as SESSION_KEY,
   createEmptyPublicOrientationAnswers,
@@ -126,6 +128,7 @@ export function PublicOrientationForm({
   const studyLanguages = useMemo(() => localizeProfileOptions(locale, studyLanguageOptions), [locale]);
   const budgets = useMemo(() => localizeProfileOptions(locale, budgetOptions), [locale]);
   const diagnostic = useMemo(() => buildPublicOrientationDiagnostic(answers), [answers]);
+  const smartPriority = useMemo(() => evaluateSmartOrientationPriority(answers), [answers]);
   const selectedCitiesLabel =
     locale === "ar"
       ? `${copy.controls.selected} ${answers.preferredCities.length}`
@@ -523,6 +526,11 @@ export function PublicOrientationForm({
                     </div>
                   ))}
                 </dl>
+
+                <SmartOrientationResultCard
+                  result={smartPriority}
+                  prospectCaptureEnabled={prospectCaptureEnabled && !authenticatedUpdate}
+                />
 
                 <div className="mt-8 space-y-7">
                   <section aria-labelledby="orientation-diagnostic-title">
