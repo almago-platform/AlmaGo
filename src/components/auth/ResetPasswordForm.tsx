@@ -70,6 +70,7 @@ export function ResetPasswordForm({ orientationToken }: { orientationToken?: str
               type="button"
               onClick={() => setShowPassword((value) => !value)}
               aria-label={showPassword ? t.hidePassword : t.showPassword}
+              aria-pressed={showPassword}
               className="absolute inset-y-0 right-2 my-auto min-h-10 rounded-[var(--radius-control)] px-2 text-xs font-semibold text-[var(--brand)] hover:text-[var(--brand-strong)]"
             >
               {showPassword ? t.hidePassword : t.showPassword}
