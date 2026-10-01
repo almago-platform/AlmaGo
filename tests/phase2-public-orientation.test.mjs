@@ -91,6 +91,13 @@ test("orientation is added to the sitemap only when Phase 2 is enabled", () => {
   assert.match(sitemap, /new URL\("\/orientation", publicOrigin\)/);
 });
 
+test("final questionnaire CTA clearly promises the orientation result", () => {
+  assert.match(copy, /summary: "Voir mon orientation"/);
+  assert.match(copy, /summary: "عرض توجيهي"/);
+  assert.match(copy, /summary: "See my orientation"/);
+  assert.match(copy, /summary: "Meine Orientierung ansehen"/);
+});
+
 test("orientation result has correct skip-link semantics and a way back home", () => {
   assert.match(form, /href="#orientation-main">\{copy\.header\.skip\}<\/a>/);
   assert.doesNotMatch(form, /href="#orientation-main">\{profileCopy\.page\.back\}<\/a>/);

@@ -82,7 +82,7 @@ const fr: OrientationCopy = {
   },
   controls: {
     choose: "Choisir…", optional: "Facultatif", previous: "Retour", next: "Continuer",
-    summary: "Voir mon récapitulatif", selected: "sélectionnée(s)",
+    summary: "Voir mon orientation", selected: "sélectionnée(s)",
   },
   validation: {
     required: "Complétez les champs demandés pour continuer.",
@@ -131,7 +131,7 @@ const ar: OrientationCopy = {
   },
   controls: {
     choose: "اختر…", optional: "اختياري", previous: "رجوع", next: "متابعة",
-    summary: "عرض ملخصي", selected: "تم اختيارها",
+    summary: "عرض توجيهي", selected: "تم اختيارها",
   },
   validation: {
     required: "أكمل الحقول المطلوبة للمتابعة.",
@@ -180,7 +180,7 @@ const en: OrientationCopy = {
   },
   controls: {
     choose: "Choose…", optional: "Optional", previous: "Back", next: "Continue",
-    summary: "See my summary", selected: "selected",
+    summary: "See my orientation", selected: "selected",
   },
   validation: {
     required: "Complete the required fields to continue.",
@@ -229,7 +229,7 @@ const de: OrientationCopy = {
   },
   controls: {
     choose: "Auswählen…", optional: "Optional", previous: "Zurück", next: "Weiter",
-    summary: "Meine Zusammenfassung", selected: "ausgewählt",
+    summary: "Meine Orientierung ansehen", selected: "ausgewählt",
   },
   validation: {
     required: "Fülle die erforderlichen Felder aus, um fortzufahren.",
