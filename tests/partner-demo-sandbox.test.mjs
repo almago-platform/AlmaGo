@@ -44,6 +44,15 @@ test("payment sandbox is zero-money UI only with no network or database writes",
   assert.match(page, /aucune modification de <code>customer_access<\/code>/);
 });
 
+test("partner demo subtle surfaces keep accessible foreground contrast", () => {
+  assert.match(page, /bg-\[var\(--surface-subtle\)\][^"]*text-\[var\(--foreground\)\]/);
+  assert.match(sandbox, /État courant<\/p>/);
+  assert.doesNotMatch(
+    sandbox,
+    /text-\[var\(--muted\)\][^>]*>État courant<\/p>/,
+  );
+});
+
 test("Partner-Ready rehearsal exercises the sandbox on desktop and mobile", () => {
   assert.match(rehearsal, /tests\/e2e\/partner-demo\.spec\.mjs/);
   assert.match(rehearsal, /--project=desktop-chromium --project=mobile-360-chromium/);
