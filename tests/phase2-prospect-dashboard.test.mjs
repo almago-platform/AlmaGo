@@ -87,3 +87,11 @@ test("prospect dashboard has a localized accessible loading state", () => {
   assert.match(prospectLoading, /Dein kostenloser Bereich wird geladen/);
   assert.match(prospectLoading, /prospectDashboardCopy\[locale\]\.page/);
 });
+
+test("prospect navigation exposes the current section accessibly", () => {
+  assert.match(prospectShell, /usePathname\(\)/);
+  assert.match(prospectShell, /window\.location\.hash \|\| "#orientation"/);
+  assert.match(prospectShell, /aria-current=\{active \? \(hash \? "location" : "page"\) : undefined\}/);
+  assert.match(prospectShell, /pathname === "\/prospect\/offers" \|\| pathname\.startsWith\("\/prospect\/offers\/"\)/);
+  assert.match(prospectShell, /onClick=\{hash \? \(\) => setActiveHash\(hash\) : undefined\}/);
+});
