@@ -5,7 +5,8 @@ Partner-Ready Calm Mode reduces automation fan-out while Campus Allemagne is bei
 ## Automatic checks that remain enabled
 
 - **AlmaGo PR CI** on non-draft pull requests: tests, TypeScript, lint, build and `git diff --check`.
-- **AlmaGo Browser Quality** on pull requests that change browser-relevant files.
+
+Browser Quality remains available by manual dispatch for UI/UX changes, milestone rehearsals and final release evidence, but does not run on every PR during Calm Mode.
 
 ## Workflows paused from automatic execution
 
@@ -14,6 +15,7 @@ The following workflows remain in the repository and can still be launched with 
 - Master Orchestrator
 - AI Backlog Dispatch
 - Prelaunch Self-Heal
+- Browser Quality
 - Authenticated E2E (manual dispatch or the narrowly scoped A43 owner probe only)
 - Prelaunch Visual Quality
 - Prelaunch Performance Improvement
