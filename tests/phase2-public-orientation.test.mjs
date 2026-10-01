@@ -160,3 +160,10 @@ test("Arabic orientation copy uses natural MSA for visible questionnaire guidanc
   assert.match(copy, /يجب التحقق من الشروط الدقيقة عبر المصادر الرسمية/);
   assert.doesNotMatch(copy, /تحصلت عليها|أدخل مستواك الحالي كما هو/);
 });
+
+test("Arabic city selection count uses natural word order", () => {
+  assert.match(form, /locale === "ar"[\s\S]*copy\.controls\.selected[\s\S]*answers\.preferredCities\.length/);
+  assert.match(form, /\{copy\.fields\.cities\} · \{selectedCitiesLabel\}/);
+  assert.match(copy, /summary: "عرض توجيهي", selected: "تم اختيار"/);
+  assert.doesNotMatch(copy, /selected: "تم اختيارها"/);
+});
