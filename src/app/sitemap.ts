@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { isLegalPublicationReady, legalDocuments } from "@/content/legal-content";
 import { isPublicIndexingEnabled } from "@/lib/public-indexing";
 import { getPublicOrigin } from "@/lib/public-origin";
 import { isPhase2AccessEnabled } from "@/lib/phase2/config";
@@ -16,6 +17,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "weekly",
       priority: 1,
     },
+    {
+      url: new URL("/contact", publicOrigin).toString(),
+      changeFrequency: "monthly",
+      priority: 0.5,
+    },
   ];
 
   if (isPhase2AccessEnabled()) {
@@ -24,6 +30,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "monthly",
       priority: 0.9,
     });
+  }
+
+  if (isLegalPublicationReady()) {
+    for (const key of Object.keys(legalDocuments)) {
+      entries.push({
+        url: new URL(`/legal/${key}`, publicOrigin).toString(),
+        changeFrequency: "yearly",
+        priority: 0.3,
+      });
+    }
   }
 
   return entries;
