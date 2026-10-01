@@ -24,7 +24,7 @@ Si `main` change après une preuve exact-SHA, cette preuve doit être rejouée s
 - aucun bypass large ;
 - le check global requis est `verify` (AlmaGo PR CI) ;
 - Vercel n'est pas un required check.
-- Render `almago-dev` est le runtime canonique ;
+- Render `almago-dev` (`https://almago-dev.onrender.com`) est le runtime canonique ;
 - GitHub → Render auto-deploy est restauré (#389 fermé) ;
 - `Health Check Path = /api/health` ;
 - un merge réel sur `main` a déjà produit un deploy Render `new_commit` exact-SHA.
@@ -153,3 +153,8 @@ Le workflow ne déploie, ne merge et ne change aucune permission.
 - aucun fournisseur payant ou upgrade de plan sans décision explicite ;
 - aucun marketing/analytics avant le cadre A38/A44 ;
 - aucun nouveau chantier non indispensable après le release freeze.
+
+
+## Non requis pour lancer
+
+Gemini/Grok ou un autre fournisseur IA externe n’est **pas** une action nécessaire au lancement AlmaGo. Ne l’activer qu’après décision séparée si un besoin produit réel apparaît.
