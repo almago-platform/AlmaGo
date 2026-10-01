@@ -49,7 +49,7 @@ const fr = {
       aria: "Accès rapides",
       navAria: "Accès rapide",
       items: [
-        ["Trouver un programme", "Programmes et critères"],
+        ["Comparer les programmes", "Critères et sources officielles"],
         ["Voir les étapes", "Ce qu’il faut faire"],
         ["Préparer mes documents", "Documents à ajouter"],
         ["Préparer mon départ", "Langue, financement, assurance"],
@@ -289,7 +289,7 @@ const ar = {
       aria: "وصول سريع",
       navAria: "روابط سريعة",
       items: [
-        ["ابحث عن برنامج", "البرامج والشروط"],
+        ["قارن البرامج", "الشروط والمصادر الرسمية"],
         ["اعرف خطوتك التالية", "ماذا تفعل الآن؟"],
         ["جهّز مستنداتك", "ما الذي تحتاجه؟"],
         ["استعد للسفر", "اللغة والتمويل والتأمين"],
@@ -529,7 +529,7 @@ const en = {
       aria: "Quick access",
       navAria: "Quick links",
       items: [
-        ["Find a programme", "Programmes and requirements"],
+        ["Compare programmes", "Requirements and official sources"],
         ["Explore the steps", "What to do next"],
         ["Organise my documents", "What to prepare"],
         ["Prepare for Germany", "Language, funding and insurance"],
@@ -769,7 +769,7 @@ const de = {
       aria: "Schnellzugriff",
       navAria: "Schnellzugriff",
       items: [
-        ["Studiengang finden", "Studiengänge und Voraussetzungen"],
+        ["Studiengänge vergleichen", "Voraussetzungen und offizielle Quellen"],
         ["Schritte ansehen", "Was als Nächstes ansteht"],
         ["Unterlagen ordnen", "Was du vorbereiten solltest"],
         ["Für Deutschland vorbereiten", "Sprache, Finanzierung, Versicherung"],
