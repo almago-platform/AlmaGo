@@ -93,6 +93,8 @@ test("prospect navigation exposes the current section accessibly", () => {
   assert.match(prospectShell, /useSyncExternalStore\(/);
   assert.match(prospectShell, /window\.location\.hash \|\| "#orientation"/);
   assert.match(prospectShell, /aria-current=\{active \? \(hash \? "location" : "page"\) : undefined\}/);
-  assert.match(prospectShell, /pathname === "\/prospect\/offers" \|\| pathname\.startsWith\("\/prospect\/offers\/"\)/);
+  assert.match(prospectShell, /pathname === item\.href \|\| pathname\.startsWith/);
+  assert.match(prospectShell, /href: "\/prospect\/offers"/);
+  assert.match(prospectShell, /href: "\/prospect\/payment"/);
   assert.doesNotMatch(prospectShell, /setActiveHash|useEffect\(/);
 });
