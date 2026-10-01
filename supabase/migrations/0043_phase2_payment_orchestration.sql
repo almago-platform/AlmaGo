@@ -401,9 +401,9 @@ begin
       'ignored'::public.payment_provider_event_status
     ) then
       select p.status::text
+        into v_audit_source
       from public.commercial_purchases p
-      where p.id = p_purchase_id
-      into v_audit_source;
+      where p.id = p_purchase_id;
       return v_audit_source;
     end if;
 
