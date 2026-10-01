@@ -13,6 +13,7 @@ export function ResetPasswordForm({ orientationToken }: { orientationToken?: str
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
   const { locale } = useLocale();
   const t = accountStateCopy[locale].reset;
@@ -53,16 +54,27 @@ export function ResetPasswordForm({ orientationToken }: { orientationToken?: str
       <form onSubmit={submit} aria-busy={saving} className="space-y-5 px-6 py-6 sm:px-8">
         <label className="block text-sm font-semibold text-[var(--foreground)]">
           {t.password}
-          <input
-            required
-            minLength={8}
-            type="password"
-            autoComplete="new-password"
-            aria-describedby="reset-password-hint"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="field mt-2 min-h-12"
-          />
+          <span className="relative mt-2 block">
+            <input
+              required
+              minLength={8}
+              dir="ltr"
+              type={showPassword ? "text" : "password"}
+              autoComplete="new-password"
+              aria-describedby="reset-password-hint"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="field mt-0 min-h-12 pr-24 text-left"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((value) => !value)}
+              aria-label={showPassword ? t.hidePassword : t.showPassword}
+              className="absolute inset-y-0 right-2 my-auto min-h-10 rounded-[var(--radius-control)] px-2 text-xs font-semibold text-[var(--brand)] hover:text-[var(--brand-strong)]"
+            >
+              {showPassword ? t.hidePassword : t.showPassword}
+            </button>
+          </span>
         </label>
 
         <p id="reset-password-hint" className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-3 py-2 text-sm leading-6 text-[var(--muted)]">
