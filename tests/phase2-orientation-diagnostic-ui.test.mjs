@@ -53,3 +53,12 @@ test("Arabic diagnostic copy uses native degree names in user-visible text", () 
   assert.doesNotMatch(arabicCopy, /"[^"]*(?:Bachelor|Master)[^"]*"/);
   assert.match(arabicCopy, /uni-assist/);
 });
+
+test("Arabic diagnostic copy avoids internal or admission-sounding wording", () => {
+  assert.match(arabicCopy, /شروط القبول في كل جامعة/);
+  assert.match(arabicCopy, /البدء في البحث عن برامج ماجستير مناسبة لمسارك/);
+  assert.match(arabicCopy, /قارن برامج من مصادر رسمية/);
+  assert.match(arabicCopy, /شروط الدخول إلى الدراسة/);
+  assert.match(arabicCopy, /تحقق منها في المصدر الرسمي/);
+  assert.doesNotMatch(arabicCopy, /القبول الأكاديمي|تاريخ تحقق|برامج موثقة/);
+});
