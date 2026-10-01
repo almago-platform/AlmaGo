@@ -25,11 +25,14 @@ test("SO-3 does not change anon/authenticated write permissions", () => {
 
 test("contact permission is an optional checkbox separate from privacy acknowledgement", () => {
   assert.match(capture, /name="privacyAcknowledged"[\s\S]*?required/);
-  const contactInput = capture.match(
-    /<input[\s\S]*?name="contactConsent"[\s\S]*?\/>/,
-  )?.[0] ?? "";
-  assert.ok(contactInput);
-  assert.doesNotMatch(contactInput, /required/);
+  assert.match(
+    capture,
+    /name="contactConsent"[\s\S]*?checked=\{contactConsent\}[\s\S]*?setContactConsent/,
+  );
+  assert.doesNotMatch(
+    capture,
+    /name="contactConsent"\s+required/,
+  );
   assert.match(capture, /useState\(false\)[\s\S]*contactConsent/);
   assert.match(capture, /contactConsent,/);
 });
