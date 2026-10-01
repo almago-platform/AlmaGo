@@ -55,6 +55,7 @@ La politique de conservation approuvée par le propriétaire prévoit la suppres
 Statut actuel confirmé :
 
 - l’orientation en ligne est **gratuite** ;
+- le propriétaire prévoit de rendre cette version gratuite publique avant immatriculation en Tunisie, sous réserve de la relecture juridique finale ;
 - des services payants d’accompagnement et de préparation de dossier sont envisagés ;
 - aucune offre payante, aucun pack, aucun tarif et aucune modalité de paiement ne sont encore activés, finalisés ni proposés à la vente.
 
