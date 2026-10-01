@@ -14,6 +14,8 @@ type AccountStateCopy = {
     formTitle: string;
     formText: string;
     password: string;
+    showPassword: string;
+    hidePassword: string;
     hint: string;
     invalid: string;
     saved: string;
@@ -54,6 +56,8 @@ export const accountStateCopy: Record<Locale, AccountStateCopy> = {
       formTitle: "Nouveau mot de passe",
       formText: "Saisissez un mot de passe solide pour sécuriser votre accès au dossier.",
       password: "Nouveau mot de passe",
+      showPassword: "Afficher",
+      hidePassword: "Masquer",
       hint: "Utilisez au moins 8 caractères. Un mot de passe long et unique protège mieux votre espace.",
       invalid: "Le lien est expiré ou invalide. Demandez un nouveau lien depuis la page de connexion.",
       saved: "Mot de passe mis à jour. Redirection vers votre espace étudiant…",
@@ -92,6 +96,8 @@ export const accountStateCopy: Record<Locale, AccountStateCopy> = {
       formTitle: "كلمة مرور جديدة",
       formText: "اختر كلمة مرور قوية لحماية الوصول إلى ملفك.",
       password: "كلمة المرور الجديدة",
+      showPassword: "إظهار",
+      hidePassword: "إخفاء",
       hint: "استخدم 8 أحرف على الأقل. كلمة مرور طويلة وفريدة تحمي حسابك بشكل أفضل.",
       invalid: "الرابط منتهي الصلاحية أو غير صالح. اطلب رابطًا جديدًا من صفحة تسجيل الدخول.",
       saved: "تم تحديث كلمة المرور. جارٍ تحويلك إلى ملفك…",
@@ -130,6 +136,8 @@ export const accountStateCopy: Record<Locale, AccountStateCopy> = {
       formTitle: "New password",
       formText: "Choose a strong password to protect access to your file.",
       password: "New password",
+      showPassword: "Show",
+      hidePassword: "Hide",
       hint: "Use at least 8 characters. A long, unique password protects your account better.",
       invalid: "This link has expired or is invalid. Request a new link from the sign-in page.",
       saved: "Password updated. Redirecting to your student space…",
@@ -168,6 +176,8 @@ export const accountStateCopy: Record<Locale, AccountStateCopy> = {
       formTitle: "Neues Passwort",
       formText: "Wähle ein starkes Passwort, um den Zugriff auf deine Akte zu schützen.",
       password: "Neues Passwort",
+      showPassword: "Anzeigen",
+      hidePassword: "Ausblenden",
       hint: "Verwende mindestens 8 Zeichen. Ein langes, einzigartiges Passwort schützt dein Konto besser.",
       invalid: "Der Link ist abgelaufen oder ungültig. Fordere auf der Anmeldeseite einen neuen Link an.",
       saved: "Passwort aktualisiert. Du wirst zu deinem Studierendenbereich weitergeleitet…",
