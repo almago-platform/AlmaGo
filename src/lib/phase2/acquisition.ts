@@ -52,6 +52,18 @@ export function acquisitionContextFromSearchParams(
   );
 }
 
+export function acquisitionContextFromStoredInput(
+  input: unknown,
+): AcquisitionContext | null {
+  if (!input || typeof input !== "object") return null;
+
+  const acquisition = (input as Record<string, unknown>).acquisition;
+  if (!acquisition || typeof acquisition !== "object") return null;
+
+  const record = acquisition as Record<string, unknown>;
+  return normalizeAcquisitionContext(record.kind, record.sourceId);
+}
+
 export function buildAcquisitionOrientationHref(
   kindValue: unknown,
   sourceIdValue: unknown,
