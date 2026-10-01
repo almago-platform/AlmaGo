@@ -5,6 +5,7 @@ import { PublicOrientationForm } from "@/components/orientation/PublicOrientatio
 import { orientationCopy } from "@/content/orientation-copy";
 import { LOCALE_COOKIE, normalizeLocale } from "@/lib/i18n";
 import { restorePublicOrientationAnswers } from "@/lib/orientation/public";
+import { getPublicOrigin } from "@/lib/public-origin";
 import { getPhase2StudentAccess } from "@/lib/phase2/access";
 import {
   isPhase2AccessEnabled,
@@ -13,13 +14,16 @@ import {
 } from "@/lib/phase2/config";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const store = await cookies();
+  const [store, publicOrigin] = await Promise.all([cookies(), getPublicOrigin()]);
   const locale = normalizeLocale(store.get(LOCALE_COOKIE)?.value);
   const copy = orientationCopy[locale];
 
   return {
-    title: `${copy.intro.eyebrow} | AlmaGo`,
+    title: copy.intro.eyebrow,
     description: copy.intro.lead,
+    alternates: {
+      canonical: new URL("/orientation", publicOrigin).toString(),
+    },
   };
 }
 
