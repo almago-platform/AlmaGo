@@ -28,10 +28,10 @@ const fr: DiagnosticCopy = {
     known_gap: "À préparer",
   },
   sections: {
-    headline: "Première lecture de votre projet",
+    headline: "Ce que votre projet montre maintenant",
     paths: "Pistes à explorer",
-    priorities: "Vos priorités maintenant",
-    checks: "À vérifier avant une démarche",
+    priorities: "À faire maintenant",
+    checks: "À vérifier avant d’avancer",
   },
   headlines: {
     future_bac: {
@@ -40,57 +40,57 @@ const fr: DiagnosticCopy = {
     },
     bachelor_project: {
       title: "Votre projet Bachelor est assez clair pour commencer la recherche.",
-      body: "La prochaine étape consiste à comparer des programmes sourcés puis à vérifier l’accès académique et les exigences de chaque établissement.",
+      body: "Commencez par comparer des programmes réels sur les sites officiels, puis vérifiez les conditions de chaque université.",
     },
     master_project: {
-      title: "Votre projet Master peut être structuré autour des prérequis.",
-      body: "Les Masters varient fortement selon le diplôme antérieur, les crédits, le domaine et les langues. Ces critères doivent être vérifiés programme par programme.",
+      title: "Vous pouvez commencer à chercher des Masters adaptés à votre parcours.",
+      body: "Les conditions changent selon votre diplôme précédent, vos crédits, votre domaine et les langues. Vérifiez chaque programme séparément.",
     },
     other_project: {
-      title: "Votre projet doit être précisé avec des programmes concrets.",
-      body: "Nous pouvons organiser la recherche, mais le niveau d’études et les conditions exactes doivent être confirmés sur des sources officielles.",
+      title: "Votre projet a besoin de quelques précisions.",
+      body: "Cherchez d’abord des programmes concrets, puis vérifiez le niveau d’études et les conditions sur les sources officielles.",
     },
   },
   items: {
     future_bac_roadmap: {
-      title: "Roadmap avant et après le Bac",
-      body: "Avancez maintenant sur la langue et le projet. Après les résultats, ajoutez la moyenne définitive pour recalculer votre orientation.",
+      title: "Avant et après le Bac",
+      body: "Avancez maintenant sur la langue et le choix d’études. Après les résultats, ajoutez votre moyenne finale pour mettre à jour votre orientation.",
     },
     bachelor_program_search: {
-      title: "Recherche de Bachelors",
-      body: "Comparez des programmes dans votre domaine, sans supposer que le Bac donne automatiquement accès à chaque cursus.",
+      title: "Chercher des Bachelors",
+      body: "Comparez des programmes dans votre domaine. Le Bac ne donne pas automatiquement accès à tous les programmes.",
     },
     master_program_search: {
-      title: "Recherche de Masters",
-      body: "Ciblez des Masters proches de votre parcours antérieur et vérifiez leurs prérequis académiques précis.",
+      title: "Chercher des Masters",
+      body: "Cherchez des Masters proches de vos études précédentes et vérifiez leurs conditions.",
     },
     other_study_search: {
-      title: "Recherche de parcours adaptés",
+      title: "Chercher un parcours adapté",
       body: "Identifiez d’abord des programmes correspondant au niveau et au domaine souhaités, puis vérifiez leurs conditions.",
     },
     german_preparation: {
-      title: "Préparation en allemand",
-      body: "Votre niveau actuel indique que la langue reste un chantier important. Le niveau exact demandé dépendra du programme choisi.",
+      title: "Progresser en allemand",
+      body: "Votre niveau actuel montre que vous devez encore progresser en allemand. Le niveau demandé dépend du programme choisi.",
     },
     english_preparation: {
-      title: "Préparation en anglais",
-      body: "Votre niveau actuel indique que l’anglais reste à renforcer. Le niveau et le certificat exigés dépendent du programme choisi.",
+      title: "Progresser en anglais",
+      body: "Votre niveau actuel montre que vous devez encore progresser en anglais. Le niveau ou le certificat demandé dépend du programme choisi.",
     },
     finish_bac: {
       title: "Obtenir les résultats définitifs du Bac",
-      body: "Vous pouvez préparer le projet maintenant, mais certaines vérifications académiques attendront vos résultats définitifs.",
+      body: "Vous pouvez avancer maintenant, mais certaines vérifications devront attendre vos résultats finaux.",
     },
     add_average: {
       title: "Ajouter votre moyenne",
-      body: "La moyenne aide à comparer certains critères académiques. Son absence ne signifie pas que votre projet est refusé.",
+      body: "Votre moyenne aide à vérifier certaines conditions. Ne pas l’indiquer ne veut pas dire que votre projet est refusé.",
     },
     add_prior_diploma: {
       title: "Préciser votre diplôme actuel",
-      body: "Pour un projet Master, votre diplôme antérieur est indispensable pour analyser les prérequis.",
+      body: "Pour un Master, nous avons besoin de connaître votre diplôme précédent pour vérifier les conditions.",
     },
     complete_prior_degree: {
-      title: "Vérifier le diplôme préalable au Master",
-      body: "Le diplôme indiqué ne montre pas encore un premier diplôme universitaire terminé. Il faut clarifier ce point avant de cibler des Masters.",
+      title: "Préciser votre diplôme avant un Master",
+      body: "Le diplôme indiqué ne montre pas encore que vous avez terminé un premier diplôme universitaire. Clarifiez ce point avant de chercher des Masters.",
     },
     strengthen_german: {
       title: "Continuer l’allemand",
@@ -101,31 +101,31 @@ const fr: DiagnosticCopy = {
       body: "Progressez en anglais pendant la recherche. Nous vérifierons ensuite le niveau ou certificat demandé par chaque programme.",
     },
     compare_verified_programs: {
-      title: "Comparer des programmes vérifiés",
-      body: "Le choix final doit partir de programmes réels avec une source officielle et une date de vérification.",
+      title: "Comparer des programmes officiels",
+      body: "Comparez des programmes réels à partir des sites officiels des universités.",
     },
     academic_access: {
-      title: "Accès académique",
-      body: "L’accès aux études doit être vérifié selon votre diplôme, votre parcours et le programme visé.",
+      title: "Accès aux études",
+      body: "Vérifiez si votre diplôme et votre parcours permettent de candidater au programme visé.",
     },
     master_entry_requirements: {
-      title: "Prérequis du Master",
-      body: "Diplôme antérieur, domaine, crédits, notes et autres critères peuvent varier. Ils doivent être vérifiés sur la source du Master.",
+      title: "Conditions d’accès au Master",
+      body: "Diplôme précédent, domaine, crédits, notes : les conditions changent selon le Master. Vérifiez-les sur la page officielle du programme.",
     },
     language_requirement: {
-      title: "Exigence linguistique",
-      body: "La langue d’enseignement et le niveau/certificat exigé doivent être confirmés pour chaque programme.",
+      title: "Langue demandée",
+      body: "Vérifiez la langue d’enseignement ainsi que le niveau ou le certificat demandé pour chaque programme.",
     },
     budget_requirement: {
-      title: "Budget et exigences financières",
-      body: "Votre budget indicatif doit être comparé aux coûts réels et aux exigences financières officielles au moment de la démarche.",
+      title: "Budget à prévoir",
+      body: "Comparez votre budget avec les coûts réels et les conditions financières officielles au moment de votre démarche.",
     },
     application_route_and_deadline: {
-      title: "Canal et date de candidature",
-      body: "Vérifiez si la candidature passe directement, par uni-assist ou par une autre voie, ainsi que la date officielle.",
+      title: "Où et quand candidater",
+      body: "Vérifiez si vous devez candidater directement à l’université, via uni-assist ou ailleurs, ainsi que la date limite officielle.",
     },
   },
-  disclaimer: "Cette orientation organise votre prochaine recherche. Elle ne constitue ni une décision d’admission, ni une décision de visa.",
+  disclaimer: "Cette orientation vous aide à organiser vos prochaines étapes. Elle ne constitue ni une décision d’admission, ni une décision de visa.",
 };
 
 const ar: DiagnosticCopy = {
