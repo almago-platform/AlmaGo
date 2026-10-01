@@ -39,6 +39,7 @@ test("signup keeps the default Supabase auth behavior while supporting optional 
 test("signup form improves password and account navigation UX", () => {
   assert.ok(progress.includes("completed ? copy.completedLabel"));
   assert.ok(form.includes("showPassword"));
+  assert.ok(form.includes("aria-pressed={showPassword}"));
   assert.ok(nativeCopy.includes('minPassword: "8 caractères minimum"'));
   assert.ok(nativeCopy.includes('emailConfirmation: "Confirmation par email"'));
   assert.ok(form.includes("href={loginHref}"));
