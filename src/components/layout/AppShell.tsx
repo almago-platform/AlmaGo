@@ -81,10 +81,12 @@ export function AppShell({
   role,
   children,
   displayName,
+  partnerPrelaunch = false,
 }: Readonly<{
   role: AppShellRole;
   children: ReactNode;
   displayName?: string | null;
+  partnerPrelaunch?: boolean;
 }>) {
   const pathname = usePathname();
   const router = useRouter();
@@ -101,7 +103,24 @@ export function AppShell({
     label: shell.groups[groupIndex],
     items: indexes.map((index) => localizedStudentItems[index]),
   }));
-  const items = role === "admin" ? adminItems : localizedStudentItems;
+  const partnerDemoItem: NavItem = {
+    label: "Démo partenaires",
+    href: "/admin/partner-demo",
+    icon: icons.orientation,
+    helper: "E-mail & paiement sandbox",
+  };
+  const currentAdminItems = partnerPrelaunch
+    ? [...adminItems, partnerDemoItem]
+    : adminItems;
+  const currentAdminGroups = [
+    { label: "Pilotage", items: currentAdminItems.slice(0, 1) },
+    { label: "Opérations", items: currentAdminItems.slice(1, 7) },
+    { label: "Catalogue Allemagne", items: currentAdminItems.slice(7, 11) },
+    ...(partnerPrelaunch
+      ? [{ label: "Pré-lancement", items: currentAdminItems.slice(11) }]
+      : []),
+  ];
+  const items = role === "admin" ? currentAdminItems : localizedStudentItems;
   const currentItem = items.find((item) => isActive(pathname, item.href)) || items[0];
   const studentName = displayName?.trim() || shell.studentNameFallback;
 
@@ -148,7 +167,7 @@ export function AppShell({
           </p>
           {role === "admin" ? (
             <div className="space-y-4">
-              {adminGroups.map((group) => (
+              {currentAdminGroups.map((group) => (
                 <div key={group.label}>
                   <p className="mb-1.5 px-3 text-[9px] font-bold uppercase tracking-[0.16em] text-[var(--muted)]">{group.label}</p>
                   <div className="space-y-1">
@@ -349,7 +368,7 @@ export function AppShell({
                   </div>
 
                   <nav className="grid gap-2 sm:grid-cols-2" aria-label="Navigation administration mobile">
-                    {adminItems.map((item) => {
+                    {currentAdminItems.map((item) => {
                       const active = isActive(pathname, item.href);
                       return (
                         <Link
