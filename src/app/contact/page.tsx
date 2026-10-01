@@ -6,6 +6,7 @@ import { HomeFooter } from "@/components/public/HomeClosing";
 import { getNativeCopy } from "@/content/native-copy";
 import { rebrandCopy } from "@/lib/brand";
 import { LOCALE_COOKIE, normalizeLocale, type Locale } from "@/lib/i18n";
+import { isPhase2AccessEnabled } from "@/lib/phase2/config";
 import { isPublicIndexingEnabled } from "@/lib/public-indexing";
 import { getPublicOrigin } from "@/lib/public-origin";
 import s from "./ContactPage.module.css";
@@ -110,6 +111,7 @@ export default async function ContactPage() {
   const locale = await requestLocale();
   const contact = contactCopy[locale];
   const copy = rebrandCopy(getNativeCopy(locale));
+  const phase2Enabled = isPhase2AccessEnabled();
 
   return (
     <div className={s.page}>
@@ -158,7 +160,12 @@ export default async function ContactPage() {
         </section>
       </main>
 
-      <HomeFooter footer={copy.home.footer} homeAria={copy.common.homeAria} />
+      <HomeFooter
+        footer={copy.home.footer}
+        homeAria={copy.common.homeAria}
+        phase2Enabled={phase2Enabled}
+        orientationLabel={copy.home.nav.orientation}
+      />
     </div>
   );
 }
