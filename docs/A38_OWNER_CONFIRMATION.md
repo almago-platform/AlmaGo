@@ -19,6 +19,7 @@ Les éléments suivants ont été confirmés par le propriétaire pour la prépa
 - pays principal d’établissement prévu : **Tunisie** ;
 - e-mail public : **contact@campus-allemagne.info** ;
 - orientation en ligne actuellement proposée gratuitement ;
+- le propriétaire souhaite lancer publiquement **la version gratuite avant toute immatriculation/identifiant fiscal en Tunisie** ;
 - des services payants d’accompagnement/préparation de dossier sont envisagés, mais **aucune offre payante, aucun tarif et aucune condition commerciale ne sont encore activés ou finalisés** ;
 - la politique de conservation et la procédure de suppression proposées dans `docs/A38_RETENTION_POLICY_PROPOSAL.md` sont **APPROUVÉES** par le propriétaire.
 
@@ -46,7 +47,7 @@ A38 OWNER CONFIRMATION
 6. Registre + numéro, si applicable : À CONFIRMER SELON IMMATRICULATION / STATUT FINAL EN TUNISIE
 7. TVA / identifiant fiscal, si applicable : À CONFIRMER SELON STATUT FINAL EN TUNISIE
 8. Pays principal d’établissement : Tunisie
-9. Statut commercial actuel : orientation gratuite ; services payants d’accompagnement/préparation envisagés mais non encore activés, tarifés ni proposés à la vente
+9. Statut commercial actuel : orientation gratuite ; lancement public gratuit prévu avant immatriculation en Tunisie ; services payants d’accompagnement/préparation envisagés mais non encore activés, tarifés ni proposés à la vente
 10. DPO : À CONFIRMER PAR LE RELECTEUR SELON APPLICABILITÉ
 11. Activité soumise à autorisation ou profession réglementée : À CONFIRMER PAR LE RELECTEUR
 12. Politique de conservation proposée : APPROUVÉE
@@ -80,6 +81,7 @@ Pour la Phase 1 :
 
 - l’orientation en ligne est **gratuite** ;
 - les futurs services payants d’accompagnement et de préparation de dossier ne sont **pas encore commercialisés** ;
+- le propriétaire souhaite lancer cette version gratuite avant immatriculation en Tunisie ; cette décision produit ne vaut pas validation juridique de ce lancement ;
 - aucun pack Bronze/Silver/Gold, tarif, paiement ou condition commerciale ne doit être présenté comme actif tant qu’il n’a pas été formellement défini et relu ;
 - avant toute activation commerciale, les conditions applicables devront être finalisées et publiées.
 
@@ -87,8 +89,8 @@ Pour la Phase 1 :
 
 A38 n’est pas prête à être publiée tant que les points suivants ne sont pas réellement résolus :
 
-1. adresse publique finale en Tunisie ;
-2. immatriculation / registre / identifiant fiscal, selon le statut réellement créé ;
+1. déterminer avec le relecteur quelle adresse publique peut/doit être publiée pour un lancement gratuit avant établissement/immatriculation en Tunisie ;
+2. confirmer avec le relecteur le cadre applicable au lancement public gratuit avant immatriculation, puis compléter immatriculation / registre / identifiant fiscal lorsqu’ils existent ;
 3. détermination de l’existence ou non d’un DPO ;
 4. détermination d’une éventuelle activité réglementée/autorisation ;
 5. bases juridiques des traitements ;
