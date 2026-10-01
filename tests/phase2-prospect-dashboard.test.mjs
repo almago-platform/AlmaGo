@@ -9,6 +9,7 @@ const phase2Access = read("src/lib/phase2/access.ts");
 const studentLayout = read("src/app/student/layout.tsx");
 const prospectLayout = read("src/app/prospect/layout.tsx");
 const prospectPage = read("src/app/prospect/page.tsx");
+const prospectLoading = read("src/app/prospect/loading.tsx");
 const prospectShell = read("src/components/layout/ProspectShell.tsx");
 const prospectCopy = read("src/content/prospect-dashboard-copy.ts");
 const documentView = read("src/app/api/documents/[id]/view/route.ts");
@@ -66,4 +67,17 @@ test("direct document viewing requires the same client entitlement as student AP
   assert.match(documentView, /getStudentUser/);
   assert.match(documentView, /if \(!isStudent\)/);
   assert.match(documentView, /status: 403/);
+});
+
+test("prospect dashboard has a localized accessible loading state", () => {
+  assert.match(prospectLoading, /"use client"/);
+  assert.match(prospectLoading, /useLocale\(\)/);
+  assert.match(prospectLoading, /aria-busy="true"/);
+  assert.match(prospectLoading, /role="status"/);
+  assert.match(prospectLoading, /aria-live="polite"/);
+  assert.match(prospectLoading, /Chargement de votre espace gratuit/);
+  assert.match(prospectLoading, /جارٍ تحميل مساحتك المجانية/);
+  assert.match(prospectLoading, /Loading your free space/);
+  assert.match(prospectLoading, /Dein kostenloser Bereich wird geladen/);
+  assert.match(prospectLoading, /prospectDashboardCopy\[locale\]\.page/);
 });
