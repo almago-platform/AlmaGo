@@ -75,6 +75,14 @@ const fr = {
       title2: "pour avancer.",
       intro: "Vous n’avez pas besoin de tout savoir maintenant. Faites une étape à la fois.",
       aria: "Les six étapes de votre projet d’études",
+      imageAlts: [
+        "Des étudiants consultent des documents devant un bâtiment universitaire.",
+        "Des documents et un stylo posés sur un bureau.",
+        "Des étudiants marchent devant un campus universitaire moderne.",
+        "Des étudiants travaillent ensemble avec un ordinateur et des notes.",
+        "Des étudiants travaillent sur des ordinateurs dans une bibliothèque.",
+        "Deux étudiants échangent pendant une séance de travail.",
+      ],
       steps: [
         ["Définir mon projet", "Choisissez le diplôme, le domaine, la langue et la rentrée qui vous intéressent.", "Mon point de départ"],
         ["Préparer mes documents", "Ajoutez vos diplômes et les documents que vous avez déjà.", "Mes études"],
@@ -315,6 +323,14 @@ const ar = {
       title2: "من البداية إلى التقديم.",
       intro: "لا تحتاج إلى إنهاء كل شيء دفعة واحدة. ركّز على خطوة واحدة في كل مرة.",
       aria: "الخطوات الست لمشروع الدراسة",
+      imageAlts: [
+        "طلاب يراجعون مستندات أمام مبنى جامعي.",
+        "مستندات وقلم على مكتب.",
+        "طلاب يسيرون أمام حرم جامعي حديث.",
+        "طلاب يعملون معًا باستخدام حاسوب وملاحظات.",
+        "طلاب يعملون على حواسيب في مكتبة.",
+        "طالبان يتحدثان أثناء جلسة دراسة.",
+      ],
       steps: [
         ["حدّد هدفك", "اختر الشهادة والمجال واللغة وموعد بدء الدراسة.", "ابدأ من هنا"],
         ["جهّز مستنداتك", "أضف شهاداتك والمستندات المتوفرة لديك.", "مستنداتك"],
@@ -555,6 +571,14 @@ const en = {
       title2: "from plan to application.",
       intro: "You do not need to figure everything out at once. Focus on one useful step at a time.",
       aria: "Six steps in your study journey",
+      imageAlts: [
+        "Students reviewing documents outside a university building.",
+        "Documents and a pen on a desk.",
+        "Students walking outside a modern university campus.",
+        "Students working together with a laptop and notes.",
+        "Students working on laptops in a library.",
+        "Two students talking during a study session.",
+      ],
       steps: [
         ["Set your goal", "Choose the degree, subject, language and intake that fit your plan.", "Start here"],
         ["Organise your documents", "Add your qualifications and the documents you already have.", "Your documents"],
@@ -795,6 +819,14 @@ const de = {
       title2: "von der Planung zur Bewerbung.",
       intro: "Du musst nicht alles auf einmal klären. Konzentriere dich auf einen sinnvollen Schritt nach dem anderen.",
       aria: "Sechs Schritte deines Studienwegs",
+      imageAlts: [
+        "Studierende prüfen Unterlagen vor einem Hochschulgebäude.",
+        "Unterlagen und ein Stift auf einem Schreibtisch.",
+        "Studierende gehen vor einem modernen Hochschulcampus.",
+        "Studierende arbeiten gemeinsam mit Laptop und Notizen.",
+        "Studierende arbeiten mit Laptops in einer Bibliothek.",
+        "Zwei Studierende sprechen während einer Lernsitzung.",
+      ],
       steps: [
         ["Ziel festlegen", "Wähle Abschluss, Fach, Sprache und den Studienstart, der zu deinem Plan passt.", "Hier starten"],
         ["Unterlagen ordnen", "Füge deine Abschlüsse und die Unterlagen hinzu, die du bereits hast.", "Deine Unterlagen"],
