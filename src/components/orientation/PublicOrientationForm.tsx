@@ -19,6 +19,7 @@ import {
   studentProfileCopy,
 } from "@/content/student-profile-copy";
 import { buildPublicOrientationDiagnostic, type PublicDiagnosticStatus } from "@/lib/orientation/diagnostic";
+import type { AcquisitionContext } from "@/lib/phase2/acquisition";
 import {
   PUBLIC_ORIENTATION_SESSION_KEY as SESSION_KEY,
   createEmptyPublicOrientationAnswers,
@@ -92,11 +93,13 @@ export function PublicOrientationForm({
   emailDeliveryEnabled = false,
   initialAnswers = null,
   authenticatedUpdate = false,
+  acquisitionContext = null,
 }: {
   prospectCaptureEnabled?: boolean;
   emailDeliveryEnabled?: boolean;
   initialAnswers?: Answers | null;
   authenticatedUpdate?: boolean;
+  acquisitionContext?: AcquisitionContext | null;
 }) {
   const { locale, direction } = useLocale();
   const copy = rebrandCopy(orientationCopy[locale]);
@@ -578,6 +581,7 @@ export function PublicOrientationForm({
                   <ProspectCaptureCard
                     answers={answers}
                     emailDeliveryEnabled={emailDeliveryEnabled}
+                    acquisitionContext={acquisitionContext}
                   />
                 ) : null}
 
