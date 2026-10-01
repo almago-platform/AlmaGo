@@ -10,6 +10,7 @@ const read = (path) => readFileSync(join(root, path), "utf8");
 const form = read("src/components/orientation/PublicOrientationForm.tsx");
 const engine = read("src/lib/orientation/diagnostic.ts");
 const copy = read("src/content/orientation-diagnostic-copy.ts");
+const arabicCopy = copy.slice(copy.indexOf("const ar:"), copy.indexOf("const en:"));
 
 test("public orientation summary renders the deterministic diagnostic", () => {
   assert.match(form, /buildPublicOrientationDiagnostic/);
@@ -43,4 +44,12 @@ test("French diagnostic copy uses simple student-facing language", () => {
   assert.doesNotMatch(copy, /Roadmap avant et après le Bac/);
   assert.doesNotMatch(copy, /Canal et date de candidature/);
   assert.doesNotMatch(copy, /la langue reste un chantier important/);
+});
+
+test("Arabic diagnostic copy uses native degree names in user-visible text", () => {
+  assert.match(arabicCopy, /البحث عن برامج البكالوريوس/);
+  assert.match(arabicCopy, /البحث عن برامج الماجستير/);
+  assert.match(arabicCopy, /استهداف برامج الماجستير/);
+  assert.doesNotMatch(arabicCopy, /"[^"]*(?:Bachelor|Master)[^"]*"/);
+  assert.match(arabicCopy, /uni-assist/);
 });
