@@ -8,6 +8,7 @@ const root = fileURLToPath(new URL("../", import.meta.url));
 const read = (path) => readFileSync(join(root, path), "utf8");
 
 const page = read("src/app/orientation/page.tsx");
+const loading = read("src/app/orientation/loading.tsx");
 const form = read("src/components/orientation/PublicOrientationForm.tsx");
 const publicOrientation = read("src/lib/orientation/public.ts");
 const copy = read("src/content/orientation-copy.ts");
@@ -122,4 +123,17 @@ test("orientation metadata follows the active locale instead of staying French-o
   assert.match(page, /canonical: new URL\("\/orientation", publicOrigin\)\.toString\(\)/);
   assert.doesNotMatch(page, /title: `\$\{copy\.intro\.eyebrow\} \| AlmaGo`/);
   assert.doesNotMatch(page, /export const metadata: Metadata/);
+});
+
+test("orientation has a localized accessible loading state", () => {
+  assert.match(loading, /"use client"/);
+  assert.match(loading, /useLocale\(\)/);
+  assert.match(loading, /aria-busy="true"/);
+  assert.match(loading, /role="status"/);
+  assert.match(loading, /aria-live="polite"/);
+  assert.match(loading, /Chargement de votre orientation/);
+  assert.match(loading, /جارٍ تحميل التوجيه/);
+  assert.match(loading, /Loading your orientation/);
+  assert.match(loading, /Deine Orientierung wird geladen/);
+  assert.match(loading, /orientationCopy\[locale\]/);
 });
