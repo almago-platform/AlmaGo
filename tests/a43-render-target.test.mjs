@@ -5,11 +5,14 @@ import test from "node:test";
 const workflow = readFileSync(".github/workflows/almago-authenticated-e2e.yml", "utf8");
 const playwright = readFileSync("playwright.config.mjs", "utf8");
 
-test("A43 workflow exposes an explicit Render target for manual authenticated evidence", () => {
+test("A43 workflow exposes an explicit Render target and uses it for main-push rehearsals", () => {
   assert.match(workflow, /target:\s*\n\s*description: "Authenticated E2E target"/);
   assert.match(workflow, /default: render/);
   assert.match(workflow, /- render\s*\n\s*- local/);
-  assert.match(workflow, /ALMAGO_E2E_TARGET: \$\{\{ inputs\.target \|\| 'local' \}\}/);
+  assert.match(
+    workflow,
+    /ALMAGO_E2E_TARGET: \$\{\{ inputs\.target \|\| \(github\.event_name == 'push' && 'render'\) \|\| 'local' \}\}/,
+  );
 });
 
 test("Render mode uses the canonical almago-dev URL and waits for health", () => {
@@ -19,7 +22,7 @@ test("Render mode uses the canonical almago-dev URL and waits for health", () =>
   assert.match(workflow, /Render did not serve exact workflow revision/);
 });
 
-test("local push regression mode still builds the application locally", () => {
+test("local manual/probe mode still builds the application locally", () => {
   assert.match(workflow, /Build and start AlmaGo locally/);
   assert.match(workflow, /if: env\.ALMAGO_E2E_TARGET != 'render'/);
   assert.match(workflow, /npm run build/);
