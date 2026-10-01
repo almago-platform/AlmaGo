@@ -7,6 +7,7 @@ import { restorePublicOrientationAnswers } from "@/lib/orientation/public";
 import { createOrientationResumeToken } from "@/lib/orientation/resume-token";
 import {
   isPhase2EmailDeliveryEnabled,
+  isPhase2P24E2EPreview,
   isPhase2ProspectCaptureEnabled,
 } from "@/lib/phase2/config";
 import { createPrivilegedSupabaseClient } from "@/lib/supabase/privileged";
@@ -25,6 +26,7 @@ import {
 const MAX_BODY_BYTES = 24_000;
 const ENGINE_VERSION = "public-orientation-v1";
 const PRIVACY_NOTICE_VERSION = "orientation-prospect-v1";
+const P24_E2E_EMAIL = "phase3.student.c@almago.test";
 
 const allowed = {
   bacTrack: new Set(valuesOf(tunisianBacTrackOptions)),
@@ -191,6 +193,18 @@ export async function POST(request: Request) {
     if (orientationError) throw orientationError;
 
     if (!isPhase2EmailDeliveryEnabled()) {
+      if (isPhase2P24E2EPreview() && email === P24_E2E_EMAIL) {
+        return NextResponse.json(
+          {
+            saved: true,
+            delivery: "disabled",
+            e2eOrientationId: orientation.id,
+            e2eResumeToken: resume.token,
+          },
+          { status: 201 },
+        );
+      }
+
       return NextResponse.json({ saved: true, delivery: "disabled" }, { status: 201 });
     }
 
