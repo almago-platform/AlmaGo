@@ -4,6 +4,7 @@ import { BrandLogo } from "@/components/brand/BrandLogo";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { LanguageSwitcher } from "@/components/i18n/LanguageSwitcher";
 import { accountStateCopy } from "@/content/account-state-copy";
+import { rebrandCopy } from "@/lib/brand";
 import { getRequestLocale } from "@/lib/i18n-server";
 
 export const metadata: Metadata = {
@@ -12,7 +13,7 @@ export const metadata: Metadata = {
 
 export default async function UnauthorizedPage() {
   const locale = await getRequestLocale();
-  const t = accountStateCopy[locale].unauthorized;
+  const t = rebrandCopy(accountStateCopy[locale].unauthorized);
 
   return (
     <main className="min-h-screen bg-[linear-gradient(180deg,#fffdf8_0%,#f7f4ec_55%,#f1ece4_100%)] px-4 py-8 text-[var(--foreground)] sm:px-6 lg:px-8">

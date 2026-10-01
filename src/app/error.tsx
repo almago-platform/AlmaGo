@@ -7,6 +7,7 @@ import { useLocale } from "@/components/i18n/LocaleProvider";
 import { buttonClassName } from "@/components/ui/Button";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { publicStateCopy } from "@/content/public-state-copy";
+import { rebrandCopy } from "@/lib/brand";
 
 export default function PublicErrorPage({
   reset,
@@ -15,7 +16,7 @@ export default function PublicErrorPage({
   reset: () => void;
 }) {
   const { locale } = useLocale();
-  const t = publicStateCopy[locale].error;
+  const t = rebrandCopy(publicStateCopy[locale].error);
 
   return (
     <main className="min-h-screen bg-[linear-gradient(180deg,#fffdf8_0%,#f7f4ec_55%,#f1ece4_100%)] px-4 py-8 text-[var(--foreground)] sm:px-6 lg:px-8">

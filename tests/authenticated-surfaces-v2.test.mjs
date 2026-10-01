@@ -69,7 +69,7 @@ test("fallback and unauthorized states stay explicit, actionable and localized",
   assert.ok(accountCopy.includes("Retour à mon dossier"));
   assert.ok(accountCopy.includes("This space is not available for this account"));
   assert.ok(accountCopy.includes("Diese Adresse gehört zu keiner aktiven Seite"));
-  assert.ok(unauthorized.includes("accountStateCopy[locale].unauthorized"));
+  assert.ok(unauthorized.includes("rebrandCopy(accountStateCopy[locale].unauthorized)"));
   assert.ok(fallback.includes("accountStateCopy[locale].unknownStudent"));
 });
 

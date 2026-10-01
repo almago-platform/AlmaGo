@@ -27,7 +27,7 @@ test("login and signup metadata follow the active locale copy", () => {
 test("reset-password metadata follows the localized account-state copy", () => {
   assert.match(reset, /export async function generateMetadata\(\): Promise<Metadata>/);
   assert.match(reset, /const locale = await getRequestLocale\(\)/);
-  assert.match(reset, /const t = accountStateCopy\[locale\]\.reset/);
+  assert.match(reset, /const t = rebrandCopy\(accountStateCopy\[locale\]\.reset\)/);
   assert.match(reset, /title: t\.formTitle/);
   assert.match(reset, /description: t\.formText/);
   assert.match(reset, /robots: \{ index: false, follow: false \}/);
