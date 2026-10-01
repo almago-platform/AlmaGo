@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import { PublicOrientationForm } from "@/components/orientation/PublicOrientationForm";
+import { orientationCopy } from "@/content/orientation-copy";
+import { LOCALE_COOKIE, normalizeLocale } from "@/lib/i18n";
 import { restorePublicOrientationAnswers } from "@/lib/orientation/public";
 import { getPhase2StudentAccess } from "@/lib/phase2/access";
 import {
@@ -9,10 +12,16 @@ import {
   isPhase2ProspectCaptureEnabled,
 } from "@/lib/phase2/config";
 
-export const metadata: Metadata = {
-  title: "Orientation gratuite",
-  description: "Commencez votre projet d’études en Allemagne avec une orientation courte, sans compte.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const store = await cookies();
+  const locale = normalizeLocale(store.get(LOCALE_COOKIE)?.value);
+  const copy = orientationCopy[locale];
+
+  return {
+    title: `${copy.intro.eyebrow} | AlmaGo`,
+    description: copy.intro.lead,
+  };
+}
 
 function savedAnswers(input: unknown) {
   if (!input || typeof input !== "object") return null;
