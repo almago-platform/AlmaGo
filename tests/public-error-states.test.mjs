@@ -19,7 +19,8 @@ test("public 404 is branded, localized and offers safe recovery", () => {
 
 test("public route error offers retry without exposing technical error details", () => {
   assert.match(errorPage, /^"use client";/);
-  assert.match(errorPage, /const \{ locale \} = useLocale\(\)/);\n  assert.match(errorPage, /rebrandCopy\(publicStateCopy\[locale\]\.error\)/);
+  assert.match(errorPage, /const \{ locale \} = useLocale\(\)/);
+  assert.match(errorPage, /rebrandCopy\(publicStateCopy\[locale\]\.error\)/);
   assert.match(errorPage, /onClick=\{reset\}/);
   assert.match(errorPage, /<ButtonLink href="\/" variant="secondary">\{t\.home\}<\/ButtonLink>/);
   assert.doesNotMatch(errorPage, /error\.message|error\.stack|error\.digest|digest\}/);
