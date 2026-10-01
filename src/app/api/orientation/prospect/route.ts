@@ -29,6 +29,7 @@ import {
 const MAX_BODY_BYTES = 24_000;
 const ENGINE_VERSION = "public-orientation-v1";
 const PRIVACY_NOTICE_VERSION = "orientation-prospect-v1";
+const CONTACT_CONSENT_VERSION = "smart-orientation-contact-v1";
 
 const allowed = {
   bacTrack: new Set(valuesOf(tunisianBacTrackOptions)),
@@ -129,6 +130,7 @@ export async function POST(request: Request) {
   const email = validEmail(record.email);
   const answers = validAnswers(record.answers);
   const privacyAcknowledged = record.privacyAcknowledged === true;
+  const contactConsent = record.contactConsent === true;
   const locale = normalizeLocale(typeof record.locale === "string" ? record.locale : null);
   const acquisitionRecord = record.acquisition && typeof record.acquisition === "object"
     ? record.acquisition as Record<string, unknown>
@@ -170,15 +172,26 @@ export async function POST(request: Request) {
       } else {
         prospectId = data.id as string;
       }
-    } else {
-      const { error } = await supabase
-        .from("prospects")
-        .update({ updated_at: new Date().toISOString() })
-        .eq("id", prospectId);
-      if (error) throw error;
     }
 
     if (!prospectId) throw new Error("Prospect identity could not be resolved.");
+
+    const contactConsentWrite = contactConsent
+      ? {
+          contact_consent: true,
+          contact_consent_at: new Date().toISOString(),
+          contact_consent_version: CONTACT_CONSENT_VERSION,
+        }
+      : {};
+
+    const { error: prospectUpdateError } = await supabase
+      .from("prospects")
+      .update({
+        updated_at: new Date().toISOString(),
+        ...contactConsentWrite,
+      })
+      .eq("id", prospectId);
+    if (prospectUpdateError) throw prospectUpdateError;
 
     const { data: orientation, error: orientationError } = await supabase
       .from("orientations")
@@ -190,6 +203,8 @@ export async function POST(request: Request) {
           locale,
           privacy_notice_version: PRIVACY_NOTICE_VERSION,
           privacy_acknowledged: true,
+          contact_consent: contactConsent,
+          contact_consent_version: contactConsent ? CONTACT_CONSENT_VERSION : null,
           ...(acquisition ? { acquisition } : {}),
         },
         result: diagnostic,
