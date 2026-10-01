@@ -36,15 +36,10 @@ test("A43 completion is main-only and requires A38 completion", () => {
   assert.match(a43, /item\.state === "open"/);
 });
 
-test("A43 watches protected API helper and migration paths", () => {
-  assert.match(a43, /src\/app\/api\/admin\/\*\*/);
-  assert.match(a43, /src\/app\/api\/student\/\*\*/);
-  assert.match(a43, /src\/app\/api\/documents\/\*\*/);
-  assert.match(a43, /src\/lib\/auth\/\*\*/);
-  assert.match(a43, /src\/lib\/documents\.ts/);
-  assert.match(a43, /src\/lib\/source-verification\.ts/);
-  assert.match(a43, /src\/lib\/application-intake\.ts/);
-  assert.match(a43, /supabase\/migrations\/\*\*/);
+test("A43 evidence is explicit-only during Partner-Ready Calm Mode", () => {
+  assert.match(a43, /workflow_dispatch:/);
+  assert.match(a43, /issue_comment:/);
+  assert.doesNotMatch(a43, /\n  push:/);
 });
 
 test("Master Orchestrator mutations are main-only", () => {

@@ -1,5 +1,6 @@
 name: AlmaGo Authenticated E2E
 
+# Partner-Ready Calm Mode: A43 runs only by explicit owner probe or manual dispatch.
 on:
   issue_comment:
     types: [created]
@@ -18,34 +19,6 @@ on:
         options:
           - render
           - local
-  push:
-    branches: [main]
-    paths:
-      - "src/app/admin/**"
-      - "src/app/student/**"
-      - "src/app/api/admin/**"
-      - "src/app/api/student/**"
-      - "src/app/api/documents/**"
-      - "src/app/login/**"
-      - "src/components/auth/**"
-      - "src/components/student/**"
-      - "src/components/admin/**"
-      - "src/components/layout/AppShell.tsx"
-      - "src/app/globals.css"
-      - "playwright.config.mjs"
-      - "src/lib/supabase/**"
-      - "src/lib/auth/**"
-      - "src/lib/phase4.ts"
-      - "src/lib/documents.ts"
-      - "src/lib/source-verification.ts"
-      - "src/lib/application-intake.ts"
-      - "src/lib/identifiers.ts"
-      - "src/proxy.ts"
-      - "supabase/migrations/**"
-      - "tests/e2e/authenticated.spec.mjs"
-      - "tests/e2e/student-space-quality.spec.mjs"
-      - "tests/e2e/admin-space-quality.spec.mjs"
-      - ".github/workflows/almago-authenticated-e2e.yml"
 
 permissions:
   contents: read
@@ -114,7 +87,7 @@ jobs:
       ALMAGO_E2E_ADMIN_EMAIL: ${{ vars.ALMAGO_E2E_ADMIN_EMAIL || 'phase3.admin.b@almago.test' }}
       ALMAGO_E2E_ADMIN_PASSWORD: ${{ secrets.ALMAGO_E2E_ADMIN_PASSWORD }}
       CI: "true"
-      ALMAGO_E2E_TARGET: ${{ inputs.target || (github.event_name == 'push' && 'render') || 'local' }}
+      ALMAGO_E2E_TARGET: ${{ inputs.target || 'local' }}
       ALMAGO_E2E_REDACT_SECRETS: "true"
     steps:
       - uses: actions/checkout@v7

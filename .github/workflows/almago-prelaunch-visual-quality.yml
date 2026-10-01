@@ -1,15 +1,7 @@
 name: AlmaGo Prelaunch Visual Quality
 
+# Partner-Ready Calm Mode: automatic triggers are paused; run this workflow manually when needed.
 on:
-  push:
-    branches: [main]
-    paths:
-      - "src/components/public/**"
-      - "autonomy/visual-review.mjs"
-      - "autonomy/prelaunch-visual-quality*.mjs"
-      - ".github/workflows/almago-prelaunch-visual-quality.yml"
-  schedule:
-    - cron: "17 7 * * *"
   workflow_dispatch:
 
 permissions:

@@ -1,8 +1,7 @@
 name: AlmaGo Autopilot Safe Merge Observer
 
+# Partner-Ready Calm Mode: automatic triggers are paused; run this workflow manually when needed.
 on:
-  schedule:
-    - cron: "13,43 * * * *"
   workflow_dispatch:
 
 permissions:

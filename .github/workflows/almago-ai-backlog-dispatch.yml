@@ -1,18 +1,8 @@
 name: AlmaGo AI Backlog Dispatch
 
+# Partner-Ready Calm Mode: automatic triggers are paused; run this workflow manually when needed.
 on:
   workflow_dispatch:
-  schedule:
-    - cron: "*/5 * * * *"
-  push:
-    branches: [main]
-    paths:
-      - ".github/workflows/almago-ai-backlog-dispatch.yml"
-      - ".github/workflows/almago-ai-queue.yml"
-      - "autonomy/plan-core.mjs"
-      - "autonomy/plan-sync.mjs"
-  issues:
-    types: [opened, labeled, reopened]
 
 permissions:
   contents: read

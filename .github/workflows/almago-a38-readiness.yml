@@ -1,15 +1,8 @@
 name: AlmaGo A38 Review Readiness
 
+# Partner-Ready Calm Mode: automatic triggers are paused; run this workflow manually when needed.
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - "docs/A38_OWNER_CONFIRMATION.md"
-      - "docs/legal-imprint-draft.md"
-      - "docs/legal-privacy-draft.md"
-      - "docs/legal-terms-draft.md"
-      - ".github/workflows/almago-a38-readiness.yml"
 
 permissions:
   contents: read

@@ -1,8 +1,7 @@
 name: AlmaGo Merged Branch Cleanup
 
+# Partner-Ready Calm Mode: automatic triggers are paused; run this workflow manually when needed.
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 permissions:
