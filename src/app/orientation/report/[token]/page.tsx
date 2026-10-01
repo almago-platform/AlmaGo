@@ -285,7 +285,7 @@ export default async function OrientationReportPage({
 
           <div className="orientation-print-hide mt-7 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4">
             <OrientationReportActions printLabel={prospectCopy.report.print} />
-            <p className="mt-2 text-xs leading-5 text-[var(--muted)]">{prospectCopy.report.printHelp}</p>
+            <p className="mt-2 text-xs leading-5 text-[var(--foreground)]">{prospectCopy.report.printHelp}</p>
           </div>
 
           {accountLinkingEnabled ? (

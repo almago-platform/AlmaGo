@@ -580,7 +580,7 @@ export function PublicOrientationForm({
                   >
                     {prospectCopy.report.print}
                   </button>
-                  <p className="mt-2 text-xs leading-5 text-[var(--muted)]">{prospectCopy.report.printHelp}</p>
+                  <p className="mt-2 text-xs leading-5 text-[var(--foreground)]">{prospectCopy.report.printHelp}</p>
                 </div>
 
                 {authenticatedUpdate ? (
