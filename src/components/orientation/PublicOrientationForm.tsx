@@ -8,6 +8,7 @@ import { useLocale } from "@/components/i18n/LocaleProvider";
 import { orientationCopy } from "@/content/orientation-copy";
 import { orientationDiagnosticCopy } from "@/content/orientation-diagnostic-copy";
 import { orientationProspectCopy } from "@/content/orientation-prospect-copy";
+import { rebrandCopy } from "@/lib/brand";
 import { ProspectCaptureCard } from "@/components/orientation/ProspectCaptureCard";
 import { ProspectOrientationUpdateCard } from "@/components/orientation/ProspectOrientationUpdateCard";
 import { prospectDashboardCopy } from "@/content/prospect-dashboard-copy";
@@ -98,7 +99,7 @@ export function PublicOrientationForm({
   authenticatedUpdate?: boolean;
 }) {
   const { locale, direction } = useLocale();
-  const copy = orientationCopy[locale];
+  const copy = rebrandCopy(orientationCopy[locale]);
   const profileCopy = studentProfileCopy[locale];
   const diagnosticCopy = orientationDiagnosticCopy[locale];
   const prospectCopy = orientationProspectCopy[locale];
