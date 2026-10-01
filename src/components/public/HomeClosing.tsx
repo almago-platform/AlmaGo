@@ -49,7 +49,17 @@ export function HomeFinalCta({
   );
 }
 
-export function HomeFooter({ footer, homeAria }: { footer: FooterCopy; homeAria: string }) {
+export function HomeFooter({
+  footer,
+  homeAria,
+  phase2Enabled = false,
+  orientationLabel,
+}: {
+  footer: FooterCopy;
+  homeAria: string;
+  phase2Enabled?: boolean;
+  orientationLabel?: string;
+}) {
   return (
     <footer className={s.footer}>
       <div className={s.container}>
@@ -63,7 +73,13 @@ export function HomeFooter({ footer, homeAria }: { footer: FooterCopy; homeAria:
           </div>
 
           {footer.columns.map(([title, links]) => (
-            <FooterColumn key={title} title={title} links={links} />
+            <FooterColumn
+              key={title}
+              title={title}
+              links={links}
+              phase2Enabled={phase2Enabled}
+              orientationLabel={orientationLabel}
+            />
           ))}
         </div>
 
@@ -87,19 +103,29 @@ export function HomeFooter({ footer, homeAria }: { footer: FooterCopy; homeAria:
 function FooterColumn({
   title,
   links,
+  phase2Enabled,
+  orientationLabel,
 }: {
   title: string;
   links: readonly (readonly [string, string])[];
+  phase2Enabled: boolean;
+  orientationLabel?: string;
 }) {
   return (
     <nav aria-label={title}>
       <h2>{title}</h2>
       <ul>
-        {links.map(([label, href]) => (
-          <li key={label}>
-            <Link href={href}>{label}</Link>
-          </li>
-        ))}
+        {links.map(([label, href]) => {
+          const orientationLink = phase2Enabled && href === "/signup";
+          const resolvedHref = orientationLink ? "/orientation" : href;
+          const resolvedLabel = orientationLink && orientationLabel ? orientationLabel : label;
+
+          return (
+            <li key={label}>
+              <Link href={resolvedHref}>{resolvedLabel}</Link>
+            </li>
+          );
+        })}
       </ul>
     </nav>
   );
