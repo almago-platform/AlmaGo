@@ -9,6 +9,7 @@ export type ProspectOffersCopy = {
   lockedBody: string;
   emptyTitle: string;
   emptyBody: string;
+  backToSpace: string;
   services: string;
   price: string;
   select: string;
@@ -26,6 +27,7 @@ const fr: ProspectOffersCopy = {
   lockedBody: "Votre projet doit d’abord atteindre l’étape de qualification humaine avant de pouvoir comparer les offres d’accompagnement.",
   emptyTitle: "Aucune offre n’est publiée pour le moment",
   emptyBody: "L’équipe prépare encore le contenu commercial. Aucun prix ni service n’est inventé ou affiché avant publication.",
+  backToSpace: "Retour à mon espace",
   services: "Services inclus",
   price: "Prix publié",
   select: "Sélectionner cette offre",
@@ -43,6 +45,7 @@ const ar: ProspectOffersCopy = {
   lockedBody: "يجب أولًا أن يصل مشروعك إلى مرحلة التأهيل البشري قبل مقارنة عروض المرافقة.",
   emptyTitle: "لا يوجد عرض منشور حاليًا",
   emptyBody: "ما زال الفريق يجهز المحتوى التجاري. لا يتم اختراع أو عرض أي سعر أو خدمة قبل النشر.",
+  backToSpace: "العودة إلى مساحتي",
   services: "الخدمات المشمولة",
   price: "السعر المنشور",
   select: "اختيار هذا العرض",
@@ -60,6 +63,7 @@ const en: ProspectOffersCopy = {
   lockedBody: "Your project must first reach the human qualification stage before you can compare support offers.",
   emptyTitle: "No offer is published yet",
   emptyBody: "The team is still preparing the commercial content. No price or service is invented or displayed before publication.",
+  backToSpace: "Back to my space",
   services: "Included services",
   price: "Published price",
   select: "Select this offer",
@@ -77,6 +81,7 @@ const de: ProspectOffersCopy = {
   lockedBody: "Dein Projekt muss zuerst die menschliche Qualifikationsstufe erreichen, bevor du Begleitangebote vergleichen kannst.",
   emptyTitle: "Noch kein Angebot veröffentlicht",
   emptyBody: "Das Team bereitet die kommerziellen Inhalte noch vor. Vor der Veröffentlichung werden keine Preise oder Leistungen erfunden oder angezeigt.",
+  backToSpace: "Zurück zu meinem Bereich",
   services: "Enthaltene Leistungen",
   price: "Veröffentlichter Preis",
   select: "Dieses Angebot auswählen",
