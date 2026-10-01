@@ -36,7 +36,7 @@ export async function generateMetadata({
   const indexable = ready && isPublicIndexingEnabled();
 
   return {
-    title: `${document.title} | Campus Allemagne`,
+    title: document.title,
     description: document.description,
     robots: {
       index: indexable,
