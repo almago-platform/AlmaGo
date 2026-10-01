@@ -19,7 +19,7 @@ export const dynamic = "force-dynamic";
 export default async function StudentEntry() {
   const { locale, copy } = await getRequestCopy();
   const t = rebrandCopy(studentDashboardCopy[locale]);
-  const checklistCopy = studentChecklistCopy[locale];
+  const checklistCopy = rebrandCopy(studentChecklistCopy[locale]);
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
