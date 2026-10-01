@@ -66,12 +66,6 @@ const adminItems: NavItem[] = [
   { label: "Finance & assurance", href: "/admin/finance-insurance", icon: icons.applications, helper: "Options factuelles" },
 ];
 
-const adminGroups = [
-  { label: "Pilotage", items: adminItems.slice(0, 1) },
-  { label: "Opérations", items: adminItems.slice(1, 7) },
-  { label: "Catalogue Allemagne", items: adminItems.slice(7) },
-];
-
 function isActive(pathname: string, href: string) {
   if (href === "/student" || href === "/admin") return pathname === href;
   return pathname === href || pathname.startsWith(`${href}/`);
