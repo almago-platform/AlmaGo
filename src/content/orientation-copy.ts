@@ -131,7 +131,7 @@ const ar: OrientationCopy = {
   },
   controls: {
     choose: "اختر…", optional: "اختياري", previous: "رجوع", next: "متابعة",
-    summary: "عرض توجيهي", selected: "تم اختيارها",
+    summary: "عرض توجيهي", selected: "تم اختيار",
   },
   validation: {
     required: "أكمل الحقول المطلوبة للمتابعة.",
