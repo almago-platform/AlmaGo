@@ -189,6 +189,7 @@ export function AuthForm({
                 className={`absolute inset-y-0 ${passwordButtonSide} my-auto min-h-10 rounded-[var(--radius-control)] px-2 text-xs font-semibold text-[var(--brand)] hover:text-[var(--brand-strong)]`}
                 onClick={() => setShowPassword((value) => !value)}
                 aria-label={showPassword ? auth.labels.hide : auth.labels.show}
+                aria-pressed={showPassword}
               >
                 {showPassword ? auth.labels.hide : auth.labels.show}
               </button>

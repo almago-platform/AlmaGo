@@ -9,6 +9,7 @@ test("reset password supports an accessible localized visibility toggle", () => 
   assert.match(form, /const \[showPassword, setShowPassword\] = useState\(false\)/);
   assert.match(form, /type=\{showPassword \? "text" : "password"\}/);
   assert.match(form, /aria-label=\{showPassword \? t\.hidePassword : t\.showPassword\}/);
+  assert.match(form, /aria-pressed=\{showPassword\}/);
   assert.match(form, /setShowPassword\(\(value\) => !value\)/);
   assert.match(form, /dir="ltr"/);
   assert.match(form, /autoComplete="new-password"/);
