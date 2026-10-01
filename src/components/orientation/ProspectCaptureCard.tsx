@@ -78,15 +78,28 @@ export function ProspectCaptureCard({
       <h3 className="mt-2 text-xl font-bold">{copy.title}</h3>
       <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{copy.text}</p>
 
-      <form className="mt-5 space-y-4" onSubmit={submit}>
+      <form className="mt-5 space-y-4" onSubmit={submit} noValidate aria-busy={status === "saving"}>
         <label className="block text-sm font-semibold">
           {copy.emailLabel}
           <input
             type="email"
+            name="email"
             autoComplete="email"
+            inputMode="email"
+            autoCapitalize="none"
+            spellCheck={false}
+            required
+            aria-invalid={status === "error" && message === copy.invalidEmail}
+            aria-describedby={message ? "orientation-capture-message" : undefined}
             className="field"
             value={email}
-            onChange={(event) => setEmail(event.target.value)}
+            onChange={(event) => {
+              setEmail(event.target.value);
+              if (status === "error" && message === copy.invalidEmail) {
+                setStatus("idle");
+                setMessage("");
+              }
+            }}
             disabled={status === "saving" || status === "success"}
           />
         </label>
@@ -94,6 +107,8 @@ export function ProspectCaptureCard({
         <label className="flex items-start gap-3 text-sm leading-6">
           <input
             type="checkbox"
+            name="privacyAcknowledged"
+            required
             className="mt-1"
             checked={privacyAcknowledged}
             onChange={(event) => setPrivacyAcknowledged(event.target.checked)}
@@ -101,7 +116,12 @@ export function ProspectCaptureCard({
           />
           <span>
             {copy.privacyLabel}{" "}
-            <Link className="font-semibold underline" href="/legal/privacy" target="_blank">
+            <Link
+              className="font-semibold underline"
+              href="/legal/privacy"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               {copy.privacyLink}
             </Link>
           </span>
@@ -118,6 +138,7 @@ export function ProspectCaptureCard({
 
       {message ? (
         <p
+          id="orientation-capture-message"
           role={status === "error" ? "alert" : "status"}
           className="mt-4 text-sm font-medium"
         >
