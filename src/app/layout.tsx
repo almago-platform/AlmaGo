@@ -11,6 +11,7 @@ import {
   localeOpenGraph,
   normalizeLocale,
 } from "@/lib/i18n";
+import { isPublicIndexingEnabled } from "@/lib/public-indexing";
 import { getPublicOrigin } from "@/lib/public-origin";
 import "./globals.css";
 
@@ -36,6 +37,7 @@ async function requestLocale() {
 export async function generateMetadata(): Promise<Metadata> {
   const [locale, publicOrigin] = await Promise.all([requestLocale(), getPublicOrigin()]);
   const { metadata } = getNativeCopy(locale);
+  const indexingEnabled = isPublicIndexingEnabled();
   const homeUrl = new URL("/", publicOrigin).toString();
   const socialImageUrl = new URL("/opengraph-image", publicOrigin).toString();
 
@@ -49,8 +51,8 @@ export async function generateMetadata(): Promise<Metadata> {
     applicationName: BRAND_NAME,
     keywords: metadata.keywords.map(brandText),
     robots: {
-      index: true,
-      follow: true,
+      index: indexingEnabled,
+      follow: indexingEnabled,
     },
     alternates: {
       canonical: homeUrl,
