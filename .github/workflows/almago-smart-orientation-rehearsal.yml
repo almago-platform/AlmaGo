@@ -1,0 +1,125 @@
+name: AlmaGo Smart Orientation Rehearsal
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: almago-smart-orientation-rehearsal
+  cancel-in-progress: true
+
+jobs:
+  rehearsal:
+    if: >-
+      github.event.issue.number == 708 &&
+      github.event.comment.user.login == 'tayariAyoub' &&
+      github.event.comment.body == 'SMART ORIENTATION REHEARSAL'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      CI: "true"
+      ALMAGO_BASE_URL: https://almago-dev.onrender.com
+      ALMAGO_PHASE2_ENABLED: "true"
+      ALMAGO_E2E_REDACT_SECRETS: "true"
+      ALMAGO_E2E_ADMIN_EMAIL: ${{ vars.ALMAGO_E2E_ADMIN_EMAIL || 'phase3.admin.b@almago.test' }}
+      ALMAGO_E2E_ADMIN_PASSWORD: ${{ secrets.ALMAGO_E2E_ADMIN_PASSWORD }}
+    steps:
+      - name: Checkout current main
+        uses: actions/checkout@v7
+        with:
+          ref: main
+          fetch-depth: 1
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install application dependencies
+        run: npm ci
+
+      - name: Require dedicated admin E2E identity
+        shell: bash
+        run: |
+          if [ -z "$ALMAGO_E2E_ADMIN_EMAIL" ] || [ -z "$ALMAGO_E2E_ADMIN_PASSWORD" ]; then
+            echo "::error::Missing dedicated admin E2E identity."
+            exit 1
+          fi
+          normalized="$(printf '%s' "$ALMAGO_E2E_ADMIN_EMAIL" | tr '[:upper:]' '[:lower:]')"
+          case "$normalized" in
+            *e2e*|*test*) ;;
+            *) echo "::error::Smart Orientation rehearsal requires a dedicated test admin account."; exit 1 ;;
+          esac
+
+      - name: Install browser rehearsal tooling
+        run: npm install --no-save --package-lock=false @playwright/test@1.55.0 @axe-core/playwright@4.10.2
+
+      - name: Cache Chromium
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-1.55.0-chromium
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Verify exact Partner-Ready Render target
+        shell: bash
+        run: |
+          mkdir -p artifacts/smart-orientation
+          expected_sha="$(git rev-parse HEAD)"
+          expected_revision="${expected_sha:0:12}"
+          for i in {1..60}; do
+            health="$(curl --fail --silent --show-error --max-time 10 "$ALMAGO_BASE_URL/api/health" 2>/dev/null || true)"
+            if [ -n "$health" ]; then
+              printf '%s\n' "$health" > artifacts/smart-orientation/render-health.json
+              revision="$(printf '%s' "$health" | jq -r '.revision // empty' 2>/dev/null || true)"
+              branch="$(printf '%s' "$health" | jq -r '.branch // empty' 2>/dev/null || true)"
+              mode="$(printf '%s' "$health" | jq -r '.exposureMode // empty' 2>/dev/null || true)"
+              if [ "$revision" = "$expected_revision" ] && [ "$branch" = "main" ] && [ "$mode" = "partner_prelaunch" ]; then
+                echo "Smart Orientation exact-SHA verified: $revision."
+                exit 0
+              fi
+            fi
+            sleep 5
+          done
+          echo "::error::Render did not reach exact main/partner_prelaunch in time."
+          exit 1
+
+      - name: Smart Orientation FR/AR desktop-mobile rehearsal
+        run: npx playwright test tests/e2e/smart-orientation.spec.mjs --project=desktop-chromium --project=mobile-360-chromium
+
+      - name: Revalidate exact main and Render after rehearsal
+        shell: bash
+        run: |
+          git fetch origin main --depth=1
+          tested_sha="$(git rev-parse HEAD)"
+          current_main="$(git rev-parse origin/main)"
+          if [ "$tested_sha" != "$current_main" ]; then
+            echo "::error::main changed during Smart Orientation rehearsal."
+            exit 1
+          fi
+          expected_revision="${tested_sha:0:12}"
+          health="$(curl --fail --silent --show-error --max-time 10 "$ALMAGO_BASE_URL/api/health")"
+          revision="$(printf '%s' "$health" | jq -r '.revision // empty')"
+          branch="$(printf '%s' "$health" | jq -r '.branch // empty')"
+          mode="$(printf '%s' "$health" | jq -r '.exposureMode // empty')"
+          if [ "$revision" != "$expected_revision" ] || [ "$branch" != "main" ] || [ "$mode" != "partner_prelaunch" ]; then
+            echo "::error::Render drifted during Smart Orientation rehearsal."
+            exit 1
+          fi
+
+      - name: Store Smart Orientation artifacts
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: almago-smart-orientation-${{ github.run_id }}
+          path: |
+            artifacts/smart-orientation/
+            artifacts/playwright/
+          retention-days: 7
+          if-no-files-found: warn
