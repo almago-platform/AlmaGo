@@ -8,7 +8,9 @@ Responsable du traitement prévu : **Ayoub Tayari**
 
 Forme actuelle : **personne physique**
 
-Pays principal d’établissement prévu : **Tunisie**
+Pays de développement / démonstration partenaire avant ouverture : **Allemagne**
+
+Pays prévu pour l’établissement légal et l’ouverture du service : **Tunisie**
 
 Adresse : **[À CONFIRMER AVANT PUBLICATION]**
 
@@ -97,7 +99,7 @@ Le texte final doit décrire les droits applicables au contexte réel après rel
 
 Canal de demande prévu : **contact@campus-allemagne.info**
 
-Autorité de contrôle / réclamation : **[À CONFIRMER SELON L’ÉTABLISSEMENT FINAL EN TUNISIE ET LES RÈGLES APPLICABLES AUX PERSONNES CONCERNÉES]**
+Autorité de contrôle / réclamation : **[À CONFIRMER AVANT OUVERTURE RÉELLE SELON L’ÉTABLISSEMENT LÉGAL, LE PUBLIC VISÉ ET LES RÈGLES APPLICABLES]**
 
 ## 8. Cookies et analytics
 
