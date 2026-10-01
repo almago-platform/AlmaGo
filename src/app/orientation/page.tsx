@@ -7,8 +7,10 @@ import { LOCALE_COOKIE, normalizeLocale } from "@/lib/i18n";
 import { restorePublicOrientationAnswers } from "@/lib/orientation/public";
 import { getPublicOrigin } from "@/lib/public-origin";
 import { getPhase2StudentAccess } from "@/lib/phase2/access";
+import { normalizeAcquisitionContext } from "@/lib/phase2/acquisition";
 import {
   isPhase2AccessEnabled,
+  isPhase2AttributionEnabled,
   isPhase2EmailDeliveryEnabled,
   isPhase2ProspectCaptureEnabled,
 } from "@/lib/phase2/config";
@@ -36,18 +38,28 @@ function savedAnswers(input: unknown) {
 export default async function OrientationPage({
   searchParams,
 }: {
-  searchParams: Promise<{ mode?: string | string[] }>;
+  searchParams: Promise<{
+    mode?: string | string[];
+    src?: string | string[];
+    ref?: string | string[];
+  }>;
 }) {
   if (!isPhase2AccessEnabled()) notFound();
 
   const params = await searchParams;
   const mode = Array.isArray(params.mode) ? params.mode[0] : params.mode;
+  const sourceKind = Array.isArray(params.src) ? params.src[0] : params.src;
+  const sourceId = Array.isArray(params.ref) ? params.ref[0] : params.ref;
+  const acquisitionContext = isPhase2AttributionEnabled()
+    ? normalizeAcquisitionContext(sourceKind, sourceId)
+    : null;
 
   if (mode !== "update") {
     return (
       <PublicOrientationForm
         prospectCaptureEnabled={isPhase2ProspectCaptureEnabled()}
         emailDeliveryEnabled={isPhase2EmailDeliveryEnabled()}
+        acquisitionContext={acquisitionContext}
       />
     );
   }
