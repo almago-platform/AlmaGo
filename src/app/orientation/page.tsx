@@ -7,10 +7,12 @@ import { LOCALE_COOKIE, normalizeLocale } from "@/lib/i18n";
 import { restorePublicOrientationAnswers } from "@/lib/orientation/public";
 import { getPublicOrigin } from "@/lib/public-origin";
 import { getPhase2StudentAccess } from "@/lib/phase2/access";
-import { normalizeAcquisitionContext } from "@/lib/phase2/acquisition";
+import {
+  isPhase2AttributionEnabled,
+  normalizeAcquisitionContext,
+} from "@/lib/phase2/acquisition";
 import {
   isPhase2AccessEnabled,
-  isPhase2AttributionEnabled,
   isPhase2EmailDeliveryEnabled,
   isPhase2ProspectCaptureEnabled,
 } from "@/lib/phase2/config";
