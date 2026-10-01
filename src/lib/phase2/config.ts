@@ -1,9 +1,12 @@
 const ENABLED_VALUES = new Set(["1", "true", "yes", "on"]);
 const P24_E2E_PREVIEW_BRANCH = "phase2/p2-4-e2e-proof";
 
-export function isPhase2P24E2EPreview(
+export function isPhase2P24E2EProof(
   env: Record<string, string | undefined> = process.env,
 ) {
+  const explicitProof = env.ALMAGO_P24_E2E_PROOF?.trim().toLowerCase();
+  if (explicitProof && ENABLED_VALUES.has(explicitProof)) return true;
+
   return env.VERCEL_ENV === "preview"
     && env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_REF === P24_E2E_PREVIEW_BRANCH;
 }
@@ -11,7 +14,7 @@ export function isPhase2P24E2EPreview(
 export function isPhase2AccessEnabled(
   env: Record<string, string | undefined> = process.env,
 ) {
-  if (isPhase2P24E2EPreview(env)) return true;
+  if (isPhase2P24E2EProof(env)) return true;
   const raw = env.ALMAGO_PHASE2_ENABLED?.trim().toLowerCase();
   return raw ? ENABLED_VALUES.has(raw) : false;
 }
@@ -19,7 +22,7 @@ export function isPhase2AccessEnabled(
 export function isPhase2ProspectCaptureEnabled(
   env: Record<string, string | undefined> = process.env,
 ) {
-  if (isPhase2P24E2EPreview(env)) return true;
+  if (isPhase2P24E2EProof(env)) return true;
   if (!isPhase2AccessEnabled(env)) return false;
   const raw = env.ALMAGO_PHASE2_PROSPECT_CAPTURE_ENABLED?.trim().toLowerCase();
   return raw ? ENABLED_VALUES.has(raw) : false;
@@ -36,7 +39,7 @@ export function isPhase2EmailDeliveryEnabled(
 export function isPhase2AccountLinkingEnabled(
   env: Record<string, string | undefined> = process.env,
 ) {
-  if (isPhase2P24E2EPreview(env)) return true;
+  if (isPhase2P24E2EProof(env)) return true;
   if (!isPhase2AccessEnabled(env)) return false;
   const raw = env.ALMAGO_PHASE2_ACCOUNT_LINKING_ENABLED?.trim().toLowerCase();
   return raw ? ENABLED_VALUES.has(raw) : false;
