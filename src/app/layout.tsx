@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { Inter, Noto_Kufi_Arabic, Noto_Sans_Arabic } from "next/font/google";
 import type { ReactNode } from "react";
 import { LocaleProvider } from "@/components/i18n/LocaleProvider";
+import { PartnerPrelaunchBanner } from "@/components/prelaunch/PartnerPrelaunchBanner";
 import { getNativeCopy } from "@/content/native-copy";
 import { BRAND_NAME, brandText, rebrandCopy } from "@/lib/brand";
 import {
@@ -11,6 +12,7 @@ import {
   localeOpenGraph,
   normalizeLocale,
 } from "@/lib/i18n";
+import { isPartnerPrelaunchModeEnabled } from "@/lib/prelaunch";
 import { isPublicIndexingEnabled } from "@/lib/public-indexing";
 import { getPublicOrigin } from "@/lib/public-origin";
 import "./globals.css";
@@ -82,6 +84,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function RootLayout({ children }: { children: ReactNode }) {
   const locale = await requestLocale();
   const copy = rebrandCopy(getNativeCopy(locale));
+  const partnerPrelaunch = isPartnerPrelaunchModeEnabled();
 
   return (
     <html
@@ -91,6 +94,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
     >
       <body className="min-h-full">
         <LocaleProvider initialLocale={locale} initialCopy={copy}>
+          <PartnerPrelaunchBanner enabled={partnerPrelaunch} />
           {children}
         </LocaleProvider>
       </body>
