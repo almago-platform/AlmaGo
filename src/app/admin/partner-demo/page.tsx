@@ -11,6 +11,7 @@ const demoAnswers = {
   bacYear: "2026",
   bacTrack: "Mathématiques",
   generalAverage: "14.50",
+  averageType: "official" as const,
   lastDiploma: "Baccalauréat",
   targetDegree: "Bachelor",
   targetField: "Informatique",
