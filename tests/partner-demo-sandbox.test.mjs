@@ -16,7 +16,7 @@ test("partner demo page is available only behind Partner-Ready mode", () => {
   assert.match(page, /isPartnerPrelaunchModeEnabled\(\)/);
   assert.match(page, /notFound\(\)/);
   assert.match(adminLayout, /partnerPrelaunch=\{isPartnerPrelaunchModeEnabled\(\)\}/);
-  assert.match(shell, /partnerPrelaunch \?/);
+  assert.match(shell, /partnerPrelaunch\s*\?/);
   assert.match(shell, /href: "\/admin\/partner-demo"/);
 });
 
