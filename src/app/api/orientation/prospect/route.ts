@@ -7,7 +7,7 @@ import { restorePublicOrientationAnswers } from "@/lib/orientation/public";
 import { createOrientationResumeToken } from "@/lib/orientation/resume-token";
 import {
   isPhase2EmailDeliveryEnabled,
-  isPhase2P24E2EPreview,
+  isPhase2P24E2EProof,
   isPhase2ProspectCaptureEnabled,
 } from "@/lib/phase2/config";
 import { createPrivilegedSupabaseClient } from "@/lib/supabase/privileged";
@@ -27,6 +27,7 @@ const MAX_BODY_BYTES = 24_000;
 const ENGINE_VERSION = "public-orientation-v1";
 const PRIVACY_NOTICE_VERSION = "orientation-prospect-v1";
 const P24_E2E_EMAIL = "phase3.student.c@almago.test";
+const P24_DISPOSABLE_EMAIL = /^phase2\.p24\.[a-z0-9-]+@almago\.test$/;
 
 const allowed = {
   bacTrack: new Set(valuesOf(tunisianBacTrackOptions)),
@@ -81,6 +82,11 @@ function publicSiteUrl() {
   } catch {
     return null;
   }
+}
+
+function canExposeProofToken(email: string) {
+  return isPhase2P24E2EProof()
+    && (email === P24_E2E_EMAIL || P24_DISPOSABLE_EMAIL.test(email));
 }
 
 async function findProspectId(
@@ -193,7 +199,7 @@ export async function POST(request: Request) {
     if (orientationError) throw orientationError;
 
     if (!isPhase2EmailDeliveryEnabled()) {
-      if (isPhase2P24E2EPreview() && email === P24_E2E_EMAIL) {
+      if (canExposeProofToken(email)) {
         return NextResponse.json(
           {
             saved: true,
