@@ -14,6 +14,8 @@ const images = [
   ["https://images.pexels.com/photos/7972361/pexels-photo-7972361.jpeg?auto=compress&cs=tinysrgb&w=1200", "Two students talking during a study session."],
 ] as const;
 
+const stepIds = ["projet", "documents", "programmes", "candidatures", "depart", "suivi"] as const;
+
 export function HomeJourneySection({
   journey,
   primaryHref = "/signup",
@@ -39,7 +41,7 @@ export function HomeJourneySection({
         </div>
         <ol className={s.steps} aria-label={journey.aria}>
           {journey.steps.map(([title, text, detail], index) => (
-            <li key={title} id={index === 2 ? "programmes" : undefined} className={s.stepCard}>
+            <li key={title} id={stepIds[index]} className={s.stepCard}>
               <div className={s.stepMedia}>
                 <Image
                   src={images[index][0]}
