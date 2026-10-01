@@ -13,11 +13,9 @@ type AuthStoryPanelProps = {
 const images = {
   login: {
     src: "https://images.pexels.com/photos/6684514/pexels-photo-6684514.jpeg?auto=compress&cs=tinysrgb&w=1200",
-    alt: "Students working together in a university library.",
   },
   signup: {
     src: "https://images.pexels.com/photos/7973208/pexels-photo-7973208.jpeg?auto=compress&cs=tinysrgb&w=1200",
-    alt: "Students reviewing documents outside a university building.",
   },
 } as const;
 
@@ -42,7 +40,7 @@ export function AuthStoryPanel({ mode }: AuthStoryPanelProps) {
       <div className="auth-story-image relative h-64 shrink-0 overflow-hidden">
         <Image
           src={images[mode].src}
-          alt={images[mode].alt}
+          alt=""
           fill
           sizes="(min-width: 1024px) 48vw, 100vw"
           className="object-cover"

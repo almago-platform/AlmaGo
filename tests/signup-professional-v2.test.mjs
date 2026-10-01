@@ -64,3 +64,9 @@ test("Arabic auth layout keeps the form primary on desktop RTL", () => {
   assert.ok(form.includes('const passwordButtonSide = "right-2"'));
   assert.ok(form.includes('const passwordPadding = "pr-24 text-left"'));
 });
+
+test("auth story stock photos are decorative for screen readers", () => {
+  assert.match(story, /alt=""/);
+  assert.doesNotMatch(story, /Students working together in a university library/);
+  assert.doesNotMatch(story, /Students reviewing documents outside a university building/);
+});
