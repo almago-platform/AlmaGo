@@ -11,9 +11,9 @@ test("A43 owner-comment probe is narrowly scoped", () => {
   assert.match(workflow, /github\.event\.comment\.body == 'A43 AUTHENTICATED E2E PROBE'/);
 });
 
-test("A43 probe keeps existing safe workflow dispatch and main push paths", () => {
+test("A43 probe remains explicit in Partner-Ready Calm Mode", () => {
   assert.match(workflow, /workflow_dispatch:/);
-  assert.match(workflow, /branches: \[main\]/);
+  assert.doesNotMatch(workflow, /\n  push:/);
   assert.match(workflow, /needs\.configuration\.outputs\.ready == 'true'/);
 });
 

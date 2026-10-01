@@ -1,20 +1,9 @@
 name: AlmaGo Browser Quality
 
+# Partner-Ready Calm Mode: keep PR quality checks, stop duplicate post-merge runs.
 on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
-    paths:
-      - "src/**"
-      - "public/**"
-      - "package.json"
-      - "package-lock.json"
-      - "next.config.*"
-      - "playwright.config.mjs"
-      - "lighthouserc.cjs"
-      - "tests/e2e/**"
-      - ".github/workflows/almago-browser-quality.yml"
-  push:
-    branches: [main]
     paths:
       - "src/**"
       - "public/**"

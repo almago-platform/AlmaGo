@@ -1,10 +1,7 @@
 name: AlmaGo Prelaunch Self-Heal
 
+# Partner-Ready Calm Mode: automatic triggers are paused; run this workflow manually when needed.
 on:
-  push:
-    branches: [main]
-  schedule:
-    - cron: "37 * * * *"
   workflow_dispatch:
 
 permissions:

@@ -1,11 +1,8 @@
 name: AlmaGo Master Orchestrator
 
+# Partner-Ready Calm Mode: automatic triggers are paused; run this workflow manually when needed.
 on:
   workflow_dispatch:
-  schedule:
-    - cron: "*/5 * * * *"
-  push:
-    branches: [main]
 
 permissions:
   contents: read

@@ -1,18 +1,7 @@
 name: AlmaGo Prelaunch Performance Improvement
 
+# Partner-Ready Calm Mode: automatic triggers are paused; run this workflow manually when needed.
 on:
-  push:
-    branches: [main]
-    paths:
-      - "src/components/public/HomeHeader.tsx"
-      - "src/components/public/HomeHero.tsx"
-      - "src/components/public/HomeJourneySection.tsx"
-      - "lighthouserc.cjs"
-      - "lighthouserc.prelaunch-performance.cjs"
-      - "autonomy/prelaunch-performance*.mjs"
-      - ".github/workflows/almago-prelaunch-performance.yml"
-  schedule:
-    - cron: "17 6 * * *"
   workflow_dispatch:
 
 permissions:

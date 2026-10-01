@@ -43,9 +43,9 @@ Render mode:
 6. checks Render again immediately before A43 closure;
 7. re-reads current `main` and refuses closure if it moved.
 
-During Partner-Ready, a relevant push to `main` targets **Render by default**. This is a rehearsal against the canonical runtime: it proves the exact deployed SHA and the authenticated matrices, but A43 remains open while A38 is incomplete.
+During Partner-Ready Calm Mode, A43 rehearsals are **explicit** rather than triggered by every relevant push to `main`. Use manual dispatch with the default `render` target when canonical runtime evidence is needed. This proves the exact deployed SHA and the authenticated matrices, but A43 remains open while A38 is incomplete.
 
-Manual dispatch still exposes the explicit `render/local` choice. Probe/comment flows keep the local fallback unless a target input exists.
+Manual dispatch keeps the explicit `render/local` choice. The narrowly scoped owner probe/comment flow keeps the local fallback.
 
 A successful local run is useful regression evidence but **cannot close A43**. A successful Render rehearsal before A38 is also not the final release proof; it must be replayed on the final release candidate after A38.
 

@@ -5,14 +5,12 @@ import test from "node:test";
 const workflow = readFileSync(".github/workflows/almago-authenticated-e2e.yml", "utf8");
 const playwright = readFileSync("playwright.config.mjs", "utf8");
 
-test("A43 workflow exposes an explicit Render target and uses it for main-push rehearsals", () => {
+test("A43 workflow exposes an explicit Render target for manual Partner-Ready rehearsals", () => {
   assert.match(workflow, /target:\s*\n\s*description: "Authenticated E2E target"/);
   assert.match(workflow, /default: render/);
   assert.match(workflow, /- render\s*\n\s*- local/);
-  assert.match(
-    workflow,
-    /ALMAGO_E2E_TARGET: \$\{\{ inputs\.target \|\| \(github\.event_name == 'push' && 'render'\) \|\| 'local' \}\}/,
-  );
+  assert.match(workflow, /ALMAGO_E2E_TARGET: \$\{\{ inputs\.target \|\| 'local' \}\}/);
+  assert.doesNotMatch(workflow, /\n  push:/);
 });
 
 test("Render mode uses the canonical almago-dev URL and waits for health", () => {
