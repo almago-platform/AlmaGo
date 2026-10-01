@@ -21,9 +21,11 @@ concurrency:
 
 
 jobs:
+  # Temporarily disabled during Partner-Ready: Gemini is advisory, not a merge gate.
+  # Re-enable by removing the leading `false &&` and restoring the PR CI dispatch.
   supervise:
     if: >-
-      (
+      false && (
         github.event_name == 'repository_dispatch' &&
         github.event.action == 'almago_supervise' &&
         github.event.client_payload.pull_number != null &&
