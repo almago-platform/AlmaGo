@@ -10,6 +10,7 @@ const read = (path) => readFileSync(join(root, path), "utf8");
 const privileged = read("src/lib/supabase/privileged.ts");
 const route = read("src/app/api/orientation/prospect/route.ts");
 const form = read("src/components/orientation/PublicOrientationForm.tsx");
+const report = read("src/app/orientation/report/[token]/page.tsx");
 const capture = read("src/components/orientation/ProspectCaptureCard.tsx");
 const config = read("src/lib/phase2/config.ts");
 const env = read(".env.example");
@@ -75,4 +76,9 @@ test("prospect email capture is mobile-friendly and accessibly validates without
   assert.match(capture, /id="orientation-capture-message"/);
   assert.match(capture, /name="privacyAcknowledged"/);
   assert.match(capture, /rel="noopener noreferrer"/);
+});
+
+test("saved orientation report exposes its stored locale to assistive technology", () => {
+  assert.match(report, /const locale = normalizeLocale/);
+  assert.match(report, /lang=\{locale\} dir=\{direction\}/);
 });
