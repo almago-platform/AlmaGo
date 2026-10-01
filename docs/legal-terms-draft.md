@@ -75,7 +75,7 @@ Ne pas ajouter automatiquement de clause d’exclusion ou limitation de responsa
 
 ## 8. Droit applicable / règlement des litiges
 
-**[À DÉTERMINER SELON L’ÉTABLISSEMENT FINAL EN TUNISIE, LE PUBLIC VISÉ ET LE STATUT COMMERCIAL RÉEL]**
+**[À DÉTERMINER PAR LE RELECTEUR EN TENANT COMPTE DE L’EXPLOITATION AU LANCEMENT DEPUIS L’ALLEMAGNE, DE L’ÉTABLISSEMENT FUTUR ENVISAGÉ EN TUNISIE, DU PUBLIC VISÉ ET DU STATUT COMMERCIAL RÉEL]**
 
 ## 9. Contact
 
@@ -85,7 +85,9 @@ Ne pas ajouter automatiquement de clause d’exclusion ou limitation de responsa
 
 Exploitant prévu : **Ayoub Tayari**, personne physique.
 
-Pays principal d’établissement prévu : **Tunisie**.
+Pays d’exploitation au lancement public : **Allemagne**.
+
+Pays principal d’établissement prévu à terme : **Tunisie**.
 
 Adresse publique, immatriculation et identifiant fiscal éventuels : **[À CONFIRMER AVANT PUBLICATION]**
 
