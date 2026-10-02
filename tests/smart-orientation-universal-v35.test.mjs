@@ -72,13 +72,16 @@ test("SO-V3.5 keeps medicine and health under enhanced human review", () => {
   assert.match(guidance, /vérification humaine renforcée/);
 });
 
-test("SO-V3.5 is designed for easy scanning rather than long generic checklists", () => {
+test("SO-V3.5 keeps the web route scannable while print becomes a readable letter", () => {
   assert.match(route, /guidance\.priorityTitle/);
   assert.match(route, /guidance\.academicTitle/);
   assert.match(route, /guidance\.cityTitle/);
   assert.match(route, /guidance\.parallelTitle/);
   assert.match(route, /guidance\.timeline\.now/);
   assert.match(route, /guidance\.ctaTitle/);
-  assert.match(report, /guidance\.languageChoices\.length/);
-  assert.match(report, /guidance\.timeline\.afterAdmission/);
+  assert.match(report, /guidance\.academicBody/);
+  assert.match(report, /guidance\.priorityBody/);
+  assert.match(report, /guidance\.cityBody/);
+  assert.match(report, /guidance\.parallelBody/);
+  assert.doesNotMatch(report, /<table className="orientation-one-page-table"/);
 });
