@@ -66,9 +66,13 @@ alter table public.orientation_human_reviews enable row level security;
 revoke all on table public.orientation_human_reviews
   from public, anon, authenticated;
 
-grant select, update
+grant select
   on table public.orientation_human_reviews
   to authenticated;
+
+revoke insert, update, delete, truncate, references, trigger
+  on table public.orientation_human_reviews
+  from authenticated;
 
 grant select, insert, update, delete
   on table public.orientation_human_reviews
@@ -80,12 +84,6 @@ create policy "orientation human reviews admin read"
   to authenticated
   using ((select public.is_admin()));
 
-create policy "orientation human reviews admin update"
-  on public.orientation_human_reviews
-  for update
-  to authenticated
-  using ((select public.is_admin()))
-  with check ((select public.is_admin()));
 
 comment on table public.orientation_human_reviews is
   'Admin-only Orientation V4 A/B/C/D review bundles. Approval remains separate from program_recommendations publication.';
