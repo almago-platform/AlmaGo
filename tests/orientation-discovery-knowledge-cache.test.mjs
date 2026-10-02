@@ -8,6 +8,7 @@ const {
   buildOrientationResearchProgrammeDedupeKey,
   mergeOrientationKnowledgeCandidates,
   orientationDegreeCompatible,
+  orientationKnowledgeCoverageSufficient,
 } = await import("../src/lib/orientation-engine/discovery/knowledge-core.ts");
 
 const serviceSource = readFileSync(
@@ -22,8 +23,13 @@ const typesSource = readFileSync(
   "src/lib/orientation-engine/discovery/types.ts",
   "utf8",
 );
+const migrationSource = readFileSync(
+  "supabase/migrations/20261002194920_orientation_discovery_knowledge_cache.sql",
+  "utf8",
+);
 
 function plan(overrides = {}) {
+  const { profile: profileOverrides = {}, ...restOverrides } = overrides;
   return {
     status: "ready",
     reason: null,
@@ -44,7 +50,7 @@ function plan(overrides = {}) {
       targetIntakeYear: 2027,
       budgetRange: "800-1000",
       preferredCities: [],
-      ...(overrides.profile || {}),
+      ...profileOverrides,
     },
     programmeFamilies: [
       {
@@ -72,7 +78,7 @@ function plan(overrides = {}) {
       campusOffersStudienkolleg: false,
       studienkollegHandling: "flag_and_review",
     },
-    ...overrides,
+    ...restOverrides,
   };
 }
 
@@ -177,12 +183,45 @@ test("A3 merges cached and newly researched programmes without duplicates", () =
   ]);
 });
 
+
+test("A3 only treats the cache as sufficient when explicit city preferences are covered", () => {
+  const preferredPlan = plan({
+    profile: {
+      preferredCities: ["Munich"],
+    },
+  });
+  const enoughButWrongCity = Array.from({ length: 8 }, (_, index) =>
+    candidate({
+      institution: `University ${index}`,
+      programme: `Automotive ${index}`,
+      city: "Aachen",
+    })
+  );
+  const withMunich = [
+    ...enoughButWrongCity.slice(0, 7),
+    candidate({
+      institution: "Munich University",
+      programme: "Vehicle Engineering",
+      city: "Munich",
+    }),
+  ];
+
+  assert.equal(
+    orientationKnowledgeCoverageSufficient(preferredPlan, enoughButWrongCity, 8),
+    false,
+  );
+  assert.equal(
+    orientationKnowledgeCoverageSufficient(preferredPlan, withMunich, 8),
+    true,
+  );
+});
+
 test("A3 is cache-first and avoids OpenAI when the reusable pool is sufficient", () => {
   assert.match(knowledgeSource, /ORIENTATION_KNOWLEDGE_MIN_CANDIDATES = 8/);
   assert.match(knowledgeSource, /ORIENTATION_KNOWLEDGE_FRESHNESS_DAYS = 30/);
 
   const loadIndex = serviceSource.indexOf("loadOrientationDiscoveryKnowledge");
-  const hitIndex = serviceSource.indexOf("cachedCandidates.length >= ORIENTATION_KNOWLEDGE_MIN_CANDIDATES");
+  const hitIndex = serviceSource.indexOf("orientationKnowledgeCoverageSufficient");
   const openAIIndex = serviceSource.indexOf("runOpenAIOrientationDiscovery");
 
   assert.ok(loadIndex >= 0);
@@ -209,4 +248,27 @@ test("A3 keeps knowledge storage server-only", () => {
 
   assert.match(typesSource, /"knowledge_cache"/);
   assert.match(typesSource, /"mixed"/);
+});
+
+
+test("A3 database cache is private by default and service-role only", () => {
+  assert.match(migrationSource, /enable row level security/g);
+  assert.match(
+    migrationSource,
+    /revoke all on table public\.orientation_research_programs from public, anon, authenticated/,
+  );
+  assert.match(
+    migrationSource,
+    /revoke all on table public\.orientation_discovery_runs from public, anon, authenticated/,
+  );
+  assert.match(
+    migrationSource,
+    /revoke all on table public\.orientation_discovery_run_candidates from public, anon, authenticated/,
+  );
+  assert.match(
+    migrationSource,
+    /grant select, insert, update, delete on table public\.orientation_research_programs to service_role/,
+  );
+  assert.doesNotMatch(migrationSource, /grant .* to anon/);
+  assert.doesNotMatch(migrationSource, /grant .* to authenticated/);
 });
