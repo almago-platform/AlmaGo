@@ -71,6 +71,50 @@ export function buildOrientationDiscoverySearchContext(
   };
 }
 
+
+
+export type OrientationDiscoveryRefreshWindow = {
+  cycle: `summer_${number}` | `winter_${number}`;
+  lastMajorRefreshAt: string;
+  nextMajorRefreshAt: string;
+};
+
+function refreshBoundary(year: number, monthIndex: 3 | 9) {
+  return new Date(Date.UTC(year, monthIndex, 15, 0, 0, 0, 0));
+}
+
+export function getOrientationDiscoveryRefreshWindow(
+  now = new Date(),
+): OrientationDiscoveryRefreshWindow {
+  const year = now.getUTCFullYear();
+  const april15 = refreshBoundary(year, 3);
+  const october15 = refreshBoundary(year, 9);
+
+  if (now < april15) {
+    const previousOctober = refreshBoundary(year - 1, 9);
+    return {
+      cycle: `winter_${year - 1}`,
+      lastMajorRefreshAt: previousOctober.toISOString(),
+      nextMajorRefreshAt: april15.toISOString(),
+    };
+  }
+
+  if (now < october15) {
+    return {
+      cycle: `summer_${year}`,
+      lastMajorRefreshAt: april15.toISOString(),
+      nextMajorRefreshAt: october15.toISOString(),
+    };
+  }
+
+  const nextApril = refreshBoundary(year + 1, 3);
+  return {
+    cycle: `winter_${year}`,
+    lastMajorRefreshAt: october15.toISOString(),
+    nextMajorRefreshAt: nextApril.toISOString(),
+  };
+}
+
 export function orientationDegreeCompatible(
   targetDegree: string | null,
   candidateDegree: string | null,
