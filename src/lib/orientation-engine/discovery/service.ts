@@ -9,6 +9,7 @@ import {
 } from "@/lib/orientation-engine/discovery/knowledge";
 import {
   mergeOrientationKnowledgeCandidates,
+  orientationKnowledgeCoverageSufficient,
 } from "@/lib/orientation-engine/discovery/knowledge-core";
 import { runOpenAIOrientationDiscovery } from "@/lib/orientation-engine/discovery/openai";
 import { emptyOrientationDiscoveryUsage } from "@/lib/orientation-engine/discovery/research";
@@ -41,7 +42,11 @@ export async function runOrientationDiscovery(
   if (
     plan.status === "ready"
     && knowledge.available
-    && cachedCandidates.length >= ORIENTATION_KNOWLEDGE_MIN_CANDIDATES
+    && orientationKnowledgeCoverageSufficient(
+      plan,
+      cachedCandidates,
+      ORIENTATION_KNOWLEDGE_MIN_CANDIDATES,
+    )
   ) {
     await recordOrientationKnowledgeCacheHit(plan, knowledge.entries);
 
