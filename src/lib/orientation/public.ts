@@ -1,6 +1,6 @@
 export const PUBLIC_ORIENTATION_SESSION_KEY = "almago_phase2_orientation_v1";
 
-export type PublicOrientationBacStatus = "" | "obtained" | "preparing";
+export type PublicOrientationBacStatus = "" | "obtained" | "preparing" | "no_bac";
 export type PublicOrientationAverageType = "" | "official" | "current_estimate";
 
 export type PublicOrientationAnswers = {
@@ -68,7 +68,7 @@ export function restorePublicOrientationAnswers(value: unknown): PublicOrientati
   const record = value as Record<string, unknown>;
   const rawBacStatus = readString(record, "bacStatus");
   const bacStatus: PublicOrientationBacStatus =
-    rawBacStatus === "obtained" || rawBacStatus === "preparing"
+    rawBacStatus === "obtained" || rawBacStatus === "preparing" || rawBacStatus === "no_bac"
       ? rawBacStatus
       : "";
   const generalAverage = readString(record, "generalAverage");
