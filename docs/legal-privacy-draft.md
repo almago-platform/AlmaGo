@@ -24,6 +24,7 @@ Inventaire technique détaillé : `docs/data-processing-inventory.md`.
 
 Grandes catégories observées :
 
+- prospect Free Validation : e-mail, réponses d’orientation, consentement contact facultatif, signal explicite de souhait de continuer et historique Smart Orientation ;
 - compte et authentification via Supabase Auth ;
 - profil et coordonnées étudiant ;
 - parcours académique et langues ;
@@ -40,6 +41,11 @@ Grandes catégories observées :
 
 Finalités correspondant au produit actuel :
 
+- permettre une orientation gratuite sans compte ;
+- sauvegarder une orientation lorsqu’un visiteur choisit volontairement de laisser son e-mail ;
+- délivrer ultérieurement un rapport/e-mail transactionnel lorsque ce canal sera légalement activé ;
+- enregistrer séparément un consentement facultatif à être recontacté ;
+- enregistrer séparément le signal explicite « Je veux continuer avec Campus Allemagne » afin de mesurer la demande Free Validation ;
 - créer et maintenir l’espace étudiant ;
 - organiser le dossier académique ;
 - recevoir, stocker et vérifier les documents ;
@@ -54,12 +60,15 @@ Finalités correspondant au produit actuel :
 
 Actuellement visibles dans le projet :
 
-- **Supabase** — Auth, PostgreSQL et Storage ;
-- **Render** — hébergement/déploiement canonique de l’application.
+- **Supabase** — Auth, PostgreSQL et Storage ; région technique du projet vérifiée le 02/10/2026 : `eu-west-1` ;
+- **Render** — hébergement/déploiement canonique de l’application ; région vérifiée le 02/10/2026 : **Frankfurt**.
 
 Une intégration Vercel reste liée au dépôt pour des usages de développement/preview historiques ou futurs. Son éventuel rôle de traitement de données en production ne doit être décrit qu’après vérification contractuelle et technique.
 
 Analytics/observabilité produit : **non actif à ce jour**. Le fournisseur éventuel sera choisi et validé séparément dans A44 avant toute activation.
+
+
+Compte tenu des localisations techniques ci-dessus, **ne pas activer la collecte réelle en supposant que les transferts internationaux sont déjà couverts**. La loi tunisienne et les formalités INPDP applicables aux transferts hors Tunisie doivent être confirmées avant activation du Free Validation Launch. Le gate de préparation est documenté dans `docs/FREE_VALIDATION_PRIVACY_GATE.md`.
 
 Pour chaque fournisseur, confirmer avant publication :
 
@@ -115,6 +124,8 @@ Avant toute activation A44 :
 ## 9. Statut commercial actuel
 
 L’orientation en ligne est actuellement **gratuite**.
+
+Le propriétaire souhaite que le premier lancement réel soit un **Free Validation Launch** : orientation gratuite, e-mail facultatif, mesure d’un souhait explicite de continuer, puis éventuellement une cohorte pilote gratuite. Cette stratégie ne constitue pas à elle seule une autorisation juridique de collecter des données réelles : le gate #717 doit être clarifié avant activation.
 
 Des services payants d’accompagnement et de préparation de dossier sont envisagés mais ne sont **pas encore activés, tarifés ni proposés à la vente**.
 
