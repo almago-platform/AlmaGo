@@ -265,12 +265,12 @@ export function OrientationOnePagePrintReport({
               <td>
                 <strong>
                   {programmeSet
-                    ? programmeSet.selectionReason === "preferred_city"
-                      ? copy.programmesTitlePreferred(programmeSet.city)
-                      : copy.programmesTitleRecommended(programmeSet.city)
-                    : programmeSet
-                      ? copy.noProgrammes(programmeSet.city)
-                      : copy.noProgrammes(cities)}
+                    ? options.length
+                      ? programmeSet.selectionReason === "preferred_city"
+                        ? copy.programmesTitlePreferred(programmeSet.city)
+                        : copy.programmesTitleRecommended(programmeSet.city)
+                      : copy.noProgrammes(programmeSet.city)
+                    : copy.noProgrammes(cities)}
                 </strong>
                 {options.length ? (
                   <div className="orientation-programme-list">
