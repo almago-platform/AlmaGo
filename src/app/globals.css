@@ -407,8 +407,8 @@ html[dir="rtl"] .student-shell [dir="ltr"] {
   .orientation-print-page .orientation-one-page-print {
     display: block !important;
     width: 100%;
-    font-size: 10px;
-    line-height: 1.3;
+    font-size: 11px;
+    line-height: 1.34;
   }
 
   .orientation-one-page-header {
@@ -416,7 +416,7 @@ html[dir="rtl"] .student-shell [dir="ltr"] {
     align-items: center;
     justify-content: space-between;
     gap: 18px;
-    padding-bottom: 8px;
+    padding-bottom: 10px;
     border-bottom: 2px solid var(--brand);
   }
 
@@ -424,12 +424,12 @@ html[dir="rtl"] .student-shell [dir="ltr"] {
     display: flex;
     gap: 10px;
     align-items: baseline;
-    margin-top: 8px;
-    padding: 7px 9px;
+    margin-top: 10px;
+    padding: 9px 11px;
     border: 1px solid #d9d3c7;
     border-radius: 6px;
     background: #f7f4ec;
-    font-size: 10px;
+    font-size: 10.5px;
   }
 
   .orientation-one-page-profile b {
@@ -438,8 +438,8 @@ html[dir="rtl"] .student-shell [dir="ltr"] {
   }
 
   .orientation-one-page-conclusion {
-    margin-top: 8px;
-    padding: 8px 9px;
+    margin-top: 10px;
+    padding: 10px 11px;
     border-left: 3px solid var(--brand);
     background: #fffdf8;
   }
@@ -452,7 +452,7 @@ html[dir="rtl"] .student-shell [dir="ltr"] {
   .orientation-one-page-label {
     margin: 0;
     color: var(--accent-strong);
-    font-size: 9px;
+    font-size: 9.5px;
     font-weight: 800;
     letter-spacing: 0;
     text-transform: uppercase;
@@ -464,17 +464,17 @@ html[dir="rtl"] .student-shell [dir="ltr"] {
 
   .orientation-one-page-table {
     width: 100%;
-    margin-top: 5px;
+    margin-top: 6px;
     border-collapse: collapse;
     table-layout: fixed;
-    font-size: 9.5px;
-    line-height: 1.28;
+    font-size: 10.25px;
+    line-height: 1.32;
   }
 
   .orientation-one-page-table th,
   .orientation-one-page-table td {
     border: 1px solid #d9d3c7;
-    padding: 5px 6px;
+    padding: 7px 8px;
     vertical-align: top;
   }
 
@@ -487,7 +487,7 @@ html[dir="rtl"] .student-shell [dir="ltr"] {
   .orientation-one-page-table th {
     background: #f1ece4;
     text-align: start;
-    font-size: 9px;
+    font-size: 9.5px;
   }
 
   .orientation-one-page-table td span {
@@ -500,9 +500,37 @@ html[dir="rtl"] .student-shell [dir="ltr"] {
     padding-inline-start: 14px;
   }
 
+  .orientation-programme-list {
+    display: grid;
+    gap: 5px;
+    margin-top: 5px;
+  }
+
+  .orientation-programme-item {
+    padding-top: 4px;
+    border-top: 1px solid #e7e2d9;
+  }
+
+  .orientation-programme-item:first-child {
+    padding-top: 0;
+    border-top: 0;
+  }
+
+  .orientation-programme-item strong,
+  .orientation-programme-item span {
+    display: block;
+    margin: 0;
+  }
+
+  .orientation-programme-item span:last-child {
+    margin-top: 1px;
+    color: #475569;
+    font-size: 9.5px;
+  }
+
   .orientation-one-page-next {
-    margin-top: 8px;
-    padding: 8px 9px;
+    margin-top: 10px;
+    padding: 10px 11px;
     border: 1.5px solid var(--brand);
     border-radius: 6px;
   }
@@ -515,8 +543,8 @@ html[dir="rtl"] .student-shell [dir="ltr"] {
     padding-top: 6px;
     border-top: 1px solid #d9d3c7;
     color: #475569;
-    font-size: 8px;
-    line-height: 1.25;
+    font-size: 8.5px;
+    line-height: 1.3;
   }
 
   .orientation-one-page-footer > * {
