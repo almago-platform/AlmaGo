@@ -19,6 +19,7 @@ type ProgrammeCatalogRow = {
   application_url: string | null;
   programme_source_url: string | null;
   programme_verified_at: string | null;
+  master_academic_prerequisites: Record<string, unknown> | null;
   university_id: string;
   university_name: string;
   university_city: string | null;
@@ -29,6 +30,21 @@ type ProgrammeCatalogRow = {
   university_source_url: string | null;
   university_verified_at: string | null;
 };
+
+function parseMasterAcademicPrerequisites(value: Record<string, unknown> | null) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return [];
+
+  return Object.entries(value)
+    .filter(([subject, ects]) =>
+      /^[a-z0-9_]{1,80}$/.test(subject)
+      && typeof ects === "number"
+      && Number.isFinite(ects)
+      && ects > 0
+      && ects <= 300
+    )
+    .map(([subject, ects]) => ({ subject, ects: Number(ects) }))
+    .sort((a, b) => a.subject.localeCompare(b.subject));
+}
 
 function mapProgramme(row: ProgrammeCatalogRow): OrientationProgrammeRecord {
   return {
@@ -49,6 +65,9 @@ function mapProgramme(row: ProgrammeCatalogRow): OrientationProgrammeRecord {
     applicationUrl: row.application_url,
     programmeSourceUrl: row.programme_source_url,
     programmeVerifiedAt: row.programme_verified_at,
+    masterAcademicPrerequisites: parseMasterAcademicPrerequisites(
+      row.master_academic_prerequisites,
+    ),
     university: {
       id: row.university_id,
       name: row.university_name,
@@ -84,6 +103,7 @@ export async function loadVerifiedProgrammeCatalogue() {
       "application_url",
       "programme_source_url",
       "programme_verified_at",
+      "master_academic_prerequisites",
       "university_id",
       "university_name",
       "university_city",
