@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import test from "node:test";
 
 const page = readFileSync("src/app/orientation/report/[token]/page.tsx", "utf8");
+const form = readFileSync("src/components/orientation/PublicOrientationForm.tsx", "utf8");
 const css = readFileSync("src/app/globals.css", "utf8");
 
 test("P2.3 printed orientation report keeps canonical brand identity", () => {
