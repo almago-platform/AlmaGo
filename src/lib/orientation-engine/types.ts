@@ -1,6 +1,6 @@
 import type { PublicOrientationAnswers } from "@/lib/orientation/public";
 
-export const ORIENTATION_ENGINE_VERSION = "orientation-v4-bachelor-letter-scout-1";
+export const ORIENTATION_ENGINE_VERSION = "orientation-v4-bachelor-first-contact-simple-1";
 
 export type OrientationRuleStatus =
   | "eligible"
