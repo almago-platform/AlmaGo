@@ -417,7 +417,7 @@ export function PersonalizedOrientationEngineCard({
                         <h4 className="mt-1 text-lg font-bold">
                           {recommendation.programme.name}
                         </h4>
-                        <p className="mt-1 text-sm text-[var(--muted)]">
+                        <p className="mt-1 text-sm text-[var(--foreground)]">
                           {recommendation.programme.university.name}
                           {recommendation.programme.university.city
                             ? ` · ${recommendation.programme.university.city}`
@@ -457,7 +457,7 @@ export function PersonalizedOrientationEngineCard({
                     ) : null}
 
                     {sources.length ? (
-                      <div className="mt-4 text-xs leading-5 text-[var(--muted)]">
+                      <div className="mt-4 text-xs leading-5 text-[var(--foreground)]">
                         <span className="font-bold">{t.sources}: </span>
                         {sources.map((source, index) => (
                           <span key={source.kind + source.url}>
