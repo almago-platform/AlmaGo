@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import type { Locale } from "@/lib/i18n";
 import type { PublicOrientationAnswers } from "@/lib/orientation/public";
 import { orientationRouteCopy } from "@/content/orientation-route-copy";
@@ -82,7 +83,7 @@ function ResponsibilityLine({
 }: {
   owner: Owner;
   locale: Locale;
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   return (
     <div className="mt-2 flex flex-wrap items-start gap-2 text-sm leading-6 text-[var(--foreground)]">
