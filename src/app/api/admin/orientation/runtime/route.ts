@@ -23,14 +23,17 @@ export async function GET() {
     return NextResponse.json({ error: "Accès non autorisé." }, { status: 403 });
   }
 
+  const supabaseUrlPresent = Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL);
+  const supabaseSecretKeyPresent = Boolean(process.env.SUPABASE_SECRET_KEY);
   const openAiKeyPresent = Boolean(process.env.OPENAI_API_KEY);
   const geminiKeyPresent = Boolean(process.env.GEMINI_API_KEY);
 
   return NextResponse.json({
-    supabasePrivilegedConfigured: Boolean(
-      process.env.NEXT_PUBLIC_SUPABASE_URL
-      && process.env.SUPABASE_SECRET_KEY,
-    ),
+    supabase: {
+      urlPresent: supabaseUrlPresent,
+      secretKeyPresent: supabaseSecretKeyPresent,
+      configured: supabaseUrlPresent && supabaseSecretKeyPresent,
+    },
     discovery: providerState(
       process.env.ALMAGO_ORIENTATION_DISCOVERY_PROVIDER,
       "openai",
