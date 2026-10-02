@@ -6,11 +6,11 @@ import type {
 } from "@/lib/orientation-engine/verification/types";
 import type {
   OrientationSelectionCandidateEvaluation,
-  type OrientationSelectionExclusionCode,
-  type OrientationSelectionReasonCode,
-  type OrientationSelectionResult,
-  type OrientationSelectionScoreBreakdown,
-  type OrientationSelectionWarningCode,
+  OrientationSelectionExclusionCode,
+  OrientationSelectionReasonCode,
+  OrientationSelectionResult,
+  OrientationSelectionScoreBreakdown,
+  OrientationSelectionWarningCode,
 } from "@/lib/orientation-engine/selection/types";
 
 export const ORIENTATION_SELECTION_MIN_TARGET = 3 as const;
