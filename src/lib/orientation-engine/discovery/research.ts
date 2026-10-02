@@ -44,7 +44,10 @@ function groundedSourceUrls(values: unknown, sourceUrls: readonly string[]) {
     values
       .filter((value): value is string => typeof value === "string")
       .map(canonicalUrl)
-      .filter((url): url is string => Boolean(url) && allowed.has(url)),
+      .filter((url): url is string => {
+        if (!url) return false;
+        return allowed.has(url);
+      }),
   )].slice(0, DISCOVERY_MAX_SOURCE_URLS_PER_CANDIDATE);
 }
 
