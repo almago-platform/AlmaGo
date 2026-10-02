@@ -42,10 +42,12 @@ function item(
 function question(
   missing: OrientationMissingInformationItem,
   choices: string[],
+  details?: Pick<OrientationRefinementQuestion, "subjectKey" | "requiredEcts">,
 ): OrientationRefinementQuestion {
   return {
     ...missing,
     choices,
+    ...details,
   };
 }
 
@@ -66,6 +68,43 @@ export function buildOrientationRefinementState(
       "previous_diploma",
       "master_prior_degree_needed",
       plausibleCandidates,
+    ));
+  }
+
+  const masterPrerequisiteGroups = new Map<string, {
+    requiredEcts: number;
+    evaluations: OrientationProgrammeEvaluation[];
+  }>();
+
+  if (profile.targetDegree === "Master" && profile.lastDiploma) {
+    for (const evaluation of plausibleCandidates) {
+      for (const prerequisite of evaluation.programme.masterAcademicPrerequisites) {
+        if (profile.masterSubjectCredits[prerequisite.subject] !== undefined) continue;
+        const current = masterPrerequisiteGroups.get(prerequisite.subject);
+        if (current) {
+          current.requiredEcts = Math.max(current.requiredEcts, prerequisite.ects);
+          current.evaluations.push(evaluation);
+        } else {
+          masterPrerequisiteGroups.set(prerequisite.subject, {
+            requiredEcts: prerequisite.ects,
+            evaluations: [evaluation],
+          });
+        }
+      }
+    }
+  }
+
+  const nextMasterPrerequisite = [...masterPrerequisiteGroups.entries()]
+    .sort((a, b) => {
+      const impact = b[1].evaluations.length - a[1].evaluations.length;
+      return impact !== 0 ? impact : a[0].localeCompare(b[0]);
+    })[0] || null;
+
+  if (nextMasterPrerequisite) {
+    missing.push(item(
+      "master_subject_credits",
+      "master_subject_credits_needed",
+      nextMasterPrerequisite[1].evaluations,
     ));
   }
 
@@ -134,16 +173,25 @@ export function buildOrientationRefinementState(
 
   const choices = next.field === "previous_diploma"
     ? ["Licence", "Master", "Bac + 2", "Bac + 1", "Baccalauréat", "other"]
-    : next.field === "engineering_specialty"
-      ? [...engineeringChoices]
-      : next.field === "target_intake"
-        ? ["winter", "summer"]
-        : next.field === "study_language"
-          ? ["Allemand", "Anglais", "Allemand et anglais"]
-          : cityChoices;
+    : next.field === "master_subject_credits"
+      ? []
+      : next.field === "engineering_specialty"
+        ? [...engineeringChoices]
+        : next.field === "target_intake"
+          ? ["winter", "summer"]
+          : next.field === "study_language"
+            ? ["Allemand", "Anglais", "Allemand et anglais"]
+            : cityChoices;
+
+  const masterDetails = next.field === "master_subject_credits" && nextMasterPrerequisite
+    ? {
+        subjectKey: nextMasterPrerequisite[0],
+        requiredEcts: nextMasterPrerequisite[1].requiredEcts,
+      }
+    : undefined;
 
   return {
     missing,
-    nextQuestion: question(next, choices),
+    nextQuestion: question(next, choices, masterDetails),
   };
 }
