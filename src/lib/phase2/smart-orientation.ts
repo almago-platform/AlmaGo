@@ -18,6 +18,7 @@ export type SmartOrientationPriorityState =
 export const smartOrientationPriorityReasonCodes = [
   "bac_obtained",
   "bac_preparing",
+  "no_bac",
   "average_above_12",
   "average_12_or_below",
   "average_missing",
@@ -93,6 +94,8 @@ export function evaluateSmartOrientationPriority(
     pushUnique(reasonCodes, "bac_obtained");
   } else if (answers.bacStatus === "preparing") {
     pushUnique(reasonCodes, "bac_preparing");
+  } else if (answers.bacStatus === "no_bac") {
+    pushUnique(reasonCodes, "no_bac");
   }
 
   const targetDegreeDefined = isDefined(answers.targetDegree);
@@ -106,16 +109,21 @@ export function evaluateSmartOrientationPriority(
   }
 
   const average = averageValue(answers.generalAverage);
-  if (average === null) {
+  if (answers.bacStatus !== "no_bac" && average === null) {
     pushUnique(reasonCodes, "average_missing");
-  } else if (average > SMART_ORIENTATION_HIGH_PRIORITY_AVERAGE_THRESHOLD) {
+  } else if (average !== null && average > SMART_ORIENTATION_HIGH_PRIORITY_AVERAGE_THRESHOLD) {
     pushUnique(reasonCodes, "average_above_12");
   } else {
     pushUnique(reasonCodes, "average_12_or_below");
   }
 
+  const academicStartingPointComplete =
+    answers.bacStatus === "obtained"
+    || answers.bacStatus === "preparing"
+    || (answers.bacStatus === "no_bac" && isDefined(answers.lastDiploma));
+
   const projectInformationComplete =
-    (answers.bacStatus === "obtained" || answers.bacStatus === "preparing")
+    academicStartingPointComplete
     && targetDegreeDefined
     && targetFieldDefined;
 
@@ -127,7 +135,9 @@ export function evaluateSmartOrientationPriority(
     pushUnique(reasonCodes, "language_preparation_needed");
   }
 
-  const requiresHumanReview = sensitiveFields.has(answers.targetField);
+  const requiresHumanReview =
+    sensitiveFields.has(answers.targetField)
+    || answers.bacStatus === "no_bac";
   if (requiresHumanReview) {
     pushUnique(reasonCodes, "sensitive_field_human_review");
   }

@@ -222,6 +222,8 @@ function recommendedEngineeringCity(specialty: string) {
 export function getVerifiedProgrammeSet(
   answers: PublicOrientationAnswers,
 ): VerifiedProgrammeSet | null {
+  if (answers.bacStatus === "no_bac") return null;
+
   const wantsBachelor = answers.targetDegree === "Bachelor";
   const wantsEngineering = answers.targetField === "Ingénierie";
   if (!wantsBachelor || !wantsEngineering) return null;
@@ -270,6 +272,17 @@ function isHumanitiesTarget(targetField: string) {
 }
 
 export function getAcademicAccessConclusion(answers: PublicOrientationAnswers) {
+  if (answers.bacStatus === "no_bac") {
+    return {
+      status: "needs_human_verification" as const,
+      short: "Votre accès académique dépend de votre dernier niveau d’études",
+      detail:
+        "Sans Bac ni diplôme secondaire équivalent déclaré, Campus Allemagne ne suppose pas un accès universitaire automatique. Nous vérifions votre dernier diplôme ou vos études actuelles et la route officielle possible avant de confirmer une candidature.",
+      sourceUrl: DAAD_TUNISIA_ENTRY_SOURCE,
+      verifiedAt: "2026-10-02",
+    };
+  }
+
   if (answers.targetDegree !== "Bachelor") {
     return {
       status: "needs_human_verification" as const,

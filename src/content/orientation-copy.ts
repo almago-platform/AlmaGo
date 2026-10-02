@@ -10,7 +10,7 @@ export type OrientationCopy = {
     languages: { title: string; text: string };
     resources: { title: string; text: string };
   };
-  bacStatus: { label: string; obtained: string; preparing: string };
+  bacStatus: { label: string; obtained: string; preparing: string; no_bac: string };
   fields: {
     yearHelp: string;
     averageHelp: string;
@@ -67,12 +67,12 @@ const fr: OrientationCopy = {
   },
   progress: { label: "Progression de l’orientation", step: "Étape" },
   steps: {
-    situation: { title: "Votre situation scolaire", text: "Commençons par votre Bac et votre moyenne." },
+    situation: { title: "Votre situation scolaire", text: "Commençons par votre dernier niveau d’études. L’orientation fonctionne aussi si vous n’avez pas de Bac." },
     project: { title: "Votre projet d’études", text: "Dites-nous ce que vous souhaitez étudier en Allemagne." },
     languages: { title: "Vos langues", text: "Indiquez vos niveaux actuels, même si vous débutez." },
     resources: { title: "Budget et villes", text: "Ces informations nous aideront ensuite à mieux organiser les pistes." },
   },
-  bacStatus: { label: "Votre Bac", obtained: "Je l’ai déjà obtenu", preparing: "Je le prépare encore" },
+  bacStatus: { label: "Votre situation scolaire", obtained: "J’ai un Bac ou diplôme secondaire équivalent", preparing: "Je prépare encore mon Bac", no_bac: "Je n’ai pas de Bac ni de diplôme secondaire équivalent" },
   fields: {
     yearHelp: "Année obtenue ou prévue.",
     averageHelp: "Facultatif. Moyenne sur 20, réelle ou estimée.",
@@ -116,12 +116,12 @@ const ar: OrientationCopy = {
   },
   progress: { label: "تقدم التوجيه", step: "الخطوة" },
   steps: {
-    situation: { title: "وضعك الدراسي", text: "نبدأ بالبكالوريا والمعدل." },
+    situation: { title: "وضعك الدراسي", text: "نبدأ بآخر مستوى دراسي لديك. يعمل التوجيه أيضًا إذا لم تكن لديك بكالوريا." },
     project: { title: "مشروعك الدراسي", text: "اختر ما تريد دراسته في ألمانيا." },
     languages: { title: "اللغات", text: "اختر مستواك الحالي كما هو، حتى لو كنت في البداية." },
     resources: { title: "الميزانية والمدن", text: "ستساعدنا هذه المعلومات لاحقًا على ترتيب الخيارات المناسبة." },
   },
-  bacStatus: { label: "البكالوريا", obtained: "حصلت عليها", preparing: "ما زلت أستعد لها" },
+  bacStatus: { label: "وضعك الدراسي", obtained: "حصلت عليها", preparing: "ما زلت أستعد لها", no_bac: "ليس لدي بكالوريا ولا شهادة ثانوية معادلة" },
   fields: {
     yearHelp: "سنة الحصول عليها أو السنة المتوقعة.",
     averageHelp: "اختياري. المعدل من 20، الفعلي أو المتوقع.",
@@ -165,12 +165,12 @@ const en: OrientationCopy = {
   },
   progress: { label: "Orientation progress", step: "Step" },
   steps: {
-    situation: { title: "Your school situation", text: "Start with your Baccalaureate and overall average." },
+    situation: { title: "Your education situation", text: "Start with your latest education level. The orientation also works if you do not have a Baccalaureate." },
     project: { title: "Your study plan", text: "Tell us what you would like to study in Germany." },
     languages: { title: "Your languages", text: "Enter your current levels, even if you are just starting." },
     resources: { title: "Budget and cities", text: "These details will later help us organise relevant paths." },
   },
-  bacStatus: { label: "Your Baccalaureate", obtained: "I already have it", preparing: "I am still preparing it" },
+  bacStatus: { label: "Your education situation", obtained: "I have a Baccalaureate or equivalent school-leaving qualification", preparing: "I am still preparing my Baccalaureate", no_bac: "I do not have a Baccalaureate or equivalent school-leaving qualification" },
   fields: {
     yearHelp: "Year completed or expected.",
     averageHelp: "Optional. Actual or estimated average out of 20.",
@@ -214,12 +214,12 @@ const de: OrientationCopy = {
   },
   progress: { label: "Fortschritt der Orientierung", step: "Schritt" },
   steps: {
-    situation: { title: "Deine schulische Situation", text: "Wir beginnen mit dem Baccalauréat und deiner Durchschnittsnote." },
+    situation: { title: "Deine schulische Situation", text: "Wir beginnen mit deinem letzten Bildungsstand. Die Orientierung funktioniert auch ohne Baccalauréat." },
     project: { title: "Dein Studienplan", text: "Sag uns, was du in Deutschland studieren möchtest." },
     languages: { title: "Deine Sprachen", text: "Gib deine aktuellen Niveaus an, auch wenn du gerade erst anfängst." },
     resources: { title: "Budget und Städte", text: "Diese Angaben helfen später, passende Wege besser einzuordnen." },
   },
-  bacStatus: { label: "Dein Baccalauréat", obtained: "Ich habe es bereits", preparing: "Ich bereite mich noch darauf vor" },
+  bacStatus: { label: "Deine schulische Situation", obtained: "Ich habe ein Baccalauréat oder einen gleichwertigen Schulabschluss", preparing: "Ich bereite mein Baccalauréat noch vor", no_bac: "Ich habe kein Baccalauréat und keinen gleichwertigen Schulabschluss" },
   fields: {
     yearHelp: "Abschlussjahr oder erwartetes Jahr.",
     averageHelp: "Optional. Tatsächlicher oder geschätzter Durchschnitt von 20.",

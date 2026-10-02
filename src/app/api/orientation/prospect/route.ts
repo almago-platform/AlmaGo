@@ -59,11 +59,20 @@ function validAnswers(value: unknown) {
   const year = Number(answers.bacYear);
   const average = answers.generalAverage === "" ? null : Number(answers.generalAverage);
 
-  if (answers.bacStatus !== "obtained" && answers.bacStatus !== "preparing") return null;
-  if (!Number.isInteger(year) || year < 2000 || year > 2035) return null;
-  if (!allowed.bacTrack.has(answers.bacTrack)) return null;
+  if (
+    answers.bacStatus !== "obtained"
+    && answers.bacStatus !== "preparing"
+    && answers.bacStatus !== "no_bac"
+  ) return null;
+  if (answers.bacStatus !== "no_bac") {
+    if (!Number.isInteger(year) || year < 2000 || year > 2035) return null;
+    if (!allowed.bacTrack.has(answers.bacTrack)) return null;
+  } else if (answers.bacYear || answers.bacTrack || answers.generalAverage) {
+    return null;
+  }
   if (average !== null && (!Number.isFinite(average) || average < 0 || average > 20)) return null;
   if (answers.lastDiploma && !allowed.diploma.has(answers.lastDiploma)) return null;
+  if (answers.bacStatus === "no_bac" && !answers.lastDiploma) return null;
   if (!allowed.degree.has(answers.targetDegree)) return null;
   if (!allowed.field.has(answers.targetField)) return null;
   if (

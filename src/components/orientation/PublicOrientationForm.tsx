@@ -151,16 +151,20 @@ export function PublicOrientationForm({
 
   function validateCurrentStep() {
     if (step === 1) {
-      if (!answers.bacStatus || !answers.bacYear || !answers.bacTrack) return copy.validation.required;
-      const year = Number(answers.bacYear);
-      if (!Number.isInteger(year) || year < 2000 || year > 2035) return copy.validation.year;
-      if (answers.generalAverage) {
-        const average = Number(answers.generalAverage);
-        if (!Number.isFinite(average) || average < 0 || average > 20) return copy.validation.average;
+      if (!answers.bacStatus) return copy.validation.required;
+      if (answers.bacStatus !== "no_bac") {
+        if (!answers.bacYear || !answers.bacTrack) return copy.validation.required;
+        const year = Number(answers.bacYear);
+        if (!Number.isInteger(year) || year < 2000 || year > 2035) return copy.validation.year;
+        if (answers.generalAverage) {
+          const average = Number(answers.generalAverage);
+          if (!Number.isFinite(average) || average < 0 || average > 20) return copy.validation.average;
+        }
       }
     }
 
     if (step === 2 && (!answers.targetDegree || !answers.targetField)) return copy.validation.required;
+    if (step === 2 && answers.bacStatus === "no_bac" && !answers.lastDiploma) return copy.validation.required;
     if (
       step === 2
       && answers.targetField === "Ingénierie"
@@ -318,14 +322,23 @@ export function PublicOrientationForm({
                     <fieldset>
                       <legend className="mb-2 text-sm font-semibold">{copy.bacStatus.label}</legend>
                       <div className="grid gap-3 sm:grid-cols-2">
-                        {(["obtained", "preparing"] as const).map((status) => (
+                        {(["obtained", "preparing", "no_bac"] as const).map((status) => (
                           <label key={status} className="flex cursor-pointer items-start gap-3 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4">
                             <input
                               type="radio"
                               name="bacStatus"
                               value={status}
                               checked={answers.bacStatus === status}
-                              onChange={() => setField("bacStatus", status)}
+                              onChange={() => {
+                                setAnswers((current) => ({
+                                  ...current,
+                                  bacStatus: status,
+                                  ...(status === "no_bac"
+                                    ? { bacYear: "", bacTrack: "", generalAverage: "", averageType: "" }
+                                    : {}),
+                                }));
+                                setError("");
+                              }}
                               className="mt-1"
                             />
                             <span className="font-medium">{copy.bacStatus[status]}</span>
@@ -334,50 +347,66 @@ export function PublicOrientationForm({
                       </div>
                     </fieldset>
 
-                    <div className="grid gap-4 sm:grid-cols-2">
-                      <label className="text-sm font-semibold">
-                        {profileCopy.form.fields.bac_year}
-                        <input
-                          className="field"
-                          type="number"
-                          inputMode="numeric"
-                          min="2000"
-                          max="2035"
-                          value={answers.bacYear}
-                          onChange={(event) => setField("bacYear", event.target.value)}
-                        />
-                        <span className="mt-1 block text-xs font-normal text-[var(--muted)]">{copy.fields.yearHelp}</span>
-                      </label>
-                      <label className="text-sm font-semibold">
-                        {profileCopy.form.fields.bac_track}
-                        <select className="field" value={answers.bacTrack} onChange={(event) => setField("bacTrack", event.target.value)}>
-                          <option value="">{copy.controls.choose}</option>
-                          {bacTracks.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
-                        </select>
-                      </label>
-                    </div>
+                    {answers.bacStatus !== "no_bac" ? (
+                      <>
+                        <div className="grid gap-4 sm:grid-cols-2">
+                          <label className="text-sm font-semibold">
+                            {profileCopy.form.fields.bac_year}
+                            <input
+                              className="field"
+                              type="number"
+                              inputMode="numeric"
+                              min="2000"
+                              max="2035"
+                              value={answers.bacYear}
+                              onChange={(event) => setField("bacYear", event.target.value)}
+                            />
+                            <span className="mt-1 block text-xs font-normal text-[var(--muted)]">{copy.fields.yearHelp}</span>
+                          </label>
+                          <label className="text-sm font-semibold">
+                            {profileCopy.form.fields.bac_track}
+                            <select className="field" value={answers.bacTrack} onChange={(event) => setField("bacTrack", event.target.value)}>
+                              <option value="">{copy.controls.choose}</option>
+                              {bacTracks.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+                            </select>
+                          </label>
+                        </div>
 
-                    <label className="block text-sm font-semibold">
-                      {profileCopy.form.fields.general_average} <span className="font-normal text-[var(--muted)]">({copy.controls.optional})</span>
-                      <input
-                        className="field"
-                        type="number"
-                        inputMode="decimal"
-                        min="0"
-                        max="20"
-                        step="0.01"
-                        value={answers.generalAverage}
-                        onChange={(event) => setField("generalAverage", event.target.value)}
-                      />
-                      <span className="mt-1 block text-xs font-normal text-[var(--muted)]">{copy.fields.averageHelp}</span>
-                    </label>
+                        <label className="block text-sm font-semibold">
+                          {profileCopy.form.fields.general_average} <span className="font-normal text-[var(--muted)]">({copy.controls.optional})</span>
+                          <input
+                            className="field"
+                            type="number"
+                            inputMode="decimal"
+                            min="0"
+                            max="20"
+                            step="0.01"
+                            value={answers.generalAverage}
+                            onChange={(event) => setField("generalAverage", event.target.value)}
+                          />
+                          <span className="mt-1 block text-xs font-normal text-[var(--muted)]">{copy.fields.averageHelp}</span>
+                        </label>
+                      </>
+                    ) : (
+                      <div className="rounded-[var(--radius-control)] border border-[var(--brand-border)] bg-[var(--brand-soft)] px-4 py-3 text-sm leading-6">
+                        {locale === "fr"
+                          ? "Pas de problème : l’étape suivante nous permettra d’indiquer votre dernier diplôme ou vos études actuelles. Campus Allemagne vérifiera ensuite la voie académique possible sans inventer d’accès automatique."
+                          : locale === "ar"
+                            ? "لا مشكلة: في الخطوة التالية يمكنك تحديد آخر شهادة أو دراستك الحالية. بعد ذلك يتحقق Campus Allemagne من المسار الأكاديمي الممكن من دون افتراض دخول تلقائي."
+                            : locale === "de"
+                              ? "Kein Problem: Im nächsten Schritt kannst du deinen letzten Abschluss oder dein aktuelles Studium angeben. Campus Allemagne prüft danach den möglichen akademischen Weg, ohne einen automatischen Zugang zu behaupten."
+                              : "No problem: the next step lets you add your latest qualification or current studies. Campus Allemagne will then verify the possible academic route without assuming automatic access."}
+                      </div>
+                    )}
                   </div>
                 ) : null}
 
                 {step === 2 ? (
                   <div className="space-y-5">
                     <label className="block text-sm font-semibold">
-                      {profileCopy.form.fields.last_diploma} <span className="font-normal text-[var(--muted)]">({copy.controls.optional})</span>
+                      {profileCopy.form.fields.last_diploma} {answers.bacStatus !== "no_bac" ? (
+                        <span className="font-normal text-[var(--muted)]">({copy.controls.optional})</span>
+                      ) : null}
                       <select className="field" value={answers.lastDiploma} onChange={(event) => setField("lastDiploma", event.target.value)}>
                         <option value="">{copy.controls.choose}</option>
                         {diplomas.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}

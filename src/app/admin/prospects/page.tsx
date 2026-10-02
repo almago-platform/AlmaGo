@@ -101,6 +101,7 @@ const priorityRank: Record<SmartOrientationPriorityState, number> = {
 const reasonLabels: Record<string, string> = {
   bac_obtained: "Bac obtenu",
   bac_preparing: "Bac en préparation",
+  no_bac: "Sans Bac",
   average_above_12: "Moyenne > 12/20",
   average_12_or_below: "Moyenne ≤ 12/20",
   average_missing: "Moyenne à compléter",
@@ -381,6 +382,7 @@ export default async function AdminProspectsPage({
             <option value="">Tous</option>
             <option value="obtained">Obtenu</option>
             <option value="preparing">En préparation</option>
+            <option value="no_bac">Sans Bac</option>
           </select>
         </label>
 
@@ -498,7 +500,9 @@ export default async function AdminProspectsPage({
                         ? "Obtenu"
                         : answers.bacStatus === "preparing"
                           ? "En préparation"
-                          : "À compléter"}
+                          : answers.bacStatus === "no_bac"
+                            ? "Sans Bac"
+                            : "À compléter"}
                       {answers.bacYear ? ` · ${answers.bacYear}` : ""}
                     </dd>
                   </div>

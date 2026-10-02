@@ -10,6 +10,7 @@ import {
 } from "@/content/student-profile-copy";
 import {
   degreeOptions,
+  diplomaOptions,
   studyFieldOptions,
 } from "@/lib/student/profile-options";
 
@@ -109,6 +110,7 @@ export function buildUniversalOrientationGuidance(
   const priority = languagePriority(answers);
   const degree = localizedValue(answers.targetDegree, locale, degreeOptions);
   const field = localizedValue(answers.targetField, locale, studyFieldOptions);
+  const lastDiploma = localizedValue(answers.lastDiploma, locale, diplomaOptions);
   const cities = joinCities(answers, locale);
   const bac = answers.bacTrack || {
     fr: "votre diplôme",
@@ -216,6 +218,23 @@ export function buildUniversalOrientationGuidance(
   })();
 
   const academic = (() => {
+    if (answers.bacStatus === "no_bac") {
+      return {
+        title: {
+          fr: "Votre point de départ académique doit être vérifié",
+          ar: "يجب التحقق من نقطة انطلاقك الأكاديمية",
+          en: "Your academic starting point must be checked",
+          de: "Dein akademischer Ausgangspunkt muss geprüft werden",
+        }[locale],
+        body: {
+          fr: `Vous avez indiqué ne pas avoir de Bac ni de diplôme secondaire équivalent. Votre dernier niveau déclaré est : ${lastDiploma}. Cela n’est pas un refus : Campus Allemagne vérifie d’abord quelle voie officielle est réellement possible avant de vous proposer une candidature universitaire.`,
+          ar: `ذكرت أنك لا تملك بكالوريا ولا شهادة ثانوية معادلة. آخر مستوى دراسي صرحت به هو: ${lastDiploma}. هذا ليس رفضًا؛ يتحقق Campus Allemagne أولًا من المسار الرسمي الممكن فعلًا قبل اقتراح تقديم جامعي.`,
+          en: `You indicated that you do not have a Baccalaureate or equivalent school-leaving qualification. Your latest declared education level is: ${lastDiploma}. This is not a rejection: Campus Allemagne first verifies which official route is genuinely possible before proposing a university application.`,
+          de: `Du hast angegeben, kein Baccalauréat und keinen gleichwertigen Schulabschluss zu haben. Dein zuletzt angegebener Bildungsstand ist: ${lastDiploma}. Das ist keine Ablehnung: Campus Allemagne prüft zuerst, welcher offizielle Weg tatsächlich möglich ist, bevor eine Hochschulbewerbung vorgeschlagen wird.`,
+        }[locale],
+      };
+    }
+
     if (access.status === "direct_subject_restricted") {
       return {
         title: {
