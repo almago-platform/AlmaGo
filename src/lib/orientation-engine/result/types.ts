@@ -35,7 +35,7 @@ export type OrientationPublicPersonalizedResult = {
   content: OrientationWriterContent;
   selected: OrientationPublicPersonalizedOption[];
   humanReview: {
-    required: true;
-    state: "counselor_validation_required";
+    mode: "post_result_audit";
+    blocksResult: false;
   };
 };

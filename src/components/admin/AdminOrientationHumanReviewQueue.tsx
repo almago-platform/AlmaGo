@@ -22,7 +22,7 @@ type ReviewRow = {
 };
 
 const reviewLabels: Record<string, string> = {
-  pending: "À valider",
+  pending: "À auditer",
   approved: "Validée",
   changes_requested: "Corrections demandées",
   rejected: "Rejetée",
@@ -161,11 +161,11 @@ export function AdminOrientationHumanReviewQueue({
             id="orientation-human-review-title"
             className="mt-1 text-2xl font-semibold tracking-[-0.03em] text-slate-950"
           >
-            Revues IA à valider humainement
+            Audits Orientation V4 a posteriori
           </h2>
           <p className="mt-1 max-w-4xl text-sm leading-6 text-slate-600">
-            A découvre, B vérifie, C sélectionne et D rédige. Ici, le conseiller contrôle le tout avant toute stratégie assistée.
-            Valider cette revue ne publie jamais automatiquement une recommandation étudiant.
+            Le candidat a déjà reçu son résultat automatique avant cette étape. Ici, le conseiller audite ensuite A, B, C et D pour le contrôle qualité.
+            Cet audit ne bloque ni ne retire rétroactivement le résultat déjà affiché et ne publie jamais automatiquement une recommandation étudiant.
           </p>
         </div>
         <Badge variant={reviews.some((review) => review.review_status === "pending") ? "warning" : "neutral"}>
@@ -373,7 +373,7 @@ export function AdminOrientationHumanReviewQueue({
                 <section className="mt-5 rounded-[var(--radius-control)] border border-slate-300 bg-slate-50 p-4">
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div>
-                      <p className="text-sm font-bold text-slate-950">Décision conseiller</p>
+                      <p className="text-sm font-bold text-slate-950">Conclusion d’audit conseiller</p>
                       <p className="mt-1 text-xs leading-5 text-slate-600">
                         {selected.length} piste{selected.length > 1 ? "s" : ""} retenue{selected.length > 1 ? "s" : ""} parmi les programmes passés par B. Maximum 4.
                       </p>
@@ -404,7 +404,7 @@ export function AdminOrientationHumanReviewQueue({
                       disabled={busy === review.id || selected.length < 1}
                       onClick={() => decide(review, "approved")}
                     >
-                      Valider la sélection
+                      Confirmer après audit
                     </Button>
                     <Button
                       type="button"

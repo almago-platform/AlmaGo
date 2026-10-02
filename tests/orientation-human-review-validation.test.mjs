@@ -98,9 +98,10 @@ test("F admin surface shows A, B, C and D while keeping manual publication separ
   assert.match(adminUi, /B — faits vérifiés/);
   assert.match(adminUi, /C — shortlist déterministe/);
   assert.match(adminUi, /D — texte généré/);
-  assert.match(adminUi, /Valider la sélection/);
+  assert.match(adminUi, /Confirmer après audit/);
   assert.match(adminUi, /Demander correction/);
   assert.match(adminUi, /Rejeter cette revue/);
+  assert.match(adminUi, /ne bloque ni ne retire rétroactivement le résultat déjà affiché/);
   assert.match(adminUi, /ne publie jamais automatiquement une recommandation étudiant/);
   assert.match(adminUi, /workflow de publication manuel/);
 });

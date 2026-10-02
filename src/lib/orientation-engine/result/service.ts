@@ -67,8 +67,8 @@ function projectPublicResult(
         .filter((fact): fact is OrientationPublicPersonalizedFact => Boolean(fact)),
     })),
     humanReview: {
-      required: true,
-      state: "counselor_validation_required",
+      mode: "post_result_audit",
+      blocksResult: false,
     },
   };
 }
@@ -150,9 +150,9 @@ export async function runOrientationResultPipeline(
   const emptySelection = () => runOrientationSelection(profile, []);
   const plan = buildOrientationDiscoveryPlan(profile);
 
-  // A1 is authoritative here: a no-Bac or incomplete route must be reviewed
-  // before normal university discovery. Do not let cache/provider fallbacks
-  // silently bypass that product rule.
+  // A1 is authoritative here: a no-Bac or incomplete route must not silently
+  // enter normal university discovery. The candidate still receives the
+  // immediate deterministic result; this is separate from Phase F post-result audit.
   if (plan.status !== "ready") {
     return resultFromSelection({
       locale,
