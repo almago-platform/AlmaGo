@@ -12,8 +12,10 @@ import {
 } from "@/content/student-profile-copy";
 import {
   degreeOptions,
+  diplomaOptions,
   engineeringSpecialtyOptions,
   studyFieldOptions,
+  studyLanguageOptions,
 } from "@/lib/student/profile-options";
 
 const labels = {
@@ -277,19 +279,37 @@ export function OrientationOnePagePrintReport({
           : "Ville à définir";
   const degree = localizedValue(answers.targetDegree, locale, degreeOptions);
   const field = localizedValue(answers.targetField, locale, studyFieldOptions);
+  const lastDiploma = localizedValue(answers.lastDiploma, locale, diplomaOptions);
+  const studyLanguage = localizedValue(answers.studyLanguage, locale, studyLanguageOptions);
   const specialty = answers.targetField === "Ingénierie" && answers.engineeringSpecialty
     ? localizedValue(answers.engineeringSpecialty, locale, engineeringSpecialtyOptions)
     : null;
   const german = answers.germanLevel || "—";
+  const english = answers.englishLevel || "—";
   const academicAccessText = compactAcademicAccess(access.status, locale);
   const sourceInstitutions = [...new Set(options.map((option) => option.institution))];
+  const educationProfile = answers.bacStatus === "no_bac"
+    ? {
+        fr: `Sans Bac · Dernier niveau : ${lastDiploma}`,
+        ar: `من دون بكالوريا · آخر مستوى: ${lastDiploma}`,
+        en: `No Baccalaureate · Latest level: ${lastDiploma}`,
+        de: `Ohne Baccalauréat · Letzter Stand: ${lastDiploma}`,
+      }[locale]
+    : [
+        answers.bacYear ? `Bac ${answers.bacYear}` : "Bac",
+        answers.bacTrack || "—",
+        answers.generalAverage ? `${answers.generalAverage}/20` : null,
+      ].filter(Boolean).join(" · ");
+  const languageProfile = answers.studyLanguage === "Anglais"
+    ? `${studyLanguage} · ${english}`
+    : answers.studyLanguage === "Allemand et anglais"
+      ? `${studyLanguage} · DE ${german} · EN ${english}`
+      : `${studyLanguage} · ${german}`;
   const profileLine = [
-    answers.bacYear ? `Bac ${answers.bacYear}` : "Bac",
-    answers.bacTrack || "—",
-    answers.generalAverage ? `${answers.generalAverage}/20` : null,
+    educationProfile,
     `${degree} · ${field}`,
     specialty,
-    `Allemand ${german}`,
+    languageProfile,
     cities,
   ].filter(Boolean).join(" · ");
 
