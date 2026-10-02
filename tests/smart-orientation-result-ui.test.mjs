@@ -9,15 +9,13 @@ const card = read("src/components/orientation/SmartOrientationResultCard.tsx");
 const copy = read("src/content/smart-orientation-copy.ts");
 const capture = read("src/components/orientation/ProspectCaptureCard.tsx");
 
-test("SO-2 evaluates Smart Orientation and renders the personalised route after the situation summary", () => {
+test("SO-2 keeps legacy Smart Orientation available outside the Bachelor first-contact view", () => {
   assert.match(form, /evaluateSmartOrientationPriority\(answers\)/);
+  assert.match(form, /isBachelorFirstContact = answers\.targetDegree === "Bachelor"/);
+  assert.match(form, /!isBachelorFirstContact \? \(/);
   assert.match(form, /<SmartOrientationResultCard[\s\S]*result=\{smartPriority\}/);
   assert.match(form, /<OrientationRouteCard answers=\{answers\} locale=\{locale\} \/>/);
-
-  const smartIndex = form.indexOf("<SmartOrientationResultCard");
-  const routeIndex = form.indexOf("<OrientationRouteCard");
-  assert.ok(smartIndex >= 0);
-  assert.ok(routeIndex > smartIndex);
+  assert.match(form, /Voir les réponses utilisées/);
 });
 
 test("SO-2 exposes no technical priority enum to the visitor", () => {
