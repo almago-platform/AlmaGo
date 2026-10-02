@@ -110,3 +110,27 @@ export type OrientationDiscoveryResearchResult = {
   candidates: OrientationDiscoveryResearchCandidate[];
   usage: OrientationDiscoveryUsage;
 };
+
+
+export type OrientationDiscoveryKnowledgeCacheStatus =
+  | "hit"
+  | "partial"
+  | "miss"
+  | "unavailable";
+
+export type OrientationDiscoveryKnowledgeCache = {
+  status: OrientationDiscoveryKnowledgeCacheStatus;
+  candidatesLoaded: number;
+  candidatesPersisted: number;
+  freshnessDays: number;
+};
+
+export type OrientationDiscoveryResult = {
+  provider: "openai" | "knowledge_cache" | "mixed";
+  model: string | null;
+  status: OrientationDiscoveryProviderStatus;
+  reason: OrientationDiscoveryProviderReason;
+  candidates: OrientationDiscoveryResearchCandidate[];
+  usage: OrientationDiscoveryUsage;
+  cache: OrientationDiscoveryKnowledgeCache;
+};
