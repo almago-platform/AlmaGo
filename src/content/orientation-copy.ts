@@ -219,7 +219,7 @@ const de: OrientationCopy = {
     languages: { title: "Deine Sprachen", text: "Gib deine aktuellen Niveaus an, auch wenn du gerade erst anfängst." },
     resources: { title: "Budget und Städte", text: "Diese Angaben helfen später, passende Wege besser einzuordnen." },
   },
-  bacStatus: { label: "Dein Baccalauréat", obtained: "Ich habe es bereits", preparing: "Ich bereite mich noch darauf vor" },
+  bacStatus: { label: "Deine schulische Situation", obtained: "Ich habe ein Baccalauréat oder einen gleichwertigen Schulabschluss", preparing: "Ich bereite mein Baccalauréat noch vor", no_bac: "Ich habe kein Baccalauréat und keinen gleichwertigen Schulabschluss" },
   fields: {
     yearHelp: "Abschlussjahr oder erwartetes Jahr.",
     averageHelp: "Optional. Tatsächlicher oder geschätzter Durchschnitt von 20.",
