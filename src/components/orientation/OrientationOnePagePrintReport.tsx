@@ -37,7 +37,7 @@ const labels = {
     language: "Langue",
     access: "Accès académique",
     programmes: "Programmes",
-    application: "Candidature",
+    application: "Accompagnement",
     languageText: (current: string, next: string | null) => {
       if (current === "none") {
         return "Vous débutez l'allemand : A1 → A2 → B1, puis B2/C1 selon le programme et le certificat demandé.";
@@ -73,7 +73,7 @@ const labels = {
     language: "اللغة",
     access: "الدخول الأكاديمي",
     programmes: "البرامج",
-    application: "التقديم",
+    application: "المرافقة",
     languageText: (current: string, next: string | null) => {
       if (current === "none") return "أنت تبدأ الألمانية: A1 ← A2 ← B1، ثم B2/C1 حسب البرنامج والشهادة المطلوبة.";
       return next
@@ -107,7 +107,7 @@ const labels = {
     language: "Language",
     access: "Academic access",
     programmes: "Programmes",
-    application: "Application",
+    application: "Support route",
     languageText: (current: string, next: string | null) => {
       if (current === "none") return "You are starting German: A1 → A2 → B1, then B2/C1 depending on the programme and accepted certificate.";
       return next
@@ -141,7 +141,7 @@ const labels = {
     language: "Sprache",
     access: "Hochschulzugang",
     programmes: "Programme",
-    application: "Bewerbung",
+    application: "Begleitung",
     languageText: (current: string, next: string | null) => {
       if (current === "none") return "Du beginnst mit Deutsch: A1 → A2 → B1, danach B2/C1 je nach Programm und akzeptiertem Zertifikat.";
       return next
