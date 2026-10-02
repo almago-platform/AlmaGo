@@ -532,15 +532,15 @@ export function evaluateProgramme(
   rules.push(...masterCurriculumRules(profile, programme, now));
   rules.push(...languageRules(profile, programme));
 
-  if (profile.preferredCities.length === 0) {
-    rules.push({ code: "other_city", status: "unknown", value: programme.university.city });
-  } else if (
-    programme.university.city
-    && profile.preferredCities.some((city) => canonicalCity(city) === canonicalCity(programme.university.city))
-  ) {
-    rules.push({ code: "preferred_city", status: "eligible", value: programme.university.city });
-  } else {
-    rules.push({ code: "other_city", status: "conditional", value: programme.university.city });
+  if (profile.preferredCities.length > 0) {
+    if (
+      programme.university.city
+      && profile.preferredCities.some((city) => canonicalCity(city) === canonicalCity(programme.university.city))
+    ) {
+      rules.push({ code: "preferred_city", status: "eligible", value: programme.university.city });
+    } else {
+      rules.push({ code: "other_city", status: "conditional", value: programme.university.city });
+    }
   }
 
   if (programme.studienkollegRequired) {
