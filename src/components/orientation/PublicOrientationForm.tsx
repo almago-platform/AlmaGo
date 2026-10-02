@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { BrandLogo } from "@/components/brand/BrandLogo";
 import { LanguageSwitcher } from "@/components/i18n/LanguageSwitcher";
 import { useLocale } from "@/components/i18n/LocaleProvider";
@@ -76,6 +76,18 @@ export function PublicOrientationForm({
   const [step, setStep] = useState<Step>(1);
   const [error, setError] = useState("");
   const [hydrated, setHydrated] = useState(authenticatedUpdate);
+  const reviewProfileKey = useMemo(() => JSON.stringify(answers), [answers]);
+  const [orientationReview, setOrientationReview] = useState<{
+    profileKey: string | null;
+    reviewId: string | null;
+  }>({ profileKey: null, reviewId: null });
+  const handleReviewReady = useCallback((reviewId: string | null) => {
+    setOrientationReview({ profileKey: reviewProfileKey, reviewId });
+  }, [reviewProfileKey]);
+  const orientationReviewId =
+    orientationReview.profileKey === reviewProfileKey
+      ? orientationReview.reviewId
+      : null;
 
   const bacTracks = useMemo(() => localizeProfileOptions(locale, tunisianBacTrackOptions), [locale]);
   const diplomas = useMemo(() => localizeProfileOptions(locale, diplomaOptions), [locale]);
@@ -617,6 +629,7 @@ export function PublicOrientationForm({
                   answers={answers}
                   locale={locale}
                   prospectCaptureEnabled={prospectCaptureEnabled && !authenticatedUpdate}
+                  onReviewReady={handleReviewReady}
                   onRefineAnswers={(patch) => {
                     setAnswers((current) => ({ ...current, ...patch }));
                     setError("");
@@ -657,6 +670,7 @@ export function PublicOrientationForm({
                 ) : prospectCaptureEnabled ? (
                   <ProspectCaptureCard
                     answers={answers}
+                    reviewId={orientationReviewId}
                     emailDeliveryEnabled={emailDeliveryEnabled}
                     acquisitionContext={acquisitionContext}
                   />

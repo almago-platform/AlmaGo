@@ -315,11 +315,13 @@ export function PersonalizedOrientationEngineCard({
   answers,
   locale,
   onRefineAnswers,
+  onReviewReady,
   prospectCaptureEnabled = false,
 }: {
   answers: PublicOrientationAnswers;
   locale: Locale;
   onRefineAnswers?: (patch: Partial<PublicOrientationAnswers>) => void;
+  onReviewReady?: (reviewId: string | null) => void;
   prospectCaptureEnabled?: boolean;
 }) {
   const t = copy[locale] as (typeof copy)["fr"];
@@ -366,6 +368,7 @@ export function PersonalizedOrientationEngineCard({
           result: payload,
           error: false,
         });
+        onReviewReady?.(payload.personalized?.reviewId || null);
       })
       .catch((error) => {
         if (error instanceof DOMException && error.name === "AbortError") return;
@@ -374,10 +377,11 @@ export function PersonalizedOrientationEngineCard({
           result: null,
           error: true,
         });
+        onReviewReady?.(null);
       });
 
     return () => controller.abort();
-  }, [requestBody]);
+  }, [requestBody, onReviewReady]);
 
   return (
     <section

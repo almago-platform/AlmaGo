@@ -3,18 +3,29 @@ import "server-only";
 import type { PublicOrientationAnswers } from "@/lib/orientation/public";
 import { buildOrientationDiscoveryPlan } from "@/lib/orientation-engine/discovery/contract";
 import { runOrientationDiscovery } from "@/lib/orientation-engine/discovery/service";
+import type {
+  OrientationDiscoveryPlan,
+  OrientationDiscoveryResult,
+} from "@/lib/orientation-engine/discovery/types";
 import { runOrientationVerification } from "@/lib/orientation-engine/verification/service";
+import type {
+  OrientationVerificationServiceResult,
+} from "@/lib/orientation-engine/verification/types";
 import { runOrientationSelection } from "@/lib/orientation-engine/selection/service";
+import type { OrientationSelectionResult } from "@/lib/orientation-engine/selection/types";
 import {
   buildDeterministicOrientationWriterContent,
 } from "@/lib/orientation-engine/writer/core";
 import { runOrientationPersonalizedWriter } from "@/lib/orientation-engine/writer/service";
 import type {
-  OrientationWriterContent,
   OrientationWriterInput,
   OrientationWriterLocale,
+  OrientationWriterResult,
 } from "@/lib/orientation-engine/writer/types";
-import type { OrientationSelectionResult } from "@/lib/orientation-engine/selection/types";
+import {
+  buildOrientationHumanReviewBundle,
+} from "@/lib/orientation-engine/review/core";
+import { persistOrientationHumanReview } from "@/lib/orientation-engine/review/store";
 import type {
   OrientationPublicPersonalizedFact,
   OrientationPublicPersonalizedResult,
@@ -37,11 +48,13 @@ function publicFact(
 
 function projectPublicResult(
   selection: OrientationSelectionResult,
-  content: OrientationWriterContent,
+  writer: OrientationWriterResult,
+  reviewId: string | null,
 ): OrientationPublicPersonalizedResult {
   return {
     status: selection.status,
-    content,
+    reviewId,
+    content: writer.content,
     selected: selection.selected.map((item) => ({
       optionId: `option_${item.position}`,
       position: item.position,
@@ -64,7 +77,7 @@ async function writeOrientation(
   locale: OrientationWriterLocale,
   profile: PublicOrientationAnswers,
   selection: OrientationSelectionResult,
-) {
+): Promise<OrientationWriterResult> {
   const input: OrientationWriterInput = {
     locale,
     profile,
@@ -72,19 +85,62 @@ async function writeOrientation(
   };
 
   try {
-    return (await runOrientationPersonalizedWriter(input)).content;
+    return await runOrientationPersonalizedWriter(input);
   } catch {
-    return buildDeterministicOrientationWriterContent(input);
+    return {
+      provider: "deterministic",
+      model: null,
+      status: "fallback",
+      reason: "provider_error",
+      content: buildDeterministicOrientationWriterContent(input),
+      usage: {
+        requests: 0,
+        inputTokens: 0,
+        outputTokens: 0,
+        totalTokens: 0,
+        durationMs: 0,
+      },
+    };
   }
 }
 
-async function resultFromSelection(
-  locale: OrientationWriterLocale,
-  profile: PublicOrientationAnswers,
-  selection: OrientationSelectionResult,
-) {
-  const content = await writeOrientation(locale, profile, selection);
-  return projectPublicResult(selection, content);
+async function resultFromSelection(input: {
+  locale: OrientationWriterLocale;
+  profile: PublicOrientationAnswers;
+  plan: OrientationDiscoveryPlan;
+  discovery: OrientationDiscoveryResult | null;
+  verification: OrientationVerificationServiceResult | null;
+  selection: OrientationSelectionResult;
+}) {
+  const writer = await writeOrientation(
+    input.locale,
+    input.profile,
+    input.selection,
+  );
+
+  const review = buildOrientationHumanReviewBundle({
+    profile: input.profile,
+    plan: input.plan,
+    discovery: input.discovery,
+    verification: input.verification,
+    selection: input.selection,
+    writer,
+  });
+
+  const persistence = await persistOrientationHumanReview({
+    profile: input.profile,
+    bundle: review.bundle,
+    pipelineStatus: review.pipelineStatus,
+  }).catch(() => ({
+    reviewId: null,
+    available: false,
+  }));
+
+  return projectPublicResult(
+    input.selection,
+    writer,
+    persistence.reviewId,
+  );
 }
 
 export async function runOrientationResultPipeline(
@@ -98,20 +154,63 @@ export async function runOrientationResultPipeline(
   // before normal university discovery. Do not let cache/provider fallbacks
   // silently bypass that product rule.
   if (plan.status !== "ready") {
-    return resultFromSelection(locale, profile, emptySelection());
+    return resultFromSelection({
+      locale,
+      profile,
+      plan,
+      discovery: null,
+      verification: null,
+      selection: emptySelection(),
+    });
   }
 
+  let discovery: OrientationDiscoveryResult | null = null;
   try {
-    const discovery = await runOrientationDiscovery(plan);
-    if (discovery.status !== "ready" || discovery.candidates.length === 0) {
-      return resultFromSelection(locale, profile, emptySelection());
-    }
-
-    const verification = await runOrientationVerification(discovery.candidates);
-    const selection = runOrientationSelection(profile, verification.programmes);
-
-    return resultFromSelection(locale, profile, selection);
+    discovery = await runOrientationDiscovery(plan);
   } catch {
-    return resultFromSelection(locale, profile, emptySelection());
+    return resultFromSelection({
+      locale,
+      profile,
+      plan,
+      discovery: null,
+      verification: null,
+      selection: emptySelection(),
+    });
   }
+
+  if (discovery.status !== "ready" || discovery.candidates.length === 0) {
+    return resultFromSelection({
+      locale,
+      profile,
+      plan,
+      discovery,
+      verification: null,
+      selection: emptySelection(),
+    });
+  }
+
+  let verification: OrientationVerificationServiceResult | null = null;
+  try {
+    verification = await runOrientationVerification(discovery.candidates);
+  } catch {
+    return resultFromSelection({
+      locale,
+      profile,
+      plan,
+      discovery,
+      verification: null,
+      selection: emptySelection(),
+    });
+  }
+
+  const selection = runOrientationSelection(profile, verification.programmes);
+
+  return resultFromSelection({
+    locale,
+    profile,
+    plan,
+    discovery,
+    verification,
+    selection,
+  });
 }
