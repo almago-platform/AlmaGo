@@ -24,17 +24,13 @@ test("SO-V3.1 has an explicit Tunisian Bac access rule for every track exposed b
     "Sport",
     "other",
   ]) {
-    assert.match(catalogue, new RegExp(track.replace(/[.*+?^$\\{\}()|[\]\\]/g, "\\test("SO-V3 gives the Tunisia Sciences techniques test profile a concrete academic access conclusion", () => {
-  assert.match(catalogue, /answers\.bacTrack === "Sciences techniques"/);
-  assert.match(catalogue, /Accès direct possible en ingénierie/);
-  assert.match(catalogue, /direct lié au domaine à tous les domaines sauf les sciences humaines/);
-  assert.match(catalogue, /ad-layerId=4640/);
-});")));
+    assert.ok(catalogue.includes(track), `missing Tunisian Bac rule for ${track}`);
   }
-  assert.match(catalogue, /Sciences expérimentales[\s\S]*status: "verified"/);
-  assert.match(catalogue, /Sciences techniques[\s\S]*status: "verified"/);
-  assert.match(catalogue, /Lettres[\s\S]*status: "verified"/);
-  assert.match(catalogue, /Sport[\s\S]*needs_human_verification/);
+
+  assert.match(catalogue, /"Sciences expérimentales": \{[\s\S]*?status: "verified"/);
+  assert.match(catalogue, /"Sciences techniques": \{[\s\S]*?status: "verified"/);
+  assert.match(catalogue, /Lettres: \{[\s\S]*?status: "verified"/);
+  assert.match(catalogue, /Sport: \{[\s\S]*?status: "needs_human_verification"/);
   assert.match(catalogue, /Campus Allemagne vérifie votre accès/);
   assert.match(catalogue, /ad-layerId=4640/);
   assert.match(catalogue, /ad-layerId=4016/);
@@ -67,7 +63,6 @@ test("SO-V3.1 communicates end-to-end support while preserving authority boundar
   assert.match(report, /la décision d'admission appartient à chaque université/);
   assert.match(report, /la décision de visa aux autorités compétentes/);
 });
-
 
 test("SO-V3.1 recommends Aachen engineering options when no city is fixed and labels the suggestion honestly", () => {
   assert.match(catalogue, /answers\.preferredCities\.length === 0/);
