@@ -9,7 +9,7 @@ function normalized(value: string | null) {
   return (value || "").trim().replace(/\s+/g, " ").toLocaleLowerCase("en");
 }
 
-function stableJson(value: unknown) {
+function stableJson(value: unknown): unknown {
   if (Array.isArray(value)) return value.map(stableJson);
   if (!value || typeof value !== "object") return value;
 
