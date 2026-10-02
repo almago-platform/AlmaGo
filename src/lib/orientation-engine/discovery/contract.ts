@@ -293,18 +293,22 @@ export function buildOrientationDiscoverySearchQueries(
   const degree = profile.targetDegree || "Bachelor";
   const aliases = uniqueAliases(families);
   const queries: string[] = [];
+  const citySlots = Math.min(
+    profile.preferredCities.length,
+    3,
+    Math.max(0, DISCOVERY_MAX_SEARCH_QUERIES - 1),
+  );
+  const baseAliasLimit = DISCOVERY_MAX_SEARCH_QUERIES - citySlots;
 
-  for (const alias of aliases) {
+  for (const alias of aliases.slice(0, baseAliasLimit)) {
     queries.push(`${alias} ${degree} Germany official university programme`);
-    if (queries.length >= DISCOVERY_MAX_SEARCH_QUERIES) return queries;
   }
 
   const primaryAlias = aliases[0];
   if (primaryAlias) {
-    for (const city of profile.preferredCities) {
+    for (const city of profile.preferredCities.slice(0, citySlots)) {
       const query = `${primaryAlias} ${degree} ${city} official university programme`;
       if (!queries.includes(query)) queries.push(query);
-      if (queries.length >= DISCOVERY_MAX_SEARCH_QUERIES) break;
     }
   }
 
