@@ -31,6 +31,7 @@ export type OrientationPublicPersonalizedOption = {
 
 export type OrientationPublicPersonalizedResult = {
   status: OrientationSelectionStatus;
+  reviewId: string | null;
   content: OrientationWriterContent;
   selected: OrientationPublicPersonalizedOption[];
   humanReview: {
