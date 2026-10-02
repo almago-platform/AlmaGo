@@ -84,7 +84,7 @@ export function validatePublicOrientationAnswers(value: unknown) {
     || answers.preferredCities.some((city) => !allowed.city.has(city))
   ) return null;
 
-  const masterCreditEntries = Object.entries(answers.masterSubjectCredits);
+  const masterCreditEntries = Object.entries(answers.masterSubjectCredits || {});
   if (masterCreditEntries.length > 24) return null;
   if (answers.targetDegree !== "Master" && masterCreditEntries.length > 0) return null;
   for (const [subject, rawCredits] of masterCreditEntries) {
