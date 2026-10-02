@@ -26,6 +26,7 @@ type ProgrammeRow = {
   english_level_required: string | null;
   studienkolleg_required: boolean;
   uni_assist_required: boolean;
+  intake_terms: string[] | null;
   winter_deadline: string | null;
   summer_deadline: string | null;
   application_url: string | null;
@@ -53,6 +54,9 @@ function mapProgramme(row: ProgrammeRow): OrientationProgrammeRecord | null {
     englishLevelRequired: row.english_level_required,
     studienkollegRequired: row.studienkolleg_required,
     uniAssistRequired: row.uni_assist_required,
+    intakeTerms: Array.isArray(row.intake_terms)
+      ? row.intake_terms.filter((term): term is string => typeof term === "string")
+      : [],
     winterDeadline: row.winter_deadline,
     summerDeadline: row.summer_deadline,
     applicationUrl: row.application_url,
@@ -85,6 +89,7 @@ export async function loadVerifiedProgrammeCatalogue() {
     "english_level_required",
     "studienkolleg_required",
     "uni_assist_required",
+    "intake_terms",
     "winter_deadline",
     "summer_deadline",
     "application_url",
