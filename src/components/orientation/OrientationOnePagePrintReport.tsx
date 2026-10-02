@@ -253,7 +253,7 @@ export function OrientationOnePagePrintReport({
             </tr>
             <tr>
               <td>{copy.access}</td>
-              <td>{access.short}. {access.status === "direct_subject_restricted" ? "Ingénierie compatible avec cette route." : access.detail}</td>
+              <td><strong>{access.short}.</strong> {access.detail}</td>
             </tr>
             <tr>
               <td>{copy.programmes}</td>
@@ -286,7 +286,7 @@ export function OrientationOnePagePrintReport({
 
       <section className="orientation-one-page-next">
         <p className="orientation-one-page-label">{copy.next}</p>
-        <p className="mt-1 text-[11px] font-semibold leading-[1.35]">{copy.nextText(german, nextGerman)}</p>
+        <p className="mt-1 text-[11px] font-semibold leading-[1.35]">{copy.nextText()}</p>
       </section>
 
       <footer className="orientation-one-page-footer">
