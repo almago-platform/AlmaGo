@@ -396,7 +396,8 @@ test("D Gemini adapter is server-only, structured, bounded and has no research t
   assert.match(geminiSource, /GEMINI_API_KEY/);
   assert.match(geminiSource, /gemini-3\.8-flash/);
   assert.match(geminiSource, /responseMimeType: "application\/json"/);
-  assert.match(geminiSource, /responseSchema/);
+  assert.match(geminiSource, /responseJsonSchema: responseSchema\(input\)/);
+  assert.doesNotMatch(geminiSource, /responseSchema: responseSchema\(input\)/);
   assert.match(geminiSource, /REQUEST_TIMEOUT_MS = 10_000/);
   assert.match(geminiSource, /CACHE_TTL_MS = 30 \* 60 \* 1000/);
   assert.match(geminiSource, /orientation_v4_gemini_http/);
