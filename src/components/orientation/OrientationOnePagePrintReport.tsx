@@ -184,6 +184,119 @@ function localizedValue(
     || "—";
 }
 
+
+function compactAcademicAccess(status: string, locale: Locale) {
+  const copy = {
+    fr: {
+      direct: "Accès direct lié au domaine : oui",
+      pending: "Accès académique : confirmation Campus Allemagne",
+      mismatch: "Route directe : à confirmer pour ce domaine",
+    },
+    ar: {
+      direct: "دخول مباشر مرتبط بالتخصص: نعم",
+      pending: "الدخول الأكاديمي: يؤكده Campus Allemagne",
+      mismatch: "المسار المباشر: يحتاج تأكيدًا لهذا التخصص",
+    },
+    en: {
+      direct: "Direct subject-linked access: yes",
+      pending: "Academic access: Campus Allemagne confirmation",
+      mismatch: "Direct route: confirmation needed for this field",
+    },
+    de: {
+      direct: "Direkter fachgebundener Zugang: ja",
+      pending: "Hochschulzugang: Bestätigung durch Campus Allemagne",
+      mismatch: "Direkter Weg: für dieses Fach noch zu bestätigen",
+    },
+  }[locale];
+
+  if (status === "direct_subject_restricted") return copy.direct;
+  if (status === "verified_subject_mismatch") return copy.mismatch;
+  return copy.pending;
+}
+
+function compactConclusion(
+  status: string,
+  bacTrack: string,
+  field: string,
+  locale: Locale,
+) {
+  const bac = bacTrack || (locale === "ar" ? "شهادتك" : locale === "de" ? "Dein Abschluss" : locale === "en" ? "Your qualification" : "Votre diplôme");
+
+  if (status === "direct_subject_restricted") {
+    return {
+      fr: `Votre Bac ${bacTrack || ""} permet une route directe vers des études en ${field} en Allemagne. La décision finale appartient à l’université.`,
+      ar: `شهادة ${bacTrack || bac} تفتح مسارًا مباشرًا نحو دراسة ${field} في ألمانيا. القرار النهائي يبقى للجامعة.`,
+      en: `Your ${bacTrack || bac} qualification supports a direct route into ${field} studies in Germany. The university makes the final decision.`,
+      de: `Dein Abschluss ${bacTrack || ""} ermöglicht einen direkten fachgebundenen Weg zu ${field} in Deutschland. Die Hochschule entscheidet endgültig.`,
+    }[locale];
+  }
+
+  if (status === "verified_subject_mismatch") {
+    return {
+      fr: `Votre Bac est bien identifié, mais la route directe ne correspond pas encore au domaine ${field}. Campus Allemagne doit confirmer une alternative adaptée.`,
+      ar: `تم تحديد شهادتك، لكن المسار المباشر لا يطابق بعد تخصص ${field}. سيؤكد Campus Allemagne مسارًا بديلًا مناسبًا.`,
+      en: `Your qualification is identified, but the direct route does not yet match ${field}. Campus Allemagne will confirm a suitable alternative.`,
+      de: `Dein Abschluss ist erfasst, aber der direkte Weg passt noch nicht zu ${field}. Campus Allemagne bestätigt eine passende Alternative.`,
+    }[locale];
+  }
+
+  return {
+    fr: "Votre profil est enregistré. Campus Allemagne confirme votre accès académique avec la règle officielle avant de fixer la route de candidature.",
+    ar: "تم تسجيل ملفك. يؤكد Campus Allemagne دخولك الأكاديمي وفق القاعدة الرسمية قبل تثبيت مسار التقديم.",
+    en: "Your profile is recorded. Campus Allemagne confirms your academic access against the official rule before fixing the application route.",
+    de: "Dein Profil ist erfasst. Campus Allemagne bestätigt deinen Hochschulzugang anhand der offiziellen Regel, bevor der Bewerbungsweg festgelegt wird.",
+  }[locale];
+}
+
+function compactProgrammeLanguage(
+  teachingLanguage: string,
+  requirement: string,
+  locale: Locale,
+) {
+  const isGerman = /allemand|deutsch|german/i.test(teachingLanguage);
+  const isEnglish = /anglais|english/i.test(teachingLanguage);
+  const hasB2 = /\bB2\b/i.test(requirement);
+  const hasUniversityGerman = /DSH|TestDaF|telc C1 Hochschule/i.test(requirement);
+
+  if (isGerman && hasB2 && hasUniversityGerman) {
+    return {
+      fr: "Allemand requis · B2 à la candidature, puis niveau universitaire à l’inscription",
+      ar: "الألمانية مطلوبة · B2 عند التقديم ثم مستوى جامعي عند التسجيل",
+      en: "German required · B2 at application, then university-entry level for enrolment",
+      de: "Deutsch erforderlich · B2 bei Bewerbung, danach Hochschulniveau zur Einschreibung",
+    }[locale];
+  }
+
+  if (isGerman && hasUniversityGerman) {
+    return {
+      fr: "Allemand requis · niveau universitaire (ex. DSH-2 / TestDaF 4x4)",
+      ar: "الألمانية مطلوبة · مستوى جامعي (مثل DSH-2 / TestDaF 4x4)",
+      en: "German required · university-entry level (e.g. DSH-2 / TestDaF 4x4)",
+      de: "Deutsch erforderlich · Hochschulniveau (z. B. DSH-2 / TestDaF 4x4)",
+    }[locale];
+  }
+
+  if (isGerman) {
+    return {
+      fr: "Allemand requis · certificat accepté par l’université",
+      ar: "الألمانية مطلوبة · شهادة تقبلها الجامعة",
+      en: "German required · certificate accepted by the university",
+      de: "Deutsch erforderlich · von der Hochschule akzeptierter Nachweis",
+    }[locale];
+  }
+
+  if (isEnglish) {
+    return {
+      fr: "Anglais requis · niveau et certificat selon le programme",
+      ar: "الإنجليزية مطلوبة · المستوى والشهادة حسب البرنامج",
+      en: "English required · level and certificate depend on the programme",
+      de: "Englisch erforderlich · Niveau und Nachweis je nach Studiengang",
+    }[locale];
+  }
+
+  return `${teachingLanguage} · ${requirement}`;
+}
+
 export function OrientationOnePagePrintReport({
   answers,
   locale,
@@ -210,6 +323,9 @@ export function OrientationOnePagePrintReport({
     ? localizedValue(answers.engineeringSpecialty, locale, engineeringSpecialtyOptions)
     : null;
   const german = answers.germanLevel || "—";
+  const conclusionText = compactConclusion(access.status, answers.bacTrack, field, locale);
+  const academicAccessText = compactAcademicAccess(access.status, locale);
+  const sourceInstitutions = [...new Set(options.map((option) => option.institution))];
   const nextGerman = answers.germanLevel ? nextGermanLevel[answers.germanLevel] : null;
   const profileLine = [
     answers.bacYear ? `Bac ${answers.bacYear}` : "Bac",
@@ -243,7 +359,7 @@ export function OrientationOnePagePrintReport({
       <section className="orientation-one-page-conclusion">
         <p className="orientation-one-page-label">{copy.conclusion}</p>
         <p className="mt-1 text-[11px] leading-[1.35]">
-          <strong>{access.short}.</strong> {access.detail}
+          <strong>{conclusionText}</strong>
         </p>
       </section>
 
@@ -266,7 +382,7 @@ export function OrientationOnePagePrintReport({
             </tr>
             <tr>
               <td>{copy.access}</td>
-              <td><strong>{access.short}.</strong></td>
+              <td><strong>{academicAccessText}</strong></td>
             </tr>
             <tr>
               <td>{copy.programmes}</td>
@@ -288,7 +404,7 @@ export function OrientationOnePagePrintReport({
                       <div key={`${option.institution}-${option.programme}`} className="orientation-programme-item">
                         <strong>{option.institution}</strong>
                         <span>{option.programme} {option.degree}</span>
-                        <span>{option.teachingLanguage} · {option.languageRequirement}</span>
+                        <span>{compactProgrammeLanguage(option.teachingLanguage, option.languageRequirement, locale)}</span>
                       </div>
                     ))}
                   </div>
@@ -311,7 +427,7 @@ export function OrientationOnePagePrintReport({
       <footer className="orientation-one-page-footer">
         <div>
           <strong>{copy.sources}:</strong> DAAD/ZAB
-          {options.length ? " · RWTH Aachen · FH Aachen" : ""}
+          {sourceInstitutions.length ? ` · ${sourceInstitutions.join(" · ")}` : ""}
           {options.length ? ` · ${copy.verified} 02/10/2026` : ` · ${copy.verified} ${access.verifiedAt}`}
         </div>
         <p>{copy.disclaimer}</p>

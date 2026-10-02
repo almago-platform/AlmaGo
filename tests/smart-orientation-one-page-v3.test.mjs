@@ -88,3 +88,32 @@ test("SO-V3.3 never labels a fallback recommendation as the student's chosen cit
   assert.match(report, /Suggestion Campus Allemagne/);
   assert.match(report, /programmeSet\.selectionReason === "preferred_city"/);
 });
+
+
+test("SO-V3.4 keeps the PDF conclusion concise and avoids repeating the full access paragraph", () => {
+  assert.match(report, /function compactConclusion/);
+  assert.match(report, /permet une route directe vers des études en/);
+  assert.match(report, /function compactAcademicAccess/);
+  assert.match(report, /Accès direct lié au domaine : oui/);
+  assert.doesNotMatch(report, /<strong>\{access\.short\}<\/strong>\. \{access\.detail\}/);
+});
+
+test("SO-V3.4 simplifies language requirements in print while preserving full verified data", () => {
+  assert.match(report, /function compactProgrammeLanguage/);
+  assert.match(report, /Allemand requis · niveau universitaire/);
+  assert.match(report, /B2 à la candidature, puis niveau universitaire à l’inscription/);
+  assert.match(catalogue, /DSH-2 ou TestDaF 4 dans les 4 épreuves/);
+  assert.match(catalogue, /B2 à la candidature internationale ; DSH-2, TestDaF 4x4/);
+});
+
+test("SO-V3.4 derives footer institutions from the displayed programme set", () => {
+  assert.match(report, /sourceInstitutions = \[\.\.\.new Set\(options\.map/);
+  assert.match(report, /sourceInstitutions\.join\(" · "\)/);
+  assert.doesNotMatch(report, /options\.length \? " · RWTH Aachen · FH Aachen"/);
+});
+
+test("SO-V3.4 uses the available A4 space with larger print typography", () => {
+  assert.match(css, /\.orientation-one-page-print \{[\s\S]*font-size: 11\.5px/);
+  assert.match(css, /\.orientation-one-page-table \{[\s\S]*font-size: 10\.75px/);
+  assert.match(css, /\.orientation-one-page-footer \{[\s\S]*font-size: 9px/);
+});
