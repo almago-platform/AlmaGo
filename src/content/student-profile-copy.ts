@@ -176,6 +176,7 @@ const optionLabels: Record<Locale, Record<string, string>> = {
   },
   de: {
     none: "Keine",
+    secondary_other: "Anderer Schulabschluss",
     other: "Andere",
     Informatique: "Informatik",
     Ingénierie: "Ingenieurwissenschaften",
