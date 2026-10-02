@@ -19,7 +19,8 @@ test("Orientation V4 runtime diagnostics are admin-only and expose presence, nev
   assert.match(route, /ALMAGO_ORIENTATION_VERIFICATION_PROVIDER/);
   assert.match(route, /ALMAGO_ORIENTATION_WRITER_PROVIDER/);
   assert.match(route, /Boolean\(process\.env\.SUPABASE_SECRET_KEY\)/);
+  assert.match(route, /SUPABASE_SERVICE_ROLE_KEY/);
   assert.match(route, /Boolean\(process\.env\.OPENAI_API_KEY\)/);
   assert.match(route, /Boolean\(process\.env\.GEMINI_API_KEY\)/);
-  assert.doesNotMatch(route, /OPENAI_API_KEY\s*[,}]|GEMINI_API_KEY\s*[,}]|SUPABASE_SECRET_KEY\s*[,}]/);
+  assert.doesNotMatch(route, /OPENAI_API_KEY\s*[,}]|GEMINI_API_KEY\s*[,}]|SUPABASE_SECRET_KEY\s*[,}]|SUPABASE_SERVICE_ROLE_KEY\s*[,}]/);
 });
