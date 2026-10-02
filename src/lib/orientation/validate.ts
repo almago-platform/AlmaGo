@@ -67,6 +67,16 @@ export function validatePublicOrientationAnswers(value: unknown) {
   }
 
   if (!allowed.studyLanguage.has(answers.studyLanguage)) return null;
+
+  const hasIntakeSeason = answers.targetIntakeSeason !== "";
+  const hasIntakeYear = answers.targetIntakeYear !== "";
+  if (hasIntakeSeason !== hasIntakeYear) return null;
+  if (hasIntakeSeason) {
+    if (answers.targetIntakeSeason !== "winter" && answers.targetIntakeSeason !== "summer") return null;
+    const intakeYear = Number(answers.targetIntakeYear);
+    if (!Number.isInteger(intakeYear) || intakeYear < 2026 || intakeYear > 2035) return null;
+  }
+
   if (!allowed.budget.has(answers.budgetRange)) return null;
 
   if (
