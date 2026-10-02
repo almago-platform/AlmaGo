@@ -399,6 +399,8 @@ test("D Gemini adapter is server-only, structured, bounded and has no research t
   assert.match(geminiSource, /responseSchema/);
   assert.match(geminiSource, /REQUEST_TIMEOUT_MS = 10_000/);
   assert.match(geminiSource, /CACHE_TTL_MS = 30 \* 60 \* 1000/);
+  assert.match(geminiSource, /orientation_v4_gemini_http/);
+  assert.match(geminiSource, /status: response\.status/);
   assert.doesNotMatch(geminiSource, /googleSearch|web_search|urlContext|tools:/);
   assert.match(geminiSource, /never decide admission eligibility/i);
   assert.match(geminiSource, /Do not invent deadlines, fees, language thresholds/i);
