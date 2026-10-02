@@ -5,7 +5,7 @@ import test from "node:test";
 const client = readFileSync("src/lib/supabase/public-catalog.ts", "utf8");
 const catalog = readFileSync("src/lib/orientation-engine/catalog.ts", "utf8");
 const migration = readFileSync(
-  "supabase/migrations/20261002153500_orientation_public_catalog_view.sql",
+  "supabase/migrations/20261002153431_orientation_public_catalog_view.sql",
   "utf8",
 );
 
