@@ -37,6 +37,22 @@ export function isPhase2AccountLinkingEnabled(
 }
 
 
+export function isFreeValidationPilotEnabled(
+  env: Record<string, string | undefined> = process.env,
+) {
+  if (
+    isPartnerPrelaunchEnabled(env)
+    || !isPhase2AccessEnabled(env)
+    || !isPhase2ProspectCaptureEnabled(env)
+    || !isPhase2AccountLinkingEnabled(env)
+  ) {
+    return false;
+  }
+
+  const raw = env.ALMAGO_FREE_VALIDATION_PILOT_ENABLED?.trim().toLowerCase();
+  return raw ? ENABLED_VALUES.has(raw) : false;
+}
+
 export function isPhase2PaymentOrchestrationEnabled(
   env: Record<string, string | undefined> = process.env,
 ) {
