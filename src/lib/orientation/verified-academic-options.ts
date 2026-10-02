@@ -222,6 +222,8 @@ function recommendedEngineeringCity(specialty: string) {
 export function getVerifiedProgrammeSet(
   answers: PublicOrientationAnswers,
 ): VerifiedProgrammeSet | null {
+  if (answers.bacStatus === "no_bac") return null;
+
   const wantsBachelor = answers.targetDegree === "Bachelor";
   const wantsEngineering = answers.targetField === "Ingénierie";
   if (!wantsBachelor || !wantsEngineering) return null;
