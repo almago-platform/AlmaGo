@@ -386,6 +386,8 @@ html[dir="rtl"] .student-shell [dir="ltr"] {
   }
 
   .orientation-print-page {
+    min-height: 0 !important;
+    height: auto !important;
     background: white !important;
     color: #0f172a !important;
     -webkit-print-color-adjust: exact;
@@ -565,6 +567,8 @@ html[dir="rtl"] .student-shell [dir="ltr"] {
   }
 
   .orientation-print-page main {
+    min-height: 0 !important;
+    height: auto !important;
     max-width: none !important;
     padding: 0 !important;
   }
