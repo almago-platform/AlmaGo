@@ -2,6 +2,7 @@ export const PUBLIC_ORIENTATION_SESSION_KEY = "almago_phase2_orientation_v1";
 
 export type PublicOrientationBacStatus = "" | "obtained" | "preparing" | "no_bac";
 export type PublicOrientationAverageType = "" | "official" | "current_estimate";
+export type PublicOrientationIntakeSeason = "" | "winter" | "summer";
 
 export type PublicOrientationAnswers = {
   bacStatus: PublicOrientationBacStatus;
@@ -16,6 +17,8 @@ export type PublicOrientationAnswers = {
   germanLevel: string;
   englishLevel: string;
   studyLanguage: string;
+  targetIntakeSeason: PublicOrientationIntakeSeason;
+  targetIntakeYear: string;
   budgetRange: string;
   preferredCities: string[];
 };
@@ -34,6 +37,8 @@ export function createEmptyPublicOrientationAnswers(): PublicOrientationAnswers 
     germanLevel: "",
     englishLevel: "",
     studyLanguage: "",
+    targetIntakeSeason: "",
+    targetIntakeYear: "",
     budgetRange: "",
     preferredCities: [],
   };
@@ -72,6 +77,11 @@ export function restorePublicOrientationAnswers(value: unknown): PublicOrientati
       ? rawBacStatus
       : "";
   const generalAverage = readString(record, "generalAverage");
+  const rawTargetIntakeSeason = readString(record, "targetIntakeSeason");
+  const targetIntakeSeason: PublicOrientationIntakeSeason =
+    rawTargetIntakeSeason === "winter" || rawTargetIntakeSeason === "summer"
+      ? rawTargetIntakeSeason
+      : "";
   const preferredCities = Array.isArray(record.preferredCities)
     ? record.preferredCities
         .filter(
@@ -100,6 +110,8 @@ export function restorePublicOrientationAnswers(value: unknown): PublicOrientati
     germanLevel: readString(record, "germanLevel"),
     englishLevel: readString(record, "englishLevel"),
     studyLanguage: readString(record, "studyLanguage"),
+    targetIntakeSeason,
+    targetIntakeYear: readString(record, "targetIntakeYear"),
     budgetRange: readString(record, "budgetRange"),
     preferredCities,
   };
