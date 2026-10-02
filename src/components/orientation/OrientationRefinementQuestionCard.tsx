@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import {
   localizePreferredCity,
   localizeProfileOptions,
@@ -241,13 +241,15 @@ export function OrientationRefinementQuestionCard({
   );
   const [year, setYear] = useState(answers.targetIntakeYear);
   const subjectKey = question.subjectKey || "";
-  const [credits, setCredits] = useState(
-    subjectKey ? answers.masterSubjectCredits?.[subjectKey] || "" : "",
-  );
-
-  useEffect(() => {
-    setCredits(subjectKey ? answers.masterSubjectCredits?.[subjectKey] || "" : "");
-  }, [answers.masterSubjectCredits, subjectKey]);
+  const [creditInput, setCreditInput] = useState<{ key: string; value: string }>({
+    key: subjectKey,
+    value: subjectKey ? answers.masterSubjectCredits?.[subjectKey] || "" : "",
+  });
+  const credits = creditInput.key === subjectKey
+    ? creditInput.value
+    : subjectKey
+      ? answers.masterSubjectCredits?.[subjectKey] || ""
+      : "";
 
   const affected = question.affectedRecommendationIds.length;
 
@@ -317,7 +319,7 @@ export function OrientationRefinementQuestionCard({
               step="0.5"
               inputMode="decimal"
               value={credits}
-              onChange={(event) => setCredits(event.target.value)}
+              onChange={(event) => setCreditInput({ key: subjectKey, value: event.target.value })}
               aria-label={t.ects}
             />
           </label>
