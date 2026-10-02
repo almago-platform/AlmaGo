@@ -616,6 +616,7 @@ export function PublicOrientationForm({
                 <PersonalizedOrientationEngineCard
                   answers={answers}
                   locale={locale}
+                  prospectCaptureEnabled={prospectCaptureEnabled && !authenticatedUpdate}
                   onRefineAnswers={(patch) => {
                     setAnswers((current) => ({ ...current, ...patch }));
                     setError("");
