@@ -403,13 +403,20 @@ Use academic profile/preferences only unless a future feature explicitly require
 
 ## 12. Implementation sequence
 
-### Phase A1 — Discovery contract
+### Phase A1 — Discovery contract ✅ implemented
 - normalized discovery input;
-- programme-family/synonym map;
-- research-candidate schema;
-- bounded search policy;
-- no-Bac/Studienkolleg behavior;
-- tests.
+- AlmaGo-owned programme-family/synonym map;
+- research-candidate schema with unknown-safe nullable fields;
+- bounded policy: max 8 search queries / 20 candidates;
+- official-source priority;
+- no-Bac route review before normal university discovery;
+- Studienkolleg flagged for review and not marketed as a Campus Allemagne service route;
+- executable contract tests.
+
+Implementation files:
+- `src/lib/orientation-engine/discovery/types.ts`;
+- `src/lib/orientation-engine/discovery/contract.ts`;
+- `tests/orientation-discovery-contract.test.mjs`.
 
 ### Phase A2 — OpenAI Research Agent
 - server-only provider adapter;
