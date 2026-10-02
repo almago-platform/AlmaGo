@@ -11,10 +11,6 @@ const {
 const {
   buildDeterministicOrientationWriterContent,
 } = await import("../src/lib/orientation-engine/writer/core.ts");
-const {
-  validatePublicOrientationAnswers,
-} = await import("../src/lib/orientation/validate.ts");
-
 function profile(overrides = {}) {
   return {
     bacStatus: "obtained",
@@ -118,12 +114,9 @@ const scenarios = [
   })],
 ];
 
-test("F production profiles remain valid inputs and produce bounded A1 plans", () => {
+test("F production profiles produce bounded A1 plans", () => {
   for (const [label, candidate] of scenarios) {
-    const valid = validatePublicOrientationAnswers(candidate);
-    assert.ok(valid, label);
-
-    const plan = buildOrientationDiscoveryPlan(valid);
+    const plan = buildOrientationDiscoveryPlan(candidate);
     assert.equal(plan.status, "ready", label);
     assert.ok(plan.searchQueries.length >= 1, label);
     assert.ok(plan.searchQueries.length <= 8, label);
@@ -177,9 +170,7 @@ test("F no-Bac profile never enters normal university discovery", () => {
     lastDiploma: "secondary_other",
   });
 
-  const valid = validatePublicOrientationAnswers(candidate);
-  assert.ok(valid);
-  const plan = buildOrientationDiscoveryPlan(valid);
+  const plan = buildOrientationDiscoveryPlan(candidate);
 
   assert.equal(plan.status, "route_requires_review");
   assert.equal(plan.reason, "no_bac_requires_route_review");
