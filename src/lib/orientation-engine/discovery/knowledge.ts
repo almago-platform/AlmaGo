@@ -263,10 +263,11 @@ export async function persistOrientationDiscoveryResearch(
 
   if (existingError) return { available: false, persisted: 0 };
 
-  const existingByKey = new Map(
-    (existingData || []).map((row) => [
+  const existingRows = (existingData || []) as unknown as Array<Record<string, unknown>>;
+  const existingByKey = new Map<string, Record<string, unknown>>(
+    existingRows.map((row) => [
       String(row.dedupe_key),
-      row as Record<string, unknown>,
+      row,
     ]),
   );
   const families = familyIds(plan);
@@ -320,8 +321,12 @@ export async function persistOrientationDiscoveryResearch(
     return { available: false, persisted: 0 };
   }
 
-  const idByKey = new Map(
-    upserted.map((row) => [String(row.dedupe_key), String(row.id)]),
+  const upsertedRows = upserted as unknown as Array<{
+    id: string;
+    dedupe_key: string;
+  }>;
+  const idByKey = new Map<string, string>(
+    upsertedRows.map((row) => [String(row.dedupe_key), String(row.id)]),
   );
 
   const entries = result.candidates
