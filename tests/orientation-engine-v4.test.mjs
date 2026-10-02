@@ -10,6 +10,8 @@ const provider = readFileSync("src/lib/orientation-engine/advisor/provider.ts", 
 const deterministic = readFileSync("src/lib/orientation-engine/advisor/deterministic.ts", "utf8");
 const api = readFileSync("src/app/api/orientation/engine/route.ts", "utf8");
 const ui = readFileSync("src/components/orientation/PersonalizedOrientationEngineCard.tsx", "utf8");
+const letterUi = readFileSync("src/components/orientation/OrientationLetterCard.tsx", "utf8");
+const intelligence = readFileSync("src/lib/orientation-engine/intelligence.ts", "utf8");
 const form = readFileSync("src/components/orientation/PublicOrientationForm.tsx", "utf8");
 const validation = readFileSync("src/lib/orientation/validate.ts", "utf8");
 const prospectApi = readFileSync("src/app/api/orientation/prospect/route.ts", "utf8");
@@ -88,13 +90,17 @@ test("Orientation V4 advisor is provider-abstracted and defaults to zero-cost de
   assert.match(docs, /costs zero LLM tokens/);
 });
 
-test("Orientation V4 UI explains why, missing conditions, sources and information quality", () => {
+test("Orientation V4 makes the simple letter primary and keeps technical evidence available", () => {
+  assert.match(ui, /OrientationLetterCard/);
+  assert.match(ui, /Votre orientation personnalisée/);
+  assert.match(ui, /Voir les détails vérifiés/);
   assert.match(ui, /Pourquoi cette option apparaît/);
   assert.match(ui, /À vérifier ou compléter/);
   assert.match(ui, /Sources/);
   assert.match(ui, /Qualité des informations/);
-  assert.match(ui, /catalogueGap/);
-  assert.match(ui, /Nous n’inventons pas de programme/);
+  assert.doesNotMatch(ui, /Notre catalogue vérifié ne contient pas encore trois options/);
+  assert.match(letterUi, /Lettre d’orientation/);
+  assert.match(letterUi, /Premières pistes à examiner ensemble/);
 });
 
 test("Orientation V4 is integrated into the existing result rather than replacing V3.6", () => {
@@ -108,4 +114,25 @@ test("Orientation V4 audit documents privacy, cost and incremental conversation 
   assert.match(docs, /Cost strategy/);
   assert.match(docs, /Increment C — conversation/);
   assert.match(docs, /LLM runtime legal\/privacy review remains a launch gate/);
+});
+
+
+test("Orientation V4 AI scout is optional, Bachelor-only and grounded", () => {
+  assert.match(intelligence, /ALMAGO_ORIENTATION_AI_SCOUT !== "gemini"/);
+  assert.match(intelligence, /profile\.targetDegree !== "Bachelor"/);
+  assert.match(intelligence, /GEMINI_API_KEY/);
+  assert.match(intelligence, /tools: \[\{ type: "google_search" \}\]/);
+  assert.match(intelligence, /verificationStatus: "research_candidate"/);
+  assert.match(intelligence, /sameCitationHost/);
+  assert.match(intelligence, /Do not promise that admission exists/);
+  assert.doesNotMatch(rules, /GEMINI_API_KEY|google_search|generativelanguage/);
+});
+
+test("Orientation V4 minimises the profile before any AI provider call", () => {
+  assert.match(intelligence, /const profileFacts = \{/);
+  assert.doesNotMatch(intelligence, /email|phone|passport|full_name|first_name|last_name/);
+  assert.match(intelligence, /bac_track/);
+  assert.match(intelligence, /generalAverage|average_out_of_20/);
+  assert.match(intelligence, /german_level/);
+  assert.match(intelligence, /preferred_cities/);
 });
