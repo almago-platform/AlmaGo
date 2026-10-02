@@ -278,8 +278,16 @@ function recommendationCategory(
   rules: OrientationRuleResult[],
 ): OrientationRecommendationCategory {
   const cityMatched = rules.some((rule) => rule.code === "preferred_city" && rule.status === "eligible");
-  const hasCondition = rules.some((rule) =>
-    ["conditional", "missing_information", "unknown"].includes(rule.status)
+  const conditionCodes = new Set<OrientationRuleCode>([
+    "academic_access_review",
+    "language_missing",
+    "language_insufficient",
+    "studienkolleg_required",
+  ]);
+  const hasCondition = rules.some(
+    (rule) =>
+      conditionCodes.has(rule.code)
+      && ["conditional", "missing_information", "unknown"].includes(rule.status),
   );
 
   if (hasCondition) return "conditions_to_complete";
