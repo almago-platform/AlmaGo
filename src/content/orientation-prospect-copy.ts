@@ -26,6 +26,13 @@ export type OrientationProspectCopy = {
     sendingEmail: string;
     emailSent: string;
     deliveryFailure: string;
+    interestEyebrow: string;
+    interestTitle: string;
+    interestText: string;
+    interestSubmit: string;
+    interestSaving: string;
+    interestSuccess: string;
+    interestFailure: string;
   };
 };
 
@@ -55,6 +62,13 @@ const fr: OrientationProspectCopy = {
     sendingEmail: "Envoi…",
     emailSent: "Orientation sauvegardée et e-mail envoyé. Aucun compte n’a été créé.",
     deliveryFailure: "Orientation sauvegardée, mais l’e-mail n’a pas pu être envoyé. Vous pouvez toujours enregistrer le rapport en PDF depuis cette page.",
+    interestEyebrow: "Continuer avec nous",
+    interestTitle: "Vous souhaitez aller plus loin avec Campus Allemagne ?",
+    interestText: "Dites-le explicitement si vous souhaitez que votre projet soit considéré pour la prochaine étape ou un pilote gratuit. Aucun paiement n’est demandé et ce choix n’ouvre pas automatiquement l’espace documents.",
+    interestSubmit: "Je veux continuer avec Campus Allemagne",
+    interestSaving: "Enregistrement…",
+    interestSuccess: "Votre intérêt est enregistré. Campus Allemagne pourra examiner votre projet pour la prochaine étape.",
+    interestFailure: "Nous n’avons pas pu enregistrer ce choix. Vous pouvez réessayer.",
   },
 };
 
@@ -84,6 +98,13 @@ const ar: OrientationProspectCopy = {
     sendingEmail: "جارٍ الإرسال…",
     emailSent: "تم حفظ التوجيه وإرسال البريد الإلكتروني. لم يتم إنشاء أي حساب.",
     deliveryFailure: "تم حفظ التوجيه، لكن تعذر إرسال البريد الإلكتروني. يمكنك ما زلت حفظ التقرير بصيغة PDF من هذه الصفحة.",
+    interestEyebrow: "المتابعة معنا",
+    interestTitle: "هل ترغب في متابعة مشروعك مع Campus Allemagne؟",
+    interestText: "اختر ذلك بوضوح إذا كنت تريد أن نأخذ مشروعك بعين الاعتبار للمرحلة التالية أو لبرنامج تجريبي مجاني. لا يوجد أي دفع، ولن يتم فتح مساحة الوثائق تلقائيًا.",
+    interestSubmit: "أريد المتابعة مع Campus Allemagne",
+    interestSaving: "جارٍ التسجيل…",
+    interestSuccess: "تم تسجيل اهتمامك. يمكن لـ Campus Allemagne مراجعة مشروعك للمرحلة التالية.",
+    interestFailure: "تعذر تسجيل هذا الاختيار. يمكنك المحاولة من جديد.",
   },
 };
 
@@ -113,6 +134,13 @@ const en: OrientationProspectCopy = {
     sendingEmail: "Sending…",
     emailSent: "Orientation saved and email sent. No account was created.",
     deliveryFailure: "Orientation saved, but the email could not be sent. You can still save the report as a PDF from this page.",
+    interestEyebrow: "Continue with us",
+    interestTitle: "Would you like to go further with Campus Allemagne?",
+    interestText: "Say so explicitly if you would like your project to be considered for the next step or a free pilot. No payment is requested and this does not automatically open document access.",
+    interestSubmit: "I want to continue with Campus Allemagne",
+    interestSaving: "Recording…",
+    interestSuccess: "Your interest has been recorded. Campus Allemagne can review your project for the next step.",
+    interestFailure: "We could not record this choice. You can try again.",
   },
 };
 
@@ -142,6 +170,13 @@ const de: OrientationProspectCopy = {
     sendingEmail: "Wird gesendet…",
     emailSent: "Orientierung gespeichert und E-Mail gesendet. Es wurde kein Konto erstellt.",
     deliveryFailure: "Orientierung gespeichert, aber die E-Mail konnte nicht gesendet werden. Du kannst den Bericht weiterhin auf dieser Seite als PDF speichern.",
+    interestEyebrow: "Mit uns weitermachen",
+    interestTitle: "Möchtest du mit Campus Allemagne weitergehen?",
+    interestText: "Bestätige dies ausdrücklich, wenn dein Projekt für den nächsten Schritt oder einen kostenlosen Pilot berücksichtigt werden soll. Es wird keine Zahlung verlangt und der Dokumentenbereich wird nicht automatisch freigeschaltet.",
+    interestSubmit: "Ich möchte mit Campus Allemagne weitermachen",
+    interestSaving: "Wird gespeichert…",
+    interestSuccess: "Dein Interesse wurde gespeichert. Campus Allemagne kann dein Projekt für den nächsten Schritt prüfen.",
+    interestFailure: "Diese Auswahl konnte nicht gespeichert werden. Du kannst es erneut versuchen.",
   },
 };
 
