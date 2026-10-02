@@ -289,7 +289,7 @@ const fr: ProfileCopy = {
     fields: {
       first_name: "Prénom", last_name: "Nom", birth_date: "Date de naissance", nationality: "Nationalité",
       current_city: "Ville actuelle", phone: "Téléphone", last_diploma: "Dernier diplôme",
-      bac_track: "Type / section du Bac tunisien", bac_year: "Année du Bac", general_average: "Moyenne générale",
+      bac_track: "Type / section du Bac (si tunisien)", bac_year: "Année du Bac / diplôme secondaire", general_average: "Moyenne générale",
       institution: "Établissement", current_university_studies: "Études universitaires actuelles", current_field: "Domaine actuel",
       university_semesters: "Nombre de semestres", german_level: "Allemand", english_level: "Anglais", french_level: "Français",
       language_certificate: "Certificat", language_certificate_other: "Autre certificat", target_degree: "Niveau visé",
@@ -329,7 +329,7 @@ const ar: ProfileCopy = {
     fields: {
       first_name: "الاسم الأول", last_name: "اسم العائلة", birth_date: "تاريخ الميلاد", nationality: "الجنسية",
       current_city: "المدينة الحالية", phone: "رقم الهاتف", last_diploma: "آخر شهادة",
-      bac_track: "شعبة البكالوريا التونسية", bac_year: "سنة البكالوريا", general_average: "المعدل العام",
+      bac_track: "شعبة البكالوريا (إذا كانت تونسية)", bac_year: "سنة البكالوريا / الشهادة الثانوية", general_average: "المعدل العام",
       institution: "المؤسسة التعليمية", current_university_studies: "الدراسة الجامعية الحالية", current_field: "التخصص الحالي",
       university_semesters: "عدد السداسيات", german_level: "الألمانية", english_level: "الإنجليزية", french_level: "الفرنسية",
       language_certificate: "شهادة اللغة", language_certificate_other: "شهادة أخرى", target_degree: "الدرجة المستهدفة",
@@ -369,7 +369,7 @@ const en: ProfileCopy = {
     fields: {
       first_name: "First name", last_name: "Last name", birth_date: "Date of birth", nationality: "Nationality",
       current_city: "Current city", phone: "Phone", last_diploma: "Latest qualification",
-      bac_track: "Tunisian Baccalaureate track", bac_year: "Baccalaureate year", general_average: "Overall average",
+      bac_track: "Baccalaureate track (if Tunisian)", bac_year: "Baccalaureate / school-leaving year", general_average: "Overall average",
       institution: "School / university", current_university_studies: "Current university studies", current_field: "Current subject",
       university_semesters: "Number of semesters", german_level: "German", english_level: "English", french_level: "French",
       language_certificate: "Certificate", language_certificate_other: "Other certificate", target_degree: "Target degree",
@@ -409,7 +409,7 @@ const de: ProfileCopy = {
     fields: {
       first_name: "Vorname", last_name: "Nachname", birth_date: "Geburtsdatum", nationality: "Staatsangehörigkeit",
       current_city: "Aktueller Wohnort", phone: "Telefon", last_diploma: "Letzter Abschluss",
-      bac_track: "Fachrichtung des tunesischen Baccalauréat", bac_year: "Jahr des Baccalauréat", general_average: "Gesamtnote",
+      bac_track: "Baccalauréat-Fachrichtung (falls tunesisch)", bac_year: "Jahr des Baccalauréat / Schulabschlusses", general_average: "Gesamtnote",
       institution: "Schule / Hochschule", current_university_studies: "Aktuelles Hochschulstudium", current_field: "Aktuelles Fach",
       university_semesters: "Anzahl der Semester", german_level: "Deutsch", english_level: "Englisch", french_level: "Französisch",
       language_certificate: "Zertifikat", language_certificate_other: "Anderes Zertifikat", target_degree: "Gewünschter Abschluss",
