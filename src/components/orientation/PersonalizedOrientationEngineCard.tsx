@@ -318,6 +318,7 @@ export function PersonalizedOrientationEngineCard({
   onRefineAnswers?: (patch: Partial<PublicOrientationAnswers>) => void;
 }) {
   const t = copy[locale] as (typeof copy)["fr"];
+  const isBachelorFirstContact = answers.targetDegree === "Bachelor";
   const requestBody = useMemo(() => JSON.stringify({ answers, locale }), [answers, locale]);
   const [requestState, setRequestState] = useState<{
     key: string | null;
@@ -371,16 +372,27 @@ export function PersonalizedOrientationEngineCard({
   }, [requestBody]);
 
   return (
-    <section className="orientation-print-hide mt-8" aria-labelledby="orientation-v4-title">
-      <div className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 sm:p-6">
-        <p className="eyebrow">{t.eyebrow}</p>
-        <h3 id="orientation-v4-title" className="mt-2 text-xl font-bold">{t.title}</h3>
-        <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">{t.lead}</p>
-        <p className="mt-2 text-xs font-semibold text-[var(--muted)]">
-          {answers.targetIntakeSeason && answers.targetIntakeYear
-            ? `${t.intake}: ${answers.targetIntakeSeason === "winter" ? t.winter : t.summer} ${answers.targetIntakeYear}`
-            : null}
-        </p>
+    <section
+      className={`orientation-print-hide ${isBachelorFirstContact ? "mt-2" : "mt-8"}`}
+      aria-labelledby={isBachelorFirstContact ? undefined : "orientation-v4-title"}
+      aria-label={isBachelorFirstContact ? t.title : undefined}
+    >
+      <div className={isBachelorFirstContact
+        ? ""
+        : "rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 sm:p-6"
+      }>
+        {!isBachelorFirstContact ? (
+          <>
+            <p className="eyebrow">{t.eyebrow}</p>
+            <h3 id="orientation-v4-title" className="mt-2 text-xl font-bold">{t.title}</h3>
+            <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">{t.lead}</p>
+          </>
+        ) : null}
+        {answers.targetIntakeSeason && answers.targetIntakeYear ? (
+          <p className={`${isBachelorFirstContact ? "mb-4" : "mt-2"} text-xs font-semibold text-[var(--muted)]`}>
+            {`${t.intake}: ${answers.targetIntakeSeason === "winter" ? t.winter : t.summer} ${answers.targetIntakeYear}`}
+          </p>
+        ) : null}
 
         {state === "loading" ? (
           <p className="mt-5 text-sm font-semibold">{t.loading}</p>
@@ -397,9 +409,11 @@ export function PersonalizedOrientationEngineCard({
             <OrientationLetterCard
               letter={result.letter}
               scout={result.scout}
+              recommendations={result.engine.recommendations}
+              answers={answers}
               locale={locale}
             />
-            {onRefineAnswers && result.engine.refinement.nextQuestion ? (
+            {!isBachelorFirstContact && onRefineAnswers && result.engine.refinement.nextQuestion ? (
               <OrientationRefinementQuestionCard
                 question={result.engine.refinement.nextQuestion}
                 answers={answers}
