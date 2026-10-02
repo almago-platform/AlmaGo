@@ -80,3 +80,15 @@ export type OrientationVerificationResult = {
   candidatesConsidered: number;
   candidatesVerified: number;
 };
+
+
+export type OrientationVerificationPersistence = {
+  available: boolean;
+  runPersisted: boolean;
+  programmesPersisted: number;
+};
+
+export type OrientationVerificationServiceResult =
+  OrientationVerificationResult & {
+    persistence: OrientationVerificationPersistence;
+  };
