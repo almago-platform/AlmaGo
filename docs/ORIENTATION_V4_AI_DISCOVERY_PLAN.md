@@ -703,23 +703,53 @@ Human-review boundary:
 - the new A/B/C/D draft is **not** automatically copied into `program_recommendations` and is never treated as counselor-approved;
 - a richer counselor review bundle (showing the exact discovered candidates, B fact statuses, C rationale and generated D copy together) remains part of the Phase F production/human-validation work.
 
-### Phase F — production validation
+### Phase F — production + human validation 🚧 implementation complete, live validation pending
 
-Test profiles include at least:
+Human-review architecture:
+- every E pipeline run can persist an admin-only `orientation_human_reviews` bundle containing the minimized academic profile plus A discovery candidates, B field-level verification, C shortlist rationale and D writer result;
+- before prospect capture the bundle has no name/email/phone/passport and is matched through a SHA-256 academic-profile fingerprint;
+- the browser receives only an opaque review id; after the visitor explicitly saves the orientation, the server links that review to the new `orientation_id` only when the exact academic-profile fingerprint matches;
+- repeated pending runs for the same profile within a short window reuse the pending review instead of flooding the counselor queue;
+- authenticated non-admin users have no read/write access to review bundles;
+- admins have read-only table access through RLS; all review decisions write through the protected server API using the privileged client after `getAdminUser()` confirms the counselor;
+- the counselor sees A, B, C and D together, including official sources, B fact statuses, C reasons/warnings/missing facts and D copy;
+- a counselor may validate or correct the shortlist using at most 4 programmes already passed through B and never a B record whose overall status is `unknown`;
+- the counselor may request corrections or reject a review with an internal note;
+- review approval is deliberately separate from `program_recommendations`: it never auto-publishes a programme to the student and never bypasses the existing verified manual publication workflow.
 
+Production validation matrix:
 - Bac obtained + A2;
 - Bac preparing + no German;
 - B2 profile ready for application work;
 - no Bac;
 - very limited budget;
 - fixed city;
-- undecided field;
+- undecided engineering specialty;
 - Automotive;
 - Computer Engineering;
 - Architecture;
 - no reliable programme found;
 - only routes requiring Studienkolleg;
-- provider outage / timeout / invalid JSON.
+- provider outage / invalid writer output.
+
+The F validation suite also caught and fixed a discovery-budget issue: when a profile fixes a preferred city, A1 now reserves part of the bounded 8-query budget for city-specific official-programme research instead of allowing programme aliases to consume all 8 slots first.
+
+Implementation:
+- `src/lib/orientation-engine/review/types.ts`;
+- `src/lib/orientation-engine/review/core.ts`;
+- `src/lib/orientation-engine/review/store.ts`;
+- `src/app/api/admin/orientation/reviews/[id]/route.ts`;
+- `src/components/admin/AdminOrientationHumanReviewQueue.tsx`;
+- `supabase/migrations/20261002213000_orientation_human_review_bundle.sql`;
+- `tests/orientation-human-review-validation.test.mjs`;
+- `tests/orientation-production-validation.test.mjs`.
+
+Still required before declaring F production-validated:
+- apply the new Supabase migration in the target environment;
+- confirm OpenAI/Gemini provider environment variables and feature flags in the deployed service;
+- run the matrix against the deployed site/providers, including real outage/fallback checks;
+- complete a real authenticated counselor review on the deployed admin surface;
+- verify the Render deploy corresponding to the exact merged SHA.
 
 ## 13. Definition of success
 
