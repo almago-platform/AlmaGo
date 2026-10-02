@@ -19,10 +19,12 @@ type InterestResponse = {
 
 export function ProspectCaptureCard({
   answers,
+  reviewId = null,
   emailDeliveryEnabled = false,
   acquisitionContext = null,
 }: {
   answers: PublicOrientationAnswers;
+  reviewId?: string | null;
   emailDeliveryEnabled?: boolean;
   acquisitionContext?: AcquisitionContext | null;
 }) {
@@ -61,6 +63,7 @@ export function ProspectCaptureCard({
           answers,
           privacyAcknowledged: true,
           contactConsent,
+          ...(reviewId ? { reviewId } : {}),
           ...(acquisitionContext ? { acquisition: acquisitionContext } : {}),
         }),
       });
