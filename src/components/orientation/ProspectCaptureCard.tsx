@@ -10,6 +10,11 @@ import type { AcquisitionContext } from "@/lib/phase2/acquisition";
 type ProspectCaptureResponse = {
   saved?: boolean;
   delivery?: "sent" | "disabled" | "unavailable" | "failed";
+  interestToken?: string;
+};
+
+type InterestResponse = {
+  recorded?: boolean;
 };
 
 export function ProspectCaptureCard({
@@ -28,6 +33,8 @@ export function ProspectCaptureCard({
   const [contactConsent, setContactConsent] = useState(false);
   const [status, setStatus] = useState<"idle" | "saving" | "success" | "error">("idle");
   const [message, setMessage] = useState("");
+  const [interestToken, setInterestToken] = useState<string | null>(null);
+  const [interestStatus, setInterestStatus] = useState<"idle" | "saving" | "success" | "error">("idle");
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -62,6 +69,11 @@ export function ProspectCaptureCard({
       if (!response.ok || !payload?.saved) throw new Error("save_failed");
 
       setStatus("success");
+      setInterestToken(
+        typeof payload.interestToken === "string" && payload.interestToken.length > 0
+          ? payload.interestToken
+          : null,
+      );
       if (payload.delivery === "sent") {
         setMessage(copy.emailSent);
       } else if (emailDeliveryEnabled) {
@@ -72,6 +84,27 @@ export function ProspectCaptureCard({
     } catch {
       setStatus("error");
       setMessage(copy.failure);
+    }
+  }
+
+
+  async function submitInterest() {
+    if (!interestToken || interestStatus === "saving" || interestStatus === "success") return;
+
+    setInterestStatus("saving");
+
+    try {
+      const response = await fetch("/api/orientation/interest", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ token: interestToken }),
+      });
+      const payload = await response.json().catch(() => null) as InterestResponse | null;
+
+      if (!response.ok || !payload?.recorded) throw new Error("interest_failed");
+      setInterestStatus("success");
+    } catch {
+      setInterestStatus("error");
     }
   }
 
@@ -167,6 +200,34 @@ export function ProspectCaptureCard({
         >
           {message}
         </p>
+      ) : null}
+
+      {status === "success" && interestToken ? (
+        <div className="mt-5 rounded-[var(--radius-control)] border border-[var(--brand-border)] bg-[var(--brand-soft)] p-4">
+          <p className="eyebrow">{copy.interestEyebrow}</p>
+          <h4 className="mt-2 text-lg font-bold">{copy.interestTitle}</h4>
+          <p className="mt-2 text-sm leading-6 text-[var(--foreground)]">
+            {copy.interestText}
+          </p>
+          <button
+            type="button"
+            onClick={submitInterest}
+            disabled={interestStatus === "saving" || interestStatus === "success"}
+            className="mt-4 rounded-[var(--radius-control)] bg-[var(--brand)] px-5 py-2.5 text-sm font-bold text-white disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {interestStatus === "saving" ? copy.interestSaving : copy.interestSubmit}
+          </button>
+          {interestStatus === "success" ? (
+            <p role="status" className="mt-3 text-sm font-semibold text-[var(--foreground)]">
+              {copy.interestSuccess}
+            </p>
+          ) : null}
+          {interestStatus === "error" ? (
+            <p role="alert" className="mt-3 text-sm font-semibold text-[var(--danger)]">
+              {copy.interestFailure}
+            </p>
+          ) : null}
+        </div>
       ) : null}
     </section>
   );
