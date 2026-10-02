@@ -76,10 +76,18 @@ export function PublicOrientationForm({
   const [step, setStep] = useState<Step>(1);
   const [error, setError] = useState("");
   const [hydrated, setHydrated] = useState(authenticatedUpdate);
-  const [orientationReviewId, setOrientationReviewId] = useState<string | null>(null);
+  const reviewProfileKey = useMemo(() => JSON.stringify(answers), [answers]);
+  const [orientationReview, setOrientationReview] = useState<{
+    profileKey: string | null;
+    reviewId: string | null;
+  }>({ profileKey: null, reviewId: null });
   const handleReviewReady = useCallback((reviewId: string | null) => {
-    setOrientationReviewId(reviewId);
-  }, []);
+    setOrientationReview({ profileKey: reviewProfileKey, reviewId });
+  }, [reviewProfileKey]);
+  const orientationReviewId =
+    orientationReview.profileKey === reviewProfileKey
+      ? orientationReview.reviewId
+      : null;
 
   const bacTracks = useMemo(() => localizeProfileOptions(locale, tunisianBacTrackOptions), [locale]);
   const diplomas = useMemo(() => localizeProfileOptions(locale, diplomaOptions), [locale]);
@@ -162,10 +170,6 @@ export function PublicOrientationForm({
     if (!hydrated || authenticatedUpdate) return;
     window.sessionStorage.setItem(SESSION_KEY, JSON.stringify({ answers, step }));
   }, [answers, step, hydrated, authenticatedUpdate]);
-
-  useEffect(() => {
-    setOrientationReviewId(null);
-  }, [answers]);
 
   useEffect(() => {
     if (hydrated) headingRef.current?.focus();
