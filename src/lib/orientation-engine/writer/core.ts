@@ -25,6 +25,7 @@ export type OrientationWriterContext = {
     bac_year: string | null;
     bac_track: string | null;
     average_out_of_20: string | null;
+    average_scale: 20 | null;
     average_type: string | null;
     last_diploma: string | null;
     target_degree: string | null;
@@ -187,6 +188,7 @@ function safeProfile(profile: PublicOrientationAnswers) {
     bac_year: nullable(profile.bacYear),
     bac_track: nullable(profile.bacTrack),
     average_out_of_20: nullable(profile.generalAverage),
+    average_scale: profile.generalAverage ? 20 : null,
     average_type: nullable(profile.averageType),
     last_diploma: nullable(profile.lastDiploma),
     target_degree: nullable(profile.targetDegree),
