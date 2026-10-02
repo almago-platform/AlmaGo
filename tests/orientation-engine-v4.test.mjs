@@ -108,5 +108,5 @@ test("Orientation V4 audit documents privacy, cost and incremental conversation 
   assert.match(docs, /Privacy \/ GDPR strategy/);
   assert.match(docs, /Cost strategy/);
   assert.match(docs, /Increment C — conversation/);
-  assert.match(docs, /Runtime LLM legal\/privacy review remains a launch gate/);
+  assert.match(docs, /LLM runtime legal\/privacy review remains a launch gate/);
 });
