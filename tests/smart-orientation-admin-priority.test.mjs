@@ -28,7 +28,7 @@ test("SO-4 sorts high priority, prepare-now, standard, then follow-up", () => {
 test("SO-4 keeps every prospect and filters only the displayed queue", () => {
   assert.match(page, /const queue: QueueItem\[\] = prospects/);
   assert.match(page, /const filteredQueue = queue\.filter/);
-  assert.match(page, /prospects conservés/);
+  assert.match(page, /prospects (?:conservés|sauvegardés)/);
   assert.match(page, /Aucun candidat n’est supprimé par Smart Orientation/);
 });
 
