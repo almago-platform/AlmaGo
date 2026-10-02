@@ -91,7 +91,7 @@ const AACHEN_ENGINEERING_OPTIONS: VerifiedAcademicOption[] = [
     sourceUrl:
       "https://www.elektrotechnik.rwth-aachen.de/cms/elektrotechnik-und-informationstechnik/studium/beratung-kontakt/bachelor-studium/~bfsmts/alle-infos-rund-um-die-bewerbung/",
     verifiedAt: "2026-10-02",
-    specialties: ["electrical_electronics", "computer_engineering"],
+    specialties: ["electrical_electronics"],
   },
   {
     institution: "FH Aachen",
@@ -104,7 +104,7 @@ const AACHEN_ENGINEERING_OPTIONS: VerifiedAcademicOption[] = [
     sourceUrl:
       "https://www.fh-aachen.de/studium/studiengaenge/elektrotechnik-beng",
     verifiedAt: "2026-10-02",
-    specialties: ["electrical_electronics", "computer_engineering"],
+    specialties: ["electrical_electronics"],
   },
   {
     institution: "FH Aachen",
@@ -166,9 +166,10 @@ export type VerifiedProgrammeSet = {
 
 function optionsForSpecialty(city: string, specialty: string) {
   const candidates = VERIFIED_ENGINEERING_CATALOGUE[city] || [];
-  if (!specialty || specialty === "undecided" || specialty === "other") {
+  if (!specialty || specialty === "undecided") {
     return candidates.slice(0, 3);
   }
+  if (specialty === "other") return [];
   return candidates
     .filter((option) => option.specialties.includes(specialty))
     .slice(0, 3);
