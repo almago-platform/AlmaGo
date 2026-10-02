@@ -22,7 +22,7 @@ export type PublicOrientationAnswers = {
   targetIntakeYear: string;
   budgetRange: string;
   preferredCities: string[];
-  masterSubjectCredits: PublicOrientationMasterSubjectCredits;
+  masterSubjectCredits?: PublicOrientationMasterSubjectCredits;
 };
 
 export function createEmptyPublicOrientationAnswers(): PublicOrientationAnswers {
