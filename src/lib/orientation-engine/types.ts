@@ -80,7 +80,7 @@ export type OrientationProgrammeRecord = {
   applicationUrl: string | null;
   programmeSourceUrl: string | null;
   programmeVerifiedAt: string | null;
-  masterAcademicPrerequisites: Array<{
+  masterAcademicPrerequisites?: Array<{
     subject: string;
     ects: number;
   }>;
