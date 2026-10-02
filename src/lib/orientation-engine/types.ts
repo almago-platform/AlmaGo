@@ -43,6 +43,7 @@ export type OrientationRuleCode =
   | "master_subject_credits_satisfied"
   | "master_subject_credits_missing"
   | "master_subject_credits_insufficient"
+  | "master_curriculum_unknown"
   | "intake_match"
   | "intake_unavailable"
   | "intake_unknown"
