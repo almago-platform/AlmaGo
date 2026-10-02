@@ -5,6 +5,7 @@ import test from "node:test";
 const report = readFileSync("src/components/orientation/OrientationOnePagePrintReport.tsx", "utf8");
 const catalogue = readFileSync("src/lib/orientation/verified-academic-options.ts", "utf8");
 const css = readFileSync("src/app/globals.css", "utf8");
+const guidance = readFileSync("src/lib/orientation/universal-guidance.ts", "utf8");
 
 test("SO-V3 print output is a dedicated one-page report instead of printing the rich web route", () => {
   assert.match(report, /orientation-one-page-print/);
@@ -83,19 +84,20 @@ test("SO-V3.3 adds three verified Aachen civil-engineering routes", () => {
 });
 
 test("SO-V3.3 never labels a fallback recommendation as the student's chosen city", () => {
-  assert.match(report, /noProgrammesPreferred/);
-  assert.match(report, /noProgrammesRecommended/);
-  assert.match(report, /Suggestion Campus Allemagne/);
-  assert.match(report, /programmeSet\.selectionReason === "preferred_city"/);
+  assert.match(guidance, /programmeSet\.selectionReason === "preferred_city"/);
+  assert.match(guidance, /Votre choix de ville/);
+  assert.match(guidance, /Première suggestion de ville/);
+  assert.match(report, /guidance\.cityTitle/);
 });
 
 
 test("SO-V3.4 keeps the PDF conclusion concise and avoids repeating the full access paragraph", () => {
-  assert.match(report, /function compactConclusion/);
-  assert.match(report, /permet une route directe vers des études en/);
+  assert.match(guidance, /peut ouvrir un accès direct lié au domaine/);
+  assert.match(report, /guidance\.academicTitle/);
+  assert.match(report, /guidance\.academicBody/);
   assert.match(report, /function compactAcademicAccess/);
   assert.match(report, /Accès direct lié au domaine : oui/);
-  assert.doesNotMatch(report, /<strong>\{access\.short\}<\/strong>\. \{access\.detail\}/);
+  assert.doesNotMatch(report, /access\.detail/);
 });
 
 test("SO-V3.4 simplifies language requirements in print while preserving full verified data", () => {

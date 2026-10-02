@@ -1,6 +1,7 @@
 import { BrandLogo } from "@/components/brand/BrandLogo";
 import type { Locale } from "@/lib/i18n";
 import type { PublicOrientationAnswers } from "@/lib/orientation/public";
+import { buildUniversalOrientationGuidance } from "@/lib/orientation/universal-guidance";
 import {
   getAcademicAccessConclusion,
   getVerifiedProgrammeSet,
@@ -14,16 +15,6 @@ import {
   engineeringSpecialtyOptions,
   studyFieldOptions,
 } from "@/lib/student/profile-options";
-
-const nextGermanLevel: Record<string, string | null> = {
-  none: "A1",
-  A1: "A2",
-  A2: "B1",
-  B1: "B2",
-  B2: "C1",
-  C1: null,
-  C2: null,
-};
 
 const labels = {
   fr: {
@@ -214,40 +205,6 @@ function compactAcademicAccess(status: string, locale: Locale) {
   return copy.pending;
 }
 
-function compactConclusion(
-  status: string,
-  bacTrack: string,
-  field: string,
-  locale: Locale,
-) {
-  const bac = bacTrack || (locale === "ar" ? "شهادتك" : locale === "de" ? "Dein Abschluss" : locale === "en" ? "Your qualification" : "Votre diplôme");
-
-  if (status === "direct_subject_restricted") {
-    return {
-      fr: `Votre Bac ${bacTrack || ""} permet une route directe vers des études en ${field} en Allemagne. La décision finale appartient à l’université.`,
-      ar: `شهادة ${bacTrack || bac} تفتح مسارًا مباشرًا نحو دراسة ${field} في ألمانيا. القرار النهائي يبقى للجامعة.`,
-      en: `Your ${bacTrack || bac} qualification supports a direct route into ${field} studies in Germany. The university makes the final decision.`,
-      de: `Dein Abschluss ${bacTrack || ""} ermöglicht einen direkten fachgebundenen Weg zu ${field} in Deutschland. Die Hochschule entscheidet endgültig.`,
-    }[locale];
-  }
-
-  if (status === "verified_subject_mismatch") {
-    return {
-      fr: `Votre Bac est bien identifié, mais la route directe ne correspond pas encore au domaine ${field}. Campus Allemagne doit confirmer une alternative adaptée.`,
-      ar: `تم تحديد شهادتك، لكن المسار المباشر لا يطابق بعد تخصص ${field}. سيؤكد Campus Allemagne مسارًا بديلًا مناسبًا.`,
-      en: `Your qualification is identified, but the direct route does not yet match ${field}. Campus Allemagne will confirm a suitable alternative.`,
-      de: `Dein Abschluss ist erfasst, aber der direkte Weg passt noch nicht zu ${field}. Campus Allemagne bestätigt eine passende Alternative.`,
-    }[locale];
-  }
-
-  return {
-    fr: "Votre profil est enregistré. Campus Allemagne confirme votre accès académique avec la règle officielle avant de fixer la route de candidature.",
-    ar: "تم تسجيل ملفك. يؤكد Campus Allemagne دخولك الأكاديمي وفق القاعدة الرسمية قبل تثبيت مسار التقديم.",
-    en: "Your profile is recorded. Campus Allemagne confirms your academic access against the official rule before fixing the application route.",
-    de: "Dein Profil ist erfasst. Campus Allemagne bestätigt deinen Hochschulzugang anhand der offiziellen Regel, bevor der Bewerbungsweg festgelegt wird.",
-  }[locale];
-}
-
 function compactProgrammeLanguage(
   teachingLanguage: string,
   requirement: string,
@@ -305,6 +262,7 @@ export function OrientationOnePagePrintReport({
   locale: Locale;
 }) {
   const copy = labels[locale] as (typeof labels)["fr"];
+  const guidance = buildUniversalOrientationGuidance(answers, locale);
   const access = getAcademicAccessConclusion(answers);
   const programmeSet = getVerifiedProgrammeSet(answers);
   const options = programmeSet?.options || [];
@@ -323,10 +281,8 @@ export function OrientationOnePagePrintReport({
     ? localizedValue(answers.engineeringSpecialty, locale, engineeringSpecialtyOptions)
     : null;
   const german = answers.germanLevel || "—";
-  const conclusionText = compactConclusion(access.status, answers.bacTrack, field, locale);
   const academicAccessText = compactAcademicAccess(access.status, locale);
   const sourceInstitutions = [...new Set(options.map((option) => option.institution))];
-  const nextGerman = answers.germanLevel ? nextGermanLevel[answers.germanLevel] : null;
   const profileLine = [
     answers.bacYear ? `Bac ${answers.bacYear}` : "Bac",
     answers.bacTrack || "—",
@@ -358,9 +314,8 @@ export function OrientationOnePagePrintReport({
 
       <section className="orientation-one-page-conclusion">
         <p className="orientation-one-page-label">{copy.conclusion}</p>
-        <p className="mt-1 text-[11px] leading-[1.35]">
-          <strong>{conclusionText}</strong>
-        </p>
+        <p className="mt-1 text-[11px] font-bold leading-[1.35]">{guidance.academicTitle}</p>
+        <p className="mt-1 text-[10.5px] leading-[1.35]">{guidance.academicBody}</p>
       </section>
 
       <section className="mt-3">
@@ -376,8 +331,17 @@ export function OrientationOnePagePrintReport({
             <tr>
               <td>{copy.language}</td>
               <td>
-                <strong>{copy.languageText(german, nextGerman)}</strong>
-                <span>{copy.languageChoice}</span>
+                <strong>{guidance.priorityTitle}</strong>
+                <span>{guidance.priorityBody}</span>
+                {guidance.languageChoices.length ? (
+                  <span>{locale === "fr"
+                    ? "Choix possibles : Tunisie · en ligne · Allemagne, selon les options réellement disponibles pour votre profil."
+                    : locale === "ar"
+                      ? "الخيارات الممكنة: تونس · عن بُعد · ألمانيا، حسب الخيارات المتاحة فعليًا لملفك."
+                      : locale === "de"
+                        ? "Mögliche Wege: Tunesien · online · Deutschland, je nach tatsächlich verfügbaren Optionen."
+                        : "Possible routes: Tunisia · online · Germany, depending on the options genuinely available for your profile."}</span>
+                ) : null}
               </td>
             </tr>
             <tr>
@@ -387,17 +351,8 @@ export function OrientationOnePagePrintReport({
             <tr>
               <td>{copy.programmes}</td>
               <td>
-                <strong>
-                  {programmeSet
-                    ? options.length
-                      ? programmeSet.selectionReason === "preferred_city"
-                        ? copy.programmesTitlePreferred(programmeSet.city)
-                        : copy.programmesTitleRecommended(programmeSet.city)
-                      : programmeSet.selectionReason === "preferred_city"
-                        ? copy.noProgrammesPreferred(programmeSet.city)
-                        : copy.noProgrammesRecommended(programmeSet.city)
-                    : copy.noProgrammesRecommended(cities)}
-                </strong>
+                <strong>{guidance.cityTitle}</strong>
+                <span>{guidance.cityBody}</span>
                 {options.length ? (
                   <div className="orientation-programme-list">
                     {options.map((option) => (
@@ -413,7 +368,14 @@ export function OrientationOnePagePrintReport({
             </tr>
             <tr>
               <td>{copy.application}</td>
-              <td>{copy.applicationText}</td>
+              <td>
+                <strong>{guidance.parallelTitle}</strong>
+                <span>{guidance.parallelBody}</span>
+                <span>{guidance.timeline.now}</span>
+                <span>{guidance.timeline.next}</span>
+                <span>{guidance.timeline.then}</span>
+                <span>{guidance.timeline.afterAdmission}</span>
+              </td>
             </tr>
           </tbody>
         </table>
@@ -421,14 +383,15 @@ export function OrientationOnePagePrintReport({
 
       <section className="orientation-one-page-next">
         <p className="orientation-one-page-label">{copy.next}</p>
-        <p className="mt-1 text-[11px] font-semibold leading-[1.35]">{copy.nextText()}</p>
+        <p className="mt-1 text-[11px] font-bold leading-[1.35]">{guidance.ctaTitle}</p>
+        <p className="mt-1 text-[10.5px] leading-[1.35]">{guidance.ctaBody}</p>
       </section>
 
       <footer className="orientation-one-page-footer">
         <div>
           <strong>{copy.sources}:</strong> DAAD/ZAB
           {sourceInstitutions.length ? ` · ${sourceInstitutions.join(" · ")}` : ""}
-          {options.length ? ` · ${copy.verified} 02/10/2026` : ` · ${copy.verified} ${access.verifiedAt}`}
+          {` · ${copy.verified} ${guidance.officialSourceDate}`}
         </div>
         <p>{copy.disclaimer}</p>
       </footer>
