@@ -72,12 +72,10 @@ test.describe("Smart Orientation Partner-Ready rehearsal", () => {
       germanLevel: "A2",
     }));
 
-    await expect(page.getByRole("heading", { name: "Nous pouvons maintenant construire votre route" })).toBeVisible();
-    await expect(page.getByText("Votre niveau de langue devient une étape de la route", { exact: false })).toBeVisible();
-    await expect(page.getByText("Votre domaine demande une vérification individualisée", { exact: false })).toBeVisible();
-    await expect(page.getByText("Route prête à structurer")).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Votre orientation personnalisée" })).toBeVisible();
+    await expect(page.locator("#smart-orientation-title")).toHaveCount(0);
+    await expect(page.locator("#orientation-route-title")).toHaveCount(0);
     await expect(page.getByRole("heading", { name: "Votre orientation pour étudier en Allemagne" })).toBeVisible();
+    await expect(page.getByText("Voir les réponses utilisées")).toBeVisible();
     await expect(page.getByText("Les options détaillées sont momentanément indisponibles", { exact: false })).toHaveCount(0);
     await expect(page.locator("#orientation-prospect-capture")).toHaveCount(0);
     await assertNoSeriousA11y(page);
@@ -90,20 +88,19 @@ test.describe("Smart Orientation Partner-Ready rehearsal", () => {
       targetField: "Informatique",
       germanLevel: "A2",
     }));
-    await expect(page.getByRole("heading", { name: "Vous pouvez commencer votre préparation dès maintenant" })).toBeVisible();
-    await expect(page.getByText("À préparer dès maintenant")).toBeVisible();
-    await expect(page.getByText(/trop tôt/i)).toHaveCount(0);
-    await expect(page.getByRole("heading", { name: "Votre orientation personnalisée" })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Votre orientation pour étudier en Allemagne" })).toBeVisible();
-    await expect(page.getByText("Pour quelle rentrée souhaitez-vous commencer ?")).toBeVisible();
+    await expect(page.getByText(/trop tôt/i)).toHaveCount(0);
+    await expect(page.getByText("Pour quelle rentrée souhaitez-vous commencer ?")).toHaveCount(0);
+    await expect(page.locator("#smart-orientation-title")).toHaveCount(0);
+    await expect(page.locator("#orientation-route-title")).toHaveCount(0);
     await expect(page.getByText("Les options détaillées sont momentanément indisponibles", { exact: false })).toHaveCount(0);
 
     await showResult(page, baseAnswers({
       generalAverage: "10",
       targetField: "Économie/Gestion",
     }));
-    await expect(page.getByRole("heading", { name: "Votre projet peut déjà être préparé" })).toBeVisible();
-    await expect(page.getByText("Projet à développer")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Votre orientation pour étudier en Allemagne" })).toBeVisible();
+    await expect(page.locator("#smart-orientation-title")).toHaveCount(0);
 
     await showResult(page, baseAnswers({
       generalAverage: "",
@@ -111,7 +108,7 @@ test.describe("Smart Orientation Partner-Ready rehearsal", () => {
       targetField: "Ingénierie",
       engineeringSpecialty: "computer_engineering",
     }));
-    await expect(page.getByRole("heading", { name: "Votre projet peut déjà être préparé" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Votre orientation pour étudier en Allemagne" })).toBeVisible();
 
     const body = await page.locator("body").innerText();
     expect(body).not.toMatch(/admission garantie|visa garanti|fortes chances d.?admission/i);
@@ -150,10 +147,9 @@ test.describe("Smart Orientation Partner-Ready rehearsal", () => {
 
     await expect(page.locator("html")).toHaveAttribute("lang", "ar");
     await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
-    await expect(page.getByRole("heading", { name: "يمكنك البدء في التحضير من الآن" })).toBeVisible();
-    await expect(page.getByText("ابدأ التحضير الآن")).toBeVisible();
-    await expect(page.getByRole("heading", { name: "توجيهك الشخصي" })).toBeVisible();
     await expect(page.getByRole("heading", { name: "توجيهك للدراسة في ألمانيا" })).toBeVisible();
+    await expect(page.locator("#smart-orientation-title")).toHaveCount(0);
+    await expect(page.locator("#orientation-route-title")).toHaveCount(0);
     await assertNoSeriousA11y(page);
     await assertNoOverflow(page);
 
