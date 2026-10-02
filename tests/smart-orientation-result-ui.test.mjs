@@ -9,14 +9,15 @@ const card = read("src/components/orientation/SmartOrientationResultCard.tsx");
 const copy = read("src/content/smart-orientation-copy.ts");
 const capture = read("src/components/orientation/ProspectCaptureCard.tsx");
 
-test("SO-2 evaluates Smart Orientation and renders it before detailed diagnostic", () => {
+test("SO-2 evaluates Smart Orientation and renders the personalised route after the situation summary", () => {
   assert.match(form, /evaluateSmartOrientationPriority\(answers\)/);
   assert.match(form, /<SmartOrientationResultCard[\s\S]*result=\{smartPriority\}/);
+  assert.match(form, /<OrientationRouteCard answers=\{answers\} locale=\{locale\} \/>/);
 
   const smartIndex = form.indexOf("<SmartOrientationResultCard");
-  const diagnosticIndex = form.indexOf('aria-labelledby="orientation-diagnostic-title"');
+  const routeIndex = form.indexOf("<OrientationRouteCard");
   assert.ok(smartIndex >= 0);
-  assert.ok(diagnosticIndex > smartIndex);
+  assert.ok(routeIndex > smartIndex);
 });
 
 test("SO-2 exposes no technical priority enum to the visitor", () => {
@@ -26,8 +27,8 @@ test("SO-2 exposes no technical priority enum to the visitor", () => {
 
 test("SO-2 explains language preparation without lowering priority", () => {
   assert.match(card, /language_preparation_needed/);
-  assert.match(copy, /La langue reste une étape de préparation/);
-  assert.match(copy, /اللغة تبقى مرحلة من مراحل التحضير/);
+  assert.match(copy, /Votre niveau de langue devient une étape de la route/);
+  assert.match(copy, /مستواك اللغوي يصبح جزءًا من المسار/);
 });
 
 test("SO-2 gives sensitive fields an explicit human-review notice", () => {
