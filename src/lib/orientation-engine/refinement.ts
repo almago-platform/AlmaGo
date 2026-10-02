@@ -55,15 +55,17 @@ export function buildOrientationRefinementState(
 ): OrientationRefinementState {
   const missing: OrientationMissingInformationItem[] = [];
 
-  const degreeCompatible = evaluations.filter((evaluation) =>
-    evaluation.rules.some((rule) => rule.code === "degree_match" && rule.status === "eligible")
-  );
+  const plausibleCandidates = evaluations.filter((evaluation) => {
+    const degreeRule = evaluation.rules.find((rule) => rule.code === "degree_match");
+    const fieldRule = evaluation.rules.find((rule) => rule.code === "field_match");
+    return degreeRule?.status === "eligible" && fieldRule?.status !== "not_eligible";
+  });
 
   if (profile.targetDegree === "Master" && !profile.lastDiploma) {
     missing.push(item(
       "previous_diploma",
       "master_prior_degree_needed",
-      degreeCompatible,
+      plausibleCandidates,
     ));
   }
 
@@ -74,11 +76,11 @@ export function buildOrientationRefinementState(
     missing.push(item(
       "engineering_specialty",
       "engineering_specialty_needed",
-      degreeCompatible,
+      plausibleCandidates,
     ));
   }
 
-  const timingSensitive = degreeCompatible.filter((evaluation) =>
+  const timingSensitive = plausibleCandidates.filter((evaluation) =>
     evaluation.programme.intakeTerms.length > 0
     || Boolean(evaluation.programme.winterDeadline || evaluation.programme.summerDeadline)
   );
@@ -93,7 +95,7 @@ export function buildOrientationRefinementState(
     ));
   }
 
-  const languageSensitive = degreeCompatible.filter((evaluation) =>
+  const languageSensitive = plausibleCandidates.filter((evaluation) =>
     Boolean(evaluation.programme.teachingLanguage)
   );
   if (profile.studyLanguage === "À définir" && languageSensitive.length > 0) {
@@ -104,7 +106,7 @@ export function buildOrientationRefinementState(
     ));
   }
 
-  const citySensitive = degreeCompatible.filter((evaluation) =>
+  const citySensitive = plausibleCandidates.filter((evaluation) =>
     Boolean(evaluation.programme.university.city)
   );
   const cityChoices = [...new Set(
