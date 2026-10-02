@@ -374,14 +374,15 @@ html[dir="rtl"] .student-shell [dir="ltr"] {
 }
 
 
-.orientation-print-only {
+.orientation-print-only,
+.orientation-one-page-print {
   display: none;
 }
 
 @media print {
   @page {
     size: A4;
-    margin: 14mm;
+    margin: 10mm;
   }
 
   .orientation-print-page {
@@ -397,6 +398,130 @@ html[dir="rtl"] .student-shell [dir="ltr"] {
 
   .orientation-print-page .orientation-print-hide {
     display: none !important;
+  }
+
+  .orientation-print-page .orientation-screen-report {
+    display: none !important;
+  }
+
+  .orientation-print-page .orientation-one-page-print {
+    display: block !important;
+    width: 100%;
+    font-size: 10px;
+    line-height: 1.3;
+  }
+
+  .orientation-one-page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--brand);
+  }
+
+  .orientation-one-page-profile {
+    display: flex;
+    gap: 10px;
+    align-items: baseline;
+    margin-top: 8px;
+    padding: 7px 9px;
+    border: 1px solid #d9d3c7;
+    border-radius: 6px;
+    background: #f7f4ec;
+    font-size: 10px;
+  }
+
+  .orientation-one-page-profile b {
+    flex: 0 0 auto;
+    color: var(--brand-strong);
+  }
+
+  .orientation-one-page-conclusion {
+    margin-top: 8px;
+    padding: 8px 9px;
+    border-left: 3px solid var(--brand);
+    background: #fffdf8;
+  }
+
+  html[dir="rtl"] .orientation-one-page-conclusion {
+    border-left: 0;
+    border-right: 3px solid var(--brand);
+  }
+
+  .orientation-one-page-label {
+    margin: 0;
+    color: var(--accent-strong);
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0;
+    text-transform: uppercase;
+  }
+
+  html[dir="rtl"] .orientation-one-page-label {
+    text-transform: none;
+  }
+
+  .orientation-one-page-table {
+    width: 100%;
+    margin-top: 5px;
+    border-collapse: collapse;
+    table-layout: fixed;
+    font-size: 9.5px;
+    line-height: 1.28;
+  }
+
+  .orientation-one-page-table th,
+  .orientation-one-page-table td {
+    border: 1px solid #d9d3c7;
+    padding: 5px 6px;
+    vertical-align: top;
+  }
+
+  .orientation-one-page-table th:first-child,
+  .orientation-one-page-table td:first-child {
+    width: 22%;
+    font-weight: 800;
+  }
+
+  .orientation-one-page-table th {
+    background: #f1ece4;
+    text-align: start;
+    font-size: 9px;
+  }
+
+  .orientation-one-page-table td span {
+    display: block;
+    margin-top: 2px;
+  }
+
+  .orientation-one-page-table ul {
+    margin: 3px 0 0;
+    padding-inline-start: 14px;
+  }
+
+  .orientation-one-page-next {
+    margin-top: 8px;
+    padding: 8px 9px;
+    border: 1.5px solid var(--brand);
+    border-radius: 6px;
+  }
+
+  .orientation-one-page-footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+    margin-top: 7px;
+    padding-top: 6px;
+    border-top: 1px solid #d9d3c7;
+    color: #475569;
+    font-size: 8px;
+    line-height: 1.25;
+  }
+
+  .orientation-one-page-footer > * {
+    flex: 1;
+    margin: 0;
   }
 
   .orientation-print-page .skip-link {
