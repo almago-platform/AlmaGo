@@ -16,8 +16,8 @@ const copy = {
     optionsHelp: "Ces pistes viennent de la sélection contrôlée par AlmaGo. Elles ne constituent pas une admission.",
     roadmap: "Votre feuille de route",
     next: "Prochaine étape",
-    review: "Validation humaine obligatoire",
-    reviewText: "Un conseiller Campus Allemagne doit encore valider ou corriger ces pistes avant qu’elles deviennent votre stratégie de candidature.",
+    review: "Contrôle qualité a posteriori",
+    reviewText: "Votre résultat est disponible immédiatement. L’équipe Campus Allemagne peut revoir plus tard les sources, les faits et les pistes pour le contrôle qualité, sans bloquer ce résultat.",
     details: "Voir les faits et sources",
     verified: "Vérifié",
     reviewNeeded: "À confirmer",
@@ -33,8 +33,8 @@ const copy = {
     optionsHelp: "هذه المسارات ناتجة عن اختيار مضبوط من AlmaGo، ولا تعني قبولًا جامعيًا.",
     roadmap: "خارطة الطريق",
     next: "الخطوة التالية",
-    review: "مراجعة بشرية إلزامية",
-    reviewText: "يجب على مستشار Campus Allemagne مراجعة هذه المسارات أو تصحيحها قبل اعتمادها ضمن استراتيجية التقديم.",
+    review: "مراجعة جودة لاحقة",
+    reviewText: "نتيجة التوجيه متاحة لك فورًا. يمكن لفريق Campus Allemagne مراجعة المصادر والحقائق والمسارات لاحقًا لأغراض الجودة، من دون تعطيل هذه النتيجة.",
     details: "عرض الحقائق والمصادر",
     verified: "موثّق",
     reviewNeeded: "يحتاج إلى تأكيد",
@@ -50,8 +50,8 @@ const copy = {
     optionsHelp: "These paths come from AlmaGo’s controlled selection. They are not an admission decision.",
     roadmap: "Your roadmap",
     next: "Next step",
-    review: "Human validation required",
-    reviewText: "A Campus Allemagne counsellor still needs to validate or correct these paths before they become your application strategy.",
+    review: "Post-result quality review",
+    reviewText: "Your orientation result is available immediately. Campus Allemagne may review the sources, facts and paths later for quality control without blocking this result.",
     details: "View facts and sources",
     verified: "Verified",
     reviewNeeded: "To confirm",
@@ -67,8 +67,8 @@ const copy = {
     optionsHelp: "Diese Optionen stammen aus der kontrollierten AlmaGo-Auswahl. Sie sind keine Zulassungsentscheidung.",
     roadmap: "Dein Fahrplan",
     next: "Nächster Schritt",
-    review: "Menschliche Prüfung erforderlich",
-    reviewText: "Ein Campus-Allemagne-Berater muss diese Optionen noch bestätigen oder korrigieren, bevor sie Teil deiner Bewerbungsstrategie werden.",
+    review: "Nachgelagerte Qualitätsprüfung",
+    reviewText: "Dein Orientierungsergebnis ist sofort verfügbar. Campus Allemagne kann Quellen, Fakten und Optionen später zur Qualitätssicherung prüfen, ohne dieses Ergebnis zu blockieren.",
     details: "Fakten und Quellen anzeigen",
     verified: "Geprüft",
     reviewNeeded: "Zu bestätigen",
@@ -273,7 +273,7 @@ export function OrientationPersonalizedWriterCard({
         ) : null}
       </section>
 
-      {result.humanReview.required ? (
+      {result.humanReview.mode === "post_result_audit" ? (
         <aside className="mt-5 rounded-[var(--radius-control)] border border-amber-200 bg-amber-50/70 p-4 text-amber-950">
           <p className="text-sm font-bold">{t.review}</p>
           <p className="mt-1 text-xs leading-5">{t.reviewText}</p>
