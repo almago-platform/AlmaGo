@@ -364,7 +364,7 @@ Pricing is time-sensitive and must be rechecked before changing production provi
 2. Escalate to a stronger reasoning model only when source conflict, ambiguity or low confidence requires it.
 3. Gemini Flash is the default writer because it receives structured facts instead of doing expensive research.
 4. Cache search results and verified programme records.
-5. Avoid repeated live research for fresh programme facts.
+5. Avoid repeated live research within the current semester freshness window; major discovery refresh gates are 15 April and 15 October.
 6. Cap candidate discovery and web calls per orientation.
 7. Track provider cost per orientation.
 8. Maintain deterministic fallbacks.
@@ -448,16 +448,31 @@ A3 makes discovery cumulative instead of disposable: every useful A2 result can 
 
 Behavior:
 - query AlmaGo knowledge before OpenAI;
-- reuse research programmes seen within the last 30 days;
+- keep discovered programme records durably instead of deleting them when a semester changes;
 - reuse by programme family across different student profiles;
-- if at least 8 fresh candidates are available, skip OpenAI entirely;
-- if 1–7 candidates are available, reuse them and let A2 complete the pool;
-- if A2 is unavailable, keep a partial cache usable for B;
+- discovery freshness is **calendar-based, not rolling**;
+- the two major discovery refresh gates are **15 April** and **15 October** every year;
+- a programme discovered or rediscovered remains discovery-fresh only until the next one of those two gates;
+- crossing 15 April or 15 October makes the prior discovery cache stale for future cache-only decisions;
+- the next relevant student/request after a gate triggers fresh A2 research for that programme family when the cache no longer qualifies;
+- this is intentionally not `+180 days from the last search`: for example, a search on 2 October expires at the 15 October gate;
+- if at least 8 fresh candidates are available and explicit preferences such as city are covered, skip OpenAI entirely;
+- if 1–7 fresh candidates are available, reuse them and let A2 complete the pool;
+- if A2 is unavailable, only still-fresh partial cache is eligible for normal reuse; stale rows remain stored for history and later refresh but do not satisfy freshness;
 - save every new A2 candidate with a deterministic SHA-256 dedupe key;
 - merge sources and programme-family tags across discoveries;
 - never downgrade a future `promoted` / `rejected` review state during rediscovery;
 - persist provider requests, web-search calls, tokens, duration and source-count metadata;
+- persist `refresh_cycle` plus `next_major_refresh_at` for traceable semester freshness;
 - persist only identity-minimised search context — no name, email, phone, passport or document bytes.
+
+Semester refresh windows:
+- **15 April -> 15 October:** `summer_<year>`;
+- **15 October -> 15 April:** `winter_<year>`;
+- programme knowledge remains in AlmaGo across cycles; only its discovery-freshness status expires;
+- B still re-verifies critical facts such as deadlines, intake, language requirements, fees and application route before a student-facing recommendation.
+
+Operationally, the dates are refresh **gates**. AlmaGo does not need to launch a wasteful blanket crawl at midnight for every stored programme. The first relevant discovery after a gate refreshes the affected family, and a later scheduled sweep can be added if operations require proactive refresh without student traffic.
 
 Database:
 - `orientation_research_programs`: global reusable research-programme pool;
@@ -476,7 +491,8 @@ Implementation files:
 - `src/lib/orientation-engine/discovery/knowledge.ts`;
 - `src/lib/orientation-engine/discovery/service.ts`;
 - `tests/orientation-discovery-knowledge-cache.test.mjs`;
-- `supabase/migrations/20261002194920_orientation_discovery_knowledge_cache.sql`.
+- `supabase/migrations/20261002194920_orientation_discovery_knowledge_cache.sql`;
+- `supabase/migrations/20261002200738_orientation_discovery_semester_refresh_calendar.sql`.
 
 ### Phase B — Verification Engine
 - field-level source provenance;
