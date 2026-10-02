@@ -32,6 +32,8 @@ export type OrientationRuleCode =
   | "degree_match"
   | "field_match"
   | "language_satisfied"
+  | "teaching_language_match"
+  | "teaching_language_other"
   | "language_missing"
   | "language_insufficient"
   | "preferred_city"
