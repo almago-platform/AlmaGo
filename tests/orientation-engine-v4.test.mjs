@@ -103,10 +103,16 @@ test("Orientation V4 makes the simple letter primary and keeps technical evidenc
   assert.match(letterUi, /Premières pistes à examiner ensemble/);
 });
 
-test("Orientation V4 is integrated into the existing result rather than replacing V3.6", () => {
+test("Orientation V4 makes Bachelor first contact letter-first while retaining legacy paths elsewhere", () => {
   assert.match(form, /PersonalizedOrientationEngineCard/);
+  assert.match(form, /isBachelorFirstContact = answers\.targetDegree === "Bachelor"/);
+  assert.match(form, /Voir les réponses utilisées/);
   assert.match(form, /OrientationRouteCard/);
   assert.match(form, /OrientationOnePagePrintReport/);
+  assert.match(ui, /isBachelorFirstContact/);
+  assert.match(ui, /!isBachelorFirstContact && onRefineAnswers/);
+  assert.match(letterUi, /recommendations: OrientationProgrammeEvaluation\[\]/);
+  assert.match(letterUi, /Premières pistes à examiner ensemble/);
 });
 
 test("Orientation V4 audit documents privacy, cost and incremental conversation architecture", () => {
@@ -135,4 +141,16 @@ test("Orientation V4 minimises the profile before any AI provider call", () => {
   assert.match(intelligence, /generalAverage|average_out_of_20/);
   assert.match(intelligence, /german_level/);
   assert.match(intelligence, /preferred_cities/);
+});
+
+test("Orientation V4 never reports an outside-city warning when the student chose no city", () => {
+  assert.match(rules, /if \(profile\.preferredCities\.length > 0\)/);
+  assert.doesNotMatch(rules, /preferredCities\.length === 0[\s\S]*other_city/);
+});
+
+test("Orientation V4 never exposes raw engineering specialty keys in the deterministic letter", () => {
+  assert.match(intelligence, /specialtyLabels/);
+  assert.match(intelligence, /computer_engineering: "Informatique \/ Computer Engineering"/);
+  assert.match(intelligence, /academicOpening/);
+  assert.doesNotMatch(intelligence, /\$\{profile\.engineeringSpecialty\}/);
 });
