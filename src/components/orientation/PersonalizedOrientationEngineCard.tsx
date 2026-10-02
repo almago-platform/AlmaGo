@@ -2,27 +2,32 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { OrientationRefinementQuestionCard } from "@/components/orientation/OrientationRefinementQuestionCard";
+import { OrientationLetterCard } from "@/components/orientation/OrientationLetterCard";
 import type { Locale } from "@/lib/i18n";
 import type { PublicOrientationAnswers } from "@/lib/orientation/public";
 import type {
   OrientationAdvisorOutput,
   OrientationEngineResult,
+  OrientationLetterOutput,
   OrientationRuleCode,
+  OrientationScoutResult,
 } from "@/lib/orientation-engine/types";
 
 type EngineResponse = {
   engine: OrientationEngineResult;
   advisor: OrientationAdvisorOutput;
+  letter: OrientationLetterOutput;
+  scout: OrientationScoutResult;
 };
 
 const copy = {
   fr: {
     eyebrow: "Orientation personnalisée V4",
-    title: "Des options vérifiées pour votre profil",
-    lead: "AlmaGo filtre le catalogue avec des règles contrôlées. L’IA n’est pas utilisée pour inventer l’admission.",
-    loading: "Analyse des options vérifiées…",
-    unavailable: "Les options détaillées sont momentanément indisponibles. Votre orientation générale reste valable.",
-    catalogueGap: "Notre catalogue vérifié ne contient pas encore trois options suffisamment proches de ce profil. Nous n’inventons pas de programme pour compléter la liste.",
+    title: "Votre orientation personnalisée",
+    lead: "Une lettre simple pour comprendre votre chemin, puis choisir les universités avec Campus Allemagne.",
+    loading: "Préparation de votre orientation…",
+    unavailable: "Votre lettre détaillée est momentanément indisponible. Votre orientation générale reste valable.",
+    details: "Voir les détails vérifiés",
     why: "Pourquoi cette option apparaît",
     missing: "À vérifier ou compléter",
     sources: "Sources",
@@ -44,11 +49,11 @@ const copy = {
   },
   ar: {
     eyebrow: "توجيه شخصي V4",
-    title: "خيارات موثقة تناسب ملفك",
-    lead: "يقوم AlmaGo بتصفية الكتالوج بقواعد مضبوطة. لا تُستخدم الذكاء الاصطناعي لاختراع شروط القبول.",
-    loading: "جارٍ تحليل الخيارات الموثقة…",
-    unavailable: "الخيارات التفصيلية غير متاحة مؤقتًا. يبقى توجيهك العام صالحًا.",
-    catalogueGap: "لا يحتوي الكتالوج الموثق لدينا بعد على ثلاثة خيارات قريبة بما يكفي من هذا الملف. لا نختلق برامج لإكمال القائمة.",
+    title: "توجيهك الشخصي",
+    lead: "رسالة بسيطة تساعدك على فهم طريقك، ثم نختار الجامعات معًا مع Campus Allemagne.",
+    loading: "جارٍ إعداد توجيهك…",
+    unavailable: "رسالة التوجيه التفصيلية غير متاحة مؤقتًا. يبقى توجيهك العام صالحًا.",
+    details: "عرض التفاصيل الموثقة",
     why: "لماذا يظهر هذا الخيار",
     missing: "ما يجب التحقق منه أو استكماله",
     sources: "المصادر",
@@ -70,11 +75,11 @@ const copy = {
   },
   en: {
     eyebrow: "Personalised orientation V4",
-    title: "Verified options for your profile",
-    lead: "AlmaGo filters the catalogue with controlled rules. AI is not used to invent admission requirements.",
-    loading: "Analysing verified options…",
-    unavailable: "Detailed options are temporarily unavailable. Your general orientation remains valid.",
-    catalogueGap: "Our verified catalogue does not yet contain three sufficiently close options for this profile. We do not invent programmes to fill the list.",
+    title: "Your personalised orientation",
+    lead: "A simple letter to understand your path, then choose universities together with Campus Allemagne.",
+    loading: "Preparing your orientation…",
+    unavailable: "Your detailed orientation letter is temporarily unavailable. Your general orientation remains valid.",
+    details: "View verified details",
     why: "Why this option appears",
     missing: "To verify or complete",
     sources: "Sources",
@@ -96,11 +101,11 @@ const copy = {
   },
   de: {
     eyebrow: "Personalisierte Orientierung V4",
-    title: "Geprüfte Optionen für dein Profil",
-    lead: "AlmaGo filtert den Katalog mit kontrollierten Regeln. KI erfindet keine Zulassungsbedingungen.",
-    loading: "Geprüfte Optionen werden analysiert…",
-    unavailable: "Detaillierte Optionen sind vorübergehend nicht verfügbar. Deine allgemeine Orientierung bleibt gültig.",
-    catalogueGap: "Unser geprüfter Katalog enthält für dieses Profil noch keine drei ausreichend passenden Optionen. Wir erfinden keine Studiengänge, um die Liste zu füllen.",
+    title: "Deine persönliche Orientierung",
+    lead: "Ein einfacher Brief, der deinen Weg erklärt. Danach wählen wir die Hochschulen gemeinsam mit Campus Allemagne aus.",
+    loading: "Deine Orientierung wird vorbereitet…",
+    unavailable: "Dein ausführliches Orientierungsschreiben ist vorübergehend nicht verfügbar. Die allgemeine Orientierung bleibt gültig.",
+    details: "Geprüfte Details anzeigen",
     why: "Warum diese Option erscheint",
     missing: "Zu prüfen oder zu ergänzen",
     sources: "Quellen",
@@ -389,12 +394,11 @@ export function PersonalizedOrientationEngineCard({
 
         {state === "ready" && result ? (
           <>
-            {result.engine.recommendations.length < 3 ? (
-              <p className="mt-5 rounded-[var(--radius-control)] border border-[var(--brand-border)] bg-[var(--brand-soft)] p-4 text-sm leading-6">
-                {t.catalogueGap}
-              </p>
-            ) : null}
-
+            <OrientationLetterCard
+              letter={result.letter}
+              scout={result.scout}
+              locale={locale}
+            />
             {onRefineAnswers && result.engine.refinement.nextQuestion ? (
               <OrientationRefinementQuestionCard
                 question={result.engine.refinement.nextQuestion}
@@ -404,7 +408,9 @@ export function PersonalizedOrientationEngineCard({
               />
             ) : null}
 
-            <div className="mt-5 grid gap-4">
+            <details className="mt-5 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface)] p-4">
+              <summary className="cursor-pointer text-sm font-bold">{t.details}</summary>
+              <div className="mt-4 grid gap-4">
               {result.engine.recommendations.map((recommendation) => {
                 const sources = recommendation.sources.slice(0, 3);
                 const deadlineRule = recommendation.rules.find((rule) =>
@@ -508,6 +514,7 @@ export function PersonalizedOrientationEngineCard({
                 ))}
               </ol>
             </div>
+            </details>
           </>
         ) : null}
       </div>

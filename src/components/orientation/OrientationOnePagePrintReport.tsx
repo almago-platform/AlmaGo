@@ -334,77 +334,50 @@ export function OrientationOnePagePrintReport({
 
       <section className="orientation-one-page-conclusion">
         <p className="orientation-one-page-label">{copy.conclusion}</p>
-        <p className="mt-1 text-[11px] font-bold leading-[1.35]">{guidance.academicTitle}</p>
-        <p className="mt-1 text-[10.5px] leading-[1.35]">{guidance.academicBody}</p>
-      </section>
-
-      <section className="mt-3">
-        <p className="orientation-one-page-label">{copy.route}</p>
-        <table className="orientation-one-page-table">
-          <thead>
-            <tr>
-              <th>{copy.step}</th>
-              <th>{copy.direction}</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>{copy.language}</td>
-              <td>
-                <strong>{guidance.priorityTitle}</strong>
-                <span>{guidance.priorityBody}</span>
-                {guidance.languageChoices.length ? (
-                  <span>{locale === "fr"
-                    ? "Choix possibles : Tunisie · en ligne · Allemagne, selon les options réellement disponibles pour votre profil."
-                    : locale === "ar"
-                      ? "الخيارات الممكنة: تونس · عن بُعد · ألمانيا، حسب الخيارات المتاحة فعليًا لملفك."
-                      : locale === "de"
-                        ? "Mögliche Wege: Tunesien · online · Deutschland, je nach tatsächlich verfügbaren Optionen."
-                        : "Possible routes: Tunisia · online · Germany, depending on the options genuinely available for your profile."}</span>
-                ) : null}
-              </td>
-            </tr>
-            <tr>
-              <td>{copy.access}</td>
-              <td><strong>{academicAccessText}</strong></td>
-            </tr>
-            <tr>
-              <td>{copy.programmes}</td>
-              <td>
-                <strong>{guidance.cityTitle}</strong>
-                <span>{guidance.cityBody}</span>
-                {options.length ? (
-                  <div className="orientation-programme-list">
-                    {options.map((option) => (
-                      <div key={`${option.institution}-${option.programme}`} className="orientation-programme-item">
-                        <strong>{option.institution}</strong>
-                        <span>{option.programme} {option.degree}</span>
-                        <span>{compactProgrammeLanguage(option.teachingLanguage, option.languageRequirement, locale)}</span>
-                      </div>
-                    ))}
-                  </div>
-                ) : null}
-              </td>
-            </tr>
-            <tr>
-              <td>{copy.application}</td>
-              <td>
-                <strong>{guidance.parallelTitle}</strong>
-                <span>{guidance.parallelBody}</span>
-                <span>{guidance.timeline.now}</span>
-                <span>{guidance.timeline.next}</span>
-                <span>{guidance.timeline.then}</span>
-                <span>{guidance.timeline.afterAdmission}</span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <p className="mt-1 text-[12px] font-bold leading-[1.45]">{guidance.academicTitle}</p>
+        <p className="mt-2 text-[10.5px] leading-[1.5]">{guidance.academicBody}</p>
+        <p className="mt-2 text-[10.5px] leading-[1.5]">
+          <strong>{academicAccessText}.</strong> {guidance.priorityBody}
+        </p>
+        <p className="mt-2 text-[10.5px] leading-[1.5]">
+          {guidance.cityBody}
+        </p>
+        {options[0] ? (
+          <p className="mt-2 text-[10.5px] leading-[1.5]">
+            {locale === "fr"
+              ? "Une première piste déjà vérifiée pour préparer notre échange est "
+              : locale === "ar"
+                ? "هناك مسار أولي موثّق يمكن أن نبدأ به في نقاشنا: "
+                : locale === "de"
+                  ? "Eine erste bereits geprüfte Option als Ausgangspunkt für unser Gespräch ist "
+                  : "One first verified option to prepare our discussion is "}
+            <strong>{options[0].institution} — {options[0].programme} {options[0].degree}</strong>.
+            {" "}{compactProgrammeLanguage(
+              options[0].teachingLanguage,
+              options[0].languageRequirement,
+              locale,
+            )}
+          </p>
+        ) : (
+          <p className="mt-2 text-[10.5px] leading-[1.5]">
+            {locale === "fr"
+              ? "Campus Allemagne recherchera avec vous les premières universités à examiner. Vous n’avez pas besoin de choisir seul maintenant."
+              : locale === "ar"
+                ? "سيبحث Campus Allemagne معك عن أول الجامعات التي تستحق المراجعة. لا تحتاج إلى الاختيار وحدك الآن."
+                : locale === "de"
+                  ? "Campus Allemagne sucht mit dir die ersten Hochschulen, die wir prüfen. Du musst jetzt nicht allein entscheiden."
+                  : "Campus Allemagne will identify the first universities to review with you. You do not need to choose alone now."}
+          </p>
+        )}
+        <p className="mt-2 text-[10.5px] leading-[1.5]">
+          {guidance.parallelBody}
+        </p>
       </section>
 
       <section className="orientation-one-page-next">
         <p className="orientation-one-page-label">{copy.next}</p>
-        <p className="mt-1 text-[11px] font-bold leading-[1.35]">{guidance.ctaTitle}</p>
-        <p className="mt-1 text-[10.5px] leading-[1.35]">{guidance.ctaBody}</p>
+        <p className="mt-1 text-[11px] font-bold leading-[1.45]">{guidance.ctaTitle}</p>
+        <p className="mt-1 text-[10.5px] leading-[1.5]">{guidance.ctaBody}</p>
       </section>
 
       <footer className="orientation-one-page-footer">

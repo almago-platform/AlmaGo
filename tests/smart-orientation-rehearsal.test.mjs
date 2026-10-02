@@ -34,7 +34,8 @@ test("SO-6 browser matrix covers owner scenarios", () => {
   assert.match(spec, /Nous pouvons maintenant construire votre route/);
   assert.match(spec, /Vous pouvez commencer votre préparation dès maintenant/);
   assert.match(spec, /Votre projet peut déjà être préparé/);
-  assert.match(spec, /Des options vérifiées pour votre profil/);
+  assert.match(spec, /Votre orientation personnalisée/);
+  assert.match(spec, /Votre orientation pour étudier en Allemagne/);
   assert.match(spec, /Pour quelle rentrée souhaitez-vous commencer/);
   assert.match(spec, /targetIntakeSeason/);
   assert.match(spec, /targetIntakeYear/);

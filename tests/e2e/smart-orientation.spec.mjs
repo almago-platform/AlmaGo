@@ -76,7 +76,8 @@ test.describe("Smart Orientation Partner-Ready rehearsal", () => {
     await expect(page.getByText("Votre niveau de langue devient une étape de la route", { exact: false })).toBeVisible();
     await expect(page.getByText("Votre domaine demande une vérification individualisée", { exact: false })).toBeVisible();
     await expect(page.getByText("Route prête à structurer")).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Des options vérifiées pour votre profil" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Votre orientation personnalisée" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Votre orientation pour étudier en Allemagne" })).toBeVisible();
     await expect(page.getByText("Les options détaillées sont momentanément indisponibles", { exact: false })).toHaveCount(0);
     await expect(page.locator("#orientation-prospect-capture")).toHaveCount(0);
     await assertNoSeriousA11y(page);
@@ -92,7 +93,8 @@ test.describe("Smart Orientation Partner-Ready rehearsal", () => {
     await expect(page.getByRole("heading", { name: "Vous pouvez commencer votre préparation dès maintenant" })).toBeVisible();
     await expect(page.getByText("À préparer dès maintenant")).toBeVisible();
     await expect(page.getByText(/trop tôt/i)).toHaveCount(0);
-    await expect(page.getByRole("heading", { name: "Des options vérifiées pour votre profil" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Votre orientation personnalisée" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Votre orientation pour étudier en Allemagne" })).toBeVisible();
     await expect(page.getByText("Pour quelle rentrée souhaitez-vous commencer ?")).toBeVisible();
     await expect(page.getByText("Les options détaillées sont momentanément indisponibles", { exact: false })).toHaveCount(0);
 
@@ -150,6 +152,8 @@ test.describe("Smart Orientation Partner-Ready rehearsal", () => {
     await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
     await expect(page.getByRole("heading", { name: "يمكنك البدء في التحضير من الآن" })).toBeVisible();
     await expect(page.getByText("ابدأ التحضير الآن")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "توجيهك الشخصي" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "توجيهك للدراسة في ألمانيا" })).toBeVisible();
     await assertNoSeriousA11y(page);
     await assertNoOverflow(page);
 
