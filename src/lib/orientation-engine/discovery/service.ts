@@ -69,7 +69,7 @@ export async function runOrientationDiscovery(
         status: "hit",
         candidatesLoaded: cachedCandidates.length,
         candidatesPersisted: 0,
-      ...cacheMetadata,
+        ...cacheMetadata,
       },
     };
   }
@@ -130,7 +130,7 @@ export async function runOrientationDiscovery(
       status: initialCacheStatus,
       candidatesLoaded: 0,
       candidatesPersisted: 0,
-        ...cacheMetadata,
+      ...cacheMetadata,
     },
   };
 }
