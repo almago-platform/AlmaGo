@@ -381,6 +381,7 @@ export default async function AdminProspectsPage({
             <option value="">Tous</option>
             <option value="obtained">Obtenu</option>
             <option value="preparing">En préparation</option>
+            <option value="no_bac">Sans Bac</option>
           </select>
         </label>
 
@@ -498,7 +499,9 @@ export default async function AdminProspectsPage({
                         ? "Obtenu"
                         : answers.bacStatus === "preparing"
                           ? "En préparation"
-                          : "À compléter"}
+                          : answers.bacStatus === "no_bac"
+                            ? "Sans Bac"
+                            : "À compléter"}
                       {answers.bacYear ? ` · ${answers.bacYear}` : ""}
                     </dd>
                   </div>
