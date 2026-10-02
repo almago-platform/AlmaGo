@@ -56,13 +56,12 @@ test("Orientation V4 excludes deterministic non-matches before selecting up to t
   assert.match(service, /generatedFrom: "verified_catalogue"/);
 });
 
-test("Orientation V4 reads only verified active programme catalogue data server-side", () => {
+test("Orientation V4 reads the bounded public catalogue projection server-side", () => {
   assert.match(catalog, /import "server-only"/);
-  assert.match(catalog, /createPrivilegedSupabaseClient/);
-  assert.match(catalog, /from\("programs"\)/);
-  assert.match(catalog, /universities!inner/);
-  assert.match(catalog, /\.eq\("is_active", true\)/);
-  assert.match(catalog, /\.eq\("universities\.is_active", true\)/);
+  assert.match(catalog, /createPublicCatalogSupabaseClient/);
+  assert.match(catalog, /from\("orientation_program_catalog"\)/);
+  assert.doesNotMatch(catalog, /createPrivilegedSupabaseClient|SUPABASE_SECRET_KEY/);
+  assert.doesNotMatch(catalog, /from\("programs"\)|from\("universities"\)/);
 });
 
 test("Orientation V4 API accepts only validated orientation answers and no identity payload", () => {
