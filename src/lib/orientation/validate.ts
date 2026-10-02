@@ -36,7 +36,7 @@ export function validatePublicOrientationAnswers(value: unknown) {
   ) return null;
 
   if (answers.bacStatus !== "no_bac") {
-    if (!Number.isInteger(year) || year < 2000 || year > 2035) return null;
+    if (!Number.isInteger(year) || year < 2000 || year > 2040) return null;
     if (!allowed.bacTrack.has(answers.bacTrack)) return null;
   } else if (answers.bacYear || answers.bacTrack || answers.generalAverage) {
     return null;
@@ -67,6 +67,16 @@ export function validatePublicOrientationAnswers(value: unknown) {
   }
 
   if (!allowed.studyLanguage.has(answers.studyLanguage)) return null;
+
+  const hasIntakeSeason = answers.targetIntakeSeason !== "";
+  const hasIntakeYear = answers.targetIntakeYear !== "";
+  if (hasIntakeSeason !== hasIntakeYear) return null;
+  if (hasIntakeSeason) {
+    if (answers.targetIntakeSeason !== "winter" && answers.targetIntakeSeason !== "summer") return null;
+    const intakeYear = Number(answers.targetIntakeYear);
+    if (!Number.isInteger(intakeYear) || intakeYear < 2026 || intakeYear > 2040) return null;
+  }
+
   if (!allowed.budget.has(answers.budgetRange)) return null;
 
   if (

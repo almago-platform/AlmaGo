@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { OrientationRefinementQuestionCard } from "@/components/orientation/OrientationRefinementQuestionCard";
 import type { Locale } from "@/lib/i18n";
 import type { PublicOrientationAnswers } from "@/lib/orientation/public";
 import type {
@@ -35,6 +36,11 @@ const copy = {
       conditions_to_complete: "Intéressant, avec conditions à compléter",
     },
     actions: "Ce que vous pouvez faire maintenant",
+    intake: "Rentrée ciblée",
+    deadline: "Deadline vérifiée",
+    deadlineUnknown: "à vérifier",
+    winter: "hiver",
+    summer: "été",
   },
   ar: {
     eyebrow: "توجيه شخصي V4",
@@ -56,6 +62,11 @@ const copy = {
       conditions_to_complete: "خيار مهم مع شروط يجب استكمالها",
     },
     actions: "ما يمكنك فعله الآن",
+    intake: "موعد الدراسة المستهدف",
+    deadline: "آخر موعد موثّق",
+    deadlineUnknown: "يجب التحقق منه",
+    winter: "الشتاء",
+    summer: "الصيف",
   },
   en: {
     eyebrow: "Personalised orientation V4",
@@ -77,6 +88,11 @@ const copy = {
       conditions_to_complete: "Interesting, with conditions to complete",
     },
     actions: "What you can do now",
+    intake: "Target intake",
+    deadline: "Verified deadline",
+    deadlineUnknown: "to verify",
+    winter: "winter",
+    summer: "summer",
   },
   de: {
     eyebrow: "Personalisierte Orientierung V4",
@@ -98,6 +114,11 @@ const copy = {
       conditions_to_complete: "Interessant, mit noch offenen Bedingungen",
     },
     actions: "Was du jetzt tun kannst",
+    intake: "Geplanter Studienstart",
+    deadline: "Geprüfte Frist",
+    deadlineUnknown: "zu prüfen",
+    winter: "Winter",
+    summer: "Sommer",
   },
 } satisfies Record<Locale, unknown>;
 
@@ -115,6 +136,12 @@ const ruleLabels: Record<Locale, Partial<Record<OrientationRuleCode, string>>> =
     language_insufficient: "Votre niveau actuel est encore sous l’exigence connue.",
     teaching_language_other: "La langue d’enseignement diffère de votre préférence actuelle.",
     other_city: "Cette option se trouve hors de vos villes choisies.",
+    intake_match: "La rentrée choisie est proposée dans les données structurées du programme.",
+    intake_unavailable: "La rentrée choisie n’est pas proposée dans les données structurées du programme.",
+    intake_unknown: "La rentrée du programme ou votre rentrée cible doit encore être précisée.",
+    deadline_open: "La deadline vérifiée correspondant à cette rentrée est encore ouverte.",
+    deadline_closed: "La deadline vérifiée correspondant à cette rentrée est dépassée.",
+    deadline_to_verify: "Une date est enregistrée, mais elle ne peut pas être reliée avec certitude à l’année ciblée.",
     deadline_unknown: "Votre semestre cible n’est pas encore assez précis pour valider la deadline.",
     studienkolleg_required: "Cette option comporte une condition de Studienkolleg connue.",
     uni_assist_required: "La candidature passe par uni-assist selon la donnée actuelle.",
@@ -134,6 +161,12 @@ const ruleLabels: Record<Locale, Partial<Record<OrientationRuleCode, string>>> =
     language_insufficient: "مستواك الحالي أقل من الشرط المعروف.",
     teaching_language_other: "لغة الدراسة تختلف عن تفضيلك الحالي.",
     other_city: "هذا الخيار خارج المدن التي اخترتها.",
+    intake_match: "موعد البدء الذي اخترته موجود ضمن بيانات البرنامج المنظمة.",
+    intake_unavailable: "موعد البدء الذي اخترته غير موجود ضمن بيانات البرنامج المنظمة.",
+    intake_unknown: "يجب توضيح موعد بدء البرنامج أو موعدك المستهدف.",
+    deadline_open: "الموعد النهائي الموثّق لهذه الدورة ما زال مفتوحًا.",
+    deadline_closed: "الموعد النهائي الموثّق لهذه الدورة انتهى.",
+    deadline_to_verify: "توجد قيمة تاريخ، لكن لا يمكن ربطها بالسنة المستهدفة بثقة كافية.",
     deadline_unknown: "الفصل الدراسي المستهدف غير محدد بما يكفي للتحقق من الموعد.",
     studienkolleg_required: "هذا الخيار يتضمن شرط Studienkolleg معروفًا.",
     uni_assist_required: "التقديم يمر عبر uni-assist حسب البيانات الحالية.",
@@ -153,6 +186,12 @@ const ruleLabels: Record<Locale, Partial<Record<OrientationRuleCode, string>>> =
     language_insufficient: "Your current level is below the known requirement.",
     teaching_language_other: "The teaching language differs from your current preference.",
     other_city: "This option is outside your selected cities.",
+    intake_match: "Your target intake is offered in the programme’s structured data.",
+    intake_unavailable: "Your target intake is not offered in the programme’s structured data.",
+    intake_unknown: "The programme intake or your target intake still needs clarification.",
+    deadline_open: "The verified deadline for this intake is still open.",
+    deadline_closed: "The verified deadline for this intake has passed.",
+    deadline_to_verify: "A date is stored, but it cannot be linked to the target year with enough certainty.",
     deadline_unknown: "Your target intake is not precise enough to validate the deadline.",
     studienkolleg_required: "This option has a known Studienkolleg condition.",
     uni_assist_required: "The application uses uni-assist according to current data.",
@@ -172,6 +211,12 @@ const ruleLabels: Record<Locale, Partial<Record<OrientationRuleCode, string>>> =
     language_insufficient: "Dein aktuelles Niveau liegt unter der bekannten Anforderung.",
     teaching_language_other: "Die Unterrichtssprache weicht von deiner aktuellen Präferenz ab.",
     other_city: "Diese Option liegt außerhalb deiner gewählten Städte.",
+    intake_match: "Dein gewünschter Studienstart ist in den strukturierten Programmdaten enthalten.",
+    intake_unavailable: "Dein gewünschter Studienstart ist in den strukturierten Programmdaten nicht enthalten.",
+    intake_unknown: "Der Studienstart des Programms oder dein Zielsemester muss noch geklärt werden.",
+    deadline_open: "Die geprüfte Frist für diesen Studienstart ist noch offen.",
+    deadline_closed: "Die geprüfte Frist für diesen Studienstart ist abgelaufen.",
+    deadline_to_verify: "Ein Datum ist gespeichert, kann dem Zieljahr aber noch nicht sicher zugeordnet werden.",
     deadline_unknown: "Dein Zielsemester ist noch nicht präzise genug, um die Frist zu prüfen.",
     studienkolleg_required: "Für diese Option ist eine Studienkolleg-Bedingung bekannt.",
     uni_assist_required: "Die Bewerbung läuft laut aktuellem Datenstand über uni-assist.",
@@ -245,9 +290,11 @@ function formatDate(value: string | null, locale: Locale) {
 export function PersonalizedOrientationEngineCard({
   answers,
   locale,
+  onRefineAnswers,
 }: {
   answers: PublicOrientationAnswers;
   locale: Locale;
+  onRefineAnswers?: (patch: Partial<PublicOrientationAnswers>) => void;
 }) {
   const t = copy[locale] as (typeof copy)["fr"];
   const requestBody = useMemo(() => JSON.stringify({ answers, locale }), [answers, locale]);
@@ -308,6 +355,11 @@ export function PersonalizedOrientationEngineCard({
         <p className="eyebrow">{t.eyebrow}</p>
         <h3 id="orientation-v4-title" className="mt-2 text-xl font-bold">{t.title}</h3>
         <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">{t.lead}</p>
+        <p className="mt-2 text-xs font-semibold text-[var(--muted)]">
+          {answers.targetIntakeSeason && answers.targetIntakeYear
+            ? `${t.intake}: ${answers.targetIntakeSeason === "winter" ? t.winter : t.summer} ${answers.targetIntakeYear}`
+            : null}
+        </p>
 
         {state === "loading" ? (
           <p className="mt-5 text-sm font-semibold">{t.loading}</p>
@@ -327,9 +379,21 @@ export function PersonalizedOrientationEngineCard({
               </p>
             ) : null}
 
+            {onRefineAnswers && result.engine.refinement.nextQuestion ? (
+              <OrientationRefinementQuestionCard
+                question={result.engine.refinement.nextQuestion}
+                answers={answers}
+                locale={locale}
+                onRefine={onRefineAnswers}
+              />
+            ) : null}
+
             <div className="mt-5 grid gap-4">
               {result.engine.recommendations.map((recommendation) => {
-                const source = recommendation.sources[0] || null;
+                const sources = recommendation.sources.slice(0, 3);
+                const deadlineRule = recommendation.rules.find((rule) =>
+                  ["deadline_open", "deadline_to_verify", "deadline_unknown"].includes(rule.code)
+                ) || null;
                 const confidenceLabel = t[recommendation.informationConfidence];
                 const why = recommendation.why
                   .map((code) => ruleLabels[locale][code])
@@ -383,20 +447,34 @@ export function PersonalizedOrientationEngineCard({
                       </div>
                     ) : null}
 
-                    {source ? (
+                    {deadlineRule ? (
+                      <p className="mt-4 text-sm leading-6">
+                        <strong>{t.deadline}:</strong>{" "}
+                        {typeof deadlineRule.value === "string" && deadlineRule.value
+                          ? formatDate(deadlineRule.value, locale)
+                          : t.deadlineUnknown}
+                      </p>
+                    ) : null}
+
+                    {sources.length ? (
                       <div className="mt-4 text-xs leading-5 text-[var(--muted)]">
                         <span className="font-bold">{t.sources}: </span>
-                        <a
-                          href={source.url}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="underline underline-offset-2"
-                        >
-                          {source.label}
-                        </a>
-                        {formatDate(source.verifiedAt, locale)
-                          ? ` · ${formatDate(source.verifiedAt, locale)}`
-                          : ""}
+                        {sources.map((source, index) => (
+                          <span key={source.kind + source.url}>
+                            {index > 0 ? " · " : ""}
+                            <a
+                              href={source.url}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="underline underline-offset-2"
+                            >
+                              {source.label}
+                            </a>
+                            {formatDate(source.verifiedAt, locale)
+                              ? ` (${formatDate(source.verifiedAt, locale)})`
+                              : ""}
+                          </span>
+                        ))}
                       </div>
                     ) : null}
                   </article>

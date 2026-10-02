@@ -1,5 +1,6 @@
 import type { PublicOrientationAnswers } from "@/lib/orientation/public";
 import { getAcademicAccessConclusion } from "@/lib/orientation/verified-academic-options";
+import { evaluateOrientationDeadline } from "@/lib/orientation-engine/deadline";
 import type {
   OrientationInformationConfidence,
   OrientationProgrammeEvaluation,
@@ -242,6 +243,100 @@ function sourceRule(programme: OrientationProgrammeRecord): OrientationRuleResul
   };
 }
 
+function intakeDeadlineRules(
+  profile: PublicOrientationAnswers,
+  programme: OrientationProgrammeRecord,
+  now: Date,
+): OrientationRuleResult[] {
+  const source = sourceFromProgramme(programme) || sourceFromUniversity(programme) || undefined;
+  const hasProgrammeTiming = programme.intakeTerms.length > 0
+    || Boolean(programme.winterDeadline || programme.summerDeadline);
+  const result = evaluateOrientationDeadline(
+    {
+      targetIntakeSeason: profile.targetIntakeSeason,
+      targetIntakeYear: profile.targetIntakeYear,
+      intakeTerms: programme.intakeTerms,
+      winterDeadline: programme.winterDeadline,
+      summerDeadline: programme.summerDeadline,
+      sourceUrl: source?.url || null,
+      verifiedAt: source?.verifiedAt || null,
+    },
+    now,
+  );
+
+  const rules: OrientationRuleResult[] = [];
+
+  if (result.intakeStatus === "match") {
+    rules.push({
+      code: "intake_match",
+      status: "eligible",
+      value: profile.targetIntakeSeason,
+      source,
+    });
+  } else if (result.intakeStatus === "unavailable") {
+    rules.push({
+      code: "intake_unavailable",
+      status: "not_eligible",
+      value: profile.targetIntakeSeason,
+      source,
+    });
+  } else if (result.intakeStatus === "missing_target") {
+    rules.push({
+      code: "intake_unknown",
+      status: hasProgrammeTiming ? "missing_information" : "unknown",
+      value: "target_intake",
+      source,
+    });
+  } else {
+    rules.push({
+      code: "intake_unknown",
+      status: "unknown",
+      value: profile.targetIntakeSeason || null,
+      source,
+    });
+  }
+
+  if (result.deadlineStatus === "open") {
+    rules.push({
+      code: "deadline_open",
+      status: "eligible",
+      value: result.deadline,
+      source,
+    });
+  } else if (result.deadlineStatus === "closed") {
+    rules.push({
+      code: "deadline_closed",
+      status: "not_eligible",
+      value: result.deadline,
+      source,
+    });
+  } else if (result.deadlineStatus === "to_verify") {
+    rules.push({
+      code: "deadline_to_verify",
+      status: "missing_information",
+      value: result.deadline,
+      source,
+    });
+  } else if (result.deadlineStatus === "missing_target") {
+    rules.push({
+      code: "deadline_unknown",
+      status: hasProgrammeTiming ? "missing_information" : "unknown",
+      value: null,
+      source,
+    });
+  } else {
+    rules.push({
+      code: "deadline_unknown",
+      status: "unknown",
+      value: null,
+      source,
+    });
+  }
+
+  return rules;
+}
+
+
 function overallStatus(rules: OrientationRuleResult[]): OrientationRuleStatus {
   const eligibilityCodes = new Set<OrientationRuleCode>([
     "degree_match",
@@ -251,6 +346,8 @@ function overallStatus(rules: OrientationRuleResult[]): OrientationRuleStatus {
     "language_satisfied",
     "language_missing",
     "language_insufficient",
+    "intake_unavailable",
+    "deadline_closed",
     "studienkolleg_required",
   ]);
   const critical = rules.filter((rule) => eligibilityCodes.has(rule.code));
@@ -291,6 +388,9 @@ function recommendationCategory(
     "academic_access_review",
     "language_missing",
     "language_insufficient",
+    "intake_unknown",
+    "deadline_to_verify",
+    "deadline_unknown",
     "studienkolleg_required",
   ]);
   const hasCondition = rules.some(
@@ -328,6 +428,7 @@ function classifyCodes(
 export function evaluateProgramme(
   profile: PublicOrientationAnswers,
   programme: OrientationProgrammeRecord,
+  now: Date = new Date(),
 ): OrientationProgrammeEvaluation {
   const rules: OrientationRuleResult[] = [];
 
@@ -366,9 +467,7 @@ export function evaluateProgramme(
     rules.push({ code: "uni_assist_required", status: "eligible", value: true });
   }
 
-  if (programme.winterDeadline || programme.summerDeadline) {
-    rules.push({ code: "deadline_unknown", status: "missing_information" });
-  }
+  rules.push(...intakeDeadlineRules(profile, programme, now));
 
   rules.push({ code: "budget_not_verified", status: "unknown" });
   rules.push(sourceRule(programme));

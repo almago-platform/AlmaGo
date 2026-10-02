@@ -1,6 +1,6 @@
 import type { PublicOrientationAnswers } from "@/lib/orientation/public";
 
-export const ORIENTATION_ENGINE_VERSION = "orientation-v4-foundation-1";
+export const ORIENTATION_ENGINE_VERSION = "orientation-v4-refinement-intake-1";
 
 export type OrientationRuleStatus =
   | "eligible"
@@ -40,8 +40,12 @@ export type OrientationRuleCode =
   | "other_city"
   | "academic_access_supported"
   | "academic_access_review"
+  | "intake_match"
+  | "intake_unavailable"
+  | "intake_unknown"
   | "deadline_open"
   | "deadline_closed"
+  | "deadline_to_verify"
   | "deadline_unknown"
   | "studienkolleg_required"
   | "uni_assist_required"
@@ -66,6 +70,7 @@ export type OrientationProgrammeRecord = {
   englishLevelRequired: string | null;
   studienkollegRequired: boolean;
   uniAssistRequired: boolean;
+  intakeTerms: string[];
   winterDeadline: string | null;
   summerDeadline: string | null;
   applicationUrl: string | null;
@@ -120,6 +125,36 @@ export type OrientationActionItem = {
   programmeId?: string;
 };
 
+export type OrientationMissingFieldCode =
+  | "previous_diploma"
+  | "engineering_specialty"
+  | "target_intake"
+  | "study_language"
+  | "preferred_city";
+
+export type OrientationRefinementReasonCode =
+  | "master_prior_degree_needed"
+  | "engineering_specialty_needed"
+  | "deadline_evaluation_needs_intake"
+  | "teaching_language_choice_changes_options"
+  | "city_choice_changes_ranking";
+
+export type OrientationMissingInformationItem = {
+  field: OrientationMissingFieldCode;
+  reason: OrientationRefinementReasonCode;
+  affectedRecommendationIds: string[];
+};
+
+export type OrientationRefinementQuestion = OrientationMissingInformationItem & {
+  choices: string[];
+};
+
+export type OrientationRefinementState = {
+  missing: OrientationMissingInformationItem[];
+  nextQuestion: OrientationRefinementQuestion | null;
+};
+
+
 export type OrientationEngineResult = {
   engineVersion: string;
   profile: PublicOrientationAnswers;
@@ -127,6 +162,7 @@ export type OrientationEngineResult = {
   academicAccessSource: OrientationSource | null;
   recommendations: OrientationProgrammeEvaluation[];
   missingInformation: OrientationRuleCode[];
+  refinement: OrientationRefinementState;
   actionPlan: OrientationActionItem[];
   warnings: OrientationRuleCode[];
   generatedFrom: "verified_catalogue";
