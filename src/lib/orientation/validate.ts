@@ -84,5 +84,14 @@ export function validatePublicOrientationAnswers(value: unknown) {
     || answers.preferredCities.some((city) => !allowed.city.has(city))
   ) return null;
 
+  const masterCreditEntries = Object.entries(answers.masterSubjectCredits || {});
+  if (masterCreditEntries.length > 24) return null;
+  if (answers.targetDegree !== "Master" && masterCreditEntries.length > 0) return null;
+  for (const [subject, rawCredits] of masterCreditEntries) {
+    if (!/^[a-z0-9_]{1,80}$/.test(subject)) return null;
+    const credits = Number(rawCredits);
+    if (!Number.isFinite(credits) || credits < 0 || credits > 300) return null;
+  }
+
   return answers;
 }

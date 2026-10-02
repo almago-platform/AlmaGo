@@ -3,6 +3,7 @@ export const PUBLIC_ORIENTATION_SESSION_KEY = "almago_phase2_orientation_v1";
 export type PublicOrientationBacStatus = "" | "obtained" | "preparing" | "no_bac";
 export type PublicOrientationAverageType = "" | "official" | "current_estimate";
 export type PublicOrientationIntakeSeason = "" | "winter" | "summer";
+export type PublicOrientationMasterSubjectCredits = Record<string, string>;
 
 export type PublicOrientationAnswers = {
   bacStatus: PublicOrientationBacStatus;
@@ -21,6 +22,7 @@ export type PublicOrientationAnswers = {
   targetIntakeYear: string;
   budgetRange: string;
   preferredCities: string[];
+  masterSubjectCredits?: PublicOrientationMasterSubjectCredits;
 };
 
 export function createEmptyPublicOrientationAnswers(): PublicOrientationAnswers {
@@ -41,6 +43,7 @@ export function createEmptyPublicOrientationAnswers(): PublicOrientationAnswers 
     targetIntakeYear: "",
     budgetRange: "",
     preferredCities: [],
+    masterSubjectCredits: {},
   };
 }
 
@@ -92,6 +95,22 @@ export function restorePublicOrientationAnswers(value: unknown): PublicOrientati
         )
         .slice(0, 3)
     : [];
+  const rawMasterSubjectCredits =
+    record.masterSubjectCredits
+    && typeof record.masterSubjectCredits === "object"
+    && !Array.isArray(record.masterSubjectCredits)
+      ? record.masterSubjectCredits as Record<string, unknown>
+      : {};
+  const masterSubjectCredits = Object.fromEntries(
+    Object.entries(rawMasterSubjectCredits)
+      .filter(([key, credits]) =>
+        /^[a-z0-9_]{1,80}$/.test(key)
+        && (typeof credits === "string" || typeof credits === "number")
+        && String(credits).trim().length <= 16
+      )
+      .slice(0, 24)
+      .map(([key, credits]) => [key, String(credits).trim()]),
+  );
 
   return {
     bacStatus,
@@ -114,5 +133,6 @@ export function restorePublicOrientationAnswers(value: unknown): PublicOrientati
     targetIntakeYear: readString(record, "targetIntakeYear"),
     budgetRange: readString(record, "budgetRange"),
     preferredCities,
+    masterSubjectCredits,
   };
 }

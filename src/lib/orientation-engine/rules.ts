@@ -1,6 +1,10 @@
 import type { PublicOrientationAnswers } from "@/lib/orientation/public";
 import { getAcademicAccessConclusion } from "@/lib/orientation/verified-academic-options";
 import { evaluateOrientationDeadline } from "@/lib/orientation-engine/deadline";
+import {
+  matchMasterRequirements,
+  type MasterRequirementProfile,
+} from "@/lib/master-requirements";
 import type {
   OrientationInformationConfidence,
   OrientationProgrammeEvaluation,
@@ -243,6 +247,78 @@ function sourceRule(programme: OrientationProgrammeRecord): OrientationRuleResul
   };
 }
 
+function masterCurriculumRules(
+  profile: PublicOrientationAnswers,
+  programme: OrientationProgrammeRecord,
+  now: Date,
+): OrientationRuleResult[] {
+  if (profile.targetDegree !== "Master" || !degreeMatches(profile, programme)) return [];
+
+  const source = sourceFromProgramme(programme) || sourceFromUniversity(programme) || undefined;
+  const academicPrerequisites = programme.masterAcademicPrerequisites || [];
+  if (academicPrerequisites.length === 0) {
+    return [{
+      code: "master_curriculum_unknown",
+      status: "missing_information",
+      value: null,
+      source,
+    }];
+  }
+
+  const requirements: MasterRequirementProfile = {
+    subject_credits: academicPrerequisites.map((item) => ({
+      subject: item.subject,
+      value: item.ects,
+      source_url: source?.url || null,
+      verified_at: source?.verifiedAt || null,
+    })),
+  };
+
+  const subjectCredits = Object.fromEntries(
+    Object.entries(profile.masterSubjectCredits || {})
+      .map(([subject, rawCredits]) => [subject, Number(rawCredits)])
+      .filter((entry): entry is [string, number] => Number.isFinite(entry[1])),
+  );
+
+  const match = matchMasterRequirements(
+    {
+      current_diploma: profile.lastDiploma || null,
+      current_german_level: profile.germanLevel || null,
+      subject_credits: subjectCredits,
+    },
+    requirements,
+    now,
+  );
+
+  return match.criteria
+    .filter((criterion) => criterion.criterion.startsWith("subject_credits:"))
+    .map((criterion): OrientationRuleResult => {
+      const subject = criterion.criterion.slice("subject_credits:".length);
+      if (criterion.status === "satisfied") {
+        return {
+          code: "master_subject_credits_satisfied",
+          status: "eligible",
+          value: subject,
+          source,
+        };
+      }
+      if (criterion.status === "not_satisfied") {
+        return {
+          code: "master_subject_credits_insufficient",
+          status: "conditional",
+          value: subject,
+          source,
+        };
+      }
+      return {
+        code: "master_subject_credits_missing",
+        status: "missing_information",
+        value: subject,
+        source,
+      };
+    });
+}
+
 function intakeDeadlineRules(
   profile: PublicOrientationAnswers,
   programme: OrientationProgrammeRecord,
@@ -343,6 +419,10 @@ function overallStatus(rules: OrientationRuleResult[]): OrientationRuleStatus {
     "field_match",
     "academic_access_supported",
     "academic_access_review",
+    "master_subject_credits_satisfied",
+    "master_subject_credits_missing",
+    "master_subject_credits_insufficient",
+    "master_curriculum_unknown",
     "language_satisfied",
     "language_missing",
     "language_insufficient",
@@ -386,6 +466,9 @@ function recommendationCategory(
   const cityMatched = rules.some((rule) => rule.code === "preferred_city" && rule.status === "eligible");
   const conditionCodes = new Set<OrientationRuleCode>([
     "academic_access_review",
+    "master_subject_credits_missing",
+    "master_subject_credits_insufficient",
+    "master_curriculum_unknown",
     "language_missing",
     "language_insufficient",
     "intake_unknown",
@@ -446,6 +529,7 @@ export function evaluateProgramme(
   });
 
   rules.push(academicAccessRule(profile));
+  rules.push(...masterCurriculumRules(profile, programme, now));
   rules.push(...languageRules(profile, programme));
 
   if (profile.preferredCities.length === 0) {

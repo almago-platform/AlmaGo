@@ -38,6 +38,31 @@ test("ECTS, subject credits and grade stay unknown without student facts", () =>
   assert.equal(get(result, "subject_credits:Mathematics")?.status, "unknown");
 });
 
+test("structured ECTS can be compared without guessing course equivalence", () => {
+  const ok = matchMasterRequirements(
+    { total_ects: 180, subject_credits: { Mathematics: 24 } },
+    {
+      minimum_ects: { value: 180, ...evidence },
+      subject_credits: [{ subject: "Mathematics", value: 20, ...evidence }],
+    },
+    now,
+  );
+  const low = matchMasterRequirements(
+    { total_ects: 150, subject_credits: { Mathematics: 12 } },
+    {
+      minimum_ects: { value: 180, ...evidence },
+      subject_credits: [{ subject: "Mathematics", value: 20, ...evidence }],
+    },
+    now,
+  );
+
+  assert.equal(get(ok, "minimum_ects")?.status, "satisfied");
+  assert.equal(get(ok, "subject_credits:Mathematics")?.status, "satisfied");
+  assert.equal(get(low, "minimum_ects")?.status, "not_satisfied");
+  assert.equal(get(low, "subject_credits:Mathematics")?.status, "not_satisfied");
+  assert.equal(low.has_blocking_mismatch, true);
+});
+
 test("intake compares only structured semester families", () => {
   const ok = matchMasterRequirements({ target_intake: "Hiver 2027" }, { intake: { value: "Wintersemester", ...evidence } }, now);
   const no = matchMasterRequirements({ target_intake: "Sommersemester" }, { intake: { value: "Wintersemester", ...evidence } }, now);

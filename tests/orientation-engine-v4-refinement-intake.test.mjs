@@ -34,6 +34,7 @@ function evaluation({
   winterDeadline = "2027-07-15",
   summerDeadline = null,
   degreeMatch = true,
+  masterAcademicPrerequisites = [],
 }) {
   return {
     programme: {
@@ -42,6 +43,7 @@ function evaluation({
       intakeTerms,
       winterDeadline,
       summerDeadline,
+      masterAcademicPrerequisites,
       university: { city },
     },
     rules: [
@@ -144,6 +146,50 @@ test("refinement prioritizes the prior degree for Master projects", () => {
 
   assert.equal(result.nextQuestion?.field, "previous_diploma");
   assert.equal(result.nextQuestion?.reason, "master_prior_degree_needed");
+});
+
+test("Master refinement asks for one verified subject-credit fact after the prior degree", () => {
+  const result = buildOrientationRefinementState(
+    profile({
+      targetDegree: "Master",
+      lastDiploma: "Licence",
+      masterSubjectCredits: {},
+    }),
+    [evaluation({
+      id: "master-1",
+      masterAcademicPrerequisites: [
+        { subject: "mathematics_ects", ects: 18 },
+        { subject: "theoretical_computer_science_ects", ects: 12 },
+      ],
+    })],
+  );
+
+  assert.equal(result.nextQuestion?.field, "master_subject_credits");
+  assert.equal(result.nextQuestion?.reason, "master_subject_credits_needed");
+  assert.equal(result.nextQuestion?.subjectKey, "mathematics_ects");
+  assert.equal(result.nextQuestion?.requiredEcts, 18);
+});
+
+test("Master refinement moves on once subject-credit answers are available", () => {
+  const result = buildOrientationRefinementState(
+    profile({
+      targetDegree: "Master",
+      lastDiploma: "Licence",
+      masterSubjectCredits: {
+        mathematics_ects: "20",
+        theoretical_computer_science_ects: "12",
+      },
+    }),
+    [evaluation({
+      id: "master-1",
+      masterAcademicPrerequisites: [
+        { subject: "mathematics_ects", ects: 18 },
+        { subject: "theoretical_computer_science_ects", ects: 12 },
+      ],
+    })],
+  );
+
+  assert.equal(result.nextQuestion?.field, "target_intake");
 });
 
 test("refinement asks only for target intake when it is the most useful missing fact", () => {
