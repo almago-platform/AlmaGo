@@ -56,9 +56,13 @@ type ProfileCopy = {
 };
 
 const optionLabels: Record<Locale, Record<string, string>> = {
-  fr: {},
+  fr: {
+    none: "Aucun",
+    secondary_other: "Diplôme secondaire autre que le Bac tunisien",
+  },
   ar: {
     none: "لا يوجد",
+    secondary_other: "شهادة ثانوية أخرى غير البكالوريا التونسية",
     other: "أخرى",
     Informatique: "علوم الحاسوب",
     Ingénierie: "الهندسة",
@@ -116,6 +120,7 @@ const optionLabels: Record<Locale, Record<string, string>> = {
   },
   en: {
     none: "None",
+    secondary_other: "Other secondary-school qualification",
     other: "Other",
     Informatique: "Computer Science",
     Ingénierie: "Engineering",
