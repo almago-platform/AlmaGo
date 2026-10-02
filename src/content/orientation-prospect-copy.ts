@@ -40,7 +40,7 @@ const fr: OrientationProspectCopy = {
   report: {
     label: "Rapport Campus Allemagne",
     title: "Mon orientation Allemagne",
-    subtitle: "Votre profil, vos pistes et les vérifications à faire avant de préparer un dossier.",
+    subtitle: "Votre profil, votre route personnalisée et la répartition claire des prochaines étapes.",
     print: "Enregistrer mon rapport en PDF",
     printHelp: "Le bouton ouvre l’impression du navigateur. Choisissez « Enregistrer au format PDF ».",
   },
@@ -76,7 +76,7 @@ const ar: OrientationProspectCopy = {
   report: {
     label: "تقرير Campus Allemagne",
     title: "توجيهي للدراسة في ألمانيا",
-    subtitle: "ملفك والمسارات المقترحة والنقاط التي يجب التحقق منها قبل بدء الملف.",
+    subtitle: "ملفك ومسارك الشخصي وتوزيع واضح للخطوات القادمة.",
     print: "حفظ تقريري بصيغة PDF",
     printHelp: "سيتم فتح نافذة الطباعة. اختر الحفظ بصيغة PDF.",
   },
@@ -112,7 +112,7 @@ const en: OrientationProspectCopy = {
   report: {
     label: "Campus Allemagne report",
     title: "My Germany orientation",
-    subtitle: "Your profile, paths to explore and checks to make before preparing an application file.",
+    subtitle: "Your profile, personalised route and a clear split of the next steps.",
     print: "Save my report as PDF",
     printHelp: "Your browser print dialog will open. Choose “Save as PDF”.",
   },
@@ -148,7 +148,7 @@ const de: OrientationProspectCopy = {
   report: {
     label: "Campus Allemagne Bericht",
     title: "Meine Deutschland-Orientierung",
-    subtitle: "Dein Profil, mögliche Wege und Punkte, die vor der Dossiervorbereitung geprüft werden sollten.",
+    subtitle: "Dein Profil, deine persönliche Route und eine klare Aufteilung der nächsten Schritte.",
     print: "Bericht als PDF speichern",
     printHelp: "Der Druckdialog deines Browsers öffnet sich. Wähle „Als PDF speichern“.",
   },
