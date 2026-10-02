@@ -32,6 +32,7 @@ import {
   budgetOptions,
   degreeOptions,
   diplomaOptions,
+  engineeringSpecialtyOptions,
   languageLevelOptions,
   studyFieldOptions,
   studyLanguageOptions,
@@ -126,9 +127,17 @@ export default async function OrientationReportPage({
   const diplomas = localizeProfileOptions(locale, diplomaOptions);
   const degrees = localizeProfileOptions(locale, degreeOptions);
   const fields = localizeProfileOptions(locale, studyFieldOptions);
+  const engineeringSpecialties = localizeProfileOptions(locale, engineeringSpecialtyOptions);
   const levels = localizeProfileOptions(locale, languageLevelOptions);
   const studyLanguages = localizeProfileOptions(locale, studyLanguageOptions);
   const budgets = localizeProfileOptions(locale, budgetOptions);
+
+  const engineeringSpecialtyLabel = {
+    fr: "Spécialité d’ingénierie",
+    ar: "تخصص الهندسة",
+    en: "Engineering specialisation",
+    de: "Ingenieurfachrichtung",
+  }[locale];
 
   const summaryRows = [
     [copy.summary.labels.bacStatus, answers.bacStatus ? copy.bacStatus[answers.bacStatus] : "—"],
@@ -138,6 +147,9 @@ export default async function OrientationReportPage({
     [copy.summary.labels.diploma, localizedValue(answers.lastDiploma, diplomas)],
     [copy.summary.labels.degree, localizedValue(answers.targetDegree, degrees)],
     [copy.summary.labels.field, localizedValue(answers.targetField, fields)],
+    ...(answers.targetField === "Ingénierie"
+      ? [[engineeringSpecialtyLabel, localizedValue(answers.engineeringSpecialty, engineeringSpecialties)]]
+      : []),
     [copy.summary.labels.german, localizedValue(answers.germanLevel, levels)],
     [copy.summary.labels.english, localizedValue(answers.englishLevel, levels)],
     [copy.summary.labels.studyLanguage, localizedValue(answers.studyLanguage, studyLanguages)],
