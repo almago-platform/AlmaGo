@@ -535,8 +535,8 @@ function unsupportedRiskClaim(
   if (/https?:\/\//i.test(text)) return true;
 
   const admissionPromises = [
-    /admission\s+garantie/i,
-    /acceptation\s+garantie/i,
+    /admission\s+(?:est\s+)?garantie/i,
+    /acceptation\s+(?:est\s+)?garantie/i,
     /vous\s+serez\s+admis/i,
     /garantie\s+d['’]admission/i,
     /guaranteed\s+admission/i,
@@ -554,14 +554,42 @@ function unsupportedRiskClaim(
   }
 
   const outputNumbers = text.match(/\b\d+(?:[.,]\d+)?\b/g) || [];
-  if (outputNumbers.some((number) => !contextText.includes(number))) {
+  const contextNumbers = new Set(
+    contextText.match(/\b\d+(?:[.,]\d+)?\b/g) || [],
+  );
+  if (outputNumbers.some((number) => !contextNumbers.has(number))) {
     return true;
   }
 
-  if (/studienkolleg/i.test(text) && !/studienkolleg/i.test(contextText)) {
+  const programmeFacts = context.FAITS_VERIFIES.programmes.flatMap(
+    (programme) => [
+      ...programme.verified_facts,
+      ...programme.facts_to_review,
+    ],
+  );
+
+  const studienkollegSupported =
+    programmeFacts.some(
+      (item) =>
+        item.field === "studienkolleg_requirement"
+        && item.value === true,
+    )
+    || context.FAITS_VERIFIES.programmes.some((programme) =>
+      programme.warnings.includes("studienkolleg_review")
+    );
+
+  if (/studienkolleg/i.test(text) && !studienkollegSupported) {
     return true;
   }
-  if (/uni[-\s]?assist/i.test(text) && !/uni[_-]?assist/i.test(contextText)) {
+
+  const uniAssistSupported = programmeFacts.some(
+    (item) =>
+      item.field === "application_route"
+      && typeof item.value === "string"
+      && /uni[_-]?assist/i.test(item.value),
+  );
+
+  if (/uni[-\s]?assist/i.test(text) && !uniAssistSupported) {
     return true;
   }
 
