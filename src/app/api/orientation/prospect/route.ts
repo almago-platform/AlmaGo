@@ -242,12 +242,19 @@ export async function POST(request: Request) {
     ).toString();
     const signupUrl = new URL("/signup", baseUrl);
     signupUrl.searchParams.set("orientation_token", resume.token);
+    const interestUrl = contactConsent
+      ? new URL(
+          `/orientation/continue/${encodeURIComponent(interest.token)}`,
+          baseUrl,
+        ).toString()
+      : null;
 
     const emailContent = buildOrientationProspectEmail({
       locale,
       diagnostic,
       reportUrl,
       signupUrl: signupUrl.toString(),
+      interestUrl,
     });
 
     const delivery = await sendTransactionalEmail({

@@ -27,8 +27,15 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid request." }, { status: 400 });
   }
 
-  const token = (body as Record<string, unknown>).token;
-  if (typeof token !== "string") {
+  const record = body as Record<string, unknown>;
+  const token = record.token;
+  const source = record.source === "email_followup"
+    ? "email_followup"
+    : record.source === undefined || record.source === "orientation_result"
+      ? "orientation_result"
+      : null;
+
+  if (typeof token !== "string" || !source) {
     return NextResponse.json({ error: "Invalid request." }, { status: 400 });
   }
 
@@ -63,7 +70,7 @@ export async function POST(request: Request) {
         prospect_id: orientation.prospect_id,
         orientation_id: orientation.id,
         signal: "wants_support",
-        source: "orientation_result",
+        source,
         signal_version: SIGNAL_VERSION,
       });
 
