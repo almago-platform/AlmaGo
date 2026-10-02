@@ -9,6 +9,18 @@ export async function runOrientationVerification(
   candidates: readonly OrientationDiscoveryResearchCandidate[],
 ): Promise<OrientationVerificationServiceResult> {
   const result = await runOpenAIOrientationVerification(candidates);
+
+  console.info("orientation_v4_provider", JSON.stringify({
+    stage: "verification",
+    provider: result.provider,
+    status: result.status,
+    reason: result.reason,
+    requests: result.usage.requests,
+    webSearchCalls: result.usage.webSearchCalls,
+    candidatesConsidered: result.candidatesConsidered,
+    candidatesVerified: result.candidatesVerified,
+  }));
+
   const persistence = await persistOrientationVerification(result);
 
   return {
