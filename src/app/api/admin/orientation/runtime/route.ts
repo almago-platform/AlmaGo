@@ -26,7 +26,7 @@ export async function GET() {
   const supabaseUrlPresent = Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL);
   const supabaseSecretKeyPresent = Boolean(process.env.SUPABASE_SECRET_KEY);
   const supabaseServiceRoleKeyPresent = Boolean(
-    process.env.SUPABASE_SERVICE_ROLE_KEY,
+    process.env.SUPABASE_SERVICE_ROLE_KEY
   );
   const openAiKeyPresent = Boolean(process.env.OPENAI_API_KEY);
   const geminiKeyPresent = Boolean(process.env.GEMINI_API_KEY);
