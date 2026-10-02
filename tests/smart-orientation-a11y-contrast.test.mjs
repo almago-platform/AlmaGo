@@ -19,8 +19,9 @@ test("orientation PDF helper text uses AA-safe foreground on subtle surfaces", (
 });
 
 
-test("Smart result disclaimer and diagnostic headline use AA-safe foreground text", () => {
+test("Smart result disclaimer and route guidance use AA-safe foreground text", () => {
   const smartCard = readFileSync("src/components/orientation/SmartOrientationResultCard.tsx", "utf8");
+  const routeCard = readFileSync("src/components/orientation/OrientationRouteCard.tsx", "utf8");
   assert.match(
     smartCard,
     /text-xs leading-5 text-\[var\(--foreground\)\][^>]*>\s*\{copy\.disclaimer\}/,
@@ -29,11 +30,7 @@ test("Smart result disclaimer and diagnostic headline use AA-safe foreground tex
     smartCard,
     /text-xs leading-5 text-\[var\(--muted\)\][^>]*>\s*\{copy\.disclaimer\}/,
   );
-
-  for (const source of [publicForm, reportPage]) {
-    assert.match(
-      source,
-      /text-sm leading-6 text-\[var\(--foreground\)\][^>]*>\s*\{diagnosticCopy\.headlines\[/,
-    );
-  }
+  assert.match(routeCard, /text-sm leading-6 text-\[var\(--foreground\)\]/);
+  assert.match(publicForm, /<OrientationRouteCard/);
+  assert.match(reportPage, /<OrientationRouteCard/);
 });
