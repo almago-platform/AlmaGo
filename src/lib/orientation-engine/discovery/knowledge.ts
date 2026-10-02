@@ -5,6 +5,7 @@ import {
   buildOrientationDiscoveryProfileFingerprint,
   buildOrientationDiscoverySearchContext,
   buildOrientationResearchProgrammeDedupeKey,
+  getOrientationDiscoveryRefreshWindow,
   orientationDegreeCompatible,
 } from "@/lib/orientation-engine/discovery/knowledge-core";
 import type {
@@ -13,8 +14,8 @@ import type {
   OrientationDiscoveryResearchResult,
 } from "@/lib/orientation-engine/discovery/types";
 
-export const ORIENTATION_KNOWLEDGE_FRESHNESS_DAYS = 30;
 export const ORIENTATION_KNOWLEDGE_MIN_CANDIDATES = 8;
+export const ORIENTATION_MAJOR_REFRESH_DATES = ["04-15", "10-15"] as const;
 const MAX_KNOWLEDGE_SCAN = 60;
 
 type ResearchProgramRow = {
@@ -30,6 +31,8 @@ type ResearchProgramRow = {
   source_urls: string[] | null;
   family_ids: string[] | null;
   research_status: string;
+  refresh_cycle: string;
+  next_major_refresh_at: string;
 };
 
 export type OrientationKnowledgeEntry = {
@@ -75,12 +78,6 @@ function familyIds(plan: OrientationDiscoveryPlan) {
   return [...new Set(plan.programmeFamilies.map((family) => family.id))].slice(0, 16);
 }
 
-function freshnessCutoff(now = new Date()) {
-  return new Date(
-    now.getTime() - ORIENTATION_KNOWLEDGE_FRESHNESS_DAYS * 24 * 60 * 60 * 1000,
-  ).toISOString();
-}
-
 export async function loadOrientationDiscoveryKnowledge(
   plan: OrientationDiscoveryPlan,
 ): Promise<OrientationKnowledgeLoadResult> {
@@ -109,9 +106,12 @@ export async function loadOrientationDiscoveryKnowledge(
       "source_urls",
       "family_ids",
       "research_status",
+      "refresh_cycle",
+      "next_major_refresh_at",
     ].join(","))
     .in("research_status", ["research_candidate", "needs_review", "promoted"])
-    .gte("last_seen_at", freshnessCutoff())
+    .gt("next_major_refresh_at", new Date().toISOString())
+    .order("next_major_refresh_at", { ascending: false })
     .order("last_seen_at", { ascending: false })
     .limit(MAX_KNOWLEDGE_SCAN);
 
@@ -158,12 +158,6 @@ function mergedStringArray(
   ])].slice(0, limit);
 }
 
-function freshUntil(now = new Date()) {
-  return new Date(
-    now.getTime() + ORIENTATION_KNOWLEDGE_FRESHNESS_DAYS * 24 * 60 * 60 * 1000,
-  ).toISOString();
-}
-
 async function insertDiscoveryRun({
   plan,
   provider,
@@ -181,6 +175,8 @@ async function insertDiscoveryRun({
 }) {
   const supabase = knowledgeClient();
   if (!supabase) return false;
+
+  const refreshWindow = getOrientationDiscoveryRefreshWindow();
 
   const { data: run, error: runError } = await supabase
     .from("orientation_discovery_runs")
@@ -200,7 +196,8 @@ async function insertDiscoveryRun({
       total_tokens: usage.totalTokens,
       source_urls_seen: usage.sourceUrlsSeen,
       duration_ms: usage.durationMs,
-      fresh_until: freshUntil(),
+      refresh_cycle: refreshWindow.cycle,
+      next_major_refresh_at: refreshWindow.nextMajorRefreshAt,
     })
     .select("id")
     .single();
@@ -272,6 +269,7 @@ export async function persistOrientationDiscoveryResearch(
   );
   const families = familyIds(plan);
   const now = new Date().toISOString();
+  const refreshWindow = getOrientationDiscoveryRefreshWindow(new Date(now));
 
   const rows = result.candidates.map((candidate) => {
     const dedupeKey = buildOrientationResearchProgrammeDedupeKey(candidate);
@@ -308,6 +306,8 @@ export async function persistOrientationDiscoveryResearch(
       last_seen_at: now,
       last_provider: "openai",
       last_model: result.model,
+      refresh_cycle: refreshWindow.cycle,
+      next_major_refresh_at: refreshWindow.nextMajorRefreshAt,
       updated_at: now,
     };
   });
