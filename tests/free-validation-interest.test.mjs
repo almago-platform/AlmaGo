@@ -4,6 +4,10 @@ import test from "node:test";
 
 const read = (path) => readFileSync(path, "utf8");
 const migration = read("supabase/migrations/0047_free_validation_interest_signal.sql");
+const migrationSql = migration
+  .split("\n")
+  .filter((line) => !line.trim().startsWith("--"))
+  .join("\n");
 const token = read("src/lib/phase2/free-validation-interest-token.ts");
 const captureRoute = read("src/app/api/orientation/prospect/route.ts");
 const interestRoute = read("src/app/api/orientation/interest/route.ts");
@@ -69,7 +73,7 @@ test("FVL-1 copy clearly states free validation and no automatic document access
 });
 
 test("FVL-1 never changes commercial lifecycle, payment, qualification or document access", () => {
-  for (const source of [migration, interestRoute]) {
+  for (const source of [migrationSql, interestRoute]) {
     assert.doesNotMatch(
       source,
       /qualified_prospect|payment_pending|paid_pending_validation|client_active|customer_access|student-documents|storage\.objects/i,
