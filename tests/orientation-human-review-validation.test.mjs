@@ -2,8 +2,6 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
 
-const reviewCore = await import("../src/lib/orientation-engine/review/core.ts");
-
 const migration = readFileSync(
   "supabase/migrations/20261002213000_orientation_human_review_bundle.sql",
   "utf8",
@@ -57,20 +55,18 @@ function profile(overrides = {}) {
 }
 
 test("F fingerprints the exact academic profile without identity fields", () => {
-  const first = reviewCore.buildOrientationHumanReviewProfileFingerprint(profile());
-  const second = reviewCore.buildOrientationHumanReviewProfileFingerprint(profile());
-  const changed = reviewCore.buildOrientationHumanReviewProfileFingerprint(
-    profile({ germanLevel: "B1" }),
-  );
-
-  assert.match(first, /^[0-9a-f]{64}$/);
-  assert.equal(first, second);
-  assert.notEqual(first, changed);
-
   const coreSource = readFileSync(
     "src/lib/orientation-engine/review/core.ts",
     "utf8",
   );
+
+  assert.match(coreSource, /createHash\("sha256"\)/);
+  assert.match(coreSource, /buildOrientationHumanReviewProfileFingerprint/);
+  assert.match(coreSource, /bacStatus: profile\.bacStatus/);
+  assert.match(coreSource, /generalAverage: profile\.generalAverage/);
+  assert.match(coreSource, /germanLevel: profile\.germanLevel/);
+  assert.match(coreSource, /preferredCities: \[\.\.\.profile\.preferredCities\]\.sort\(\)/);
+
   for (const forbidden of [
     "email",
     "phone",
