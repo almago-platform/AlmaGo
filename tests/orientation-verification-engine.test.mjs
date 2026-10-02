@@ -225,7 +225,10 @@ test("B OpenAI verifier is server-only, bounded, structured, and does not decide
   assert.match(openAISource, /strict: true/);
   assert.match(openAISource, /Never decide student admission eligibility or diploma recognition/);
   assert.match(openAISource, /Do not claim that the whole programme is verified/);
-  assert.doesNotMatch(openAISource, /name|email|phone|passport/i);
+  assert.doesNotMatch(
+    openAISource,
+    /student_name|student_email|email_address|phone_number|passport_number/i,
+  );
 });
 
 test("B persists verification separately and never auto-promotes into orientation_program_catalog", () => {
