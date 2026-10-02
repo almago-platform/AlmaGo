@@ -32,6 +32,7 @@ export const prospectQualificationReasonCodes = [
   "average_missing",
   "prior_diploma_missing",
   "bac_in_preparation",
+  "no_bac_academic_access",
   "first_degree_incomplete",
   "german_language_gap",
   "english_language_gap",
@@ -150,12 +151,15 @@ export function evaluateProspectQualification(
     pushUnique(reasonCodes, "english_level_missing");
   }
 
-  if (!answers.generalAverage) {
+  if (answers.bacStatus !== "no_bac" && !answers.generalAverage) {
     pushUnique(missingFields, "generalAverage");
     pushUnique(reasonCodes, "average_missing");
   }
 
-  if (answers.targetDegree === "Master" && !answers.lastDiploma) {
+  if (
+    (answers.targetDegree === "Master" || answers.bacStatus === "no_bac")
+    && !answers.lastDiploma
+  ) {
     pushUnique(missingFields, "lastDiploma");
     pushUnique(reasonCodes, "prior_diploma_missing");
   }
@@ -180,6 +184,10 @@ export function evaluateProspectQualification(
       verificationRequirements,
       nextAction: "continue_preparation",
     };
+  }
+
+  if (answers.bacStatus === "no_bac") {
+    pushUnique(reasonCodes, "no_bac_academic_access");
   }
 
   if (
