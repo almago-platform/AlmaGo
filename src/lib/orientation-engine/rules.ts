@@ -76,6 +76,15 @@ function normalize(value: string | null | undefined) {
   return (value || "").trim().toLowerCase();
 }
 
+function canonicalCity(value: string | null | undefined) {
+  const normalized = normalize(value);
+  const aliases: Record<string, string> = {
+    sarrebruck: "saarbrücken",
+    saarbrucken: "saarbrücken",
+  };
+  return aliases[normalized] || normalized;
+}
+
 function requiredLevel(value: string | null) {
   if (!value) return null;
   const match = value.toUpperCase().match(/\b(A1|A2|B1|B2|C1|C2)\b/);
@@ -342,7 +351,7 @@ export function evaluateProgramme(
     rules.push({ code: "other_city", status: "unknown", value: programme.university.city });
   } else if (
     programme.university.city
-    && profile.preferredCities.some((city) => normalize(city) === normalize(programme.university.city))
+    && profile.preferredCities.some((city) => canonicalCity(city) === canonicalCity(programme.university.city))
   ) {
     rules.push({ code: "preferred_city", status: "eligible", value: programme.university.city });
   } else {
