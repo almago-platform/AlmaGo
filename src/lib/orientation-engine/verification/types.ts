@@ -22,6 +22,7 @@ export type OrientationVerificationSourceKind =
 export type OrientationVerificationFactKey =
   | "programme_exists"
   | "degree_level"
+  | "city"
   | "teaching_language"
   | "german_language_requirement"
   | "english_language_requirement"
