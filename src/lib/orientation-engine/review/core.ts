@@ -3,7 +3,7 @@ import { createHash } from "node:crypto";
 import type { PublicOrientationAnswers } from "@/lib/orientation/public";
 import {
   buildOrientationResearchProgrammeDedupeKey,
-} from "../discovery/knowledge-core.ts";
+} from "@/lib/orientation-engine/discovery/knowledge-core";
 import type {
   OrientationDiscoveryPlan,
   OrientationDiscoveryResult,
