@@ -234,12 +234,24 @@ function sourceRule(programme: OrientationProgrammeRecord): OrientationRuleResul
 }
 
 function overallStatus(rules: OrientationRuleResult[]): OrientationRuleStatus {
-  if (rules.some((rule) => rule.status === "not_eligible")) return "not_eligible";
-  if (rules.some((rule) => rule.status === "conditional")) return "conditional";
-  if (rules.some((rule) => rule.status === "missing_information")) return "missing_information";
-  if (rules.some((rule) => rule.status === "unknown")) return "unknown";
+  const eligibilityCodes = new Set<OrientationRuleCode>([
+    "degree_match",
+    "field_match",
+    "academic_access_supported",
+    "academic_access_review",
+    "language_satisfied",
+    "language_missing",
+    "language_insufficient",
+    "studienkolleg_required",
+  ]);
+  const critical = rules.filter((rule) => eligibilityCodes.has(rule.code));
 
-  const allEligible = rules.length > 0 && rules.every(
+  if (critical.some((rule) => rule.status === "not_eligible")) return "not_eligible";
+  if (critical.some((rule) => rule.status === "conditional")) return "conditional";
+  if (critical.some((rule) => rule.status === "missing_information")) return "missing_information";
+  if (critical.some((rule) => rule.status === "unknown")) return "unknown";
+
+  const allEligible = critical.length > 0 && critical.every(
     (rule) => rule.status === "eligible" || rule.status === "likely_eligible",
   );
   return allEligible ? "likely_eligible" : "unknown";
