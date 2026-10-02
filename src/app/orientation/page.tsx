@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { unstable_noStore as noStore } from "next/cache";
 import { cookies } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import { PublicOrientationForm } from "@/components/orientation/PublicOrientationForm";
@@ -16,6 +17,9 @@ import {
   isPhase2EmailDeliveryEnabled,
   isPhase2ProspectCaptureEnabled,
 } from "@/lib/phase2/config";
+
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export async function generateMetadata(): Promise<Metadata> {
   const [store, publicOrigin] = await Promise.all([cookies(), getPublicOrigin()]);
@@ -46,6 +50,8 @@ export default async function OrientationPage({
     ref?: string | string[];
   }>;
 }) {
+  noStore();
+
   if (!isPhase2AccessEnabled()) notFound();
 
   const params = await searchParams;
