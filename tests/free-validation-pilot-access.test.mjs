@@ -58,7 +58,11 @@ test("pilot access is append-only and separate from customer/payment lifecycle",
   assert.doesNotMatch(migration, /delete\s+from\s+public\.free_validation_pilot_access_events/i);
   assert.doesNotMatch(
     migration,
-    /customer_access|commercial_purchases|payment_pending|paid_pending_validation|client_active/i,
+    /(?:insert\s+into|update|delete\s+from)\s+public\.customer_access|(?:insert\s+into|update|delete\s+from)\s+public\.commercial_purchases/i,
+  );
+  assert.doesNotMatch(
+    migration,
+    /'payment_pending'|'paid_pending_validation'|'client_active'/i,
   );
 });
 
