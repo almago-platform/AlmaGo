@@ -22,12 +22,6 @@ select
   p.application_url,
   p.source_url as programme_source_url,
   p.verified_at as programme_verified_at,
-  case
-    when lower(p.degree_level) = 'master'
-      and jsonb_typeof(p.requirements -> 'academic_prerequisites') = 'object'
-    then p.requirements -> 'academic_prerequisites'
-    else '{}'::jsonb
-  end as master_academic_prerequisites,
   u.id as university_id,
   u.name as university_name,
   u.city as university_city,
@@ -36,7 +30,13 @@ select
   u.is_public as university_is_public,
   u.website_url as university_website_url,
   u.source_url as university_source_url,
-  u.verified_at as university_verified_at
+  u.verified_at as university_verified_at,
+  case
+    when lower(p.degree_level) = 'master'
+      and jsonb_typeof(p.requirements -> 'academic_prerequisites') = 'object'
+    then p.requirements -> 'academic_prerequisites'
+    else '{}'::jsonb
+  end as master_academic_prerequisites
 from public.programs p
 join public.universities u on u.id = p.university_id
 where p.is_active
