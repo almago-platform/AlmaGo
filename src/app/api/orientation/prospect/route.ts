@@ -6,6 +6,7 @@ import { buildOrientationProspectEmail } from "@/lib/orientation/prospect-email"
 import { validatePublicOrientationAnswers } from "@/lib/orientation/validate";
 import { createOrientationResumeToken } from "@/lib/orientation/resume-token";
 import { evaluateSmartOrientationPriority } from "@/lib/phase2/smart-orientation";
+import { linkOrientationHumanReview } from "@/lib/orientation-engine/review/store";
 import { createFreeValidationInterestToken } from "@/lib/phase2/free-validation-interest-token";
 import {
   isPhase2EmailDeliveryEnabled,
@@ -91,6 +92,10 @@ export async function POST(request: Request) {
   const answers = validatePublicOrientationAnswers(record.answers);
   const privacyAcknowledged = record.privacyAcknowledged === true;
   const contactConsent = record.contactConsent === true;
+  const reviewId =
+    typeof record.reviewId === "string" && record.reviewId.length <= 64
+      ? record.reviewId
+      : null;
   const locale = normalizeLocale(typeof record.locale === "string" ? record.locale : null);
   const acquisitionRecord = record.acquisition && typeof record.acquisition === "object"
     ? record.acquisition as Record<string, unknown>
@@ -180,6 +185,14 @@ export async function POST(request: Request) {
       .single();
 
     if (orientationError) throw orientationError;
+
+    if (reviewId) {
+      await linkOrientationHumanReview({
+        reviewId,
+        profile: answers,
+        orientationId: String(orientation.id),
+      }).catch(() => false);
+    }
 
     if (!isPhase2EmailDeliveryEnabled()) {
       return NextResponse.json({ saved: true, delivery: "disabled", interestToken: interest.token }, { status: 201 });
