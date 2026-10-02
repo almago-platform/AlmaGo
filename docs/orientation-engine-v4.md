@@ -429,3 +429,44 @@ The projection explicitly excludes internal catalogue notes and every student/pr
 Runtime Orientation reads this projection with the existing Supabase publishable key through a server-only client. It does not use `SUPABASE_SECRET_KEY`.
 
 This keeps the public engine independent from the privileged Phase 2 persistence boundary while preserving RLS/grant separation on the underlying tables.
+
+
+## 15. Master curricular compatibility increment
+
+This increment reuses the existing deterministic Master-requirements matcher instead of creating a parallel admission system.
+
+### Bounded programme data
+
+The public Orientation catalogue projection now exposes only the structured
+`requirements.academic_prerequisites` object for verified Master programmes.
+The full `programs.requirements` JSON, internal notes and student data remain outside the public projection.
+
+Only finite positive ECTS values with bounded machine-readable keys are consumed by V4.
+
+### Student-side structured facts
+
+The evolving Orientation profile can now store self-declared ECTS by prerequisite category in
+`masterSubjectCredits`.
+
+These values stay inside the same structured Orientation profile. They are validated server-side,
+bounded in count and numeric range, and are not sent to an LLM.
+
+### Deterministic comparison
+
+For a verified Master prerequisite, the engine can return:
+
+- `master_subject_credits_satisfied`: declared credits reach the verified minimum;
+- `master_subject_credits_missing`: the relevant student credit fact is still missing;
+- `master_subject_credits_insufficient`: declared credits are below the verified minimum;
+- `master_curriculum_unknown`: the programme does not yet have sufficiently structured subject prerequisites.
+
+A self-declared credit count below a published minimum is treated as a condition requiring attention,
+not as a final university admission decision. AlmaGo does not infer course equivalence from titles.
+
+### Incremental UX
+
+After the previous degree is known, refinement asks for at most one relevant subject-credit fact at a time.
+The question is derived only from structured prerequisites attached to still-plausible Master options.
+Once answered, the same deterministic engine recalculates immediately.
+
+No runtime LLM is enabled by this increment and the Rules Engine remains zero-token.
