@@ -79,7 +79,7 @@ export function evaluateOrientationDeadline(
   const hasTarget = Boolean(input.targetIntakeSeason)
     && Number.isInteger(targetYear)
     && targetYear >= 2026
-    && targetYear <= 2035;
+    && targetYear <= 2040;
 
   if (!hasTarget) {
     return {
