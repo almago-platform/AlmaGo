@@ -56,11 +56,83 @@ function preferredCity(profile: PublicOrientationAnswers) {
   return profile.preferredCities?.[0] || null;
 }
 
-function degreeAndField(profile: PublicOrientationAnswers) {
+const specialtyLabels: Record<Locale, Record<string, string>> = {
+  fr: {
+    computer_engineering: "Informatique / Computer Engineering",
+    electrical_electronics: "Électrique / Électronique",
+    mechanical: "Mécanique",
+    mechatronics_robotics: "Mécatronique / Robotique",
+    civil: "Génie civil",
+    industrial_production: "Industriel / Production",
+    automotive: "Automobile",
+    aerospace: "Aéronautique / Aérospatial",
+    energy: "Énergie",
+  },
+  ar: {
+    computer_engineering: "هندسة الحاسوب / Computer Engineering",
+    electrical_electronics: "الهندسة الكهربائية / الإلكترونية",
+    mechanical: "الهندسة الميكانيكية",
+    mechatronics_robotics: "الميكاترونيك / الروبوتات",
+    civil: "الهندسة المدنية",
+    industrial_production: "الهندسة الصناعية / الإنتاج",
+    automotive: "هندسة السيارات",
+    aerospace: "الطيران / الفضاء",
+    energy: "الطاقة",
+  },
+  en: {
+    computer_engineering: "Computer Engineering",
+    electrical_electronics: "Electrical / Electronics Engineering",
+    mechanical: "Mechanical Engineering",
+    mechatronics_robotics: "Mechatronics / Robotics",
+    civil: "Civil Engineering",
+    industrial_production: "Industrial / Production Engineering",
+    automotive: "Automotive Engineering",
+    aerospace: "Aerospace Engineering",
+    energy: "Energy Engineering",
+  },
+  de: {
+    computer_engineering: "Computer Engineering",
+    electrical_electronics: "Elektrotechnik / Elektronik",
+    mechanical: "Maschinenbau",
+    mechatronics_robotics: "Mechatronik / Robotik",
+    civil: "Bauingenieurwesen",
+    industrial_production: "Industrie / Produktion",
+    automotive: "Fahrzeugtechnik",
+    aerospace: "Luft- und Raumfahrt",
+    energy: "Energietechnik",
+  },
+};
+
+function degreeAndField(locale: Locale, profile: PublicOrientationAnswers) {
   const specialty = profile.targetField === "Ingénierie" && profile.engineeringSpecialty
-    ? ` / ${profile.engineeringSpecialty}`
+    ? specialtyLabels[locale][profile.engineeringSpecialty] || profile.engineeringSpecialty
     : "";
-  return `${profile.targetDegree} · ${profile.targetField}${specialty}`;
+  return specialty
+    ? `${profile.targetDegree} · ${profile.targetField} — ${specialty}`
+    : `${profile.targetDegree} · ${profile.targetField}`;
+}
+
+function academicOpening(locale: Locale, profile: PublicOrientationAnswers) {
+  if (profile.bacStatus === "no_bac") {
+    const lastDiploma = profile.lastDiploma || "";
+    return {
+      fr: `Votre point de départ est ${lastDiploma || "à préciser"}.`,
+      ar: `نقطة انطلاقك الدراسية هي ${lastDiploma || "بحاجة إلى توضيح"}.`,
+      en: `Your current academic starting point is ${lastDiploma || "to be confirmed"}.`,
+      de: `Dein aktueller akademischer Ausgangspunkt ist ${lastDiploma || "noch zu klären"}.`,
+    }[locale];
+  }
+
+  const track = profile.bacTrack || "";
+  const year = profile.bacYear || "";
+  const average = profile.generalAverage ? `${profile.generalAverage}/20` : "";
+
+  return {
+    fr: `Avec votre Bac ${track || "tunisien"}${year ? ` obtenu en ${year}` : ""}${average ? ` avec une moyenne de ${average}` : ""}, votre projet peut déjà être organisé de manière concrète.`,
+    ar: `بشهادة البكالوريا ${track || "التونسية"}${year ? ` لسنة ${year}` : ""}${average ? ` وبمعدل ${average}` : ""}، يمكننا بالفعل تنظيم مشروعك بشكل عملي.`,
+    en: `With your ${track || "Tunisian"} Baccalaureate${year ? ` from ${year}` : ""}${average ? ` and an average of ${average}` : ""}, your project can already be organised concretely.`,
+    de: `Mit deinem ${track || "tunesischen"} Baccalauréat${year ? ` aus dem Jahr ${year}` : ""}${average ? ` und einem Durchschnitt von ${average}` : ""} kann dein Vorhaben bereits konkret geplant werden.`,
+  }[locale];
 }
 
 function deterministicLetter(
@@ -69,15 +141,14 @@ function deterministicLetter(
   engineResult: OrientationEngineResult,
 ): OrientationLetterOutput {
   const city = preferredCity(profile);
-  const first = engineResult.recommendations[0] || null;
-  const verifiedOption = first
-    ? `${first.programme.university.name} — ${first.programme.name}`
-    : null;
+  const hasVerifiedOption = engineResult.recommendations.length > 0;
+  const project = degreeAndField(locale, profile);
+  const opening = academicOpening(locale, profile);
 
   const copy = {
     fr: {
       title: "Votre orientation pour étudier en Allemagne",
-      intro: `Votre projet est clair : ${degreeAndField(profile)}. Votre profil scolaire, votre niveau de langue et vos préférences nous donnent déjà une base concrète pour organiser la suite.`,
+      intro: `${opening} Vous souhaitez poursuivre en ${project}. Votre profil scolaire, votre niveau de langue et vos préférences nous donnent déjà une base concrète pour organiser la suite.`,
       academic: engineResult.academicAccessStatus === "likely_eligible"
         ? "Votre accès académique dispose déjà d’une base officielle vérifiée. La décision finale reste toujours celle de l’université."
         : "Votre accès académique doit encore être confirmé avec la règle officielle correspondant exactement à votre situation. Nous le vérifierons avec vous avant toute candidature.",
@@ -85,14 +156,14 @@ function deterministicLetter(
       city: city
         ? `Vous préférez étudier à ${city}. Nous gardons cette ville comme priorité, tout en restant ouverts à d’autres villes si elles offrent une meilleure piste pour votre projet.`
         : "Vous n’avez pas encore fixé de ville. C’est un avantage à ce stade : nous pouvons comparer plusieurs villes avant de retenir les meilleures pistes.",
-      option: verifiedOption
-        ? `Une première piste déjà vérifiée dans notre catalogue est ${verifiedOption}. Elle sert de point de départ ; nous comparerons d’autres possibilités avec vous avant de choisir les candidatures.`
+      option: hasVerifiedOption
+        ? "Nous avons déjà identifié des premières pistes à examiner. Elles servent de point de départ ; nous les comparerons avec vous avant de choisir les candidatures."
         : "Nous allons maintenant chercher des premières pistes adaptées à votre projet. L’objectif n’est pas de vous faire choisir seul, mais de préparer ensemble une sélection sérieuse avant les candidatures.",
       closing: "Votre prochaine étape est simple : continuer la préparation de la langue et du dossier, puis choisir avec Campus Allemagne les universités à vérifier et les candidatures à préparer.",
     },
     ar: {
       title: "توجيهك للدراسة في ألمانيا",
-      intro: `مشروعك واضح: ${degreeAndField(profile)}. ملفك الدراسي ومستواك اللغوي وتفضيلاتك تعطينا أساسًا عمليًا لتنظيم الخطوات القادمة.`,
+      intro: `${opening} ترغب في متابعة ${project}. ملفك الدراسي ومستواك اللغوي وتفضيلاتك تعطينا أساسًا عمليًا لتنظيم الخطوات القادمة.`,
       academic: engineResult.academicAccessStatus === "likely_eligible"
         ? "يوجد أساس رسمي موثّق لمسارك الأكاديمي. ويبقى قرار القبول النهائي دائمًا من اختصاص الجامعة."
         : "يجب تأكيد مسارك الأكاديمي وفق القاعدة الرسمية التي تنطبق بدقة على حالتك، وسنتحقق من ذلك معك قبل أي تقديم.",
@@ -100,14 +171,14 @@ function deterministicLetter(
       city: city
         ? `تفضّل الدراسة في ${city}. سنعتبر هذه المدينة أولوية، مع إبقاء مدن أخرى مفتوحة إذا كانت توفر مسارًا أفضل لمشروعك.`
         : "لم تحدد مدينة بعد، وهذا مفيد في هذه المرحلة لأنه يسمح لنا بمقارنة عدة مدن قبل اختيار أفضل المسارات.",
-      option: verifiedOption
-        ? `لدينا نقطة بداية موثقة في دليلنا: ${verifiedOption}. هي مجرد نقطة انطلاق، وسنقارن معك خيارات أخرى قبل اختيار طلبات التقديم.`
+      option: hasVerifiedOption
+        ? "لدينا بالفعل مسارات أولية تستحق المراجعة. هي نقطة انطلاق، وسنقارنها معك قبل اختيار طلبات التقديم."
         : "سنبدأ الآن بالبحث عن مسارات أولية تناسب مشروعك. الهدف ليس أن تختار وحدك، بل أن نبني معًا قائمة جدية قبل التقديم.",
       closing: "الخطوة التالية بسيطة: واصل تحضير اللغة والملف، ثم نختار معك الجامعات التي سنراجعها وطلبات التقديم التي سنجهزها.",
     },
     en: {
       title: "Your orientation for studying in Germany",
-      intro: `Your project is clear: ${degreeAndField(profile)}. Your academic profile, language level and preferences already give us a concrete base for the next steps.`,
+      intro: `${opening} You want to continue with ${project}. Your academic profile, language level and preferences already give us a concrete base for the next steps.`,
       academic: engineResult.academicAccessStatus === "likely_eligible"
         ? "Your academic route already has a verified official basis. The final admission decision always remains with the university."
         : "Your academic access still needs to be confirmed against the official rule that applies exactly to your situation. We will verify it with you before any application.",
@@ -115,14 +186,14 @@ function deterministicLetter(
       city: city
         ? `You prefer ${city}. We will keep it as a priority while staying open to other cities if they offer a stronger path for your project.`
         : "You have not fixed a city yet. That is useful at this stage because we can compare several places before selecting the strongest paths.",
-      option: verifiedOption
-        ? `One first option already verified in our catalogue is ${verifiedOption}. It is a starting point; we will compare other possibilities with you before choosing applications.`
+      option: hasVerifiedOption
+        ? "We have already identified first paths worth examining. They are a starting point; we will compare them with you before choosing applications."
         : "We will now look for first programme paths that fit your project. The goal is not to make you choose alone, but to prepare a serious shortlist together before applications.",
       closing: "Your next step is simple: continue preparing the language and documents, then choose with Campus Allemagne which universities to verify and which applications to prepare.",
     },
     de: {
       title: "Deine Orientierung für ein Studium in Deutschland",
-      intro: `Dein Projekt ist klar: ${degreeAndField(profile)}. Dein schulisches Profil, deine Sprachen und deine Wünsche geben uns bereits eine konkrete Grundlage für die nächsten Schritte.`,
+      intro: `${opening} Du möchtest mit ${project} weitermachen. Dein schulisches Profil, deine Sprachen und deine Wünsche geben uns bereits eine konkrete Grundlage für die nächsten Schritte.`,
       academic: engineResult.academicAccessStatus === "likely_eligible"
         ? "Für deinen Hochschulzugang gibt es bereits eine geprüfte offizielle Grundlage. Die endgültige Zulassungsentscheidung trifft immer die Hochschule."
         : "Dein Hochschulzugang muss noch mit der genau passenden offiziellen Regel bestätigt werden. Das prüfen wir gemeinsam vor einer Bewerbung.",
@@ -130,8 +201,8 @@ function deterministicLetter(
       city: city
         ? `Du bevorzugst ${city}. Diese Stadt bleibt Priorität, aber wir halten andere Städte offen, wenn sie eine bessere Studienoption für dein Projekt bieten.`
         : "Du hast noch keine Stadt festgelegt. Das ist in dieser Phase hilfreich, weil wir mehrere Orte vergleichen können, bevor wir die besten Optionen auswählen.",
-      option: verifiedOption
-        ? `Eine erste bereits geprüfte Option in unserem Katalog ist ${verifiedOption}. Sie ist ein Ausgangspunkt; vor Bewerbungen vergleichen wir gemeinsam weitere Möglichkeiten.`
+      option: hasVerifiedOption
+        ? "Wir haben bereits erste Studienoptionen identifiziert, die wir gemeinsam prüfen können. Sie sind ein Ausgangspunkt; vor Bewerbungen vergleichen wir weitere Möglichkeiten."
         : "Wir suchen jetzt nach ersten Studienoptionen, die zu deinem Projekt passen. Du sollst nicht allein entscheiden; wir erstellen gemeinsam eine seriöse Auswahl vor den Bewerbungen.",
       closing: "Der nächste Schritt ist einfach: Sprache und Unterlagen weiter vorbereiten und anschließend gemeinsam mit Campus Allemagne die zu prüfenden Hochschulen und Bewerbungen auswählen.",
     },
