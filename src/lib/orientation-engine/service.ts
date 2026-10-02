@@ -1,0 +1,144 @@
+import type { PublicOrientationAnswers } from "@/lib/orientation/public";
+import { getAcademicAccessConclusion } from "@/lib/orientation/verified-academic-options";
+import { evaluateProgramme, rankProgrammeEvaluations } from "@/lib/orientation-engine/rules";
+import {
+  ORIENTATION_ENGINE_VERSION,
+  type OrientationActionItem,
+  type OrientationEngineResult,
+  type OrientationProgrammeRecord,
+  type OrientationRuleCode,
+  type OrientationRuleStatus,
+  type OrientationSource,
+} from "@/lib/orientation-engine/types";
+
+const levelRank: Record<string, number> = {
+  none: 0,
+  A1: 1,
+  A2: 2,
+  B1: 3,
+  B2: 4,
+  C1: 5,
+  C2: 6,
+};
+
+function academicAccess(profile: PublicOrientationAnswers): {
+  status: OrientationRuleStatus;
+  source: OrientationSource | null;
+} {
+  const access = getAcademicAccessConclusion(profile);
+  const source: OrientationSource = {
+    kind: "daad_zab",
+    label: "DAAD/ZAB",
+    url: access.sourceUrl,
+    verifiedAt: access.verifiedAt,
+  };
+
+  if (access.status === "direct_subject_restricted") {
+    return { status: "likely_eligible", source };
+  }
+  if (access.status === "verified_subject_mismatch") {
+    return { status: "conditional", source };
+  }
+  return { status: "missing_information", source };
+}
+
+function needsLevel(current: string, target: string) {
+  return (levelRank[current] ?? -1) < (levelRank[target] ?? Number.POSITIVE_INFINITY);
+}
+
+function actionPlan(
+  profile: PublicOrientationAnswers,
+  recommendations: OrientationEngineResult["recommendations"],
+  academicStatus: OrientationRuleStatus,
+): OrientationActionItem[] {
+  const actions: OrientationActionItem[] = [];
+
+  if (academicStatus !== "likely_eligible" && academicStatus !== "eligible") {
+    actions.push({ code: "confirm_academic_access", phase: "now" });
+  }
+
+  if (
+    (profile.studyLanguage === "Allemand" || profile.studyLanguage === "Allemand et anglais")
+    && needsLevel(profile.germanLevel, "B2")
+  ) {
+    actions.push({ code: "improve_german", phase: "now" });
+  }
+
+  if (
+    (profile.studyLanguage === "Anglais" || profile.studyLanguage === "Allemand et anglais")
+    && needsLevel(profile.englishLevel, "B2")
+  ) {
+    actions.push({ code: "improve_english", phase: "now" });
+  }
+
+  actions.push({ code: "prepare_academic_documents", phase: "now" });
+
+  if (recommendations.length > 0) {
+    actions.push({ code: "verify_programme_requirements", phase: "next" });
+  }
+
+  if (
+    recommendations.some((recommendation) =>
+      recommendation.rules.some((rule) => rule.code === "language_missing")
+    )
+  ) {
+    actions.push({ code: "verify_language_certificate", phase: "next" });
+  }
+
+  if (recommendations.some((recommendation) => recommendation.programme.uniAssistRequired)) {
+    actions.push({ code: "prepare_uni_assist", phase: "next" });
+  }
+
+  if (
+    recommendations.some((recommendation) =>
+      Boolean(recommendation.programme.winterDeadline || recommendation.programme.summerDeadline)
+    )
+  ) {
+    actions.push({ code: "watch_deadline", phase: "next" });
+  }
+
+  actions.push({ code: "prepare_financing", phase: "next" });
+  actions.push({ code: "prepare_visa_after_admission", phase: "after_admission" });
+
+  return actions;
+}
+
+function uniqueCodes(codes: OrientationRuleCode[]) {
+  return [...new Set(codes)];
+}
+
+export function buildOrientationEngineResult(
+  profile: PublicOrientationAnswers,
+  catalogue: OrientationProgrammeRecord[],
+): OrientationEngineResult {
+  const academic = academicAccess(profile);
+  const evaluations = rankProgrammeEvaluations(
+    catalogue.map((programme) => evaluateProgramme(profile, programme)),
+  );
+
+  const recommendations = evaluations.slice(0, 3);
+  const missingInformation = uniqueCodes(
+    recommendations.flatMap((recommendation) => recommendation.missingInformation),
+  );
+  const warnings = uniqueCodes(
+    recommendations.flatMap((recommendation) => recommendation.warnings),
+  );
+
+  if (academic.status === "missing_information") {
+    missingInformation.unshift("academic_access_review");
+  } else if (academic.status === "conditional") {
+    warnings.unshift("academic_access_review");
+  }
+
+  return {
+    engineVersion: ORIENTATION_ENGINE_VERSION,
+    profile,
+    academicAccessStatus: academic.status,
+    academicAccessSource: academic.source,
+    recommendations,
+    missingInformation: uniqueCodes(missingInformation),
+    actionPlan: actionPlan(profile, recommendations, academic.status),
+    warnings: uniqueCodes(warnings),
+    generatedFrom: "verified_catalogue",
+  };
+}
