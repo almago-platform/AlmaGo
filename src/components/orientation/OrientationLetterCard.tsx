@@ -15,7 +15,7 @@ const copy = {
     pisteNote: "Ces pistes servent de point de départ. Campus Allemagne vérifiera avec vous les conditions officielles avant de choisir les candidatures.",
     source: "Page officielle",
     closing: "Prochaine étape",
-    verified: "Piste vérifiée",
+    verified: "Piste documentée",
     research: "Piste à vérifier ensemble",
     verifiedReason: "Cette piste est proche de votre projet. Nous vérifierons ensemble les conditions de langue et de candidature.",
     alternativeLanguage: (language: string) => `Alternative intéressante en ${language}. Elle diffère de votre préférence actuelle, mais mérite d’être comparée.`,
@@ -26,7 +26,7 @@ const copy = {
     pisteNote: "هذه المسارات هي نقطة بداية. سيتحقق Campus Allemagne معك من الشروط الرسمية قبل اختيار طلبات التقديم.",
     source: "الصفحة الرسمية",
     closing: "الخطوة التالية",
-    verified: "مسار موثّق",
+    verified: "مسار موثّق بالمصادر",
     research: "مسار نتحقق منه معًا",
     verifiedReason: "هذا المسار قريب من مشروعك. سنتحقق معك من شروط اللغة والتقديم.",
     alternativeLanguage: (language: string) => `مسار بديل مثير للاهتمام باللغة ${language}. يختلف عن تفضيلك الحالي، لكنه يستحق المقارنة.`,
@@ -37,7 +37,7 @@ const copy = {
     pisteNote: "These paths are a starting point. Campus Allemagne will verify the official conditions with you before applications are chosen.",
     source: "Official page",
     closing: "Next step",
-    verified: "Verified path",
+    verified: "Documented path",
     research: "Path to verify together",
     verifiedReason: "This path is close to your project. We will verify the language and application conditions together.",
     alternativeLanguage: (language: string) => `An interesting alternative in ${language}. It differs from your current preference, but is worth comparing.`,
@@ -48,7 +48,7 @@ const copy = {
     pisteNote: "Diese Optionen sind ein Ausgangspunkt. Campus Allemagne prüft mit dir die offiziellen Bedingungen, bevor Bewerbungen ausgewählt werden.",
     source: "Offizielle Seite",
     closing: "Nächster Schritt",
-    verified: "Geprüfte Option",
+    verified: "Dokumentierte Option",
     research: "Gemeinsam zu prüfende Option",
     verifiedReason: "Diese Option passt grundsätzlich zu deinem Projekt. Sprache und Bewerbungsbedingungen prüfen wir gemeinsam.",
     alternativeLanguage: (language: string) => `Eine interessante Alternative auf ${language}. Sie weicht von deiner aktuellen Präferenz ab, ist aber einen Vergleich wert.`,
@@ -84,6 +84,22 @@ function studyLanguageMismatch(answers: PublicOrientationAnswers, teachingLangua
   return false;
 }
 
+function firstContactPreferenceScore(
+  answers: PublicOrientationAnswers,
+  recommendation: OrientationProgrammeEvaluation,
+) {
+  let score = 0;
+  if (!studyLanguageMismatch(answers, recommendation.programme.teachingLanguage)) score += 2;
+  if (
+    answers.preferredCities.length > 0
+    && recommendation.programme.university.city
+    && answers.preferredCities.some(
+      (city) => city.toLowerCase() === recommendation.programme.university.city?.toLowerCase(),
+    )
+  ) score += 3;
+  return score;
+}
+
 export function OrientationLetterCard({
   letter,
   scout,
@@ -99,7 +115,15 @@ export function OrientationLetterCard({
 }) {
   const t = copy[locale];
 
-  const verifiedPistes = recommendations.slice(0, 3).map((recommendation) => ({
+  const verifiedPistes = recommendations
+    .map((recommendation, index) => ({ recommendation, index }))
+    .sort((a, b) =>
+      firstContactPreferenceScore(answers, b.recommendation)
+      - firstContactPreferenceScore(answers, a.recommendation)
+      || a.index - b.index
+    )
+    .slice(0, 3)
+    .map(({ recommendation }) => ({
     key: `verified-${recommendation.programme.id}`,
     institution: recommendation.programme.university.name,
     programme: recommendation.programme.name,
