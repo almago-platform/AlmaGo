@@ -274,7 +274,7 @@ function masterCurriculumRules(
   };
 
   const subjectCredits = Object.fromEntries(
-    Object.entries(profile.masterSubjectCredits)
+    Object.entries(profile.masterSubjectCredits || {})
       .map(([subject, rawCredits]) => [subject, Number(rawCredits)])
       .filter((entry): entry is [string, number] => Number.isFinite(entry[1])),
   );
