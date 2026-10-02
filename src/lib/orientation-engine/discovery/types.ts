@@ -122,7 +122,10 @@ export type OrientationDiscoveryKnowledgeCache = {
   status: OrientationDiscoveryKnowledgeCacheStatus;
   candidatesLoaded: number;
   candidatesPersisted: number;
-  freshnessDays: number;
+  refreshCadence: "semester";
+  majorRefreshDates: readonly ["04-15", "10-15"];
+  refreshCycle: `summer_${number}` | `winter_${number}`;
+  nextMajorRefreshAt: string;
 };
 
 export type OrientationDiscoveryResult = {
