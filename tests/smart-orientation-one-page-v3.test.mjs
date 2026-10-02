@@ -87,7 +87,7 @@ test("SO-V3.3 never labels a fallback recommendation as the student's chosen cit
   assert.match(guidance, /programmeSet\.selectionReason === "preferred_city"/);
   assert.match(guidance, /Votre choix de ville/);
   assert.match(guidance, /Première suggestion de ville/);
-  assert.match(report, /guidance\.cityTitle/);
+  assert.match(report, /guidance\.cityBody/);
 });
 
 
