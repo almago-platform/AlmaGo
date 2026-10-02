@@ -6,6 +6,7 @@ import { buildOrientationProspectEmail } from "@/lib/orientation/prospect-email"
 import { restorePublicOrientationAnswers } from "@/lib/orientation/public";
 import { createOrientationResumeToken } from "@/lib/orientation/resume-token";
 import { evaluateSmartOrientationPriority } from "@/lib/phase2/smart-orientation";
+import { createFreeValidationInterestToken } from "@/lib/phase2/free-validation-interest-token";
 import {
   isPhase2EmailDeliveryEnabled,
   isPhase2ProspectCaptureEnabled,
@@ -147,6 +148,7 @@ export async function POST(request: Request) {
   const diagnostic = buildPublicOrientationDiagnostic(answers);
   const smartPriority = evaluateSmartOrientationPriority(answers);
   const resume = createOrientationResumeToken();
+  const interest = createFreeValidationInterestToken();
 
   let supabase;
   try {
@@ -213,6 +215,8 @@ export async function POST(request: Request) {
         result: diagnostic,
         resume_token_hash: resume.hash,
         resume_token_expires_at: resume.expiresAt,
+        free_validation_interest_token_hash: interest.hash,
+        free_validation_interest_token_expires_at: interest.expiresAt,
       })
       .select("id")
       .single();
@@ -220,7 +224,7 @@ export async function POST(request: Request) {
     if (orientationError) throw orientationError;
 
     if (!isPhase2EmailDeliveryEnabled()) {
-      return NextResponse.json({ saved: true, delivery: "disabled" }, { status: 201 });
+      return NextResponse.json({ saved: true, delivery: "disabled", interestToken: interest.token }, { status: 201 });
     }
 
     const baseUrl = publicSiteUrl();
@@ -229,7 +233,7 @@ export async function POST(request: Request) {
         .from("orientations")
         .update({ delivery_attempted_at: new Date().toISOString() })
         .eq("id", orientation.id);
-      return NextResponse.json({ saved: true, delivery: "unavailable" }, { status: 201 });
+      return NextResponse.json({ saved: true, delivery: "unavailable", interestToken: interest.token }, { status: 201 });
     }
 
     const reportUrl = new URL(
@@ -270,7 +274,7 @@ export async function POST(request: Request) {
       .eq("id", orientation.id);
 
     return NextResponse.json(
-      { saved: true, delivery: delivery.status },
+      { saved: true, delivery: delivery.status, interestToken: interest.token },
       { status: 201 },
     );
   } catch {
