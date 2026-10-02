@@ -331,19 +331,15 @@ test.describe("Smart Orientation Partner-Ready rehearsal", () => {
       }
     }
 
-    expect(primaryPayload?.personalized?.reviewId).toBeTruthy();
-
-    const immediateReviewId = String(primaryPayload.personalized.reviewId);
-    const immediateReviewPrefix = immediateReviewId.slice(0, 8);
-
-    // Browser proof: the candidate sees the result while every F audit is still untouched.
+    // Browser proof comes before any admin session or runtime configuration check:
+    // the candidate result must never depend on Phase F audit availability.
     await showResult(page, primary);
     await expect(
       page.getByRole("heading", { name: "Votre orientation pour étudier en Allemagne" }),
     ).toBeVisible({ timeout: 90_000 });
     await expect(page.getByText(/attente.*admin|approbation.*admin/i)).toHaveCount(0);
 
-    if ((primaryPayload.personalized?.selected?.length || 0) > 0) {
+    if ((primaryPayload?.personalized?.selected?.length || 0) > 0) {
       await expect(page.getByText("Contrôle qualité a posteriori")).toBeVisible();
       await expect(page.getByText(/résultat est disponible immédiatement/i)).toBeVisible();
     }
@@ -351,12 +347,15 @@ test.describe("Smart Orientation Partner-Ready rehearsal", () => {
     const candidateTextBeforeAudit = await page.locator("#orientation-report").innerText();
     expect(candidateTextBeforeAudit.length).toBeGreaterThan(100);
 
-    // Only now does an admin session start. The action is on a synthetic E2E review,
-    // and is intentionally a "changes requested" audit rather than a student-facing publication.
+    // Only now does an admin session start. Runtime diagnostics expose presence/flags
+    // as booleans only — never key values — so live failures are actionable without
+    // weakening the server-only secret boundary.
     const adminContext = await browser.newContext({
       baseURL: process.env.ALMAGO_BASE_URL || "http://127.0.0.1:3000",
     });
     const adminPage = await adminContext.newPage();
+    let runtime = null;
+    let immediateReviewPrefix = null;
 
     try {
       await loginWithRedactedPassword(
@@ -365,6 +364,36 @@ test.describe("Smart Orientation Partner-Ready rehearsal", () => {
         adminPassword,
         "admin",
       );
+
+      const runtimeResponse = await adminPage.request.get(
+        "/api/admin/orientation/runtime",
+      );
+      expect(runtimeResponse.status()).toBe(200);
+      runtime = await runtimeResponse.json();
+
+      // Persist evidence before asserting provider configuration so a failing run
+      // records exactly which non-secret activation boundary is missing.
+      writeFileSync(
+        "artifacts/smart-orientation/orientation-v4-live-matrix.json",
+        JSON.stringify({
+          candidateResultBeforeAdmin: true,
+          runtime,
+          postResultAuditCompleted: false,
+          cases: summaries,
+        }, null, 2),
+      );
+
+      expect(runtime.supabase?.urlPresent, JSON.stringify(runtime)).toBe(true);
+      expect(runtime.supabase?.secretKeyPresent, JSON.stringify(runtime)).toBe(true);
+      expect(runtime.supabase?.configured, JSON.stringify(runtime)).toBe(true);
+      expect(runtime.discovery?.configured, JSON.stringify(runtime)).toBe(true);
+      expect(runtime.verification?.configured, JSON.stringify(runtime)).toBe(true);
+      expect(runtime.writer?.configured, JSON.stringify(runtime)).toBe(true);
+
+      expect(primaryPayload?.personalized?.reviewId).toBeTruthy();
+      const immediateReviewId = String(primaryPayload.personalized.reviewId);
+      immediateReviewPrefix = immediateReviewId.slice(0, 8);
+
       const adminResponse = await adminPage.goto("/admin/orientation", {
         waitUntil: "networkidle",
       });
@@ -407,6 +436,7 @@ test.describe("Smart Orientation Partner-Ready rehearsal", () => {
       "artifacts/smart-orientation/orientation-v4-live-matrix.json",
       JSON.stringify({
         candidateResultBeforeAdmin: true,
+        runtime,
         postResultAuditCompleted: true,
         reviewedIdPrefix: immediateReviewPrefix,
         cases: summaries,
