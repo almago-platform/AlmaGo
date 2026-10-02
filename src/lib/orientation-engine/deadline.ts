@@ -1,5 +1,3 @@
-import { applicationIntakeFamily } from "../application-intake";
-
 export type OrientationIntakeCheckStatus =
   | "missing_target"
   | "match"
@@ -19,6 +17,22 @@ export type OrientationDeadlineEvaluation = {
   deadline: string | null;
   cycleYear: number | null;
 };
+
+function normalized(value: string | null | undefined) {
+  return (value || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim()
+    .toLowerCase();
+}
+
+function intakeFamily(value: string | null | undefined): "winter" | "summer" | null {
+  const text = normalized(value);
+  if (!text) return null;
+  if (text.includes("winter") || text.includes("hiver") || /(^|\s)ws(\s|$)/.test(text)) return "winter";
+  if (text.includes("summer") || text.includes("sommer") || text.includes("ete") || /(^|\s)ss(\s|$)/.test(text)) return "summer";
+  return null;
+}
 
 function validDateOnly(value: string) {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
@@ -93,7 +107,7 @@ export function evaluateOrientationDeadline(
   const targetSeason = input.targetIntakeSeason as "winter" | "summer";
   const intakeFamilies = [...new Set(
     input.intakeTerms
-      .map((term) => applicationIntakeFamily(term))
+      .map((term) => intakeFamily(term))
       .filter((family): family is "winter" | "summer" => family !== null),
   )];
 
