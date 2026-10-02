@@ -1,22 +1,9 @@
 import "server-only";
 
-import { createPrivilegedSupabaseClient } from "@/lib/supabase/privileged";
+import { createPublicCatalogSupabaseClient } from "@/lib/supabase/public-catalog";
 import type { OrientationProgrammeRecord } from "@/lib/orientation-engine/types";
 
-type UniversityRow = {
-  id: string;
-  name: string;
-  city: string | null;
-  bundesland: string | null;
-  university_type: string | null;
-  is_public: boolean;
-  website_url: string | null;
-  source_url: string | null;
-  verified_at: string | null;
-  is_active: boolean;
-};
-
-type ProgrammeRow = {
+type ProgrammeCatalogRow = {
   id: string;
   name: string;
   degree_level: string;
@@ -30,20 +17,20 @@ type ProgrammeRow = {
   winter_deadline: string | null;
   summer_deadline: string | null;
   application_url: string | null;
-  source_url: string | null;
-  verified_at: string | null;
-  universities: UniversityRow | UniversityRow[] | null;
+  programme_source_url: string | null;
+  programme_verified_at: string | null;
+  university_id: string;
+  university_name: string;
+  university_city: string | null;
+  university_bundesland: string | null;
+  university_type: string | null;
+  university_is_public: boolean;
+  university_website_url: string | null;
+  university_source_url: string | null;
+  university_verified_at: string | null;
 };
 
-function universityOf(row: ProgrammeRow) {
-  if (Array.isArray(row.universities)) return row.universities[0] || null;
-  return row.universities;
-}
-
-function mapProgramme(row: ProgrammeRow): OrientationProgrammeRecord | null {
-  const university = universityOf(row);
-  if (!university) return null;
-
+function mapProgramme(row: ProgrammeCatalogRow): OrientationProgrammeRecord {
   return {
     id: row.id,
     name: row.name,
@@ -60,54 +47,56 @@ function mapProgramme(row: ProgrammeRow): OrientationProgrammeRecord | null {
     winterDeadline: row.winter_deadline,
     summerDeadline: row.summer_deadline,
     applicationUrl: row.application_url,
-    programmeSourceUrl: row.source_url,
-    programmeVerifiedAt: row.verified_at,
+    programmeSourceUrl: row.programme_source_url,
+    programmeVerifiedAt: row.programme_verified_at,
     university: {
-      id: university.id,
-      name: university.name,
-      city: university.city,
-      bundesland: university.bundesland,
-      universityType: university.university_type,
-      isPublic: university.is_public,
-      websiteUrl: university.website_url,
-      sourceUrl: university.source_url,
-      verifiedAt: university.verified_at,
+      id: row.university_id,
+      name: row.university_name,
+      city: row.university_city,
+      bundesland: row.university_bundesland,
+      universityType: row.university_type,
+      isPublic: row.university_is_public,
+      websiteUrl: row.university_website_url,
+      sourceUrl: row.university_source_url,
+      verifiedAt: row.university_verified_at,
     },
   };
 }
 
 export async function loadVerifiedProgrammeCatalogue() {
-  const supabase = createPrivilegedSupabaseClient();
-
-  const selection = [
-    "id",
-    "name",
-    "degree_level",
-    "field",
-    "teaching_language",
-    "german_level_required",
-    "english_level_required",
-    "studienkolleg_required",
-    "uni_assist_required",
-    "intake_terms",
-    "winter_deadline",
-    "summer_deadline",
-    "application_url",
-    "source_url",
-    "verified_at",
-    "universities!inner(id,name,city,bundesland,university_type,is_public,website_url,source_url,verified_at,is_active)",
-  ].join(",");
+  const supabase = createPublicCatalogSupabaseClient();
 
   const { data, error } = await supabase
-    .from("programs")
-    .select(selection)
-    .eq("is_active", true)
-    .eq("universities.is_active", true)
+    .from("orientation_program_catalog")
+    .select([
+      "id",
+      "name",
+      "degree_level",
+      "field",
+      "teaching_language",
+      "german_level_required",
+      "english_level_required",
+      "studienkolleg_required",
+      "uni_assist_required",
+      "intake_terms",
+      "winter_deadline",
+      "summer_deadline",
+      "application_url",
+      "programme_source_url",
+      "programme_verified_at",
+      "university_id",
+      "university_name",
+      "university_city",
+      "university_bundesland",
+      "university_type",
+      "university_is_public",
+      "university_website_url",
+      "university_source_url",
+      "university_verified_at",
+    ].join(","))
     .order("name");
 
   if (error) throw error;
 
-  return (data || [])
-    .map((row) => mapProgramme(row as unknown as ProgrammeRow))
-    .filter((programme): programme is OrientationProgrammeRecord => Boolean(programme));
+  return (data || []).map((row) => mapProgramme(row as unknown as ProgrammeCatalogRow));
 }
