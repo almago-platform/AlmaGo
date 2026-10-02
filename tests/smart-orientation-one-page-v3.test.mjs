@@ -45,28 +45,30 @@ test("SO-V3 shows verified Aachen engineering examples from RWTH and FH Aachen",
   assert.match(catalogue, /verifiedAt: "2026-10-02"/);
 });
 
-test("SO-V3.1 makes the language route concrete and only mentions partners conditionally", () => {
+test("SO-V3.2 makes the language route concrete and partner wording conditional", () => {
   assert.match(report, /A2/);
   assert.match(report, /B1/);
   assert.match(report, /B2\/C1/);
-  assert.match(report, /Selon les disponibilités de votre parcours/);
-  assert.match(report, /école partenaire validée/);
+  assert.match(report, /si une école partenaire Campus Allemagne est disponible/);
   assert.doesNotMatch(catalogue, /partner|partenaire/i);
 });
 
-test("SO-V3.1 communicates end-to-end support while preserving authority boundaries", () => {
-  assert.match(report, /prend en charge l'accompagnement opérationnel de votre projet/);
-  assert.match(report, /organisation et suivi des candidatures/);
-  assert.match(report, /préparation de votre arrivée en Allemagne/);
-  assert.match(report, /services d'intégration et de carrière disponibles/);
-  assert.match(report, /Si vous choisissez de continuer, Campus Allemagne vous contacte/);
+test("SO-V3.2 communicates the full Campus Allemagne route without promising official decisions", () => {
+  assert.match(report, /Langue → programmes → admission → visa → Allemagne/);
+  assert.match(report, /préparation et le contrôle du dossier/);
+  assert.match(report, /candidatures et leur suivi/);
+  assert.match(report, /Après une admission, nous préparons avec vous les étapes et documents du visa/);
+  assert.match(report, /Campus Allemagne vous contacte pour confirmer votre route/);
   assert.match(report, /la décision d'admission appartient à chaque université/);
   assert.match(report, /la décision de visa aux autorités compétentes/);
 });
 
-test("SO-V3.1 recommends Aachen engineering options when no city is fixed and labels the suggestion honestly", () => {
-  assert.match(catalogue, /answers\.preferredCities\.length === 0/);
-  assert.match(catalogue, /selectionReason: "recommended_city"/);
+test("SO-V3.2 matches programme examples by specialty and handles uncovered cities explicitly", () => {
+  assert.match(catalogue, /specialties: \["electrical_electronics"\]/);
+  assert.match(catalogue, /specialties: \["mechanical"\]/);
+  assert.match(catalogue, /recommendedEngineeringCity/);
+  assert.match(catalogue, /catalogueGap: true/);
+  assert.match(report, /Notre catalogue vérifié ne contient pas encore assez de programmes/);
   assert.match(report, /Suggestion Campus Allemagne/);
   assert.match(report, /Ville à définir/);
 });

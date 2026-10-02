@@ -32,6 +32,7 @@ import {
   budgetOptions,
   degreeOptions,
   diplomaOptions,
+  engineeringSpecialtyOptions,
   languageLevelOptions,
   preferredCityOptions,
   studyFieldOptions,
@@ -79,10 +80,33 @@ export function PublicOrientationForm({
   const diplomas = useMemo(() => localizeProfileOptions(locale, diplomaOptions), [locale]);
   const degrees = useMemo(() => localizeProfileOptions(locale, degreeOptions), [locale]);
   const fields = useMemo(() => localizeProfileOptions(locale, studyFieldOptions), [locale]);
+  const engineeringSpecialties = useMemo(
+    () => localizeProfileOptions(locale, engineeringSpecialtyOptions),
+    [locale],
+  );
   const levels = useMemo(() => localizeProfileOptions(locale, languageLevelOptions), [locale]);
   const studyLanguages = useMemo(() => localizeProfileOptions(locale, studyLanguageOptions), [locale]);
   const budgets = useMemo(() => localizeProfileOptions(locale, budgetOptions), [locale]);
   const smartPriority = useMemo(() => evaluateSmartOrientationPriority(answers), [answers]);
+  const engineeringSpecialtyCopy = {
+    fr: {
+      label: "Spécialité d’ingénierie",
+      help: "Cela nous permet de chercher des programmes réellement proches de votre projet.",
+    },
+    ar: {
+      label: "تخصص الهندسة",
+      help: "يساعدنا ذلك على البحث عن برامج قريبة فعلاً من مشروعك.",
+    },
+    en: {
+      label: "Engineering specialisation",
+      help: "This helps us search for programmes that genuinely match your project.",
+    },
+    de: {
+      label: "Ingenieurfachrichtung",
+      help: "So können wir Studiengänge suchen, die wirklich zu deinem Projekt passen.",
+    },
+  }[locale];
+
   const selectedCitiesLabel =
     locale === "ar"
       ? `${copy.controls.selected} ${answers.preferredCities.length}`
@@ -137,6 +161,11 @@ export function PublicOrientationForm({
     }
 
     if (step === 2 && (!answers.targetDegree || !answers.targetField)) return copy.validation.required;
+    if (
+      step === 2
+      && answers.targetField === "Ingénierie"
+      && !answers.engineeringSpecialty
+    ) return copy.validation.required;
     if (step === 3 && (!answers.germanLevel || !answers.englishLevel || !answers.studyLanguage)) return copy.validation.required;
     if (step === 4 && !answers.budgetRange) return copy.validation.required;
 
@@ -197,6 +226,9 @@ export function PublicOrientationForm({
     [copy.summary.labels.diploma, localizedValue(answers.lastDiploma, diplomas)],
     [copy.summary.labels.degree, localizedValue(answers.targetDegree, degrees)],
     [copy.summary.labels.field, localizedValue(answers.targetField, fields)],
+    ...(answers.targetField === "Ingénierie"
+      ? [[engineeringSpecialtyCopy.label, localizedValue(answers.engineeringSpecialty, engineeringSpecialties)]]
+      : []),
     [copy.summary.labels.german, localizedValue(answers.germanLevel, levels)],
     [copy.summary.labels.english, localizedValue(answers.englishLevel, levels)],
     [copy.summary.labels.studyLanguage, localizedValue(answers.studyLanguage, studyLanguages)],
@@ -363,12 +395,44 @@ export function PublicOrientationForm({
                       </label>
                       <label className="text-sm font-semibold">
                         {profileCopy.form.fields.target_field}
-                        <select className="field" value={answers.targetField} onChange={(event) => setField("targetField", event.target.value)}>
+                        <select
+                          className="field"
+                          value={answers.targetField}
+                          onChange={(event) => {
+                            const nextField = event.target.value;
+                            setAnswers((current) => ({
+                              ...current,
+                              targetField: nextField,
+                              engineeringSpecialty:
+                                nextField === "Ingénierie" ? current.engineeringSpecialty : "",
+                            }));
+                            setError("");
+                          }}
+                        >
                           <option value="">{copy.controls.choose}</option>
                           {fields.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
                         </select>
                       </label>
                     </div>
+
+                    {answers.targetField === "Ingénierie" ? (
+                      <label className="block text-sm font-semibold">
+                        {engineeringSpecialtyCopy.label}
+                        <select
+                          className="field"
+                          value={answers.engineeringSpecialty}
+                          onChange={(event) => setField("engineeringSpecialty", event.target.value)}
+                        >
+                          <option value="">{copy.controls.choose}</option>
+                          {engineeringSpecialties.map((option) => (
+                            <option key={option.value} value={option.value}>{option.label}</option>
+                          ))}
+                        </select>
+                        <span className="mt-1 block text-xs font-normal text-[var(--muted)]">
+                          {engineeringSpecialtyCopy.help}
+                        </span>
+                      </label>
+                    ) : null}
                   </div>
                 ) : null}
 

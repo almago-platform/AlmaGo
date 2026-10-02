@@ -20,6 +20,7 @@ import {
   budgetOptions,
   degreeOptions,
   diplomaOptions,
+  engineeringSpecialtyOptions,
   languageLevelOptions,
   preferredCityOptions,
   studyFieldOptions,
@@ -38,6 +39,7 @@ const allowed = {
   diploma: new Set(valuesOf(diplomaOptions)),
   degree: new Set(valuesOf(degreeOptions)),
   field: new Set(valuesOf(studyFieldOptions)),
+  engineeringSpecialty: new Set(valuesOf(engineeringSpecialtyOptions)),
   level: new Set(valuesOf(languageLevelOptions)),
   studyLanguage: new Set(valuesOf(studyLanguageOptions)),
   budget: new Set(valuesOf(budgetOptions)),
@@ -64,6 +66,15 @@ function validAnswers(value: unknown) {
   if (answers.lastDiploma && !allowed.diploma.has(answers.lastDiploma)) return null;
   if (!allowed.degree.has(answers.targetDegree)) return null;
   if (!allowed.field.has(answers.targetField)) return null;
+  if (
+    answers.targetField === "Ingénierie"
+    && !allowed.engineeringSpecialty.has(answers.engineeringSpecialty)
+  ) return null;
+  if (
+    answers.targetField !== "Ingénierie"
+    && answers.engineeringSpecialty
+    && !allowed.engineeringSpecialty.has(answers.engineeringSpecialty)
+  ) return null;
   if (!allowed.level.has(answers.germanLevel) || !allowed.level.has(answers.englishLevel)) return null;
   if (!allowed.studyLanguage.has(answers.studyLanguage)) return null;
   if (!allowed.budget.has(answers.budgetRange)) return null;

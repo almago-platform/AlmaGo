@@ -38,6 +38,20 @@ export const studyFieldOptions: readonly SelectOption[] = [
   { value: "other", label: "Autre" },
 ];
 
+export const engineeringSpecialtyOptions: readonly SelectOption[] = [
+  { value: "computer_engineering", label: "Informatique / Computer Engineering" },
+  { value: "electrical_electronics", label: "Électrotechnique / électronique" },
+  { value: "mechanical", label: "Mécanique" },
+  { value: "mechatronics_robotics", label: "Mécatronique / robotique" },
+  { value: "civil", label: "Génie civil" },
+  { value: "industrial_production", label: "Génie industriel / production" },
+  { value: "automotive", label: "Automobile" },
+  { value: "aerospace", label: "Aéronautique / spatial" },
+  { value: "energy", label: "Énergie" },
+  { value: "undecided", label: "Je ne sais pas encore" },
+  { value: "other", label: "Autre spécialité" },
+];
+
 export const tunisianBacTrackOptions: readonly SelectOption[] = [
   { value: "Sciences expérimentales", label: "Sciences expérimentales" },
   { value: "Mathématiques", label: "Mathématiques" },
