@@ -31,9 +31,13 @@ test("SO-6 browser matrix covers owner scenarios", () => {
   assert.match(spec, /bacStatus: "preparing"[\s\S]*generalAverage: "14"/);
   assert.match(spec, /generalAverage: "10"/);
   assert.match(spec, /generalAverage: ""/);
-  assert.match(spec, /Votre projet mérite une étude plus précise/);
+  assert.match(spec, /Nous pouvons maintenant construire votre route/);
   assert.match(spec, /Vous pouvez commencer votre préparation dès maintenant/);
   assert.match(spec, /Votre projet peut déjà être préparé/);
+  assert.match(spec, /Des options vérifiées pour votre profil/);
+  assert.match(spec, /Pour quelle rentrée souhaitez-vous commencer/);
+  assert.match(spec, /targetIntakeSeason/);
+  assert.match(spec, /targetIntakeYear/);
 });
 
 test("SO-6 covers Arabic RTL, 360 mobile, accessibility and admin queue", () => {
@@ -43,6 +47,8 @@ test("SO-6 covers Arabic RTL, 360 mobile, accessibility and admin queue", () => 
   assert.match(spec, /AxeBuilder/);
   assert.match(spec, /\/admin\/prospects/);
   assert.match(spec, /À traiter en priorité/);
+  assert.match(spec, /prospects sauvegardés/);
+  assert.match(spec, /ne décident pas automatiquement si le marché est validé/);
 });
 
 test("SO-6 uses no real public prospect submission", () => {
