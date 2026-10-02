@@ -1,6 +1,6 @@
 import type { PublicOrientationAnswers } from "@/lib/orientation/public";
 
-export const ORIENTATION_ENGINE_VERSION = "orientation-v4-master-compatibility-1";
+export const ORIENTATION_ENGINE_VERSION = "orientation-v4-bachelor-letter-scout-1";
 
 export type OrientationRuleStatus =
   | "eligible"
@@ -195,4 +195,31 @@ export type OrientationAdvisorOutput = {
     | "academic_review_needed"
     | "catalogue_gap";
   priorityActionCodes: OrientationActionCode[];
+};
+
+
+export type OrientationScoutCandidate = {
+  institution: string;
+  programme: string;
+  city: string | null;
+  officialUrl: string;
+  reason: string;
+  verificationStatus: "research_candidate";
+};
+
+export type OrientationScoutResult = {
+  provider: string;
+  mode: "disabled" | "grounded_ai";
+  status: "disabled" | "ready" | "unavailable";
+  candidates: OrientationScoutCandidate[];
+  citationUrls: string[];
+};
+
+export type OrientationLetterOutput = {
+  provider: string;
+  mode: "deterministic" | "grounded_ai";
+  title: string;
+  paragraphs: string[];
+  closing: string;
+  scoutUsed: boolean;
 };
