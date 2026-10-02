@@ -11,6 +11,7 @@ import { rebrandCopy } from "@/lib/brand";
 import { ProspectCaptureCard } from "@/components/orientation/ProspectCaptureCard";
 import { SmartOrientationResultCard } from "@/components/orientation/SmartOrientationResultCard";
 import { OrientationRouteCard } from "@/components/orientation/OrientationRouteCard";
+import { OrientationOnePagePrintReport } from "@/components/orientation/OrientationOnePagePrintReport";
 import { ProspectOrientationUpdateCard } from "@/components/orientation/ProspectOrientationUpdateCard";
 import { prospectDashboardCopy } from "@/content/prospect-dashboard-copy";
 import { prospectOrientationUpdateCopy } from "@/content/prospect-orientation-update-copy";
@@ -462,6 +463,8 @@ export function PublicOrientationForm({
               </form>
             ) : (
               <div id="orientation-report" className="orientation-print-report">
+                <OrientationOnePagePrintReport answers={answers} locale={locale} />
+                <div className="orientation-screen-report">
                 <div className="orientation-print-only mb-6 items-center justify-between gap-6 border-b border-slate-300 pb-5">
                   <BrandLogo className="h-10 w-auto" priority />
                   <div className="text-end text-xs leading-5 text-slate-600">
@@ -537,6 +540,7 @@ export function PublicOrientationForm({
                   >
                     {copy.summary.home}
                   </Link>
+                </div>
                 </div>
               </div>
             )}
