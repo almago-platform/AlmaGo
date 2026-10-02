@@ -4,8 +4,8 @@ import { notFound } from "next/navigation";
 import { BrandLogo } from "@/components/brand/BrandLogo";
 import { rebrandCopy } from "@/lib/brand";
 import { OrientationReportActions } from "@/components/orientation/OrientationReportActions";
+import { OrientationRouteCard } from "@/components/orientation/OrientationRouteCard";
 import { orientationCopy } from "@/content/orientation-copy";
-import { orientationDiagnosticCopy } from "@/content/orientation-diagnostic-copy";
 import { orientationProspectCopy } from "@/content/orientation-prospect-copy";
 import { orientationResumeCopy } from "@/content/orientation-resume-copy";
 import {
@@ -82,59 +82,6 @@ function validDiagnostic(value: unknown): value is PublicOrientationDiagnostic {
   );
 }
 
-function StatusBadge({
-  status,
-  label,
-}: {
-  status: PublicDiagnosticItem["status"];
-  label: string;
-}) {
-  const className = status === "needs_verification"
-    ? "bg-amber-100 text-amber-900"
-    : status === "known_gap"
-      ? "bg-orange-100 text-orange-900"
-      : status === "needs_information"
-        ? "bg-slate-100 text-slate-700"
-        : "bg-blue-100 text-blue-900";
-
-  return <span className={`status-badge ${className}`}>{label}</span>;
-}
-
-function DiagnosticSection({
-  title,
-  items,
-  copy,
-}: {
-  title: string;
-  items: PublicDiagnosticItem[];
-  copy: (typeof orientationDiagnosticCopy)[keyof typeof orientationDiagnosticCopy];
-}) {
-  if (!items.length) return null;
-
-  return (
-    <section>
-      <h3 className="text-base font-bold">{title}</h3>
-      <div className="mt-3 grid gap-3">
-        {items.map((item) => {
-          const message = copy.items[item.code];
-          return (
-            <article
-              key={item.code}
-              className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface)] p-4"
-            >
-              <div className="flex flex-wrap items-start justify-between gap-3">
-                <h4 className="font-semibold">{message.title}</h4>
-                <StatusBadge status={item.status} label={copy.status[item.status]} />
-              </div>
-              <p className="mt-1 text-sm leading-6 text-[var(--muted)]">{message.body}</p>
-            </article>
-          );
-        })}
-      </div>
-    </section>
-  );
-}
-
 export default async function OrientationReportPage({
   params,
 }: {
@@ -171,7 +118,6 @@ export default async function OrientationReportPage({
   const direction = localeDirection(locale);
   const answers = restorePublicOrientationAnswers(input.answers);
   const copy = rebrandCopy(orientationCopy[locale]);
-  const diagnosticCopy = rebrandCopy(orientationDiagnosticCopy[locale]);
   const prospectCopy = rebrandCopy(orientationProspectCopy[locale]);
   const resumeCopy = rebrandCopy(orientationResumeCopy[locale]);
 
@@ -255,33 +201,8 @@ export default async function OrientationReportPage({
             ))}
           </dl>
 
-          <div className="mt-8 space-y-7">
-            <section aria-labelledby="orientation-resume-diagnostic-title">
-              <p className="eyebrow">{diagnosticCopy.sections.headline}</p>
-              <div className="mt-3 rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface-subtle)] p-5">
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <h2 id="orientation-resume-diagnostic-title" className="text-lg font-bold">
-                    {diagnosticCopy.headlines[data.result.headlineCode].title}
-                  </h2>
-                  <StatusBadge
-                    status={data.result.overallStatus}
-                    label={diagnosticCopy.status[data.result.overallStatus]}
-                  />
-                </div>
-                <p className="mt-2 text-sm leading-6 text-[var(--foreground)]">
-                  {diagnosticCopy.headlines[data.result.headlineCode].body}
-                </p>
-              </div>
-            </section>
+          <OrientationRouteCard answers={answers} locale={locale} />
 
-            <DiagnosticSection title={diagnosticCopy.sections.paths} items={data.result.paths} copy={diagnosticCopy} />
-            <DiagnosticSection title={diagnosticCopy.sections.priorities} items={data.result.priorities} copy={diagnosticCopy} />
-            <DiagnosticSection title={diagnosticCopy.sections.checks} items={data.result.checks} copy={diagnosticCopy} />
-
-            <div className="rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--brand-soft)] p-5 text-sm leading-6">
-              {diagnosticCopy.disclaimer}
-            </div>
-          </div>
 
           <div className="orientation-print-hide mt-7 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4">
             <OrientationReportActions printLabel={prospectCopy.report.print} />

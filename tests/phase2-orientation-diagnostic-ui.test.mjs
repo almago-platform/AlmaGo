@@ -12,12 +12,10 @@ const engine = read("src/lib/orientation/diagnostic.ts");
 const copy = read("src/content/orientation-diagnostic-copy.ts");
 const arabicCopy = copy.slice(copy.indexOf("const ar:"), copy.indexOf("const en:"));
 
-test("public orientation summary renders the deterministic diagnostic", () => {
-  assert.match(form, /buildPublicOrientationDiagnostic/);
-  assert.match(form, /diagnostic\.paths/);
-  assert.match(form, /diagnostic\.priorities/);
-  assert.match(form, /diagnostic\.checks/);
-  assert.match(form, /orientationDiagnosticCopy/);
+test("public orientation keeps the deterministic diagnostic as a server contract but shows the route-first experience", () => {
+  assert.match(form, /<OrientationRouteCard answers=\{answers\} locale=\{locale\} \/>/);
+  assert.doesNotMatch(form, /diagnostic\.paths|diagnostic\.priorities|diagnostic\.checks/);
+  assert.doesNotMatch(form, /orientationDiagnosticCopy/);
 });
 
 test("diagnostic engine is pure and contains no database or network calls", () => {

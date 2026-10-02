@@ -17,12 +17,12 @@ export type SmartOrientationCopy = {
 };
 
 const fr: SmartOrientationCopy = {
-  eyebrow: "Votre prochaine étape",
+  eyebrow: "Votre situation en bref",
   states: {
     priority_ready: {
-      label: "Projet prêt à approfondir",
-      title: "Votre projet mérite une étude plus précise",
-      body: "Votre Bac, votre moyenne et votre objectif d’études nous donnent suffisamment d’éléments pour aller plus loin. Campus Allemagne peut examiner votre situation de manière plus détaillée et vous aider à organiser les prochaines étapes.",
+      label: "Route prête à structurer",
+      title: "Nous pouvons maintenant construire votre route",
+      body: "Votre Bac, votre moyenne et votre objectif d’études donnent assez d’éléments pour organiser la suite : langue, accès académique, programmes, candidature puis préparation du départ.",
       cta: "Faire examiner mon projet par Campus Allemagne",
     },
     priority_prepare_now: {
@@ -44,18 +44,18 @@ const fr: SmartOrientationCopy = {
       cta: "Sauvegarder et compléter mon projet",
     },
   },
-  languagePreparation: "La langue reste une étape de préparation : votre niveau actuel peut continuer à évoluer en Tunisie ou pendant la préparation de votre projet.",
+  languagePreparation: "Votre niveau de langue devient une étape de la route : Campus Allemagne doit vérifier le niveau final demandé et comparer avec vous une progression en Tunisie ou en Allemagne.",
   humanReview: "Votre domaine demande une vérification individualisée. Notre équipe doit confirmer les conditions académiques et les exigences officielles avant de conclure sur les possibilités réelles.",
   disclaimer: "Cette priorité organise l’accompagnement Campus Allemagne. Elle ne constitue ni une admission universitaire, ni une garantie de visa.",
 };
 
 const ar: SmartOrientationCopy = {
-  eyebrow: "خطوتك التالية",
+  eyebrow: "وضعك باختصار",
   states: {
     priority_ready: {
-      label: "مشروع جاهز لدراسة أعمق",
-      title: "مشروعك يستحق دراسة أكثر دقة",
-      body: "البكالوريا والمعدل وهدفك الدراسي تعطينا معلومات كافية للانتقال إلى دراسة أكثر تفصيلًا. يمكن لفريق Campus Allemagne مراجعة وضعك ومساعدتك على تنظيم الخطوات القادمة.",
+      label: "يمكن تنظيم المسار الآن",
+      title: "يمكننا الآن بناء مسارك",
+      body: "البكالوريا والمعدل وهدفك الدراسي تعطينا معلومات كافية لتنظيم المراحل: اللغة، مسار الدخول الأكاديمي، البرامج، التقديم ثم التحضير للسفر.",
       cta: "طلب مراجعة مشروعي من Campus Allemagne",
     },
     priority_prepare_now: {
@@ -77,18 +77,18 @@ const ar: SmartOrientationCopy = {
       cta: "حفظ مشروعي واستكماله",
     },
   },
-  languagePreparation: "اللغة تبقى مرحلة من مراحل التحضير: يمكنك تطوير مستواك الحالي في تونس أو أثناء تحضير مشروعك.",
+  languagePreparation: "مستواك اللغوي يصبح جزءًا من المسار: يتحقق Campus Allemagne من المستوى النهائي المطلوب ويقارن معك بين تطوير اللغة في تونس أو ألمانيا.",
   humanReview: "مجالك يحتاج إلى مراجعة فردية. يجب على فريقنا التحقق من الشروط الأكاديمية والمتطلبات الرسمية قبل تقديم أي استنتاج حول الإمكانيات الفعلية.",
   disclaimer: "هذه الأولوية تنظّم مرافقة Campus Allemagne فقط، ولا تمثل قبولًا جامعيًا أو ضمانًا للحصول على التأشيرة.",
 };
 
 const en: SmartOrientationCopy = {
-  eyebrow: "Your next step",
+  eyebrow: "Your situation at a glance",
   states: {
     priority_ready: {
-      label: "Ready for a closer review",
-      title: "Your project deserves a more detailed review",
-      body: "Your Baccalaureate, average and study objective give us enough information to go further. Campus Allemagne can review your situation in more detail and help organise the next steps.",
+      label: "Route ready to structure",
+      title: "We can now build your route",
+      body: "Your Baccalaureate, average and study objective give us enough information to organise the sequence: language, academic access, programmes, application and preparation for Germany.",
       cta: "Ask Campus Allemagne to review my project",
     },
     priority_prepare_now: {
@@ -110,18 +110,18 @@ const en: SmartOrientationCopy = {
       cta: "Save and complete my project",
     },
   },
-  languagePreparation: "Language remains a preparation step: your current level can continue to improve in Tunisia or while you prepare your project.",
+  languagePreparation: "Your language level is part of the route: Campus Allemagne should verify the final requirement and compare preparation in Tunisia or Germany with you.",
   humanReview: "Your field requires an individual review. Our team must verify the academic conditions and official requirements before drawing conclusions about the real possibilities.",
   disclaimer: "This priority only organises Campus Allemagne support. It is neither a university admission decision nor a visa guarantee.",
 };
 
 const de: SmartOrientationCopy = {
-  eyebrow: "Dein nächster Schritt",
+  eyebrow: "Deine Situation im Überblick",
   states: {
     priority_ready: {
-      label: "Bereit für eine genauere Prüfung",
-      title: "Dein Projekt verdient eine genauere Prüfung",
-      body: "Dein Baccalauréat, dein Durchschnitt und dein Studienziel geben uns genügend Informationen, um weiterzugehen. Campus Allemagne kann deine Situation genauer prüfen und die nächsten Schritte mit dir strukturieren.",
+      label: "Route kann strukturiert werden",
+      title: "Wir können jetzt deine Route aufbauen",
+      body: "Baccalauréat, Durchschnitt und Studienziel geben genug Informationen, um die Reihenfolge zu strukturieren: Sprache, akademischer Zugang, Programme, Bewerbung und Vorbereitung auf Deutschland.",
       cta: "Mein Projekt von Campus Allemagne prüfen lassen",
     },
     priority_prepare_now: {
@@ -143,7 +143,7 @@ const de: SmartOrientationCopy = {
       cta: "Mein Projekt speichern und ergänzen",
     },
   },
-  languagePreparation: "Die Sprache bleibt ein Vorbereitungsschritt: Dein aktuelles Niveau kann sich in Tunesien oder während der Projektvorbereitung weiterentwickeln.",
+  languagePreparation: "Dein Sprachniveau ist Teil der Route: Campus Allemagne prüft die endgültige Anforderung und vergleicht mit dir eine Vorbereitung in Tunesien oder Deutschland.",
   humanReview: "Dein Fachgebiet erfordert eine individuelle Prüfung. Unser Team muss die akademischen Bedingungen und offiziellen Anforderungen prüfen, bevor reale Möglichkeiten beurteilt werden können.",
   disclaimer: "Diese Priorität organisiert nur die Begleitung durch Campus Allemagne. Sie ist weder eine Hochschulzulassung noch eine Visumgarantie.",
 };

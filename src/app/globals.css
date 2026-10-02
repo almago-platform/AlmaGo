@@ -399,6 +399,18 @@ html[dir="rtl"] .student-shell [dir="ltr"] {
     display: none !important;
   }
 
+  .orientation-print-page .skip-link {
+    display: none !important;
+  }
+
+  .orientation-print-page .eyebrow {
+    letter-spacing: 0 !important;
+  }
+
+  .orientation-print-page .orientation-route-step {
+    break-inside: avoid;
+  }
+
   .orientation-print-page main {
     max-width: none !important;
     padding: 0 !important;
