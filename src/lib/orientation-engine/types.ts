@@ -1,6 +1,6 @@
 import type { PublicOrientationAnswers } from "@/lib/orientation/public";
 
-export const ORIENTATION_ENGINE_VERSION = "orientation-v4-refinement-intake-1";
+export const ORIENTATION_ENGINE_VERSION = "orientation-v4-master-compatibility-1";
 
 export type OrientationRuleStatus =
   | "eligible"
@@ -40,6 +40,9 @@ export type OrientationRuleCode =
   | "other_city"
   | "academic_access_supported"
   | "academic_access_review"
+  | "master_subject_credits_satisfied"
+  | "master_subject_credits_missing"
+  | "master_subject_credits_insufficient"
   | "intake_match"
   | "intake_unavailable"
   | "intake_unknown"
@@ -76,6 +79,10 @@ export type OrientationProgrammeRecord = {
   applicationUrl: string | null;
   programmeSourceUrl: string | null;
   programmeVerifiedAt: string | null;
+  masterAcademicPrerequisites: Array<{
+    subject: string;
+    ects: number;
+  }>;
   university: {
     id: string;
     name: string;
@@ -127,6 +134,7 @@ export type OrientationActionItem = {
 
 export type OrientationMissingFieldCode =
   | "previous_diploma"
+  | "master_subject_credits"
   | "engineering_specialty"
   | "target_intake"
   | "study_language"
@@ -134,6 +142,7 @@ export type OrientationMissingFieldCode =
 
 export type OrientationRefinementReasonCode =
   | "master_prior_degree_needed"
+  | "master_subject_credits_needed"
   | "engineering_specialty_needed"
   | "deadline_evaluation_needs_intake"
   | "teaching_language_choice_changes_options"
@@ -147,6 +156,8 @@ export type OrientationMissingInformationItem = {
 
 export type OrientationRefinementQuestion = OrientationMissingInformationItem & {
   choices: string[];
+  subjectKey?: string;
+  requiredEcts?: number;
 };
 
 export type OrientationRefinementState = {
