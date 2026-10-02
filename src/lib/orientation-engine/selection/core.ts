@@ -4,16 +4,17 @@ import type {
   OrientationVerificationFact,
   OrientationVerificationFactKey,
 } from "@/lib/orientation-engine/verification/types";
-import {
-  ORIENTATION_SELECTION_MAX_TARGET,
-  ORIENTATION_SELECTION_MIN_TARGET,
-  type OrientationSelectionCandidateEvaluation,
+import type {
+  OrientationSelectionCandidateEvaluation,
   type OrientationSelectionExclusionCode,
   type OrientationSelectionReasonCode,
   type OrientationSelectionResult,
   type OrientationSelectionScoreBreakdown,
   type OrientationSelectionWarningCode,
 } from "@/lib/orientation-engine/selection/types";
+
+export const ORIENTATION_SELECTION_MIN_TARGET = 3 as const;
+export const ORIENTATION_SELECTION_MAX_TARGET = 4 as const;
 
 const levelRank: Record<string, number> = {
   none: 0,
