@@ -418,13 +418,27 @@ Implementation files:
 - `src/lib/orientation-engine/discovery/contract.ts`;
 - `tests/orientation-discovery-contract.test.mjs`.
 
-### Phase A2 — OpenAI Research Agent
-- server-only provider adapter;
-- web search integration;
-- official source finder;
-- extraction to strict JSON;
-- deduplication;
-- timeout/retry/cost instrumentation.
+### Phase A2 — OpenAI Research Agent ✅ implemented (provider path, activation pending)
+- server-only OpenAI Responses API provider adapter;
+- GPT-6 Luna default, configurable with `ALMAGO_ORIENTATION_DISCOVERY_MODEL`;
+- live `web_search` integration with one bounded query plan from A1;
+- strict JSON Schema output via Responses API `text.format`;
+- candidate URLs retained only when grounded in URLs actually returned by web search;
+- HTTPS source sanitization and exact-source grounding;
+- deterministic deduplication before B;
+- 12-second per-query timeout;
+- one global retry budget beyond the A1 query cap;
+- usage instrumentation: provider requests, web-search calls, input/output/total tokens, source URLs and wall-clock duration;
+- fail-closed states for disabled flag, missing credentials, non-ready A1 plans, and provider failure;
+- not exposed directly to the student UI before B verification.
+
+Implementation files:
+- `src/lib/orientation-engine/discovery/openai.ts`;
+- `src/lib/orientation-engine/discovery/research.ts`;
+- `tests/orientation-discovery-openai.test.mjs`;
+- `.env.example`.
+
+Activation requires server-only `OPENAI_API_KEY` and `ALMAGO_ORIENTATION_DISCOVERY_PROVIDER=openai`.
 
 ### Phase B — Verification Engine
 - field-level source provenance;
