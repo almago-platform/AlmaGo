@@ -75,3 +75,38 @@ export type OrientationDiscoveryPlan = {
   searchQueries: string[];
   policy: OrientationDiscoveryPolicy;
 };
+
+
+export type OrientationDiscoveryProviderStatus =
+  | "disabled"
+  | "not_applicable"
+  | "ready"
+  | "unavailable";
+
+export type OrientationDiscoveryProviderReason =
+  | "feature_disabled"
+  | "plan_not_ready"
+  | "missing_credentials"
+  | "provider_error"
+  | null;
+
+export type OrientationDiscoveryUsage = {
+  requests: number;
+  webSearchCalls: number;
+  queriesAttempted: number;
+  queriesSucceeded: number;
+  inputTokens: number;
+  outputTokens: number;
+  totalTokens: number;
+  sourceUrlsSeen: number;
+  durationMs: number;
+};
+
+export type OrientationDiscoveryResearchResult = {
+  provider: "openai";
+  model: string | null;
+  status: OrientationDiscoveryProviderStatus;
+  reason: OrientationDiscoveryProviderReason;
+  candidates: OrientationDiscoveryResearchCandidate[];
+  usage: OrientationDiscoveryUsage;
+};
