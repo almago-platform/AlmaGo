@@ -1,6 +1,7 @@
 import type { PublicOrientationAnswers } from "@/lib/orientation/public";
 import { getAcademicAccessConclusion } from "@/lib/orientation/verified-academic-options";
 import { evaluateProgramme, rankProgrammeEvaluations } from "@/lib/orientation-engine/rules";
+import { buildOrientationRefinementState } from "@/lib/orientation-engine/refinement";
 import {
   ORIENTATION_ENGINE_VERSION,
   type OrientationActionItem,
@@ -110,13 +111,14 @@ function uniqueCodes(codes: OrientationRuleCode[]) {
 export function buildOrientationEngineResult(
   profile: PublicOrientationAnswers,
   catalogue: OrientationProgrammeRecord[],
+  now: Date = new Date(),
 ): OrientationEngineResult {
   const academic = academicAccess(profile);
-  const evaluations = rankProgrammeEvaluations(
-    catalogue.map((programme) => evaluateProgramme(profile, programme)),
-  );
+  const allEvaluations = catalogue.map((programme) => evaluateProgramme(profile, programme, now));
+  const evaluations = rankProgrammeEvaluations(allEvaluations);
 
   const recommendations = evaluations.slice(0, 3);
+  const refinement = buildOrientationRefinementState(profile, allEvaluations);
   const missingInformation = uniqueCodes(
     recommendations.flatMap((recommendation) => recommendation.missingInformation),
   );
@@ -137,6 +139,7 @@ export function buildOrientationEngineResult(
     academicAccessSource: academic.source,
     recommendations,
     missingInformation: uniqueCodes(missingInformation),
+    refinement,
     actionPlan: actionPlan(profile, recommendations, academic.status),
     warnings: uniqueCodes(warnings),
     generatedFrom: "verified_catalogue",
