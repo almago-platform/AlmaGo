@@ -129,7 +129,10 @@ export function buildPublicOrientationDiagnostic(
     ruleTrace.push("R-DEGREE-OTHER");
   }
 
-  if (!answers.generalAverage) {
+  if (answers.bacStatus === "no_bac") {
+    ruleTrace.push("R-NO-BAC-HUMAN-ACCESS-CHECK");
+    hasMaterialGap = true;
+  } else if (!answers.generalAverage) {
     pushUnique(priorities, { code: "add_average", status: "needs_information" });
     ruleTrace.push("R-AVERAGE-MISSING");
   }
