@@ -250,14 +250,27 @@ export function PersonalizedOrientationEngineCard({
   locale: Locale;
 }) {
   const t = copy[locale] as (typeof copy)["fr"];
-  const [result, setResult] = useState<EngineResponse | null>(null);
-  const [state, setState] = useState<"loading" | "ready" | "error">("loading");
-
   const requestBody = useMemo(() => JSON.stringify({ answers, locale }), [answers, locale]);
+  const [requestState, setRequestState] = useState<{
+    key: string | null;
+    result: EngineResponse | null;
+    error: boolean;
+  }>({
+    key: null,
+    result: null,
+    error: false,
+  });
+
+  const isCurrentRequest = requestState.key === requestBody;
+  const result = isCurrentRequest ? requestState.result : null;
+  const state: "loading" | "ready" | "error" = !isCurrentRequest
+    ? "loading"
+    : requestState.error
+      ? "error"
+      : "ready";
 
   useEffect(() => {
     const controller = new AbortController();
-    setState("loading");
 
     fetch("/api/orientation/engine", {
       method: "POST",
@@ -271,13 +284,19 @@ export function PersonalizedOrientationEngineCard({
         return response.json() as Promise<EngineResponse>;
       })
       .then((payload) => {
-        setResult(payload);
-        setState("ready");
+        setRequestState({
+          key: requestBody,
+          result: payload,
+          error: false,
+        });
       })
       .catch((error) => {
         if (error instanceof DOMException && error.name === "AbortError") return;
-        setResult(null);
-        setState("error");
+        setRequestState({
+          key: requestBody,
+          result: null,
+          error: true,
+        });
       });
 
     return () => controller.abort();
