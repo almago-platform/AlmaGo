@@ -19,7 +19,7 @@ const demoAnswers = {
   germanLevel: "B1",
   englishLevel: "B2",
   studyLanguage: "Allemand",
-  targetIntakeSeason: "",
+  targetIntakeSeason: "" as const,
   targetIntakeYear: "",
   budgetRange: "800–1 000 € / mois",
   preferredCities: ["Aachen"],
