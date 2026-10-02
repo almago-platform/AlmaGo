@@ -235,6 +235,40 @@ export function buildUniversalOrientationGuidance(
       };
     }
 
+    if (answers.targetDegree === "Master") {
+      return {
+        title: {
+          fr: "Votre projet de Master doit être vérifié",
+          ar: "يجب التحقق من مشروع الماستر",
+          en: "Your Master's project must be checked",
+          de: "Dein Master-Vorhaben muss geprüft werden",
+        }[locale],
+        body: {
+          fr: `Pour un Master en ${field}, votre diplôme précédent (${lastDiploma}) devient la base principale de l’évaluation. Campus Allemagne vérifie sa pertinence, les prérequis académiques, la langue et les conditions propres aux programmes avant de confirmer une candidature.`,
+          ar: `بالنسبة إلى ماستر في ${field}، تصبح شهادتك السابقة (${lastDiploma}) الأساس الرئيسي للتقييم. يتحقق Campus Allemagne من ملاءمتها والمتطلبات الأكاديمية واللغة وشروط البرامج قبل تأكيد أي تقديم.`,
+          en: `For a Master's in ${field}, your previous qualification (${lastDiploma}) becomes the main basis of the assessment. Campus Allemagne checks its relevance, academic prerequisites, language and programme-specific requirements before confirming an application.`,
+          de: `Für einen Master in ${field} ist dein vorheriger Abschluss (${lastDiploma}) die wichtigste Grundlage der Prüfung. Campus Allemagne prüft fachliche Passung, akademische Voraussetzungen, Sprache und programmspezifische Bedingungen vor einer Bewerbung.`,
+        }[locale],
+      };
+    }
+
+    if (answers.targetDegree !== "Bachelor") {
+      return {
+        title: {
+          fr: "Votre accès académique doit être confirmé",
+          ar: "يجب تأكيد دخولك الأكاديمي",
+          en: "Your academic access must be confirmed",
+          de: "Dein Hochschulzugang muss bestätigt werden",
+        }[locale],
+        body: {
+          fr: `Pour votre objectif ${degree} en ${field}, Campus Allemagne vérifie votre dernier diplôme (${lastDiploma}) et les conditions du programme avant de confirmer une candidature.`,
+          ar: `لهدفك ${degree} في ${field}، يتحقق Campus Allemagne من آخر شهادة لديك (${lastDiploma}) وشروط البرنامج قبل تأكيد التقديم.`,
+          en: `For your ${degree} objective in ${field}, Campus Allemagne checks your latest qualification (${lastDiploma}) and the programme requirements before confirming an application.`,
+          de: `Für dein Ziel ${degree} in ${field} prüft Campus Allemagne deinen letzten Abschluss (${lastDiploma}) und die Programmbedingungen vor einer Bewerbung.`,
+        }[locale],
+      };
+    }
+
     if (access.status === "direct_subject_restricted") {
       return {
         title: {
@@ -325,10 +359,18 @@ export function buildUniversalOrientationGuidance(
           de: `Deine Stadtwahl: ${cities}`,
         }[locale],
         body: {
-          fr: `Nous gardons cette préférence comme priorité. Campus Allemagne vérifie 2 ou 3 établissements réellement adaptés à votre ${degree} en ${field}, avec la langue, les conditions, la candidature et les échéances. Nous ne donnons pas de noms non vérifiés.`,
-          ar: `نحتفظ بهذا الاختيار كأولوية. يتحقق Campus Allemagne من مؤسستين أو ثلاث تناسبان فعليًا ${degree} في ${field}، مع اللغة والشروط وطريقة التقديم والمواعيد. لا نعرض أسماء غير موثقة.`,
-          en: `We keep this preference as a priority. Campus Allemagne verifies 2 or 3 institutions that genuinely fit your ${degree} in ${field}, including language, requirements, application route and deadlines. We do not show unverified names.`,
-          de: `Diese Präferenz bleibt Priorität. Campus Allemagne prüft 2 oder 3 Hochschulen, die wirklich zu deinem ${degree} in ${field} passen, einschließlich Sprache, Voraussetzungen, Bewerbungsweg und Fristen. Ungeprüfte Namen zeigen wir nicht.`,
+          fr: answers.bacStatus === "no_bac"
+            ? `Nous gardons ${cities} comme préférence. Après confirmation de votre accès académique, Campus Allemagne vérifiera 2 ou 3 établissements réellement adaptés à votre projet en ${field}. Nous ne donnons pas de noms non vérifiés.`
+            : `Nous gardons cette préférence comme priorité. Campus Allemagne vérifie 2 ou 3 établissements réellement adaptés à votre ${degree} en ${field}, avec la langue, les conditions, la candidature et les échéances. Nous ne donnons pas de noms non vérifiés.`,
+          ar: answers.bacStatus === "no_bac"
+            ? `نحتفظ بـ ${cities} كتفضيل. بعد تأكيد الدخول الأكاديمي، سيتحقق Campus Allemagne من مؤسستين أو ثلاث تناسبان مشروعك فعلًا في ${field}. لا نعرض أسماء غير موثقة.`
+            : `نحتفظ بهذا الاختيار كأولوية. يتحقق Campus Allemagne من مؤسستين أو ثلاث تناسبان فعليًا ${degree} في ${field}، مع اللغة والشروط وطريقة التقديم والمواعيد. لا نعرض أسماء غير موثقة.`,
+          en: answers.bacStatus === "no_bac"
+            ? `We keep ${cities} as your preference. After your academic access is confirmed, Campus Allemagne will verify 2 or 3 institutions that genuinely fit your ${field} project. We do not show unverified names.`
+            : `We keep this preference as a priority. Campus Allemagne verifies 2 or 3 institutions that genuinely fit your ${degree} in ${field}, including language, requirements, application route and deadlines. We do not show unverified names.`,
+          de: answers.bacStatus === "no_bac"
+            ? `${cities} bleibt deine Präferenz. Nach Bestätigung deines Hochschulzugangs prüft Campus Allemagne 2 oder 3 Hochschulen, die wirklich zu deinem Vorhaben in ${field} passen. Ungeprüfte Namen zeigen wir nicht.`
+            : `Diese Präferenz bleibt Priorität. Campus Allemagne prüft 2 oder 3 Hochschulen, die wirklich zu deinem ${degree} in ${field} passen, einschließlich Sprache, Voraussetzungen, Bewerbungsweg und Fristen. Ungeprüfte Namen zeigen wir nicht.`,
         }[locale],
       };
     }
@@ -365,10 +407,34 @@ export function buildUniversalOrientationGuidance(
         : "Dein Dossier läuft parallel weiter",
     }[locale],
     body: {
-      fr: "Campus Allemagne prépare avec vous : diplôme/Bac et relevés, traductions et légalisations lorsqu’elles sont nécessaires, passeport et pièces personnelles, calendrier, sélection des programmes et préparation des candidatures. Vous ne perdez pas des mois à attendre la fin de la langue.",
-      ar: "يجهز Campus Allemagne معك: الشهادة وكشوف النقاط، الترجمات والتصديقات عند الحاجة، جواز السفر والوثائق الشخصية، الجدول الزمني، اختيار البرامج وتجهيز التقديمات. لا تضيع أشهرًا في انتظار نهاية دراسة اللغة.",
-      en: "Campus Allemagne prepares with you: diploma/Bac and transcripts, translations and legalisations when required, passport and personal documents, timeline, programme selection and application preparation. You do not lose months waiting for language study to finish.",
-      de: "Campus Allemagne bereitet mit dir vor: Abschluss/Bac und Notenübersichten, Übersetzungen und Legalisierungen wenn nötig, Pass und persönliche Unterlagen, Zeitplan, Programmauswahl und Bewerbungen. Du verlierst keine Monate, nur weil die Sprachvorbereitung noch läuft.",
+      fr: `${answers.bacStatus === "no_bac"
+        ? "Campus Allemagne prépare avec vous les documents scolaires disponibles, les pièces personnelles, les traductions ou légalisations nécessaires, le calendrier et la vérification de votre voie académique."
+        : answers.targetDegree === "Master"
+          ? "Campus Allemagne prépare avec vous votre diplôme universitaire précédent et ses relevés, les traductions ou légalisations nécessaires, les pièces personnelles, le calendrier, la sélection des Masters et les candidatures."
+          : "Campus Allemagne prépare avec vous le Bac ou diplôme précédent et les relevés, les traductions ou légalisations nécessaires, les pièces personnelles, le calendrier, la sélection des programmes et les candidatures."} ${priority.key === "german" || priority.key === "english"
+        ? "Votre dossier avance pendant votre progression linguistique."
+        : "La sélection académique et le dossier avancent ensemble, sans étape d’attente artificielle."}`,
+      ar: `${answers.bacStatus === "no_bac"
+        ? "يجهز Campus Allemagne معك الوثائق الدراسية المتوفرة والوثائق الشخصية والترجمات أو التصديقات اللازمة والجدول الزمني والتحقق من المسار الأكاديمي."
+        : answers.targetDegree === "Master"
+          ? "يجهز Campus Allemagne معك شهادتك الجامعية السابقة وكشوف النقاط والترجمات أو التصديقات اللازمة والوثائق الشخصية والجدول الزمني واختيار برامج الماستر وطلبات التقديم."
+          : "يجهز Campus Allemagne معك البكالوريا أو الشهادة السابقة وكشوف النقاط والترجمات أو التصديقات اللازمة والوثائق الشخصية والجدول الزمني واختيار البرامج وطلبات التقديم."} ${priority.key === "german" || priority.key === "english"
+        ? "ويتقدم ملفك بالتوازي مع تطورك اللغوي."
+        : "يتقدم الاختيار الأكاديمي والملف معًا من دون انتظار غير ضروري."}`,
+      en: `${answers.bacStatus === "no_bac"
+        ? "Campus Allemagne prepares your available school records, personal documents, required translations or legalisations, timeline and academic-route verification with you."
+        : answers.targetDegree === "Master"
+          ? "Campus Allemagne prepares your previous university qualification and transcripts, required translations or legalisations, personal documents, timeline, Master's selection and applications with you."
+          : "Campus Allemagne prepares your Bac or previous qualification and transcripts, required translations or legalisations, personal documents, timeline, programme selection and applications with you."} ${priority.key === "german" || priority.key === "english"
+        ? "Your file keeps moving while your language level improves."
+        : "Academic selection and the application file move forward together without an artificial waiting step."}`,
+      de: `${answers.bacStatus === "no_bac"
+        ? "Campus Allemagne bereitet mit dir die vorhandenen Schulunterlagen, persönlichen Dokumente, nötige Übersetzungen oder Legalisierungen, den Zeitplan und die Prüfung deines akademischen Weges vor."
+        : answers.targetDegree === "Master"
+          ? "Campus Allemagne bereitet mit dir deinen vorherigen Hochschulabschluss und Notenübersichten, nötige Übersetzungen oder Legalisierungen, persönliche Unterlagen, Zeitplan, Master-Auswahl und Bewerbungen vor."
+          : "Campus Allemagne bereitet mit dir Bac oder vorherigen Abschluss und Notenübersichten, nötige Übersetzungen oder Legalisierungen, persönliche Unterlagen, Zeitplan, Programmauswahl und Bewerbungen vor."} ${priority.key === "german" || priority.key === "english"
+        ? "Dein Dossier läuft während deiner Sprachentwicklung weiter."
+        : "Akademische Auswahl und Dossier laufen gemeinsam weiter, ohne künstliche Wartezeit."}`,
     }[locale],
   };
 
@@ -398,10 +464,18 @@ export function buildUniversalOrientationGuidance(
         de: priority.key === "applications" ? "Jetzt: Hochschulen bestätigen und Dossier starten." : "Jetzt: die Priorität oben angehen und das Dossier starten.",
       }[locale],
       next: {
-        fr: "Ensuite : retenir 2 ou 3 programmes vérifiés et finaliser les pièces.",
-        ar: "بعد ذلك: اختيار برنامجين أو ثلاثة موثقة واستكمال الوثائق.",
-        en: "Next: keep 2 or 3 verified programmes and complete the documents.",
-        de: "Danach: 2 oder 3 geprüfte Programme auswählen und Unterlagen vervollständigen.",
+        fr: answers.bacStatus === "no_bac"
+          ? "Ensuite : confirmer votre accès académique, puis retenir 2 ou 3 programmes vérifiés."
+          : "Ensuite : retenir 2 ou 3 programmes vérifiés et finaliser les pièces.",
+        ar: answers.bacStatus === "no_bac"
+          ? "بعد ذلك: تأكيد الدخول الأكاديمي ثم اختيار برنامجين أو ثلاثة موثقة."
+          : "بعد ذلك: اختيار برنامجين أو ثلاثة موثقة واستكمال الوثائق.",
+        en: answers.bacStatus === "no_bac"
+          ? "Next: confirm your academic access, then keep 2 or 3 verified programmes."
+          : "Next: keep 2 or 3 verified programmes and complete the documents.",
+        de: answers.bacStatus === "no_bac"
+          ? "Danach: Hochschulzugang bestätigen und anschließend 2 oder 3 geprüfte Programme auswählen."
+          : "Danach: 2 oder 3 geprüfte Programme auswählen und Unterlagen vervollständigen.",
       }[locale],
       then: {
         fr: "Puis : envoyer les candidatures par le canal officiel et suivre les réponses.",

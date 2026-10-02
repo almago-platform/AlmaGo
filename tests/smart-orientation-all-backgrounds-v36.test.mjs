@@ -100,3 +100,21 @@ test("SO-V3.6 PDF adapts both education and study-language profile lines", () =>
   assert.match(report, /answers\.studyLanguage === "Allemand et anglais"/);
   assert.match(report, /DE \$\{german\} · EN \$\{english\}/);
 });
+
+
+test("SO-V3.6 Master guidance evaluates the previous university qualification, not only the Bac", () => {
+  assert.match(guidance, /Votre projet de Master doit être vérifié/);
+  assert.match(guidance, /votre diplôme précédent \(\$\{lastDiploma\}\) devient la base principale de l’évaluation/);
+  assert.match(guidance, /prérequis académiques, la langue et les conditions propres aux programmes/);
+});
+
+test("SO-V3.6 no-Bac guidance waits for access confirmation before programme selection", () => {
+  assert.match(guidance, /Après confirmation de votre accès académique/);
+  assert.match(guidance, /confirmer votre accès académique, puis retenir 2 ou 3 programmes vérifiés/);
+  assert.match(guidance, /documents scolaires disponibles/);
+});
+
+test("SO-V3.6 does not tell language-ready students they are waiting for language", () => {
+  assert.match(guidance, /La sélection académique et le dossier avancent ensemble, sans étape d’attente artificielle/);
+  assert.match(guidance, /votre diplôme universitaire précédent et ses relevés/);
+});

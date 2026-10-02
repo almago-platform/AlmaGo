@@ -60,8 +60,8 @@ test("SO-V3.5 keeps verified exact programmes when they exist and otherwise stay
 
 test("SO-V3.5 makes parallel dossier work and the full after-admission path visible", () => {
   assert.match(guidance, /Pendant que vous apprenez la langue, votre dossier avance/);
-  assert.match(guidance, /diplôme\/Bac et relevés/);
-  assert.match(guidance, /traductions et légalisations lorsqu’elles sont nécessaires/);
+  assert.match(guidance, /Bac ou diplôme précédent et les relevés/);
+  assert.match(guidance, /traductions ou légalisations nécessaires/);
   assert.match(guidance, /envoyer les candidatures par le canal officiel/);
   assert.match(guidance, /financement, assurance, visa/);
   assert.match(guidance, /logement et de l’arrivée/);

@@ -32,7 +32,7 @@ test("SO-V3.5 route covers priority through post-admission instead of a generic 
 
 test("SO-V3.5 keeps responsibilities and official-decision boundaries understandable", () => {
   assert.match(guidance, /Campus Allemagne prépare avec vous/);
-  assert.match(guidance, /Vous ne perdez pas des mois à attendre la fin de la langue/);
+  assert.match(guidance, /Votre dossier avance pendant votre progression linguistique/);
   assert.match(guidance, /La décision finale appartient à l’établissement/);
   assert.match(routeCopy, /ne constitue ni une admission universitaire ni une décision de visa/);
 });
