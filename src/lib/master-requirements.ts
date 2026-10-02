@@ -161,6 +161,8 @@ export type StudentProjectForMasterMatch = {
   current_diploma?: string | null;
   current_german_level?: string | null;
   target_intake?: string | null;
+  total_ects?: number | null;
+  subject_credits?: Record<string, number | null | undefined>;
 };
 export type RequirementMatchResult = {
   criterion: string;
@@ -219,13 +221,48 @@ export function matchMasterRequirements(
     const ects = resolvePositiveNumber(profile.minimum_ects, now);
     const ectsRule = unavailable("minimum_ects", ects);
     if (ectsRule) criteria.push(ectsRule);
-    else if (ects.value !== null) criteria.push(unknown("minimum_ects", ects.value, "Les ECTS totaux de l’étudiant ne sont pas structurés dans le projet."));
+    else if (ects.value !== null) {
+      const studentEcts = project.total_ects;
+      if (!Number.isFinite(studentEcts)) {
+        criteria.push(unknown("minimum_ects", ects.value, "Les ECTS totaux de l’étudiant ne sont pas structurés dans le projet."));
+      } else {
+        criteria.push({
+          criterion: "minimum_ects",
+          status: Number(studentEcts) >= ects.value ? "satisfied" : "not_satisfied",
+          student_value: Number(studentEcts),
+          required_value: ects.value,
+          reason: Number(studentEcts) >= ects.value
+            ? "Le total d’ECTS déclaré atteint le minimum vérifié."
+            : "Le total d’ECTS déclaré est inférieur au minimum vérifié.",
+        });
+      }
+    }
   }
 
   for (const item of profile.subject_credits || []) {
     const required = resolvePositiveNumber(item, now);
     const name = `subject_credits:${item.subject}`;
-    criteria.push(unavailable(name, required) || unknown(name, required.value, "Les crédits par matière de l’étudiant ne sont pas structurés dans le projet."));
+    const requirementRule = unavailable(name, required);
+    if (requirementRule) {
+      criteria.push(requirementRule);
+      continue;
+    }
+
+    const studentCredits = project.subject_credits?.[item.subject];
+    if (!Number.isFinite(studentCredits)) {
+      criteria.push(unknown(name, required.value, "Les crédits déclarés pour cette matière ne sont pas encore disponibles."));
+      continue;
+    }
+
+    criteria.push({
+      criterion: name,
+      status: Number(studentCredits) >= Number(required.value) ? "satisfied" : "not_satisfied",
+      student_value: Number(studentCredits),
+      required_value: required.value,
+      reason: Number(studentCredits) >= Number(required.value)
+        ? "Les crédits déclarés atteignent le minimum vérifié pour cette matière."
+        : "Les crédits déclarés sont inférieurs au minimum vérifié pour cette matière.",
+    });
   }
 
   if (profile.minimum_grade) {
