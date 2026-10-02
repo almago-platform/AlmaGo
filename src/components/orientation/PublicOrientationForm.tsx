@@ -589,7 +589,14 @@ export function PublicOrientationForm({
                   prospectCaptureEnabled={prospectCaptureEnabled && !authenticatedUpdate}
                 />
 
-                <PersonalizedOrientationEngineCard answers={answers} locale={locale} />
+                <PersonalizedOrientationEngineCard
+                  answers={answers}
+                  locale={locale}
+                  onRefineAnswers={(patch) => {
+                    setAnswers((current) => ({ ...current, ...patch }));
+                    setError("");
+                  }}
+                />
 
                 <OrientationRouteCard answers={answers} locale={locale} />
 
