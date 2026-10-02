@@ -695,7 +695,7 @@ Implemented in the result pipeline:
 - 3–4 programme pistes, short roadmap and the single writer CTA stay in the main reading flow;
 - the writer CTA reuses the existing consented prospect-capture flow instead of creating a second acquisition path;
 - verified/review facts and their sources remain expandable below the simple letter;
-- every personalized shortlist is visibly marked for mandatory Campus Allemagne counselor validation before it becomes an assisted application strategy.
+- every personalized shortlist is returned to the candidate immediately; any Campus Allemagne human review is a later quality-control audit and never a prerequisite for displaying the automatic orientation result.
 
 Human-review boundary:
 - AlmaGo already has a protected admin Orientation workflow where a counselor chooses the student, checks the stored profile, selects a programme, documents the factual justification, publishes the recommendation and can archive it later;
@@ -703,9 +703,12 @@ Human-review boundary:
 - the new A/B/C/D draft is **not** automatically copied into `program_recommendations` and is never treated as counselor-approved;
 - a richer counselor review bundle (showing the exact discovered candidates, B fact statuses, C rationale and generated D copy together) remains part of the Phase F production/human-validation work.
 
-### Phase F — production + human validation 🚧 implementation complete, live validation pending
+### Phase F — production + post-result human audit 🚧 implementation complete, live validation pending
 
-Human-review architecture:
+Post-result audit architecture:
+- mandatory candidate path is `Candidate -> A1/A2/A3 -> B -> C -> Gemini -> immediate result`;
+- Phase F never introduces `pending_admin_approval` or any counselor-approval gate before the result is displayed;
+- the candidate result is not revoked or blocked retroactively when an admin later approves, changes or rejects the internal audit;
 - every E pipeline run can persist an admin-only `orientation_human_reviews` bundle containing the minimized academic profile plus A discovery candidates, B field-level verification, C shortlist rationale and D writer result;
 - before prospect capture the bundle has no name/email/phone/passport and is matched through a SHA-256 academic-profile fingerprint;
 - the browser receives only an opaque review id; after the visitor explicitly saves the orientation, the server links that review to the new `orientation_id` only when the exact academic-profile fingerprint matches;
@@ -715,7 +718,7 @@ Human-review architecture:
 - the counselor sees A, B, C and D together, including official sources, B fact statuses, C reasons/warnings/missing facts and D copy;
 - a counselor may validate or correct the shortlist using at most 4 programmes already passed through B and never a B record whose overall status is `unknown`;
 - the counselor may request corrections or reject a review with an internal note;
-- review approval is deliberately separate from `program_recommendations`: it never auto-publishes a programme to the student and never bypasses the existing verified manual publication workflow.
+- audit conclusions are deliberately separate from the automatic candidate result and from `program_recommendations`: they never block the result already delivered, never auto-publish a programme to the student and never bypass the existing verified manual publication workflow.
 
 Production validation matrix:
 - Bac obtained + A2;
@@ -772,7 +775,7 @@ Validated on 2026-10-02:
 - OpenAI/research layer for discovery and source analysis.
 - AlmaGo deterministic verification/ranking as source of truth.
 - Gemini for personalized marketing-oriented writing.
-- Human Campus Allemagne validation remains mandatory for assisted selection.
+- Campus Allemagne human review is a post-result quality audit for Orientation V4; it is never a gate before the automatic candidate result. The separate manual counselor publication workflow remains the boundary for assisted recommendations.
 - Programme database grows progressively from verified discoveries.
 - No attempt to pre-build every German university before launch.
 - Campus Allemagne does not market Studienkolleg as a current service route.
