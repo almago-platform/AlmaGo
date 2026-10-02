@@ -242,11 +242,11 @@ export function OrientationRefinementQuestionCard({
   const [year, setYear] = useState(answers.targetIntakeYear);
   const subjectKey = question.subjectKey || "";
   const [credits, setCredits] = useState(
-    subjectKey ? answers.masterSubjectCredits[subjectKey] || "" : "",
+    subjectKey ? answers.masterSubjectCredits?.[subjectKey] || "" : "",
   );
 
   useEffect(() => {
-    setCredits(subjectKey ? answers.masterSubjectCredits[subjectKey] || "" : "");
+    setCredits(subjectKey ? answers.masterSubjectCredits?.[subjectKey] || "" : "");
   }, [answers.masterSubjectCredits, subjectKey]);
 
   const affected = question.affectedRecommendationIds.length;
@@ -298,7 +298,7 @@ export function OrientationRefinementQuestionCard({
             if (!Number.isFinite(value) || value < 0 || value > 300) return;
             onRefine({
               masterSubjectCredits: {
-                ...answers.masterSubjectCredits,
+                ...(answers.masterSubjectCredits || {}),
                 [subjectKey]: credits.trim(),
               },
             });
