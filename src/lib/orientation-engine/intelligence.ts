@@ -56,6 +56,52 @@ function preferredCity(profile: PublicOrientationAnswers) {
   return profile.preferredCities?.[0] || null;
 }
 
+const degreeLabels: Record<Locale, Record<string, string>> = {
+  fr: { Bachelor: "Bachelor", Master: "Master" },
+  ar: { Bachelor: "بكالوريوس", Master: "ماجستير" },
+  en: { Bachelor: "Bachelor", Master: "Master" },
+  de: { Bachelor: "Bachelor", Master: "Master" },
+};
+
+const fieldLabels: Record<Locale, Record<string, string>> = {
+  fr: {
+    "Ingénierie": "Ingénierie",
+    "Informatique": "Informatique",
+    "Économie/Gestion": "Économie / Gestion",
+    "Architecture": "Architecture",
+    "Sciences": "Sciences",
+    "Médecine/Santé": "Médecine / Santé",
+    "Lettres/Langues": "Lettres / Langues",
+  },
+  ar: {
+    "Ingénierie": "الهندسة",
+    "Informatique": "الإعلامية / علوم الحاسوب",
+    "Économie/Gestion": "الاقتصاد / التصرف",
+    "Architecture": "الهندسة المعمارية",
+    "Sciences": "العلوم",
+    "Médecine/Santé": "الطب / الصحة",
+    "Lettres/Langues": "الآداب / اللغات",
+  },
+  en: {
+    "Ingénierie": "Engineering",
+    "Informatique": "Computer Science",
+    "Économie/Gestion": "Economics / Management",
+    "Architecture": "Architecture",
+    "Sciences": "Sciences",
+    "Médecine/Santé": "Medicine / Health",
+    "Lettres/Langues": "Languages / Humanities",
+  },
+  de: {
+    "Ingénierie": "Ingenieurwesen",
+    "Informatique": "Informatik",
+    "Économie/Gestion": "Wirtschaft / Management",
+    "Architecture": "Architektur",
+    "Sciences": "Naturwissenschaften",
+    "Médecine/Santé": "Medizin / Gesundheit",
+    "Lettres/Langues": "Sprachen / Geisteswissenschaften",
+  },
+};
+
 const specialtyLabels: Record<Locale, Record<string, string>> = {
   fr: {
     computer_engineering: "Informatique / Computer Engineering",
@@ -107,9 +153,11 @@ function degreeAndField(locale: Locale, profile: PublicOrientationAnswers) {
   const specialty = profile.targetField === "Ingénierie" && profile.engineeringSpecialty
     ? specialtyLabels[locale][profile.engineeringSpecialty] || profile.engineeringSpecialty
     : "";
+  const degree = degreeLabels[locale][profile.targetDegree] || profile.targetDegree;
+  const field = fieldLabels[locale][profile.targetField] || profile.targetField;
   return specialty
-    ? `${profile.targetDegree} · ${profile.targetField} — ${specialty}`
-    : `${profile.targetDegree} · ${profile.targetField}`;
+    ? `${degree} · ${field} — ${specialty}`
+    : `${degree} · ${field}`;
 }
 
 function academicOpening(locale: Locale, profile: PublicOrientationAnswers) {
@@ -127,11 +175,20 @@ function academicOpening(locale: Locale, profile: PublicOrientationAnswers) {
   const year = profile.bacYear || "";
   const average = profile.generalAverage ? `${profile.generalAverage}/20` : "";
 
+  const preparing = profile.bacStatus === "preparing";
   return {
-    fr: `Avec votre Bac ${track || "tunisien"}${year ? ` obtenu en ${year}` : ""}${average ? ` avec une moyenne de ${average}` : ""}, votre projet peut déjà être organisé de manière concrète.`,
-    ar: `بشهادة البكالوريا ${track || "التونسية"}${year ? ` لسنة ${year}` : ""}${average ? ` وبمعدل ${average}` : ""}، يمكننا بالفعل تنظيم مشروعك بشكل عملي.`,
-    en: `With your ${track || "Tunisian"} Baccalaureate${year ? ` from ${year}` : ""}${average ? ` and an average of ${average}` : ""}, your project can already be organised concretely.`,
-    de: `Mit deinem ${track || "tunesischen"} Baccalauréat${year ? ` aus dem Jahr ${year}` : ""}${average ? ` und einem Durchschnitt von ${average}` : ""} kann dein Vorhaben bereits konkret geplant werden.`,
+    fr: preparing
+      ? `Vous préparez un Bac ${track || "tunisien"}${year ? ` pour ${year}` : ""}${average ? ` avec une moyenne actuelle de ${average}` : ""}. Votre projet peut déjà être organisé de manière concrète.`
+      : `Avec votre Bac ${track || "tunisien"}${year ? ` obtenu en ${year}` : ""}${average ? ` avec une moyenne de ${average}` : ""}, votre projet peut déjà être organisé de manière concrète.`,
+    ar: preparing
+      ? `أنت تستعد لبكالوريا ${track || "التونسية"}${year ? ` لسنة ${year}` : ""}${average ? ` بمعدل حالي ${average}` : ""}. يمكننا بالفعل تنظيم مشروعك بشكل عملي.`
+      : `بشهادة البكالوريا ${track || "التونسية"}${year ? ` لسنة ${year}` : ""}${average ? ` وبمعدل ${average}` : ""}، يمكننا بالفعل تنظيم مشروعك بشكل عملي.`,
+    en: preparing
+      ? `You are preparing a ${track || "Tunisian"} Baccalaureate${year ? ` for ${year}` : ""}${average ? ` with a current average of ${average}` : ""}. Your project can already be organised concretely.`
+      : `With your ${track || "Tunisian"} Baccalaureate${year ? ` from ${year}` : ""}${average ? ` and an average of ${average}` : ""}, your project can already be organised concretely.`,
+    de: preparing
+      ? `Du bereitest ein ${track || "tunesisches"} Baccalauréat${year ? ` für ${year}` : ""}${average ? ` mit einem aktuellen Durchschnitt von ${average}` : ""} vor. Dein Vorhaben kann bereits konkret geplant werden.`
+      : `Mit deinem ${track || "tunesischen"} Baccalauréat${year ? ` aus dem Jahr ${year}` : ""}${average ? ` und einem Durchschnitt von ${average}` : ""} kann dein Vorhaben bereits konkret geplant werden.`,
   }[locale];
 }
 
