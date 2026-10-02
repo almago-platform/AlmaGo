@@ -13,7 +13,7 @@ import type {
 } from "@/lib/orientation-engine/writer/types";
 
 const DEFAULT_MODEL = "gemini-3.8-flash";
-const REQUEST_TIMEOUT_MS = 10_000;
+const REQUEST_TIMEOUT_MS = 20_000;
 const CACHE_TTL_MS = 30 * 60 * 1000;
 const MAX_CACHE_ENTRIES = 100;
 
