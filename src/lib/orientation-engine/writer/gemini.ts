@@ -266,7 +266,7 @@ export function buildGeminiOrientationWriterRequest(
       temperature: 0.45,
       maxOutputTokens: 2600,
       responseMimeType: "application/json",
-      responseSchema: responseSchema(input),
+      responseJsonSchema: responseSchema(input),
     },
   };
 }
