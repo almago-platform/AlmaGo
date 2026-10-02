@@ -33,7 +33,7 @@ test("prospect capture remains independently feature-gated", () => {
 test("public prospect API validates and recomputes the diagnostic server-side", () => {
   assert.match(route, /MAX_BODY_BYTES = 24_000/);
   assert.match(route, /validEmail/);
-  assert.match(route, /validAnswers/);
+  assert.match(route, /validatePublicOrientationAnswers/);
   assert.match(route, /privacyAcknowledged === true/);
   assert.match(route, /buildPublicOrientationDiagnostic\(answers\)/);
   assert.match(route, /ENGINE_VERSION = "public-orientation-v1"/);
