@@ -494,11 +494,66 @@ Implementation files:
 - `supabase/migrations/20261002194920_orientation_discovery_knowledge_cache.sql`;
 - `supabase/migrations/20261002200738_orientation_discovery_semester_refresh_calendar.sql`.
 
-### Phase B — Verification Engine
-- field-level source provenance;
-- freshness dates;
-- verified / needs_review / unknown states;
-- official-source checks.
+### Phase B — Verification Engine ✅ implemented (provider activation pending)
+
+B converts A's `research_candidate` records into source-gated programme facts. It does **not** decide admission eligibility and it does not auto-promote programmes into the student-facing verified catalogue.
+
+Behavior:
+- verify at most **8 candidates** per B run to keep search/provider cost bounded before C selects 3–4 final pistes;
+- prioritize candidates that already have an official programme/university source;
+- revisit one programme at a time with one bounded web-search call;
+- extract facts with strict structured output;
+- keep a separate status per fact: `verified`, `needs_review`, or `unknown`;
+- a fact becomes `verified` only when its evidence URL was actually seen in the verification web research **and** belongs to the official programme/university domain;
+- DAAD, Hochschulkompass and uni-assist are accepted as useful secondary registries, but their programme-specific claims remain `needs_review` until primary university evidence confirms them;
+- an AI value whose source URL was not actually seen is discarded back to `unknown`;
+- deterministic fallback may preserve useful A discovery values as `needs_review`, but it never upgrades them to `verified`;
+- programme-level `verified` means the programme core (current existence, degree level and teaching language) has primary-source support. It does **not** mean admission is guaranteed and it does not imply every deadline/language/application fact is known;
+- critical missing facts remain individually `unknown` even when the programme core is verified.
+
+Field-level facts tracked by B:
+- programme existence;
+- degree level;
+- city;
+- teaching language;
+- German language requirement;
+- English language requirement;
+- accepted language certificates;
+- available intake terms;
+- winter deadline;
+- summer deadline;
+- application route;
+- application URL;
+- Studienkolleg requirement only when explicitly documented;
+- tuition / semester fees when explicitly documented.
+
+Persistence:
+- `orientation_research_programs.verification_status` + `last_verification_at` summarize the latest B result;
+- `orientation_verification_runs` stores provider/model/status and cost observability;
+- `orientation_programme_verifications` stores historical field-level facts and provenance;
+- verification history is identity-minimised and server-only;
+- no B code writes to `orientation_program_catalog`.
+
+Security:
+- B verification tables have RLS enabled;
+- `anon` and `authenticated` receive no privileges;
+- only server-side `service_role` receives CRUD.
+
+Provider activation:
+- `ALMAGO_ORIENTATION_VERIFICATION_PROVIDER=openai`;
+- server-only `OPENAI_API_KEY`;
+- optional `ALMAGO_ORIENTATION_VERIFICATION_MODEL`.
+
+Implementation files:
+- `src/lib/orientation-engine/verification/types.ts`;
+- `src/lib/orientation-engine/verification/core.ts`;
+- `src/lib/orientation-engine/verification/openai.ts`;
+- `src/lib/orientation-engine/verification/store.ts`;
+- `src/lib/orientation-engine/verification/service.ts`;
+- `tests/orientation-verification-engine.test.mjs`;
+- `supabase/migrations/20261002202819_orientation_programme_verification_engine.sql`.
+
+B remains server-side infrastructure until C chooses the final shortlist and later UI/human-review work decides which verified facts become student-facing.
 
 ### Phase C — Selection Engine
 - deterministic 3–4 programme shortlist;
