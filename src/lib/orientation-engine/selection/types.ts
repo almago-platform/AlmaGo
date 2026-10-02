@@ -4,9 +4,6 @@ import type {
   OrientationVerificationFactKey,
 } from "@/lib/orientation-engine/verification/types";
 
-export const ORIENTATION_SELECTION_MIN_TARGET = 3;
-export const ORIENTATION_SELECTION_MAX_TARGET = 4;
-
 export type OrientationSelectionStatus =
   | "ready"
   | "partial"
@@ -83,8 +80,8 @@ export type OrientationSelectionResult = {
   excluded: OrientationSelectionCandidateEvaluation[];
   unselected: OrientationSelectionCandidateEvaluation[];
   targetSize: {
-    min: typeof ORIENTATION_SELECTION_MIN_TARGET;
-    max: typeof ORIENTATION_SELECTION_MAX_TARGET;
+    min: 3;
+    max: 4;
   };
   generatedBy: "deterministic_selection_v1";
 };
