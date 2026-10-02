@@ -555,11 +555,59 @@ Implementation files:
 
 B remains server-side infrastructure until C chooses the final shortlist and later UI/human-review work decides which verified facts become student-facing.
 
-### Phase C — Selection Engine
-- deterministic 3–4 programme shortlist;
-- explainable scoring;
-- diversity of useful alternatives;
-- no hidden LLM ranking.
+### Phase C — Selection Engine ✅ implemented
+
+C consumes B's field-level verification output and produces the shortlist that later goes to the writer/UI.
+
+Behavior:
+- fully deterministic and zero-LLM-cost;
+- target shortlist size is **3 to 4 programmes**;
+- never force a third/fourth programme when evidence is insufficient;
+- completely `unknown` B records are not inserted merely to fill the shortlist;
+- hard exclusion happens only on a **verified conflict**:
+  - programme officially not current;
+  - verified degree-level mismatch;
+  - verified target intake unavailable;
+- unknown information remains a warning/missing fact, never implicit rejection;
+- current language below a verified requirement is a condition to complete, not an exclusion;
+- Studienkolleg / fees / application-route gaps remain explicit warnings instead of hidden ranking assumptions.
+
+Explainable score inputs:
+- B core verification strength;
+- verified degree match;
+- deterministic programme-title match for target field / engineering specialty;
+- preferred study-language match;
+- preferred city match;
+- verified target-intake match;
+- current language level versus an explicitly sourced CEFR requirement;
+- known application route and target-semester deadline.
+
+Diversity:
+- after base relevance scoring, C adds small deterministic bonuses for a new institution and a new city;
+- diversity bonuses are intentionally smaller than the core relevance weights;
+- university fame, brand prestige, sponsored placement and LLM opinion are **not** ranking inputs.
+
+Output for every selected item includes:
+- base score + final score;
+- score breakdown;
+- reasons;
+- warnings;
+- missing B facts;
+- deterministic shortlist position.
+
+Persistence/cost:
+- C does not call OpenAI or Gemini;
+- C does not create a second copy of A/B programme knowledge;
+- unselected programmes remain in the reusable A/B database;
+- the shortlist is cheap to recompute whenever the student's preferences change.
+
+Implementation files:
+- `src/lib/orientation-engine/selection/types.ts`;
+- `src/lib/orientation-engine/selection/core.ts`;
+- `src/lib/orientation-engine/selection/service.ts`;
+- `tests/orientation-selection-engine.test.mjs`.
+
+C remains server-side infrastructure until D/E consume the shortlist for personalized writing and student-facing presentation.
 
 ### Phase D — Gemini Writer
 - master prompt;
