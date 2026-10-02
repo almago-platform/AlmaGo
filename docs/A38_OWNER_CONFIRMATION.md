@@ -26,6 +26,22 @@ Les éléments suivants ont été confirmés par le propriétaire pour la prépa
 
 Ces confirmations sont des faits/décisions propriétaire. Elles ne remplacent pas la détermination juridique de leur applicabilité par le relecteur final.
 
+## Mise à jour stratégie propriétaire — Free Validation (2 octobre 2026)
+
+Le propriétaire a confirmé une évolution de séquencement :
+
+- le premier lancement envisagé doit servir à **valider la demande gratuitement avant investissement commercial lourd** ;
+- orientation gratuite pour tous les visiteurs ;
+- e-mail facultatif et consentement contact séparé ;
+- mesure d’un signal explicite « Je veux continuer avec Campus Allemagne » ;
+- aucun paiement réel pendant cette phase de validation ;
+- si une demande réelle apparaît, possibilité d’inviter une cohorte limitée dans un **pilote gratuit**, avec accès dossier/documents avant tout paiement ;
+- investissement commercial (offres/prix, paiement production, montée en gamme fournisseurs) seulement après observation de la demande.
+
+Cette décision **modifie l’ordre commercial souhaité**, mais **ne vaut pas autorisation juridique d’ouvrir la collecte réelle**. Le minimum confidentialité/INPDP et la question des transferts internationaux doivent être clarifiés dans #717 avant toute activation de la capture prospect. L’accès à de vrais documents exige un gate additionnel.
+
+Le public pouvant inclure des élèves mineurs, la stratégie initiale 18+ pour la **collecte persistée** est recommandée comme option de réduction de complexité, mais reste une **décision propriétaire ouverte** tant qu’elle n’est pas explicitement approuvée.
+
 ## Ce qui est déjà établi techniquement
 
 - Supabase fournit Auth, PostgreSQL et Storage ;
