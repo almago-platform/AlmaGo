@@ -6,6 +6,7 @@ const {
   buildOrientationDiscoveryProfileFingerprint,
   buildOrientationDiscoverySearchContext,
   buildOrientationResearchProgrammeDedupeKey,
+  getOrientationDiscoveryRefreshWindow,
   mergeOrientationKnowledgeCandidates,
   orientationDegreeCompatible,
   orientationKnowledgeCoverageSufficient,
@@ -25,6 +26,10 @@ const typesSource = readFileSync(
 );
 const migrationSource = readFileSync(
   "supabase/migrations/20261002194920_orientation_discovery_knowledge_cache.sql",
+  "utf8",
+);
+const semesterMigrationSource = readFileSync(
+  "supabase/migrations/20261002200738_orientation_discovery_semester_refresh_calendar.sql",
   "utf8",
 );
 
@@ -97,6 +102,45 @@ function candidate(overrides = {}) {
     ...overrides,
   };
 }
+
+
+test("A3 semester refresh calendar rolls exactly on 15 April and 15 October", () => {
+  assert.deepEqual(
+    getOrientationDiscoveryRefreshWindow(new Date("2026-04-14T23:59:59.999Z")),
+    {
+      cycle: "winter_2025",
+      lastMajorRefreshAt: "2025-10-15T00:00:00.000Z",
+      nextMajorRefreshAt: "2026-04-15T00:00:00.000Z",
+    },
+  );
+
+  assert.deepEqual(
+    getOrientationDiscoveryRefreshWindow(new Date("2026-04-15T00:00:00.000Z")),
+    {
+      cycle: "summer_2026",
+      lastMajorRefreshAt: "2026-04-15T00:00:00.000Z",
+      nextMajorRefreshAt: "2026-10-15T00:00:00.000Z",
+    },
+  );
+
+  assert.deepEqual(
+    getOrientationDiscoveryRefreshWindow(new Date("2026-10-14T23:59:59.999Z")),
+    {
+      cycle: "summer_2026",
+      lastMajorRefreshAt: "2026-04-15T00:00:00.000Z",
+      nextMajorRefreshAt: "2026-10-15T00:00:00.000Z",
+    },
+  );
+
+  assert.deepEqual(
+    getOrientationDiscoveryRefreshWindow(new Date("2026-10-15T00:00:00.000Z")),
+    {
+      cycle: "winter_2026",
+      lastMajorRefreshAt: "2026-10-15T00:00:00.000Z",
+      nextMajorRefreshAt: "2027-04-15T00:00:00.000Z",
+    },
+  );
+});
 
 test("A3 profile fingerprints are stable for equivalent discovery preferences", () => {
   const first = plan({
@@ -218,7 +262,8 @@ test("A3 only treats the cache as sufficient when explicit city preferences are 
 
 test("A3 is cache-first and avoids OpenAI when the reusable pool is sufficient", () => {
   assert.match(knowledgeSource, /ORIENTATION_KNOWLEDGE_MIN_CANDIDATES = 8/);
-  assert.match(knowledgeSource, /ORIENTATION_KNOWLEDGE_FRESHNESS_DAYS = 30/);
+  assert.match(knowledgeSource, /ORIENTATION_MAJOR_REFRESH_DATES = \["04-15", "10-15"\]/);
+  assert.doesNotMatch(knowledgeSource, /ORIENTATION_KNOWLEDGE_FRESHNESS_DAYS|freshnessCutoff/);
 
   const loadIndex = serviceSource.indexOf("loadOrientationDiscoveryKnowledge");
   const hitIndex = serviceSource.indexOf("orientationKnowledgeCoverageSufficient");
@@ -237,7 +282,9 @@ test("A3 persists every researched candidate into a reusable global knowledge po
   assert.match(knowledgeSource, /orientation_discovery_runs/);
   assert.match(knowledgeSource, /orientation_discovery_run_candidates/);
   assert.match(knowledgeSource, /\.overlaps\("family_ids", families\)/);
-  assert.match(knowledgeSource, /\.gte\("last_seen_at", freshnessCutoff\(\)\)/);
+  assert.match(knowledgeSource, /\.gt\("next_major_refresh_at", new Date\(\)\.toISOString\(\)\)/);
+  assert.match(knowledgeSource, /refresh_cycle: refreshWindow\.cycle/);
+  assert.match(knowledgeSource, /next_major_refresh_at: refreshWindow\.nextMajorRefreshAt/);
 });
 
 test("A3 keeps knowledge storage server-only", () => {
@@ -271,4 +318,40 @@ test("A3 database cache is private by default and service-role only", () => {
   );
   assert.doesNotMatch(migrationSource, /grant .* to anon/);
   assert.doesNotMatch(migrationSource, /grant .* to authenticated/);
+});
+
+
+test("A3 semester migration replaces rolling freshness with fixed refresh gates", () => {
+  assert.match(
+    semesterMigrationSource,
+    /rename column fresh_until to next_major_refresh_at/,
+  );
+  assert.match(
+    semesterMigrationSource,
+    /make_timestamptz\(b\.y, 4, 15, 0, 0, 0, 'UTC'\)/,
+  );
+  assert.match(
+    semesterMigrationSource,
+    /make_timestamptz\(b\.y, 10, 15, 0, 0, 0, 'UTC'\)/,
+  );
+  assert.match(
+    semesterMigrationSource,
+    /refresh_cycle ~ '\^\(summer\|winter\)_\[0-9\]\{4\}\$'/,
+  );
+  assert.match(
+    semesterMigrationSource,
+    /orientation_research_programs_next_major_refresh_idx/,
+  );
+  assert.match(
+    semesterMigrationSource,
+    /orientation_discovery_runs_next_major_refresh_idx/,
+  );
+});
+
+test("A3 no longer exposes rolling day freshness metadata", () => {
+  assert.doesNotMatch(serviceSource, /freshnessDays|FRESHNESS_DAYS/);
+  assert.match(serviceSource, /refreshCadence: "semester"/);
+  assert.match(serviceSource, /majorRefreshDates: ORIENTATION_MAJOR_REFRESH_DATES/);
+  assert.match(serviceSource, /nextMajorRefreshAt: refreshWindow\.nextMajorRefreshAt/);
+  assert.match(typesSource, /majorRefreshDates: readonly \["04-15", "10-15"\]/);
 });
