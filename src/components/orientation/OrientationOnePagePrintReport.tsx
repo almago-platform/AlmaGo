@@ -1,6 +1,7 @@
 import { BrandLogo } from "@/components/brand/BrandLogo";
 import type { Locale } from "@/lib/i18n";
 import type { PublicOrientationAnswers } from "@/lib/orientation/public";
+import { buildUniversalOrientationGuidance } from "@/lib/orientation/universal-guidance";
 import {
   getAcademicAccessConclusion,
   getVerifiedProgrammeSet,
@@ -305,6 +306,7 @@ export function OrientationOnePagePrintReport({
   locale: Locale;
 }) {
   const copy = labels[locale] as (typeof labels)["fr"];
+  const guidance = buildUniversalOrientationGuidance(answers, locale);
   const access = getAcademicAccessConclusion(answers);
   const programmeSet = getVerifiedProgrammeSet(answers);
   const options = programmeSet?.options || [];
@@ -358,9 +360,8 @@ export function OrientationOnePagePrintReport({
 
       <section className="orientation-one-page-conclusion">
         <p className="orientation-one-page-label">{copy.conclusion}</p>
-        <p className="mt-1 text-[11px] leading-[1.35]">
-          <strong>{conclusionText}</strong>
-        </p>
+        <p className="mt-1 text-[11px] font-bold leading-[1.35]">{guidance.academicTitle}</p>
+        <p className="mt-1 text-[10.5px] leading-[1.35]">{guidance.academicBody}</p>
       </section>
 
       <section className="mt-3">
@@ -376,8 +377,17 @@ export function OrientationOnePagePrintReport({
             <tr>
               <td>{copy.language}</td>
               <td>
-                <strong>{copy.languageText(german, nextGerman)}</strong>
-                <span>{copy.languageChoice}</span>
+                <strong>{guidance.priorityTitle}</strong>
+                <span>{guidance.priorityBody}</span>
+                {guidance.languageChoices.length ? (
+                  <span>{locale === "fr"
+                    ? "Choix possibles : Tunisie · en ligne · Allemagne, selon les options réellement disponibles pour votre profil."
+                    : locale === "ar"
+                      ? "الخيارات الممكنة: تونس · عن بُعد · ألمانيا، حسب الخيارات المتاحة فعليًا لملفك."
+                      : locale === "de"
+                        ? "Mögliche Wege: Tunesien · online · Deutschland, je nach tatsächlich verfügbaren Optionen."
+                        : "Possible routes: Tunisia · online · Germany, depending on the options genuinely available for your profile."}</span>
+                ) : null}
               </td>
             </tr>
             <tr>
@@ -387,17 +397,8 @@ export function OrientationOnePagePrintReport({
             <tr>
               <td>{copy.programmes}</td>
               <td>
-                <strong>
-                  {programmeSet
-                    ? options.length
-                      ? programmeSet.selectionReason === "preferred_city"
-                        ? copy.programmesTitlePreferred(programmeSet.city)
-                        : copy.programmesTitleRecommended(programmeSet.city)
-                      : programmeSet.selectionReason === "preferred_city"
-                        ? copy.noProgrammesPreferred(programmeSet.city)
-                        : copy.noProgrammesRecommended(programmeSet.city)
-                    : copy.noProgrammesRecommended(cities)}
-                </strong>
+                <strong>{guidance.cityTitle}</strong>
+                <span>{guidance.cityBody}</span>
                 {options.length ? (
                   <div className="orientation-programme-list">
                     {options.map((option) => (
@@ -413,7 +414,14 @@ export function OrientationOnePagePrintReport({
             </tr>
             <tr>
               <td>{copy.application}</td>
-              <td>{copy.applicationText}</td>
+              <td>
+                <strong>{guidance.parallelTitle}</strong>
+                <span>{guidance.parallelBody}</span>
+                <span>{guidance.timeline.now}</span>
+                <span>{guidance.timeline.next}</span>
+                <span>{guidance.timeline.then}</span>
+                <span>{guidance.timeline.afterAdmission}</span>
+              </td>
             </tr>
           </tbody>
         </table>
@@ -421,14 +429,15 @@ export function OrientationOnePagePrintReport({
 
       <section className="orientation-one-page-next">
         <p className="orientation-one-page-label">{copy.next}</p>
-        <p className="mt-1 text-[11px] font-semibold leading-[1.35]">{copy.nextText()}</p>
+        <p className="mt-1 text-[11px] font-bold leading-[1.35]">{guidance.ctaTitle}</p>
+        <p className="mt-1 text-[10.5px] leading-[1.35]">{guidance.ctaBody}</p>
       </section>
 
       <footer className="orientation-one-page-footer">
         <div>
           <strong>{copy.sources}:</strong> DAAD/ZAB
           {sourceInstitutions.length ? ` · ${sourceInstitutions.join(" · ")}` : ""}
-          {options.length ? ` · ${copy.verified} 02/10/2026` : ` · ${copy.verified} ${access.verifiedAt}`}
+          ` · ${copy.verified} ${guidance.officialSourceDate}`
         </div>
         <p>{copy.disclaimer}</p>
       </footer>
