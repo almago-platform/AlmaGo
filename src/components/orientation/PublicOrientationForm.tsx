@@ -11,6 +11,7 @@ import { rebrandCopy } from "@/lib/brand";
 import { ProspectCaptureCard } from "@/components/orientation/ProspectCaptureCard";
 import { SmartOrientationResultCard } from "@/components/orientation/SmartOrientationResultCard";
 import { OrientationRouteCard } from "@/components/orientation/OrientationRouteCard";
+import { PersonalizedOrientationEngineCard } from "@/components/orientation/PersonalizedOrientationEngineCard";
 import { OrientationOnePagePrintReport } from "@/components/orientation/OrientationOnePagePrintReport";
 import { ProspectOrientationUpdateCard } from "@/components/orientation/ProspectOrientationUpdateCard";
 import { prospectDashboardCopy } from "@/content/prospect-dashboard-copy";
@@ -587,6 +588,8 @@ export function PublicOrientationForm({
                   result={smartPriority}
                   prospectCaptureEnabled={prospectCaptureEnabled && !authenticatedUpdate}
                 />
+
+                <PersonalizedOrientationEngineCard answers={answers} locale={locale} />
 
                 <OrientationRouteCard answers={answers} locale={locale} />
 

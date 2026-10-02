@@ -18,6 +18,7 @@ const guidance = readFileSync("src/lib/orientation/universal-guidance.ts", "utf8
 const report = readFileSync("src/components/orientation/OrientationOnePagePrintReport.tsx", "utf8");
 const publicApi = readFileSync("src/app/api/orientation/prospect/route.ts", "utf8");
 const prospectApi = readFileSync("src/app/api/prospect/orientation/route.ts", "utf8");
+const validation = readFileSync("src/lib/orientation/validate.ts", "utf8");
 
 function noBacAnswers(overrides = {}) {
   return restorePublicOrientationAnswers({
@@ -79,11 +80,11 @@ test("SO-V3.6 broadens the previous-education choices", () => {
 });
 
 test("SO-V3.6 APIs validate no-Bac submissions without requiring fake Bac year or track", () => {
-  for (const api of [publicApi, prospectApi]) {
-    assert.match(api, /answers\.bacStatus !== "no_bac"/);
-    assert.match(api, /answers\.bacStatus === "no_bac" && !answers\.lastDiploma/);
-    assert.match(api, /answers\.bacYear \|\| answers\.bacTrack \|\| answers\.generalAverage/);
-  }
+  assert.match(publicApi, /validatePublicOrientationAnswers/);
+  assert.match(prospectApi, /validatePublicOrientationAnswers/);
+  assert.match(validation, /answers\.bacStatus !== "no_bac"/);
+  assert.match(validation, /answers\.bacStatus === "no_bac" && !answers\.lastDiploma/);
+  assert.match(validation, /answers\.bacYear \|\| answers\.bacTrack \|\| answers\.generalAverage/);
 });
 
 test("SO-V3.6 gives no-Bac students an understandable, non-rejection explanation", () => {

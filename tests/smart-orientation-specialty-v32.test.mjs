@@ -7,6 +7,7 @@ const publicAnswers = readFileSync("src/lib/orientation/public.ts", "utf8");
 const form = readFileSync("src/components/orientation/PublicOrientationForm.tsx", "utf8");
 const publicApi = readFileSync("src/app/api/orientation/prospect/route.ts", "utf8");
 const accountApi = readFileSync("src/app/api/prospect/orientation/route.ts", "utf8");
+const validation = readFileSync("src/lib/orientation/validate.ts", "utf8");
 const savedReport = readFileSync("src/app/orientation/report/[token]/page.tsx", "utf8");
 
 test("SO-V3.2 exposes the engineering-specialty taxonomy", () => {
@@ -33,9 +34,10 @@ test("SO-V3.2 persists, restores and validates engineering specialty", () => {
   assert.match(form, /answers\.targetField === "Ingénierie"/);
   assert.match(form, /value=\{answers\.engineeringSpecialty\}/);
   assert.match(form, /setField\("engineeringSpecialty"/);
-  assert.match(publicApi, /engineeringSpecialtyOptions/);
-  assert.match(publicApi, /answers\.targetField === "Ingénierie"[\s\S]*allowed\.engineeringSpecialty/);
-  assert.match(accountApi, /engineeringSpecialtyOptions/);
+  assert.match(publicApi, /validatePublicOrientationAnswers/);
+  assert.match(accountApi, /validatePublicOrientationAnswers/);
+  assert.match(validation, /engineeringSpecialtyOptions/);
+  assert.match(validation, /answers\.targetField === "Ingénierie"[\s\S]*allowed\.engineeringSpecialty/);
 });
 
 test("SO-V3.2 shows the specialty in live and saved summaries", () => {

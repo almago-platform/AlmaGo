@@ -26,7 +26,7 @@ test("authenticated prospect update resolves identity from auth and never trusts
 
 test("authenticated update validates, recalculates and persists orientation plus qualification atomically", () => {
   assert.match(route, /MAX_BODY_BYTES = 24_000/);
-  assert.match(route, /validAnswers/);
+  assert.match(route, /validatePublicOrientationAnswers/);
   assert.match(route, /buildPublicOrientationDiagnostic\(answers\)/);
   assert.match(route, /evaluateProspectQualification\(answers, diagnostic\)/);
   assert.match(route, /createPrivilegedSupabaseClient/);

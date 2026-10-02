@@ -72,7 +72,7 @@ test("automatic RPC cannot persist qualified_prospect or commercial access chang
 
 test("browser payload still contains only answers and locale, never identity or qualification state", () => {
   assert.match(route, /const record = body as Record<string, unknown>/);
-  assert.match(route, /const answers = validAnswers\(record\.answers\)/);
+  assert.match(route, /const answers = validatePublicOrientationAnswers\(record\.answers\)/);
   assert.match(route, /record\.locale/);
   assert.doesNotMatch(
     route,
