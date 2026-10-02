@@ -17,8 +17,10 @@ export class DeterministicOrientationAdvisor implements OrientationAdvisorProvid
     } else if (engineResult.recommendations.length === 0) {
       summaryCode = "catalogue_gap";
     } else if (
-      engineResult.recommendations.some((recommendation) =>
-        ["conditional", "missing_information", "unknown"].includes(recommendation.status)
+      engineResult.refinement.nextQuestion
+      || engineResult.recommendations.some((recommendation) =>
+        recommendation.category === "conditions_to_complete"
+        || ["conditional", "missing_information", "unknown"].includes(recommendation.status)
       )
     ) {
       summaryCode = "conditions_to_complete";
