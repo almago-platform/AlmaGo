@@ -369,11 +369,12 @@ export async function buildOrientationIntelligence(
   engineResult: OrientationEngineResult,
 ): Promise<IntelligenceResult> {
   const fallbackLetter = deterministicLetter(locale, profile, engineResult);
+  const apiKey = process.env.GEMINI_API_KEY;
 
   if (
     profile.targetDegree !== "Bachelor"
     || process.env.ALMAGO_ORIENTATION_AI_SCOUT !== "gemini"
-    || !process.env.GEMINI_API_KEY
+    || !apiKey
   ) {
     return {
       scout: disabledScout(),
@@ -391,7 +392,7 @@ export async function buildOrientationIntelligence(
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-goog-api-key": process.env.GEMINI_API_KEY,
+        "x-goog-api-key": apiKey,
       },
       body: JSON.stringify({
         model: process.env.ALMAGO_ORIENTATION_AI_MODEL || "gemini-3.8-flash",
