@@ -119,6 +119,45 @@ const AACHEN_ENGINEERING_OPTIONS: VerifiedAcademicOption[] = [
     verifiedAt: "2026-10-02",
     specialties: ["mechanical"],
   },
+  {
+    institution: "RWTH Aachen University",
+    programme: "Bauingenieurwesen",
+    degree: "B.Sc.",
+    city: "Aachen",
+    teachingLanguage: "Allemand",
+    languageRequirement:
+      "DSH-2 ou TestDaF 4 dans les 4 épreuves, ou certificat équivalent reconnu",
+    sourceUrl:
+      "https://www.rwth-aachen.de/global/show_document.asp?id=aaaaaaaaaaaoypk",
+    verifiedAt: "2026-10-02",
+    specialties: ["civil"],
+  },
+  {
+    institution: "FH Aachen",
+    programme: "Bauingenieurwesen",
+    degree: "B.Eng.",
+    city: "Aachen",
+    teachingLanguage: "Allemand",
+    languageRequirement:
+      "B2 à la candidature internationale ; DSH-2, TestDaF 4x4, telc C1 Hochschule ou équivalent à l'inscription",
+    sourceUrl:
+      "https://www.fh-aachen.de/studium/studiengaenge/bauingenieurwesen-beng",
+    verifiedAt: "2026-10-02",
+    specialties: ["civil"],
+  },
+  {
+    institution: "FH Aachen",
+    programme: "Smart Building Engineering",
+    degree: "B.Eng.",
+    city: "Aachen",
+    teachingLanguage: "Allemand",
+    languageRequirement:
+      "B2 à la candidature internationale ; DSH-2, TestDaF 4x4, telc C1 Hochschule ou équivalent à l'inscription",
+    sourceUrl:
+      "https://www.fh-aachen.de/studium/studiengaenge/smart-building-engineering-beng",
+    verifiedAt: "2026-10-02",
+    specialties: ["civil"],
+  },
 ];
 
 const MUNICH_ENGINEERING_OPTIONS: VerifiedAcademicOption[] = [
