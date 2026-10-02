@@ -33,3 +33,9 @@ test("P2.3 printed report keeps web-only navigation and sensitive resume actions
   assert.match(page, /orientation-print-hide[\s\S]*OrientationReportActions/);
   assert.match(page, /orientation-print-hide[\s\S]*href=\{signupHref\}/);
 });
+
+
+test("P2.3 print shell removes screen viewport height so A4 does not gain a blank second page", () => {
+  assert.match(css, /\.orientation-print-page \{[\s\S]*min-height: 0 !important;[\s\S]*height: auto !important/);
+  assert.match(css, /\.orientation-print-page main \{[\s\S]*min-height: 0 !important;[\s\S]*height: auto !important/);
+});
