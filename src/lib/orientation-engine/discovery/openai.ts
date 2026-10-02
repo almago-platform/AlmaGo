@@ -266,6 +266,7 @@ async function researchOneQuery({
           search_context_size: "low",
         }],
         tool_choice: "required",
+        max_tool_calls: 1,
         include: ["web_search_call.action.sources"],
         input: [
           {

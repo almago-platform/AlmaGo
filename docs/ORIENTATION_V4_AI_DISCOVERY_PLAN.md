@@ -13,7 +13,9 @@ Target architecture:
 
 ```text
 Student profile
-  -> A. University Discovery Agent
+  -> A1. Discovery Contract
+  -> A2. OpenAI Research Agent
+  -> A3. Programme Knowledge Base & Discovery Cache
   -> B. Verification Engine
   -> C. Selection Engine
   -> D. Gemini Personalized Writer
@@ -439,6 +441,42 @@ Implementation files:
 - `.env.example`.
 
 Activation requires server-only `OPENAI_API_KEY` and `ALMAGO_ORIENTATION_DISCOVERY_PROVIDER=openai`.
+
+### Phase A3 — Programme Knowledge Base & Discovery Cache ✅ implemented
+
+A3 makes discovery cumulative instead of disposable: every useful A2 result can enrich a reusable internal programme pool.
+
+Behavior:
+- query AlmaGo knowledge before OpenAI;
+- reuse research programmes seen within the last 30 days;
+- reuse by programme family across different student profiles;
+- if at least 8 fresh candidates are available, skip OpenAI entirely;
+- if 1–7 candidates are available, reuse them and let A2 complete the pool;
+- if A2 is unavailable, keep a partial cache usable for B;
+- save every new A2 candidate with a deterministic SHA-256 dedupe key;
+- merge sources and programme-family tags across discoveries;
+- never downgrade a future `promoted` / `rejected` review state during rediscovery;
+- persist provider requests, web-search calls, tokens, duration and source-count metadata;
+- persist only identity-minimised search context — no name, email, phone, passport or document bytes.
+
+Database:
+- `orientation_research_programs`: global reusable research-programme pool;
+- `orientation_discovery_runs`: identity-minimised run/cost history;
+- `orientation_discovery_run_candidates`: run-to-programme provenance.
+
+Security:
+- all three tables use RLS;
+- `anon` and `authenticated` receive no privileges;
+- only server-side `service_role` receives CRUD;
+- research rows never enter `orientation_program_catalog` automatically;
+- B must verify/promote facts before they can become verified student-facing catalogue data.
+
+Implementation files:
+- `src/lib/orientation-engine/discovery/knowledge-core.ts`;
+- `src/lib/orientation-engine/discovery/knowledge.ts`;
+- `src/lib/orientation-engine/discovery/service.ts`;
+- `tests/orientation-discovery-knowledge-cache.test.mjs`;
+- `supabase/migrations/20261002194920_orientation_discovery_knowledge_cache.sql`.
 
 ### Phase B — Verification Engine
 - field-level source provenance;

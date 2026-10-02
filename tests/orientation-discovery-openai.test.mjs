@@ -20,6 +20,7 @@ test("A2 uses the current OpenAI Responses API with web search and strict struct
   assert.match(provider, /https:\/\/api\.openai\.com\/v1\/responses/);
   assert.match(provider, /type: "web_search"/);
   assert.match(provider, /tool_choice: "required"/);
+  assert.match(provider, /max_tool_calls: 1/);
   assert.match(provider, /web_search_call\.action\.sources/);
   assert.match(provider, /type: "json_schema"/);
   assert.match(provider, /strict: true/);
