@@ -255,7 +255,8 @@ function masterCurriculumRules(
   if (profile.targetDegree !== "Master" || !degreeMatches(profile, programme)) return [];
 
   const source = sourceFromProgramme(programme) || sourceFromUniversity(programme) || undefined;
-  if (programme.masterAcademicPrerequisites.length === 0) {
+  const academicPrerequisites = programme.masterAcademicPrerequisites || [];
+  if (academicPrerequisites.length === 0) {
     return [{
       code: "master_curriculum_unknown",
       status: "missing_information",
@@ -265,7 +266,7 @@ function masterCurriculumRules(
   }
 
   const requirements: MasterRequirementProfile = {
-    subject_credits: programme.masterAcademicPrerequisites.map((item) => ({
+    subject_credits: academicPrerequisites.map((item) => ({
       subject: item.subject,
       value: item.ects,
       source_url: source?.url || null,
