@@ -21,10 +21,13 @@ function baseAnswers(overrides = {}) {
     lastDiploma: "",
     targetDegree: "Bachelor",
     targetField: "Informatique",
+    engineeringSpecialty: "",
     germanLevel: "B2",
     englishLevel: "B2",
     studyLanguage: "Allemand",
-    budgetRange: "10 000–12 000 € / an",
+    targetIntakeSeason: "",
+    targetIntakeYear: "",
+    budgetRange: "1 000–1 200 € / mois",
     preferredCities: [],
     ...overrides,
   };
@@ -69,10 +72,12 @@ test.describe("Smart Orientation Partner-Ready rehearsal", () => {
       germanLevel: "A2",
     }));
 
-    await expect(page.getByRole("heading", { name: "Votre projet mérite une étude plus précise" })).toBeVisible();
-    await expect(page.getByText("La langue reste une étape de préparation", { exact: false })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Nous pouvons maintenant construire votre route" })).toBeVisible();
+    await expect(page.getByText("Votre niveau de langue devient une étape de la route", { exact: false })).toBeVisible();
     await expect(page.getByText("Votre domaine demande une vérification individualisée", { exact: false })).toBeVisible();
-    await expect(page.getByText("Projet prêt à approfondir")).toBeVisible();
+    await expect(page.getByText("Route prête à structurer")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Des options vérifiées pour votre profil" })).toBeVisible();
+    await expect(page.getByText("Les options détaillées sont momentanément indisponibles", { exact: false })).toHaveCount(0);
     await expect(page.locator("#orientation-prospect-capture")).toHaveCount(0);
     await assertNoSeriousA11y(page);
     await assertNoOverflow(page);
@@ -87,10 +92,13 @@ test.describe("Smart Orientation Partner-Ready rehearsal", () => {
     await expect(page.getByRole("heading", { name: "Vous pouvez commencer votre préparation dès maintenant" })).toBeVisible();
     await expect(page.getByText("À préparer dès maintenant")).toBeVisible();
     await expect(page.getByText(/trop tôt/i)).toHaveCount(0);
+    await expect(page.getByRole("heading", { name: "Des options vérifiées pour votre profil" })).toBeVisible();
+    await expect(page.getByText("Pour quelle rentrée souhaitez-vous commencer ?")).toBeVisible();
+    await expect(page.getByText("Les options détaillées sont momentanément indisponibles", { exact: false })).toHaveCount(0);
 
     await showResult(page, baseAnswers({
       generalAverage: "10",
-      targetField: "Gestion / économie",
+      targetField: "Économie/Gestion",
     }));
     await expect(page.getByRole("heading", { name: "Votre projet peut déjà être préparé" })).toBeVisible();
     await expect(page.getByText("Projet à développer")).toBeVisible();
@@ -99,6 +107,7 @@ test.describe("Smart Orientation Partner-Ready rehearsal", () => {
       generalAverage: "",
       averageType: "",
       targetField: "Ingénierie",
+      engineeringSpecialty: "computer_engineering",
     }));
     await expect(page.getByRole("heading", { name: "Votre projet peut déjà être préparé" })).toBeVisible();
 
@@ -163,8 +172,8 @@ test.describe("Smart Orientation Partner-Ready rehearsal", () => {
       await expect(page.locator(`select[name="${name}"]`)).toBeVisible();
     }
 
-    await expect(page.getByText(/prospects conservés/i)).toBeVisible();
-    await expect(page.getByText(/chances d’admission ni les chances de visa/i)).toBeVisible();
+    await expect(page.getByText(/prospects sauvegardés/i)).toBeVisible();
+    await expect(page.getByText(/ne décident pas automatiquement si le marché est validé/i)).toBeVisible();
     await assertNoSeriousA11y(page);
     await assertNoOverflow(page);
   });
