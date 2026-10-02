@@ -1,13 +1,14 @@
 import "server-only";
 
 import {
-  ORIENTATION_KNOWLEDGE_FRESHNESS_DAYS,
   ORIENTATION_KNOWLEDGE_MIN_CANDIDATES,
+  ORIENTATION_MAJOR_REFRESH_DATES,
   loadOrientationDiscoveryKnowledge,
   persistOrientationDiscoveryResearch,
   recordOrientationKnowledgeCacheHit,
 } from "@/lib/orientation-engine/discovery/knowledge";
 import {
+  getOrientationDiscoveryRefreshWindow,
   mergeOrientationKnowledgeCandidates,
   orientationKnowledgeCoverageSufficient,
 } from "@/lib/orientation-engine/discovery/knowledge-core";
@@ -32,6 +33,13 @@ function cacheStatus(
 export async function runOrientationDiscovery(
   plan: OrientationDiscoveryPlan,
 ): Promise<OrientationDiscoveryResult> {
+  const refreshWindow = getOrientationDiscoveryRefreshWindow();
+  const cacheMetadata = {
+    refreshCadence: "semester" as const,
+    majorRefreshDates: ORIENTATION_MAJOR_REFRESH_DATES,
+    refreshCycle: refreshWindow.cycle,
+    nextMajorRefreshAt: refreshWindow.nextMajorRefreshAt,
+  };
   const knowledge = await loadOrientationDiscoveryKnowledge(plan);
   const cachedCandidates = knowledge.entries.map((entry) => entry.candidate);
   const initialCacheStatus = cacheStatus(
@@ -61,7 +69,7 @@ export async function runOrientationDiscovery(
         status: "hit",
         candidatesLoaded: cachedCandidates.length,
         candidatesPersisted: 0,
-        freshnessDays: ORIENTATION_KNOWLEDGE_FRESHNESS_DAYS,
+        ...cacheMetadata,
       },
     };
   }
@@ -87,7 +95,7 @@ export async function runOrientationDiscovery(
         status: initialCacheStatus,
         candidatesLoaded: cachedCandidates.length,
         candidatesPersisted: persistence.persisted,
-        freshnessDays: ORIENTATION_KNOWLEDGE_FRESHNESS_DAYS,
+        ...cacheMetadata,
       },
     };
   }
@@ -106,7 +114,7 @@ export async function runOrientationDiscovery(
         status: initialCacheStatus,
         candidatesLoaded: cachedCandidates.length,
         candidatesPersisted: 0,
-        freshnessDays: ORIENTATION_KNOWLEDGE_FRESHNESS_DAYS,
+        ...cacheMetadata,
       },
     };
   }
@@ -122,7 +130,7 @@ export async function runOrientationDiscovery(
       status: initialCacheStatus,
       candidatesLoaded: 0,
       candidatesPersisted: 0,
-      freshnessDays: ORIENTATION_KNOWLEDGE_FRESHNESS_DAYS,
+        ...cacheMetadata,
     },
   };
 }
