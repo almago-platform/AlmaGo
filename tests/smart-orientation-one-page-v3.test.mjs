@@ -64,7 +64,7 @@ test("SO-V3.2 communicates the full Campus Allemagne route without promising off
 });
 
 test("SO-V3.2 matches programme examples by specialty and handles uncovered cities explicitly", () => {
-  assert.match(catalogue, /specialties: \["electrical_electronics", "computer_engineering"\]/);
+  assert.match(catalogue, /specialties: \["electrical_electronics"\]/);
   assert.match(catalogue, /specialties: \["mechanical"\]/);
   assert.match(catalogue, /recommendedEngineeringCity/);
   assert.match(catalogue, /catalogueGap: true/);
