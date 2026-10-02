@@ -52,8 +52,10 @@ const labels = {
       "Langue → programmes → admission → visa → Allemagne. Campus Allemagne organise avec vous la sélection des programmes, le calendrier, la préparation et le contrôle du dossier, les candidatures et leur suivi. Après une admission, nous préparons avec vous les étapes et documents du visa puis votre arrivée en Allemagne. Les décisions restent celles des universités et des autorités.",
     programmesTitlePreferred: (city: string) => `Programmes vérifiés à ${city}`,
     programmesTitleRecommended: (city: string) => `Suggestion Campus Allemagne : ${city}`,
-    noProgrammes: (city: string) =>
+    noProgrammesPreferred: (city: string) =>
       `Votre ville choisie est ${city}. Notre catalogue vérifié ne contient pas encore assez de programmes correspondant exactement à cette spécialité ; Campus Allemagne complètera la sélection avant de vous proposer 2 ou 3 pistes.`,
+    noProgrammesRecommended: (city: string) =>
+      `Suggestion Campus Allemagne : ${city}. Notre catalogue vérifié ne contient pas encore assez de programmes correspondant exactement à cette spécialité ; Campus Allemagne complètera la sélection avant de vous proposer 2 ou 3 pistes.`,
     next: "Vous souhaitez continuer ?",
     nextText: () =>
       "Campus Allemagne vous contacte pour confirmer votre route, sélectionner vos programmes et organiser la première étape de votre accompagnement personnalisé.",
@@ -86,8 +88,10 @@ const labels = {
       "اللغة ← البرامج ← القبول ← التأشيرة ← ألمانيا. ينظم Campus Allemagne معك اختيار البرامج والجدول وتجهيز ومراجعة الملف والتقديم ومتابعته. بعد الحصول على قبول، نجهز معك خطوات ووثائق التأشيرة ثم الوصول إلى ألمانيا. القرارات النهائية تبقى للجامعة والسلطات.",
     programmesTitlePreferred: (city: string) => `مسارات موثقة في ${city}`,
     programmesTitleRecommended: (city: string) => `اقتراح Campus Allemagne: ${city}`,
-    noProgrammes: (city: string) =>
+    noProgrammesPreferred: (city: string) =>
       `مدينتك المختارة هي ${city}. لا يحتوي دليلنا الموثق بعد على عدد كافٍ من البرامج المطابقة تمامًا لهذا التخصص؛ سيُكمل Campus Allemagne الاختيار قبل اقتراح برنامجين أو ثلاثة عليك.`,
+    noProgrammesRecommended: (city: string) =>
+      `اقتراح Campus Allemagne: ${city}. لا يحتوي دليلنا الموثق بعد على عدد كافٍ من البرامج المطابقة تمامًا لهذا التخصص؛ سيُكمل Campus Allemagne الاختيار قبل اقتراح برنامجين أو ثلاثة عليك.`,
     next: "هل تريد المتابعة؟",
     nextText: () =>
       "سيتواصل معك Campus Allemagne لتأكيد مسارك واختيار البرامج وتنظيم أول خطوة في المرافقة الشخصية.",
@@ -120,8 +124,10 @@ const labels = {
       "Language → programmes → admission → visa → Germany. Campus Allemagne organises programme selection, timeline, file preparation and checking, applications and follow-up with you. After an admission, we prepare the visa steps and documents with you, then your arrival in Germany. Universities and authorities keep the final decisions.",
     programmesTitlePreferred: (city: string) => `Verified options in ${city}`,
     programmesTitleRecommended: (city: string) => `Campus Allemagne suggestion: ${city}`,
-    noProgrammes: (city: string) =>
+    noProgrammesPreferred: (city: string) =>
       `Your selected city is ${city}. Our verified catalogue does not yet contain enough programmes that exactly match this specialisation; Campus Allemagne will complete the selection before proposing 2 or 3 options.`,
+    noProgrammesRecommended: (city: string) =>
+      `Campus Allemagne suggestion: ${city}. Our verified catalogue does not yet contain enough programmes that exactly match this specialisation; Campus Allemagne will complete the selection before proposing 2 or 3 options.`,
     next: "Would you like to continue?",
     nextText: () =>
       "Campus Allemagne will contact you to confirm your route, select your programmes and organise the first step of your personalised support.",
@@ -154,8 +160,10 @@ const labels = {
       "Sprache → Programme → Zulassung → Visum → Deutschland. Campus Allemagne organisiert mit dir Programmauswahl, Zeitplan, Vorbereitung und Kontrolle des Dossiers, Bewerbungen und Nachverfolgung. Nach einer Zulassung bereiten wir mit dir die Visumschritte und Unterlagen sowie deine Ankunft in Deutschland vor. Hochschulen und Behörden treffen die endgültigen Entscheidungen.",
     programmesTitlePreferred: (city: string) => `Verifizierte Optionen in ${city}`,
     programmesTitleRecommended: (city: string) => `Vorschlag von Campus Allemagne: ${city}`,
-    noProgrammes: (city: string) =>
+    noProgrammesPreferred: (city: string) =>
       `Deine gewählte Stadt ist ${city}. Unser verifizierter Katalog enthält noch nicht genügend Programme, die genau zu dieser Fachrichtung passen; Campus Allemagne ergänzt die Auswahl, bevor wir dir 2 oder 3 Optionen vorschlagen.`,
+    noProgrammesRecommended: (city: string) =>
+      `Vorschlag von Campus Allemagne: ${city}. Unser verifizierter Katalog enthält noch nicht genügend Programme, die genau zu dieser Fachrichtung passen; Campus Allemagne ergänzt die Auswahl, bevor wir dir 2 oder 3 Optionen vorschlagen.`,
     next: "Möchtest du weitermachen?",
     nextText: () =>
       "Campus Allemagne kontaktiert dich, bestätigt deine Route, wählt deine Programme mit dir aus und organisiert den ersten Schritt deiner persönlichen Begleitung.",
@@ -269,8 +277,10 @@ export function OrientationOnePagePrintReport({
                       ? programmeSet.selectionReason === "preferred_city"
                         ? copy.programmesTitlePreferred(programmeSet.city)
                         : copy.programmesTitleRecommended(programmeSet.city)
-                      : copy.noProgrammes(programmeSet.city)
-                    : copy.noProgrammes(cities)}
+                      : programmeSet.selectionReason === "preferred_city"
+                        ? copy.noProgrammesPreferred(programmeSet.city)
+                        : copy.noProgrammesRecommended(programmeSet.city)
+                    : copy.noProgrammesRecommended(cities)}
                 </strong>
                 {options.length ? (
                   <div className="orientation-programme-list">
