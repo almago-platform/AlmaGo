@@ -15,6 +15,7 @@ const demoAnswers = {
   lastDiploma: "Baccalauréat",
   targetDegree: "Bachelor",
   targetField: "Informatique",
+  engineeringSpecialty: "",
   germanLevel: "B1",
   englishLevel: "B2",
   studyLanguage: "Allemand",
