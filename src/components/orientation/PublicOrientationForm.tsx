@@ -6,11 +6,11 @@ import { BrandLogo } from "@/components/brand/BrandLogo";
 import { LanguageSwitcher } from "@/components/i18n/LanguageSwitcher";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { orientationCopy } from "@/content/orientation-copy";
-import { orientationDiagnosticCopy } from "@/content/orientation-diagnostic-copy";
 import { orientationProspectCopy } from "@/content/orientation-prospect-copy";
 import { rebrandCopy } from "@/lib/brand";
 import { ProspectCaptureCard } from "@/components/orientation/ProspectCaptureCard";
 import { SmartOrientationResultCard } from "@/components/orientation/SmartOrientationResultCard";
+import { OrientationRouteCard } from "@/components/orientation/OrientationRouteCard";
 import { ProspectOrientationUpdateCard } from "@/components/orientation/ProspectOrientationUpdateCard";
 import { prospectDashboardCopy } from "@/content/prospect-dashboard-copy";
 import { prospectOrientationUpdateCopy } from "@/content/prospect-orientation-update-copy";
@@ -19,7 +19,6 @@ import {
   localizeProfileOptions,
   studentProfileCopy,
 } from "@/content/student-profile-copy";
-import { buildPublicOrientationDiagnostic, type PublicDiagnosticStatus } from "@/lib/orientation/diagnostic";
 import type { AcquisitionContext } from "@/lib/phase2/acquisition";
 import { evaluateSmartOrientationPriority } from "@/lib/phase2/smart-orientation";
 import {
@@ -46,50 +45,6 @@ function localizedValue(value: string, options: readonly SelectOption[]) {
   return options.find((option) => option.value === value)?.label || value || "—";
 }
 
-function DiagnosticStatusBadge({ status, label }: { status: PublicDiagnosticStatus; label: string }) {
-  const className = status === "needs_verification"
-    ? "bg-amber-100 text-amber-900"
-    : status === "known_gap"
-      ? "bg-orange-100 text-orange-900"
-      : status === "needs_information"
-        ? "bg-slate-100 text-slate-700"
-        : "bg-blue-100 text-blue-900";
-
-  return <span className={`status-badge ${className}`}>{label}</span>;
-}
-
-function DiagnosticSection({
-  title,
-  items,
-  copy,
-}: {
-  title: string;
-  items: ReturnType<typeof buildPublicOrientationDiagnostic>["paths"];
-  copy: (typeof orientationDiagnosticCopy)[keyof typeof orientationDiagnosticCopy];
-}) {
-  if (!items.length) return null;
-
-  return (
-    <section>
-      <h3 className="text-base font-bold">{title}</h3>
-      <div className="mt-3 grid gap-3">
-        {items.map((item) => {
-          const message = copy.items[item.code];
-          return (
-            <article key={item.code} className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface)] p-4">
-              <div className="flex flex-wrap items-start justify-between gap-3">
-                <h4 className="font-semibold">{message.title}</h4>
-                <DiagnosticStatusBadge status={item.status} label={copy.status[item.status]} />
-              </div>
-              <p className="mt-1 text-sm leading-6 text-[var(--muted)]">{message.body}</p>
-            </article>
-          );
-        })}
-      </div>
-    </section>
-  );
-}
-
 export function PublicOrientationForm({
   prospectCaptureEnabled = false,
   emailDeliveryEnabled = false,
@@ -106,7 +61,6 @@ export function PublicOrientationForm({
   const { locale, direction } = useLocale();
   const copy = rebrandCopy(orientationCopy[locale]);
   const profileCopy = studentProfileCopy[locale];
-  const diagnosticCopy = orientationDiagnosticCopy[locale];
   const prospectCopy = orientationProspectCopy[locale];
   const prospectDashboard = prospectDashboardCopy[locale];
   const updateCopy = prospectOrientationUpdateCopy[locale];
@@ -127,7 +81,6 @@ export function PublicOrientationForm({
   const levels = useMemo(() => localizeProfileOptions(locale, languageLevelOptions), [locale]);
   const studyLanguages = useMemo(() => localizeProfileOptions(locale, studyLanguageOptions), [locale]);
   const budgets = useMemo(() => localizeProfileOptions(locale, budgetOptions), [locale]);
-  const diagnostic = useMemo(() => buildPublicOrientationDiagnostic(answers), [answers]);
   const smartPriority = useMemo(() => evaluateSmartOrientationPriority(answers), [answers]);
   const selectedCitiesLabel =
     locale === "ar"
@@ -257,7 +210,7 @@ export function PublicOrientationForm({
 
   return (
     <div className="orientation-print-page min-h-screen bg-[var(--background)] text-[var(--foreground)]" dir={direction}>
-      <a className="skip-link" href="#orientation-main">{copy.header.skip}</a>
+      <a className="skip-link orientation-print-hide" href="#orientation-main">{copy.header.skip}</a>
 
       <header className="orientation-print-hide border-b border-[var(--border)] bg-[var(--surface)]">
         <div className="mx-auto flex min-h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
@@ -509,6 +462,13 @@ export function PublicOrientationForm({
               </form>
             ) : (
               <div id="orientation-report" className="orientation-print-report">
+                <div className="orientation-print-only mb-6 items-center justify-between gap-6 border-b border-slate-300 pb-5">
+                  <BrandLogo className="h-10 w-auto" priority />
+                  <div className="text-end text-xs leading-5 text-slate-600">
+                    <p className="font-bold text-slate-900">{prospectCopy.report.label}</p>
+                    <p>{prospectCopy.report.title}</p>
+                  </div>
+                </div>
                 <div className="mb-6 border-b border-[var(--border)] pb-5">
                   <p className="eyebrow">{prospectCopy.report.label}</p>
                   <h2 className="mt-2 text-2xl font-bold">{prospectCopy.report.title}</h2>
@@ -532,45 +492,8 @@ export function PublicOrientationForm({
                   prospectCaptureEnabled={prospectCaptureEnabled && !authenticatedUpdate}
                 />
 
-                <div className="mt-8 space-y-7">
-                  <section aria-labelledby="orientation-diagnostic-title">
-                    <p className="eyebrow">{diagnosticCopy.sections.headline}</p>
-                    <div className="mt-3 rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface-subtle)] p-5">
-                      <div className="flex flex-wrap items-start justify-between gap-3">
-                        <h3 id="orientation-diagnostic-title" className="text-lg font-bold">
-                          {diagnosticCopy.headlines[diagnostic.headlineCode].title}
-                        </h3>
-                        <DiagnosticStatusBadge
-                          status={diagnostic.overallStatus}
-                          label={diagnosticCopy.status[diagnostic.overallStatus]}
-                        />
-                      </div>
-                      <p className="mt-2 text-sm leading-6 text-[var(--foreground)]">
-                        {diagnosticCopy.headlines[diagnostic.headlineCode].body}
-                      </p>
-                    </div>
-                  </section>
+                <OrientationRouteCard answers={answers} locale={locale} />
 
-                  <DiagnosticSection
-                    title={diagnosticCopy.sections.paths}
-                    items={diagnostic.paths}
-                    copy={diagnosticCopy}
-                  />
-                  <DiagnosticSection
-                    title={diagnosticCopy.sections.priorities}
-                    items={diagnostic.priorities}
-                    copy={diagnosticCopy}
-                  />
-                  <DiagnosticSection
-                    title={diagnosticCopy.sections.checks}
-                    items={diagnostic.checks}
-                    copy={diagnosticCopy}
-                  />
-
-                  <div className="rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--brand-soft)] p-5 text-sm leading-6">
-                    {diagnosticCopy.disclaimer}
-                  </div>
-                </div>
 
                 <div className="orientation-print-hide mt-7 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4">
                   <button
