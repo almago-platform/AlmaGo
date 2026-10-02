@@ -75,8 +75,8 @@ test("SO-V3.2 matches programme examples by specialty and handles uncovered citi
 
 
 test("SO-V3.3 adds three verified Aachen civil-engineering routes", () => {
-  assert.match(catalogue, /programme: "Bauingenieurwesen"[\s\S]*degree: "B\.Sc\."[sS]*specialties: \["civil"\]/);
-  assert.match(catalogue, /programme: "Bauingenieurwesen"[\s\S]*degree: "B\.Eng\."[sS]*specialties: \["civil"\]/);
+  assert.match(catalogue, /programme: "Bauingenieurwesen"[\s\S]*degree: "B\.Sc\."[\s\S]*specialties: \["civil"\]/);
+  assert.match(catalogue, /programme: "Bauingenieurwesen"[\s\S]*degree: "B\.Eng\."[\s\S]*specialties: \["civil"\]/);
   assert.match(catalogue, /programme: "Smart Building Engineering"[\s\S]*specialties: \["civil"\]/);
   assert.match(catalogue, /DSH-2 ou TestDaF 4 dans les 4 épreuves/);
   assert.match(catalogue, /B2 à la candidature internationale/);
