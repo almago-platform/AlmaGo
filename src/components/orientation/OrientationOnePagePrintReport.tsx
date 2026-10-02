@@ -16,16 +16,6 @@ import {
   studyFieldOptions,
 } from "@/lib/student/profile-options";
 
-const nextGermanLevel: Record<string, string | null> = {
-  none: "A1",
-  A1: "A2",
-  A2: "B1",
-  B1: "B2",
-  B2: "C1",
-  C1: null,
-  C2: null,
-};
-
 const labels = {
   fr: {
     title: "Mon orientation Allemagne",
@@ -215,40 +205,6 @@ function compactAcademicAccess(status: string, locale: Locale) {
   return copy.pending;
 }
 
-function compactConclusion(
-  status: string,
-  bacTrack: string,
-  field: string,
-  locale: Locale,
-) {
-  const bac = bacTrack || (locale === "ar" ? "شهادتك" : locale === "de" ? "Dein Abschluss" : locale === "en" ? "Your qualification" : "Votre diplôme");
-
-  if (status === "direct_subject_restricted") {
-    return {
-      fr: `Votre Bac ${bacTrack || ""} permet une route directe vers des études en ${field} en Allemagne. La décision finale appartient à l’université.`,
-      ar: `شهادة ${bacTrack || bac} تفتح مسارًا مباشرًا نحو دراسة ${field} في ألمانيا. القرار النهائي يبقى للجامعة.`,
-      en: `Your ${bacTrack || bac} qualification supports a direct route into ${field} studies in Germany. The university makes the final decision.`,
-      de: `Dein Abschluss ${bacTrack || ""} ermöglicht einen direkten fachgebundenen Weg zu ${field} in Deutschland. Die Hochschule entscheidet endgültig.`,
-    }[locale];
-  }
-
-  if (status === "verified_subject_mismatch") {
-    return {
-      fr: `Votre Bac est bien identifié, mais la route directe ne correspond pas encore au domaine ${field}. Campus Allemagne doit confirmer une alternative adaptée.`,
-      ar: `تم تحديد شهادتك، لكن المسار المباشر لا يطابق بعد تخصص ${field}. سيؤكد Campus Allemagne مسارًا بديلًا مناسبًا.`,
-      en: `Your qualification is identified, but the direct route does not yet match ${field}. Campus Allemagne will confirm a suitable alternative.`,
-      de: `Dein Abschluss ist erfasst, aber der direkte Weg passt noch nicht zu ${field}. Campus Allemagne bestätigt eine passende Alternative.`,
-    }[locale];
-  }
-
-  return {
-    fr: "Votre profil est enregistré. Campus Allemagne confirme votre accès académique avec la règle officielle avant de fixer la route de candidature.",
-    ar: "تم تسجيل ملفك. يؤكد Campus Allemagne دخولك الأكاديمي وفق القاعدة الرسمية قبل تثبيت مسار التقديم.",
-    en: "Your profile is recorded. Campus Allemagne confirms your academic access against the official rule before fixing the application route.",
-    de: "Dein Profil ist erfasst. Campus Allemagne bestätigt deinen Hochschulzugang anhand der offiziellen Regel, bevor der Bewerbungsweg festgelegt wird.",
-  }[locale];
-}
-
 function compactProgrammeLanguage(
   teachingLanguage: string,
   requirement: string,
@@ -325,10 +281,8 @@ export function OrientationOnePagePrintReport({
     ? localizedValue(answers.engineeringSpecialty, locale, engineeringSpecialtyOptions)
     : null;
   const german = answers.germanLevel || "—";
-  const conclusionText = compactConclusion(access.status, answers.bacTrack, field, locale);
   const academicAccessText = compactAcademicAccess(access.status, locale);
   const sourceInstitutions = [...new Set(options.map((option) => option.institution))];
-  const nextGerman = answers.germanLevel ? nextGermanLevel[answers.germanLevel] : null;
   const profileLine = [
     answers.bacYear ? `Bac ${answers.bacYear}` : "Bac",
     answers.bacTrack || "—",
@@ -437,7 +391,7 @@ export function OrientationOnePagePrintReport({
         <div>
           <strong>{copy.sources}:</strong> DAAD/ZAB
           {sourceInstitutions.length ? ` · ${sourceInstitutions.join(" · ")}` : ""}
-          ` · ${copy.verified} ${guidance.officialSourceDate}`
+          {` · ${copy.verified} ${guidance.officialSourceDate}`}
         </div>
         <p>{copy.disclaimer}</p>
       </footer>
