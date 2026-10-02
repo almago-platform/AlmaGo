@@ -42,8 +42,17 @@ function keysFromBundle(bundle: unknown) {
   if (Array.isArray(verification.programmes)) {
     for (const item of verification.programmes) {
       if (!item || typeof item !== "object") continue;
-      const key = (item as Record<string, unknown>).candidateKey;
-      if (typeof key === "string" && /^[0-9a-f]{64}$/i.test(key)) {
+      const record = item as Record<string, unknown>;
+      const key = record.candidateKey;
+      const verification =
+        record.verification && typeof record.verification === "object"
+          ? record.verification as Record<string, unknown>
+          : {};
+      if (
+        typeof key === "string"
+        && /^[0-9a-f]{64}$/i.test(key)
+        && verification.overallStatus !== "unknown"
+      ) {
         allowed.add(key);
       }
     }
