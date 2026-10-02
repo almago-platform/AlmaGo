@@ -10,9 +10,10 @@ test("P2.3 printed orientation report keeps canonical brand identity", () => {
   assert.match(page, /orientation-print-only/);
   assert.match(page, /<BrandLogo className="h-10 w-auto" priority \/>/);
   assert.match(page, /const copy = rebrandCopy\(orientationCopy\[locale\]\)/);
-  assert.match(page, /const diagnosticCopy = rebrandCopy\(orientationDiagnosticCopy\[locale\]\)/);
   assert.match(page, /const prospectCopy = rebrandCopy\(orientationProspectCopy\[locale\]\)/);
   assert.match(page, /const resumeCopy = rebrandCopy\(orientationResumeCopy\[locale\]\)/);
+  assert.match(page, /<OrientationRouteCard answers=\{answers\} locale=\{locale\} \/>/);
+  assert.match(form, /orientation-print-only[\s\S]*<BrandLogo className="h-10 w-auto" priority \/>/);
 });
 
 test("P2.3 report has an explicit A4 print contract", () => {
@@ -21,9 +22,12 @@ test("P2.3 report has an explicit A4 print contract", () => {
   assert.match(css, /\.orientation-print-page \.orientation-print-only \{[\s\S]*display: flex !important/);
   assert.match(css, /print-color-adjust: exact/);
   assert.match(css, /\.orientation-print-page \.orientation-print-hide \{[\s\S]*display: none !important/);
+  assert.match(css, /\.orientation-print-page \.skip-link \{[\s\S]*display: none !important/);
+  assert.match(css, /\.orientation-print-page \.eyebrow \{[\s\S]*letter-spacing: 0 !important/);
 });
 
-test("P2.3 printed report keeps sensitive resume actions out of the PDF", () => {
+test("P2.3 printed report keeps web-only navigation and sensitive resume actions out of the PDF", () => {
+  assert.match(form, /className="skip-link orientation-print-hide"/);
   assert.match(page, /orientation-print-hide[\s\S]*OrientationReportActions/);
   assert.match(page, /orientation-print-hide[\s\S]*href=\{signupHref\}/);
 });
