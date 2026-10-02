@@ -79,7 +79,7 @@ export function buildOrientationRefinementState(
   if (profile.targetDegree === "Master" && profile.lastDiploma) {
     for (const evaluation of plausibleCandidates) {
       for (const prerequisite of evaluation.programme.masterAcademicPrerequisites) {
-        if (profile.masterSubjectCredits[prerequisite.subject] !== undefined) continue;
+        if (profile.masterSubjectCredits?.[prerequisite.subject] !== undefined) continue;
         const current = masterPrerequisiteGroups.get(prerequisite.subject);
         if (current) {
           current.requiredEcts = Math.max(current.requiredEcts, prerequisite.ects);
