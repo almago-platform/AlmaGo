@@ -101,6 +101,7 @@ const priorityRank: Record<SmartOrientationPriorityState, number> = {
 const reasonLabels: Record<string, string> = {
   bac_obtained: "Bac obtenu",
   bac_preparing: "Bac en préparation",
+  no_bac: "Sans Bac",
   average_above_12: "Moyenne > 12/20",
   average_12_or_below: "Moyenne ≤ 12/20",
   average_missing: "Moyenne à compléter",
