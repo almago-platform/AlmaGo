@@ -64,6 +64,8 @@ export const tunisianBacTrackOptions: readonly SelectOption[] = [
 ];
 
 export const diplomaOptions: readonly SelectOption[] = [
+  { value: "none", label: "Aucun diplôme" },
+  { value: "secondary_other", label: "Diplôme secondaire autre que le Bac tunisien" },
   { value: "Baccalauréat", label: "Baccalauréat" },
   { value: "Bac + 1", label: "Bac + 1" },
   { value: "Bac + 2", label: "Bac + 2" },
