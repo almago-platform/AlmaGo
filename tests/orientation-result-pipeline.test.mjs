@@ -40,7 +40,9 @@ test("E public projection does not expose selection scores or provider internals
   assert.doesNotMatch(publicTypes, /baseScore|finalScore|breakdown|provider|model|usage/i);
   assert.match(publicTypes, /OrientationWriterContent/);
   assert.match(publicTypes, /facts: OrientationPublicPersonalizedFact\[\]/);
-  assert.match(publicTypes, /counselor_validation_required/);
+  assert.match(publicTypes, /post_result_audit/);
+  assert.match(publicTypes, /blocksResult: false/);
+  assert.doesNotMatch(publicTypes, /pending_admin_approval|counselor_validation_required/);
 });
 
 test("E makes the controlled writer primary only when a real shortlist exists", () => {
@@ -62,7 +64,14 @@ test("E writer UI is letter-first with pistes, roadmap, one prospect CTA and ver
   assert.equal((writerCard.match(/href="#orientation-prospect-capture"/g) || []).length, 1);
   assert.match(writerCard, /result\.selected\.map/);
   assert.match(writerCard, /fact\.sourceUrl/);
-  assert.match(writerCard, /humanReview\.required/);
+  assert.match(writerCard, /humanReview\.mode === "post_result_audit"/);
+  assert.match(writerCard, /résultat est disponible immédiatement/);
+});
+
+test("E returns the candidate result without waiting for any admin approval state", () => {
+  assert.match(service, /return projectPublicResult/);
+  assert.doesNotMatch(service, /pending_admin_approval|review_status|approved_selection/);
+  assert.doesNotMatch(route, /pending_admin_approval|review_status|approved_selection/);
 });
 
 test("E reuses the existing consented prospect flow and protected counselor publication boundary", () => {
