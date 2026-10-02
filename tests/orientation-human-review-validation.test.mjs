@@ -31,29 +31,6 @@ const prospectRoute = readFileSync(
   "utf8",
 );
 
-function profile(overrides = {}) {
-  return {
-    bacStatus: "obtained",
-    bacYear: "2026",
-    bacTrack: "Sciences techniques",
-    generalAverage: "15",
-    averageType: "official",
-    lastDiploma: "Baccalauréat",
-    targetDegree: "Bachelor",
-    targetField: "Ingénierie",
-    engineeringSpecialty: "automotive",
-    germanLevel: "A2",
-    englishLevel: "B2",
-    studyLanguage: "Allemand",
-    targetIntakeSeason: "winter",
-    targetIntakeYear: "2027",
-    budgetRange: "800–1 000 € / mois",
-    preferredCities: ["Aachen"],
-    masterSubjectCredits: {},
-    ...overrides,
-  };
-}
-
 test("F fingerprints the exact academic profile without identity fields", () => {
   const coreSource = readFileSync(
     "src/lib/orientation-engine/review/core.ts",
