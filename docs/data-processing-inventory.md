@@ -201,11 +201,71 @@ Actuellement le code montre l’utilisation de :
 - Render pour l’hébergement/déploiement canonique actuel ;
 - une intégration Vercel reste visible/connectée au dépôt ; son rôle technique éventuel et tout traitement de données associé doivent être confirmés avant la notice finale.
 
+Localisation technique vérifiée le **2 octobre 2026** :
+- projet Supabase AlmaGo : région technique `eu-west-1` ;
+- service Render canonique `almago-dev` : région **Frankfurt**.
+
+Ces localisations sont des faits techniques, pas une qualification juridique. Toute collecte réelle destinée à un responsable établi en Tunisie doit faire l’objet de la vérification des formalités INPDP applicables aux traitements/transferts internationaux avant activation.
+
 Aucun fournisseur analytics/observabilité n’est actuellement codé comme actif dans l’application.
 
 A44 prévoit une activation séparée avec allow-list de télémétrie et relecture confidentialité.
 
-## 12. Décisions encore nécessaires pour A38
+## 12. Free Validation Launch — prospect, orientation et intérêt explicite
+
+Le code Free Validation ajoute une couche avant tout paiement.
+
+### Prospect
+
+Table `public.prospects` :
+- e-mail ;
+- rattachement éventuel à un compte Supabase ;
+- consentement facultatif à être recontacté ;
+- date/version du consentement lorsqu’il est donné ;
+- dates techniques.
+
+### Orientation publique sauvegardée
+
+Table `public.orientations` :
+- réponses d’orientation (Bac, année/filière, moyenne officielle ou estimée, niveau/domaine visés, langues, budget et villes préférées) ;
+- résultat déterministe/version du moteur ;
+- contexte Smart Orientation ;
+- acknowledgement confidentialité ;
+- consentement contact de la soumission ;
+- éventuel contexte d’acquisition borné ;
+- jetons de reprise/intérêt stockés **hachés** avec expiration.
+
+### Priorité Smart Orientation
+
+Table `public.smart_orientation_priority_history` :
+- orientation ;
+- version du moteur ;
+- priorité interne ;
+- codes de raison ;
+- indicateur de revue humaine ;
+- date.
+
+Cette priorité sert à organiser le travail Campus Allemagne. Elle ne constitue pas une décision d’admission ni une probabilité de visa.
+
+### Signal de demande Free Validation
+
+Table `public.free_validation_interest_signals` :
+- prospect ;
+- orientation ;
+- signal explicite `wants_support` ;
+- source (`orientation_result` ou futur `email_followup`) ;
+- version ;
+- date.
+
+Le signal n’est créé qu’après une action explicite « Je veux continuer ». Il n’est pas inféré de l’e-mail, n’active aucun paiement et n’ouvre pas automatiquement les documents.
+
+### État d’activation
+
+Sous `ALMAGO_PARTNER_PRELAUNCH_MODE`, la vraie capture prospect publique reste désactivée. Les structures ci-dessus sont prêtes techniquement mais ne constituent pas une autorisation de collecter de vraies données.
+
+Avant activation réelle, suivre le gate `docs/FREE_VALIDATION_PRIVACY_GATE.md` et l’Issue #717.
+
+## 13. Décisions encore nécessaires pour A38
 
 Le propriétaire doit confirmer :
 - identité légale de l’éditeur/exploitant ;
@@ -220,7 +280,7 @@ Le propriétaire doit confirmer :
 - base/consentement applicable au futur analytics selon la décision juridique ;
 - personne responsable de la relecture juridique finale.
 
-## 13. Principe de publication
+## 14. Principe de publication
 
 Aucune page juridique ne doit être présentée comme « validée » tant que :
 1. les informations publiques ci-dessus ne sont pas confirmées ;
