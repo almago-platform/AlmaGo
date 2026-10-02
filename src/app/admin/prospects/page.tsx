@@ -41,11 +41,20 @@ type AccessRow = {
   status: string;
 };
 
+type InterestRow = {
+  prospect_id: string;
+  orientation_id: string;
+  source: "orientation_result" | "email_followup";
+  signal_version: string;
+  created_at: string;
+};
+
 type QueueItem = {
   prospect: ProspectRow;
   orientation: OrientationRow | null;
   qualification: QualificationRow | null;
   accessStatus: string | null;
+  interest: InterestRow | null;
   answers: ReturnType<typeof restorePublicOrientationAnswers>;
   smartPriority: SmartOrientationPriorityResult;
   acquisition: ReturnType<typeof acquisitionContextFromStoredInput>;
@@ -55,6 +64,7 @@ type PageSearchParams = {
   priority?: string | string[];
   bac?: string | string[];
   contact?: string | string[];
+  interest?: string | string[];
   field?: string | string[];
 };
 
@@ -153,6 +163,7 @@ export default async function AdminProspectsPage({
   const priorityFilter = firstParam(params.priority);
   const bacFilter = firstParam(params.bac);
   const contactFilter = firstParam(params.contact);
+  const interestFilter = firstParam(params.interest);
   const fieldFilter = firstParam(params.field);
 
   const supabase = await createClient();
@@ -229,6 +240,24 @@ export default async function AdminProspectsPage({
   }
   const accessByUser = new Map(accessRows.map((row) => [row.user_id, row.status]));
 
+  let interestRows: InterestRow[] = [];
+  if (prospectIds.length) {
+    const { data } = await supabase
+      .from("free_validation_interest_signals")
+      .select("prospect_id,orientation_id,source,signal_version,created_at")
+      .in("prospect_id", prospectIds)
+      .order("created_at", { ascending: false })
+      .limit(500);
+    interestRows = (data ?? []) as InterestRow[];
+  }
+
+  const latestInterestByProspect = new Map<string, InterestRow>();
+  for (const interest of interestRows) {
+    if (!latestInterestByProspect.has(interest.prospect_id)) {
+      latestInterestByProspect.set(interest.prospect_id, interest);
+    }
+  }
+
   const queue: QueueItem[] = prospects
     .map((prospect) => {
       const orientation = latestOrientationByProspect.get(prospect.id) ?? null;
@@ -244,6 +273,7 @@ export default async function AdminProspectsPage({
         accessStatus: prospect.user_id
           ? accessByUser.get(prospect.user_id) ?? null
           : null,
+        interest: latestInterestByProspect.get(prospect.id) ?? null,
         answers,
         smartPriority: evaluateSmartOrientationPriority(answers),
         acquisition: orientation
@@ -270,6 +300,8 @@ export default async function AdminProspectsPage({
     if (bacFilter && item.answers.bacStatus !== bacFilter) return false;
     if (contactFilter === "yes" && !item.prospect.contact_consent) return false;
     if (contactFilter === "no" && item.prospect.contact_consent) return false;
+    if (interestFilter === "yes" && !item.interest) return false;
+    if (interestFilter === "no" && item.interest) return false;
     if (fieldFilter && item.answers.targetField !== fieldFilter) return false;
     return true;
   });
@@ -285,39 +317,53 @@ export default async function AdminProspectsPage({
     || item.smartPriority.state === "priority_prepare_now"
   ).length;
   const contactableCount = queue.filter((item) => item.prospect.contact_consent).length;
+  const interestedCount = queue.filter((item) => item.interest).length;
+  const linkedAccountCount = queue.filter((item) => item.prospect.user_id).length;
 
   return (
     <main className="mx-auto w-full max-w-[92rem] px-4 py-5 sm:px-6 sm:py-6 xl:px-8">
       <AdminPageHeader
         section="Prospects"
         title="À traiter en priorité"
-        description="Smart Orientation trie les projets pour organiser votre travail. Cette priorité interne ne mesure ni les chances d’admission ni les chances de visa."
+        description="Smart Orientation organise la priorité et Free Validation mesure la demande réelle. Les chiffres montrent des actions observées ; ils ne décident pas automatiquement si le marché est validé."
       />
 
-      <section className="mb-6 grid gap-3 sm:grid-cols-3">
-        <article className="rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--brand-soft)] p-4">
-          <p className="text-2xl font-bold text-[var(--foreground)]">{urgentCount}</p>
-          <p className="mt-1 text-sm font-semibold text-[var(--foreground)]">
-            à traiter en priorité
-          </p>
-        </article>
+      <section className="mb-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
         <article className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-4">
           <p className="text-2xl font-bold text-slate-950">{queue.length}</p>
           <p className="mt-1 text-sm font-semibold text-slate-700">
-            prospects conservés
+            prospects sauvegardés
           </p>
         </article>
         <article className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-4">
           <p className="text-2xl font-bold text-slate-950">{contactableCount}</p>
           <p className="mt-1 text-sm font-semibold text-slate-700">
-            ont autorisé un contact
+            contact autorisé
+          </p>
+        </article>
+        <article className="rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--brand-soft)] p-4">
+          <p className="text-2xl font-bold text-[var(--foreground)]">{interestedCount}</p>
+          <p className="mt-1 text-sm font-semibold text-[var(--foreground)]">
+            veulent continuer
+          </p>
+        </article>
+        <article className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-4">
+          <p className="text-2xl font-bold text-slate-950">{linkedAccountCount}</p>
+          <p className="mt-1 text-sm font-semibold text-slate-700">
+            comptes gratuits liés
+          </p>
+        </article>
+        <article className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-4">
+          <p className="text-2xl font-bold text-slate-950">{urgentCount}</p>
+          <p className="mt-1 text-sm font-semibold text-slate-700">
+            priorité haute / maintenant
           </p>
         </article>
       </section>
 
       <form
         method="get"
-        className="mb-6 grid gap-3 rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-4 md:grid-cols-5"
+        className="mb-6 grid gap-3 rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-4 md:grid-cols-3 xl:grid-cols-6"
       >
         <label className="text-sm font-semibold text-slate-800">
           Priorité
@@ -341,6 +387,15 @@ export default async function AdminProspectsPage({
         <label className="text-sm font-semibold text-slate-800">
           Contact autorisé
           <select name="contact" defaultValue={contactFilter} className="field">
+            <option value="">Tous</option>
+            <option value="yes">Oui</option>
+            <option value="no">Non</option>
+          </select>
+        </label>
+
+        <label className="text-sm font-semibold text-slate-800">
+          Veut continuer
+          <select name="interest" defaultValue={interestFilter} className="field">
             <option value="">Tous</option>
             <option value="yes">Oui</option>
             <option value="no">Non</option>
@@ -388,6 +443,7 @@ export default async function AdminProspectsPage({
               orientation,
               qualification,
               accessStatus,
+              interest,
               answers,
               smartPriority,
               acquisition,
@@ -417,6 +473,11 @@ export default async function AdminProspectsPage({
                     >
                       {priorityLabels[smartPriority.state]}
                     </span>
+                    {interest ? (
+                      <span className="rounded-full border border-[var(--brand-border)] bg-[var(--brand-soft)] px-2.5 py-1 text-xs font-bold text-[var(--foreground)]">
+                        Veut continuer
+                      </span>
+                    ) : null}
                     <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-700">
                       {qualification
                         ? qualificationLabels[qualification.state] ?? qualification.state
@@ -472,7 +533,7 @@ export default async function AdminProspectsPage({
                   </div>
                 ) : null}
 
-                <div className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
+                <div className="mt-4 grid gap-3 text-sm md:grid-cols-3">
                   <div className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-3">
                     <p className="font-semibold text-slate-900">Contact</p>
                     <p className="mt-1 text-slate-700">
@@ -480,6 +541,19 @@ export default async function AdminProspectsPage({
                         ? "Autorisé explicitement"
                         : "Non autorisé — ne pas contacter à des fins commerciales"}
                     </p>
+                  </div>
+                  <div className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-3">
+                    <p className="font-semibold text-slate-900">Demande réelle</p>
+                    {interest ? (
+                      <>
+                        <p className="mt-1 font-semibold text-slate-900">Veut continuer avec Campus Allemagne</p>
+                        <p className="mt-1 text-xs leading-5 text-slate-600">
+                          {interest.source === "orientation_result" ? "Depuis le résultat d’orientation" : "Depuis un suivi e-mail"} · <bdi dir="auto">{dateFormatter.format(new Date(interest.created_at))}</bdi>
+                        </p>
+                      </>
+                    ) : (
+                      <p className="mt-1 text-slate-700">Aucun signal explicite enregistré</p>
+                    )}
                   </div>
                   <div className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-3">
                     <p className="font-semibold text-slate-900">Compte / accès</p>
