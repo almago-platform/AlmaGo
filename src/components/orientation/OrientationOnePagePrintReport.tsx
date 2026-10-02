@@ -3,7 +3,7 @@ import type { Locale } from "@/lib/i18n";
 import type { PublicOrientationAnswers } from "@/lib/orientation/public";
 import {
   getAcademicAccessConclusion,
-  getVerifiedAcademicOptions,
+  getVerifiedProgrammeSet,
 } from "@/lib/orientation/verified-academic-options";
 import {
   localizePreferredCity,
@@ -37,22 +37,25 @@ const labels = {
     access: "Accès académique",
     programmes: "Programmes",
     application: "Candidature",
-    languageText: (current: string, next: string | null) =>
-      next
-        ? `Allemand ${current} → ${next}, puis B2/C1 selon le programme et le certificat demandé.`
-        : `Allemand ${current} : viser le certificat universitaire exigé par le programme choisi.`,
+    languageText: (current: string, next: string | null) => {
+      if (current === "none") {
+        return "Vous débutez l'allemand : A1 → A2 → B1, puis B2/C1 selon le programme et le certificat demandé.";
+      }
+      return next
+        ? `Votre niveau ${current} est un bon point de départ : visez ${next}, puis B2/C1 selon le programme et le certificat demandé.`
+        : `Votre niveau ${current} est déjà avancé : l'objectif devient le certificat universitaire accepté par le programme choisi.`;
+    },
     languageChoice:
-      "Vous pouvez progresser en Tunisie ou suivre une préparation linguistique en Allemagne. Une école ne sera appelée « partenaire Campus Allemagne » qu'après accord réel signé.",
+      "Vous pouvez progresser en Tunisie ou en Allemagne. Selon les disponibilités de votre parcours, Campus Allemagne peut vous orienter vers une école partenaire validée en Tunisie ou en Allemagne.",
     applicationText:
-      "Campus Allemagne vous accompagne dans le choix des programmes, l'organisation du dossier et la procédure de candidature. Vous fournissez les documents personnels et effectuez les démarches qui doivent être faites en votre nom.",
-    programmesTitle: "Pistes vérifiées à Aachen",
+      "Campus Allemagne prend en charge l'accompagnement opérationnel de votre projet : confirmation de la route, sélection des programmes, calendrier, préparation et contrôle du dossier, organisation et suivi des candidatures, puis préparation de votre arrivée en Allemagne. Les décisions officielles et les démarches qui exigent votre signature restent faites en votre nom. Après l'arrivée, les services d'intégration et de carrière disponibles peuvent prolonger cet accompagnement.",
+    programmesTitlePreferred: (city: string) => `Pistes vérifiées à ${city}`,
+    programmesTitleRecommended: (city: string) => `Suggestion Campus Allemagne : ${city}`,
     noProgrammes:
-      "Aucune piste V3 vérifiée n'est encore disponible pour cette combinaison de ville et domaine.",
-    next: "Prochaine action",
-    nextText: (current: string, next: string | null) =>
-      next
-        ? `Continuez votre allemand de ${current} vers ${next}. En parallèle, choisissez avec Campus Allemagne 2 ou 3 programmes parmi les pistes ci-dessous.`
-        : "Choisissez avec Campus Allemagne 2 ou 3 programmes parmi les pistes ci-dessous et préparez le certificat de langue demandé.",
+      "Campus Allemagne vous proposera 2 ou 3 programmes adaptés après confirmation de votre ville et de votre route académique.",
+    next: "Prochaine étape avec Campus Allemagne",
+    nextText: () =>
+      "Si vous choisissez de continuer, Campus Allemagne vous contacte pour confirmer votre route, sélectionner avec vous 2 ou 3 programmes et vous présenter l'option d'accompagnement adaptée pour la langue et la candidature.",
     sources: "Sources officielles",
     verified: "vérifiées le",
     disclaimer:
@@ -70,22 +73,23 @@ const labels = {
     access: "الدخول الأكاديمي",
     programmes: "البرامج",
     application: "التقديم",
-    languageText: (current: string, next: string | null) =>
-      next
-        ? `الألمانية ${current} ← ${next}، ثم B2/C1 حسب البرنامج والشهادة المطلوبة.`
-        : `مستواك ${current} في الألمانية: الهدف الآن هو الشهادة الجامعية التي يطلبها البرنامج المختار.`,
+    languageText: (current: string, next: string | null) => {
+      if (current === "none") return "أنت تبدأ الألمانية: A1 ← A2 ← B1، ثم B2/C1 حسب البرنامج والشهادة المطلوبة.";
+      return next
+        ? `مستواك ${current} نقطة بداية جيدة: الهدف التالي ${next}، ثم B2/C1 حسب البرنامج والشهادة المطلوبة.`
+        : `مستواك ${current} متقدم؛ الهدف الآن هو شهادة اللغة الجامعية المقبولة في البرنامج المختار.`;
+    },
     languageChoice:
-      "يمكن تطوير اللغة في تونس أو عبر تحضير لغوي في ألمانيا. لا نصف أي مدرسة بأنها «شريك Campus Allemagne» إلا بعد اتفاق حقيقي وموقع.",
+      "يمكن تطوير اللغة في تونس أو ألمانيا. حسب الخيارات المتاحة لمسارك، يمكن لـ Campus Allemagne توجيهك إلى مدرسة شريكة معتمدة في تونس أو ألمانيا.",
     applicationText:
-      "يرافقك Campus Allemagne في اختيار البرامج وتنظيم الملف ومسار التقديم. أنت تقدم الوثائق الشخصية وتقوم بالإجراءات التي يجب أن تتم باسمك.",
-    programmesTitle: "مسارات موثقة في آخن",
+      "يتولى Campus Allemagne مرافقة مشروعك عمليًا: تأكيد المسار، اختيار البرامج، وضع الجدول، تجهيز ومراجعة الملف، تنظيم ومتابعة طلبات التقديم، ثم التحضير للوصول إلى ألمانيا. القرارات الرسمية والإجراءات التي تتطلب توقيعك تبقى باسمك، ويمكن أن تمتد المرافقة بعد الوصول إلى خدمات الاندماج والمسار المهني المتاحة.",
+    programmesTitlePreferred: (city: string) => `مسارات موثقة في ${city}`,
+    programmesTitleRecommended: (city: string) => `اقتراح Campus Allemagne: ${city}`,
     noProgrammes:
-      "لا توجد بعد مسارات V3 موثقة لهذه المدينة وهذا المجال.",
-    next: "خطوتك التالية",
-    nextText: (current: string, next: string | null) =>
-      next
-        ? `واصل الألمانية من ${current} إلى ${next}. وفي الوقت نفسه اختر مع Campus Allemagne برنامجين أو ثلاثة من الخيارات أدناه.`
-        : "اختر مع Campus Allemagne برنامجين أو ثلاثة من الخيارات أدناه وجهّز شهادة اللغة المطلوبة.",
+      "سيعرض عليك Campus Allemagne برنامجين أو ثلاثة بعد تأكيد المدينة والمسار الأكاديمي.",
+    next: "الخطوة التالية مع Campus Allemagne",
+    nextText: () =>
+      "إذا اخترت المتابعة، سيتواصل معك Campus Allemagne لتأكيد المسار واختيار برنامجين أو ثلاثة معك وعرض خيار المرافقة المناسب للغة والتقديم.",
     sources: "المصادر الرسمية",
     verified: "تم التحقق في",
     disclaimer:
@@ -103,22 +107,23 @@ const labels = {
     access: "Academic access",
     programmes: "Programmes",
     application: "Application",
-    languageText: (current: string, next: string | null) =>
-      next
-        ? `German ${current} → ${next}, then B2/C1 depending on the programme and accepted certificate.`
-        : `German ${current}: target the university-entry certificate required by the chosen programme.`,
+    languageText: (current: string, next: string | null) => {
+      if (current === "none") return "You are starting German: A1 → A2 → B1, then B2/C1 depending on the programme and accepted certificate.";
+      return next
+        ? `Your ${current} level is a good starting point: target ${next}, then B2/C1 depending on the programme and accepted certificate.`
+        : `Your ${current} level is already advanced: the next target is the university language certificate accepted by the chosen programme.`;
+    },
     languageChoice:
-      "You can progress in Tunisia or take language preparation in Germany. A school is only described as a Campus Allemagne partner after a real signed agreement.",
+      "You can progress in Tunisia or Germany. Depending on the options available for your route, Campus Allemagne can direct you to a validated partner language school in Tunisia or Germany.",
     applicationText:
-      "Campus Allemagne supports programme choice, file organisation and the application route. You provide personal documents and complete actions that legally must be done in your own name.",
-    programmesTitle: "Verified options in Aachen",
+      "Campus Allemagne handles the operational support for your project: route confirmation, programme selection, timeline, application-file preparation and checking, application organisation and follow-up, then preparation for arrival in Germany. Official decisions and actions requiring your signature remain in your name; available integration and career services can continue the support after arrival.",
+    programmesTitlePreferred: (city: string) => `Verified options in ${city}`,
+    programmesTitleRecommended: (city: string) => `Campus Allemagne suggestion: ${city}`,
     noProgrammes:
-      "No V3-verified option is available yet for this city and field combination.",
-    next: "Next action",
-    nextText: (current: string, next: string | null) =>
-      next
-        ? `Continue German from ${current} toward ${next}. In parallel, choose 2 or 3 programmes below with Campus Allemagne.`
-        : "Choose 2 or 3 programmes below with Campus Allemagne and prepare the required language certificate.",
+      "Campus Allemagne will propose 2 or 3 suitable programmes after confirming your city and academic route.",
+    next: "Next step with Campus Allemagne",
+    nextText: () =>
+      "If you choose to continue, Campus Allemagne will contact you to confirm the route, select 2 or 3 programmes with you and present the most suitable language and application support option.",
     sources: "Official sources",
     verified: "verified",
     disclaimer:
@@ -136,22 +141,23 @@ const labels = {
     access: "Hochschulzugang",
     programmes: "Programme",
     application: "Bewerbung",
-    languageText: (current: string, next: string | null) =>
-      next
-        ? `Deutsch ${current} → ${next}, danach B2/C1 je nach Programm und akzeptiertem Zertifikat.`
-        : `Deutsch ${current}: Ziel ist der für das gewählte Programm verlangte Hochschul-Sprachnachweis.`,
+    languageText: (current: string, next: string | null) => {
+      if (current === "none") return "Du beginnst mit Deutsch: A1 → A2 → B1, danach B2/C1 je nach Programm und akzeptiertem Zertifikat.";
+      return next
+        ? `Dein Niveau ${current} ist ein guter Ausgangspunkt: nächstes Ziel ${next}, danach B2/C1 je nach Programm und akzeptiertem Zertifikat.`
+        : `Dein Niveau ${current} ist bereits fortgeschritten: Ziel ist jetzt der vom Programm akzeptierte Hochschul-Sprachnachweis.`;
+    },
     languageChoice:
-      "Du kannst die Sprache in Tunesien verbessern oder eine Sprachvorbereitung in Deutschland wählen. Eine Schule wird erst nach einer echten unterschriebenen Vereinbarung als Campus-Allemagne-Partner bezeichnet.",
+      "Du kannst die Sprache in Tunesien oder Deutschland verbessern. Je nach verfügbarer Route kann Campus Allemagne dich an eine validierte Partnersprachschule in Tunesien oder Deutschland vermitteln.",
     applicationText:
-      "Campus Allemagne begleitet Programmauswahl, Dossier und Bewerbungsweg. Du stellst persönliche Unterlagen bereit und erledigst Schritte, die rechtlich in deinem Namen erfolgen müssen.",
-    programmesTitle: "Verifizierte Optionen in Aachen",
+      "Campus Allemagne übernimmt die operative Begleitung deines Projekts: Routenbestätigung, Programmauswahl, Zeitplan, Vorbereitung und Kontrolle des Dossiers, Organisation und Nachverfolgung der Bewerbungen sowie Vorbereitung auf die Ankunft in Deutschland. Offizielle Entscheidungen und Schritte mit deiner Unterschrift bleiben in deinem Namen; verfügbare Integrations- und Karriereservices können die Begleitung nach der Ankunft fortsetzen.",
+    programmesTitlePreferred: (city: string) => `Verifizierte Optionen in ${city}`,
+    programmesTitleRecommended: (city: string) => `Vorschlag von Campus Allemagne: ${city}`,
     noProgrammes:
-      "Für diese Kombination aus Stadt und Fach gibt es noch keine V3-verifizierte Option.",
-    next: "Nächste Aktion",
-    nextText: (current: string, next: string | null) =>
-      next
-        ? `Verbessere dein Deutsch von ${current} auf ${next}. Wähle parallel mit Campus Allemagne 2 oder 3 Programme aus den Optionen unten.`
-        : "Wähle mit Campus Allemagne 2 oder 3 Programme unten aus und bereite den verlangten Sprachnachweis vor.",
+      "Campus Allemagne schlägt dir nach Bestätigung von Stadt und akademischer Route 2 oder 3 passende Programme vor.",
+    next: "Nächster Schritt mit Campus Allemagne",
+    nextText: () =>
+      "Wenn du weitermachen möchtest, kontaktiert dich Campus Allemagne, bestätigt deine Route, wählt mit dir 2 oder 3 Programme aus und stellt dir die passende Sprach- und Bewerbungsbegleitung vor.",
     sources: "Offizielle Quellen",
     verified: "geprüft am",
     disclaimer:
@@ -178,10 +184,17 @@ export function OrientationOnePagePrintReport({
 }) {
   const copy = labels[locale] as (typeof labels)["fr"];
   const access = getAcademicAccessConclusion(answers);
-  const options = getVerifiedAcademicOptions(answers);
+  const programmeSet = getVerifiedProgrammeSet(answers);
+  const options = programmeSet?.options || [];
   const cities = answers.preferredCities.length
     ? answers.preferredCities.map((city) => localizePreferredCity(locale, city)).join(", ")
-    : "—";
+    : locale === "ar"
+      ? "المدينة لم تُحدد"
+      : locale === "de"
+        ? "Stadt noch offen"
+        : locale === "en"
+          ? "City not fixed"
+          : "Ville à définir";
   const degree = localizedValue(answers.targetDegree, locale, degreeOptions);
   const field = localizedValue(answers.targetField, locale, studyFieldOptions);
   const german = answers.germanLevel || "—";
@@ -203,6 +216,9 @@ export function OrientationOnePagePrintReport({
           <p className="text-[10px] font-bold uppercase tracking-wide text-[var(--accent-strong)]">Campus Allemagne</p>
           <h1 className="mt-0.5 text-xl font-bold">{copy.title}</h1>
           <p className="mt-0.5 text-[10px] text-slate-600">{copy.subtitle}</p>
+          <p className="mt-0.5 text-[9px] text-slate-500">
+            {new Intl.DateTimeFormat(locale, { day: "2-digit", month: "2-digit", year: "numeric" }).format(new Date())}
+          </p>
         </div>
       </header>
 
@@ -242,7 +258,13 @@ export function OrientationOnePagePrintReport({
             <tr>
               <td>{copy.programmes}</td>
               <td>
-                <strong>{copy.programmesTitle}</strong>
+                <strong>
+                  {programmeSet
+                    ? programmeSet.selectionReason === "preferred_city"
+                      ? copy.programmesTitlePreferred(programmeSet.city)
+                      : copy.programmesTitleRecommended(programmeSet.city)
+                    : copy.noProgrammes}
+                </strong>
                 {options.length ? (
                   <ul className="mt-1 space-y-0.5">
                     {options.map((option) => (
@@ -251,9 +273,7 @@ export function OrientationOnePagePrintReport({
                       </li>
                     ))}
                   </ul>
-                ) : (
-                  <span>{copy.noProgrammes}</span>
-                )}
+                ) : null}
               </td>
             </tr>
             <tr>
@@ -271,8 +291,9 @@ export function OrientationOnePagePrintReport({
 
       <footer className="orientation-one-page-footer">
         <div>
-          <strong>{copy.sources}:</strong> DAAD/ZAB · RWTH Aachen · FH Aachen
-          {options.length ? ` · ${copy.verified} 02/10/2026` : ""}
+          <strong>{copy.sources}:</strong> DAAD/ZAB
+          {options.length ? " · RWTH Aachen · FH Aachen" : ""}
+          {options.length ? ` · ${copy.verified} 02/10/2026` : ` · ${copy.verified} ${access.verifiedAt}`}
         </div>
         <p>{copy.disclaimer}</p>
       </footer>
