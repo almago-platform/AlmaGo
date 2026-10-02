@@ -79,6 +79,30 @@ export function orientationDegreeCompatible(
   return normalized(candidateDegree).includes(normalized(targetDegree));
 }
 
+
+export function orientationKnowledgeCoverageSufficient(
+  plan: OrientationDiscoveryPlan,
+  candidates: readonly OrientationDiscoveryResearchCandidate[],
+  minimumCandidates: number,
+) {
+  if (candidates.length < minimumCandidates) return false;
+
+  if (plan.profile.preferredCities.length > 0) {
+    const preferred = new Set(
+      plan.profile.preferredCities.map((city) => normalized(city)),
+    );
+    const hasPreferredCity = candidates.some(
+      (candidate) =>
+        candidate.city
+        && preferred.has(normalized(candidate.city)),
+    );
+
+    if (!hasPreferredCity) return false;
+  }
+
+  return true;
+}
+
 export function mergeOrientationKnowledgeCandidates(
   cached: readonly OrientationDiscoveryResearchCandidate[],
   researched: readonly OrientationDiscoveryResearchCandidate[],
