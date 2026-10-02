@@ -304,3 +304,107 @@ New V4 area:
 - Master compatibility usually depends on curricular prerequisites that are not yet fully structured;
 - no-Bac and unusual qualifications require human review unless an official rule is explicitly encoded;
 - LLM runtime legal/privacy review remains a launch gate before sending personal orientation context to a provider.
+
+
+## 13. Increment B/C — refinement + intake/deadlines
+
+This increment deliberately stays deterministic and does not enable a runtime LLM.
+
+### Structured intake added to the public Orientation profile
+
+The public Orientation answer object now carries:
+
+- `targetIntakeSeason`: `winter` or `summer`;
+- `targetIntakeYear`: explicit calendar year.
+
+Both fields are optional together. A partially filled intake is rejected by server validation.
+
+This is stored inside the existing orientation JSON input, so no database migration is required.
+
+### Missing-information engine
+
+The engine now derives a structured refinement state:
+
+- all currently useful missing profile facts;
+- why each fact matters;
+- which evaluated programme records could change;
+- exactly one `nextQuestion`.
+
+Current deterministic priority:
+
+1. previous university qualification for Master projects;
+2. engineering specialty when the student explicitly selected “undecided”;
+3. target intake when programme timing data exist;
+4. teaching-language preference when still undefined;
+5. preferred city when several verified cities remain.
+
+Budget is intentionally not asked by this refinement layer yet because the current Orientation Engine has no verified city-cost compatibility dataset. Asking it would create questionnaire friction without changing a verified recommendation.
+
+### One-question recalculation loop
+
+The student-facing V4 card can answer the single current question.
+
+The answer patches the same `PublicOrientationAnswers` state already used by the Orientation flow. The existing deterministic engine API is then called again with that updated profile.
+
+There is no independent chatbot state and no separate AI-owned profile.
+
+### Intake and deadline model
+
+Programme timing now uses existing Supabase fields:
+
+- `intake_terms`;
+- `winter_deadline`;
+- `summer_deadline`;
+- programme source URL;
+- programme `verified_at`.
+
+No date is generated when the catalogue does not contain one.
+
+Possible deterministic rule outcomes now include:
+
+- `intake_match`;
+- `intake_unavailable`;
+- `intake_unknown`;
+- `deadline_open`;
+- `deadline_closed`;
+- `deadline_to_verify`;
+- `deadline_unknown`.
+
+A closed verified deadline or an unavailable intake can exclude that programme for the selected project.
+
+A stored deadline is only called open/closed when:
+
+- the date is structurally valid;
+- its source and verification date are valid;
+- the stored date can be aligned to the selected target cycle.
+
+If a stored date belongs to a different target year, the engine returns `deadline_to_verify` instead of reusing or shifting the date.
+
+For summer semester alignment, a late-year deadline can correspond to the following calendar year's summer semester. This is only a cycle-alignment rule for an already stored date; it does not create an institutional deadline.
+
+### UX behavior
+
+The V4 card now shows:
+
+- the target intake once known;
+- why a programme appears;
+- what still needs verification;
+- a verified stored deadline when safely usable;
+- all surfaced sources rather than only the first source;
+- one next refinement question.
+
+The print/PDF component remains separate and unchanged by this increment.
+
+### LLM boundary remains unchanged
+
+The Rules Engine, refinement choice and deadline status remain deterministic and cost zero LLM tokens.
+
+A future runtime Advisor provider may explain the structured result, but it must not alter:
+
+- the selected next missing field;
+- intake availability;
+- deadline state;
+- eligibility state;
+- official-source values.
+
+The deterministic Advisor fallback remains the default.
