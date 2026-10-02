@@ -5,6 +5,8 @@ import { createOrientationAdvisor } from "@/lib/orientation-engine/advisor/deter
 import { loadVerifiedProgrammeCatalogue } from "@/lib/orientation-engine/catalog";
 import { buildOrientationEngineResult } from "@/lib/orientation-engine/service";
 import { buildOrientationIntelligence } from "@/lib/orientation-engine/intelligence";
+import { runOrientationResultPipeline } from "@/lib/orientation-engine/result/service";
+import type { OrientationPublicPersonalizedResult } from "@/lib/orientation-engine/result/types";
 
 const MAX_BODY_BYTES = 24_000;
 
@@ -48,12 +50,22 @@ export async function POST(request: Request) {
       engineResult,
     );
 
+    let personalized: OrientationPublicPersonalizedResult | null = null;
+    try {
+      personalized = await runOrientationResultPipeline(locale, profile);
+    } catch {
+      // E is additive. A provider/persistence failure must never remove the
+      // already-safe deterministic orientation returned below.
+      personalized = null;
+    }
+
     return NextResponse.json(
       {
         engine: engineResult,
         advisor: advisorResult,
         letter: intelligence.letter,
         scout: intelligence.scout,
+        personalized,
       },
       {
         status: 200,
