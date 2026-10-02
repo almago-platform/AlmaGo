@@ -76,6 +76,16 @@ export async function runOrientationDiscovery(
 
   const research = await runOpenAIOrientationDiscovery(plan);
 
+  console.info("orientation_v4_provider", JSON.stringify({
+    stage: "discovery",
+    provider: research.provider,
+    status: research.status,
+    reason: research.reason,
+    requests: research.usage.requests,
+    webSearchCalls: research.usage.webSearchCalls,
+    candidates: research.candidates.length,
+  }));
+
   if (research.status === "ready" && research.candidates.length > 0) {
     const persistence = await persistOrientationDiscoveryResearch(plan, research);
     const candidates = mergeOrientationKnowledgeCandidates(
