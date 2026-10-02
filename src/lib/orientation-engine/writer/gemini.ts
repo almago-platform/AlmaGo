@@ -345,6 +345,11 @@ export async function runGeminiOrientationWriter(
 
     const durationMs = Date.now() - startedAt;
     if (!response.ok) {
+      console.info("orientation_v4_gemini_http", JSON.stringify({
+        model,
+        status: response.status,
+      }));
+
       return fallbackResult(
         input,
         "provider_error",
