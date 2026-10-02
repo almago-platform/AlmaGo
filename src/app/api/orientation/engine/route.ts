@@ -4,6 +4,7 @@ import { validatePublicOrientationAnswers } from "@/lib/orientation/validate";
 import { createOrientationAdvisor } from "@/lib/orientation-engine/advisor/deterministic";
 import { loadVerifiedProgrammeCatalogue } from "@/lib/orientation-engine/catalog";
 import { buildOrientationEngineResult } from "@/lib/orientation-engine/service";
+import { buildOrientationIntelligence } from "@/lib/orientation-engine/intelligence";
 
 const MAX_BODY_BYTES = 24_000;
 
@@ -41,11 +42,18 @@ export async function POST(request: Request) {
       profile,
       engineResult,
     });
+    const intelligence = await buildOrientationIntelligence(
+      locale,
+      profile,
+      engineResult,
+    );
 
     return NextResponse.json(
       {
         engine: engineResult,
         advisor: advisorResult,
+        letter: intelligence.letter,
+        scout: intelligence.scout,
       },
       {
         status: 200,
