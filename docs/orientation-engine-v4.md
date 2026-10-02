@@ -408,3 +408,24 @@ A future runtime Advisor provider may explain the structured result, but it must
 - official-source values.
 
 The deterministic Advisor fallback remains the default.
+
+
+## 14. Public catalogue runtime boundary
+
+The public Orientation Engine must remain usable without the backend prospect-persistence secret.
+
+A dedicated read-only projection, `public.orientation_program_catalog`, exposes only the verified academic catalogue fields required by Orientation V4:
+
+- programme identity, degree, field and teaching language;
+- structured language requirements;
+- Studienkolleg / uni-assist flags;
+- intake terms and stored deadlines;
+- application URL;
+- programme source + verification date;
+- public university identity/location/type/source metadata.
+
+The projection explicitly excludes internal catalogue notes and every student/prospect table.
+
+Runtime Orientation reads this projection with the existing Supabase publishable key through a server-only client. It does not use `SUPABASE_SECRET_KEY`.
+
+This keeps the public engine independent from the privileged Phase 2 persistence boundary while preserving RLS/grant separation on the underlying tables.
