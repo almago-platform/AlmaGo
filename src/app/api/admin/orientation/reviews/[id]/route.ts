@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { getAdminUser } from "@/lib/auth/access";
+import { createPrivilegedSupabaseClient } from "@/lib/supabase/privileged";
 
 const DECISIONS = new Set(["approved", "changes_requested", "rejected"]);
 
@@ -144,7 +145,17 @@ export async function PATCH(
   }
 
   const reviewedAt = new Date().toISOString();
-  const { error } = await supabase
+  let adminClient;
+  try {
+    adminClient = createPrivilegedSupabaseClient();
+  } catch {
+    return NextResponse.json(
+      { error: "La persistance de revue n’est pas configurée." },
+      { status: 503 },
+    );
+  }
+
+  const { error } = await adminClient
     .from("orientation_human_reviews")
     .update({
       review_status: decision,
