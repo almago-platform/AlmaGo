@@ -22,6 +22,14 @@ const ENGINE_VERSION = "public-orientation-v1";
 const PRIVACY_NOTICE_VERSION = "orientation-prospect-v1";
 const CONTACT_CONSENT_VERSION = "smart-orientation-contact-v1";
 
+function validEmail(value: unknown) {
+  if (typeof value !== "string") return null;
+  const normalized = value.trim().toLowerCase();
+  if (normalized.length < 3 || normalized.length > 320) return null;
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalized)) return null;
+  return normalized;
+}
+
 function publicSiteUrl() {
   const raw = process.env.SITE_URL?.trim();
   if (!raw) return null;
