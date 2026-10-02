@@ -188,7 +188,7 @@ function safeProfile(profile: PublicOrientationAnswers) {
     bac_year: nullable(profile.bacYear),
     bac_track: nullable(profile.bacTrack),
     average_out_of_20: nullable(profile.generalAverage),
-    average_scale: profile.generalAverage ? 20 : null,
+    average_scale: profile.generalAverage ? 20 as const : null,
     average_type: nullable(profile.averageType),
     last_diploma: nullable(profile.lastDiploma),
     target_degree: nullable(profile.targetDegree),
