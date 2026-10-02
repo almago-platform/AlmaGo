@@ -3,8 +3,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { OrientationRefinementQuestionCard } from "@/components/orientation/OrientationRefinementQuestionCard";
 import { OrientationLetterCard } from "@/components/orientation/OrientationLetterCard";
+import { OrientationPersonalizedWriterCard } from "@/components/orientation/OrientationPersonalizedWriterCard";
 import type { Locale } from "@/lib/i18n";
 import type { PublicOrientationAnswers } from "@/lib/orientation/public";
+import type { OrientationPublicPersonalizedResult } from "@/lib/orientation-engine/result/types";
 import type {
   OrientationAdvisorOutput,
   OrientationEngineResult,
@@ -18,6 +20,7 @@ type EngineResponse = {
   advisor: OrientationAdvisorOutput;
   letter: OrientationLetterOutput;
   scout: OrientationScoutResult;
+  personalized: OrientationPublicPersonalizedResult | null;
 };
 
 const copy = {
@@ -312,10 +315,12 @@ export function PersonalizedOrientationEngineCard({
   answers,
   locale,
   onRefineAnswers,
+  prospectCaptureEnabled = false,
 }: {
   answers: PublicOrientationAnswers;
   locale: Locale;
   onRefineAnswers?: (patch: Partial<PublicOrientationAnswers>) => void;
+  prospectCaptureEnabled?: boolean;
 }) {
   const t = copy[locale] as (typeof copy)["fr"];
   const isBachelorFirstContact = answers.targetDegree === "Bachelor";
@@ -337,6 +342,9 @@ export function PersonalizedOrientationEngineCard({
     : requestState.error
       ? "error"
       : "ready";
+  const personalized = result?.personalized && result.personalized.selected.length > 0
+    ? result.personalized
+    : null;
 
   useEffect(() => {
     const controller = new AbortController();
@@ -406,13 +414,21 @@ export function PersonalizedOrientationEngineCard({
 
         {state === "ready" && result ? (
           <>
-            <OrientationLetterCard
-              letter={result.letter}
-              scout={result.scout}
-              recommendations={result.engine.recommendations}
-              answers={answers}
-              locale={locale}
-            />
+            {personalized ? (
+              <OrientationPersonalizedWriterCard
+                result={personalized}
+                locale={locale}
+                showCta={prospectCaptureEnabled && isBachelorFirstContact}
+              />
+            ) : (
+              <OrientationLetterCard
+                letter={result.letter}
+                scout={result.scout}
+                recommendations={result.engine.recommendations}
+                answers={answers}
+                locale={locale}
+              />
+            )}
             {!isBachelorFirstContact && onRefineAnswers && result.engine.refinement.nextQuestion ? (
               <OrientationRefinementQuestionCard
                 question={result.engine.refinement.nextQuestion}
@@ -422,6 +438,7 @@ export function PersonalizedOrientationEngineCard({
               />
             ) : null}
 
+            {!personalized ? (
             <details className="mt-5 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface)] p-4">
               <summary className="cursor-pointer text-sm font-bold">{t.details}</summary>
               <div className="mt-4 grid gap-4">
@@ -529,6 +546,7 @@ export function PersonalizedOrientationEngineCard({
               </ol>
             </div>
             </details>
+            ) : null}
           </>
         ) : null}
       </div>

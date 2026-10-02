@@ -684,13 +684,24 @@ Implementation:
 
 D is server-side infrastructure. E will integrate this structured result into the student-facing orientation UI and human-review flow.
 
-### Phase E — UI + human review
-- letter-first result;
-- programme pistes;
-- roadmap;
-- one CTA;
-- verified-detail drawer;
-- counselor validation workflow.
+### Phase E — UI + human review 🚧 student integration implemented
+
+Implemented in the result pipeline:
+- one server-side A -> B -> C -> D orchestration path behind the existing Orientation API;
+- A1 remains authoritative: incomplete / no-Bac review routes do not silently enter normal university discovery;
+- the existing deterministic Orientation Engine remains the public fallback if the new pipeline is unavailable or produces no usable shortlist;
+- the browser receives only the writer content plus bounded selected facts/sources — no C score breakdown, provider/model metadata or usage telemetry;
+- when C has a real shortlist, the D structured writer becomes the primary letter-first result;
+- 3–4 programme pistes, short roadmap and the single writer CTA stay in the main reading flow;
+- the writer CTA reuses the existing consented prospect-capture flow instead of creating a second acquisition path;
+- verified/review facts and their sources remain expandable below the simple letter;
+- every personalized shortlist is visibly marked for mandatory Campus Allemagne counselor validation before it becomes an assisted application strategy.
+
+Human-review boundary:
+- AlmaGo already has a protected admin Orientation workflow where a counselor chooses the student, checks the stored profile, selects a programme, documents the factual justification, publishes the recommendation and can archive it later;
+- E reuses that protected manual publication boundary rather than auto-publishing AI output;
+- the new A/B/C/D draft is **not** automatically copied into `program_recommendations` and is never treated as counselor-approved;
+- a richer counselor review bundle (showing the exact discovered candidates, B fact statuses, C rationale and generated D copy together) remains part of the Phase F production/human-validation work.
 
 ### Phase F — production validation
 
