@@ -12,6 +12,7 @@ export type PublicOrientationAnswers = {
   lastDiploma: string;
   targetDegree: string;
   targetField: string;
+  engineeringSpecialty: string;
   germanLevel: string;
   englishLevel: string;
   studyLanguage: string;
@@ -29,6 +30,7 @@ export function createEmptyPublicOrientationAnswers(): PublicOrientationAnswers 
     lastDiploma: "",
     targetDegree: "",
     targetField: "",
+    engineeringSpecialty: "",
     germanLevel: "",
     englishLevel: "",
     studyLanguage: "",
@@ -94,6 +96,7 @@ export function restorePublicOrientationAnswers(value: unknown): PublicOrientati
     lastDiploma: readString(record, "lastDiploma"),
     targetDegree: readString(record, "targetDegree"),
     targetField: readString(record, "targetField"),
+    engineeringSpecialty: readString(record, "engineeringSpecialty"),
     germanLevel: readString(record, "germanLevel"),
     englishLevel: readString(record, "englishLevel"),
     studyLanguage: readString(record, "studyLanguage"),
