@@ -609,12 +609,80 @@ Implementation files:
 
 C remains server-side infrastructure until D/E consume the shortlist for personalized writing and student-facing presentation.
 
-### Phase D — Gemini Writer
-- master prompt;
-- strict JSON schema;
-- factual guardrails;
-- multilingual marketing copy;
-- deterministic fallback.
+### Phase D — Gemini Personalized Writer ✅ implemented (provider activation pending)
+
+D is the editorial layer only. AlmaGo remains the source of truth.
+
+Architecture:
+- input = C shortlist + B field-level verification + minimized student profile;
+- optional explicit Campus Allemagne services + explicit available CTA actions;
+- no discovery, no web search, no re-ranking and no admission decision inside the writer;
+- default model: `gemini-3.8-flash`;
+- provider remains disabled unless `ALMAGO_ORIENTATION_WRITER_PROVIDER=gemini` and a server-only `GEMINI_API_KEY` are configured.
+
+Stable writer context:
+- `PROFIL_ETUDIANT`;
+- `FAITS_VERIFIES`;
+- `OPTIONS_CAMPUS_ALLEMAGNE`;
+- `ACTIONS_DISPONIBLES`;
+- `LANGUAGE_FOCUS`.
+
+Privacy/minimisation:
+- no name, email, phone, passport or uploaded document content;
+- no source URLs;
+- no internal C score/breakdown;
+- only the selected 3–4 programme identities and their bounded verified/review/missing facts are sent.
+
+Editorial principles:
+- student is the hero; Campus Allemagne is the guide;
+- warm, persuasive, human copy in FR/AR/EN/DE;
+- celebrate only achievements present in the profile;
+- focus on the next immediate language step instead of exposing the whole language ladder;
+- explain parallel progress of language + university project without inventing Campus Allemagne services;
+- one clear CTA from the backend-provided action allow-list;
+- no engine jargon in student copy.
+
+Strict structured output:
+- opening;
+- project status;
+- main priority;
+- language plan;
+- Campus Allemagne value;
+- study options;
+- roadmap;
+- reassurance;
+- one CTA.
+
+Backend ownership:
+- Gemini returns only `option_id` + narrative for each study option;
+- institution/programme/city names are injected from C by AlmaGo;
+- the writer must return every selected option exactly once;
+- Gemini cannot add, remove or reorder the shortlist.
+
+Post-generation grounding checks:
+- unsupported CEFR levels cause fallback;
+- unsupported numeric claims cause fallback;
+- admission guarantees cause fallback;
+- invented Studienkolleg / uni-assist claims cause fallback;
+- unknown CTA ids cause fallback;
+- malformed/incomplete JSON causes fallback;
+- source URLs in student copy cause fallback.
+
+Reliability/cost:
+- 10-second request timeout;
+- 30-minute bounded in-memory cache for identical writer context;
+- usage tokens and request duration returned for observability;
+- deterministic localized fallback always remains available;
+- D adds no new database copy and does not mutate B/C truth.
+
+Implementation:
+- `src/lib/orientation-engine/writer/types.ts`;
+- `src/lib/orientation-engine/writer/core.ts`;
+- `src/lib/orientation-engine/writer/gemini.ts`;
+- `src/lib/orientation-engine/writer/service.ts`;
+- `tests/orientation-personalized-writer.test.mjs`.
+
+D is server-side infrastructure. E will integrate this structured result into the student-facing orientation UI and human-review flow.
 
 ### Phase E — UI + human review
 - letter-first result;
