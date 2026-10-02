@@ -88,7 +88,11 @@ test("F persists an admin-only A/B/C/D bundle rather than publishing recommendat
   assert.match(migration, /alter table public\.orientation_human_reviews enable row level security/);
   assert.match(migration, /revoke all on table public\.orientation_human_reviews[\s\S]*from public, anon, authenticated/);
   assert.match(migration, /orientation human reviews admin read/);
-  assert.match(migration, /orientation human reviews admin update/);
+  assert.match(migration, /orientation human reviews admin read/);
+  assert.match(
+    migration,
+    /revoke insert, update, delete, truncate, references, trigger[\s\S]*from authenticated/,
+  );
   assert.match(migration, /program_recommendations publication/);
 
   assert.doesNotMatch(resultService, /\.from\("program_recommendations"\)/);
@@ -112,6 +116,7 @@ test("F counselor decisions are bounded to non-unknown B programmes and at most 
   assert.match(reviewApi, /approvedSelection\.length < 1 \|\| approvedSelection\.length > 4/);
   assert.match(reviewApi, /allowed\.has\(key\)/);
   assert.match(reviewApi, /reviewed_by: user\.id/);
+  assert.match(reviewApi, /createPrivilegedSupabaseClient/);
   assert.doesNotMatch(reviewApi, /program_recommendations/);
 });
 
