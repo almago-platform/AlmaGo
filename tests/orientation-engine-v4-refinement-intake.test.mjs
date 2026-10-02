@@ -221,5 +221,7 @@ test("V4 refinement stays connected to the same deterministic engine and preserv
   assert.match(card, /OrientationRefinementQuestionCard/);
   assert.match(form, /onRefineAnswers/);
   assert.match(card, /orientation-print-hide/);
+  assert.match(card, /mt-1 text-sm text-\[var\(--foreground\)\]/);
+  assert.match(card, /mt-4 text-xs leading-5 text-\[var\(--foreground\)\]/);
   assert.doesNotMatch(printReport, /OrientationRefinementQuestionCard/);
 });
