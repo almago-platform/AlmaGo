@@ -9,6 +9,7 @@ export type VerifiedAcademicOption = {
   languageRequirement: string;
   sourceUrl: string;
   verifiedAt: string;
+  specialties: string[];
 };
 
 type TunisianBacAccessRule = {
@@ -90,6 +91,7 @@ const AACHEN_ENGINEERING_OPTIONS: VerifiedAcademicOption[] = [
     sourceUrl:
       "https://www.elektrotechnik.rwth-aachen.de/cms/elektrotechnik-und-informationstechnik/studium/beratung-kontakt/bachelor-studium/~bfsmts/alle-infos-rund-um-die-bewerbung/",
     verifiedAt: "2026-10-02",
+    specialties: ["electrical_electronics", "computer_engineering"],
   },
   {
     institution: "FH Aachen",
@@ -102,6 +104,7 @@ const AACHEN_ENGINEERING_OPTIONS: VerifiedAcademicOption[] = [
     sourceUrl:
       "https://www.fh-aachen.de/studium/studiengaenge/elektrotechnik-beng",
     verifiedAt: "2026-10-02",
+    specialties: ["electrical_electronics", "computer_engineering"],
   },
   {
     institution: "FH Aachen",
@@ -114,14 +117,67 @@ const AACHEN_ENGINEERING_OPTIONS: VerifiedAcademicOption[] = [
     sourceUrl:
       "https://www.fh-aachen.de/studium/studiengaenge/maschinenbau-beng-aachen/",
     verifiedAt: "2026-10-02",
+    specialties: ["mechanical"],
   },
 ];
+
+const MUNICH_ENGINEERING_OPTIONS: VerifiedAcademicOption[] = [
+  {
+    institution: "Technical University of Munich",
+    programme: "Informatics",
+    degree: "B.Sc.",
+    city: "Munich",
+    teachingLanguage: "Allemand",
+    languageRequirement: "Preuve d'allemand reconnue par TUM ; niveau exact selon la preuve acceptée par le programme",
+    sourceUrl:
+      "https://www.tum.de/en/studies/degree-programs/detail/informatics-bachelor-of-science-bsc",
+    verifiedAt: "2026-09-26",
+    specialties: ["computer_engineering"],
+  },
+];
+
+const SAARBRUECKEN_ENGINEERING_OPTIONS: VerifiedAcademicOption[] = [
+  {
+    institution: "Saarland University",
+    programme: "Computer Science (English)",
+    degree: "B.Sc.",
+    city: "Sarrebruck",
+    teachingLanguage: "Anglais",
+    languageRequirement: "Anglais B2 recommandé ; preuve acceptée selon la voie de candidature",
+    sourceUrl:
+      "https://www.uni-saarland.de/en/study/programmes/bachelor/computer-science.html",
+    verifiedAt: "2026-09-26",
+    specialties: ["computer_engineering"],
+  },
+];
+
+const VERIFIED_ENGINEERING_CATALOGUE: Record<string, VerifiedAcademicOption[]> = {
+  Aachen: AACHEN_ENGINEERING_OPTIONS,
+  Munich: MUNICH_ENGINEERING_OPTIONS,
+  Sarrebruck: SAARBRUECKEN_ENGINEERING_OPTIONS,
+};
 
 export type VerifiedProgrammeSet = {
   city: string;
   selectionReason: "preferred_city" | "recommended_city";
   options: VerifiedAcademicOption[];
+  catalogueGap: boolean;
 };
+
+function optionsForSpecialty(city: string, specialty: string) {
+  const candidates = VERIFIED_ENGINEERING_CATALOGUE[city] || [];
+  if (!specialty || specialty === "undecided" || specialty === "other") {
+    return candidates.slice(0, 3);
+  }
+  return candidates
+    .filter((option) => option.specialties.includes(specialty))
+    .slice(0, 3);
+}
+
+function recommendedEngineeringCity(specialty: string) {
+  if (specialty === "computer_engineering") return "Munich";
+  return "Aachen";
+}
 
 export function getVerifiedProgrammeSet(
   answers: PublicOrientationAnswers,
@@ -130,23 +186,37 @@ export function getVerifiedProgrammeSet(
   const wantsEngineering = answers.targetField === "Ingénierie";
   if (!wantsBachelor || !wantsEngineering) return null;
 
-  if (answers.preferredCities.includes("Aachen")) {
+  const specialty = answers.engineeringSpecialty;
+
+  if (answers.preferredCities.length > 0) {
+    for (const city of answers.preferredCities) {
+      const options = optionsForSpecialty(city, specialty);
+      if (options.length > 0) {
+        return {
+          city,
+          selectionReason: "preferred_city",
+          options,
+          catalogueGap: false,
+        };
+      }
+    }
+
     return {
-      city: "Aachen",
+      city: answers.preferredCities[0],
       selectionReason: "preferred_city",
-      options: AACHEN_ENGINEERING_OPTIONS,
+      options: [],
+      catalogueGap: true,
     };
   }
 
-  if (answers.preferredCities.length === 0) {
-    return {
-      city: "Aachen",
-      selectionReason: "recommended_city",
-      options: AACHEN_ENGINEERING_OPTIONS,
-    };
-  }
-
-  return null;
+  const city = recommendedEngineeringCity(specialty);
+  const options = optionsForSpecialty(city, specialty);
+  return {
+    city,
+    selectionReason: "recommended_city",
+    options,
+    catalogueGap: options.length === 0,
+  };
 }
 
 export function getVerifiedAcademicOptions(
