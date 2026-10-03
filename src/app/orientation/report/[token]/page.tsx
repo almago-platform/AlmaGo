@@ -173,7 +173,7 @@ export default async function OrientationReportPage({
   const signupHref = `/signup?orientation_token=${encodeURIComponent(token)}`;
 
   return (
-    <div className="orientation-print-page min-h-screen bg-[var(--background)] text-[var(--foreground)]" dir={direction}>
+    <div className="orientation-print-page orientation-color-theme min-h-screen bg-[var(--background)] text-[var(--foreground)]" dir={direction}>
       <header className="orientation-print-hide border-b border-[var(--border)] bg-[var(--surface)]">
         <div className="mx-auto flex min-h-16 max-w-5xl items-center justify-between gap-4 px-4 sm:px-6">
           <Link href="/" className="inline-flex items-center">
