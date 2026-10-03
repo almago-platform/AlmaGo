@@ -116,7 +116,7 @@ body {
 }
 
 .orientation-unified-shell .orientation-chapter {
-  border-top: 1px solid var(--border);
+  border-top: 1px solid #e7ded3;
 }
 
 .orientation-unified-shell .orientation-chapter:first-of-type {

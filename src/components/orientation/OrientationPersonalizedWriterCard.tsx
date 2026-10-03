@@ -1057,14 +1057,14 @@ export function OrientationPersonalizedWriterCard({
 
           return (
             <article
-              className={`mt-5 overflow-hidden rounded-[var(--radius-panel)] border bg-[var(--surface)] shadow-[var(--shadow-card)] ${
+              className={`mt-5 border-s-2 ps-4 sm:ps-5 lg:ps-6 ${
                 outlook.level === "strong"
-                  ? "border-[var(--success-border)]"
-                  : "border-[var(--brand-border)]"
+                  ? "border-[var(--success)]"
+                  : "border-[var(--brand)]"
               }`}
             >
-              <div className="grid lg:grid-cols-[minmax(0,1.18fr)_minmax(19rem,0.82fr)] lg:items-start">
-                <div className="p-5 sm:p-6 lg:p-7">
+              <div className="grid gap-5 lg:grid-cols-[minmax(0,1.2fr)_minmax(19rem,0.8fr)] lg:items-start lg:gap-8">
+                <div className="py-2 pe-1 sm:py-3 lg:pe-2">
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div className="min-w-0">
                       <p className="text-xs font-bold text-[var(--brand-strong)]">
@@ -1106,7 +1106,7 @@ export function OrientationPersonalizedWriterCard({
                     <p className="mt-2 text-sm leading-6 text-[var(--foreground)]">{outlook.cleanWhy}</p>
                   </div>
 
-                  <div className="mt-5 border-t border-[var(--border)] pt-4">
+                  <div className="mt-5 pt-1">
                     <p className="text-xs font-bold uppercase tracking-[0.08em] text-[var(--brand-strong)]">{t.checking}</p>
                     <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
                       {featuredOption.verificationNote}
@@ -1114,7 +1114,7 @@ export function OrientationPersonalizedWriterCard({
                   </div>
                 </div>
 
-                <div className="orientation-tone-facts border-t border-[var(--border)] p-5 sm:p-6 lg:m-5 lg:ms-0 lg:self-start lg:rounded-[var(--radius-control)] lg:border">
+                <div className="orientation-tone-facts rounded-[var(--radius-control)] p-4 sm:p-5 lg:self-start">
                   <p className="text-xs font-bold uppercase tracking-[0.08em] text-[var(--accent-strong)]">
                     {t.confirmed}
                   </p>
@@ -1125,7 +1125,7 @@ export function OrientationPersonalizedWriterCard({
                         return (
                           <div
                             key={fact.field}
-                            className="rounded-[var(--radius-control)] bg-[var(--surface)] px-3.5 py-3 ring-1 ring-inset ring-[var(--border)]"
+                            className="border-b border-[var(--border)] px-1 py-3 last:border-b-0"
                           >
                             <dt className="text-[10px] font-bold uppercase tracking-[0.06em] text-[var(--accent-strong)]">
                               {parts.label}
