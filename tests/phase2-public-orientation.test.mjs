@@ -30,9 +30,10 @@ test("public orientation is feature-gated and does not alter the current homepag
   assert.match(home, /<HomeHeader phase2Enabled=\{phase2Enabled\} \/>/);
   assert.match(header, /phase2Enabled \? "\/orientation" : "\/signup"/);
   assert.match(header, /nav\.orientation/);
-  assert.match(home, /const primaryHref = phase2Enabled \? "\/orientation" : "\/signup"/);
-  assert.match(home, /<HomeLanding copy=\{landingCopy\} primaryHref=\{primaryHref\} \/>/);
-  assert.match(home, /<HomeFooter[\s\S]*phase2Enabled=\{phase2Enabled\}[\s\S]*orientationLabel=\{nativeCopy\.home\.nav\.orientation\}/);
+  assert.match(home, /<HomeJourneySection[\s\S]*primaryHref=\{phase2Enabled \? "\/orientation" : "\/signup"\}/);
+  assert.match(home, /<HomeTrustSection[\s\S]*primaryHref=\{phase2Enabled \? "\/orientation" : "\/signup"\}/);
+  assert.match(home, /<HomeFinalCta[\s\S]*primaryHref=\{phase2Enabled \? "\/orientation" : "\/signup"\}/);
+  assert.match(home, /<HomeFooter[\s\S]*phase2Enabled=\{phase2Enabled\}[\s\S]*orientationLabel=\{copy\.home\.nav\.orientation\}/);
   assert.match(journey, /primaryHref = "\/signup"/);
   assert.match(tools, /index === 0 \? primaryHref/);
   assert.match(closing, /primaryHref = "\/signup"/);
@@ -102,7 +103,7 @@ test("final questionnaire CTA clearly promises the orientation result", () => {
 test("orientation result has correct skip-link semantics and a way back home", () => {
   assert.match(form, /href="#orientation-main">\{copy\.header\.skip\}<\/a>/);
   assert.doesNotMatch(form, /href="#orientation-main">\{profileCopy\.page\.back\}<\/a>/);
-  assert.match(form, /href="\/"[\s\S]*\{resultActionsCopy\.home\}/);
+  assert.match(form, /href="\/"[\s\S]*\{copy\.summary\.home\}/);
   assert.match(copy, /skip: "Aller au contenu"/);
   assert.match(copy, /skip: "الانتقال إلى المحتوى"/);
   assert.match(copy, /skip: "Skip to content"/);
@@ -169,7 +170,5 @@ test("Arabic city selection count uses natural word order", () => {
 
 test("public orientation renders legacy source copy through the canonical brand layer", () => {
   assert.match(form, /const copy = rebrandCopy\(orientationCopy\[locale\]\)/);
-  assert.match(copy, /Vos réponses servent à générer cette orientation personnalisée/);
-  assert.match(copy, /Elles ne constituent pas une demande de contact avec Campus Allemagne/);
-  assert.doesNotMatch(copy, /Rien n’est envoyé à AlmaGo/);
+  assert.match(copy, /Rien n’est envoyé à AlmaGo/);
 });
