@@ -672,6 +672,15 @@ export function OrientationPersonalizedWriterCard({
   ];
   const languageChoices = guidance?.languageChoices.map((choice) => splitGuidanceChoice(choice, locale)) || [];
   const journeyStep = determineJourneyStep(result, answers);
+  const optionOutlooks = new Map(
+    content.studyOptions.map((option) => [
+      option.optionId,
+      admissionOutlook(option.whyItFits, locale),
+    ]),
+  );
+  const strongOutlookCount = [...optionOutlooks.values()].filter(
+    (outlook) => outlook.level === "strong",
+  ).length;
 
   return (
     <article className="space-y-7 sm:space-y-8">
@@ -705,18 +714,39 @@ export function OrientationPersonalizedWriterCard({
 
       <section
         aria-labelledby="orientation-summary"
-        className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface-subtle)] px-4 py-4 sm:px-5"
+        className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4 sm:p-5"
       >
         <div className="max-w-4xl">
           <h4 id="orientation-summary" className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--brand-strong)]">
             {t.summaryTitle}
           </h4>
-          <p className="mt-1.5 text-base font-semibold leading-6 text-[var(--foreground)]">
+          <p className="mt-1.5 max-w-3xl text-base font-semibold leading-6 text-[var(--foreground)]">
             {t.summaryLead}
           </p>
-          <p className="mt-1.5 text-sm leading-6 text-[var(--muted)]">
+          <p className="mt-1.5 max-w-3xl text-sm leading-6 text-[var(--muted)]">
             {t.summaryText}
           </p>
+
+          <div className="mt-4 grid gap-2 sm:grid-cols-3">
+            <div className="rounded-[var(--radius-control)] bg-[var(--surface)] p-3.5 ring-1 ring-inset ring-[var(--border)]">
+              <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-emerald-700">{t.summarySignal}</p>
+              <p className="mt-1.5 text-sm font-semibold leading-5 text-[var(--foreground)]">
+                {summarySignalText(locale, strongOutlookCount, content.studyOptions.length)}
+              </p>
+            </div>
+            <div className="rounded-[var(--radius-control)] bg-[var(--surface)] p-3.5 ring-1 ring-inset ring-[var(--border)]">
+              <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-[var(--brand-strong)]">{t.summaryAction}</p>
+              <p className="mt-1.5 text-sm font-semibold leading-5 text-[var(--foreground)]">
+                {content.mainPriority.title}
+              </p>
+            </div>
+            <div className="rounded-[var(--radius-control)] bg-[var(--foreground)] p-3.5 text-white">
+              <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-white/[0.55]">{t.summaryCampus}</p>
+              <p className="mt-1.5 text-sm font-medium leading-5 text-white/[0.86]">
+                {t.summaryCampusText}
+              </p>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -730,16 +760,20 @@ export function OrientationPersonalizedWriterCard({
           </span>
         </div>
 
-        <div className="mt-4 grid items-start gap-3 lg:grid-cols-2">
+        <div className="mt-4 grid items-stretch gap-3 lg:grid-cols-2">
           {content.studyOptions.map((option) => {
             const selected = result.selected.find((item) => item.optionId === option.optionId);
             const status = selected ? optionStatus(selected, locale) : null;
-            const facts = selected ? highlightedFacts(selected) : [];
+            const facts = selected ? highlightedFacts(selected, answers) : [];
+            const outlook = optionOutlooks.get(option.optionId) || {
+              level: null,
+              cleanWhy: option.whyItFits,
+            };
 
             return (
               <article
                 key={option.optionId}
-                className="professional-hover rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-4 shadow-[0_4px_14px_rgba(0,0,0,0.035)]"
+                className="professional-hover flex h-full flex-col rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-4 shadow-[0_4px_14px_rgba(0,0,0,0.035)] sm:p-5"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
@@ -758,46 +792,58 @@ export function OrientationPersonalizedWriterCard({
                   ) : null}
                 </div>
 
+                {outlook.level ? (
+                  <div
+                    className={`mt-4 rounded-[var(--radius-control)] px-3.5 py-3 ring-1 ring-inset ${
+                      outlook.level === "strong"
+                        ? "bg-emerald-50 text-emerald-950 ring-emerald-200"
+                        : "bg-blue-50 text-blue-950 ring-blue-200"
+                    }`}
+                  >
+                    <p className="text-[10px] font-bold uppercase tracking-[0.08em] opacity-70">
+                      {t.outlookEyebrow}
+                    </p>
+                    <p className="mt-1 text-base font-bold leading-5">
+                      {outlook.level === "strong" ? t.outlookStrong : t.outlookGood}
+                    </p>
+                    <p className="mt-1 text-xs leading-5 opacity-75">{t.outlookNote}</p>
+                  </div>
+                ) : null}
+
                 {facts.length ? (
                   <div className="mt-4">
                     <p className="text-xs font-semibold text-[var(--muted)]">{t.confirmed}</p>
-                    <div className="mt-2 flex flex-wrap gap-2">
-                      {facts.map((fact) => (
-                        <span
-                          key={fact.field}
-                          title={`${factLabels[locale][fact.field]}: ${formatFactValue(fact.value, locale)}`}
-                          className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-semibold text-emerald-800 ring-1 ring-inset ring-emerald-100"
-                        >
-                          <span aria-hidden="true">✓</span>
-                          {compactFactLabel(fact, locale)}
-                        </span>
-                      ))}
-                    </div>
+                    <dl className="mt-2 grid gap-2 sm:grid-cols-2">
+                      {facts.map((fact) => {
+                        const parts = decisionFactParts(fact, locale);
+                        return (
+                          <div
+                            key={fact.field}
+                            className="min-w-0 rounded-[var(--radius-control)] bg-emerald-50/70 px-3 py-2.5 ring-1 ring-inset ring-emerald-100"
+                          >
+                            <dt className="text-[10px] font-bold uppercase tracking-[0.06em] text-emerald-800">
+                              {parts.label}
+                            </dt>
+                            <dd className="mt-0.5 break-words text-xs font-semibold leading-5 text-emerald-950">
+                              {parts.value}
+                            </dd>
+                          </div>
+                        );
+                      })}
+                    </dl>
                   </div>
                 ) : null}
 
                 <div className="mt-4">
                   <p className="text-xs font-semibold text-[var(--muted)]">{t.why}</p>
-                  <p className="mt-1.5 text-sm leading-6">{option.whyItFits}</p>
+                  <p className="mt-1.5 text-sm leading-6">{outlook.cleanWhy}</p>
                 </div>
 
-                <div className="mt-4 border-t border-[var(--border)] pt-3">
-                  <div className="hidden sm:block">
-                    {selected?.overallStatus === "verified" ? (
-                      <p className="text-xs font-semibold text-blue-800">{t.checking}</p>
-                    ) : null}
-                    <p className={`${selected?.overallStatus === "verified" ? "mt-1.5" : ""} text-sm leading-6 text-[var(--muted)]`}>
-                      {option.verificationNote}
-                    </p>
-                  </div>
-                  <details className="sm:hidden">
-                    <summary className="cursor-pointer text-xs font-semibold text-blue-800">
-                      {selected?.overallStatus === "verified" ? t.checking : status?.label || t.checking}
-                    </summary>
-                    <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
-                      {option.verificationNote}
-                    </p>
-                  </details>
+                <div className="mt-auto border-t border-[var(--border)] pt-4">
+                  <p className="text-xs font-semibold text-blue-800">{t.checking}</p>
+                  <p className="mt-1.5 text-sm leading-6 text-[var(--muted)]">
+                    {option.verificationNote}
+                  </p>
                 </div>
               </article>
             );
