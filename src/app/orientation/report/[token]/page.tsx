@@ -33,6 +33,7 @@ import {
   degreeOptions,
   diplomaOptions,
   engineeringSpecialtyOptions,
+  scienceSpecialtyOptions,
   languageLevelOptions,
   studyFieldOptions,
   studyLanguageOptions,
