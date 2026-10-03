@@ -47,6 +47,7 @@ const copy = {
     why: "Pourquoi elle ressort pour vous",
     confirmed: "Repères vérifiés pour votre décision",
     checking: "Ce que nous vérifions encore",
+    checkingDetails: "Voir ce que nous vérifions",
     verifiedStatus: "Infos vérifiées",
     progressStatus: "Vérification en cours",
     unknownStatus: "À clarifier",
@@ -113,6 +114,7 @@ const copy = {
     why: "لماذا يبرز هذا المسار لك",
     confirmed: "معلومات موثقة تساعدك على الاختيار",
     checking: "ما زال يحتاج إلى تأكيد",
+    checkingDetails: "عرض ما نتحقق منه",
     verifiedStatus: "موثّق",
     progressStatus: "التحقق جارٍ",
     unknownStatus: "بحاجة إلى توضيح",
@@ -179,6 +181,7 @@ const copy = {
     why: "Why it stands out for you",
     confirmed: "Verified decision points",
     checking: "Still to confirm",
+    checkingDetails: "See what we are checking",
     verifiedStatus: "Info verified",
     progressStatus: "Verification in progress",
     unknownStatus: "To clarify",
@@ -245,6 +248,7 @@ const copy = {
     why: "Warum sie für dich auffällt",
     confirmed: "Geprüfte Entscheidungspunkte",
     checking: "Noch zu klären",
+    checkingDetails: "Ansehen, was wir noch prüfen",
     verifiedStatus: "Infos geprüft",
     progressStatus: "Prüfung läuft",
     unknownStatus: "Zu klären",
@@ -979,10 +983,12 @@ export function OrientationPersonalizedWriterCard({
 
                     <p className="mt-4 text-sm leading-6 text-[var(--foreground)]">{outlook.cleanWhy}</p>
 
-                    <div className="mt-auto border-t border-[var(--border)] pt-3">
-                      <p className="text-[10px] font-bold uppercase tracking-[0.06em] text-[var(--brand-strong)]">{t.checking}</p>
-                      <p className="mt-1.5 text-xs leading-5 text-[var(--muted)]">{option.verificationNote}</p>
-                    </div>
+                    <details className="mt-auto border-t border-[var(--border)] pt-3">
+                      <summary className="cursor-pointer text-xs font-semibold text-[var(--brand-strong)]">
+                        {t.checkingDetails}
+                      </summary>
+                      <p className="mt-2 text-xs leading-5 text-[var(--muted)]">{option.verificationNote}</p>
+                    </details>
                   </article>
                 );
               })}
