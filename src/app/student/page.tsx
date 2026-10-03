@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { redirect } from "next/navigation";
 import { Badge } from "@/components/ui/Badge";
 import { ButtonLink } from "@/components/ui/ButtonLink";
@@ -448,7 +449,7 @@ function CockpitPanel({
   title: string;
   href: string;
   cta: string;
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   return (
     <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface-raised)] p-5 shadow-[var(--shadow-xs)]">
@@ -461,7 +462,7 @@ function CockpitPanel({
   );
 }
 
-function EmptyState({ children }: { children: React.ReactNode }) {
+function EmptyState({ children }: { children: ReactNode }) {
   return (
     <p className="rounded-[var(--radius-control)] border border-dashed border-[var(--border)] bg-[var(--surface-subtle)] px-3 py-5 text-sm leading-6 text-[var(--muted)]">
       {children}
