@@ -50,6 +50,49 @@ body {
   line-height: 1.5;
 }
 
+.orientation-color-theme {
+  --background: #e9dfd1;
+  --surface: #fbf4ea;
+  --surface-muted: #d7c9b7;
+  --surface-subtle: #e9ded1;
+  --brand-soft: #f7dfe3;
+  --brand-border: #e99aa7;
+  --accent-light: #f9e8af;
+  --muted: #655f5a;
+  --border: #d2c2ae;
+  --border-strong: #bca990;
+  background:
+    radial-gradient(circle at 8% 10%, rgba(252, 181, 10, 0.12), transparent 28rem),
+    radial-gradient(circle at 92% 34%, rgba(219, 4, 35, 0.07), transparent 32rem),
+    linear-gradient(180deg, #f3ebdf 0%, #e8ddcf 52%, #f1e8dd 100%);
+}
+
+.orientation-color-theme > header {
+  background: rgba(251, 244, 234, 0.96);
+}
+
+.orientation-tone-summary {
+  background:
+    linear-gradient(135deg, rgba(247, 223, 227, 0.28) 0%, transparent 42%),
+    #e9ded1;
+}
+
+.orientation-tone-facts {
+  background:
+    linear-gradient(160deg, rgba(249, 232, 175, 0.34) 0%, transparent 52%),
+    #e4d8ca;
+}
+
+.orientation-tone-priority {
+  background:
+    linear-gradient(135deg, rgba(252, 181, 10, 0.07) 0%, transparent 46%),
+    #e9ddd0;
+}
+
+.orientation-tone-actions {
+  background: #f3e9dc;
+}
+
 a, button, input, select, textarea { -webkit-tap-highlight-color: transparent; }
 
 :focus-visible {
