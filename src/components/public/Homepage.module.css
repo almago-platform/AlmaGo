@@ -5779,3 +5779,36 @@
     margin-inline: 0;
   }
 }
+
+
+/* Header readability: keep desktop navigation labels on a single line. */
+@media (min-width: 1200px) {
+  .headerInner {
+    gap: 18px;
+  }
+
+  .desktopNav {
+    flex: 1 1 auto;
+    justify-content: center;
+    gap: clamp(14px, 1.35vw, 24px);
+    font-size: 12.5px;
+    white-space: nowrap;
+  }
+
+  .desktopNav a,
+  .login,
+  .headerCta {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+
+  .headerActions {
+    flex: 0 0 auto;
+    gap: 14px;
+    white-space: nowrap;
+  }
+
+  .headerCta {
+    min-width: max-content;
+  }
+}

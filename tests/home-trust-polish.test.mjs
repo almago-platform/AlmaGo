@@ -14,7 +14,7 @@ test("public trust framing keeps AlmaGo independent and official decisions exter
   assert.ok(nativeCopy.includes("Les admissions, visas et autres décisions officielles appartiennent"));
   assert.ok(nativeCopy.includes('"Vérifier une information"'));
   assert.ok(closing.includes("footer.disclaimer"));
-  assert.ok(page.includes("tools={copy.home.tools}"));
+  assert.ok(page.includes("<HomeLanding copy={landingCopy} primaryHref={primaryHref} />"));
   assert.ok(tools.includes("tools.items.map"));
 });
 
