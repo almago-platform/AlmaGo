@@ -240,7 +240,7 @@ export function AppShell({
       <div className="student-shell-content lg:pl-[15.5rem]">
         {role === "student" ? (
           <>
-            <header className="sticky top-0 z-30 border-b border-[var(--border)] bg-[var(--surface)]/95 pt-[env(safe-area-inset-top)] shadow-[var(--shadow-[var(--shadow-xs)])] backdrop-blur lg:hidden">
+            <header className="sticky top-0 z-30 border-b border-[var(--border)] bg-[var(--surface)]/95 pt-[env(safe-area-inset-top)] shadow-[var(--shadow-sm)] backdrop-blur lg:hidden">
               <div className="flex min-h-16 items-center justify-between gap-3 px-3 py-2.5 min-[360px]:px-4">
                 <Link href="/student" onClick={() => setMobileMenuOpen(false)} className="flex min-w-0 items-center gap-2.5" aria-label={shellHomeAria}>
                   <span className="grid h-10 w-10 shrink-0 place-items-center"><BrandLogo symbolOnly className="h-10 w-10 object-contain" /></span>
@@ -331,7 +331,7 @@ export function AppShell({
           </>
         ) : (
           <>
-            <header className="sticky top-0 z-30 border-b border-[var(--border)] bg-[var(--surface)]/95 pt-[env(safe-area-inset-top)] shadow-[var(--shadow-[var(--shadow-xs)])] backdrop-blur lg:hidden">
+            <header className="sticky top-0 z-30 border-b border-[var(--border)] bg-[var(--surface)]/95 pt-[env(safe-area-inset-top)] shadow-[var(--shadow-sm)] backdrop-blur lg:hidden">
               <div className="flex min-h-16 items-center justify-between gap-3 px-3 py-2.5 min-[360px]:px-4">
                 <Link href="/admin" onClick={() => setMobileMenuOpen(false)} className="flex min-w-0 items-center gap-2.5" aria-label={shellHomeAria}>
                   <span className="grid h-10 w-10 shrink-0 place-items-center"><BrandLogo symbolOnly className="h-10 w-10 object-contain" /></span>
