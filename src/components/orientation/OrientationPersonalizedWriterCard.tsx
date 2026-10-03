@@ -791,7 +791,7 @@ export function OrientationPersonalizedWriterCard({
 
           <div className="mt-4 grid gap-2 sm:grid-cols-3">
             <div className="rounded-[var(--radius-control)] bg-[var(--surface)] p-3.5 ring-1 ring-inset ring-[var(--border)]">
-              <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-emerald-700">{t.summarySignal}</p>
+              <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-[var(--accent-strong)]">{t.summarySignal}</p>
               <p className="mt-1.5 text-sm font-semibold leading-5 text-[var(--foreground)]">
                 {summarySignalText(locale, strongOutlookCount, content.studyOptions.length)}
               </p>
@@ -1033,8 +1033,9 @@ export function OrientationPersonalizedWriterCard({
 
         {content.languagePlan.show && languageChoices.length ? (
           <div className="mt-5 border-t border-[var(--border)] pt-4">
-            <p className="text-xs font-semibold text-[var(--muted)]">{t.languagePaths}</p>
-            <div className="mt-2 grid gap-2 sm:grid-cols-3">
+            <p className="text-xs font-bold uppercase tracking-[0.08em] text-[var(--accent-strong)]">{t.languagePaths}</p>
+            <p className="mt-1.5 max-w-3xl text-sm leading-6 text-[var(--muted)]">{t.languageIntro}</p>
+            <div className="mt-3 grid gap-2 sm:grid-cols-3">
               {languageChoices.map((choice) => (
                 <div
                   key={choice.title}
@@ -1097,7 +1098,7 @@ export function OrientationPersonalizedWriterCard({
                 <div
                   className={`h-1.5 rounded-full ${
                     completed
-                      ? "bg-emerald-500"
+                      ? "bg-[var(--accent)]"
                       : current
                         ? "bg-[var(--brand)]"
                         : "bg-[var(--border)]"
@@ -1107,7 +1108,7 @@ export function OrientationPersonalizedWriterCard({
                   <span
                     className={`flex size-7 shrink-0 items-center justify-center rounded-full text-[11px] font-bold ${
                       completed
-                        ? "bg-emerald-100 text-emerald-800"
+                        ? "bg-[var(--accent-light)] text-[var(--accent-strong)]"
                         : current
                           ? "bg-[var(--brand)] text-white"
                           : "bg-[var(--surface-subtle)] text-[var(--muted)]"
@@ -1137,13 +1138,13 @@ export function OrientationPersonalizedWriterCard({
                 {index < t.journeySteps.length - 1 ? (
                   <span
                     aria-hidden="true"
-                    className={`absolute start-[0.83rem] top-7 h-[calc(100%-0.25rem)] w-px ${index < journeyStep ? "bg-emerald-300" : "bg-[var(--border)]"}`}
+                    className={`absolute start-[0.83rem] top-7 h-[calc(100%-0.25rem)] w-px ${index < journeyStep ? "bg-[var(--accent)]" : "bg-[var(--border)]"}`}
                   />
                 ) : null}
                 <span
                   className={`relative z-10 flex size-6 shrink-0 items-center justify-center rounded-full text-[11px] font-bold ${
                     completed
-                      ? "bg-emerald-100 text-emerald-800"
+                      ? "bg-[var(--accent-light)] text-[var(--accent-strong)]"
                       : current
                         ? "bg-[var(--brand)] text-white"
                         : "bg-[var(--surface-subtle)] text-[var(--muted)] ring-1 ring-inset ring-[var(--border)]"
