@@ -15,6 +15,10 @@ const form = readFileSync(
   "src/components/orientation/PublicOrientationForm.tsx",
   "utf8",
 );
+const profileOptions = readFileSync(
+  "src/lib/student/profile-options.ts",
+  "utf8",
+);
 const writer = readFileSync(
   "src/lib/orientation-engine/writer/core.ts",
   "utf8",
@@ -105,18 +109,23 @@ test("Master specialization gets a dedicated discovery query", () => {
 test("public form distinguishes current, interrupted and completed university study", () => {
   for (const token of [
     "higherEducationStatusOptions",
-    "currently_enrolled",
-    "interrupted",
-    "completed",
     "currentStudyField",
     "universitySemesters",
     "studyIntentOptions",
-    "transfer_credits",
-    "restart_bachelor",
-    "switch_field",
     "targetSpecialization",
   ]) {
     assert.match(form, new RegExp(token));
+  }
+
+  for (const token of [
+    "currently_enrolled",
+    "interrupted",
+    "completed",
+    "transfer_credits",
+    "restart_bachelor",
+    "switch_field",
+  ]) {
+    assert.match(profileOptions, new RegExp(token));
   }
 });
 
