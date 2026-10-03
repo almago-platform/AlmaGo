@@ -72,7 +72,8 @@ test("A2 never promotes discovered programmes beyond research_candidate", () => 
 
 test("A2 is bounded, deduplicated, timed and instrumented for cost", () => {
   assert.match(provider, /DISCOVERY_MAX_SEARCH_QUERIES/);
-  assert.match(provider, /MAX_PROVIDER_REQUESTS = DISCOVERY_MAX_SEARCH_QUERIES \+ 1/);
+  assert.match(provider, /maxQueries = DISCOVERY_MAX_SEARCH_QUERIES/);
+  assert.match(provider, /maxProviderRequests = queryLimit \+ 1/);
   assert.match(provider, /QUERY_TIMEOUT_MS = 12_000/);
   assert.match(provider, /dedupeOrientationResearchCandidates/);
   assert.match(types, /webSearchCalls: number/);
