@@ -329,9 +329,9 @@ const fallbackCopy = {
       }
       return "Votre projet d’études en Allemagne peut commencer à prendre forme dès maintenant ; nous allons avancer étape par étape.";
     },
-    projectReady: "Votre projet est suffisamment clair pour que nous commencions à structurer les prochaines étapes et à consolider les pistes universitaires adaptées.",
-    projectPartial: "Nous avons déjà identifié des pistes utiles. Notre équipe complète maintenant les informations manquantes avant de resserrer la sélection.",
-    projectEmpty: "Nous allons d’abord consolider les informations académiques essentielles afin de construire une sélection universitaire fiable.",
+    projectReady: "Vous avez franchi une étape importante ; Campus Allemagne va maintenant organiser concrètement la suite de votre projet.",
+    projectPartial: "La base de votre projet est déjà posée ; nous complétons maintenant les éléments manquants pour organiser la suite avec vous.",
+    projectEmpty: "Votre projet peut déjà avancer ; nous allons d’abord clarifier avec vous les éléments académiques essentiels.",
     priorityTitle: "Votre prochaine action",
     priorityText: "Concentrez-vous sur ce qui dépend directement de vous. Campus Allemagne garde la vue d’ensemble et fait avancer le reste du parcours en parallèle.",
     priorityStep: "Avancez sur cette étape ; nous poursuivons les vérifications et la préparation du dossier.",
@@ -371,9 +371,9 @@ const fallbackCopy = {
       }
       return "يمكن لمشروعك للدراسة في ألمانيا أن يبدأ من الآن، وسنتقدم معك خطوة بخطوة.";
     },
-    projectReady: "مشروعك واضح بما يكفي لنبدأ في تنظيم الخطوات القادمة وتثبيت الخيارات الجامعية المناسبة.",
-    projectPartial: "حددنا بالفعل خيارات مفيدة، وفريقنا يكمل الآن المعلومات الناقصة قبل تضييق الاختيار.",
-    projectEmpty: "سنثبت أولًا المعلومات الأكاديمية الأساسية حتى نبني اختيارًا جامعيًا موثوقًا.",
+    projectReady: "لقد أنجزت خطوة مهمة؛ وسيقوم Campus Allemagne الآن بتنظيم بقية مشروعك بشكل عملي.",
+    projectPartial: "أساس مشروعك موجود بالفعل؛ ونكمل الآن العناصر الناقصة حتى ننظم معك الخطوات التالية.",
+    projectEmpty: "يمكن لمشروعك أن يتقدم من الآن؛ وسنوضح معك أولًا العناصر الأكاديمية الأساسية.",
     priorityTitle: "خطوتك التالية",
     priorityText: "ركّز على ما يعتمد عليك مباشرة، بينما يتولى Campus Allemagne متابعة الصورة الكاملة ودفع بقية المسار إلى الأمام.",
     priorityStep: "تقدّم في هذه الخطوة، ونحن نواصل التحقق وتنظيم الملف.",
@@ -413,9 +413,9 @@ const fallbackCopy = {
       }
       return "Your Germany study project can start taking shape now, one clear step at a time.";
     },
-    projectReady: "Your project is clear enough for us to structure the next steps and consolidate suitable university paths.",
-    projectPartial: "We have already identified useful paths. Our team is completing the missing information before narrowing the shortlist.",
-    projectEmpty: "We will first consolidate the essential academic information so we can build a reliable university shortlist.",
+    projectReady: "You have already crossed an important milestone; Campus Allemagne will now organise the next part of your project.",
+    projectPartial: "The foundation of your project is already in place; we are completing the missing pieces so we can organise the next steps with you.",
+    projectEmpty: "Your project can already move forward; we will first clarify the essential academic elements with you.",
     priorityTitle: "Your next action",
     priorityText: "Focus on what depends directly on you. Campus Allemagne keeps the full picture under control and moves the rest of the process forward in parallel.",
     priorityStep: "Move this step forward while we continue the checks and file preparation.",
@@ -455,9 +455,9 @@ const fallbackCopy = {
       }
       return "Dein Studienprojekt für Deutschland kann jetzt Gestalt annehmen – Schritt für Schritt.";
     },
-    projectReady: "Dein Projekt ist klar genug, damit wir die nächsten Schritte strukturieren und passende Hochschuloptionen festigen können.",
-    projectPartial: "Wir haben bereits sinnvolle Optionen gefunden. Unser Team ergänzt jetzt die fehlenden Informationen, bevor wir die Auswahl weiter eingrenzen.",
-    projectEmpty: "Wir klären zuerst die wesentlichen akademischen Informationen, damit wir eine verlässliche Hochschulauswahl aufbauen können.",
+    projectReady: "Du hast bereits einen wichtigen Meilenstein erreicht; Campus Allemagne organisiert jetzt den nächsten Teil deines Projekts.",
+    projectPartial: "Die Grundlage deines Projekts steht bereits; wir ergänzen die fehlenden Punkte und organisieren mit dir die nächsten Schritte.",
+    projectEmpty: "Dein Projekt kann schon jetzt vorankommen; zuerst klären wir mit dir die wesentlichen akademischen Punkte.",
     priorityTitle: "Dein nächster Schritt",
     priorityText: "Konzentriere dich auf das, was direkt von dir abhängt. Campus Allemagne behält den Gesamtprozess im Blick und bringt den Rest parallel voran.",
     priorityStep: "Bringe diesen Schritt voran; wir führen die Prüfungen und die Vorbereitung deines Dossiers weiter.",
