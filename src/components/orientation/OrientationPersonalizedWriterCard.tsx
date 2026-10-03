@@ -67,6 +67,15 @@ const copy = {
     closingEyebrow: "À retenir aujourd’hui",
     closingText: "Ce rapport est notre point de départ. Avant la sélection finale, nous reprenons avec vous les points importants et nous confirmons la stratégie.",
     journey: "Votre parcours vers l’Allemagne",
+    journeyEyebrow: "Votre parcours, étape par étape",
+    journeySubtitle: "Vous voyez immédiatement ce qui est déjà fait, où vous en êtes et ce qui vient ensuite.",
+    journeyCompletedLabel: "étape franchie",
+    journeyCompletedPlural: "étapes franchies",
+    journeyRemainingLabel: "étape restante",
+    journeyRemainingPlural: "étapes restantes",
+    journeyGoal: "Objectif final · Départ",
+    journeyNextAction: "Prochaine action",
+    journeyOpenAction: "Voir ma prochaine étape",
     journeyCurrent: "Étape actuelle",
     journeyCurrentText: [
       "Nous clarifions votre projet et les options qui vous correspondent.",
@@ -134,6 +143,15 @@ const copy = {
     closingEyebrow: "ما يجب أن تتذكره اليوم",
     closingText: "هذا التقرير هو نقطة البداية. قبل الاختيار النهائي، نراجع معك النقاط المهمة ونؤكد معك الخطة الأنسب.",
     journey: "مسارك نحو ألمانيا",
+    journeyEyebrow: "مسارك، خطوة بخطوة",
+    journeySubtitle: "ترى فورًا ما تم إنجازه، أين أنت الآن، وما الذي يأتي بعد ذلك.",
+    journeyCompletedLabel: "مرحلة مكتملة",
+    journeyCompletedPlural: "مراحل مكتملة",
+    journeyRemainingLabel: "مرحلة متبقية",
+    journeyRemainingPlural: "مراحل متبقية",
+    journeyGoal: "الهدف النهائي · المغادرة",
+    journeyNextAction: "الخطوة التالية",
+    journeyOpenAction: "عرض خطوتي التالية",
     journeyCurrent: "المرحلة الحالية",
     journeyCurrentText: [
       "نوضح مشروعك والخيارات المناسبة له.",
@@ -201,6 +219,15 @@ const copy = {
     closingEyebrow: "What to remember today",
     closingText: "This report is our starting point. Before the final selection, we review the important points with you and confirm the strategy.",
     journey: "Your path to Germany",
+    journeyEyebrow: "Your path, step by step",
+    journeySubtitle: "See at a glance what is done, where you are now and what comes next.",
+    journeyCompletedLabel: "step completed",
+    journeyCompletedPlural: "steps completed",
+    journeyRemainingLabel: "step remaining",
+    journeyRemainingPlural: "steps remaining",
+    journeyGoal: "Final goal · Departure",
+    journeyNextAction: "Next action",
+    journeyOpenAction: "View my next step",
     journeyCurrent: "Current stage",
     journeyCurrentText: [
       "We clarify your project and the options that fit it.",
@@ -268,6 +295,15 @@ const copy = {
     closingEyebrow: "Was heute wichtig ist",
     closingText: "Dieser Bericht ist unser Ausgangspunkt. Vor der finalen Auswahl gehen wir die wichtigen Punkte mit dir durch und bestätigen die Strategie.",
     journey: "Dein Weg nach Deutschland",
+    journeyEyebrow: "Dein Weg, Schritt für Schritt",
+    journeySubtitle: "Du siehst sofort, was erledigt ist, wo du jetzt stehst und was als Nächstes kommt.",
+    journeyCompletedLabel: "Schritt abgeschlossen",
+    journeyCompletedPlural: "Schritte abgeschlossen",
+    journeyRemainingLabel: "Schritt übrig",
+    journeyRemainingPlural: "Schritte übrig",
+    journeyGoal: "Endziel · Abreise",
+    journeyNextAction: "Nächste Aktion",
+    journeyOpenAction: "Nächsten Schritt ansehen",
     journeyCurrent: "Aktuelle Etappe",
     journeyCurrentText: [
       "Wir klären dein Projekt und passende Optionen.",
@@ -493,7 +529,7 @@ function optionStatus(
   if (option.overallStatus === "verified") {
     return {
       label: t.verifiedStatus,
-      className: "bg-[var(--accent-light)] text-[var(--accent-strong)] ring-1 ring-inset ring-[var(--accent)]",
+      className: "bg-[var(--success-soft)] text-[var(--success-strong)] ring-1 ring-inset ring-[var(--success-border)]",
     };
   }
   if (option.overallStatus === "needs_review") {
