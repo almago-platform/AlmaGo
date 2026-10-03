@@ -45,3 +45,14 @@ test("V8 removes obsolete trust-polish override block", () => {
   assert.ok(!css.includes("Homepage trust section polish"));
   assert.ok(!css.includes("Homepage density pass — tools + FAQ"));
 });
+
+
+test("premium FAQ uses numbered editorial accordions and a highlighted open state", () => {
+  assert.match(faq, /className=\{s\.faqNumber\}/);
+  assert.match(faq, /className=\{s\.faqToggle\}/);
+  assert.match(css, /\.faqIntro::after/);
+  assert.match(css, /\.faqList details\[open\]/);
+  assert.match(css, /\.faqList details\[open\] \.faqNumber/);
+  assert.match(css, /\.faqList details\[open\] \.faqToggle/);
+  assert.match(css, /@media \(max-width: 899px\)[\s\S]*\.faqGrid[\s\S]*grid-template-columns:\s*1fr/);
+});

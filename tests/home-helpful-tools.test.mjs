@@ -40,3 +40,14 @@ test("helpful tools retain mobile stacked cards", () => {
   assert.ok(css.includes("grid-template-columns: 1fr"));
   assert.ok(css.includes(".helpfulToolCard:focus-visible"));
 });
+
+
+test("premium helpful tools create a clear visual hierarchy", () => {
+  assert.match(section, /className=\{s\.helpfulToolIndex\}/);
+  assert.match(css, /Homepage tools \+ FAQ V2/);
+  assert.match(css, /\.helpfulToolCard:first-child/);
+  assert.match(css, /\.helpfulToolIndex/);
+  assert.match(css, /\.helpfulToolCard:hover/);
+  assert.match(css, /\.helpfulToolCard:nth-child\(2\)::before/);
+  assert.match(css, /@media \(max-width: 767px\)[\s\S]*\.helpfulToolCard[\s\S]*grid-template-columns:\s*62px minmax\(0, 1fr\)/);
+});
