@@ -186,7 +186,7 @@ export default async function OrientationReportPage({
       </header>
 
       <main id="orientation-main" className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-12">
-        <article id="orientation-report" className="orientation-print-report professional-panel rounded-[var(--radius-panel)] p-5 sm:p-7">
+        <article id="orientation-report" className="orientation-print-report">
           <OrientationOnePagePrintReport answers={answers} locale={locale} />
           <div className="orientation-screen-report">
           <div className="orientation-print-only mb-6 items-center justify-between gap-6 border-b border-slate-300 pb-5">
@@ -199,7 +199,7 @@ export default async function OrientationReportPage({
 
           <div className="mb-6 border-b border-[var(--border)] pb-5">
             <p className="eyebrow">{prospectCopy.report.label}</p>
-            <h1 className="mt-2 text-2xl font-bold">{prospectCopy.report.title}</h1>
+            <h1 className="mt-2 text-3xl font-semibold tracking-tight">{prospectCopy.report.title}</h1>
             <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{prospectCopy.report.subtitle}</p>
             <div className="mt-3 text-xs leading-5 text-[var(--muted)]">
               <p>{resumeCopy.created} <bdi dir="auto">{created}</bdi></p>

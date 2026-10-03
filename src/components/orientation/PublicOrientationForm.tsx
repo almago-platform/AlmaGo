@@ -355,7 +355,10 @@ export function PublicOrientationForm({
             </div>
           ) : null}
 
-          <div className="professional-panel rounded-[var(--radius-panel)] p-5 sm:p-7">
+          <div className={step <= 4
+            ? "professional-panel rounded-[var(--radius-panel)] p-5 sm:p-7"
+            : "orientation-result-shell"
+          }>
             {step <= 4 ? (
               <form
                 onSubmit={(event) => {
@@ -617,9 +620,9 @@ export function PublicOrientationForm({
                     <p>{prospectCopy.report.title}</p>
                   </div>
                 </div>
-                <div className="mb-4 border-b border-[var(--border)] pb-4">
+                <div className="mb-6 border-b border-[var(--border)] pb-5">
                   <p className="eyebrow">{prospectCopy.report.label}</p>
-                  <h2 className="mt-2 text-2xl font-bold">{prospectCopy.report.title}</h2>
+                  <h2 className="mt-2 text-3xl font-semibold tracking-tight">{prospectCopy.report.title}</h2>
                   {!isBachelorFirstContact ? (
                     <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{prospectCopy.report.subtitle}</p>
                   ) : null}

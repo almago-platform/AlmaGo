@@ -35,6 +35,15 @@ const copy = {
     outlookGood: "Bon potentiel d’admission",
     outlookNote: "Nous confirmerons cette première estimation avec vous lors de la vérification finale.",
     options: "Les programmes que nous étudions pour votre projet",
+    featuredOption: "La piste qui ressort le plus aujourd’hui",
+    otherOptions: "Autres pistes que nous continuons à étudier",
+    outlookSectionNote: "Cette première estimation nous aide à organiser la shortlist. Nous la reprenons avec vous avant la sélection finale.",
+    languageIntro: "Nous regarderons avec vous la solution de préparation B1 la plus adaptée à votre situation.",
+    togetherLabel: "Ensuite, ensemble",
+    togetherText: "Dossier → candidatures → admission → financement → assurance → visa → logement → arrivée.",
+    humanTitle: "La prochaine décision se prend avec vous.",
+    humanText: "Ce rapport est une première orientation. Un membre de l’équipe Campus Allemagne reprend ensuite avec vous les programmes retenus, les points encore à vérifier et la stratégie avant la sélection finale.",
+    humanCta: "Parler de mon orientation avec Campus Allemagne",
     why: "Pourquoi nous l’étudions",
     confirmed: "Repères vérifiés pour votre décision",
     checking: "Encore à confirmer",
@@ -42,6 +51,7 @@ const copy = {
     progressStatus: "Analyse en cours",
     unknownStatus: "À clarifier",
     roles: "Vous n’avez pas à porter tout le projet seul.",
+    withYouEyebrow: "Campus Allemagne avec vous",
     roleYou: "Votre rôle maintenant",
     roleCampus: "Campus Allemagne avance avec vous",
     roleTogether: "Ce que nous préparons ensuite avec vous",
@@ -91,6 +101,15 @@ const copy = {
     outlookGood: "فرصة قبول جيدة",
     outlookNote: "سنؤكد هذا التقدير الأولي معك خلال المراجعة النهائية.",
     options: "البرامج التي ندرسها لمشروعك",
+    featuredOption: "المسار الذي يبرز أكثر اليوم",
+    otherOptions: "مسارات أخرى نواصل دراستها",
+    outlookSectionNote: "يساعدنا هذا التقدير الأولي على تنظيم القائمة المختصرة، ثم نراجعه معك قبل الاختيار النهائي.",
+    languageIntro: "سنبحث معك عن أفضل طريقة مناسبة لوضعك للتقدم إلى مستوى B1.",
+    togetherLabel: "ثم نتابع معًا",
+    togetherText: "الملف ← التقديمات ← القبول ← التمويل ← التأمين ← التأشيرة ← السكن ← الوصول.",
+    humanTitle: "القرار التالي نتخذه معك.",
+    humanText: "هذا التقرير هو توجيه أولي. بعد ذلك يراجع أحد أعضاء فريق Campus Allemagne معك البرامج المختارة والنقاط التي ما زالت تحتاج إلى تأكيد والخطة قبل الاختيار النهائي.",
+    humanCta: "التحدث عن توجيهي مع Campus Allemagne",
     why: "لماذا ندرس هذا المسار",
     confirmed: "معلومات موثقة تساعدك على الاختيار",
     checking: "ما زال يحتاج إلى تأكيد",
@@ -98,6 +117,7 @@ const copy = {
     progressStatus: "التحليل جارٍ",
     unknownStatus: "بحاجة إلى توضيح",
     roles: "لا تحتاج إلى حمل المشروع كله وحدك.",
+    withYouEyebrow: "Campus Allemagne معك",
     roleYou: "دورك الآن",
     roleCampus: "Campus Allemagne يتقدم معك",
     roleTogether: "ما سنحضّره معك بعد ذلك",
@@ -147,6 +167,15 @@ const copy = {
     outlookGood: "Good admission potential",
     outlookNote: "We will confirm this initial estimate with you during the final review.",
     options: "Programmes we are reviewing for your project",
+    featuredOption: "The path that stands out most today",
+    otherOptions: "Other paths we are continuing to review",
+    outlookSectionNote: "This initial estimate helps us organise the shortlist. We review it with you before the final selection.",
+    languageIntro: "We will look with you for the B1 preparation option that best fits your situation.",
+    togetherLabel: "Then, together",
+    togetherText: "Dossier → applications → admission → funding → insurance → visa → housing → arrival.",
+    humanTitle: "The next decision is made with you.",
+    humanText: "This report is a first orientation. A Campus Allemagne team member then reviews the selected programmes, remaining checks and strategy with you before the final selection.",
+    humanCta: "Talk about my orientation with Campus Allemagne",
     why: "Why we are reviewing it",
     confirmed: "Verified decision points",
     checking: "Still to confirm",
@@ -154,6 +183,7 @@ const copy = {
     progressStatus: "Analysis in progress",
     unknownStatus: "To clarify",
     roles: "You do not have to carry the whole project alone.",
+    withYouEyebrow: "Campus Allemagne with you",
     roleYou: "Your role right now",
     roleCampus: "Campus Allemagne moves forward with you",
     roleTogether: "What we prepare next with you",
@@ -203,6 +233,15 @@ const copy = {
     outlookGood: "Gutes Zulassungspotenzial",
     outlookNote: "Diese erste Einschätzung bestätigen wir mit dir in der abschließenden Prüfung.",
     options: "Studiengänge, die wir für dein Projekt prüfen",
+    featuredOption: "Die Option, die heute am stärksten hervorsticht",
+    otherOptions: "Weitere Optionen, die wir weiter prüfen",
+    outlookSectionNote: "Diese erste Einschätzung hilft uns, die Shortlist zu ordnen. Vor der finalen Auswahl gehen wir sie mit dir durch.",
+    languageIntro: "Wir schauen mit dir, welche B1-Vorbereitung am besten zu deiner Situation passt.",
+    togetherLabel: "Danach gemeinsam",
+    togetherText: "Unterlagen → Bewerbungen → Zulassung → Finanzierung → Versicherung → Visum → Wohnen → Ankunft.",
+    humanTitle: "Die nächste Entscheidung treffen wir mit dir.",
+    humanText: "Dieser Bericht ist eine erste Orientierung. Danach geht ein Mitglied des Campus-Allemagne-Teams die ausgewählten Studiengänge, offenen Punkte und die Strategie mit dir durch.",
+    humanCta: "Meine Orientierung mit Campus Allemagne besprechen",
     why: "Warum wir diese Option prüfen",
     confirmed: "Geprüfte Entscheidungspunkte",
     checking: "Noch zu klären",
@@ -210,6 +249,7 @@ const copy = {
     progressStatus: "Analyse läuft",
     unknownStatus: "Zu klären",
     roles: "Du musst nicht das ganze Projekt allein tragen.",
+    withYouEyebrow: "Campus Allemagne an deiner Seite",
     roleYou: "Deine Rolle jetzt",
     roleCampus: "Campus Allemagne geht mit dir weiter",
     roleTogether: "Was wir als Nächstes mit dir vorbereiten",
@@ -449,13 +489,13 @@ function optionStatus(
   if (option.overallStatus === "verified") {
     return {
       label: t.verifiedStatus,
-      className: "bg-emerald-50 text-emerald-800 ring-1 ring-inset ring-emerald-200",
+      className: "bg-[var(--accent-light)] text-[var(--accent-strong)] ring-1 ring-inset ring-[var(--accent)]",
     };
   }
   if (option.overallStatus === "needs_review") {
     return {
       label: t.progressStatus,
-      className: "bg-blue-50 text-blue-800 ring-1 ring-inset ring-blue-200",
+      className: "bg-[var(--surface-subtle)] text-[var(--foreground)] ring-1 ring-inset ring-[var(--border)]",
     };
   }
   return {
@@ -546,6 +586,23 @@ function decisionFactParts(
   ) {
     const level = text.match(/\b(A1|A2|B1|B2|C1|C2)\b/i)?.[1];
     if (level) text = level.toUpperCase();
+  } else if (fact.field === "application_route") {
+    const direct = /^direct(?:e|ly)?$/i.test(text.trim());
+    if (direct) {
+      text = { fr: "directe", ar: "مباشر", en: "direct", de: "direkt" }[locale];
+    }
+  } else if (fact.field === "tuition_or_semester_fees") {
+    const euro = text.match(/€\s?([\d.,]+)|([\d.,]+)\s?€/i);
+    const amount = euro?.[1] || euro?.[2];
+    if (amount) {
+      const cleanAmount = amount.replace(/,(?=\d{3}\b)/g, ".");
+      text = {
+        fr: `env. ${cleanAmount} € / semestre`,
+        ar: `حوالي ${cleanAmount} € / فصل دراسي`,
+        en: `about €${cleanAmount} / semester`,
+        de: `ca. ${cleanAmount} € / Semester`,
+      }[locale];
+    }
   }
 
   return {
@@ -623,24 +680,24 @@ function splitGuidanceChoice(choice: string, locale: Locale) {
 
   const concise: Record<Locale, Record<string, string>> = {
     fr: {
-      Tunisie: "Nous pouvons vous orienter vers une école de langue partenaire en Tunisie lorsqu’une solution adaptée est réellement disponible.",
-      "En ligne": "Nous pouvons vous proposer une préparation à distance adaptée à votre niveau, lorsqu’elle est disponible.",
-      Allemagne: "Si votre situation le permet, nous pouvons vous orienter vers une école de langue partenaire en Allemagne et vous expliquer quelles démarches sont possibles dans votre situation.",
+      Tunisie: "Préparation avec une solution partenaire disponible en Tunisie.",
+      "En ligne": "Préparation à distance adaptée à votre niveau.",
+      Allemagne: "Préparation en Allemagne lorsque votre situation le permet.",
     },
     ar: {
-      تونس: "يمكننا توجيهك إلى مدرسة لغة شريكة في تونس عندما تتوفر صيغة مناسبة فعلًا.",
-      "عبر الإنترنت": "يمكننا اقتراح تحضير عن بُعد مناسب لمستواك عندما يكون متاحًا.",
-      ألمانيا: "إذا سمحت وضعيتك، يمكننا توجيهك إلى مدرسة لغة شريكة في ألمانيا وشرح الخطوات الممكنة في حالتك.",
+      تونس: "تحضير مع حل شريك متاح في تونس.",
+      "عبر الإنترنت": "تحضير عن بُعد مناسب لمستواك.",
+      ألمانيا: "تحضير في ألمانيا عندما تسمح وضعيتك بذلك.",
     },
     en: {
-      Tunisia: "We can direct you to a partner language school in Tunisia when a suitable option is genuinely available.",
-      Online: "We can offer remote preparation suited to your level when available.",
-      Germany: "If your situation allows it, we can direct you to a partner language school in Germany and explain which steps are possible in your situation.",
+      Tunisia: "Preparation with an available partner option in Tunisia.",
+      Online: "Remote preparation suited to your level.",
+      Germany: "Preparation in Germany when your situation allows it.",
     },
     de: {
-      Tunesien: "Wir können dich an eine Partnersprachschule in Tunesien vermitteln, wenn eine passende Möglichkeit tatsächlich verfügbar ist.",
-      Online: "Wir können eine Online-Vorbereitung anbieten, die zu deinem Niveau passt, wenn sie verfügbar ist.",
-      Deutschland: "Wenn deine Situation es erlaubt, können wir dich an eine Partnersprachschule in Deutschland vermitteln und erklären, welche Schritte in deiner Situation möglich sind.",
+      Tunesien: "Vorbereitung mit einer verfügbaren Partnerlösung in Tunesien.",
+      Online: "Online-Vorbereitung passend zu deinem Niveau.",
+      Deutschland: "Vorbereitung in Deutschland, wenn deine Situation es erlaubt.",
     },
   };
 
@@ -681,13 +738,23 @@ export function OrientationPersonalizedWriterCard({
   const strongOutlookCount = [...optionOutlooks.values()].filter(
     (outlook) => outlook.level === "strong",
   ).length;
+  const featuredOption =
+    content.studyOptions.find(
+      (option) => optionOutlooks.get(option.optionId)?.level === "strong",
+    )
+    || content.studyOptions[0]
+    || null;
+  const otherOptions = featuredOption
+    ? content.studyOptions.filter((option) => option.optionId !== featuredOption.optionId)
+    : content.studyOptions;
 
   return (
     <article className="space-y-7 sm:space-y-8">
       <header className="relative overflow-hidden rounded-[var(--radius-panel)] bg-[var(--foreground)] px-5 py-6 text-white shadow-[var(--shadow-card)] sm:px-8 sm:py-7">
         <div aria-hidden="true" className="absolute inset-x-0 top-0 h-0.5 bg-[var(--brand)]" />
         <div className="relative max-w-4xl">
-          <p className="text-xs font-bold uppercase tracking-[0.16em] text-white/[0.55]">
+          <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.16em] text-[var(--accent)]">
+            <span aria-hidden="true" className="size-1.5 rounded-full bg-[var(--brand)]" />
             {t.heroEyebrow}
           </p>
           <h3 className="mt-2 max-w-3xl text-2xl font-semibold leading-tight tracking-tight sm:text-[2rem]">
@@ -729,7 +796,7 @@ export function OrientationPersonalizedWriterCard({
 
           <div className="mt-4 grid gap-2 sm:grid-cols-3">
             <div className="rounded-[var(--radius-control)] bg-[var(--surface)] p-3.5 ring-1 ring-inset ring-[var(--border)]">
-              <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-emerald-700">{t.summarySignal}</p>
+              <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-[var(--accent-strong)]">{t.summarySignal}</p>
               <p className="mt-1.5 text-sm font-semibold leading-5 text-[var(--foreground)]">
                 {summarySignalText(locale, strongOutlookCount, content.studyOptions.length)}
               </p>
@@ -752,103 +819,176 @@ export function OrientationPersonalizedWriterCard({
 
       <section aria-labelledby="orientation-premium-options">
         <div className="flex flex-wrap items-end justify-between gap-3">
-          <h4 id="orientation-premium-options" className="text-2xl font-semibold tracking-tight">
-            {t.options}
-          </h4>
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--accent-strong)]">
+              {t.options}
+            </p>
+            <h4 id="orientation-premium-options" className="mt-1 text-2xl font-semibold tracking-tight">
+              {t.featuredOption}
+            </h4>
+          </div>
           <span className="text-xs font-semibold text-[var(--muted)]">
             {result.selected.length} {t.pathsCount}
           </span>
         </div>
 
-        <div className="mt-4 grid items-stretch gap-3 lg:grid-cols-2">
-          {content.studyOptions.map((option) => {
-            const selected = result.selected.find((item) => item.optionId === option.optionId);
-            const status = selected ? optionStatus(selected, locale) : null;
-            const facts = selected ? highlightedFacts(selected, answers) : [];
-            const outlook = optionOutlooks.get(option.optionId) || {
-              level: null,
-              cleanWhy: option.whyItFits,
-            };
+        <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
+          {t.outlookSectionNote}
+        </p>
 
-            return (
-              <article
-                key={option.optionId}
-                className="professional-hover flex h-full flex-col rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-4 shadow-[0_4px_14px_rgba(0,0,0,0.035)] sm:p-5"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <p className="text-xs font-bold text-[var(--brand-strong)]">
-                      {String(option.position).padStart(2, "0")}
-                    </p>
-                    <h5 className="mt-1 text-lg font-semibold leading-6 tracking-tight">{option.programme}</h5>
-                    <p className="mt-1 text-sm leading-5 text-[var(--muted)]">
-                      {option.institution}{option.city ? ` · ${option.city}` : ""}
+        {featuredOption ? (() => {
+          const selected = result.selected.find((item) => item.optionId === featuredOption.optionId);
+          const status = selected ? optionStatus(selected, locale) : null;
+          const facts = selected ? highlightedFacts(selected, answers) : [];
+          const outlook = optionOutlooks.get(featuredOption.optionId) || {
+            level: null,
+            cleanWhy: featuredOption.whyItFits,
+          };
+
+          return (
+            <article
+              className="mt-5 overflow-hidden rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--surface)] shadow-[var(--shadow-card)]"
+            >
+              <div className="grid lg:grid-cols-[minmax(0,1.08fr)_minmax(17rem,0.92fr)]">
+                <div className="p-5 sm:p-6">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="text-xs font-bold text-[var(--brand-strong)]">
+                        {String(featuredOption.position).padStart(2, "0")}
+                      </p>
+                      <h5 className="mt-1 text-2xl font-semibold leading-tight tracking-tight">
+                        {featuredOption.programme}
+                      </h5>
+                      <p className="mt-1 text-sm leading-6 text-[var(--muted)]">
+                        {featuredOption.institution}{featuredOption.city ? ` · ${featuredOption.city}` : ""}
+                      </p>
+                    </div>
+                    {status ? (
+                      <span className={`shrink-0 rounded-full px-3 py-1.5 text-[11px] font-semibold ${status.className}`}>
+                        {status.label}
+                      </span>
+                    ) : null}
+                  </div>
+
+                  {outlook.level ? (
+                    <div className="mt-5 border-s-4 border-[var(--brand)] ps-4">
+                      <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-[var(--brand-strong)]">
+                        {t.outlookEyebrow}
+                      </p>
+                      <p className="mt-1 text-xl font-bold leading-6 text-[var(--foreground)]">
+                        {outlook.level === "strong" ? t.outlookStrong : t.outlookGood}
+                      </p>
+                    </div>
+                  ) : null}
+
+                  <div className="mt-5">
+                    <p className="text-xs font-bold uppercase tracking-[0.08em] text-[var(--muted)]">{t.why}</p>
+                    <p className="mt-2 text-sm leading-6 text-[var(--foreground)]">{outlook.cleanWhy}</p>
+                  </div>
+
+                  <div className="mt-5 border-t border-[var(--border)] pt-4">
+                    <p className="text-xs font-bold uppercase tracking-[0.08em] text-[var(--brand-strong)]">{t.checking}</p>
+                    <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
+                      {featuredOption.verificationNote}
                     </p>
                   </div>
-                  {status ? (
-                    <span className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-semibold ${status.className}`}>
-                      {status.label}
-                    </span>
-                  ) : null}
                 </div>
 
-                {outlook.level ? (
-                  <div
-                    className={`mt-4 rounded-[var(--radius-control)] px-3.5 py-3 ring-1 ring-inset ${
-                      outlook.level === "strong"
-                        ? "bg-emerald-50 text-emerald-950 ring-emerald-200"
-                        : "bg-blue-50 text-blue-950 ring-blue-200"
-                    }`}
-                  >
-                    <p className="text-[10px] font-bold uppercase tracking-[0.08em] opacity-70">
-                      {t.outlookEyebrow}
-                    </p>
-                    <p className="mt-1 text-base font-bold leading-5">
-                      {outlook.level === "strong" ? t.outlookStrong : t.outlookGood}
-                    </p>
-                    <p className="mt-1 text-xs leading-5 opacity-75">{t.outlookNote}</p>
-                  </div>
-                ) : null}
-
-                {facts.length ? (
-                  <div className="mt-4">
-                    <p className="text-xs font-semibold text-[var(--muted)]">{t.confirmed}</p>
-                    <dl className="mt-2 grid gap-2 sm:grid-cols-2">
+                <div className="border-t border-[var(--border)] bg-[var(--surface-subtle)] p-5 sm:p-6 lg:border-s lg:border-t-0">
+                  <p className="text-xs font-bold uppercase tracking-[0.08em] text-[var(--accent-strong)]">
+                    {t.confirmed}
+                  </p>
+                  {facts.length ? (
+                    <dl className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
                       {facts.map((fact) => {
                         const parts = decisionFactParts(fact, locale);
                         return (
                           <div
                             key={fact.field}
-                            className="min-w-0 rounded-[var(--radius-control)] bg-emerald-50/70 px-3 py-2.5 ring-1 ring-inset ring-emerald-100"
+                            className="rounded-[var(--radius-control)] bg-[var(--surface)] px-3.5 py-3 ring-1 ring-inset ring-[var(--border)]"
                           >
-                            <dt className="text-[10px] font-bold uppercase tracking-[0.06em] text-emerald-800">
+                            <dt className="text-[10px] font-bold uppercase tracking-[0.06em] text-[var(--accent-strong)]">
                               {parts.label}
                             </dt>
-                            <dd className="mt-0.5 break-words text-xs font-semibold leading-5 text-emerald-950">
+                            <dd className="mt-1 break-words text-sm font-semibold leading-5 text-[var(--foreground)]">
                               {parts.value}
                             </dd>
                           </div>
                         );
                       })}
                     </dl>
-                  </div>
-                ) : null}
-
-                <div className="mt-4">
-                  <p className="text-xs font-semibold text-[var(--muted)]">{t.why}</p>
-                  <p className="mt-1.5 text-sm leading-6">{outlook.cleanWhy}</p>
+                  ) : (
+                    <p className="mt-3 text-sm leading-6 text-[var(--muted)]">{t.noFacts}</p>
+                  )}
                 </div>
+              </div>
+            </article>
+          );
+        })() : null}
 
-                <div className="mt-auto border-t border-[var(--border)] pt-4">
-                  <p className="text-xs font-semibold text-blue-800">{t.checking}</p>
-                  <p className="mt-1.5 text-sm leading-6 text-[var(--muted)]">
-                    {option.verificationNote}
-                  </p>
-                </div>
-              </article>
-            );
-          })}
-        </div>
+        {otherOptions.length ? (
+          <div className="mt-7">
+            <h5 className="text-lg font-semibold tracking-tight">{t.otherOptions}</h5>
+            <div className="mt-3 grid gap-3 lg:grid-cols-3">
+              {otherOptions.map((option) => {
+                const selected = result.selected.find((item) => item.optionId === option.optionId);
+                const status = selected ? optionStatus(selected, locale) : null;
+                const outlook = optionOutlooks.get(option.optionId) || {
+                  level: null,
+                  cleanWhy: option.whyItFits,
+                };
+
+                return (
+                  <article
+                    key={option.optionId}
+                    className="professional-hover flex flex-col rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-4"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="text-xs font-bold text-[var(--brand-strong)]">
+                          {String(option.position).padStart(2, "0")}
+                        </p>
+                        <h6 className="mt-1 text-base font-semibold leading-5">{option.programme}</h6>
+                        <p className="mt-1 text-xs leading-5 text-[var(--muted)]">
+                          {option.institution}{option.city ? ` · ${option.city}` : ""}
+                        </p>
+                      </div>
+                      {status ? (
+                        <span className={`shrink-0 rounded-full px-2 py-1 text-[10px] font-semibold ${status.className}`}>
+                          {status.label}
+                        </span>
+                      ) : null}
+                    </div>
+
+                    {outlook.level ? (
+                      <div
+                        className={`mt-4 rounded-[var(--radius-control)] px-3 py-2.5 ${
+                          outlook.level === "strong"
+                            ? "bg-[var(--brand-soft)]"
+                            : "bg-[var(--accent-light)]"
+                        }`}
+                      >
+                        <p className="text-[10px] font-bold uppercase tracking-[0.06em] text-[var(--muted)]">
+                          {t.outlookEyebrow}
+                        </p>
+                        <p className="mt-1 text-sm font-bold leading-5 text-[var(--foreground)]">
+                          {outlook.level === "strong" ? t.outlookStrong : t.outlookGood}
+                        </p>
+                      </div>
+                    ) : null}
+
+                    <p className="mt-4 text-sm leading-6 text-[var(--foreground)]">{outlook.cleanWhy}</p>
+
+                    <div className="mt-auto border-t border-[var(--border)] pt-3">
+                      <p className="text-[10px] font-bold uppercase tracking-[0.06em] text-[var(--brand-strong)]">{t.checking}</p>
+                      <p className="mt-1.5 text-xs leading-5 text-[var(--muted)]">{option.verificationNote}</p>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          </div>
+        ) : null}
       </section>
 
       <section
@@ -898,8 +1038,9 @@ export function OrientationPersonalizedWriterCard({
 
         {content.languagePlan.show && languageChoices.length ? (
           <div className="mt-5 border-t border-[var(--border)] pt-4">
-            <p className="text-xs font-semibold text-[var(--muted)]">{t.languagePaths}</p>
-            <div className="mt-2 grid gap-2 sm:grid-cols-3">
+            <p className="text-xs font-bold uppercase tracking-[0.08em] text-[var(--accent-strong)]">{t.languagePaths}</p>
+            <p className="mt-1.5 max-w-3xl text-sm leading-6 text-[var(--muted)]">{t.languageIntro}</p>
+            <div className="mt-3 grid gap-2 sm:grid-cols-3">
               {languageChoices.map((choice) => (
                 <div
                   key={choice.title}
@@ -915,36 +1056,39 @@ export function OrientationPersonalizedWriterCard({
           </div>
         ) : null}
 
-        {showCta ? (
-          <a
-            href="#orientation-prospect-capture"
-            className="mt-5 inline-flex min-h-11 items-center justify-center rounded-[var(--radius-control)] bg-[var(--brand)] px-5 py-2.5 text-sm font-bold text-white transition hover:bg-[var(--brand-strong)]"
-          >
-            {content.cta.label || t.next}
-          </a>
-        ) : null}
       </section>
 
       <section aria-labelledby="orientation-responsibilities">
-        <h4 id="orientation-responsibilities" className="max-w-3xl text-2xl font-semibold tracking-tight">
+        <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--accent-strong)]">
+          {t.withYouEyebrow}
+        </p>
+        <h4 id="orientation-responsibilities" className="mt-1 max-w-3xl text-2xl font-semibold tracking-tight">
           {t.roles}
         </h4>
-        <div className="mt-4 grid gap-3 md:grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)]">
+
+        <div className="mt-5 grid items-stretch gap-3 md:grid-cols-[1fr_auto_1fr]">
           <div className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5">
-            <p className="text-xs font-bold text-[var(--brand-strong)]">01</p>
-            <h5 className="mt-1.5 text-base font-semibold">{t.roleYou}</h5>
-            <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{roleTexts[0]}</p>
+            <p className="text-xs font-bold uppercase tracking-[0.1em] text-[var(--brand-strong)]">
+              {t.roleYou}
+            </p>
+            <p className="mt-3 text-base font-semibold leading-6 text-[var(--foreground)]">{roleTexts[0]}</p>
+          </div>
+
+          <div className="hidden items-center justify-center px-1 text-xl font-bold text-[var(--accent-strong)] md:flex" aria-hidden="true">
+            →
           </div>
 
           <div className="rounded-[var(--radius-panel)] bg-[var(--foreground)] p-5 text-white sm:p-6">
-            <p className="text-xs font-bold text-white/[0.55]">02</p>
-            <h5 className="mt-1.5 text-lg font-semibold">{t.roleCampus}</h5>
-            <p className="mt-2 text-sm leading-6 text-white/[0.8]">{t.campusLead}</p>
-            <div className="mt-4 border-t border-white/[0.12] pt-4">
-              <p className="text-xs font-bold uppercase tracking-[0.08em] text-white/[0.5]">{t.roleTogether}</p>
-              <p className="mt-2 text-sm leading-6 text-white/[0.8]">{t.campusCommitment}</p>
-            </div>
+            <p className="text-xs font-bold uppercase tracking-[0.1em] text-[var(--accent)]">
+              {t.roleCampus}
+            </p>
+            <p className="mt-3 text-sm leading-6 text-white/[0.82]">{t.priorityParallelText}</p>
           </div>
+        </div>
+
+        <div className="mt-3 rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--accent-light)] px-4 py-4 sm:px-5">
+          <p className="text-xs font-bold uppercase tracking-[0.1em] text-[var(--accent-strong)]">{t.togetherLabel}</p>
+          <p className="mt-2 text-sm font-semibold leading-6 text-[var(--foreground)]">{t.togetherText}</p>
         </div>
       </section>
 
@@ -962,7 +1106,7 @@ export function OrientationPersonalizedWriterCard({
                 <div
                   className={`h-1.5 rounded-full ${
                     completed
-                      ? "bg-emerald-500"
+                      ? "bg-[var(--accent)]"
                       : current
                         ? "bg-[var(--brand)]"
                         : "bg-[var(--border)]"
@@ -972,7 +1116,7 @@ export function OrientationPersonalizedWriterCard({
                   <span
                     className={`flex size-7 shrink-0 items-center justify-center rounded-full text-[11px] font-bold ${
                       completed
-                        ? "bg-emerald-100 text-emerald-800"
+                        ? "bg-[var(--accent-light)] text-[var(--accent-strong)]"
                         : current
                           ? "bg-[var(--brand)] text-white"
                           : "bg-[var(--surface-subtle)] text-[var(--muted)]"
@@ -1002,13 +1146,13 @@ export function OrientationPersonalizedWriterCard({
                 {index < t.journeySteps.length - 1 ? (
                   <span
                     aria-hidden="true"
-                    className={`absolute start-[0.83rem] top-7 h-[calc(100%-0.25rem)] w-px ${index < journeyStep ? "bg-emerald-300" : "bg-[var(--border)]"}`}
+                    className={`absolute start-[0.83rem] top-7 h-[calc(100%-0.25rem)] w-px ${index < journeyStep ? "bg-[var(--accent)]" : "bg-[var(--border)]"}`}
                   />
                 ) : null}
                 <span
                   className={`relative z-10 flex size-6 shrink-0 items-center justify-center rounded-full text-[11px] font-bold ${
                     completed
-                      ? "bg-emerald-100 text-emerald-800"
+                      ? "bg-[var(--accent-light)] text-[var(--accent-strong)]"
                       : current
                         ? "bg-[var(--brand)] text-white"
                         : "bg-[var(--surface-subtle)] text-[var(--muted)] ring-1 ring-inset ring-[var(--border)]"
@@ -1031,12 +1175,19 @@ export function OrientationPersonalizedWriterCard({
         </div>
       </section>
 
-      <section className="rounded-[var(--radius-panel)] bg-[var(--brand-soft)] px-4 py-4 sm:px-5">
-        <p className="text-xs font-bold uppercase tracking-[0.08em] text-[var(--brand-strong)]">{t.closingEyebrow}</p>
-        <p className="mt-1.5 max-w-3xl text-base font-semibold leading-6 text-[var(--foreground)]">
-          {content.reassurance}
-        </p>
-        <p className="mt-1 max-w-3xl text-sm leading-6 text-[var(--muted)]">{t.closingText}</p>
+      <section className="relative overflow-hidden rounded-[var(--radius-panel)] bg-[var(--foreground)] px-5 py-5 text-white sm:px-6 sm:py-6">
+        <div aria-hidden="true" className="absolute inset-y-0 start-0 w-1 bg-[var(--brand)]" />
+        <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--accent)]">{t.closingEyebrow}</p>
+        <h4 className="mt-2 max-w-3xl text-2xl font-semibold tracking-tight">{t.humanTitle}</h4>
+        <p className="mt-2 max-w-3xl text-sm leading-6 text-white/[0.78]">{t.humanText}</p>
+        {showCta ? (
+          <a
+            href="#orientation-prospect-capture"
+            className="mt-5 inline-flex min-h-11 items-center justify-center rounded-[var(--radius-control)] bg-[var(--brand)] px-5 py-2.5 text-sm font-bold text-white transition hover:bg-[var(--brand-strong)]"
+          >
+            {t.humanCta}
+          </a>
+        ) : null}
       </section>
 
       <details className="border-t border-[var(--border)] pt-4">
