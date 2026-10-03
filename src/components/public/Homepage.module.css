@@ -5118,6 +5118,9 @@
 
 .heroBackdrop {
   z-index: 0;
+  /* Local fallback keeps the hero photographic if the remote Pexels/Next Image
+     request is temporarily unavailable. The remote image still renders on top. */
+  background: #1c2124 url("/images/homepage/study-library.webp") center / cover no-repeat;
   box-shadow: var(--shadow-overlay);
 }
 
