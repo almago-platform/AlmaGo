@@ -51,61 +51,61 @@ body {
 }
 
 .orientation-color-theme {
-  --background: #f6f0e6;
+  --background: #faf7f2;
   --foreground: #132131;
   --surface: #fffdf9;
-  --surface-muted: #ddd1c2;
-  --surface-subtle: #f2eadf;
-  --brand: #e10626;
-  --brand-strong: #c9001f;
-  --brand-soft: #fce7ea;
-  --brand-border: #f0b3bd;
-  --accent: #f4b400;
-  --accent-strong: #9b6b00;
-  --accent-light: #fbf3d8;
+  --surface-muted: #e8dfd4;
+  --surface-subtle: #f7f1e8;
+  --brand: #db0423;
+  --brand-strong: #b9031d;
+  --brand-soft: #fdebed;
+  --brand-border: #efb4bd;
+  --accent: #e8ad18;
+  --accent-strong: #8b6408;
+  --accent-light: #fbf3dc;
   --success: #3f8a61;
   --success-strong: #245c40;
-  --success-soft: #e8f3ec;
-  --success-border: #a7cdb4;
+  --success-soft: #eaf4ed;
+  --success-border: #add0b8;
   --muted: #655f59;
-  --border: #d8c9b8;
-  --border-strong: #c8b7a4;
+  --border: #e0d5c8;
+  --border-strong: #cbbbaa;
   background:
-    radial-gradient(circle at 8% 8%, rgba(244, 180, 0, 0.09), transparent 30rem),
-    radial-gradient(circle at 92% 32%, rgba(225, 6, 38, 0.045), transparent 34rem),
-    linear-gradient(180deg, #f8f2e9 0%, #f3eadd 50%, #f7f0e6 100%);
+    radial-gradient(circle at 7% 7%, rgba(232, 173, 24, 0.055), transparent 32rem),
+    radial-gradient(circle at 94% 30%, rgba(219, 4, 35, 0.025), transparent 36rem),
+    linear-gradient(180deg, #fcfaf6 0%, #faf7f2 48%, #f8f4ee 100%);
 }
 
 .orientation-color-theme > header {
-  background: rgba(247, 240, 230, 0.97);
+  background: rgba(251, 248, 242, 0.98);
 }
 
 .orientation-tone-summary {
   background:
-    linear-gradient(135deg, rgba(252, 231, 234, 0.32) 0%, transparent 44%),
-    #f2eadf;
+    linear-gradient(135deg, rgba(253, 235, 237, 0.24) 0%, transparent 46%),
+    #f8f3ec;
 }
 
 .orientation-tone-facts {
   background:
-    linear-gradient(160deg, rgba(251, 243, 216, 0.68) 0%, transparent 54%),
-    #f3ebdd;
+    linear-gradient(160deg, rgba(251, 243, 220, 0.54) 0%, transparent 56%),
+    #f8f2e8;
 }
 
 .orientation-tone-priority {
   background:
-    linear-gradient(135deg, rgba(244, 180, 0, 0.055) 0%, transparent 48%),
-    #f5ede2;
+    linear-gradient(135deg, rgba(232, 173, 24, 0.04) 0%, transparent 50%),
+    #f8f3ec;
 }
 
 .orientation-tone-actions {
-  background: #fbf8f2;
+  background: #fffaf4;
 }
 
 .orientation-tone-success {
   background:
-    linear-gradient(145deg, rgba(63, 138, 97, 0.075) 0%, transparent 58%),
-    #e8f3ec;
+    linear-gradient(145deg, rgba(63, 138, 97, 0.065) 0%, transparent 60%),
+    #edf6f0;
 }
 
 a, button, input, select, textarea { -webkit-tap-highlight-color: transparent; }
