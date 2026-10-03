@@ -239,7 +239,9 @@ function deterministicLetter(
   engineResult: OrientationEngineResult,
 ): OrientationLetterOutput {
   const city = preferredCity(profile);
-  const hasVerifiedOption = engineResult.recommendations.length > 0;
+  const hasVerifiedOption =
+    profile.bacStatus !== "no_bac"
+    && engineResult.recommendations.length > 0;
   const project = degreeAndField(locale, profile);
   const opening = academicOpening(locale, profile);
 
@@ -306,12 +308,29 @@ function deterministicLetter(
     },
   }[locale];
 
+  const routeOption = profile.bacStatus === "no_bac"
+    ? {
+        fr: "Nous ne proposons pas encore d’université à ce stade. Nous clarifions d’abord avec vous la voie académique qui correspond à votre situation.",
+        ar: "لا نقترح جامعة في هذه المرحلة بعد. نوضح أولاً معك المسار الأكاديمي المناسب لوضعك.",
+        en: "We are not proposing a university at this stage yet. We first clarify the academic route that fits your situation.",
+        de: "In dieser Phase schlagen wir noch keine Hochschule vor. Zuerst klären wir gemeinsam den akademischen Weg, der zu deiner Situation passt.",
+      }[locale]
+    : copy.option;
+  const routeClosing = profile.bacStatus === "no_bac"
+    ? {
+        fr: "Votre prochaine étape est de clarifier votre situation académique avec Campus Allemagne ; les universités viendront ensuite, lorsque la voie sera suffisamment établie.",
+        ar: "خطوتك التالية هي توضيح وضعك الأكاديمي مع Campus Allemagne؛ ننتقل إلى الجامعات بعد تحديد المسار بشكل كافٍ.",
+        en: "Your next step is to clarify your academic situation with Campus Allemagne; universities come afterwards, once the route is sufficiently established.",
+        de: "Dein nächster Schritt ist, deine akademische Situation mit Campus Allemagne zu klären; Hochschulen folgen erst, wenn der passende Weg ausreichend feststeht.",
+      }[locale]
+    : copy.closing;
+
   return {
     provider: "deterministic-letter-v1",
     mode: "deterministic",
     title: copy.title,
-    paragraphs: [copy.intro, copy.academic, copy.language, copy.city, copy.option],
-    closing: copy.closing,
+    paragraphs: [copy.intro, copy.academic, copy.language, copy.city, routeOption],
+    closing: routeClosing,
     scoutUsed: false,
   };
 }
@@ -554,7 +573,8 @@ export async function buildOrientationIntelligence(
   const apiKey = process.env.GEMINI_API_KEY;
 
   if (
-    profile.targetDegree !== "Bachelor"
+    profile.bacStatus === "no_bac"
+    || profile.targetDegree !== "Bachelor"
     || process.env.ALMAGO_ORIENTATION_AI_SCOUT !== "gemini"
     || !apiKey
   ) {
