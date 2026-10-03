@@ -5506,7 +5506,7 @@
 }
 
 .finalCta h2 em {
-  color: #ff5c72;
+  color: var(--brand);
 }
 
 .finalCta h2 + p,
