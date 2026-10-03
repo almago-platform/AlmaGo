@@ -422,6 +422,7 @@ export function PersonalizedOrientationEngineCard({
               <OrientationPersonalizedWriterCard
                 result={personalized}
                 locale={locale}
+                answers={answers}
                 showCta={prospectCaptureEnabled && isBachelorFirstContact}
               />
             ) : (

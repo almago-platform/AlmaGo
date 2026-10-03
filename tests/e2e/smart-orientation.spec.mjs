@@ -340,8 +340,9 @@ test.describe("Smart Orientation Partner-Ready rehearsal", () => {
     await expect(page.getByText(/attente.*admin|approbation.*admin/i)).toHaveCount(0);
 
     if ((primaryPayload?.personalized?.selected?.length || 0) > 0) {
-      await expect(page.getByText("Suivi Campus Allemagne")).toBeVisible();
-      await expect(page.getByText(/poursuivons les contrôles en arrière-plan/i)).toBeVisible();
+      await expect(page.getByText("Les programmes retenus pour vous")).toBeVisible();
+      await expect(page.getByText("Votre priorité du moment")).toBeVisible();
+      await expect(page.getByText("Voir les informations vérifiées et les sources officielles")).toBeVisible();
     }
 
     const candidateTextBeforeAudit = await page.locator("#orientation-report").innerText();
