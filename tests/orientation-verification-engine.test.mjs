@@ -231,6 +231,17 @@ test("B OpenAI verifier is server-only, bounded, structured, and does not decide
   );
 });
 
+test("B reuses fresh stored verification before paid web checks", () => {
+  assert.match(storeSource, /loadReusableOrientationVerifications/);
+  assert.match(storeSource, /next_major_refresh_at/);
+  assert.match(storeSource, /lastMajorRefreshAt/);
+  assert.match(serviceSource, /ORIENTATION_VERIFICATION_REUSE_TARGET = 4/);
+  assert.match(serviceSource, /cachedProgrammes\.length >= ORIENTATION_VERIFICATION_REUSE_TARGET/);
+  assert.match(serviceSource, /runOpenAIOrientationVerification\([\s\S]*uncachedCandidates,[\s\S]*missing/);
+  assert.match(openAISource, /maxCandidates = ORIENTATION_VERIFICATION_MAX_CANDIDATES/);
+  assert.match(openAISource, /maxProviderRequests = candidateLimit \+ 1/);
+});
+
 test("B persists verification separately and never auto-promotes into orientation_program_catalog", () => {
   assert.match(storeSource, /import "server-only"/);
   assert.match(storeSource, /createPrivilegedSupabaseClient/);
