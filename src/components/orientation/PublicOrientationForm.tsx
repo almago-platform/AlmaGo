@@ -332,7 +332,7 @@ export function PublicOrientationForm({
           </section>
         ) : null}
 
-        <section className={`mx-auto max-w-3xl ${step <= 4 ? "mt-8" : "mt-0"}`}>
+        <section className={`mx-auto ${step <= 4 ? "max-w-3xl mt-8" : "max-w-5xl mt-0"}`}>
           {step <= 4 ? (
             <div
               role="progressbar"
