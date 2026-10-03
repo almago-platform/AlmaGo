@@ -26,7 +26,7 @@ const copy = {
     options: "Programmes sélectionnés pour votre projet",
     why: "Pourquoi cette piste",
     confirmed: "Informations confirmées",
-    checking: "Analyse en cours",
+    checking: "Points à confirmer",
     verifiedStatus: "Vérifié",
     progressStatus: "Analyse en cours",
     unknownStatus: "À clarifier",
@@ -66,7 +66,7 @@ const copy = {
     options: "البرامج المختارة لمشروعك",
     why: "لماذا هذا المسار",
     confirmed: "معلومات مؤكدة",
-    checking: "التحليل جارٍ",
+    checking: "نقاط نواصل تأكيدها",
     verifiedStatus: "موثّق",
     progressStatus: "التحليل جارٍ",
     unknownStatus: "بحاجة إلى توضيح",
@@ -106,7 +106,7 @@ const copy = {
     options: "Programmes selected for your project",
     why: "Why this path",
     confirmed: "Confirmed information",
-    checking: "Analysis in progress",
+    checking: "Points to confirm",
     verifiedStatus: "Verified",
     progressStatus: "Analysis in progress",
     unknownStatus: "To clarify",
@@ -146,7 +146,7 @@ const copy = {
     options: "Ausgewählte Programme für dein Projekt",
     why: "Warum diese Option",
     confirmed: "Bestätigte Informationen",
-    checking: "Analyse läuft",
+    checking: "Noch zu bestätigen",
     verifiedStatus: "Geprüft",
     progressStatus: "Analyse läuft",
     unknownStatus: "Zu klären",
@@ -464,10 +464,13 @@ export function OrientationPersonalizedWriterCard({
           <h3 className="mt-2 max-w-3xl text-2xl font-semibold leading-tight tracking-tight sm:text-[2rem]">
             {t.heroTitle}
           </h3>
-          <p className="mt-3 max-w-3xl text-sm leading-6 text-white/[0.78] sm:text-base sm:leading-7">
+          <p className="mt-3 max-w-3xl text-sm font-medium leading-6 text-white/[0.9] sm:text-base sm:leading-7">
             {content.opening}
           </p>
-          <div className="mt-5 flex flex-wrap gap-2">
+          <p className="mt-2 max-w-3xl text-sm leading-6 text-white/[0.66]">
+            {content.projectStatus}
+          </p>
+          <div className="mt-4 flex flex-wrap gap-2">
             {profileHighlights.map((item) => (
               <span
                 key={item}
@@ -633,14 +636,14 @@ export function OrientationPersonalizedWriterCard({
         <h4 id="orientation-responsibilities" className="text-2xl font-semibold tracking-tight">
           {t.roles}
         </h4>
-        <div className="mt-4 grid items-start gap-3 lg:grid-cols-[0.8fr_1.4fr]">
-          <div className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-4">
+        <div className="mt-4 grid items-start gap-3 lg:grid-cols-[0.8fr_1.4fr] lg:grid-rows-[auto_auto]">
+          <div className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-4 lg:col-start-1 lg:row-start-1">
             <p className="text-xs font-bold text-[var(--brand-strong)]">01</p>
             <h5 className="mt-1.5 text-base font-semibold">{t.roleYou}</h5>
             <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{roleTexts[0]}</p>
           </div>
 
-          <div className="rounded-[var(--radius-panel)] bg-[var(--foreground)] p-4 text-white sm:p-5">
+          <div className="rounded-[var(--radius-panel)] bg-[var(--foreground)] p-4 text-white sm:p-5 lg:col-start-2 lg:row-span-2 lg:row-start-1">
             <p className="text-xs font-bold text-white/[0.55]">02</p>
             <h5 className="mt-1.5 text-lg font-semibold">{t.roleCampus}</h5>
             <p className="mt-2 text-sm leading-6 text-white/[0.72]">{t.campusLead}</p>
@@ -653,13 +656,13 @@ export function OrientationPersonalizedWriterCard({
               ))}
             </ul>
           </div>
-        </div>
 
-        <div className="mt-3 flex gap-3 rounded-[var(--radius-control)] bg-[var(--surface-subtle)] px-4 py-3">
-          <span className="text-xs font-bold text-[var(--brand-strong)]">03</span>
-          <div>
-            <p className="text-sm font-semibold">{t.roleTogether}</p>
-            <p className="mt-0.5 text-sm leading-6 text-[var(--muted)]">{roleTexts[1]}</p>
+          <div className="flex gap-3 rounded-[var(--radius-control)] bg-[var(--surface-subtle)] px-4 py-3 lg:col-start-1 lg:row-start-2">
+            <span className="text-xs font-bold text-[var(--brand-strong)]">03</span>
+            <div>
+              <p className="text-sm font-semibold">{t.roleTogether}</p>
+              <p className="mt-0.5 text-sm leading-6 text-[var(--muted)]">{roleTexts[1]}</p>
+            </div>
           </div>
         </div>
       </section>

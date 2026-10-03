@@ -146,7 +146,7 @@ function systemPrompt(locale: OrientationWriterInput["locale"]) {
     "",
     "OUTPUT EXPERIENCE:",
     "opening: exactly 1 human sentence, ideally under 190 characters, adapted to the candidate's current academic stage. It should contain either congratulations, encouragement, acknowledgement of progress, or calm reassurance—whichever is genuinely supported.",
-    "project_status: at most 1 short sentence. Explain whether the project is structured enough to move forward, without sounding technical.",
+    "project_status: exactly 1 short transition sentence, ideally under 150 characters. It appears directly after the human opening, so move from emotion to action without repeating the opening or the hero title. For example, acknowledge that an important step has been crossed and that Campus Allemagne will now organise the next part of the project. Keep it factual and grounded.",
     "main_priority: this is the candidate's own next action. Use a short title and at most 1 concise sentence of explanation. Avoid repeating the same next step twice.",
     "language_plan: explain the immediate language milestone only when relevant.",
     "campus_value: explain what Campus Allemagne is doing in parallel. Use first-person plural in the candidate's language (we / nous / wir / نحن).",

@@ -55,6 +55,7 @@ test("E makes the controlled writer primary only when a real shortlist exists", 
 
 test("E writer UI presents a premium progressive result with one CTA and verified details", () => {
   assert.match(writerCard, /content\.opening/);
+  assert.match(writerCard, /content\.projectStatus/);
   assert.match(writerCard, /content\.mainPriority/);
   assert.match(writerCard, /content\.studyOptions\.map/);
   assert.match(writerCard, /content\.roadmap\[0\]/);
@@ -67,6 +68,9 @@ test("E writer UI presents a premium progressive result with one CTA and verifie
   assert.match(writerCard, /Programmes sélectionnés pour votre projet/);
   assert.match(writerCard, /Votre rôle, notre accompagnement/);
   assert.match(writerCard, /Campus Allemagne coordonne votre parcours/);
+  assert.match(writerCard, /Points à confirmer/);
+  assert.match(writerCard, /lg:col-start-2 lg:row-span-2 lg:row-start-1/);
+  assert.match(writerCard, /lg:col-start-1 lg:row-start-2/);
   assert.match(writerCard, /Vos options pour avancer en allemand/);
   assert.match(writerCard, /buildUniversalOrientationGuidance/);
   assert.match(writerCard, /Votre prochaine étape/);

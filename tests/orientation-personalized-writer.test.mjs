@@ -302,6 +302,8 @@ test("D deterministic fallback remains useful when Gemini is unavailable", () =>
 
   assert.match(content.opening, /Félicitations/i);
   assert.match(content.opening, /15\/20/);
+  assert.match(content.projectStatus, /étape importante/i);
+  assert.match(content.projectStatus, /Campus Allemagne/i);
   assert.equal(content.languagePlan.currentLevel, "A2");
   assert.equal(content.languagePlan.nextLevel, "B1");
   assert.equal(content.studyOptions.length, 3);
@@ -469,6 +471,8 @@ test("D Gemini adapter is server-only, structured, bounded and has no research t
   assert.match(geminiSource, /If bac_status is preparing, encourage the candidate/i);
   assert.match(geminiSource, /If bac_status is no_bac, do not shame, alarm or imply that Germany is impossible/i);
   assert.match(geminiSource, /Never say 'you will get the Bac'/i);
+  assert.match(geminiSource, /project_status: exactly 1 short transition sentence/i);
+  assert.match(geminiSource, /move from emotion to action without repeating the opening or the hero title/i);
 
 });
 
