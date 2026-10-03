@@ -902,7 +902,7 @@ export function OrientationPersonalizedWriterCard({
                           index < journeyStep
                             ? "bg-[var(--success)]"
                             : current
-                              ? "bg-[var(--brand)]/30"
+                              ? "bg-[var(--brand-border)]"
                               : "bg-[var(--border)]"
                         }`}
                       />
@@ -999,8 +999,14 @@ export function OrientationPersonalizedWriterCard({
           </p>
 
           <div className="mt-4 grid gap-3 md:grid-cols-[minmax(0,1fr)_minmax(0,0.92fr)_minmax(0,1.08fr)]">
-            <div className="rounded-[var(--radius-control)] bg-[var(--surface)] p-3.5 ring-1 ring-inset ring-[var(--border)]">
-              <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-[var(--accent-strong)]">{t.summarySignal}</p>
+            <div className={`rounded-[var(--radius-control)] p-3.5 ring-1 ring-inset ${
+              strongOutlookCount > 0
+                ? "orientation-tone-success ring-[var(--success-border)]"
+                : "bg-[var(--surface)] ring-[var(--border)]"
+            }`}>
+              <p className={`text-[11px] font-bold uppercase tracking-[0.08em] ${
+                strongOutlookCount > 0 ? "text-[var(--success-strong)]" : "text-[var(--accent-strong)]"
+              }`}>{t.summarySignal}</p>
               <p className="mt-1.5 text-sm font-semibold leading-5 text-[var(--foreground)]">
                 {summarySignalText(locale, strongOutlookCount, content.studyOptions.length)}
               </p>
@@ -1051,7 +1057,11 @@ export function OrientationPersonalizedWriterCard({
 
           return (
             <article
-              className="mt-5 overflow-hidden rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--surface)] shadow-[var(--shadow-card)]"
+              className={`mt-5 overflow-hidden rounded-[var(--radius-panel)] border bg-[var(--surface)] shadow-[var(--shadow-card)] ${
+                outlook.level === "strong"
+                  ? "border-[var(--success-border)]"
+                  : "border-[var(--brand-border)]"
+              }`}
             >
               <div className="grid lg:grid-cols-[minmax(0,1.18fr)_minmax(19rem,0.82fr)] lg:items-start">
                 <div className="p-5 sm:p-6 lg:p-7">
@@ -1075,8 +1085,14 @@ export function OrientationPersonalizedWriterCard({
                   </div>
 
                   {outlook.level ? (
-                    <div className="mt-5 border-s-4 border-[var(--brand)] ps-4">
-                      <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-[var(--brand-strong)]">
+                    <div className={`mt-5 rounded-[var(--radius-control)] border-s-4 px-4 py-3 ${
+                      outlook.level === "strong"
+                        ? "orientation-tone-success border-[var(--success)]"
+                        : "bg-[var(--accent-light)] border-[var(--accent)]"
+                    }`}>
+                      <p className={`text-[10px] font-bold uppercase tracking-[0.1em] ${
+                        outlook.level === "strong" ? "text-[var(--success-strong)]" : "text-[var(--accent-strong)]"
+                      }`}>
                         {t.outlookEyebrow}
                       </p>
                       <p className="mt-1 text-xl font-bold leading-6 text-[var(--foreground)]">
