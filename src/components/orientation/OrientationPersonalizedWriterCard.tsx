@@ -778,7 +778,7 @@ export function OrientationPersonalizedWriterCard({
     : content.studyOptions;
 
   return (
-    <article className="space-y-7 sm:space-y-8">
+    <article className="space-y-6 sm:space-y-7 lg:space-y-8">
       <header className="relative overflow-hidden rounded-[var(--radius-panel)] bg-[var(--foreground)] px-5 py-6 text-white shadow-[var(--shadow-card)] sm:px-8 sm:py-7">
         <div aria-hidden="true" className="absolute inset-x-0 top-0 h-0.5 bg-[var(--brand)]" />
         <div className="relative max-w-4xl">
@@ -810,7 +810,7 @@ export function OrientationPersonalizedWriterCard({
 
       <section
         aria-labelledby="orientation-summary"
-        className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4 sm:p-5"
+        className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4 sm:p-5 lg:p-6"
       >
         <div className="max-w-4xl">
           <h4 id="orientation-summary" className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--brand-strong)]">
@@ -823,7 +823,7 @@ export function OrientationPersonalizedWriterCard({
             {t.summaryText}
           </p>
 
-          <div className="mt-4 grid gap-2 sm:grid-cols-3">
+          <div className="mt-4 grid gap-3 md:grid-cols-[minmax(0,1fr)_minmax(0,0.92fr)_minmax(0,1.08fr)]">
             <div className="rounded-[var(--radius-control)] bg-[var(--surface)] p-3.5 ring-1 ring-inset ring-[var(--border)]">
               <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-[var(--accent-strong)]">{t.summarySignal}</p>
               <p className="mt-1.5 text-sm font-semibold leading-5 text-[var(--foreground)]">
@@ -878,8 +878,8 @@ export function OrientationPersonalizedWriterCard({
             <article
               className="mt-5 overflow-hidden rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--surface)] shadow-[var(--shadow-card)]"
             >
-              <div className="grid lg:grid-cols-[minmax(0,1.08fr)_minmax(17rem,0.92fr)]">
-                <div className="p-5 sm:p-6">
+              <div className="grid lg:grid-cols-[minmax(0,1.18fr)_minmax(19rem,0.82fr)] lg:items-start">
+                <div className="p-5 sm:p-6 lg:p-7">
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div className="min-w-0">
                       <p className="text-xs font-bold text-[var(--brand-strong)]">
@@ -923,12 +923,12 @@ export function OrientationPersonalizedWriterCard({
                   </div>
                 </div>
 
-                <div className="border-t border-[var(--border)] bg-[var(--surface-subtle)] p-5 sm:p-6 lg:border-s lg:border-t-0">
+                <div className="border-t border-[var(--border)] bg-[var(--surface-subtle)] p-5 sm:p-6 lg:m-5 lg:ms-0 lg:self-start lg:rounded-[var(--radius-control)] lg:border">
                   <p className="text-xs font-bold uppercase tracking-[0.08em] text-[var(--accent-strong)]">
                     {t.confirmed}
                   </p>
                   {facts.length ? (
-                    <dl className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+                    <dl className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-2">
                       {facts.map((fact) => {
                         const parts = decisionFactParts(fact, locale);
                         return (
@@ -958,7 +958,7 @@ export function OrientationPersonalizedWriterCard({
         {otherOptions.length ? (
           <div className="mt-7">
             <h5 className="text-lg font-semibold tracking-tight">{t.otherOptions}</h5>
-            <div className="mt-3 grid gap-3 lg:grid-cols-3">
+            <div className="mt-3 grid items-start gap-3 md:grid-cols-2 xl:grid-cols-3">
               {otherOptions.map((option) => {
                 const selected = result.selected.find((item) => item.optionId === option.optionId);
                 const status = selected ? optionStatus(selected, locale) : null;
@@ -970,7 +970,7 @@ export function OrientationPersonalizedWriterCard({
                 return (
                   <article
                     key={option.optionId}
-                    className="professional-hover flex flex-col rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-4"
+                    className="professional-hover flex flex-col rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-4 sm:p-5"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
@@ -1024,10 +1024,10 @@ export function OrientationPersonalizedWriterCard({
 
       <section
         aria-labelledby="orientation-main-priority"
-        className="relative overflow-hidden rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface-subtle)] p-5 sm:p-6"
+        className="relative overflow-hidden rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface-subtle)] p-5 sm:p-6 lg:p-7"
       >
         <div aria-hidden="true" className="absolute inset-y-0 start-0 w-0.5 bg-[var(--brand)]" />
-        <div className="grid gap-4 lg:grid-cols-[minmax(0,1.2fr)_minmax(15rem,0.8fr)]">
+        <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,0.68fr)] lg:items-start">
           <div>
             <p className="text-xs font-semibold text-[var(--brand-strong)]">{t.priority}</p>
             {content.languagePlan.show && content.languagePlan.nextLevel ? (() => {
@@ -1081,7 +1081,7 @@ export function OrientationPersonalizedWriterCard({
             )}
           </div>
 
-          <aside className="rounded-[var(--radius-control)] bg-[var(--surface)] p-4 ring-1 ring-inset ring-[var(--border)]">
+          <aside className="self-start rounded-[var(--radius-control)] bg-[var(--surface)] p-4 sm:p-5 ring-1 ring-inset ring-[var(--border)]">
             <p className="text-xs font-bold text-[var(--foreground)]">{t.priorityParallelTitle}</p>
             <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{t.priorityParallelText}</p>
           </aside>
@@ -1117,8 +1117,8 @@ export function OrientationPersonalizedWriterCard({
           {t.roles}
         </h4>
 
-        <div className="mt-5 grid items-stretch gap-3 md:grid-cols-[1fr_auto_1fr]">
-          <div className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5">
+        <div className="mt-4 grid items-stretch gap-2 md:grid-cols-[minmax(0,1fr)_2.5rem_minmax(0,1.12fr)]">
+          <div className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-4 sm:p-5">
             <p className="text-xs font-bold uppercase tracking-[0.1em] text-[var(--brand-strong)]">
               {t.roleYou}
             </p>
@@ -1129,7 +1129,7 @@ export function OrientationPersonalizedWriterCard({
             →
           </div>
 
-          <div className="rounded-[var(--radius-panel)] bg-[var(--foreground)] p-5 text-white sm:p-6">
+          <div className="rounded-[var(--radius-panel)] bg-[var(--foreground)] p-4 text-white sm:p-5">
             <p className="text-xs font-bold uppercase tracking-[0.1em] text-[var(--accent)]">
               {t.roleCampus}
             </p>
@@ -1137,7 +1137,7 @@ export function OrientationPersonalizedWriterCard({
           </div>
         </div>
 
-        <div className="mt-3 rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--accent-light)] px-4 py-4 sm:px-5">
+        <div className="mt-2 rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--accent-light)] px-4 py-3.5 sm:px-5">
           <p className="text-xs font-bold uppercase tracking-[0.1em] text-[var(--accent-strong)]">{t.togetherLabel}</p>
           <p className="mt-2 text-sm font-semibold leading-6 text-[var(--foreground)]">{t.togetherText}</p>
         </div>
@@ -1148,7 +1148,7 @@ export function OrientationPersonalizedWriterCard({
           {t.journey}
         </h4>
 
-        <ol className="mt-4 hidden grid-cols-5 gap-2 sm:grid">
+        <ol className="mt-3 hidden grid-cols-5 gap-2 sm:grid">
           {t.journeySteps.map((step, index) => {
             const completed = index < journeyStep;
             const current = index === journeyStep;
@@ -1219,7 +1219,7 @@ export function OrientationPersonalizedWriterCard({
           })}
         </ol>
 
-        <div className="mt-4 rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4 sm:p-5">
+        <div className="mt-3 rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4 sm:p-5">
           <p className="text-xs font-bold uppercase tracking-[0.08em] text-[var(--brand-strong)]">{t.journeyCurrent}</p>
           <p className="mt-1.5 text-base font-semibold text-[var(--foreground)]">{t.journeySteps[journeyStep]}</p>
           <p className="mt-1.5 max-w-3xl text-sm leading-6 text-[var(--muted)]">{t.journeyCurrentText[journeyStep]}</p>

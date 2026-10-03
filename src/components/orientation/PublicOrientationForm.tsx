@@ -332,7 +332,7 @@ export function PublicOrientationForm({
           </section>
         ) : null}
 
-        <section className={`mx-auto ${step <= 4 ? "max-w-3xl mt-8" : "max-w-5xl mt-0"}`}>
+        <section className={`mx-auto ${step <= 4 ? "max-w-3xl mt-8" : "max-w-6xl mt-0"}`}>
           {step <= 4 ? (
             <div
               role="progressbar"
@@ -689,9 +689,9 @@ export function PublicOrientationForm({
                   />
                 ) : null}
 
-                <section className="orientation-print-hide mt-7 border-t border-[var(--border)] pt-5" aria-label={resultActionsCopy.title}>
+                <section className="orientation-print-hide mt-7 rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] px-4 py-4 sm:flex sm:items-center sm:justify-between sm:gap-6 sm:px-5" aria-label={resultActionsCopy.title}>
                   <p className="text-sm font-semibold">{resultActionsCopy.title}</p>
-                  <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-3">
+                  <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-3 sm:mt-0 sm:justify-end">
                     <button
                       type="button"
                       onClick={() => window.print()}
