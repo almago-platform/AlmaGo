@@ -504,7 +504,7 @@ function optionStatus(
   }
   return {
     label: t.unknownStatus,
-    className: "bg-slate-100 text-slate-700 ring-1 ring-inset ring-slate-200",
+    className: "bg-[var(--surface-subtle)] text-[var(--foreground)] ring-1 ring-inset ring-[var(--border)]",
   };
 }
 
@@ -810,7 +810,7 @@ export function OrientationPersonalizedWriterCard({
 
       <section
         aria-labelledby="orientation-summary"
-        className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4 sm:p-5 lg:p-6"
+        className="orientation-tone-summary rounded-[var(--radius-panel)] border border-[var(--border)] p-4 sm:p-5 lg:p-6"
       >
         <div className="max-w-4xl">
           <h4 id="orientation-summary" className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--brand-strong)]">
@@ -923,7 +923,7 @@ export function OrientationPersonalizedWriterCard({
                   </div>
                 </div>
 
-                <div className="border-t border-[var(--border)] bg-[var(--surface-subtle)] p-5 sm:p-6 lg:m-5 lg:ms-0 lg:self-start lg:rounded-[var(--radius-control)] lg:border">
+                <div className="orientation-tone-facts border-t border-[var(--border)] p-5 sm:p-6 lg:m-5 lg:ms-0 lg:self-start lg:rounded-[var(--radius-control)] lg:border">
                   <p className="text-xs font-bold uppercase tracking-[0.08em] text-[var(--accent-strong)]">
                     {t.confirmed}
                   </p>
@@ -1024,7 +1024,7 @@ export function OrientationPersonalizedWriterCard({
 
       <section
         aria-labelledby="orientation-main-priority"
-        className="relative overflow-hidden rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface-subtle)] p-5 sm:p-6 lg:p-7"
+        className="orientation-tone-priority relative overflow-hidden rounded-[var(--radius-panel)] border border-[var(--border)] p-5 sm:p-6 lg:p-7"
       >
         <div aria-hidden="true" className="absolute inset-y-0 start-0 w-0.5 bg-[var(--brand)]" />
         <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,0.68fr)] lg:items-start">
