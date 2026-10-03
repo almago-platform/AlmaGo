@@ -135,6 +135,27 @@ export function orientationDegreeCompatible(
   return normalized(candidateDegree).includes(normalized(targetDegree));
 }
 
+function masterTargetSpecializationCovered(
+  plan: OrientationDiscoveryPlan,
+  candidates: readonly OrientationDiscoveryResearchCandidate[],
+) {
+  if (!normalized(plan.profile.targetDegree).includes("master")) return true;
+
+  const target = normalized(plan.profile.targetSpecialization);
+  if (!target) return true;
+
+  const targetPhrases = target
+    .split(/\s+(?:and|und|et)\s+|[\/,&;+]+/)
+    .map((value) => value.trim())
+    .filter((value) => value.length >= 6);
+
+  return candidates.some((candidate) => {
+    const programme = normalized(candidate.programme);
+    if (!programme) return false;
+    if (programme.includes(target)) return true;
+    return targetPhrases.some((phrase) => programme.includes(phrase));
+  });
+}
 
 export function orientationKnowledgeCoverageSufficient(
   plan: OrientationDiscoveryPlan,
@@ -142,6 +163,8 @@ export function orientationKnowledgeCoverageSufficient(
   minimumCandidates: number,
 ) {
   if (candidates.length < minimumCandidates) return false;
+
+  if (!masterTargetSpecializationCovered(plan, candidates)) return false;
 
   if (plan.profile.preferredCities.length > 0) {
     const preferred = new Set(
