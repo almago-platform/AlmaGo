@@ -1051,36 +1051,39 @@ export function OrientationPersonalizedWriterCard({
           </div>
         ) : null}
 
-        {showCta ? (
-          <a
-            href="#orientation-prospect-capture"
-            className="mt-5 inline-flex min-h-11 items-center justify-center rounded-[var(--radius-control)] bg-[var(--brand)] px-5 py-2.5 text-sm font-bold text-white transition hover:bg-[var(--brand-strong)]"
-          >
-            {content.cta.label || t.next}
-          </a>
-        ) : null}
       </section>
 
       <section aria-labelledby="orientation-responsibilities">
-        <h4 id="orientation-responsibilities" className="max-w-3xl text-2xl font-semibold tracking-tight">
+        <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--accent-strong)]">
+          Campus Allemagne avec vous
+        </p>
+        <h4 id="orientation-responsibilities" className="mt-1 max-w-3xl text-2xl font-semibold tracking-tight">
           {t.roles}
         </h4>
-        <div className="mt-4 grid gap-3 md:grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)]">
+
+        <div className="mt-5 grid items-stretch gap-3 md:grid-cols-[1fr_auto_1fr]">
           <div className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5">
-            <p className="text-xs font-bold text-[var(--brand-strong)]">01</p>
-            <h5 className="mt-1.5 text-base font-semibold">{t.roleYou}</h5>
-            <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{roleTexts[0]}</p>
+            <p className="text-xs font-bold uppercase tracking-[0.1em] text-[var(--brand-strong)]">
+              {t.roleYou}
+            </p>
+            <p className="mt-3 text-base font-semibold leading-6 text-[var(--foreground)]">{roleTexts[0]}</p>
+          </div>
+
+          <div className="hidden items-center justify-center px-1 text-xl font-bold text-[var(--accent-strong)] md:flex" aria-hidden="true">
+            →
           </div>
 
           <div className="rounded-[var(--radius-panel)] bg-[var(--foreground)] p-5 text-white sm:p-6">
-            <p className="text-xs font-bold text-white/[0.55]">02</p>
-            <h5 className="mt-1.5 text-lg font-semibold">{t.roleCampus}</h5>
-            <p className="mt-2 text-sm leading-6 text-white/[0.8]">{t.campusLead}</p>
-            <div className="mt-4 border-t border-white/[0.12] pt-4">
-              <p className="text-xs font-bold uppercase tracking-[0.08em] text-white/[0.5]">{t.roleTogether}</p>
-              <p className="mt-2 text-sm leading-6 text-white/[0.8]">{t.campusCommitment}</p>
-            </div>
+            <p className="text-xs font-bold uppercase tracking-[0.1em] text-[var(--accent)]">
+              {t.roleCampus}
+            </p>
+            <p className="mt-3 text-sm leading-6 text-white/[0.82]">{t.priorityParallelText}</p>
           </div>
+        </div>
+
+        <div className="mt-3 rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--accent-light)] px-4 py-4 sm:px-5">
+          <p className="text-xs font-bold uppercase tracking-[0.1em] text-[var(--accent-strong)]">{t.togetherLabel}</p>
+          <p className="mt-2 text-sm font-semibold leading-6 text-[var(--foreground)]">{t.togetherText}</p>
         </div>
       </section>
 
@@ -1167,12 +1170,19 @@ export function OrientationPersonalizedWriterCard({
         </div>
       </section>
 
-      <section className="rounded-[var(--radius-panel)] bg-[var(--brand-soft)] px-4 py-4 sm:px-5">
-        <p className="text-xs font-bold uppercase tracking-[0.08em] text-[var(--brand-strong)]">{t.closingEyebrow}</p>
-        <p className="mt-1.5 max-w-3xl text-base font-semibold leading-6 text-[var(--foreground)]">
-          {content.reassurance}
-        </p>
-        <p className="mt-1 max-w-3xl text-sm leading-6 text-[var(--muted)]">{t.closingText}</p>
+      <section className="relative overflow-hidden rounded-[var(--radius-panel)] bg-[var(--foreground)] px-5 py-5 text-white sm:px-6 sm:py-6">
+        <div aria-hidden="true" className="absolute inset-y-0 start-0 w-1 bg-[var(--brand)]" />
+        <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--accent)]">{t.closingEyebrow}</p>
+        <h4 className="mt-2 max-w-3xl text-2xl font-semibold tracking-tight">{t.humanTitle}</h4>
+        <p className="mt-2 max-w-3xl text-sm leading-6 text-white/[0.78]">{t.humanText}</p>
+        {showCta ? (
+          <a
+            href="#orientation-prospect-capture"
+            className="mt-5 inline-flex min-h-11 items-center justify-center rounded-[var(--radius-control)] bg-[var(--brand)] px-5 py-2.5 text-sm font-bold text-white transition hover:bg-[var(--brand-strong)]"
+          >
+            {t.humanCta}
+          </a>
+        ) : null}
       </section>
 
       <details className="border-t border-[var(--border)] pt-4">
