@@ -53,9 +53,9 @@ function Hero({
               </a>
             </div>
             <div className={s.heroTrust}>
-              <span><HomeIcon name="check" /> Programmes</span>
-              <span><HomeIcon name="check" /> Documents</span>
-              <span><HomeIcon name="check" /> Candidatures</span>
+              {copy.dashboard.cards.slice(0, 3).map(([label]) => (
+                <span key={label}><HomeIcon name="check" /> {label}</span>
+              ))}
             </div>
           </div>
 
@@ -184,7 +184,7 @@ function ProductShowcase({
   applications: HomepageRedesignCopy["applications"];
 }) {
   return (
-    <section className={[s.section, s.productSection].join(" ")} aria-label="Aperçu du produit AlmaGo">
+    <section className={[s.section, s.productSection].join(" ")} aria-label="AlmaGo">
       <div className={s.container}>
         <article id="programmes" className={s.featureRow}>
           <FeatureCopy eyebrow={programmes.eyebrow} title={programmes.title} text={programmes.text} />
@@ -234,7 +234,7 @@ function ProgrammesPreview({ copy }: { copy: HomepageRedesignCopy["programmes"] 
             <strong>{copy.rows.length}</strong>
           </div>
         </div>
-        <span className={s.panelBadge}>Exemple</span>
+        <span className={s.panelBadge}>{copy.rows.length}</span>
       </div>
       <div className={s.programmeRows}>
         {copy.rows.map(([title, meta, status], index) => (
@@ -295,7 +295,7 @@ function ApplicationsPreview({ copy }: { copy: HomepageRedesignCopy["application
             <strong>{copy.rows.length}</strong>
           </div>
         </div>
-        <span className={s.panelBadge}>2 actives</span>
+        <span className={s.panelBadge}>{copy.rows.length}</span>
       </div>
       <div className={s.applicationRows}>
         {copy.rows.map(([name, status, deadline], index) => (
