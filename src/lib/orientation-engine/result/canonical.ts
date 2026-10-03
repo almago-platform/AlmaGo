@@ -24,6 +24,13 @@ export function buildOrientationCanonicalShortlist(
   engine: OrientationEngineResult,
   personalized: OrientationPublicPersonalizedResult | null,
 ): OrientationCanonicalShortlist {
+  if (engine.profile.bacStatus === "no_bac") {
+    return {
+      source: "none",
+      items: [],
+    };
+  }
+
   if (personalized && personalized.selected.length > 0) {
     return {
       source: "personalized_verified",
