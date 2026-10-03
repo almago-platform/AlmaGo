@@ -68,3 +68,24 @@ test("full-bleed desktop hero fills the visual field without a split-layout phot
   assert.match(css, /\.hero \.heroCopy \{[\s\S]*color: #fffdf8/);
   assert.match(css, /\.hero \.heroDossier \{[\s\S]*background: rgba\(255, 253, 248, 0\.96\)/);
 });
+
+test("full-bleed desktop hero mirrors the Arabic composition correctly", () => {
+  const fullBleed = css.slice(css.indexOf("Homepage hero — full-bleed immersive treatment"));
+  assert.match(
+    fullBleed,
+    /:global\(html\[dir="rtl"\]\) \.hero \.heroCopy \{[\s\S]*?margin-inline-start: 0;[\s\S]*?margin-inline-end: auto;[\s\S]*?\}/,
+  );
+  assert.doesNotMatch(
+    fullBleed,
+    /:global\(html\[dir="rtl"\]\) \.hero \.heroCopy \{[\s\S]{0,220}?margin-inline-start: auto;/,
+  );
+  assert.match(
+    fullBleed,
+    /:global\(html\[dir="rtl"\]\) \.hero \.heroDossier \{\s*right: auto;\s*left: clamp\(34px, 5vw, 88px\);\s*\}/,
+  );
+  assert.match(
+    fullBleed,
+    /:global\(html\[dir="rtl"\]\) \.heroShade \{[\s\S]*?linear-gradient\(\s*270deg,/,
+  );
+});
+
