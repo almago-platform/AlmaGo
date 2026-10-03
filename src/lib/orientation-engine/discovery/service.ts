@@ -20,6 +20,20 @@ import type {
   OrientationDiscoveryResult,
 } from "@/lib/orientation-engine/discovery/types";
 
+export const ORIENTATION_DISCOVERY_MAX_FRESH_QUERIES = 3;
+export const ORIENTATION_DISCOVERY_MAX_PARTIAL_QUERIES = 2;
+
+function discoveryQueryBudget(cachedCount: number) {
+  if (cachedCount <= 0) return ORIENTATION_DISCOVERY_MAX_FRESH_QUERIES;
+
+  const missing = Math.max(
+    1,
+    ORIENTATION_KNOWLEDGE_MIN_CANDIDATES - cachedCount,
+  );
+
+  return Math.min(ORIENTATION_DISCOVERY_MAX_PARTIAL_QUERIES, missing);
+}
+
 function cacheStatus(
   available: boolean,
   count: number,
@@ -74,7 +88,10 @@ export async function runOrientationDiscovery(
     };
   }
 
-  const research = await runOpenAIOrientationDiscovery(plan);
+  const research = await runOpenAIOrientationDiscovery(
+    plan,
+    discoveryQueryBudget(cachedCandidates.length),
+  );
 
   console.info("orientation_v4_provider", JSON.stringify({
     stage: "discovery",
@@ -84,6 +101,7 @@ export async function runOrientationDiscovery(
     requests: research.usage.requests,
     webSearchCalls: research.usage.webSearchCalls,
     candidates: research.candidates.length,
+    queryBudget: discoveryQueryBudget(cachedCandidates.length),
   }));
 
   if (research.status === "ready" && research.candidates.length > 0) {
