@@ -422,7 +422,10 @@ test("D Gemini adapter is server-only, structured, bounded and has no research t
   assert.match(geminiSource, /ONE clear immediate priority/);
   assert.match(geminiSource, /Phrase research, verification and dossier coordination as Campus Allemagne's work/);
   assert.match(geminiSource, /Do not promise admission, visa success, recognition, acceptance or a perfect dossier/);
-  assert.match(geminiSource, /distinguish tuition fees from semester contributions/i);
+  assert.match(geminiSource, /distinguish tuition fees from semester contributions/i);\n  assert.match(geminiSource, /absolute-fit or prestige claims/i);
+  assert.match(geminiSource, /declared language level is not automatically a certified or validated level/i);
+  assert.match(geminiSource, /Do not claim budget fit, direct academic access, Numerus Clausus status/i);
+  assert.match(geminiSource, /Avoid words that imply a guarantee/i);
 
 });
 
