@@ -119,6 +119,32 @@ export function PublicOrientationForm({
       answersHelp: "Diese Angaben personalisieren deine Orientierung und können jederzeit geändert werden.",
     },
   }[locale];
+  const resultActionsCopy = {
+    fr: {
+      title: "Conservez votre orientation",
+      pdf: "Enregistrer mon rapport (PDF)",
+      adjust: "Ajuster mon profil",
+      home: "Retour à l’accueil",
+    },
+    ar: {
+      title: "احتفظ بنتيجة توجيهك",
+      pdf: "حفظ تقريري (PDF)",
+      adjust: "تعديل ملفي",
+      home: "العودة إلى الصفحة الرئيسية",
+    },
+    en: {
+      title: "Keep your orientation report",
+      pdf: "Save my report (PDF)",
+      adjust: "Adjust my profile",
+      home: "Back to home",
+    },
+    de: {
+      title: "Orientierung sichern",
+      pdf: "Bericht als PDF speichern",
+      adjust: "Profil anpassen",
+      home: "Zur Startseite",
+    },
+  }[locale];
   const engineeringSpecialtyCopy = {
     fr: {
       label: "Spécialité d’ingénierie",
@@ -233,17 +259,6 @@ export function PublicOrientationForm({
           : [...current.preferredCities, city],
       };
     });
-  }
-
-  function restart() {
-    setAnswers(
-      authenticatedUpdate && initialAnswers
-        ? restorePublicOrientationAnswers(initialAnswers)
-        : createEmptyPublicOrientationAnswers(),
-    );
-    setStep(1);
-    setError("");
-    if (!authenticatedUpdate) window.sessionStorage.removeItem(SESSION_KEY);
   }
 
   const stepCopy = [
@@ -601,7 +616,9 @@ export function PublicOrientationForm({
                 <div className="mb-6 border-b border-[var(--border)] pb-5">
                   <p className="eyebrow">{prospectCopy.report.label}</p>
                   <h2 className="mt-2 text-2xl font-bold">{prospectCopy.report.title}</h2>
-                  <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{prospectCopy.report.subtitle}</p>
+                  {!isBachelorFirstContact ? (
+                    <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{prospectCopy.report.subtitle}</p>
+                  ) : null}
                 </div>
                 {!isBachelorFirstContact ? (
                   <>
@@ -654,17 +671,6 @@ export function PublicOrientationForm({
                 )}
 
 
-                <div className="orientation-print-hide mt-7 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4">
-                  <button
-                    type="button"
-                    onClick={() => window.print()}
-                    className="rounded-[var(--radius-control)] bg-[var(--brand)] px-5 py-2.5 text-sm font-bold text-white hover:bg-[var(--brand-strong)]"
-                  >
-                    {prospectCopy.report.print}
-                  </button>
-                  <p className="mt-2 text-xs leading-5 text-[var(--foreground)]">{prospectCopy.report.printHelp}</p>
-                </div>
-
                 {authenticatedUpdate ? (
                   <ProspectOrientationUpdateCard answers={answers} />
                 ) : prospectCaptureEnabled ? (
@@ -676,28 +682,31 @@ export function PublicOrientationForm({
                   />
                 ) : null}
 
-                <div className="orientation-print-hide mt-7 flex flex-wrap gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setStep(1)}
-                    className="rounded-[var(--radius-control)] bg-[var(--brand)] px-5 py-2.5 text-sm font-bold text-white hover:bg-[var(--brand-strong)]"
-                  >
-                    {copy.summary.edit}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={restart}
-                    className="rounded-[var(--radius-control)] border border-[var(--border-strong)] bg-[var(--surface)] px-4 py-2.5 text-sm font-semibold"
-                  >
-                    {copy.summary.restart}
-                  </button>
-                  <Link
-                    href="/"
-                    className="inline-flex items-center rounded-[var(--radius-control)] px-3 py-2.5 text-sm font-semibold text-[var(--foreground)] underline underline-offset-4"
-                  >
-                    {copy.summary.home}
-                  </Link>
-                </div>
+                <section className="orientation-print-hide mt-9 border-t border-[var(--border)] pt-6" aria-label={resultActionsCopy.title}>
+                  <p className="text-sm font-semibold">{resultActionsCopy.title}</p>
+                  <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-3">
+                    <button
+                      type="button"
+                      onClick={() => window.print()}
+                      className="rounded-[var(--radius-control)] bg-[var(--brand)] px-5 py-2.5 text-sm font-bold text-white hover:bg-[var(--brand-strong)]"
+                    >
+                      {resultActionsCopy.pdf}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setStep(1)}
+                      className="text-sm font-semibold text-[var(--foreground)] underline decoration-[var(--border-strong)] underline-offset-4 hover:decoration-[var(--foreground)]"
+                    >
+                      {resultActionsCopy.adjust}
+                    </button>
+                    <Link
+                      href="/"
+                      className="text-sm font-semibold text-[var(--muted)] underline decoration-[var(--border)] underline-offset-4 hover:text-[var(--foreground)]"
+                    >
+                      {resultActionsCopy.home}
+                    </Link>
+                  </div>
+                </section>
                 </div>
               </div>
             )}

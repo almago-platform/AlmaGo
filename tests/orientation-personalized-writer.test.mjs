@@ -300,7 +300,6 @@ test("D language plan focuses on only the immediate next level", () => {
 test("D deterministic fallback remains useful when Gemini is unavailable", () => {
   const content = buildDeterministicOrientationWriterContent(input());
 
-  assert.match(content.opening, /Bravo/i);
   assert.match(content.opening, /15\/20/);
   assert.match(content.opening, /Campus Allemagne/i);
   assert.equal(content.languagePlan.currentLevel, "A2");

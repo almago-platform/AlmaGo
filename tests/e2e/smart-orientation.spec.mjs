@@ -340,8 +340,8 @@ test.describe("Smart Orientation Partner-Ready rehearsal", () => {
     await expect(page.getByText(/attente.*admin|approbation.*admin/i)).toHaveCount(0);
 
     if ((primaryPayload?.personalized?.selected?.length || 0) > 0) {
-      await expect(page.getByText("Les programmes retenus pour vous")).toBeVisible();
-      await expect(page.getByText("Votre priorité du moment")).toBeVisible();
+      await expect(page.getByText("Programmes sélectionnés pour votre projet")).toBeVisible();
+      await expect(page.getByText("Votre prochaine étape")).toBeVisible();
       await expect(page.getByText("Voir les informations vérifiées et les sources officielles")).toBeVisible();
     }
 
