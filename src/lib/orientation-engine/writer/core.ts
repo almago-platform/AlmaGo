@@ -1,5 +1,4 @@
 import type { PublicOrientationAnswers } from "@/lib/orientation/public";
-import { getAcademicAccessConclusion } from "@/lib/orientation/verified-academic-options";
 import type {
   OrientationSelectionItem,
   OrientationSelectionReasonCode,
@@ -185,9 +184,10 @@ function nullable(value: string | undefined | null) {
   return normalized || null;
 }
 
-function safeProfile(profile: PublicOrientationAnswers) {
-  const academicAccess = getAcademicAccessConclusion(profile);
-
+function safeProfile(
+  profile: PublicOrientationAnswers,
+  academicAccessStatus: string | null | undefined,
+) {
   return {
     bac_status: nullable(profile.bacStatus),
     bac_year: nullable(profile.bacYear),
@@ -211,7 +211,7 @@ function safeProfile(profile: PublicOrientationAnswers) {
       .map((city) => boundedString(city, 80))
       .filter((city): city is string => Boolean(city))
       .slice(0, 3),
-    academic_access_status: nullable(academicAccess.status),
+    academic_access_status: nullable(academicAccessStatus),
   };
 }
 
@@ -348,7 +348,7 @@ export function buildOrientationWriterContext(
 ): OrientationWriterContext {
   return {
     locale: input.locale,
-    PROFIL_ETUDIANT: safeProfile(input.profile),
+    PROFIL_ETUDIANT: safeProfile(input.profile, input.academicAccessStatus),
     FAITS_VERIFIES: {
       selection_status: input.selection.status,
       programmes: input.selection.selected.map(safeProgramme),
@@ -537,6 +537,7 @@ const fallbackCopy = {
 function localizedAdmissionOutlook(
   locale: OrientationWriterLocale,
   profile: PublicOrientationAnswers,
+  academicAccessStatus: string | null | undefined,
   item: OrientationSelectionItem,
 ) {
   const strongSignals = [
@@ -553,10 +554,9 @@ function localizedAdmissionOutlook(
     item.reasons.includes(reason as OrientationSelectionReasonCode)
   ).length;
 
-  const academicAccess = getAcademicAccessConclusion(profile);
   const strong =
     profile.bacStatus === "obtained"
-    && academicAccess.status === "direct_subject_restricted"
+    && academicAccessStatus === "direct_subject_restricted"
     && item.verification.overallStatus === "verified"
     && strongSignals >= 4;
 
@@ -581,6 +581,7 @@ function localizedAdmissionOutlook(
 function localizedReason(
   locale: OrientationWriterLocale,
   profile: PublicOrientationAnswers,
+  academicAccessStatus: string | null | undefined,
   item: OrientationSelectionItem,
 ) {
   const city = item.verification.candidate.city;
@@ -672,7 +673,7 @@ function localizedReason(
     de: "Wir prüfen diese Option aus konkreten Gründen: ",
   }[locale];
 
-  return `${localizedAdmissionOutlook(locale, profile, item)} ${prefix}${selectedReasons.join(" · ")}.`;
+  return `${localizedAdmissionOutlook(locale, profile, academicAccessStatus, item)} ${prefix}${selectedReasons.join(" · ")}.`;
 }
 
 function localizedVerificationNote(
@@ -742,7 +743,12 @@ export function buildDeterministicOrientationWriterContent(
       institution: item.verification.candidate.institution,
       programme: item.verification.candidate.programme,
       city: item.verification.candidate.city,
-      whyItFits: localizedReason(input.locale, input.profile, item),
+      whyItFits: localizedReason(
+        input.locale,
+        input.profile,
+        input.academicAccessStatus,
+        item,
+      ),
       verificationNote: localizedVerificationNote(input.locale, item),
     })),
     roadmap: copy.roadmap.map(([id, label, text]) => ({ id, label, text })),
@@ -768,6 +774,7 @@ function admissionOutlookPattern(locale: OrientationWriterLocale) {
 function normalizeAdmissionOutlook(
   locale: OrientationWriterLocale,
   profile: PublicOrientationAnswers,
+  academicAccessStatus: string | null | undefined,
   item: OrientationSelectionItem,
   text: string,
 ) {
@@ -777,7 +784,12 @@ function normalizeAdmissionOutlook(
     .replace(/[\s·,:;–—-]+$/u, "")
     .replace(/\.+$/u, "");
   const reason = clean ? `${clean}.` : "";
-  return `${reason}${reason ? " " : ""}${localizedAdmissionOutlook(locale, profile, item)}`;
+  return `${reason}${reason ? " " : ""}${localizedAdmissionOutlook(
+    locale,
+    profile,
+    academicAccessStatus,
+    item,
+  )}`;
 }
 
 function unsupportedLanguagePriority(
