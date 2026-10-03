@@ -221,10 +221,15 @@ export default async function StudentEntry() {
         <h1 className="mt-2 text-[2.25rem] font-semibold tracking-[-0.045em] text-[var(--foreground)] sm:text-[3rem]">
           {cockpit.greeting} <bdi dir="auto">{profile.first_name || t.studentFallback}</bdi>
         </h1>
-        <p className="mt-2 max-w-4xl text-sm font-medium leading-6 text-[var(--muted)] sm:text-base">
-          <span className="font-bold text-[var(--foreground-soft)]">{cockpit.projectLabel} :</span>{" "}
-          <bdi dir="auto">{projectSummary}</bdi>
-        </p>
+        <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-2">
+          <p className="max-w-4xl text-sm font-medium leading-6 text-[var(--muted)] sm:text-base">
+            <span className="font-bold text-[var(--foreground-soft)]">{cockpit.projectLabel} :</span>{" "}
+            <bdi dir="auto">{projectSummary}</bdi>
+          </p>
+          <Link href="/student/pathway" className="text-xs font-bold text-[var(--brand)] hover:underline">
+            {t.pathwayCta}
+          </Link>
+        </div>
       </header>
 
       <section className="mt-6 grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,0.34fr)] lg:items-stretch">
