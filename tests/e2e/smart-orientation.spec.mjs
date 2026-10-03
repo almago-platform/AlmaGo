@@ -341,17 +341,16 @@ test.describe("Smart Orientation Partner-Ready rehearsal", () => {
 
     if ((primaryPayload?.personalized?.selected?.length || 0) > 0) {
       await expect(page.getByText("Les programmes que nous étudions pour votre projet")).toBeVisible();
-      await expect(page.getByText("Votre prochaine étape")).toBeVisible();
+      await expect(page.getByText("Votre priorité maintenant")).toBeVisible();
       await expect(page.getByText("Ce que nous retenons de votre dossier")).toBeVisible();
-      await expect(page.getByText("Ce qui est encourageant")).toBeVisible();
+      await expect(page.getByText("Ce qui ressort")).toBeVisible();
       await expect(page.getByText(/Première estimation Campus Allemagne/i).first()).toBeVisible();
-      await expect(page.getByText(/Vous n’avez pas à porter tout le projet seul/i)).toBeVisible();
-      await expect(page.getByText("Campus Allemagne avance avec vous")).toBeVisible();
+      await expect(page.getByText(/Vous avancez sur le B1\. Nous avançons sur le reste/i)).toBeVisible();
       await expect(page.getByText("La piste qui ressort le plus aujourd’hui")).toBeVisible();
       await expect(page.getByText(/Autres pistes que nous continuons à étudier/i)).toBeVisible();
-      await expect(page.getByText(/Pendant ce temps, nous avançons aussi/i)).toBeVisible();
+      await expect(page.getByText(/Nous avançons en parallèle/i)).toBeVisible();
       await expect(page.getByText(/Préparation en Allemagne lorsque votre situation le permet/i)).toBeVisible();
-      await expect(page.getByText(/La prochaine décision se prend avec vous/i)).toBeVisible();
+      await expect(page.getByText(/On reprend ce rapport avec vous/i)).toBeVisible();
       await expect(page.getByText(/selon l’accompagnement choisi/i)).toHaveCount(0);
       await expect(page.getByText("Voir les informations vérifiées et les sources officielles")).toBeVisible();
     }
