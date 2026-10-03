@@ -48,12 +48,14 @@ test("V8 removes obsolete trust-polish override block", () => {
 
 
 
-test("tools stay centered while FAQ keeps the original split layout", () => {
+test("tools stay centered while FAQ uses the refined split editorial layout", () => {
   assert.match(css, /\.helpfulToolsHeading[\s\S]*margin-inline:\s*auto[\s\S]*text-align:\s*center/);
   assert.match(css, /\.helpfulToolCard[\s\S]*text-align:\s*center/);
   assert.match(faq, /<summary>[\s\S]*<span>\{question\}<\/span>[\s\S]*<HomeIcon name="plus" \/>/);
   assert.doesNotMatch(faq, /faqNumber|faqToggle/);
-  assert.match(css, /FAQ restore — keep the original split editorial layout/);
-  assert.match(css, /\.faqGrid[\s\S]*grid-template-columns:\s*minmax\(0, 0\.76fr\) minmax\(0, 1\.24fr\)/);
-  assert.match(css, /\.faqIntro[\s\S]*position:\s*sticky[\s\S]*text-align:\s*left/);
+  assert.match(css, /FAQ V2 — keep the split layout, refine hierarchy and interaction/);
+  assert.match(css, /\.faqGrid[\s\S]*grid-template-columns:\s*minmax\(300px, \.78fr\) minmax\(0, 1\.22fr\)/);
+  assert.match(css, /\.faqIntro[\s\S]*position:\s*sticky[\s\S]*border-radius:\s*16px[\s\S]*text-align:\s*left/);
+  assert.match(css, /\.faqList details\[open\]::before[\s\S]*background:\s*var\(--brand\)/);
+  assert.match(css, /\.faqList details\[open\] summary svg[\s\S]*background:\s*var\(--brand\)/);
 });
