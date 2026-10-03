@@ -199,7 +199,7 @@ export default async function OrientationReportPage({
 
           <div className="mb-6 border-b border-[var(--border)] pb-5">
             <p className="eyebrow">{prospectCopy.report.label}</p>
-            <h1 className="mt-2 text-2xl font-bold">{prospectCopy.report.title}</h1>
+            <h1 className="mt-2 text-3xl font-semibold tracking-tight">{prospectCopy.report.title}</h1>
             <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{prospectCopy.report.subtitle}</p>
             <div className="mt-3 text-xs leading-5 text-[var(--muted)]">
               <p>{resumeCopy.created} <bdi dir="auto">{created}</bdi></p>
