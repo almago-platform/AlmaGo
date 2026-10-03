@@ -403,6 +403,8 @@ test("D Gemini adapter is server-only, structured, bounded and has no research t
   assert.match(geminiSource, /responseJsonSchema: responseSchema\(input\)/);
   assert.doesNotMatch(geminiSource, /responseSchema: responseSchema\(input\)/);
   assert.match(geminiSource, /REQUEST_TIMEOUT_MS = 20_000/);
+  assert.match(geminiSource, /maxOutputTokens: 4000/);
+  assert.match(geminiSource, /thinkingLevel: "low"/);
   assert.match(geminiSource, /CACHE_TTL_MS = 30 \* 60 \* 1000/);
   assert.match(geminiSource, /const inFlight = new Map<string, Promise<OrientationWriterResult>>/);
   assert.match(geminiSource, /const pending = inFlight\.get\(key\)/);
