@@ -16,7 +16,7 @@ export type PublicOrientationStudyIntent =
   | "restart_bachelor"
   | "switch_field"
   | "master_after_degree"
-  | "undecided";
+  | "not_sure";
 export type PublicOrientationMasterSubjectCredits = Record<string, string>;
 
 export type PublicOrientationAnswers = {
@@ -119,7 +119,7 @@ export function restorePublicOrientationAnswers(value: unknown): PublicOrientati
     || rawStudyIntent === "restart_bachelor"
     || rawStudyIntent === "switch_field"
     || rawStudyIntent === "master_after_degree"
-    || rawStudyIntent === "undecided"
+    || rawStudyIntent === "not_sure"
       ? rawStudyIntent
       : "";
   const rawTargetIntakeSeason = readString(record, "targetIntakeSeason");
