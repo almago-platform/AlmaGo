@@ -5,8 +5,11 @@ const {
   buildOrientationCanonicalShortlist,
 } = await import("../src/lib/orientation-engine/result/canonical.ts");
 
-function engine(recommendations = []) {
-  return { recommendations };
+function engine(recommendations = [], bacStatus = "obtained") {
+  return {
+    profile: { bacStatus },
+    recommendations,
+  };
 }
 
 function deterministicRecommendation({
@@ -74,6 +77,23 @@ test("canonical shortlist always prefers the verified personalized selection", (
     result.items.some((item) => item.programme === "Old Catalogue Programme"),
     false,
   );
+});
+
+test("canonical shortlist never exposes university programmes for a no-Bac route", () => {
+  const result = buildOrientationCanonicalShortlist(
+    engine([
+      deterministicRecommendation({
+        institution: "Should Not Surface University",
+        programme: "Informatik",
+      }),
+    ], "no_bac"),
+    personalized([]),
+  );
+
+  assert.deepEqual(result, {
+    source: "none",
+    items: [],
+  });
 });
 
 test("canonical shortlist falls back to deterministic catalogue only when personalized selection is empty", () => {
