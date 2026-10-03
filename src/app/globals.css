@@ -108,6 +108,21 @@ body {
     #edf6f0;
 }
 
+.orientation-unified-shell {
+  background:
+    linear-gradient(180deg, rgba(255, 253, 249, 0.99) 0%, rgba(251, 247, 240, 0.99) 100%);
+  border: 1px solid var(--border);
+  box-shadow: 0 24px 70px rgba(19, 33, 49, 0.08);
+}
+
+.orientation-unified-shell .orientation-chapter {
+  border-top: 1px solid var(--border);
+}
+
+.orientation-unified-shell .orientation-chapter:first-of-type {
+  border-top: 0;
+}
+
 a, button, input, select, textarea { -webkit-tap-highlight-color: transparent; }
 
 :focus-visible {
