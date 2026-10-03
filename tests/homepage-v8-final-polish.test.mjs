@@ -47,21 +47,13 @@ test("V8 removes obsolete trust-polish override block", () => {
 });
 
 
-test("premium FAQ uses numbered editorial accordions and a highlighted open state", () => {
-  assert.match(faq, /className=\{s\.faqNumber\}/);
-  assert.match(faq, /className=\{s\.faqToggle\}/);
-  assert.match(css, /\.faqIntro::after/);
-  assert.match(css, /\.faqList details\[open\]/);
-  assert.match(css, /\.faqList details\[open\] \.faqNumber/);
-  assert.match(css, /\.faqList details\[open\] \.faqToggle/);
-  assert.match(css, /@media \(max-width: 899px\)[\s\S]*\.faqGrid[\s\S]*grid-template-columns:\s*1fr/);
-});
 
-
-test("tools and FAQ keep a centered reading axis", () => {
+test("tools stay centered while FAQ keeps the original split layout", () => {
   assert.match(css, /\.helpfulToolsHeading[\s\S]*margin-inline:\s*auto[\s\S]*text-align:\s*center/);
   assert.match(css, /\.helpfulToolCard[\s\S]*text-align:\s*center/);
-  assert.match(css, /\.faqGrid[\s\S]*margin-inline:\s*auto/);
-  assert.match(css, /\.faqIntro[\s\S]*margin:\s*0 auto 34px[\s\S]*text-align:\s*center/);
-  assert.match(css, /@media \(max-width: 767px\)[\s\S]*\.helpfulToolCard[\s\S]*flex-direction:\s*column/);
+  assert.match(faq, /<summary>[\s\S]*<span>\{question\}<\/span>[\s\S]*<HomeIcon name="plus" \/>/);
+  assert.doesNotMatch(faq, /faqNumber|faqToggle/);
+  assert.match(css, /FAQ restore — keep the original split editorial layout/);
+  assert.match(css, /\.faqGrid[\s\S]*grid-template-columns:\s*minmax\(0, 0\.76fr\) minmax\(0, 1\.24fr\)/);
+  assert.match(css, /\.faqIntro[\s\S]*position:\s*sticky[\s\S]*text-align:\s*left/);
 });
