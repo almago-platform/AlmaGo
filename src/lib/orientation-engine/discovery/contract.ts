@@ -82,6 +82,45 @@ const programmeFamiliesByField: Record<string, OrientationProgrammeFamily[]> = {
   ],
 };
 
+const scienceFamiliesBySpecialty: Record<string, OrientationProgrammeFamily[]> = {
+  biology_life_sciences: [
+    {
+      id: "biology_life_sciences",
+      label: "Biology / Life Sciences",
+      aliases: ["Biology", "Life Sciences", "Biological Sciences", "Biowissenschaften"],
+    },
+  ],
+  chemistry: [
+    {
+      id: "chemistry",
+      label: "Chemistry",
+      aliases: ["Chemistry", "Chemie"],
+    },
+  ],
+  physics: [
+    {
+      id: "physics",
+      label: "Physics",
+      aliases: ["Physics", "Physik"],
+    },
+  ],
+  mathematics_sciences: [
+    {
+      id: "mathematics",
+      label: "Mathematics",
+      aliases: ["Mathematics", "Mathematik"],
+    },
+  ],
+  earth_environment: [
+    {
+      id: "earth_environment",
+      label: "Earth / Environmental Sciences",
+      aliases: ["Earth Sciences", "Environmental Sciences", "Geosciences", "Umweltwissenschaften"],
+    },
+  ],
+  undecided: programmeFamiliesByField.Sciences,
+};
+
 const engineeringFamiliesBySpecialty: Record<string, OrientationProgrammeFamily[]> = {
   computer_engineering: [
     {
@@ -248,6 +287,7 @@ export function normalizeOrientationDiscoveryProfile(
     targetDegree: cleanString(answers.targetDegree),
     targetField: cleanString(answers.targetField),
     engineeringSpecialty: cleanString(answers.engineeringSpecialty),
+    scienceSpecialty: answers.scienceSpecialty || null,
     germanLevel: cleanString(answers.germanLevel, 16),
     englishLevel: cleanString(answers.englishLevel, 16),
     studyLanguage: cleanString(answers.studyLanguage, 40),
@@ -273,6 +313,12 @@ export function resolveOrientationProgrammeFamilies(
     return engineeringFamiliesBySpecialty[
       profile.engineeringSpecialty || "undecided"
     ] || engineeringFamiliesBySpecialty.other;
+  }
+
+  if (profile.targetField === "Sciences") {
+    return scienceFamiliesBySpecialty[
+      profile.scienceSpecialty || "undecided"
+    ] || programmeFamiliesByField.Sciences;
   }
 
   return programmeFamiliesByField[profile.targetField || "other"]

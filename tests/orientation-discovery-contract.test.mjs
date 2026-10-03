@@ -68,6 +68,28 @@ test("A1 owns an automotive programme-family map instead of asking the provider 
   assert.ok(plan.searchQueries.some((query) => query.includes("Automotive Engineering")));
 });
 
+test("A1 narrows generic Sciences to the selected science speciality", () => {
+  const plan = buildOrientationDiscoveryPlan(answers({
+    targetField: "Sciences",
+    engineeringSpecialty: "",
+    scienceSpecialty: "biology_life_sciences",
+  }));
+  const aliases = plan.programmeFamilies.flatMap((family) => family.aliases);
+
+  assert.equal(plan.status, "ready");
+  assert.ok(aliases.includes("Biology"));
+  assert.ok(aliases.includes("Life Sciences"));
+  assert.equal(aliases.includes("Mathematics"), false);
+  assert.equal(aliases.includes("Physics"), false);
+  assert.ok(
+    plan.searchQueries.some((query) => /Biology|Life Sciences/i.test(query)),
+  );
+  assert.equal(
+    plan.searchQueries.some((query) => /Mathematics|Physics/i.test(query)),
+    false,
+  );
+});
+
 test("A1 refuses normal university discovery for no-Bac profiles until the academic route is reviewed", () => {
   const plan = buildOrientationDiscoveryPlan(answers({
     bacStatus: "no_bac",

@@ -38,6 +38,15 @@ export const studyFieldOptions: readonly SelectOption[] = [
   { value: "other", label: "Autre" },
 ];
 
+export const scienceSpecialtyOptions: readonly SelectOption[] = [
+  { value: "biology_life_sciences", label: "Biologie / sciences de la vie" },
+  { value: "chemistry", label: "Chimie" },
+  { value: "physics", label: "Physique" },
+  { value: "mathematics_sciences", label: "Mathématiques" },
+  { value: "earth_environment", label: "Sciences de la Terre / environnement" },
+  { value: "undecided", label: "Je ne sais pas encore" },
+];
+
 export const engineeringSpecialtyOptions: readonly SelectOption[] = [
   { value: "computer_engineering", label: "Informatique / Computer Engineering" },
   { value: "electrical_electronics", label: "Électrotechnique / électronique" },

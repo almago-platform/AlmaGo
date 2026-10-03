@@ -37,6 +37,7 @@ export type OrientationWriterContext = {
     target_degree: string | null;
     target_field: string | null;
     engineering_specialty: string | null;
+    science_specialty: string | null;
     german_level: string | null;
     english_level: string | null;
     study_language: string | null;
@@ -209,6 +210,7 @@ function safeProfile(
     target_degree: nullable(profile.targetDegree),
     target_field: nullable(profile.targetField),
     engineering_specialty: nullable(profile.engineeringSpecialty),
+    science_specialty: nullable(profile.scienceSpecialty),
     german_level: nullable(profile.germanLevel),
     english_level: nullable(profile.englishLevel),
     study_language: nullable(profile.studyLanguage),
@@ -223,6 +225,60 @@ function safeProfile(
       .slice(0, 3),
     academic_access_status: nullable(academicAccessStatus),
   };
+}
+
+function normalizedComparison(value: string | null | undefined) {
+  return (value || "").trim().replace(/\s+/g, " ").toLocaleLowerCase("en");
+}
+
+function fieldSwitchProjectStatus(
+  locale: OrientationWriterLocale,
+  profile: PublicOrientationAnswers,
+) {
+  if (profile.studyIntent !== "switch_field") return null;
+  const current = boundedString(profile.currentStudyField, 120);
+  const target = boundedString(profile.targetField, 120);
+  if (!current || !target || normalizedComparison(current) === normalizedComparison(target)) {
+    return null;
+  }
+
+  return {
+    fr: `Vous passez de ${current} vers ${target} ; nous vérifions maintenant la compatibilité académique de ce changement.`,
+    ar: `أنت تنتقل من ${current} إلى ${target}، ونحن نتحقق الآن من التوافق الأكاديمي لهذا التغيير.`,
+    en: `You are moving from ${current} to ${target}; we are now checking the academic compatibility of this change.`,
+    de: `Du wechselst von ${current} zu ${target}; wir prüfen jetzt die akademische Vereinbarkeit dieses Fachwechsels.`,
+  }[locale];
+}
+
+function fieldSwitchPriority(
+  locale: OrientationWriterLocale,
+  profile: PublicOrientationAnswers,
+) {
+  const status = fieldSwitchProjectStatus(locale, profile);
+  if (!status) return null;
+
+  return {
+    fr: {
+      title: "Clarifier le changement de domaine",
+      text: "Nous comparons votre parcours actuel avec les conditions du nouveau domaine avant de retenir les candidatures.",
+      nextStep: "Préparez vos relevés et diplômes universitaires pour cette vérification.",
+    },
+    ar: {
+      title: "توضيح تغيير المجال",
+      text: "نقارن مسارك الحالي بشروط المجال الجديد قبل اعتماد طلبات التقديم.",
+      nextStep: "جهّز كشوف الأعداد والشهادات الجامعية لهذا التحقق.",
+    },
+    en: {
+      title: "Clarify the field change",
+      text: "We compare your current academic path with the new field's requirements before selecting applications.",
+      nextStep: "Prepare your university transcripts and qualifications for this review.",
+    },
+    de: {
+      title: "Den Fachwechsel klären",
+      text: "Wir vergleichen deinen bisherigen Studienweg mit den Anforderungen des neuen Fachs, bevor Bewerbungen ausgewählt werden.",
+      nextStep: "Halte deine Hochschulzeugnisse und Leistungsnachweise für diese Prüfung bereit.",
+    },
+  }[locale];
 }
 
 function safeFactValue(value: unknown): SafeFactValue | null {
@@ -718,11 +774,14 @@ export function buildDeterministicOrientationWriterContent(
   const language = context.LANGUAGE_FOCUS;
 
   const projectStatus =
-    status === "ready"
-      ? copy.projectReady
-      : status === "partial"
-        ? copy.projectPartial
-        : copy.projectEmpty;
+    fieldSwitchProjectStatus(input.locale, input.profile)
+    || (
+      status === "ready"
+        ? copy.projectReady
+        : status === "partial"
+          ? copy.projectPartial
+          : copy.projectEmpty
+    );
 
   const campusValue = context.OPTIONS_CAMPUS_ALLEMAGNE.length > 0
     ? context.OPTIONS_CAMPUS_ALLEMAGNE
@@ -734,11 +793,13 @@ export function buildDeterministicOrientationWriterContent(
   return {
     opening: copy.opening(context.PROFIL_ETUDIANT),
     projectStatus,
-    mainPriority: {
-      title: copy.priorityTitle,
-      text: copy.priorityText,
-      nextStep: copy.priorityStep,
-    },
+    mainPriority:
+      fieldSwitchPriority(input.locale, input.profile)
+      || {
+        title: copy.priorityTitle,
+        text: copy.priorityText,
+        nextStep: copy.priorityStep,
+      },
     languagePlan: {
       show: language.show,
       currentLevel: language.current_level,
@@ -948,17 +1009,24 @@ export function parseOrientationWriterPayload(
   });
 
   const focus = context.LANGUAGE_FOCUS;
-  const safePriority = unsupportedLanguagePriority(
-    input.locale,
-    focus,
-    [priorityTitle, priorityText, priorityStep],
-  )
-    ? nonLanguagePriorityCopy(input.locale)
-    : {
-        title: priorityTitle,
-        text: priorityText,
-        nextStep: priorityStep,
-      };
+  const switchPriority =
+    !focus.show && input.academicAccessStatus !== "direct_subject_restricted"
+      ? fieldSwitchPriority(input.locale, input.profile)
+      : null;
+  const safePriority = switchPriority
+    || (
+      unsupportedLanguagePriority(
+        input.locale,
+        focus,
+        [priorityTitle, priorityText, priorityStep],
+      )
+        ? nonLanguagePriorityCopy(input.locale)
+        : {
+            title: priorityTitle,
+            text: priorityText,
+            nextStep: priorityStep,
+          }
+    );
 
   const availablePaths = Array.isArray(payload.language_plan?.available_paths)
     ? payload.language_plan.available_paths
@@ -969,7 +1037,9 @@ export function parseOrientationWriterPayload(
 
   return {
     opening,
-    projectStatus,
+    projectStatus:
+      fieldSwitchProjectStatus(input.locale, input.profile)
+      || projectStatus,
     mainPriority: safePriority,
     languagePlan: {
       show: focus.show,

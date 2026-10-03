@@ -21,6 +21,7 @@ const demoAnswers = {
   targetDegree: "Bachelor",
   targetField: "Informatique",
   engineeringSpecialty: "",
+  scienceSpecialty: "" as const,
   germanLevel: "B1",
   englishLevel: "B2",
   studyLanguage: "Allemand",

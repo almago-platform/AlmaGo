@@ -14,6 +14,7 @@ import {
   degreeOptions,
   diplomaOptions,
   engineeringSpecialtyOptions,
+  scienceSpecialtyOptions,
   studyFieldOptions,
   studyLanguageOptions,
 } from "@/lib/student/profile-options";
@@ -281,9 +282,12 @@ export function OrientationOnePagePrintReport({
   const field = localizedValue(answers.targetField, locale, studyFieldOptions);
   const lastDiploma = localizedValue(answers.lastDiploma, locale, diplomaOptions);
   const studyLanguage = localizedValue(answers.studyLanguage, locale, studyLanguageOptions);
-  const specialty = answers.targetField === "Ingénierie" && answers.engineeringSpecialty
-    ? localizedValue(answers.engineeringSpecialty, locale, engineeringSpecialtyOptions)
-    : null;
+  const specialty =
+    answers.targetField === "Ingénierie" && answers.engineeringSpecialty
+      ? localizedValue(answers.engineeringSpecialty, locale, engineeringSpecialtyOptions)
+      : answers.targetField === "Sciences" && answers.scienceSpecialty
+        ? localizedValue(answers.scienceSpecialty, locale, scienceSpecialtyOptions)
+        : null;
   const german = answers.germanLevel || "—";
   const english = answers.englishLevel || "—";
   const academicAccessText = compactAcademicAccess(access.status, locale);

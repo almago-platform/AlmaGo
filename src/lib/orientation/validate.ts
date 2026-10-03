@@ -7,6 +7,7 @@ import {
   higherEducationStatusOptions,
   languageLevelOptions,
   preferredCityOptions,
+  scienceSpecialtyOptions,
   studyFieldOptions,
   studyIntentOptions,
   studyLanguageOptions,
@@ -20,6 +21,7 @@ const allowed = {
   degree: new Set(valuesOf(degreeOptions)),
   field: new Set(valuesOf(studyFieldOptions)),
   engineeringSpecialty: new Set(valuesOf(engineeringSpecialtyOptions)),
+  scienceSpecialty: new Set(valuesOf(scienceSpecialtyOptions)),
   higherEducationStatus: new Set(valuesOf(higherEducationStatusOptions)),
   studyIntent: new Set(valuesOf(studyIntentOptions)),
   level: new Set(valuesOf(languageLevelOptions)),
@@ -91,6 +93,18 @@ export function validatePublicOrientationAnswers(value: unknown) {
     && answers.engineeringSpecialty
     && !allowed.engineeringSpecialty.has(answers.engineeringSpecialty)
   ) return null;
+
+  if (
+    answers.targetField === "Sciences"
+    && answers.scienceSpecialty
+    && !allowed.scienceSpecialty.has(answers.scienceSpecialty)
+  ) return null;
+
+  if (
+    answers.targetField !== "Sciences"
+    && answers.scienceSpecialty
+  ) return null;
+
 
   if (!allowed.level.has(answers.germanLevel) || !allowed.level.has(answers.englishLevel)) {
     return null;
