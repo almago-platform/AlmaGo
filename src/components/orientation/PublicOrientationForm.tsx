@@ -355,7 +355,10 @@ export function PublicOrientationForm({
             </div>
           ) : null}
 
-          <div className="professional-panel rounded-[var(--radius-panel)] p-5 sm:p-7">
+          <div className={step <= 4
+            ? "professional-panel rounded-[var(--radius-panel)] p-5 sm:p-7"
+            : "orientation-result-shell"
+          }>
             {step <= 4 ? (
               <form
                 onSubmit={(event) => {
