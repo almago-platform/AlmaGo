@@ -4,9 +4,11 @@ import {
   degreeOptions,
   diplomaOptions,
   engineeringSpecialtyOptions,
+  higherEducationStatusOptions,
   languageLevelOptions,
   preferredCityOptions,
   studyFieldOptions,
+  studyIntentOptions,
   studyLanguageOptions,
   tunisianBacTrackOptions,
   valuesOf,
@@ -18,6 +20,8 @@ const allowed = {
   degree: new Set(valuesOf(degreeOptions)),
   field: new Set(valuesOf(studyFieldOptions)),
   engineeringSpecialty: new Set(valuesOf(engineeringSpecialtyOptions)),
+  higherEducationStatus: new Set(valuesOf(higherEducationStatusOptions)),
+  studyIntent: new Set(valuesOf(studyIntentOptions)),
   level: new Set(valuesOf(languageLevelOptions)),
   studyLanguage: new Set(valuesOf(studyLanguageOptions)),
   budget: new Set(valuesOf(budgetOptions)),
@@ -48,8 +52,34 @@ export function validatePublicOrientationAnswers(value: unknown) {
 
   if (answers.lastDiploma && !allowed.diploma.has(answers.lastDiploma)) return null;
   if (answers.bacStatus === "no_bac" && !answers.lastDiploma) return null;
+
+  if (
+    answers.higherEducationStatus
+    && !allowed.higherEducationStatus.has(answers.higherEducationStatus)
+  ) return null;
+  if (answers.currentStudyField.length > 120) return null;
+  if (answers.targetSpecialization.length > 120) return null;
+
+  if (answers.universitySemesters) {
+    const semesters = Number(answers.universitySemesters);
+    if (!Number.isInteger(semesters) || semesters < 1 || semesters > 30) return null;
+  }
+
+  if (answers.studyIntent && !allowed.studyIntent.has(answers.studyIntent)) return null;
+
+  if (answers.higherEducationStatus === "not_started") {
+    if (answers.currentStudyField || answers.universitySemesters || answers.studyIntent) return null;
+  }
+
+  if (
+    answers.higherEducationStatus
+    && answers.higherEducationStatus !== "not_started"
+    && (!answers.currentStudyField || !answers.studyIntent)
+  ) return null;
+
   if (!allowed.degree.has(answers.targetDegree)) return null;
   if (!allowed.field.has(answers.targetField)) return null;
+  if (answers.targetDegree !== "Master" && answers.targetSpecialization) return null;
 
   if (
     answers.targetField === "Ingénierie"

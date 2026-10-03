@@ -74,6 +74,22 @@ export const diplomaOptions: readonly SelectOption[] = [
   { value: "other", label: "Autre" },
 ];
 
+export const higherEducationStatusOptions: readonly SelectOption[] = [
+  { value: "not_started", label: "Je n’ai pas encore commencé l’université" },
+  { value: "currently_enrolled", label: "J’étudie actuellement à l’université" },
+  { value: "interrupted", label: "J’ai interrompu mes études universitaires" },
+  { value: "completed", label: "J’ai terminé un diplôme universitaire" },
+];
+
+export const studyIntentOptions: readonly SelectOption[] = [
+  { value: "continue_same_field", label: "Continuer dans le même domaine" },
+  { value: "transfer_credits", label: "Étudier la possibilité de reprendre mes crédits" },
+  { value: "restart_bachelor", label: "Recommencer un Bachelor" },
+  { value: "switch_field", label: "Changer de domaine" },
+  { value: "master_after_degree", label: "Préparer un Master après mon diplôme" },
+  { value: "not_sure", label: "Je ne sais pas encore" },
+];
+
 export const studyLanguageOptions: readonly SelectOption[] = [
   { value: "Allemand", label: "Allemand" },
   { value: "Anglais", label: "Anglais" },

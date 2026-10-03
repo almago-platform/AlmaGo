@@ -15,6 +15,14 @@ export type OrientationCopy = {
     yearHelp: string;
     averageHelp: string;
     lastDiplomaHelp: string;
+    higherEducationStatus: string;
+    currentStudyField: string;
+    currentStudyFieldHelp: string;
+    universitySemesters: string;
+    universitySemestersHelp: string;
+    studyIntent: string;
+    targetSpecialization: string;
+    targetSpecializationHelp: string;
     cities: string;
     citiesHelp: string;
   };
@@ -46,6 +54,11 @@ export type OrientationCopy = {
       bacTrack: string;
       average: string;
       diploma: string;
+      higherEducationStatus: string;
+      currentStudyField: string;
+      universitySemesters: string;
+      studyIntent: string;
+      targetSpecialization: string;
       degree: string;
       field: string;
       german: string;
@@ -77,6 +90,14 @@ const fr: OrientationCopy = {
     yearHelp: "Année obtenue ou prévue.",
     averageHelp: "Facultatif. Moyenne sur 20, réelle ou estimée.",
     lastDiplomaHelp: "Facultatif si le Bac est votre dernier diplôme.",
+    higherEducationStatus: "Après le Bac, quelle est votre situation universitaire ?",
+    currentStudyField: "Domaine de vos études actuelles ou précédentes",
+    currentStudyFieldHelp: "Ex. informatique, électrotechnique, économie…",
+    universitySemesters: "Nombre de semestres déjà suivis",
+    universitySemestersHelp: "Facultatif. Indiquez seulement les semestres réellement suivis.",
+    studyIntent: "En Allemagne, vous souhaitez surtout…",
+    targetSpecialization: "Spécialisation recherchée pour le Master",
+    targetSpecializationHelp: "Facultatif. Ex. Data / IA, automobile, finance…",
     cities: "Villes qui vous intéressent",
     citiesHelp: "Facultatif · jusqu’à 3 villes. Vous pourrez changer plus tard.",
   },
@@ -100,7 +121,7 @@ const fr: OrientationCopy = {
     home: "Retour à l’accueil",
     labels: {
       bacStatus: "Bac", bacYear: "Année du Bac", bacTrack: "Section", average: "Moyenne",
-      diploma: "Dernier diplôme", degree: "Niveau visé", field: "Domaine", german: "Allemand",
+      diploma: "Dernier diplôme", higherEducationStatus: "Situation universitaire", currentStudyField: "Domaine universitaire", universitySemesters: "Semestres suivis", studyIntent: "Objectif universitaire", targetSpecialization: "Spécialisation Master", degree: "Niveau visé", field: "Domaine", german: "Allemand",
       english: "Anglais", studyLanguage: "Langue d’études", budget: "Budget", cities: "Villes",
     },
   },
@@ -126,6 +147,14 @@ const ar: OrientationCopy = {
     yearHelp: "سنة الحصول عليها أو السنة المتوقعة.",
     averageHelp: "اختياري. المعدل من 20، الفعلي أو المتوقع.",
     lastDiplomaHelp: "اختياري إذا كانت البكالوريا آخر شهادة لديك.",
+    higherEducationStatus: "ما وضعك الجامعي بعد البكالوريا؟",
+    currentStudyField: "مجال دراستك الجامعية الحالية أو السابقة",
+    currentStudyFieldHelp: "مثال: علوم الحاسوب، هندسة كهربائية، اقتصاد…",
+    universitySemesters: "عدد السداسيات التي درستها بالفعل",
+    universitySemestersHelp: "اختياري. اذكر فقط السداسيات التي درستها فعليًا.",
+    studyIntent: "في ألمانيا، ما الذي تريد فعله أساسًا؟",
+    targetSpecialization: "التخصص الذي تبحث عنه في الماجستير",
+    targetSpecializationHelp: "اختياري. مثال: البيانات والذكاء الاصطناعي، السيارات، التمويل…",
     cities: "المدن التي تهمك",
     citiesHelp: "اختياري · حتى 3 مدن. يمكنك تغييرها لاحقًا.",
   },
@@ -149,7 +178,7 @@ const ar: OrientationCopy = {
     home: "العودة إلى الرئيسية",
     labels: {
       bacStatus: "البكالوريا", bacYear: "سنة البكالوريا", bacTrack: "الشعبة", average: "المعدل",
-      diploma: "آخر شهادة", degree: "الدرجة المستهدفة", field: "المجال", german: "الألمانية",
+      diploma: "آخر شهادة", higherEducationStatus: "الوضع الجامعي", currentStudyField: "المجال الجامعي", universitySemesters: "السداسيات المدروسة", studyIntent: "الهدف الجامعي", targetSpecialization: "تخصص الماجستير", degree: "الدرجة المستهدفة", field: "المجال", german: "الألمانية",
       english: "الإنجليزية", studyLanguage: "لغة الدراسة", budget: "الميزانية", cities: "المدن",
     },
   },
@@ -175,6 +204,14 @@ const en: OrientationCopy = {
     yearHelp: "Year completed or expected.",
     averageHelp: "Optional. Actual or estimated average out of 20.",
     lastDiplomaHelp: "Optional if the Baccalaureate is your latest qualification.",
+    higherEducationStatus: "What is your university situation after secondary school?",
+    currentStudyField: "Current or previous university study field",
+    currentStudyFieldHelp: "For example: Computer Science, Electrical Engineering, Economics…",
+    universitySemesters: "Number of semesters already studied",
+    universitySemestersHelp: "Optional. Count only semesters you actually attended.",
+    studyIntent: "In Germany, what would you mainly like to do?",
+    targetSpecialization: "Master’s specialisation you are looking for",
+    targetSpecializationHelp: "Optional. For example: Data / AI, Automotive, Finance…",
     cities: "Cities you are interested in",
     citiesHelp: "Optional · up to 3 cities. You can change this later.",
   },
@@ -198,7 +235,7 @@ const en: OrientationCopy = {
     home: "Back to home",
     labels: {
       bacStatus: "Baccalaureate", bacYear: "Baccalaureate year", bacTrack: "Track", average: "Average",
-      diploma: "Latest qualification", degree: "Target degree", field: "Subject", german: "German",
+      diploma: "Latest qualification", higherEducationStatus: "University situation", currentStudyField: "University field", universitySemesters: "Semesters studied", studyIntent: "University goal", targetSpecialization: "Master’s specialisation", degree: "Target degree", field: "Subject", german: "German",
       english: "English", studyLanguage: "Study language", budget: "Budget", cities: "Cities",
     },
   },
@@ -224,6 +261,14 @@ const de: OrientationCopy = {
     yearHelp: "Abschlussjahr oder erwartetes Jahr.",
     averageHelp: "Optional. Tatsächlicher oder geschätzter Durchschnitt von 20.",
     lastDiplomaHelp: "Optional, wenn das Baccalauréat dein letzter Abschluss ist.",
+    higherEducationStatus: "Wie ist deine Hochschulsituation nach dem Schulabschluss?",
+    currentStudyField: "Aktuelles oder früheres Studienfach",
+    currentStudyFieldHelp: "Zum Beispiel Informatik, Elektrotechnik, Wirtschaft…",
+    universitySemesters: "Bereits studierte Semester",
+    universitySemestersHelp: "Optional. Gib nur tatsächlich studierte Semester an.",
+    studyIntent: "Was möchtest du in Deutschland vor allem tun?",
+    targetSpecialization: "Gesuchte Master-Spezialisierung",
+    targetSpecializationHelp: "Optional. Zum Beispiel Data / AI, Automotive, Finance…",
     cities: "Städte, die dich interessieren",
     citiesHelp: "Optional · bis zu 3 Städte. Du kannst das später ändern.",
   },
@@ -247,7 +292,7 @@ const de: OrientationCopy = {
     home: "Zurück zur Startseite",
     labels: {
       bacStatus: "Baccalauréat", bacYear: "Jahr des Baccalauréat", bacTrack: "Fachrichtung", average: "Durchschnitt",
-      diploma: "Letzter Abschluss", degree: "Gewünschter Abschluss", field: "Fach", german: "Deutsch",
+      diploma: "Letzter Abschluss", higherEducationStatus: "Hochschulsituation", currentStudyField: "Studienfach", universitySemesters: "Studierte Semester", studyIntent: "Studienziel", targetSpecialization: "Master-Spezialisierung", degree: "Gewünschter Abschluss", field: "Fach", german: "Deutsch",
       english: "Englisch", studyLanguage: "Studiensprache", budget: "Budget", cities: "Städte",
     },
   },

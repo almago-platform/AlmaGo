@@ -3,6 +3,20 @@ export const PUBLIC_ORIENTATION_SESSION_KEY = "almago_phase2_orientation_v1";
 export type PublicOrientationBacStatus = "" | "obtained" | "preparing" | "no_bac";
 export type PublicOrientationAverageType = "" | "official" | "current_estimate";
 export type PublicOrientationIntakeSeason = "" | "winter" | "summer";
+export type PublicOrientationHigherEducationStatus =
+  | ""
+  | "not_started"
+  | "currently_enrolled"
+  | "interrupted"
+  | "completed";
+export type PublicOrientationStudyIntent =
+  | ""
+  | "continue_same_field"
+  | "transfer_credits"
+  | "restart_bachelor"
+  | "switch_field"
+  | "master_after_degree"
+  | "not_sure";
 export type PublicOrientationMasterSubjectCredits = Record<string, string>;
 
 export type PublicOrientationAnswers = {
@@ -12,6 +26,11 @@ export type PublicOrientationAnswers = {
   generalAverage: string;
   averageType: PublicOrientationAverageType;
   lastDiploma: string;
+  higherEducationStatus: PublicOrientationHigherEducationStatus;
+  currentStudyField: string;
+  universitySemesters: string;
+  studyIntent: PublicOrientationStudyIntent;
+  targetSpecialization: string;
   targetDegree: string;
   targetField: string;
   engineeringSpecialty: string;
@@ -33,6 +52,11 @@ export function createEmptyPublicOrientationAnswers(): PublicOrientationAnswers 
     generalAverage: "",
     averageType: "",
     lastDiploma: "",
+    higherEducationStatus: "",
+    currentStudyField: "",
+    universitySemesters: "",
+    studyIntent: "",
+    targetSpecialization: "",
     targetDegree: "",
     targetField: "",
     engineeringSpecialty: "",
@@ -80,6 +104,24 @@ export function restorePublicOrientationAnswers(value: unknown): PublicOrientati
       ? rawBacStatus
       : "";
   const generalAverage = readString(record, "generalAverage");
+  const rawHigherEducationStatus = readString(record, "higherEducationStatus");
+  const higherEducationStatus: PublicOrientationHigherEducationStatus =
+    rawHigherEducationStatus === "not_started"
+    || rawHigherEducationStatus === "currently_enrolled"
+    || rawHigherEducationStatus === "interrupted"
+    || rawHigherEducationStatus === "completed"
+      ? rawHigherEducationStatus
+      : "";
+  const rawStudyIntent = readString(record, "studyIntent");
+  const studyIntent: PublicOrientationStudyIntent =
+    rawStudyIntent === "continue_same_field"
+    || rawStudyIntent === "transfer_credits"
+    || rawStudyIntent === "restart_bachelor"
+    || rawStudyIntent === "switch_field"
+    || rawStudyIntent === "master_after_degree"
+    || rawStudyIntent === "not_sure"
+      ? rawStudyIntent
+      : "";
   const rawTargetIntakeSeason = readString(record, "targetIntakeSeason");
   const targetIntakeSeason: PublicOrientationIntakeSeason =
     rawTargetIntakeSeason === "winter" || rawTargetIntakeSeason === "summer"
@@ -123,6 +165,11 @@ export function restorePublicOrientationAnswers(value: unknown): PublicOrientati
       averageType: record.averageType,
     }),
     lastDiploma: readString(record, "lastDiploma"),
+    higherEducationStatus,
+    currentStudyField: readString(record, "currentStudyField").slice(0, 120),
+    universitySemesters: readString(record, "universitySemesters").slice(0, 3),
+    studyIntent,
+    targetSpecialization: readString(record, "targetSpecialization").slice(0, 120),
     targetDegree: readString(record, "targetDegree"),
     targetField: readString(record, "targetField"),
     engineeringSpecialty: readString(record, "engineeringSpecialty"),
