@@ -1,7 +1,9 @@
 import type { PublicOrientationAnswers } from "@/lib/orientation/public";
+import { getAcademicAccessConclusion } from "@/lib/orientation/verified-academic-options";
 import type {
   OrientationSelectionItem,
   OrientationSelectionReasonCode,
+  OrientationSelectionResult,
   OrientationSelectionWarningCode,
 } from "@/lib/orientation-engine/selection/types";
 import type {
@@ -40,6 +42,7 @@ export type OrientationWriterContext = {
     };
     budget_range: string | null;
     preferred_cities: string[];
+    academic_access_status: string | null;
   };
   FAITS_VERIFIES: {
     selection_status: string;
@@ -183,6 +186,8 @@ function nullable(value: string | undefined | null) {
 }
 
 function safeProfile(profile: PublicOrientationAnswers) {
+  const academicAccess = getAcademicAccessConclusion(profile);
+
   return {
     bac_status: nullable(profile.bacStatus),
     bac_year: nullable(profile.bacYear),
@@ -206,6 +211,7 @@ function safeProfile(profile: PublicOrientationAnswers) {
       .map((city) => boundedString(city, 80))
       .filter((city): city is string => Boolean(city))
       .slice(0, 3),
+    academic_access_status: nullable(academicAccess.status),
   };
 }
 
@@ -254,30 +260,86 @@ function safeProgramme(item: OrientationSelectionItem) {
   };
 }
 
-function nextLevel(current: string | null) {
-  const order = ["none", "A1", "A2", "B1", "B2", "C1", "C2"];
-  if (!current) return null;
-  const index = order.indexOf(current);
-  if (index < 0 || index >= order.length - 1) return null;
-  return order[index + 1];
+const languageLevelOrder = ["none", "A1", "A2", "B1", "B2", "C1", "C2"] as const;
+
+function languageLevelRank(value: string | null) {
+  return value ? languageLevelOrder.indexOf(value as (typeof languageLevelOrder)[number]) : -1;
+}
+
+function requiredLanguageLevel(value: unknown) {
+  if (typeof value !== "string") return null;
+  return value.toUpperCase().match(/\b(A1|A2|B1|B2|C1|C2)\b/)?.[1] || null;
+}
+
+function nextLevelTowardRequirement(current: string | null, required: string | null) {
+  const currentRank = languageLevelRank(current);
+  const requiredRank = languageLevelRank(required);
+  if (currentRank < 0 || requiredRank < 0 || currentRank >= requiredRank) return null;
+  return languageLevelOrder[Math.min(currentRank + 1, requiredRank)] || null;
+}
+
+function verifiedLanguageRequirement(
+  item: OrientationSelectionItem,
+  field: "german_language_requirement" | "english_language_requirement",
+) {
+  const fact = item.verification.facts.find(
+    (candidate) => candidate.field === field && candidate.status === "verified",
+  );
+  return requiredLanguageLevel(fact?.value);
 }
 
 export function orientationWriterLanguageFocus(
   profile: PublicOrientationAnswers,
+  selection: OrientationSelectionResult,
 ) {
-  const prefersEnglish =
-    profile.studyLanguage === "Anglais"
-    && profile.englishLevel
-    && profile.englishLevel !== "none";
+  const languages: Array<{
+    language: "german" | "english";
+    current: string | null;
+    field: "german_language_requirement" | "english_language_requirement";
+  }> = [];
 
-  const current = prefersEnglish
-    ? nullable(profile.englishLevel)
-    : nullable(profile.germanLevel);
+  if (profile.studyLanguage === "Allemand" || profile.studyLanguage === "Allemand et anglais") {
+    languages.push({
+      language: "german",
+      current: nullable(profile.germanLevel),
+      field: "german_language_requirement",
+    });
+  }
+  if (profile.studyLanguage === "Anglais" || profile.studyLanguage === "Allemand et anglais") {
+    languages.push({
+      language: "english",
+      current: nullable(profile.englishLevel),
+      field: "english_language_requirement",
+    });
+  }
+
+  const candidates = languages.flatMap((language) =>
+    selection.selected.flatMap((item) => {
+      const required = verifiedLanguageRequirement(item, language.field);
+      const next = nextLevelTowardRequirement(language.current, required);
+      if (!required || !next) return [];
+      return [{
+        ...language,
+        required,
+        next,
+        gap: languageLevelRank(required) - languageLevelRank(language.current),
+      }];
+    })
+  ).sort((a, b) => {
+    if (a.gap !== b.gap) return a.gap - b.gap;
+    return a.language === "german" ? -1 : 1;
+  });
+
+  const selected = candidates[0] || null;
+  const fallbackCurrent =
+    profile.studyLanguage === "Anglais"
+      ? nullable(profile.englishLevel)
+      : nullable(profile.germanLevel);
 
   return {
-    show: Boolean(current),
-    current_level: current,
-    next_level: nextLevel(current),
+    show: Boolean(selected),
+    current_level: selected?.current || fallbackCurrent,
+    next_level: selected?.next || null,
   };
 }
 
@@ -296,7 +358,7 @@ export function buildOrientationWriterContext(
       input.locale,
       input.availableActions,
     ),
-    LANGUAGE_FOCUS: orientationWriterLanguageFocus(input.profile),
+    LANGUAGE_FOCUS: orientationWriterLanguageFocus(input.profile, input.selection),
   };
 }
 
@@ -474,6 +536,7 @@ const fallbackCopy = {
 
 function localizedAdmissionOutlook(
   locale: OrientationWriterLocale,
+  profile: PublicOrientationAnswers,
   item: OrientationSelectionItem,
 ) {
   const strongSignals = [
@@ -490,8 +553,11 @@ function localizedAdmissionOutlook(
     item.reasons.includes(reason as OrientationSelectionReasonCode)
   ).length;
 
+  const academicAccess = getAcademicAccessConclusion(profile);
   const strong =
-    item.verification.overallStatus === "verified"
+    profile.bacStatus === "obtained"
+    && academicAccess.status === "direct_subject_restricted"
+    && item.verification.overallStatus === "verified"
     && strongSignals >= 4;
 
   const copy = {
@@ -514,6 +580,7 @@ function localizedAdmissionOutlook(
 
 function localizedReason(
   locale: OrientationWriterLocale,
+  profile: PublicOrientationAnswers,
   item: OrientationSelectionItem,
 ) {
   const city = item.verification.candidate.city;
@@ -605,7 +672,7 @@ function localizedReason(
     de: "Wir prüfen diese Option aus konkreten Gründen: ",
   }[locale];
 
-  return `${localizedAdmissionOutlook(locale, item)} ${prefix}${selectedReasons.join(" · ")}.`;
+  return `${localizedAdmissionOutlook(locale, profile, item)} ${prefix}${selectedReasons.join(" · ")}.`;
 }
 
 function localizedVerificationNote(
@@ -675,7 +742,7 @@ export function buildDeterministicOrientationWriterContent(
       institution: item.verification.candidate.institution,
       programme: item.verification.candidate.programme,
       city: item.verification.candidate.city,
-      whyItFits: localizedReason(input.locale, item),
+      whyItFits: localizedReason(input.locale, input.profile, item),
       verificationNote: localizedVerificationNote(input.locale, item),
     })),
     roadmap: copy.roadmap.map(([id, label, text]) => ({ id, label, text })),
@@ -686,6 +753,72 @@ export function buildDeterministicOrientationWriterContent(
       text: action.description,
     },
   };
+}
+
+function admissionOutlookPattern(locale: OrientationWriterLocale) {
+  const patterns = {
+    fr: /première estimation Campus Allemagne\s*:\s*(?:fortes chances d[’']admission|bon potentiel d[’']admission)[^.]*\.?/i,
+    ar: /التقدير الأولي من Campus Allemagne[^.؟!]*(?:فرص القبول قوية|فرصة قبول جيدة|إمكانات جيدة للقبول)[^.؟!]*[.؟!]?/i,
+    en: /initial Campus Allemagne estimate\s*:\s*(?:strong admission chances|good admission potential)[^.]*\.?/i,
+    de: /erste Einschätzung von Campus Allemagne\s*:\s*(?:(?:gute bis sehr gute|starke) Zulassungschancen|gutes Zulassungspotenzial)[^.]*\.?/i,
+  } as const;
+  return patterns[locale];
+}
+
+function normalizeAdmissionOutlook(
+  locale: OrientationWriterLocale,
+  profile: PublicOrientationAnswers,
+  item: OrientationSelectionItem,
+  text: string,
+) {
+  const clean = text
+    .replace(admissionOutlookPattern(locale), "")
+    .trim()
+    .replace(/[\s·,:;–—-]+$/u, "")
+    .replace(/\.+$/u, "");
+  const reason = clean ? `${clean}.` : "";
+  return `${reason}${reason ? " " : ""}${localizedAdmissionOutlook(locale, profile, item)}`;
+}
+
+function unsupportedLanguagePriority(
+  locale: OrientationWriterLocale,
+  focus: OrientationWriterContext["LANGUAGE_FOCUS"],
+  values: readonly string[],
+) {
+  if (focus.show || focus.next_level) return false;
+  const text = values.join(" ");
+  const languageWords = {
+    fr: /\b(?:langue|linguistique|allemand|anglais)\b/i,
+    ar: /(?:اللغة|الألمانية|الإنجليزية)/i,
+    en: /\b(?:language|german|english)\b/i,
+    de: /\b(?:sprache|deutsch|englisch)\b/i,
+  }[locale];
+  return languageWords.test(text) && /\b(?:A1|A2|B1|B2|C1|C2)\b/i.test(text);
+}
+
+function nonLanguagePriorityCopy(locale: OrientationWriterLocale) {
+  return {
+    fr: {
+      title: "Préparer la prochaine décision",
+      text: "Gardez vos éléments académiques prêts pendant que Campus Allemagne termine les vérifications utiles.",
+      nextStep: "Rassemblez vos documents d’études ; nous avançons sur la sélection et les conditions.",
+    },
+    ar: {
+      title: "الاستعداد للقرار التالي",
+      text: "احتفظ بوثائقك الأكاديمية جاهزة بينما يُكمل Campus Allemagne التحققات اللازمة.",
+      nextStep: "جهّز وثائق الدراسة، ونحن نتابع اختيار البرامج والشروط.",
+    },
+    en: {
+      title: "Prepare the next decision",
+      text: "Keep your academic documents ready while Campus Allemagne completes the useful checks.",
+      nextStep: "Gather your study documents while we progress the shortlist and requirements.",
+    },
+    de: {
+      title: "Die nächste Entscheidung vorbereiten",
+      text: "Halte deine Studienunterlagen bereit, während Campus Allemagne die wichtigen Prüfungen abschließt.",
+      nextStep: "Stelle deine Studienunterlagen zusammen; wir arbeiten an Auswahl und Voraussetzungen weiter.",
+    },
+  }[locale];
 }
 
 function requiredString(value: unknown, max = 700) {
@@ -787,6 +920,17 @@ export function parseOrientationWriterPayload(
   });
 
   const focus = context.LANGUAGE_FOCUS;
+  const safePriority = unsupportedLanguagePriority(
+    input.locale,
+    focus,
+    [priorityTitle, priorityText, priorityStep],
+  )
+    ? nonLanguagePriorityCopy(input.locale)
+    : {
+        title: priorityTitle,
+        text: priorityText,
+        nextStep: priorityStep,
+      };
 
   const availablePaths = Array.isArray(payload.language_plan?.available_paths)
     ? payload.language_plan.available_paths
@@ -798,11 +942,7 @@ export function parseOrientationWriterPayload(
   return {
     opening,
     projectStatus,
-    mainPriority: {
-      title: priorityTitle,
-      text: priorityText,
-      nextStep: priorityStep,
-    },
+    mainPriority: safePriority,
     languagePlan: {
       show: focus.show,
       currentLevel: focus.current_level,
