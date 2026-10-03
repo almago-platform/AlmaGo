@@ -121,25 +121,25 @@ export function PublicOrientationForm({
   }[locale];
   const resultActionsCopy = {
     fr: {
-      title: "Conservez votre orientation",
+      title: "Gardez votre rapport",
       pdf: "Enregistrer mon rapport (PDF)",
       adjust: "Ajuster mon profil",
       home: "Retour à l’accueil",
     },
     ar: {
-      title: "احتفظ بنتيجة توجيهك",
+      title: "احتفظ بتقريرك",
       pdf: "حفظ تقريري (PDF)",
       adjust: "تعديل ملفي",
       home: "العودة إلى الصفحة الرئيسية",
     },
     en: {
-      title: "Keep your orientation report",
+      title: "Keep your report",
       pdf: "Save my report (PDF)",
       adjust: "Adjust my profile",
       home: "Back to home",
     },
     de: {
-      title: "Orientierung sichern",
+      title: "Bericht speichern",
       pdf: "Bericht als PDF speichern",
       adjust: "Profil anpassen",
       home: "Zur Startseite",
