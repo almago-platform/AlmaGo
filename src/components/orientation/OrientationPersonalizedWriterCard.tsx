@@ -23,6 +23,9 @@ const copy = {
   fr: {
     heroEyebrow: "Votre orientation Campus Allemagne",
     heroTitle: "Votre projet Allemagne prend forme.",
+    summaryTitle: "Votre projet, en bref",
+    summaryText: "Vous gardez une prochaine étape claire. Campus Allemagne garde la vue d’ensemble : nous comparons les programmes, vérifions les conditions, structurons votre dossier et vos candidatures, puis préparons avec vous la suite après admission selon l’accompagnement choisi. Vous n’avez pas à porter seul la complexité du projet.",
+    summaryTags: ["Prochaine étape claire", "Dossier structuré", "Parcours coordonné"],
     options: "Programmes sélectionnés pour votre projet",
     why: "Pourquoi cette piste",
     confirmed: "Informations confirmées",
@@ -63,6 +66,9 @@ const copy = {
   ar: {
     heroEyebrow: "توجيهك مع Campus Allemagne",
     heroTitle: "مشروعك نحو ألمانيا يتضح.",
+    summaryTitle: "مشروعك باختصار",
+    summaryText: "تبقى أمامك خطوة واضحة في كل مرة، بينما يحتفظ Campus Allemagne بالصورة الكاملة: نقارن البرامج، نتحقق من الشروط، ننظم ملفك وطلباتك، ثم نجهز معك ما بعد القبول حسب نوع المرافقة المختار. لست مضطرًا لتحمل تعقيد المشروع وحدك.",
+    summaryTags: ["خطوة واضحة", "ملف منظم", "مسار منسق"],
     options: "البرامج المختارة لمشروعك",
     why: "لماذا هذا المسار",
     confirmed: "معلومات مؤكدة",
@@ -103,6 +109,9 @@ const copy = {
   en: {
     heroEyebrow: "Your Campus Allemagne orientation",
     heroTitle: "Your Germany project is taking shape.",
+    summaryTitle: "Your project, at a glance",
+    summaryText: "You keep one clear next step. Campus Allemagne keeps the full picture in view: we compare programmes, check requirements, structure your dossier and applications, then prepare the post-admission steps with you according to the support selected. You do not have to carry the project’s complexity alone.",
+    summaryTags: ["Clear next step", "Dossier structured", "Journey coordinated"],
     options: "Programmes selected for your project",
     why: "Why this path",
     confirmed: "Confirmed information",
@@ -143,6 +152,9 @@ const copy = {
   de: {
     heroEyebrow: "Deine Orientierung mit Campus Allemagne",
     heroTitle: "Dein Deutschland-Projekt nimmt Form an.",
+    summaryTitle: "Dein Projekt auf einen Blick",
+    summaryText: "Du behältst einen klaren nächsten Schritt. Campus Allemagne behält den Gesamtweg im Blick: Wir vergleichen Programme, prüfen Voraussetzungen, strukturieren Unterlagen und Bewerbungen und bereiten danach mit dir die Schritte nach einer Zulassung entsprechend der gewählten Begleitung vor. Du musst die Komplexität des Projekts nicht allein tragen.",
+    summaryTags: ["Klarer nächster Schritt", "Unterlagen strukturiert", "Weg koordiniert"],
     options: "Ausgewählte Programme für dein Projekt",
     why: "Warum diese Option",
     confirmed: "Bestätigte Informationen",
@@ -483,6 +495,32 @@ export function OrientationPersonalizedWriterCard({
         </div>
       </header>
 
+      <section
+        aria-labelledby="orientation-summary"
+        className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface-subtle)] px-4 py-4 sm:px-5"
+      >
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div className="max-w-3xl">
+            <h4 id="orientation-summary" className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--brand-strong)]">
+              {t.summaryTitle}
+            </h4>
+            <p className="mt-1.5 text-sm leading-6 text-[var(--foreground)]">
+              {t.summaryText}
+            </p>
+          </div>
+          <div className="flex shrink-0 flex-wrap gap-2 sm:max-w-[15rem] sm:justify-end">
+            {t.summaryTags.map((tag) => (
+              <span
+                key={tag}
+                className="rounded-full bg-[var(--surface)] px-2.5 py-1 text-[11px] font-semibold text-[var(--muted)] ring-1 ring-inset ring-[var(--border)]"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <section aria-labelledby="orientation-premium-options">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <h4 id="orientation-premium-options" className="text-2xl font-semibold tracking-tight">
@@ -636,14 +674,24 @@ export function OrientationPersonalizedWriterCard({
         <h4 id="orientation-responsibilities" className="text-2xl font-semibold tracking-tight">
           {t.roles}
         </h4>
-        <div className="mt-4 grid items-start gap-3 lg:grid-cols-[0.8fr_1.4fr] lg:grid-rows-[auto_auto]">
-          <div className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-4 lg:col-start-1 lg:row-start-1">
-            <p className="text-xs font-bold text-[var(--brand-strong)]">01</p>
-            <h5 className="mt-1.5 text-base font-semibold">{t.roleYou}</h5>
-            <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{roleTexts[0]}</p>
+        <div className="mt-4 grid items-start gap-3 lg:grid-cols-[0.8fr_1.4fr]">
+          <div className="grid gap-3">
+            <div className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-4">
+              <p className="text-xs font-bold text-[var(--brand-strong)]">01</p>
+              <h5 className="mt-1.5 text-base font-semibold">{t.roleYou}</h5>
+              <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{roleTexts[0]}</p>
+            </div>
+
+            <div className="flex gap-3 rounded-[var(--radius-control)] bg-[var(--surface-subtle)] px-4 py-3">
+              <span className="text-xs font-bold text-[var(--brand-strong)]">03</span>
+              <div>
+                <p className="text-sm font-semibold">{t.roleTogether}</p>
+                <p className="mt-0.5 text-sm leading-6 text-[var(--muted)]">{roleTexts[1]}</p>
+              </div>
+            </div>
           </div>
 
-          <div className="rounded-[var(--radius-panel)] bg-[var(--foreground)] p-4 text-white sm:p-5 lg:col-start-2 lg:row-span-2 lg:row-start-1">
+          <div className="rounded-[var(--radius-panel)] bg-[var(--foreground)] p-4 text-white sm:p-5">
             <p className="text-xs font-bold text-white/[0.55]">02</p>
             <h5 className="mt-1.5 text-lg font-semibold">{t.roleCampus}</h5>
             <p className="mt-2 text-sm leading-6 text-white/[0.72]">{t.campusLead}</p>
@@ -655,14 +703,6 @@ export function OrientationPersonalizedWriterCard({
                 </li>
               ))}
             </ul>
-          </div>
-
-          <div className="flex gap-3 rounded-[var(--radius-control)] bg-[var(--surface-subtle)] px-4 py-3 lg:col-start-1 lg:row-start-2">
-            <span className="text-xs font-bold text-[var(--brand-strong)]">03</span>
-            <div>
-              <p className="text-sm font-semibold">{t.roleTogether}</p>
-              <p className="mt-0.5 text-sm leading-6 text-[var(--muted)]">{roleTexts[1]}</p>
-            </div>
           </div>
         </div>
       </section>
