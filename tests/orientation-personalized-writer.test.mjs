@@ -506,6 +506,66 @@ test("D backend removes invented language escalation when no verified unmet requ
   assert.equal(parsed.languagePlan.nextLevel, null);
 });
 
+test("D backend explicitly frames a switch of study field and academic compatibility review", () => {
+  const switchProfile = profile({
+    higherEducationStatus: "currently_enrolled",
+    currentStudyField: "Lettres / Langues",
+    universitySemesters: "2",
+    studyIntent: "switch_field",
+    targetField: "Économie/Gestion",
+    engineeringSpecialty: "",
+    scienceSpecialty: "",
+    germanLevel: "B2",
+  });
+  const writerInput = input({
+    profile: switchProfile,
+    selection: { ...selection(3), profile: switchProfile },
+    academicAccessStatus: "needs_human_verification",
+  });
+
+  const deterministic = buildDeterministicOrientationWriterContent(writerInput);
+  assert.match(deterministic.projectStatus, /Lettres \/ Langues/);
+  assert.match(deterministic.projectStatus, /Économie\/Gestion/);
+  assert.match(deterministic.projectStatus, /compatibilité académique/i);
+  assert.match(deterministic.mainPriority.title, /changement de domaine/i);
+
+  const raw = validPayload(writerInput);
+  raw.project_status = "Votre projet avance normalement.";
+  raw.main_priority = {
+    title: "Continuer",
+    text: "Continuez simplement votre projet.",
+    next_step: "Avancer.",
+  };
+
+  const parsed = parseOrientationWriterPayload(writerInput, raw);
+  assert.ok(parsed);
+  assert.match(parsed.projectStatus, /Lettres \/ Langues/);
+  assert.match(parsed.projectStatus, /Économie\/Gestion/);
+  assert.match(parsed.projectStatus, /compatibilité académique/i);
+  assert.match(parsed.mainPriority.title, /changement de domaine/i);
+  assert.match(parsed.mainPriority.nextStep, /relevés|diplômes/i);
+});
+
+test("D writer context carries the bounded science speciality", () => {
+  const scienceProfile = profile({
+    targetField: "Sciences",
+    engineeringSpecialty: "",
+    scienceSpecialty: "biology_life_sciences",
+  });
+  const context = buildOrientationWriterContext(input({
+    profile: scienceProfile,
+    selection: { ...selection(3), profile: scienceProfile },
+  }));
+
+  assert.equal(
+    context.PROFIL_ETUDIANT.science_specialty,
+    "biology_life_sciences",
+  );
+  assert.match(geminiSource, /science_specialty/i);
+  assert.match(geminiSource, /do not broaden it to unrelated science subjects/i);
+  assert.match(geminiSource, /explicitly acknowledge the transition/i);
+});
+
 test("D accepts schema-valid Gemini prose without a second semantic rejection layer", () => {
   const writerInput = input();
   const raw = validPayload(writerInput);
