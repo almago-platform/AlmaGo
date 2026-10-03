@@ -563,21 +563,17 @@ export function parseOrientationWriterPayload(
   );
   if (!allowedAction) return null;
 
-  const expectedOptions = new Map(
-    input.selection.selected.map((item) => [optionId(item), item]),
-  );
-  const seenOptions = new Set<string>();
-  const studyOptions = rawStudyOptions(payload.study_options).flatMap((raw) => {
-    const item = raw as Record<string, unknown>;
-    const id = sanitizeCode(item.option_id);
+  const expectedOptions = input.selection.selected;
+  const returnedOptions = rawStudyOptions(payload.study_options);
+  if (returnedOptions.length !== expectedOptions.length) return null;
+
+  const studyOptions = expectedOptions.flatMap((selected, index) => {
+    const item = returnedOptions[index] as Record<string, unknown>;
     const why = requiredString(item.why_it_fits, 500);
     const note = requiredString(item.verification_note, 500);
-    if (!id || !why || !note || seenOptions.has(id)) return [];
-    const selected = expectedOptions.get(id);
-    if (!selected) return [];
-    seenOptions.add(id);
+    if (!why || !note) return [];
     return [{
-      optionId: id,
+      optionId: optionId(selected),
       position: selected.position,
       institution: selected.verification.candidate.institution,
       programme: selected.verification.candidate.programme,
@@ -587,7 +583,7 @@ export function parseOrientationWriterPayload(
     }];
   });
 
-  if (studyOptions.length !== expectedOptions.size) return null;
+  if (studyOptions.length !== expectedOptions.length) return null;
 
   const roadmap = rawRoadmap(payload.roadmap).flatMap((raw) => {
     const item = raw as Record<string, unknown>;
@@ -598,9 +594,17 @@ export function parseOrientationWriterPayload(
   }).slice(0, MAX_ROADMAP_ITEMS);
 
   if (roadmap.length < 2) return null;
-  if (new Set(roadmap.map((item) => item.id)).size !== roadmap.length) {
-    return null;
-  }
+  const seenRoadmapIds = new Set<string>();
+  const normalizedRoadmap = roadmap.map((item, index) => {
+    if (!seenRoadmapIds.has(item.id)) {
+      seenRoadmapIds.add(item.id);
+      return item;
+    }
+    return {
+      ...item,
+      id: `${item.id}_${index + 1}`,
+    };
+  });
 
   const focus = context.LANGUAGE_FOCUS;
 
@@ -628,7 +632,7 @@ export function parseOrientationWriterPayload(
     },
     campusValue,
     studyOptions: studyOptions.sort((a, b) => a.position - b.position),
-    roadmap,
+    roadmap: normalizedRoadmap,
     reassurance,
     cta: {
       actionId: allowedAction.id,
