@@ -17,6 +17,14 @@ export type PublicOrientationStudyIntent =
   | "switch_field"
   | "master_after_degree"
   | "not_sure";
+export type PublicOrientationScienceSpecialty =
+  | ""
+  | "biology_life_sciences"
+  | "chemistry"
+  | "physics"
+  | "mathematics_sciences"
+  | "earth_environment"
+  | "undecided";
 export type PublicOrientationMasterSubjectCredits = Record<string, string>;
 
 export type PublicOrientationAnswers = {
@@ -34,6 +42,7 @@ export type PublicOrientationAnswers = {
   targetDegree: string;
   targetField: string;
   engineeringSpecialty: string;
+  scienceSpecialty: PublicOrientationScienceSpecialty;
   germanLevel: string;
   englishLevel: string;
   studyLanguage: string;
@@ -60,6 +69,7 @@ export function createEmptyPublicOrientationAnswers(): PublicOrientationAnswers 
     targetDegree: "",
     targetField: "",
     engineeringSpecialty: "",
+    scienceSpecialty: "",
     germanLevel: "",
     englishLevel: "",
     studyLanguage: "",
@@ -122,6 +132,16 @@ export function restorePublicOrientationAnswers(value: unknown): PublicOrientati
     || rawStudyIntent === "not_sure"
       ? rawStudyIntent
       : "";
+  const rawScienceSpecialty = readString(record, "scienceSpecialty");
+  const scienceSpecialty: PublicOrientationScienceSpecialty =
+    rawScienceSpecialty === "biology_life_sciences"
+    || rawScienceSpecialty === "chemistry"
+    || rawScienceSpecialty === "physics"
+    || rawScienceSpecialty === "mathematics_sciences"
+    || rawScienceSpecialty === "earth_environment"
+    || rawScienceSpecialty === "undecided"
+      ? rawScienceSpecialty
+      : "";
   const rawTargetIntakeSeason = readString(record, "targetIntakeSeason");
   const targetIntakeSeason: PublicOrientationIntakeSeason =
     rawTargetIntakeSeason === "winter" || rawTargetIntakeSeason === "summer"
@@ -173,6 +193,7 @@ export function restorePublicOrientationAnswers(value: unknown): PublicOrientati
     targetDegree: readString(record, "targetDegree"),
     targetField: readString(record, "targetField"),
     engineeringSpecialty: readString(record, "engineeringSpecialty"),
+    scienceSpecialty,
     germanLevel: readString(record, "germanLevel"),
     englishLevel: readString(record, "englishLevel"),
     studyLanguage: readString(record, "studyLanguage"),
