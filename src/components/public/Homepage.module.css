@@ -7180,3 +7180,222 @@
 :global(html[dir="rtl"]) .photoBandHeading .eyebrow {
   justify-content: flex-start;
 }
+
+
+/* FAQ restore — keep the original split editorial layout and simple accordions. */
+.faq {
+  position: static;
+  overflow: visible;
+  border-top: 1px solid var(--border);
+  background: var(--background);
+}
+
+.faq::before {
+  display: none;
+}
+
+.faq.section {
+  padding-block: 76px;
+}
+
+.faqGrid {
+  display: grid;
+  width: auto;
+  margin-inline: 0;
+  grid-template-columns: minmax(0, 0.76fr) minmax(0, 1.24fr);
+  gap: 64px;
+  align-items: start;
+}
+
+.faqIntro {
+  position: sticky;
+  top: 116px;
+  width: auto;
+  margin: 0;
+  padding: 0;
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  text-align: left;
+}
+
+.faqIntro::after {
+  display: none;
+}
+
+.faqIntro .eyebrow {
+  justify-content: flex-start;
+  margin-bottom: 16px;
+}
+
+.faqIntro .sectionTitle {
+  max-width: none;
+  margin-inline: 0;
+  font-size: clamp(38px, 3.25vw, 50px);
+  line-height: 1.08;
+  text-align: left;
+}
+
+.faqIntro .lead {
+  max-width: 330px;
+  margin: 17px 0 0;
+  font-size: 14px;
+  line-height: 1.7;
+  text-align: left;
+}
+
+.faqIntro .textLink {
+  justify-content: flex-start;
+  margin-top: 17px;
+}
+
+.faqList {
+  width: auto;
+  margin-inline: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.faqList details {
+  overflow: hidden;
+  margin-bottom: 10px;
+  padding-inline: 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-panel);
+  background: var(--surface-raised);
+  box-shadow: var(--shadow-xs);
+  transform: none;
+}
+
+.faqList details:hover,
+.faqList details[open] {
+  transform: none;
+  border-color: var(--border);
+  background: var(--surface-raised);
+  box-shadow: var(--shadow-xs);
+}
+
+.faqList summary {
+  display: flex;
+  min-height: 72px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 16px 0;
+  list-style: none;
+  cursor: pointer;
+  color: var(--foreground);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.faqList summary::-webkit-details-marker {
+  display: none;
+}
+
+.faqList summary:hover {
+  color: var(--brand-strong);
+}
+
+.faqList summary svg {
+  width: 17px;
+  height: 17px;
+  flex: 0 0 auto;
+  transition: transform 160ms;
+}
+
+.faqList details[open] summary svg {
+  transform: rotate(45deg);
+}
+
+.faqList details > p {
+  max-width: 720px;
+  margin: 0;
+  padding: 0 34px 18px 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.72;
+  text-align: left;
+}
+
+@media (max-width: 899px) {
+  .faqGrid {
+    grid-template-columns: 1fr;
+    gap: 26px;
+  }
+
+  .faqIntro {
+    position: static;
+  }
+
+  .faqList details {
+    padding-inline: 16px;
+  }
+}
+
+@media (max-width: 767px) {
+  .faq.section {
+    padding-block: 52px;
+  }
+
+  .faq .sectionTitle {
+    font-size: 34px;
+  }
+
+  .faq .lead {
+    max-width: none;
+    margin-top: 12px;
+    font-size: 13px;
+  }
+
+  .faq .textLink {
+    margin-top: 10px;
+  }
+
+  .faqList summary {
+    min-height: 56px;
+    gap: 14px;
+    padding: 14px 0;
+    font-size: 13px;
+    line-height: 1.35;
+  }
+
+  .faqList summary svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .faqList details > p {
+    padding: 0 28px 16px 0;
+    font-size: 12px;
+    line-height: 1.65;
+    text-align: left;
+  }
+}
+
+:global(html[dir="rtl"]) .faqIntro,
+:global(html[dir="rtl"]) .faqIntro .sectionTitle,
+:global(html[dir="rtl"]) .faqIntro .lead,
+:global(html[dir="rtl"]) .faqList details > p {
+  text-align: right;
+}
+
+:global(html[dir="rtl"]) .faqIntro .eyebrow,
+:global(html[dir="rtl"]) .faqIntro .textLink {
+  justify-content: flex-start;
+}
+
+:global(html[dir="rtl"]) .faqList details > p {
+  padding: 0 0 18px 34px;
+}
+
+@media (max-width: 767px) {
+  :global(html[dir="rtl"]) .faqList details > p {
+    padding: 0 0 16px 28px;
+  }
+}
