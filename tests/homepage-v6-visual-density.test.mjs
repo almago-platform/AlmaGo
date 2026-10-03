@@ -70,3 +70,11 @@ test("photo-band matches the approved reference composition", () => {
   assert.match(css, /\.photoBandEyebrowMarker[\s\S]*border-left:\s*14px solid var\(--brand\)/);
   assert.match(css, /\.photoBandLead[\s\S]*font-size:\s*clamp\(16px, 1\.45vw, 23px\)/);
 });
+
+
+test("supporting photo-band lines align with the vertical accent", () => {
+  assert.match(css, /Align the two supporting lines with the vertical accent start/);
+  assert.match(css, /\.photoBandEyebrow,[\s\S]*\.photoBandLead[\s\S]*margin-left:\s*-70px/);
+  assert.match(css, /@media \(max-width: 999px\)[\s\S]*\.photoBandEyebrow,[\s\S]*\.photoBandLead[\s\S]*margin-left:\s*-54px/);
+  assert.match(css, /@media \(max-width: 767px\)[\s\S]*\.photoBandEyebrow,[\s\S]*\.photoBandLead[\s\S]*margin-left:\s*-30px/);
+});
