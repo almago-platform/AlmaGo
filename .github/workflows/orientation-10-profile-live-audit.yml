@@ -1,0 +1,67 @@
+name: Orientation 10-profile live audit
+
+on:
+  push:
+    branches:
+      - agent/chatgpt/orientation-10-profile-live-audit
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Run 10 profiles against live orientation API
+        env:
+          ORIENTATION_URL: https://almago-dev.onrender.com/api/orientation/engine
+        run: |
+          node <<'NODE'
+          const P=(id,label,a)=>({id,label,answers:a});
+          const profiles=[
+            P("P01","Lycéen — bac en préparation",{bacStatus:"preparing",bacYear:"2027",bacTrack:"Informatique",generalAverage:"14",averageType:"current_estimate",lastDiploma:"none",targetDegree:"Bachelor",targetField:"Ingénierie",engineeringSpecialty:"computer_engineering",germanLevel:"A1",englishLevel:"B1",studyLanguage:"Allemand et anglais",targetIntakeSeason:"winter",targetIntakeYear:"2027",budgetRange:"800–1 000 € / mois",preferredCities:["Aachen","Berlin"],masterSubjectCredits:{}}),
+            P("P02","Sans bac — diplôme secondaire",{bacStatus:"no_bac",bacYear:"",bacTrack:"",generalAverage:"",averageType:"",lastDiploma:"secondary_other",targetDegree:"Bachelor",targetField:"Informatique",engineeringSpecialty:"",germanLevel:"A1",englishLevel:"A2",studyLanguage:"À définir",targetIntakeSeason:"winter",targetIntakeYear:"2027",budgetRange:"Moins de 800 € / mois",preferredCities:["Berlin"],masterSubjectCredits:{}}),
+            P("P03","Nouveau bachelier fort",{bacStatus:"obtained",bacYear:"2026",bacTrack:"Informatique",generalAverage:"16",averageType:"official",lastDiploma:"Baccalauréat",targetDegree:"Bachelor",targetField:"Ingénierie",engineeringSpecialty:"computer_engineering",germanLevel:"A2",englishLevel:"B2",studyLanguage:"Anglais",targetIntakeSeason:"winter",targetIntakeYear:"2027",budgetRange:"800–1 000 € / mois",preferredCities:["Hambourg","Hanovre","Bonn"],masterSubjectCredits:{}}),
+            P("P04","Bachelier année sabbatique",{bacStatus:"obtained",bacYear:"2024",bacTrack:"Sciences expérimentales",generalAverage:"13",averageType:"official",lastDiploma:"Baccalauréat",targetDegree:"Bachelor",targetField:"Sciences",engineeringSpecialty:"",germanLevel:"A2",englishLevel:"B1",studyLanguage:"Allemand",targetIntakeSeason:"summer",targetIntakeYear:"2027",budgetRange:"Moins de 800 € / mois",preferredCities:["Bonn","Leipzig"],masterSubjectCredits:{}}),
+            P("P05","Étudiant Bachelor 1re année",{bacStatus:"obtained",bacYear:"2025",bacTrack:"Mathématiques",generalAverage:"15",averageType:"official",lastDiploma:"Bac + 1",targetDegree:"Bachelor",targetField:"Informatique",engineeringSpecialty:"",germanLevel:"B1",englishLevel:"B2",studyLanguage:"Allemand et anglais",targetIntakeSeason:"winter",targetIntakeYear:"2027",budgetRange:"800–1 000 € / mois",preferredCities:["Aachen","Bonn"],masterSubjectCredits:{}}),
+            P("P06","Étudiant Bachelor avancé — électrotechnique",{bacStatus:"obtained",bacYear:"2023",bacTrack:"Sciences techniques",generalAverage:"14",averageType:"official",lastDiploma:"Bac + 2",targetDegree:"Bachelor",targetField:"Ingénierie",engineeringSpecialty:"electrical_electronics",germanLevel:"B2",englishLevel:"B2",studyLanguage:"Allemand",targetIntakeSeason:"winter",targetIntakeYear:"2027",budgetRange:"1 000–1 200 € / mois",preferredCities:["Aachen","Munich","Stuttgart"],masterSubjectCredits:{}}),
+            P("P07","Licence terminée — projet Master Data/AI",{bacStatus:"obtained",bacYear:"2022",bacTrack:"Mathématiques",generalAverage:"14.5",averageType:"official",lastDiploma:"Licence",targetDegree:"Master",targetField:"Informatique",engineeringSpecialty:"",germanLevel:"B1",englishLevel:"C1",studyLanguage:"Anglais",targetIntakeSeason:"winter",targetIntakeYear:"2027",budgetRange:"1 000–1 200 € / mois",preferredCities:["Berlin","Munich","Darmstadt"],masterSubjectCredits:{}}),
+            P("P08","Études interrompues après Bac+2",{bacStatus:"obtained",bacYear:"2023",bacTrack:"Informatique",generalAverage:"12",averageType:"official",lastDiploma:"Bac + 2",targetDegree:"Bachelor",targetField:"Informatique",engineeringSpecialty:"",germanLevel:"A2",englishLevel:"B1",studyLanguage:"Allemand et anglais",targetIntakeSeason:"winter",targetIntakeYear:"2027",budgetRange:"Moins de 800 € / mois",preferredCities:["Berlin","Leipzig"],masterSubjectCredits:{}}),
+            P("P09","Changement de domaine — lettres vers gestion",{bacStatus:"obtained",bacYear:"2024",bacTrack:"Lettres",generalAverage:"14",averageType:"official",lastDiploma:"Bac + 1",targetDegree:"Bachelor",targetField:"Économie/Gestion",engineeringSpecialty:"",germanLevel:"A2",englishLevel:"B2",studyLanguage:"Anglais",targetIntakeSeason:"winter",targetIntakeYear:"2027",budgetRange:"800–1 000 € / mois",preferredCities:["Berlin","Cologne"],masterSubjectCredits:{}}),
+            P("P10","Diplômé + expérience — projet Master automobile",{bacStatus:"obtained",bacYear:"2020",bacTrack:"Sciences techniques",generalAverage:"13",averageType:"official",lastDiploma:"Licence",targetDegree:"Master",targetField:"Ingénierie",engineeringSpecialty:"automotive",germanLevel:"B2",englishLevel:"B2",studyLanguage:"Allemand et anglais",targetIntakeSeason:"winter",targetIntakeYear:"2027",budgetRange:"Plus de 1 200 € / mois",preferredCities:["Stuttgart","Munich"],masterSubjectCredits:{}})
+          ];
+          const compact=(data,p)=>{
+            const e=data?.engine,a=data?.advisor,x=data?.personalized;
+            return {
+              id:p.id,label:p.label,
+              engine:e?{
+                academicAccessStatus:e.academicAccessStatus,
+                recommendations:(e.recommendations||[]).slice(0,6).map(r=>({programme:r.programme?.name,institution:r.programme?.university?.name,city:r.programme?.university?.city,status:r.status,category:r.category,relevanceScore:r.relevanceScore,confidence:r.informationConfidence,warnings:r.warnings,missingInformation:r.missingInformation})),
+                refinement:e.refinement,actionPlan:e.actionPlan,warnings:e.warnings
+              }:null,
+              advisor:a?{provider:a.provider,mode:a.mode,summaryCode:a.summaryCode,priorityActionCodes:a.priorityActionCodes}:null,
+              personalized:x?{
+                status:x.status,selectedCount:(x.selected||[]).length,
+                selected:(x.selected||[]).map(s=>({position:s.position,institution:s.institution,programme:s.programme,city:s.city,overallStatus:s.overallStatus,factCount:(s.facts||[]).length})),
+                humanReview:x.humanReview,
+                content:x.content?{opening:x.content.opening,projectStatus:x.content.projectStatus,mainPriority:x.content.mainPriority,languagePlan:x.content.languagePlan,campusValue:x.content.campusValue,studyOptions:x.content.studyOptions,roadmap:x.content.roadmap,reassurance:x.content.reassurance,cta:x.content.cta}:null
+              }:null
+            };
+          };
+          for(const p of profiles){
+            const started=Date.now();
+            try{
+              const r=await fetch(process.env.ORIENTATION_URL,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({locale:"fr",answers:p.answers})});
+              const raw=await r.text(); let data=null; try{data=JSON.parse(raw)}catch{}
+              console.log("===PROFILE_START===",p.id,p.label);
+              console.log(JSON.stringify({httpStatus:r.status,durationMs:Date.now()-started,result:data?compact(data,p):null,rawError:data?null:raw.slice(0,1000)},null,2));
+              console.log("===PROFILE_END===",p.id);
+            }catch(err){
+              console.log("===PROFILE_START===",p.id,p.label);
+              console.log(JSON.stringify({httpStatus:null,durationMs:Date.now()-started,error:String(err)},null,2));
+              console.log("===PROFILE_END===",p.id);
+            }
+          }
+          NODE
