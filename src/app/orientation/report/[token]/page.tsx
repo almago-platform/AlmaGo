@@ -128,6 +128,7 @@ export default async function OrientationReportPage({
   const degrees = localizeProfileOptions(locale, degreeOptions);
   const fields = localizeProfileOptions(locale, studyFieldOptions);
   const engineeringSpecialties = localizeProfileOptions(locale, engineeringSpecialtyOptions);
+  const scienceSpecialties = localizeProfileOptions(locale, scienceSpecialtyOptions);
   const levels = localizeProfileOptions(locale, languageLevelOptions);
   const studyLanguages = localizeProfileOptions(locale, studyLanguageOptions);
   const budgets = localizeProfileOptions(locale, budgetOptions);
@@ -137,6 +138,12 @@ export default async function OrientationReportPage({
     ar: "تخصص الهندسة",
     en: "Engineering specialisation",
     de: "Ingenieurfachrichtung",
+  }[locale];
+  const scienceSpecialtyLabel = {
+    fr: "Branche scientifique",
+    ar: "الفرع العلمي",
+    en: "Science subject",
+    de: "Naturwissenschaftliches Fach",
   }[locale];
 
   const summaryRows = [
@@ -149,6 +156,9 @@ export default async function OrientationReportPage({
     [copy.summary.labels.field, localizedValue(answers.targetField, fields)],
     ...(answers.targetField === "Ingénierie"
       ? [[engineeringSpecialtyLabel, localizedValue(answers.engineeringSpecialty, engineeringSpecialties)]]
+      : []),
+    ...(answers.targetField === "Sciences" && answers.scienceSpecialty
+      ? [[scienceSpecialtyLabel, localizedValue(answers.scienceSpecialty, scienceSpecialties)]]
       : []),
     [copy.summary.labels.german, localizedValue(answers.germanLevel, levels)],
     [copy.summary.labels.english, localizedValue(answers.englishLevel, levels)],
