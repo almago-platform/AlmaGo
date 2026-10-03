@@ -185,7 +185,7 @@ export default async function OrientationReportPage({
         </div>
       </header>
 
-      <main id="orientation-main" className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-12">
+      <main id="orientation-main" className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-12">
         <article id="orientation-report" className="orientation-print-report professional-panel rounded-[var(--radius-panel)] p-5 sm:p-7">
           <OrientationOnePagePrintReport answers={answers} locale={locale} />
           <div className="orientation-screen-report">
