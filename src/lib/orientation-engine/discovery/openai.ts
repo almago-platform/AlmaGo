@@ -20,7 +20,6 @@ import type {
 const OPENAI_RESPONSES_URL = "https://api.openai.com/v1/responses";
 const DEFAULT_MODEL = "gpt-6-luna";
 const QUERY_TIMEOUT_MS = 12_000;
-const MAX_PROVIDER_REQUESTS = DISCOVERY_MAX_SEARCH_QUERIES + 1;
 const MAX_CANDIDATES_PER_QUERY = 4;
 
 type OpenAIWebSource = {
@@ -369,6 +368,7 @@ async function researchOneQuery({
 
 export async function runOpenAIOrientationDiscovery(
   plan: OrientationDiscoveryPlan,
+  maxQueries = DISCOVERY_MAX_SEARCH_QUERIES,
 ): Promise<OrientationDiscoveryResearchResult> {
   const startedAt = Date.now();
 
@@ -409,7 +409,12 @@ export async function runOpenAIOrientationDiscovery(
     };
   }
 
-  const queries = plan.searchQueries.slice(0, DISCOVERY_MAX_SEARCH_QUERIES);
+  const queryLimit = Math.max(
+    1,
+    Math.min(maxQueries, DISCOVERY_MAX_SEARCH_QUERIES),
+  );
+  const queries = plan.searchQueries.slice(0, queryLimit);
+  const maxProviderRequests = queryLimit + 1;
   const initialResults = await Promise.all(
     queries.map((query) => researchOneQuery({
       apiKey,
@@ -426,7 +431,7 @@ export async function runOpenAIOrientationDiscovery(
 
   if (
     firstRetriableIndex >= 0
-    && results.length < MAX_PROVIDER_REQUESTS
+    && results.length < maxProviderRequests
   ) {
     results.push(await researchOneQuery({
       apiKey,
