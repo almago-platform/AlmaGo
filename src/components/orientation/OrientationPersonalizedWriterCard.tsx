@@ -740,9 +740,9 @@ export function OrientationPersonalizedWriterCard({
                 {content.mainPriority.title}
               </p>
             </div>
-            <div className="rounded-[var(--radius-control)] bg-[var(--foreground)] p-3.5 text-white">
-              <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-white/[0.55]">{t.summaryCampus}</p>
-              <p className="mt-1.5 text-sm font-medium leading-5 text-white/[0.86]">
+            <div className="rounded-[var(--radius-control)] bg-[var(--brand-soft)] p-3.5 ring-1 ring-inset ring-[var(--brand-border)]">
+              <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-[var(--brand-strong)]">{t.summaryCampus}</p>
+              <p className="mt-1.5 text-sm font-medium leading-5 text-[var(--foreground)]">
                 {t.summaryCampusText}
               </p>
             </div>
