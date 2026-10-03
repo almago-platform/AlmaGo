@@ -1,15 +1,16 @@
 import type { ReactNode } from "react";
 
 const variants = {
-  success: "bg-emerald-50 text-emerald-800 ring-emerald-600/20",
-  info: "bg-[var(--brand-soft)] text-[var(--brand-strong)] ring-[var(--brand-border)]",
-  warning: "bg-amber-50 text-amber-900 ring-amber-600/20",
-  neutral: "bg-[var(--surface-muted)] text-[var(--foreground)] ring-[var(--brand-border)]",
-};
+  success: "border-[var(--success-border)] bg-[var(--success-soft)] text-[var(--success-strong)]",
+  info: "border-[var(--info-border)] bg-[var(--info-soft)] text-[var(--info-strong)]",
+  warning: "border-[var(--warning-border)] bg-[var(--warning-soft)] text-[var(--warning-strong)]",
+  error: "border-[var(--danger-border)] bg-[var(--danger-soft)] text-[var(--danger-strong)]",
+  neutral: "border-[var(--border)] bg-[var(--surface-subtle)] text-[var(--foreground-soft)]",
+} as const;
 
 export function Badge({ children, variant = "neutral" }: { children: ReactNode; variant?: keyof typeof variants }) {
   return (
-    <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold leading-5 ring-1 ring-inset ${variants[variant]}`}>
+    <span className={`ds-badge inline-flex items-center border px-2.5 py-1 leading-5 ${variants[variant]}`}>
       {children}
     </span>
   );
