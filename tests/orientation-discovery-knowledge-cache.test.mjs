@@ -228,6 +228,44 @@ test("A3 merges cached and newly researched programmes without duplicates", () =
 });
 
 
+test("A3 Master specialization cache must cover the requested specialization before reuse", () => {
+  const masterPlan = plan({
+    profile: {
+      targetDegree: "Master",
+      targetField: "Informatique",
+      engineeringSpecialty: null,
+      targetSpecialization: "Data Science and Artificial Intelligence",
+      preferredCities: [],
+    },
+  });
+  const generic = Array.from({ length: 4 }, (_, index) =>
+    candidate({
+      institution: `Generic University ${index}`,
+      programme: index % 2 === 0 ? "Computer Science" : "Informatics",
+      degree: "Master",
+      city: "Berlin",
+    })
+  );
+  const withSpecialization = [
+    ...generic.slice(0, 3),
+    candidate({
+      institution: "Data University",
+      programme: "Data Science",
+      degree: "Master",
+      city: "Berlin",
+    }),
+  ];
+
+  assert.equal(
+    orientationKnowledgeCoverageSufficient(masterPlan, generic, 4),
+    false,
+  );
+  assert.equal(
+    orientationKnowledgeCoverageSufficient(masterPlan, withSpecialization, 4),
+    true,
+  );
+});
+
 test("A3 only treats the cache as sufficient when explicit city preferences are covered", () => {
   const preferredPlan = plan({
     profile: {
