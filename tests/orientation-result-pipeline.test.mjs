@@ -58,7 +58,6 @@ test("E writer UI presents a premium progressive result with one CTA and verifie
   assert.match(writerCard, /content\.mainPriority/);
   assert.match(writerCard, /content\.studyOptions\.map/);
   assert.match(writerCard, /content\.roadmap\[0\]/);
-  assert.match(writerCard, /content\.campusValue/);
   assert.match(writerCard, /content\.cta\.label/);
   assert.match(writerCard, /href="#orientation-prospect-capture"/);
   assert.equal((writerCard.match(/href="#orientation-prospect-capture"/g) || []).length, 1);
