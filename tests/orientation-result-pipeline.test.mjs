@@ -65,7 +65,9 @@ test("E writer UI is letter-first with pistes, roadmap, one prospect CTA and ver
   assert.match(writerCard, /result\.selected\.map/);
   assert.match(writerCard, /fact\.sourceUrl/);
   assert.match(writerCard, /humanReview\.mode === "post_result_audit"/);
-  assert.match(writerCard, /résultat est disponible immédiatement/);
+  assert.match(writerCard, /poursuivons les contrôles en arrière-plan/);
+  assert.match(writerCard, /Ce que nous vérifions pour vous/);
+  assert.match(writerCard, /Qui fait quoi maintenant/);
 });
 
 test("E returns the candidate result without waiting for any admin approval state", () => {

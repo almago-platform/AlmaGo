@@ -302,76 +302,89 @@ export function buildOrientationWriterContext(
 
 const fallbackCopy = {
   fr: {
-    opening: (profile: OrientationWriterContext["PROFIL_ETUDIANT"]) =>
-      profile.bac_status === "obtained" && profile.average_out_of_20
-        ? `Félicitations pour votre Bac avec ${profile.average_out_of_20}/20. Vous avez déjà franchi une étape importante ; maintenant, on transforme ce résultat en projet concret pour l’Allemagne.`
-        : profile.bac_status === "obtained"
-          ? "Félicitations pour votre Bac. Vous avez déjà franchi une étape importante ; maintenant, on transforme ce résultat en projet concret pour l’Allemagne."
-          : "Votre projet pour l’Allemagne peut avancer étape par étape, sans tout résoudre aujourd’hui.",
-    projectReady: "Votre projet est assez clair pour comparer plusieurs pistes universitaires sérieuses.",
-    projectPartial: "Nous avons déjà des pistes utiles, mais certaines informations doivent encore être vérifiées avant de réduire la sélection.",
-    projectEmpty: "La priorité est d’abord de consolider les informations académiques avant de présenter des universités comme pistes sérieuses.",
-    priorityTitle: "Votre priorité maintenant",
-    priorityText: "Avancer sur la prochaine étape utile sans perdre de vue le dossier universitaire.",
-    priorityStep: "Traiter la prochaine condition connue, puis réévaluer les pistes.",
-    language: "Votre langue avance en parallèle du projet universitaire : concentrez-vous sur le prochain niveau utile, pas sur toute la montagne d’un coup.",
-    campusGeneric: "Pendant que vous avancez sur la langue, votre projet peut continuer à avancer : comparaison des pistes, vérifications et préparation des prochaines étapes.",
-    reassurance: "Vous n’avez pas besoin de tout décider aujourd’hui. L’objectif est de faire avancer une étape claire à la fois.",
+    opening: (profile: OrientationWriterContext["PROFIL_ETUDIANT"]) => {
+      const bac = profile.bac_track ? `Bac ${profile.bac_track}` : "Bac";
+      if (profile.bac_status === "obtained" && profile.average_out_of_20) {
+        return `Bravo pour votre ${bac} obtenu avec ${profile.average_out_of_20}/20. Vous avez posé une base solide ; Campus Allemagne va maintenant transformer votre objectif en plan concret pour l’Allemagne.`;
+      }
+      if (profile.bac_status === "obtained") {
+        return `Bravo pour votre ${bac}. Vous avez franchi une étape importante ; Campus Allemagne va maintenant structurer la suite de votre projet en Allemagne.`;
+      }
+      return "Votre projet Allemagne peut déjà avancer. Campus Allemagne va vous donner une prochaine action claire et organiser en parallèle les vérifications nécessaires.";
+    },
+    projectReady: "Votre projet est suffisamment clair pour que nous commencions à structurer les prochaines étapes et à consolider les pistes universitaires adaptées.",
+    projectPartial: "Nous avons déjà identifié des pistes utiles. Notre équipe complète maintenant les informations manquantes avant de resserrer la sélection.",
+    projectEmpty: "Nous allons d’abord consolider les informations académiques essentielles afin de construire une sélection universitaire fiable.",
+    priorityTitle: "Votre prochaine action",
+    priorityText: "Concentrez-vous sur ce qui dépend directement de vous. Campus Allemagne garde la vue d’ensemble et fait avancer le reste du parcours en parallèle.",
+    priorityStep: "Avancez sur cette étape ; nous poursuivons les vérifications et la préparation du dossier.",
+    language: "La langue et le projet universitaire avancent en parallèle. Concentrez-vous seulement sur le prochain niveau utile ; nous continuons à travailler sur les universités et le dossier.",
+    campusGeneric: "Pendant que vous avancez sur votre prochaine action, Campus Allemagne compare les pistes, vérifie les conditions et organise les prochaines étapes du dossier. Nous vous demandons uniquement les éléments qui nécessitent réellement votre intervention.",
+    reassurance: "Vous n’avez pas à gérer seul tout le parcours. Vous avancez sur une prochaine action claire ; Campus Allemagne garde le contrôle des vérifications et de la suite du dossier.",
     roadmap: [
-      ["language", "Langue", "Avancer vers le prochain niveau utile pour les programmes retenus."],
-      ["compare", "Universités", "Comparer les pistes retenues et garder visibles les points encore à vérifier."],
-      ["prepare", "Dossier", "Préparer progressivement les éléments nécessaires avant les candidatures."],
+      ["you", "Vous", "Avancer sur la prochaine action qui dépend directement de vous."],
+      ["campus", "Campus Allemagne", "Nous vérifions les conditions, comparons les pistes et organisons les prochaines étapes du dossier."],
+      ["together", "Ensemble", "Nous transformons les informations confirmées en une prochaine décision simple et concrète."],
     ],
   },
   ar: {
-    opening: () => "يمكن لمشروعك للدراسة في ألمانيا أن يتقدم خطوة بخطوة، من دون الحاجة إلى حل كل شيء اليوم.",
-    projectReady: "مشروعك واضح بما يكفي لمقارنة عدة مسارات جامعية جدية.",
-    projectPartial: "لدينا بالفعل مسارات مفيدة، لكن ما زالت بعض المعلومات بحاجة إلى التحقق.",
-    projectEmpty: "الأولوية الآن هي تثبيت المعلومات الأكاديمية قبل تقديم جامعات كخيارات جدية.",
-    priorityTitle: "أولويتك الآن",
-    priorityText: "التقدم في الخطوة المفيدة التالية مع استمرار تجهيز المشروع الجامعي.",
-    priorityStep: "إكمال الشرط التالي المعروف ثم إعادة تقييم الخيارات.",
-    language: "اللغة والمشروع الجامعي يتقدمان بالتوازي: ركّز الآن على المستوى التالي المفيد فقط.",
-    campusGeneric: "أثناء تقدمك في اللغة، يمكن لمشروعك أن يتقدم أيضًا عبر مقارنة الخيارات والتحقق من المعلومات وتحضير الخطوات التالية.",
-    reassurance: "لا تحتاج إلى اتخاذ كل القرارات اليوم. المهم هو التقدم بخطوة واضحة في كل مرة.",
+    opening: (profile: OrientationWriterContext["PROFIL_ETUDIANT"]) =>
+      profile.bac_status === "obtained" && profile.average_out_of_20
+        ? `مبروك على الباكالوريا بمعدل ${profile.average_out_of_20}/20. لديك أساس جيد، وCampus Allemagne سيحوّل هدفك الآن إلى خطة واضحة للدراسة في ألمانيا.`
+        : "مشروعك للدراسة في ألمانيا يمكن أن يبدأ من الآن. سنعطيك خطوة واضحة ونواصل نحن بالتوازي تنظيم التحقق والملف.",
+    projectReady: "مشروعك واضح بما يكفي لنبدأ في تنظيم الخطوات القادمة وتثبيت الخيارات الجامعية المناسبة.",
+    projectPartial: "حددنا بالفعل خيارات مفيدة، وفريقنا يكمل الآن المعلومات الناقصة قبل تضييق الاختيار.",
+    projectEmpty: "سنثبت أولًا المعلومات الأكاديمية الأساسية حتى نبني اختيارًا جامعيًا موثوقًا.",
+    priorityTitle: "خطوتك التالية",
+    priorityText: "ركّز على ما يعتمد عليك مباشرة، بينما يتولى Campus Allemagne متابعة الصورة الكاملة ودفع بقية المسار إلى الأمام.",
+    priorityStep: "تقدّم في هذه الخطوة، ونحن نواصل التحقق وتنظيم الملف.",
+    language: "اللغة والمشروع الجامعي يتقدمان معًا. ركّز فقط على المستوى التالي المفيد، ونحن نواصل العمل على الجامعات والملف.",
+    campusGeneric: "بينما تتقدم في خطوتك التالية، يقوم Campus Allemagne بمقارنة الخيارات والتحقق من الشروط وتنظيم المراحل القادمة. نطلب منك فقط ما يحتاج فعلًا إلى تدخلك.",
+    reassurance: "لست مطالبًا بإدارة كل المسار وحدك. لديك خطوة واضحة الآن، وCampus Allemagne يتابع التحقق وتنظيم ما يأتي بعدها.",
     roadmap: [
-      ["language", "اللغة", "التقدم نحو المستوى التالي المفيد للبرامج المختارة."],
-      ["compare", "الجامعات", "مقارنة الخيارات المختارة وإبقاء النقاط غير المؤكدة واضحة."],
-      ["prepare", "الملف", "تحضير عناصر الملف تدريجيًا قبل التقديم."],
+      ["you", "أنت", "تتقدم في الخطوة التي تعتمد عليك مباشرة."],
+      ["campus", "Campus Allemagne", "نتحقق من الشروط ونقارن الخيارات وننظم المراحل القادمة من الملف."],
+      ["together", "معًا", "نحوّل المعلومات المؤكدة إلى قرار وخطوة تالية واضحة."],
     ],
   },
   en: {
-    opening: () => "Your Germany study project can move forward step by step without solving everything today.",
-    projectReady: "Your project is clear enough to compare several serious university paths.",
-    projectPartial: "We already have useful paths, but some information still needs verification.",
-    projectEmpty: "The priority is to consolidate the academic facts before presenting universities as serious paths.",
-    priorityTitle: "Your priority now",
-    priorityText: "Move the next useful step forward while keeping the university file progressing.",
-    priorityStep: "Complete the next known condition, then reassess the shortlist.",
-    language: "Language and the university project can move in parallel: focus on the next useful level rather than the whole ladder at once.",
-    campusGeneric: "While you progress with language, your project can keep moving through comparison, verification and preparation of the next steps.",
-    reassurance: "You do not need to decide everything today. The goal is one clear step at a time.",
+    opening: (profile: OrientationWriterContext["PROFIL_ETUDIANT"]) =>
+      profile.bac_status === "obtained" && profile.average_out_of_20
+        ? `Congratulations on your secondary diploma with ${profile.average_out_of_20}/20. You already have a solid base; Campus Allemagne can now turn your Germany goal into a concrete plan.`
+        : "Your Germany project can start moving now. Campus Allemagne will give you one clear next action while we organise the complex checks in parallel.",
+    projectReady: "Your project is clear enough for us to structure the next steps and consolidate suitable university paths.",
+    projectPartial: "We have already identified useful paths. Our team is completing the missing information before narrowing the shortlist.",
+    projectEmpty: "We will first consolidate the essential academic information so we can build a reliable university shortlist.",
+    priorityTitle: "Your next action",
+    priorityText: "Focus on what depends directly on you. Campus Allemagne keeps the full picture under control and moves the rest of the process forward in parallel.",
+    priorityStep: "Move this step forward while we continue the checks and file preparation.",
+    language: "Language and the university project move in parallel. Focus only on the next useful level; we continue working on the universities and your file.",
+    campusGeneric: "While you work on your next action, Campus Allemagne compares paths, checks requirements and organises the next dossier steps. We ask you only for the items that genuinely require your input.",
+    reassurance: "You do not have to manage the whole process alone. You have one clear next action; Campus Allemagne keeps the checks and next steps coordinated.",
     roadmap: [
-      ["language", "Language", "Move toward the next useful level for the selected programmes."],
-      ["compare", "Universities", "Compare the selected paths and keep remaining verification points visible."],
-      ["prepare", "Documents", "Prepare the file progressively before applications."],
+      ["you", "You", "Move forward on the next action that depends directly on you."],
+      ["campus", "Campus Allemagne", "We check requirements, compare paths and organise the next dossier steps."],
+      ["together", "Together", "We turn confirmed information into one clear next decision."],
     ],
   },
   de: {
-    opening: () => "Dein Studienprojekt für Deutschland kann Schritt für Schritt vorankommen, ohne dass heute schon alles geklärt sein muss.",
-    projectReady: "Dein Projekt ist klar genug, um mehrere seriöse Studienwege zu vergleichen.",
-    projectPartial: "Es gibt bereits nützliche Optionen, aber einige Angaben müssen noch geprüft werden.",
-    projectEmpty: "Zuerst sollten die akademischen Fakten geklärt werden, bevor Hochschulen als seriöse Optionen dargestellt werden.",
-    priorityTitle: "Deine Priorität jetzt",
-    priorityText: "Den nächsten sinnvollen Schritt angehen und gleichzeitig das Hochschulprojekt weiter vorbereiten.",
-    priorityStep: "Die nächste bekannte Bedingung bearbeiten und danach die Auswahl neu bewerten.",
-    language: "Sprache und Hochschulprojekt können parallel vorankommen: Konzentriere dich auf das nächste sinnvolle Niveau, nicht auf die ganze Leiter auf einmal.",
-    campusGeneric: "Während du sprachlich vorankommst, kann auch dein Projekt weiterlaufen: Optionen vergleichen, Angaben prüfen und nächste Schritte vorbereiten.",
-    reassurance: "Du musst heute noch nicht alles entscheiden. Entscheidend ist jeweils ein klarer nächster Schritt.",
+    opening: (profile: OrientationWriterContext["PROFIL_ETUDIANT"]) =>
+      profile.bac_status === "obtained" && profile.average_out_of_20
+        ? `Glückwunsch zu deinem Schulabschluss mit ${profile.average_out_of_20}/20. Du hast eine gute Grundlage; Campus Allemagne macht daraus jetzt einen konkreten Plan für Deutschland.`
+        : "Dein Deutschland-Projekt kann jetzt vorankommen. Campus Allemagne gibt dir einen klaren nächsten Schritt und koordiniert parallel die komplexeren Prüfungen.",
+    projectReady: "Dein Projekt ist klar genug, damit wir die nächsten Schritte strukturieren und passende Hochschuloptionen festigen können.",
+    projectPartial: "Wir haben bereits sinnvolle Optionen gefunden. Unser Team ergänzt jetzt die fehlenden Informationen, bevor wir die Auswahl weiter eingrenzen.",
+    projectEmpty: "Wir klären zuerst die wesentlichen akademischen Informationen, damit wir eine verlässliche Hochschulauswahl aufbauen können.",
+    priorityTitle: "Dein nächster Schritt",
+    priorityText: "Konzentriere dich auf das, was direkt von dir abhängt. Campus Allemagne behält den Gesamtprozess im Blick und bringt den Rest parallel voran.",
+    priorityStep: "Bringe diesen Schritt voran; wir führen die Prüfungen und die Vorbereitung deines Dossiers weiter.",
+    language: "Sprache und Hochschulprojekt laufen parallel. Konzentriere dich nur auf das nächste sinnvolle Niveau; wir arbeiten währenddessen an Hochschulen und Dossier weiter.",
+    campusGeneric: "Während du deinen nächsten Schritt angehst, vergleicht Campus Allemagne Optionen, prüft Bedingungen und organisiert die nächsten Dossier-Schritte. Wir fragen dich nur nach Dingen, die wirklich deine Mitwirkung brauchen.",
+    reassurance: "Du musst den gesamten Prozess nicht allein steuern. Du hast einen klaren nächsten Schritt; Campus Allemagne koordiniert Prüfungen und die weitere Vorbereitung.",
     roadmap: [
-      ["language", "Sprache", "Auf das nächste sinnvolle Niveau für die ausgewählten Programme hinarbeiten."],
-      ["compare", "Hochschulen", "Die ausgewählten Wege vergleichen und offene Prüfpunkte sichtbar halten."],
-      ["prepare", "Unterlagen", "Die Unterlagen schrittweise vor den Bewerbungen vorbereiten."],
+      ["you", "Du", "Den nächsten Schritt angehen, der direkt von dir abhängt."],
+      ["campus", "Campus Allemagne", "Wir prüfen Bedingungen, vergleichen Optionen und organisieren die nächsten Dossier-Schritte."],
+      ["together", "Gemeinsam", "Wir machen aus bestätigten Informationen eine klare nächste Entscheidung."],
     ],
   },
 } as const;
@@ -435,17 +448,17 @@ function localizedVerificationNote(
   const verified = item.verification.overallStatus === "verified";
   const copy = {
     fr: verified
-      ? "Piste documentée ; les conditions encore inconnues restent à vérifier avant candidature."
-      : "Piste à vérifier ensemble avant toute candidature.",
+      ? "Campus Allemagne a déjà confirmé plusieurs éléments clés de cette piste. Nous complétons encore les conditions non confirmées avant de passer à une candidature."
+      : "Cette piste est pertinente, mais Campus Allemagne poursuit encore les vérifications nécessaires avant toute candidature.",
     ar: verified
-      ? "مسار موثق؛ تبقى الشروط غير المعروفة بحاجة إلى التحقق قبل التقديم."
-      : "مسار يحتاج إلى مراجعة مشتركة قبل أي تقديم.",
+      ? "أكد Campus Allemagne بالفعل عدة عناصر أساسية في هذا المسار، ونواصل التحقق من الشروط غير المؤكدة قبل أي تقديم."
+      : "هذا المسار مناسب مبدئيًا، ويواصل Campus Allemagne التحقق من الشروط اللازمة قبل أي تقديم.",
     en: verified
-      ? "Documented path; remaining unknown conditions still need verification before application."
-      : "Path to review together before any application.",
+      ? "Campus Allemagne has already confirmed several key elements of this path. We are completing the remaining checks before any application."
+      : "This path is relevant, but Campus Allemagne is still completing the checks required before any application.",
     de: verified
-      ? "Dokumentierte Option; offene Bedingungen müssen vor einer Bewerbung noch geprüft werden."
-      : "Option, die vor einer Bewerbung gemeinsam geprüft werden muss.",
+      ? "Campus Allemagne hat bereits mehrere Kernelemente dieser Option bestätigt. Wir ergänzen die offenen Prüfungen vor einer Bewerbung."
+      : "Diese Option ist grundsätzlich relevant; Campus Allemagne führt vor einer Bewerbung noch die nötigen Prüfungen durch.",
   };
   return copy[locale];
 }

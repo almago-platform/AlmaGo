@@ -300,14 +300,18 @@ test("D language plan focuses on only the immediate next level", () => {
 test("D deterministic fallback remains useful when Gemini is unavailable", () => {
   const content = buildDeterministicOrientationWriterContent(input());
 
-  assert.match(content.opening, /Félicitations/i);
+  assert.match(content.opening, /Bravo/i);
   assert.match(content.opening, /15\/20/);
+  assert.match(content.opening, /Campus Allemagne/i);
   assert.equal(content.languagePlan.currentLevel, "A2");
   assert.equal(content.languagePlan.nextLevel, "B1");
   assert.equal(content.studyOptions.length, 3);
   assert.equal(content.studyOptions[0].institution, "University 1");
   assert.equal(content.cta.actionId, "review_shortlist");
   assert.match(content.campusValue, /Campus Allemagne/);
+  assert.equal(content.roadmap[0].label, "Vous");
+  assert.equal(content.roadmap[1].label, "Campus Allemagne");
+  assert.match(content.studyOptions[0].verificationNote, /Campus Allemagne/i);
 });
 
 test("D parser accepts a grounded structured payload and injects programme names from C", () => {
@@ -414,6 +418,12 @@ test("D Gemini adapter is server-only, structured, bounded and has no research t
   assert.doesNotMatch(geminiSource, /googleSearch|web_search|urlContext|tools:/);
   assert.match(geminiSource, /never decide admission eligibility/i);
   assert.match(geminiSource, /Do not invent deadlines, fees, language thresholds/i);
+  assert.match(geminiSource, /trusted study-abroad agency/i);
+  assert.match(geminiSource, /ONE clear immediate priority/);
+  assert.match(geminiSource, /Phrase research, verification and dossier coordination as Campus Allemagne's work/);
+  assert.match(geminiSource, /Do not promise admission, visa success, recognition, acceptance or a perfect dossier/);
+  assert.match(geminiSource, /distinguish tuition fees from semester contributions/i);
+
 });
 
 test("D service delegates only to the writer and does not alter C selection", () => {
