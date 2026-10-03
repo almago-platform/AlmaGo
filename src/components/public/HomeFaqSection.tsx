@@ -25,15 +25,8 @@ export function HomeFaqSection({ faq }: { faq: FaqCopy }) {
           {faq.items.map(([question, answer], index) => (
             <details key={question} open={index === 0}>
               <summary>
-                <span className={s.faqQuestion}>
-                  <span className={s.faqNumber} aria-hidden="true">
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
-                  <span>{question}</span>
-                </span>
-                <span className={s.faqToggle} aria-hidden="true">
-                  <HomeIcon name="plus" />
-                </span>
+                <span>{question}</span>
+                <HomeIcon name="plus" />
               </summary>
               <p>{answer}</p>
             </details>
