@@ -55,7 +55,6 @@ test("E makes the controlled writer primary only when a real shortlist exists", 
 
 test("E writer UI presents a premium progressive result with one CTA and verified details", () => {
   assert.match(writerCard, /content\.opening/);
-  assert.match(writerCard, /content\.projectStatus/);
   assert.match(writerCard, /content\.mainPriority/);
   assert.match(writerCard, /content\.studyOptions\.map/);
   assert.match(writerCard, /content\.roadmap\[0\]/);
@@ -66,10 +65,12 @@ test("E writer UI presents a premium progressive result with one CTA and verifie
   assert.match(writerCard, /result\.selected\.map/);
   assert.match(writerCard, /fact\.sourceUrl/);
   assert.match(writerCard, /humanReview\.mode === "post_result_audit"/);
-  assert.match(writerCard, /Les programmes retenus pour vous/);
-  assert.match(writerCard, /Comment nous avançons ensemble/);
-  assert.match(writerCard, /Votre priorité du moment/);
+  assert.match(writerCard, /Programmes sélectionnés pour votre projet/);
+  assert.match(writerCard, /Qui fait quoi maintenant/);
+  assert.match(writerCard, /Votre prochaine étape/);
   assert.match(writerCard, /Voir les informations vérifiées et les sources officielles/);
+  assert.match(writerCard, /determineJourneyStep/);
+  assert.doesNotMatch(writerCard, /bg-\[var\(--foreground\)\][\s\S]*bg-\[var\(--foreground\)\][\s\S]*orientation-main-priority/);
   assert.match(engineCard, /answers=\{answers\}/);
 });
 

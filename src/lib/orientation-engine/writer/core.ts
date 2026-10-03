@@ -305,12 +305,12 @@ const fallbackCopy = {
     opening: (profile: OrientationWriterContext["PROFIL_ETUDIANT"]) => {
       const bac = profile.bac_track ? `Bac ${profile.bac_track}` : "Bac";
       if (profile.bac_status === "obtained" && profile.average_out_of_20) {
-        return `Bravo pour votre ${bac} obtenu avec ${profile.average_out_of_20}/20. Vous avez posé une base solide ; Campus Allemagne va maintenant transformer votre objectif en plan concret pour l’Allemagne.`;
+        return `Avec votre ${bac} à ${profile.average_out_of_20}/20, Campus Allemagne peut maintenant structurer un projet d’études concret en Allemagne.`;
       }
       if (profile.bac_status === "obtained") {
-        return `Bravo pour votre ${bac}. Vous avez franchi une étape importante ; Campus Allemagne va maintenant structurer la suite de votre projet en Allemagne.`;
+        return `Avec votre ${bac}, Campus Allemagne peut maintenant structurer la suite de votre projet d’études en Allemagne.`;
       }
-      return "Votre projet Allemagne peut déjà avancer. Campus Allemagne va vous donner une prochaine action claire et organiser en parallèle les vérifications nécessaires.";
+      return "Votre projet Allemagne peut déjà avancer : nous clarifions la prochaine action et organisons les vérifications utiles en parallèle.";
     },
     projectReady: "Votre projet est suffisamment clair pour que nous commencions à structurer les prochaines étapes et à consolider les pistes universitaires adaptées.",
     projectPartial: "Nous avons déjà identifié des pistes utiles. Notre équipe complète maintenant les informations manquantes avant de resserrer la sélection.",
@@ -323,14 +323,14 @@ const fallbackCopy = {
     reassurance: "Vous n’avez pas à gérer seul tout le parcours. Vous avancez sur une prochaine action claire ; Campus Allemagne garde le contrôle des vérifications et de la suite du dossier.",
     roadmap: [
       ["you", "Vous", "Avancer sur la prochaine action qui dépend directement de vous."],
-      ["campus", "Campus Allemagne", "Nous vérifions les conditions, comparons les pistes et organisons les prochaines étapes du dossier."],
-      ["together", "Ensemble", "Nous transformons les informations confirmées en une prochaine décision simple et concrète."],
+      ["campus", "Campus Allemagne", "Nous vérifions les conditions et organisons la suite du dossier."],
+      ["together", "Ensemble", "Nous décidons de la prochaine étape à partir des informations confirmées."],
     ],
   },
   ar: {
     opening: (profile: OrientationWriterContext["PROFIL_ETUDIANT"]) =>
       profile.bac_status === "obtained" && profile.average_out_of_20
-        ? `مبروك على الباكالوريا بمعدل ${profile.average_out_of_20}/20. لديك أساس جيد، وCampus Allemagne سيحوّل هدفك الآن إلى خطة واضحة للدراسة في ألمانيا.`
+        ? `بمعدل ${profile.average_out_of_20}/20 في الباكالوريا، يمكن لـ Campus Allemagne الآن تنظيم مشروعك الدراسي في ألمانيا بشكل واضح.`
         : "مشروعك للدراسة في ألمانيا يمكن أن يبدأ من الآن. سنعطيك خطوة واضحة ونواصل نحن بالتوازي تنظيم التحقق والملف.",
     projectReady: "مشروعك واضح بما يكفي لنبدأ في تنظيم الخطوات القادمة وتثبيت الخيارات الجامعية المناسبة.",
     projectPartial: "حددنا بالفعل خيارات مفيدة، وفريقنا يكمل الآن المعلومات الناقصة قبل تضييق الاختيار.",
@@ -350,7 +350,7 @@ const fallbackCopy = {
   en: {
     opening: (profile: OrientationWriterContext["PROFIL_ETUDIANT"]) =>
       profile.bac_status === "obtained" && profile.average_out_of_20
-        ? `Congratulations on your secondary diploma with ${profile.average_out_of_20}/20. You already have a solid base; Campus Allemagne can now turn your Germany goal into a concrete plan.`
+        ? `With ${profile.average_out_of_20}/20 in your secondary diploma, Campus Allemagne can now structure a concrete Germany study plan around your profile.`
         : "Your Germany project can start moving now. Campus Allemagne will give you one clear next action while we organise the complex checks in parallel.",
     projectReady: "Your project is clear enough for us to structure the next steps and consolidate suitable university paths.",
     projectPartial: "We have already identified useful paths. Our team is completing the missing information before narrowing the shortlist.",
@@ -370,7 +370,7 @@ const fallbackCopy = {
   de: {
     opening: (profile: OrientationWriterContext["PROFIL_ETUDIANT"]) =>
       profile.bac_status === "obtained" && profile.average_out_of_20
-        ? `Glückwunsch zu deinem Schulabschluss mit ${profile.average_out_of_20}/20. Du hast eine gute Grundlage; Campus Allemagne macht daraus jetzt einen konkreten Plan für Deutschland.`
+        ? `Mit ${profile.average_out_of_20}/20 im Schulabschluss kann Campus Allemagne dein Deutschland-Projekt jetzt konkret strukturieren.`
         : "Dein Deutschland-Projekt kann jetzt vorankommen. Campus Allemagne gibt dir einen klaren nächsten Schritt und koordiniert parallel die komplexeren Prüfungen.",
     projectReady: "Dein Projekt ist klar genug, damit wir die nächsten Schritte strukturieren und passende Hochschuloptionen festigen können.",
     projectPartial: "Wir haben bereits sinnvolle Optionen gefunden. Unser Team ergänzt jetzt die fehlenden Informationen, bevor wir die Auswahl weiter eingrenzen.",
@@ -448,8 +448,8 @@ function localizedVerificationNote(
   const verified = item.verification.overallStatus === "verified";
   const copy = {
     fr: verified
-      ? "Campus Allemagne a déjà confirmé plusieurs éléments clés de cette piste. Nous complétons encore les conditions non confirmées avant de passer à une candidature."
-      : "Cette piste est pertinente, mais Campus Allemagne poursuit encore les vérifications nécessaires avant toute candidature.",
+      ? "Plusieurs éléments clés sont confirmés ; Campus Allemagne complète les conditions restantes."
+      : "Campus Allemagne poursuit les vérifications essentielles avant toute candidature.",
     ar: verified
       ? "أكد Campus Allemagne بالفعل عدة عناصر أساسية في هذا المسار، ونواصل التحقق من الشروط غير المؤكدة قبل أي تقديم."
       : "هذا المسار مناسب مبدئيًا، ويواصل Campus Allemagne التحقق من الشروط اللازمة قبل أي تقديم.",
