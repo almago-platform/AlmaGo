@@ -3,6 +3,9 @@
   --home-ink: #1c2124;
   --home-green: #db0423;
   --home-red: #db0423;
+  --brand: var(--home-red);
+  --brand-strong: var(--home-red);
+  --brand-hover: var(--home-red);
   --home-gold: #fcb50a;
   --home-cream: #f7f4ec;
   --home-paper: #fffdf8;
@@ -98,8 +101,8 @@
   text-decoration: none;
 }
 .button:hover {
-  background: #b6031d;
-  border-color: #b6031d;
+  background: var(--home-red);
+  border-color: var(--home-red);
 }
 .textLink {
   display: inline-flex;
@@ -440,7 +443,7 @@
   width: 15px;
 }
 .miniNext {
-  color: #930018;
+  color: var(--home-red);
   background: #fce5e9;
 }
 .miniStatus {
@@ -1980,7 +1983,7 @@
 /* AlmaGo Brand Identity V2 refinements */
 .hero h1 em { color: var(--home-red); }
 .miniCheck { background: #fff0bf; color: #8b6200; }
-.miniNext { background: #fce5e9; color: #930018; }
+.miniNext { background: #fce5e9; color: var(--home-red); }
 .quickLinks a > svg:first-child,
 .quickArrow { color: var(--home-red); }
 .nextAction { border-color: #f2d37b; background: #fff3cc; }
@@ -2639,7 +2642,7 @@
   height: 31px;
   border-radius: 50%;
   background: #fce5e9;
-  color: #b6031d;
+  color: var(--home-red);
   font-size: 9px;
   font-weight: 750;
 }
@@ -5865,7 +5868,7 @@
   }
 
   .hero .dot {
-    background: #ff405a;
+    background: var(--home-red);
   }
 
   .hero h1 {
@@ -5875,7 +5878,7 @@
   }
 
   .hero h1 em {
-    color: #ff405a;
+    color: var(--home-red);
   }
 
   .heroLead {
@@ -6528,7 +6531,7 @@
 .helpfulToolCard:first-child .helpfulToolIcon {
   border-color: rgba(255,255,255,.16);
   background: rgba(255,255,255,.08);
-  color: #ff405a;
+  color: var(--home-red);
   box-shadow: none;
 }
 
@@ -8261,4 +8264,50 @@
   :global(html[dir="rtl"]) .photoBandLead {
     margin-right: -30px;
   }
+}
+
+
+/* Homepage brand-color lock — one solid AlmaGo red everywhere. */
+.home {
+  --brand: var(--home-red);
+  --brand-strong: var(--home-red);
+  --brand-hover: var(--home-red);
+  --brand-soft: rgba(219, 4, 35, 0.09);
+  --brand-border: rgba(219, 4, 35, 0.28);
+}
+
+.button:hover,
+.headerCta:hover,
+.finalCta .button:hover {
+  background: var(--home-red);
+  border-color: var(--home-red);
+}
+
+.hero h1 em,
+.hero .dot,
+.quickLinks a > svg:first-child,
+.quickArrow,
+.actionIcon,
+.productBenefitNumber,
+.photoBandTitle em,
+.photoBandEyebrowMarker,
+.helpfulToolCard:first-child .helpfulToolIcon,
+.faqList details[open] summary svg {
+  color: var(--home-red);
+}
+
+.hero .dot,
+.actionIcon,
+.faqList details[open] summary svg {
+  background: var(--home-red);
+}
+
+.photoBandEyebrowMarker {
+  color: transparent;
+  border-left-color: var(--home-red);
+}
+
+:global(html[dir="rtl"]) .photoBandEyebrowMarker {
+  border-left-color: transparent;
+  border-right-color: var(--home-red);
 }
