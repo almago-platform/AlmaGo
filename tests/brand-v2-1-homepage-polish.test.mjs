@@ -8,8 +8,6 @@ const footer = readFileSync("src/components/public/HomeClosing.tsx", "utf8");
 const nativeCopy = readFileSync("src/content/native-copy.ts", "utf8");
 const css = readFileSync("src/components/public/Homepage.module.css", "utf8");
 const config = readFileSync("next.config.ts", "utf8");
-const landing = readFileSync("src/components/public/HomeLanding.tsx", "utf8");
-const redesignCss = readFileSync("src/components/public/HomepageRedesign.module.css", "utf8");
 
 test("Brand V2.1 keeps contextual Pexels photography with transparent attribution", () => {
   assert.ok(hero.includes("pexels-photo-7972313.jpeg"));
@@ -20,12 +18,12 @@ test("Brand V2.1 keeps contextual Pexels photography with transparent attributio
   assert.ok(config.includes('hostname: "images.pexels.com"'));
 });
 
-test("current homepage uses the product-led dashboard hero instead of the legacy photographic sequence", () => {
-  assert.ok(page.includes("HomeLanding"));
-  assert.ok(landing.includes("DashboardPreview"));
-  assert.ok(landing.includes("ProductShowcase"));
-  assert.ok(redesignCss.includes(".dashboardShell"));
-  assert.ok(redesignCss.includes(".heroGrid"));
-  assert.ok(!page.includes("HomePhotoBand"));
+test("Brand V2.1 keeps the immersive hero and removes the obsolete product block from the live page", () => {
+  assert.ok(css.includes(".hero {"));
+  assert.ok(css.includes("min-height: 610px"));
+  assert.ok(css.includes(".heroBackdrop {"));
+  assert.ok(css.includes("position: absolute"));
+  assert.ok(css.includes(".heroImmersiveInner {"));
+  assert.ok(page.includes("HomePhotoBand"));
   assert.ok(!page.includes("HomeProduct"));
 });

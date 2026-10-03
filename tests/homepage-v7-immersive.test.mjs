@@ -10,9 +10,6 @@ const band = readFileSync("src/components/public/HomePhotoBand.tsx", "utf8");
 const closing = readFileSync("src/components/public/HomeClosing.tsx", "utf8");
 const nativeCopy = readFileSync("src/content/native-copy.ts", "utf8");
 const css = readFileSync("src/components/public/Homepage.module.css", "utf8");
-const landing = readFileSync("src/components/public/HomeLanding.tsx", "utf8");
-const landingCopy = readFileSync("src/content/homepage-redesign-copy.ts", "utf8");
-const redesignCss = readFileSync("src/components/public/HomepageRedesign.module.css", "utf8");
 
 test("V7 uses an immersive full-width academic hero", () => {
   assert.ok(hero.includes("7972313"));
@@ -24,22 +21,23 @@ test("V7 uses an immersive full-width academic hero", () => {
   assert.ok(css.includes("linear-gradient"));
 });
 
-test("current homepage keeps localized product proof integrated inside the hero", () => {
-  assert.ok(page.includes("<HomeLanding copy={landingCopy} primaryHref={primaryHref} />"));
-  assert.ok(landing.includes("DashboardPreview"));
-  assert.ok(landing.includes("copy.dashboard.cards"));
-  assert.ok(landingCopy.includes('title: "Ton projet d’études en Allemagne, organisé de A à Z."'));
-  assert.ok(landingCopy.includes('primary: "Commencer mon projet"'));
-  assert.ok(redesignCss.includes(".dashboardShell"));
+test("V7 keeps localized copy and product proof integrated inside the hero", () => {
+  assert.ok(page.includes("hero={copy.home.hero}"));
+  assert.ok(hero.includes("hero.exampleTitle"));
+  assert.ok(nativeCopy.includes('eyebrow: "Étudier en Allemagne, étape par étape."'));
+  assert.ok(nativeCopy.includes('title3: "plus clair."'));
+  assert.ok(nativeCopy.includes('exampleTitle: "Votre dossier avance"'));
+  assert.ok(nativeCopy.includes('["Mes candidatures", "À suivre", ""]'));
+  assert.ok(css.includes(".hero .heroDossier"));
+  assert.ok(css.includes("position: absolute"));
 });
 
-test("current homepage follows the product-led clarity sequence", () => {
-  assert.ok(landing.indexOf("<Hero") < landing.indexOf("<Steps"));
-  assert.ok(landing.indexOf("<Steps") < landing.indexOf("<Benefits"));
-  assert.ok(landing.indexOf("<Benefits") < landing.indexOf("<ProductShowcase"));
-  assert.ok(landing.indexOf("<ProductShowcase") < landing.indexOf("<Sources"));
-  assert.ok(landing.indexOf("<Sources") < landing.indexOf("<Faq"));
-  assert.ok(landing.indexOf("<Faq") < landing.indexOf("<FinalCta"));
+test("current homepage places quick access and the visual pathway immediately after the hero", () => {
+  assert.ok(page.indexOf("<HomeHero hero={copy.home.hero} />") < page.indexOf("<HomeQuickAccess quick={copy.home.quick} />"));
+  assert.ok(page.indexOf("<HomeQuickAccess quick={copy.home.quick} />") < page.indexOf("<HomePhotoBand photo={copy.home.photo} />"));
+  assert.ok(page.indexOf("<HomePhotoBand photo={copy.home.photo} />") < page.indexOf("<HomeJourneySection"));
+  assert.equal(quick.split('icon: "').length - 1, 5);
+  assert.ok(css.includes("repeat(5"));
 });
 
 test("V7 follow-up section uses three visual academic cards", () => {

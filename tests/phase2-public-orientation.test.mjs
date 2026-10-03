@@ -30,9 +30,10 @@ test("public orientation is feature-gated and does not alter the current homepag
   assert.match(home, /<HomeHeader phase2Enabled=\{phase2Enabled\} \/>/);
   assert.match(header, /phase2Enabled \? "\/orientation" : "\/signup"/);
   assert.match(header, /nav\.orientation/);
-  assert.match(home, /const primaryHref = phase2Enabled \? "\/orientation" : "\/signup"/);
-  assert.match(home, /<HomeLanding copy=\{landingCopy\} primaryHref=\{primaryHref\} \/>/);
-  assert.match(home, /<HomeFooter[\s\S]*phase2Enabled=\{phase2Enabled\}[\s\S]*orientationLabel=\{nativeCopy\.home\.nav\.orientation\}/);
+  assert.match(home, /<HomeJourneySection[\s\S]*primaryHref=\{phase2Enabled \? "\/orientation" : "\/signup"\}/);
+  assert.match(home, /<HomeTrustSection[\s\S]*primaryHref=\{phase2Enabled \? "\/orientation" : "\/signup"\}/);
+  assert.match(home, /<HomeFinalCta[\s\S]*primaryHref=\{phase2Enabled \? "\/orientation" : "\/signup"\}/);
+  assert.match(home, /<HomeFooter[\s\S]*phase2Enabled=\{phase2Enabled\}[\s\S]*orientationLabel=\{copy\.home\.nav\.orientation\}/);
   assert.match(journey, /primaryHref = "\/signup"/);
   assert.match(tools, /index === 0 \? primaryHref/);
   assert.match(closing, /primaryHref = "\/signup"/);

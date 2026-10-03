@@ -10,9 +10,6 @@ const faq = readFileSync("src/components/public/HomeFaqSection.tsx", "utf8");
 const closing = readFileSync("src/components/public/HomeClosing.tsx", "utf8");
 const nativeCopy = readFileSync("src/content/native-copy.ts", "utf8");
 const css = readFileSync("src/components/public/Homepage.module.css", "utf8");
-const landing = readFileSync("src/components/public/HomeLanding.tsx", "utf8");
-const redesignCopy = readFileSync("src/content/homepage-redesign-copy.ts", "utf8");
-const redesignCss = readFileSync("src/components/public/HomepageRedesign.module.css", "utf8");
 
 test("V8 removes stale public #espace anchors", () => {
   for (const source of [header, hero, quick, closing]) assert.ok(!source.includes("#espace"));
@@ -24,18 +21,14 @@ test("V8 strengthens the localized final CTA and footer", () => {
   assert.ok(nativeCopy.includes('"Prochaines étapes"'));
   assert.ok(nativeCopy.includes('independent: "Plateforme indépendante"'));
   assert.ok(nativeCopy.includes('"Outils utiles"'));
-  assert.ok(page.includes("<HomeLanding copy={landingCopy} primaryHref={primaryHref} />"));
-  assert.ok(redesignCopy.includes('primary: "Commencer mon projet"'));
-  assert.ok(landing.includes("<FinalCta"));
+  assert.ok(page.includes("closing={copy.home.closing}"));
   assert.ok(closing.includes("closing.cta"));
 });
 
 test("V8 gives the localized FAQ a compact editorial surface", () => {
   assert.ok(nativeCopy.includes('eyebrow: "Questions utiles"'));
   assert.ok(faq.includes("className={s.faqIntro}"));
-  assert.ok(page.includes("<HomeLanding copy={landingCopy} primaryHref={primaryHref} />"));
-  assert.ok(landing.includes("<Faq"));
-  assert.ok(redesignCss.includes(".faqGrid"));
+  assert.ok(page.includes("faq={copy.home.faq}"));
   assert.ok(css.includes(".faqIntro {"));
   assert.ok(css.includes("position: sticky"));
   assert.ok(css.includes("border-radius: 10px"));
