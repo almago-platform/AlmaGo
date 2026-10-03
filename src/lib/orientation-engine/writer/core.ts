@@ -472,6 +472,46 @@ const fallbackCopy = {
   },
 } as const;
 
+function localizedAdmissionOutlook(
+  locale: OrientationWriterLocale,
+  item: OrientationSelectionItem,
+) {
+  const strongSignals = [
+    "degree_match",
+    "field_match",
+    "specialty_match",
+    "study_language_match",
+    "preferred_city_match",
+    "intake_match",
+    "current_language_sufficient",
+    "deadline_known",
+    "application_route_known",
+  ].filter((reason) =>
+    item.reasons.includes(reason as OrientationSelectionReasonCode)
+  ).length;
+
+  const strong =
+    item.verification.overallStatus === "verified"
+    && strongSignals >= 4;
+
+  const copy = {
+    fr: strong
+      ? "Première estimation Campus Allemagne : fortes chances d’admission, à confirmer ensemble lors de la vérification finale."
+      : "Première estimation Campus Allemagne : bon potentiel d’admission, à confirmer ensemble lors de la vérification finale.",
+    ar: strong
+      ? "التقدير الأولي من Campus Allemagne: فرص القبول قوية، وسنؤكد ذلك معك بعد المراجعة النهائية."
+      : "التقدير الأولي من Campus Allemagne: لديك فرصة قبول جيدة، وسنؤكد ذلك معك بعد المراجعة النهائية.",
+    en: strong
+      ? "Initial Campus Allemagne estimate: strong admission chances, to be confirmed together during the final review."
+      : "Initial Campus Allemagne estimate: good admission potential, to be confirmed together during the final review.",
+    de: strong
+      ? "Erste Einschätzung von Campus Allemagne: gute bis sehr gute Zulassungschancen, die wir in der Abschlussprüfung gemeinsam bestätigen."
+      : "Erste Einschätzung von Campus Allemagne: gutes Zulassungspotenzial, das wir in der Abschlussprüfung gemeinsam bestätigen.",
+  };
+
+  return copy[locale];
+}
+
 function localizedReason(
   locale: OrientationWriterLocale,
   item: OrientationSelectionItem,
@@ -565,7 +605,7 @@ function localizedReason(
     de: "Wir prüfen diese Option aus konkreten Gründen: ",
   }[locale];
 
-  return `${prefix}${selectedReasons.join(" · ")}.`;
+  return `${localizedAdmissionOutlook(locale, item)} ${prefix}${selectedReasons.join(" · ")}.`;
 }
 
 function localizedVerificationNote(
