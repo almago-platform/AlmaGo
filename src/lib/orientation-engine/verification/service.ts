@@ -30,10 +30,10 @@ function normalize(value: string | null | undefined) {
     .replace(/\s+/g, " ");
 }
 
-function targetSpecializationPhrases(profile: PublicOrientationAnswers) {
-  if (!normalize(profile.targetDegree).includes("master")) return [];
+function targetSpecializationPhrases(answers: PublicOrientationAnswers) {
+  if (!normalize(answers.targetDegree).includes("master")) return [];
 
-  const target = normalize(profile.targetSpecialization);
+  const target = normalize(answers.targetSpecialization);
   if (!target) return [];
 
   return [
@@ -46,28 +46,28 @@ function targetSpecializationPhrases(profile: PublicOrientationAnswers) {
 }
 
 function matchesTargetSpecialization(
-  profile: PublicOrientationAnswers,
+  answers: PublicOrientationAnswers,
   candidate: OrientationDiscoveryResearchCandidate,
 ) {
   const programme = normalize(candidate.programme);
   if (!programme) return false;
-  return targetSpecializationPhrases(profile).some((phrase) =>
+  return targetSpecializationPhrases(answers).some((phrase) =>
     programme.includes(phrase)
   );
 }
 
 function verificationMatchesTargetSpecialization(
-  profile: PublicOrientationAnswers,
+  answers: PublicOrientationAnswers,
   programme: OrientationProgrammeVerification,
 ) {
-  return matchesTargetSpecialization(profile, programme.candidate);
+  return matchesTargetSpecialization(answers, programme.candidate);
 }
 
 function teachingLanguageMatches(
-  profile: PublicOrientationAnswers,
+  answers: PublicOrientationAnswers,
   candidate: OrientationDiscoveryResearchCandidate,
 ) {
-  const preference = normalize(profile.studyLanguage);
+  const preference = normalize(answers.studyLanguage);
   const teaching = normalize(candidate.teachingLanguage);
   if (!preference || !teaching || preference.includes("definir")) return false;
 
@@ -86,25 +86,25 @@ function teachingLanguageMatches(
 }
 
 function prioritizeCandidates(
-  profile: PublicOrientationAnswers,
+  answers: PublicOrientationAnswers,
   candidates: readonly OrientationDiscoveryResearchCandidate[],
 ) {
-  if (targetSpecializationPhrases(profile).length === 0) {
+  if (targetSpecializationPhrases(answers).length === 0) {
     return [...candidates];
   }
 
   return candidates
     .map((candidate, index) => ({ candidate, index }))
     .sort((a, b) => {
-      const aMatches = matchesTargetSpecialization(profile, a.candidate);
-      const bMatches = matchesTargetSpecialization(profile, b.candidate);
+      const aMatches = matchesTargetSpecialization(answers, a.candidate);
+      const bMatches = matchesTargetSpecialization(answers, b.candidate);
       const specializationDiff = Number(bMatches) - Number(aMatches);
       if (specializationDiff !== 0) return specializationDiff;
 
       if (aMatches && bMatches) {
         const languageDiff =
-          Number(teachingLanguageMatches(profile, b.candidate))
-          - Number(teachingLanguageMatches(profile, a.candidate));
+          Number(teachingLanguageMatches(answers, b.candidate))
+          - Number(teachingLanguageMatches(answers, a.candidate));
         if (languageDiff !== 0) return languageDiff;
       }
 
@@ -137,7 +137,7 @@ function logVerification(result: {
 }
 
 function takeReusable(
-  profile: PublicOrientationAnswers,
+  answers: PublicOrientationAnswers,
   programmes: readonly OrientationProgrammeVerification[],
 ) {
   return programmes
@@ -145,8 +145,8 @@ function takeReusable(
     .map((programme, index) => ({ programme, index }))
     .sort((a, b) => {
       const specializationDiff =
-        Number(verificationMatchesTargetSpecialization(profile, b.programme))
-        - Number(verificationMatchesTargetSpecialization(profile, a.programme));
+        Number(verificationMatchesTargetSpecialization(answers, b.programme))
+        - Number(verificationMatchesTargetSpecialization(answers, a.programme));
       if (specializationDiff !== 0) return specializationDiff;
 
       const statusDiff =
@@ -161,26 +161,26 @@ function takeReusable(
 }
 
 function targetSpecializationCovered(
-  profile: PublicOrientationAnswers,
+  answers: PublicOrientationAnswers,
   programmes: readonly OrientationProgrammeVerification[],
 ) {
-  const phrases = targetSpecializationPhrases(profile);
+  const phrases = targetSpecializationPhrases(answers);
   if (phrases.length === 0) return true;
   return programmes.some((programme) =>
-    verificationMatchesTargetSpecialization(profile, programme)
+    verificationMatchesTargetSpecialization(answers, programme)
   );
 }
 
 export async function runOrientationVerification(
   candidates: readonly OrientationDiscoveryResearchCandidate[],
-  profile: PublicOrientationAnswers,
+  answers: PublicOrientationAnswers,
 ): Promise<OrientationVerificationServiceResult> {
   const knowledge = await loadReusableOrientationVerifications(candidates);
-  const cachedProgrammes = takeReusable(profile, knowledge.programmes);
+  const cachedProgrammes = takeReusable(answers, knowledge.programmes);
 
   if (
     cachedProgrammes.length >= ORIENTATION_VERIFICATION_REUSE_TARGET
-    && targetSpecializationCovered(profile, cachedProgrammes)
+    && targetSpecializationCovered(answers, cachedProgrammes)
   ) {
     const persistence = await recordOrientationVerificationCacheHit(
       cachedProgrammes,
@@ -217,7 +217,7 @@ export async function runOrientationVerification(
     cachedProgrammes.map((programme) => candidateKey(programme.candidate)),
   );
   const uncachedCandidates = prioritizeCandidates(
-    profile,
+    answers,
     candidates.filter(
       (candidate) => !cachedKeys.has(candidateKey(candidate)),
     ),
@@ -234,7 +234,7 @@ export async function runOrientationVerification(
   const persistence = await persistOrientationVerification(fresh);
 
   const programmes = takeReusable(
-    profile,
+    answers,
     [
       ...fresh.programmes,
       ...cachedProgrammes,
