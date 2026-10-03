@@ -64,7 +64,7 @@ test("SO-V3.5 makes parallel dossier work and the full after-admission path visi
   assert.match(guidance, /traductions ou légalisations nécessaires/);
   assert.match(guidance, /envoyer les candidatures par le canal officiel/);
   assert.match(guidance, /financement, assurance, visa/);
-  assert.match(guidance, /logement et de l’arrivée/);
+  assert.match(guidance, /logement et préparation de l’arrivée/);
 });
 
 test("SO-V3.5 keeps medicine and health under enhanced human review", () => {

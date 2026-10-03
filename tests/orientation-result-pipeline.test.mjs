@@ -11,6 +11,7 @@ const engineCard = read("src/components/orientation/PersonalizedOrientationEngin
 const writerCard = read("src/components/orientation/OrientationPersonalizedWriterCard.tsx");
 const form = read("src/components/orientation/PublicOrientationForm.tsx");
 const adminPanel = read("src/components/admin/AdminOrientationPanel.tsx");
+const universalGuidance = read("src/lib/orientation/universal-guidance.ts");
 
 test("E orchestrates A/B/C/D only after the discovery contract allows university discovery", () => {
   assert.match(service, /buildOrientationDiscoveryPlan\(profile\)/);
@@ -66,14 +67,18 @@ test("E writer UI presents a premium progressive result with one CTA and verifie
   assert.match(writerCard, /fact\.sourceUrl/);
   assert.match(writerCard, /humanReview\.mode === "post_result_audit"/);
   assert.match(writerCard, /Programmes sélectionnés pour votre projet/);
-  assert.match(writerCard, /Avancez sereinement, nous orchestrons le reste/);
-  assert.match(writerCard, /Votre focus/);
-  assert.match(writerCard, /Notre ingénierie/);
-  assert.match(writerCard, /Notre engagement/);
+  assert.match(writerCard, /Vous avancez étape par étape\. Nous gardons le cap avec vous/);
+  assert.match(writerCard, /Votre priorité/);
+  assert.match(writerCard, /Ce que nous sécurisons/);
+  assert.match(writerCard, /Ce que nous préparons avec vous/);
   assert.match(writerCard, /Votre projet, en bref/);
-  assert.match(writerCard, /Vous savez toujours quoi faire, pourquoi, et ce qui vient ensuite/);
+  assert.match(writerCard, /Vous savez ce qui est prêt, ce qui reste à confirmer et quelle est la prochaine étape/);
   assert.match(writerCard, /Points à confirmer/);
   assert.match(writerCard, /md:grid-cols-3/);
+  assert.match(writerCard, /Studienkolleg si nécessaire/);
+  assert.match(writerCard, /financement, assurance, visa, logement et arrivée/);
+  assert.match(writerCard, /école de langue partenaire validée en Allemagne/);
+  assert.doesNotMatch(writerCard, /orchestrons|Notre ingénierie|auditons|verrouillons|architecturons/i);
   assert.doesNotMatch(writerCard, /summaryTags|campusTasks/);
   assert.doesNotMatch(writerCard, /selon l’accompagnement choisi|forfait|option commerciale/i);
   assert.match(writerCard, /Vos options pour avancer en allemand/);
@@ -85,6 +90,21 @@ test("E writer UI presents a premium progressive result with one CTA and verifie
   assert.match(engineCard, /answers=\{answers\}/);
   assert.match(form, /\{step <= 4 \? \([\s\S]*copy\.intro\.eyebrow/);
   assert.match(form, /\{step <= 4 \? \([\s\S]*role="progressbar"/);
+});
+
+test("E language and post-admission guidance keep partner and agency claims bounded", () => {
+  assert.match(
+    universalGuidance,
+    /école partenaire validée, si votre situation et la voie administrative le permettent/,
+  );
+  assert.match(
+    universalGuidance,
+    /Après une admission : nous vous guidons dans l’ordre des démarches/,
+  );
+  assert.doesNotMatch(
+    universalGuidance,
+    /selon l’accompagnement choisi|according to the support selected|je nach gewählter Begleitung|حسب نوع المرافقة المختار/i,
+  );
 });
 
 test("E returns the candidate result without waiting for any admin approval state", () => {
