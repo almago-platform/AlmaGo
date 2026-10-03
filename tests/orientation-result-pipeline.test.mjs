@@ -106,6 +106,15 @@ test("E writer UI presents a premium progressive result with one CTA and verifie
   assert.match(writerCard, /Vos options pour avancer en allemand/);
   assert.match(writerCard, /buildUniversalOrientationGuidance/);
   assert.match(writerCard, /Votre priorité maintenant/);
+  assert.match(writerCard, /Votre parcours, étape par étape/);
+  assert.match(writerCard, /Objectif final · Départ/);
+  assert.match(writerCard, /Prochaine action/);
+  assert.match(writerCard, /Voir ma prochaine étape/);
+  assert.match(writerCard, /journeyCompletedCount/);
+  assert.match(writerCard, /journeyRemainingCount/);
+  assert.match(writerCard, /--success/);
+  assert.match(writerCard, /bg-\[var\(--success\)\]/);
+  assert.equal((writerCard.match(/aria-labelledby="orientation-journey"/g) || []).length, 1);
   assert.match(writerCard, /Voir les informations vérifiées et les sources officielles/);
   assert.match(writerCard, /determineJourneyStep/);
   assert.doesNotMatch(writerCard, /bg-\[var\(--foreground\)\][\s\S]*bg-\[var\(--foreground\)\][\s\S]*orientation-main-priority/);
