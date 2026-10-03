@@ -29,6 +29,11 @@ export type OrientationWriterContext = {
     average_scale: 20 | null;
     average_type: string | null;
     last_diploma: string | null;
+    higher_education_status: string | null;
+    current_study_field: string | null;
+    university_semesters: string | null;
+    study_intent: string | null;
+    target_specialization: string | null;
     target_degree: string | null;
     target_field: string | null;
     engineering_specialty: string | null;
@@ -196,6 +201,11 @@ function safeProfile(
     average_scale: profile.generalAverage ? 20 as const : null,
     average_type: nullable(profile.averageType),
     last_diploma: nullable(profile.lastDiploma),
+    higher_education_status: nullable(profile.higherEducationStatus),
+    current_study_field: nullable(profile.currentStudyField),
+    university_semesters: nullable(profile.universitySemesters),
+    study_intent: nullable(profile.studyIntent),
+    target_specialization: nullable(profile.targetSpecialization),
     target_degree: nullable(profile.targetDegree),
     target_field: nullable(profile.targetField),
     engineering_specialty: nullable(profile.engineeringSpecialty),
