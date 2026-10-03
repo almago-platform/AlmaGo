@@ -315,41 +315,45 @@ export function PublicOrientationForm({
       </header>
 
       <main id="orientation-main" className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-12">
-        <section className="orientation-print-hide mx-auto max-w-3xl">
-          <p className="eyebrow">
-            {authenticatedUpdate ? updateCopy.introEyebrow : copy.intro.eyebrow}
-          </p>
-          <h1 className="page-title max-w-3xl">
-            {authenticatedUpdate ? updateCopy.introTitle : copy.intro.title}
-          </h1>
-          <p className="page-subtitle">
-            {authenticatedUpdate ? updateCopy.introLead : copy.intro.lead}
-          </p>
-          <div className="mt-5 rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--brand-soft)] px-4 py-3 text-sm leading-6">
-            {authenticatedUpdate ? updateCopy.introNotice : copy.intro.privacy}
-          </div>
-        </section>
+        {step <= 4 ? (
+          <section className="orientation-print-hide mx-auto max-w-3xl">
+            <p className="eyebrow">
+              {authenticatedUpdate ? updateCopy.introEyebrow : copy.intro.eyebrow}
+            </p>
+            <h1 className="page-title max-w-3xl">
+              {authenticatedUpdate ? updateCopy.introTitle : copy.intro.title}
+            </h1>
+            <p className="page-subtitle">
+              {authenticatedUpdate ? updateCopy.introLead : copy.intro.lead}
+            </p>
+            <div className="mt-5 rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--brand-soft)] px-4 py-3 text-sm leading-6">
+              {authenticatedUpdate ? updateCopy.introNotice : copy.intro.privacy}
+            </div>
+          </section>
+        ) : null}
 
-        <section className="mx-auto mt-8 max-w-3xl">
-          <div
-            role="progressbar"
-            aria-label={copy.progress.label}
-            aria-valuemin={1}
-            aria-valuemax={4}
-            aria-valuenow={Math.min(step, 4)}
-            className="orientation-print-hide mb-6"
-          >
-            <div className="mb-2 flex items-center justify-between text-xs font-semibold text-[var(--muted)]">
-              <span>{copy.progress.step} {Math.min(step, 4)} / 4</span>
-              <span>{Math.min(step, 4) * 25}%</span>
+        <section className={`mx-auto max-w-3xl ${step <= 4 ? "mt-8" : "mt-0"}`}>
+          {step <= 4 ? (
+            <div
+              role="progressbar"
+              aria-label={copy.progress.label}
+              aria-valuemin={1}
+              aria-valuemax={4}
+              aria-valuenow={step}
+              className="orientation-print-hide mb-6"
+            >
+              <div className="mb-2 flex items-center justify-between text-xs font-semibold text-[var(--muted)]">
+                <span>{copy.progress.step} {step} / 4</span>
+                <span>{step * 25}%</span>
+              </div>
+              <div className="h-2 overflow-hidden rounded-full bg-[var(--surface-muted)]">
+                <div
+                  className="h-full rounded-full bg-[var(--brand)] transition-[width]"
+                  style={{ width: `${step * 25}%` }}
+                />
+              </div>
             </div>
-            <div className="h-2 overflow-hidden rounded-full bg-[var(--surface-muted)]">
-              <div
-                className="h-full rounded-full bg-[var(--brand)] transition-[width]"
-                style={{ width: `${Math.min(step, 4) * 25}%` }}
-              />
-            </div>
-          </div>
+          ) : null}
 
           <div className="professional-panel rounded-[var(--radius-panel)] p-5 sm:p-7">
             {step <= 4 ? (
