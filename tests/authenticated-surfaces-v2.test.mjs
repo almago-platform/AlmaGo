@@ -86,13 +86,11 @@ test("Arabic student shell reserves the sidebar on the correct RTL edge", () => 
   assert.match(globals, /border-left: 1px solid var\(--border\)/);
 });
 
-test("student priority accents use logical inline positioning for RTL", () => {
-  assert.ok(dashboard.includes("student-accent-edge"));
-  assert.ok(dashboard.includes("student-accent-content"));
-  assert.ok(dashboard.includes("student-split-border"));
-  assert.match(globals, /inset-inline-start: 0/);
-  assert.match(globals, /padding-inline-start: 0\.5rem/);
-  assert.match(globals, /border-inline-end: 1px solid var\(--border\)/);
+test("student cockpit keeps mixed-direction project and record values isolated for RTL", () => {
+  assert.match(dashboard, /<bdi dir="auto">\{projectSummary\}<\/bdi>/);
+  assert.match(dashboard, /<span[^>]*dir="auto">\s*\{deadline\.label\}/);
+  assert.match(dashboard, /<p[^>]*dir="auto">\{program\?\.name/);
+  assert.match(globals, /html\[dir="rtl"\] \.student-shell \.student-shell-sidebar/);
 });
 
 
@@ -114,16 +112,15 @@ test("recorded checklist templates are localized by stable template key", () => 
 });
 
 
-test("Arabic dashboard V3 prioritizes the concrete next action and one progress source", () => {
-  assert.ok(dashboard.includes('select("path").eq("student_id", user.id).maybeSingle()'));
-  assert.ok(dashboard.includes("waitingAlmaGo.length > 0"));
+test("Arabic dashboard cockpit prioritizes one concrete next action and one progress source", () => {
+  assert.ok(dashboard.includes('select("path,target_degree,target_field,target_intake")'));
+  assert.ok(dashboard.includes("waitingAlmaGo.length"));
   assert.ok(dashboard.includes("label: nextItem.title"));
-  assert.ok(dashboard.includes("cta: t.openStep"));
-  assert.ok(dashboard.includes("showProgressSummary={false}"));
+  assert.ok(dashboard.includes("cockpit.continue"));
+  assert.ok(dashboard.includes("ProgressBar value={progression}"));
+  assert.ok(dashboard.includes('href="/student/pathway"'));
   assert.ok(journeyOverview.includes("showProgressSummary = true"));
   assert.ok(dashboardCopy.includes('statusTodo: "خطوات مطلوبة"'));
-  assert.ok(dashboardCopy.includes('openStep: "افتح الخطوة"'));
-  assert.ok(dashboardCopy.includes('germanyReadyTitle: "هدفك محفوظ، والخطوات المناسبة مرتبطة به."'));
 });
 
 test("Arabic profile and project V3 isolate Latin data instead of mixing scripts", () => {
