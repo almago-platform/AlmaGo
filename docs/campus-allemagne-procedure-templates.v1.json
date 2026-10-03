@@ -1,0 +1,287 @@
+{
+  "schema_version": "1.1-draft",
+  "status": "design-prototype-not-production",
+  "source_verified_at": "2026-10-04",
+  "source_of_truth": "docs/CAMPUS_ALLEMAGNE_IMPLEMENTATION_HANDOFF.md",
+  "student_input_policy": {
+    "principle": "minimum_student_burden_campus_managed_by_default",
+    "default_required_uploads": [
+      "passport",
+      "baccalaureate",
+      "baccalaureate_transcript"
+    ],
+    "optional_at_intake": [
+      "existing_language_certificate"
+    ],
+    "additional_student_request": "only_when_source_document_or_personal_action_is_indispensable",
+    "internal_tasks_are_never_student_tasks": true
+  },
+  "deadline_kinds": [
+    "official_hard_deadline",
+    "official_external_date",
+    "internal_target",
+    "source_review_date"
+  ],
+  "step_statuses": [
+    "not_started",
+    "ready",
+    "waiting_student",
+    "waiting_almago",
+    "waiting_external",
+    "in_progress",
+    "blocked",
+    "completed",
+    "not_applicable"
+  ],
+  "document_requirement_statuses": [
+    "requested",
+    "uploaded",
+    "under_review",
+    "replacement_required",
+    "accepted_original",
+    "authentication_required",
+    "authentication_in_progress",
+    "authenticated",
+    "translation_required",
+    "translation_in_progress",
+    "translated",
+    "legalisation_to_verify",
+    "legalisation_required",
+    "legalisation_in_progress",
+    "ready",
+    "not_applicable"
+  ],
+  "deadline_rules": {
+    "documents_ready": {
+      "kind": "internal_target",
+      "formula": "official_application_deadline - 84 days"
+    },
+    "authentication_translation_ready": {
+      "kind": "internal_target",
+      "formula": "official_application_deadline - 70 days"
+    },
+    "uni_assist_submit_target": {
+      "kind": "internal_target",
+      "formula": "official_application_deadline - 56 days",
+      "basis": "uni-assist recommends applying at least 8 weeks before the official deadline"
+    },
+    "vpd_request_target": {
+      "kind": "internal_target",
+      "formula": "official_application_deadline - 70 days",
+      "basis": "internal safety buffer around the official 4-6 week VPD processing guidance"
+    },
+    "direct_submit_target": {
+      "kind": "internal_target",
+      "formula": "official_application_deadline - 21 days"
+    },
+    "final_review": {
+      "kind": "internal_target",
+      "formula": "official_application_deadline - 7 days"
+    },
+    "study_prep_visa_latest_plausible": {
+      "kind": "official_external_date",
+      "formula": "language_course_start - 2 calendar months",
+      "basis": "German Embassy Tunis study-preparation guidance; not a guaranteed visa processing time"
+    }
+  },
+  "common_steps": [
+    {
+      "key": "project_confirmed",
+      "owner": "joint",
+      "blocking": true,
+      "student_action_mode": "profile_input"
+    },
+    {
+      "key": "starter_documents",
+      "owner": "student",
+      "blocking": true,
+      "student_action_mode": "default_required_uploads"
+    },
+    {
+      "key": "academic_review",
+      "owner": "almago",
+      "blocking": true,
+      "student_action_mode": "only_if_replacement_required"
+    },
+    {
+      "key": "tunisian_authentication",
+      "owner": "almago",
+      "blocking": true,
+      "student_action_mode": "exception_only"
+    },
+    {
+      "key": "german_legalisation",
+      "owner": "almago",
+      "external_actor": "tls_or_embassy",
+      "blocking": true,
+      "applies_if": "document_requirement.requires_german_legalisation == true",
+      "student_action_mode": "exception_only"
+    },
+    {
+      "key": "certified_translation",
+      "owner": "almago",
+      "external_actor": "translator",
+      "blocking": true,
+      "student_action_mode": "none_by_default"
+    },
+    {
+      "key": "academic_eligibility",
+      "owner": "almago",
+      "blocking": true,
+      "student_action_mode": "request_source_document_only_if_needed"
+    },
+    {
+      "key": "language_path",
+      "owner": "almago",
+      "blocking": true,
+      "student_action_mode": "certificate_if_existing_or_personal_exam_course_action"
+    },
+    {
+      "key": "program_selection",
+      "owner": "almago",
+      "blocking": true,
+      "student_action_mode": "none_by_default"
+    },
+    {
+      "key": "application_ready",
+      "owner": "almago",
+      "blocking": true,
+      "student_action_mode": "exception_only"
+    },
+    {
+      "key": "application_submitted",
+      "owner": "almago",
+      "blocking": true,
+      "student_action_mode": "personal_confirmation_payment_if_required"
+    },
+    {
+      "key": "application_followup",
+      "owner": "almago",
+      "blocking": false,
+      "student_action_mode": "exception_only"
+    },
+    {
+      "key": "admission_basis",
+      "owner": "external",
+      "blocking": true,
+      "student_action_mode": "none"
+    },
+    {
+      "key": "financing",
+      "owner": "almago",
+      "blocking": true,
+      "student_action_mode": "kyc_payment_signature_if_required"
+    },
+    {
+      "key": "insurance",
+      "owner": "almago",
+      "blocking": true,
+      "student_action_mode": "kyc_payment_signature_if_required"
+    },
+    {
+      "key": "visa_submission",
+      "owner": "almago",
+      "blocking": true,
+      "student_action_mode": "signature_biometrics_presence_if_required"
+    },
+    {
+      "key": "arrival",
+      "owner": "almago",
+      "blocking": false,
+      "student_action_mode": "personal_presence_only_where_required"
+    }
+  ],
+  "routes": {
+    "studies_bachelor": {
+      "label": "Études - Bachelor",
+      "steps": "common_steps",
+      "application_methods": ["direct", "uni_assist", "vpd_then_direct", "other_documented"]
+    },
+    "studies_master": {
+      "label": "Études - Master",
+      "steps": "common_steps",
+      "extra_source_documents_if_needed": [
+        "bachelor_or_licence_diploma",
+        "university_transcripts",
+        "grading_system",
+        "diploma_supplement_if_available"
+      ]
+    },
+    "study_preparation": {
+      "label": "Préparation aux études",
+      "steps": "common_steps",
+      "route_requirements_to_verify": [
+        "preparatory_academic_basis",
+        "language_course_at_least_20h_week",
+        "accepted_A2_or_current_official_requirement",
+        "financing",
+        "insurance"
+      ]
+    },
+    "study_place_search": {
+      "label": "Recherche d'une place d'études",
+      "steps": "common_steps",
+      "route_requirements_to_verify": [
+        "academic_eligibility",
+        "language",
+        "financing",
+        "insurance",
+        "official_active_checklist"
+      ]
+    },
+    "standalone_language": {
+      "label": "Cours de langue autonome",
+      "steps": "common_steps",
+      "guardrail": "do_not_use_as_automatic_substitute_for_study_project"
+    },
+    "ausbildung": {
+      "label": "Formation professionnelle / Ausbildung",
+      "steps": "common_steps",
+      "route_requirements_to_verify": [
+        "training_place_or_contract",
+        "language",
+        "recognition_if_applicable",
+        "financing_if_applicable",
+        "insurance"
+      ]
+    },
+    "ausbildung_search": {
+      "label": "Recherche d'une place d'Ausbildung",
+      "steps": "common_steps",
+      "guardrail": "keep_separate_from_already_secured_training_route"
+    },
+    "research_doctorate": {
+      "label": "Doctorat / recherche",
+      "steps": "common_steps",
+      "route_requirements_to_verify": [
+        "invitation_contract_or_hosting_basis",
+        "degree",
+        "financing_or_salary",
+        "insurance",
+        "correct_visa_route"
+      ]
+    },
+    "study_internship": {
+      "label": "Stage lié aux études",
+      "steps": "common_steps",
+      "route_requirements_to_verify": [
+        "internship_agreement",
+        "university_enrolment",
+        "BA_or_AIESEC_approval_if_applicable",
+        "financing",
+        "insurance"
+      ]
+    }
+  },
+  "truth_rules": [
+    "official_deadline_requires_source_url_verified_at_and_cycle",
+    "internal_target_must_be_labelled_campus_allemagne_target",
+    "german_legalisation_is_never_required_by_default",
+    "uploaded_does_not_mean_verified",
+    "important_admin_changes_must_create_student_history",
+    "route_change_must_be_auditable",
+    "student_tasks_require_a_precise_reason",
+    "internal_campus_tasks_are_never_student_obligations",
+    "volatile_visa_financing_rules_are_versioned_with_source_and_verified_at"
+  ]
+}
