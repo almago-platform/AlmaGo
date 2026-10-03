@@ -484,10 +484,10 @@ export function buildUniversalOrientationGuidance(
         de: "Dann: über den offiziellen Bewerbungsweg einreichen und Antworten verfolgen.",
       }[locale],
       afterAdmission: {
-        fr: "Après une admission : financement, assurance, visa, puis préparation du logement et de l’arrivée selon l’accompagnement choisi.",
-        ar: "بعد القبول: التمويل والتأمين والتأشيرة ثم التحضير للسكن والوصول حسب نوع المرافقة المختار.",
-        en: "After admission: funding, insurance, visa, then housing and arrival preparation according to the support selected.",
-        de: "Nach einer Zulassung: Finanzierung, Versicherung, Visum sowie Wohnungs- und Ankunftsvorbereitung je nach gewählter Begleitung.",
+        fr: "Après une admission : nous vous guidons dans l’ordre des démarches — financement, assurance, visa, logement et préparation de l’arrivée — selon votre situation.",
+        ar: "بعد القبول: نوجّهك في ترتيب الخطوات — التمويل والتأمين والتأشيرة والسكن والتحضير للوصول — حسب وضعيتك.",
+        en: "After admission: we guide you through the right order of steps — funding, insurance, visa, housing and arrival preparation — according to your situation.",
+        de: "Nach einer Zulassung führen wir dich in der richtigen Reihenfolge durch Finanzierung, Versicherung, Visum, Wohnen und Ankunftsvorbereitung – passend zu deiner Situation.",
       }[locale],
     },
     ctaTitle: {
