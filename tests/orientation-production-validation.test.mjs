@@ -214,7 +214,7 @@ test("F a documented Studienkolleg requirement remains a review warning, never a
   assert.equal(writer.studyOptions.length, 1);
 });
 
-test("F provider outage and invalid writer output keep deterministic fallbacks wired", () => {
+test("F provider outage and malformed writer output keep deterministic fallbacks wired", () => {
   const resultService = readFileSync(
     "src/lib/orientation-engine/result/service.ts",
     "utf8",
@@ -233,7 +233,8 @@ test("F provider outage and invalid writer output keep deterministic fallbacks w
     /catch \{[\s\S]*?provider: "deterministic"[\s\S]*?buildDeterministicOrientationWriterContent/,
   );
   assert.match(resultService, /discovery: null[\s\S]*?verification: null/);
-  assert.match(writerCore, /if \(unsupportedRiskClaim\(payload, context\)\) return null/);
+  assert.doesNotMatch(writerCore, /unsupportedRiskClaim/);
+  assert.match(gemini, /JSON\.parse\(text\)/);
   assert.match(gemini, /invalid_output/);
   assert.match(gemini, /fallbackResult/);
 });
