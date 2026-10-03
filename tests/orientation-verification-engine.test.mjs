@@ -241,8 +241,8 @@ test("B reuses fresh stored verification before paid web checks", () => {
   assert.match(storeSource, /lastMajorRefreshAt/);
   assert.match(serviceSource, /ORIENTATION_VERIFICATION_REUSE_TARGET = 4/);
   assert.match(serviceSource, /cachedProgrammes\.length >= ORIENTATION_VERIFICATION_REUSE_TARGET/);
-  assert.match(serviceSource, /targetSpecializationCovered\(profile, cachedProgrammes\)/);
-  assert.match(serviceSource, /prioritizeCandidates\([\s\S]*profile,[\s\S]*candidates\.filter/);
+  assert.match(serviceSource, /targetSpecializationCovered\(answers, cachedProgrammes\)/);
+  assert.match(serviceSource, /prioritizeCandidates\([\s\S]*answers,[\s\S]*candidates\.filter/);
   assert.match(serviceSource, /runOpenAIOrientationVerification\([\s\S]*uncachedCandidates,[\s\S]*missing/);
   assert.match(serviceSource, /takeReusable\([\s\S]*profile,[\s\S]*fresh\.programmes/);
   assert.match(resultServiceSource, /runOrientationVerification\(discovery\.candidates, profile\)/);
