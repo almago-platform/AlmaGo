@@ -456,6 +456,8 @@ test("D Gemini adapter is server-only, structured, bounded and has no research t
   assert.match(geminiSource, /thinkingLevel: "low"/);
   assert.match(geminiSource, /Avoid generic filler/);
   assert.match(geminiSource, /fortes chances d’admission/);
+  assert.match(geminiSource, /bon potentiel d’admission/);
+  assert.match(geminiSource, /why_it_fits must end with exactly one approved admission-outlook sentence/);
   assert.match(geminiSource, /initial Campus Allemagne estimate/);
   assert.match(geminiSource, /guaranteed admission/);
   assert.match(geminiSource, /cost-of-living claims/);
