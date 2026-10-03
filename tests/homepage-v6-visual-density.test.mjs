@@ -58,11 +58,13 @@ test("premium journey connects the six public steps and becomes a mobile timelin
 });
 
 
-test("photo-band copy sits in a centered block with one aligned reading edge", () => {
+test("photo-band uses a premium editorial panel with one aligned reading axis", () => {
+  assert.match(css, /Editorial refinement V2 — photo band \+ FAQ/);
   assert.match(css, /\.photoBandLayout[\s\S]*grid-template-columns:\s*1fr/);
-  assert.match(css, /\.photoBandHeading[\s\S]*width:\s*min\(100%, 760px\)[\s\S]*margin:\s*0 auto[\s\S]*text-align:\s*left/);
-  assert.match(css, /\.photoBandHeading \.eyebrow[\s\S]*justify-content:\s*flex-start/);
-  assert.match(css, /\.photoBandTitle[\s\S]*margin-inline:\s*0[\s\S]*text-align:\s*left/);
+  assert.match(css, /\.photoBandHeading[\s\S]*width:\s*min\(100%, 980px\)[\s\S]*border-radius:\s*20px[\s\S]*text-align:\s*left/);
+  assert.match(css, /\.photoBandHeading::before[\s\S]*linear-gradient\(90deg, var\(--brand\)[\s\S]*var\(--accent\)/);
+  assert.match(css, /\.photoBandTitle[\s\S]*font-size:\s*clamp\(44px, 4vw, 58px\)[\s\S]*text-align:\s*left/);
   assert.match(css, /\.photoBandHeading > p:last-child[\s\S]*margin:\s*18px 0 0[\s\S]*text-align:\s*left/);
+  assert.match(css, /\.photoCard:hover[\s\S]*translateY\(-4px\)/);
   assert.match(css, /html\[dir="rtl"\][\s\S]*\.photoBandHeading[\s\S]*text-align:\s*right/);
 });
