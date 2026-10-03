@@ -678,6 +678,31 @@ function summarySignalText(
     : `${total} pistes présentent des signaux positifs que nous continuons à approfondir.`;
 }
 
+function simpleLanguagePriority(
+  locale: Locale,
+  currentLevel: string | null | undefined,
+  nextLevel: string | null | undefined,
+) {
+  if (!nextLevel) return null;
+  const from = currentLevel ? `${currentLevel} → ${nextLevel}` : nextLevel;
+
+  const title: Record<Locale, string> = {
+    fr: currentLevel ? `Passez de ${currentLevel} à ${nextLevel}.` : `Visez le niveau ${nextLevel}.`,
+    ar: currentLevel ? `انتقل من ${currentLevel} إلى ${nextLevel}.` : `استهدف مستوى ${nextLevel}.`,
+    en: currentLevel ? `Move from ${currentLevel} to ${nextLevel}.` : `Aim for ${nextLevel}.`,
+    de: currentLevel ? `Gehe von ${currentLevel} auf ${nextLevel}.` : `Ziele auf ${nextLevel}.`,
+  };
+
+  const text: Record<Locale, string> = {
+    fr: "Concentrez-vous sur cette étape. Nous gardons le reste du projet en mouvement.",
+    ar: "ركز الآن على هذه الخطوة، ونحن نواصل تحريك بقية المشروع.",
+    en: "Focus on this step. We keep the rest of the project moving.",
+    de: "Konzentriere dich jetzt auf diesen Schritt. Wir bringen den Rest des Projekts weiter voran.",
+  };
+
+  return { title: title[locale], text: text[locale], from };
+}
+
 function splitGuidanceChoice(choice: string, locale: Locale) {
   const separator = choice.indexOf(":");
   const title = separator < 0 ? choice.trim() : choice.slice(0, separator).trim();
@@ -1005,12 +1030,32 @@ export function OrientationPersonalizedWriterCard({
         <div className="grid gap-4 lg:grid-cols-[minmax(0,1.2fr)_minmax(15rem,0.8fr)]">
           <div>
             <p className="text-xs font-semibold text-[var(--brand-strong)]">{t.priority}</p>
-            <h4 id="orientation-main-priority" className="mt-2 text-2xl font-semibold tracking-tight">
-              {content.mainPriority.title}
-            </h4>
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--muted)]">
-              {content.mainPriority.text}
-            </p>
+            {content.languagePlan.show && content.languagePlan.nextLevel ? (() => {
+              const simplePriority = simpleLanguagePriority(
+                locale,
+                content.languagePlan.currentLevel,
+                content.languagePlan.nextLevel,
+              );
+              return simplePriority ? (
+                <>
+                  <h4 id="orientation-main-priority" className="mt-2 text-2xl font-semibold tracking-tight">
+                    {simplePriority.title}
+                  </h4>
+                  <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--muted)]">
+                    {simplePriority.text}
+                  </p>
+                </>
+              ) : null;
+            })() : (
+              <>
+                <h4 id="orientation-main-priority" className="mt-2 text-2xl font-semibold tracking-tight">
+                  {content.mainPriority.title}
+                </h4>
+                <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--muted)]">
+                  {content.mainPriority.text}
+                </p>
+              </>
+            )}
 
             {content.languagePlan.show ? (
               <div className="mt-4 flex flex-wrap items-center gap-2">
