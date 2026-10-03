@@ -352,6 +352,10 @@ export function PersonalizedOrientationEngineCard({
     && result.personalized.selected.length > 0
       ? result.personalized
       : null;
+  const fallbackRecommendations =
+    result?.shortlist.source === "deterministic_fallback"
+      ? result.engine.recommendations
+      : [];
 
   useEffect(() => {
     const controller = new AbortController();
@@ -434,7 +438,7 @@ export function PersonalizedOrientationEngineCard({
               <OrientationLetterCard
                 letter={result.letter}
                 scout={result.scout}
-                recommendations={result.engine.recommendations}
+                recommendations={fallbackRecommendations}
                 answers={answers}
                 locale={locale}
               />
@@ -448,7 +452,7 @@ export function PersonalizedOrientationEngineCard({
               />
             ) : null}
 
-            {!personalized ? (
+            {!personalized && result.shortlist.source === "deterministic_fallback" ? (
             <details className="mt-5 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface)] p-4">
               <summary className="cursor-pointer text-sm font-bold">{t.details}</summary>
               <div className="mt-4 grid gap-4">
