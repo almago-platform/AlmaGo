@@ -308,6 +308,10 @@ test("D deterministic fallback remains useful when Gemini is unavailable", () =>
   assert.equal(content.languagePlan.nextLevel, "B1");
   assert.equal(content.studyOptions.length, 3);
   assert.equal(content.studyOptions[0].institution, "University 1");
+  assert.match(content.studyOptions[0].whyItFits, /spécialité recherchée/i);
+  assert.match(content.studyOptions[0].whyItFits, /langue d’enseignement/i);
+  assert.match(content.studyOptions[0].whyItFits, /Aachen/);
+  assert.doesNotMatch(content.studyOptions[0].whyItFits, /correspond à vos objectifs académiques/i);
   assert.equal(content.cta.actionId, "review_shortlist");
   assert.match(content.campusValue, /Campus Allemagne/);
   assert.equal(content.roadmap[0].label, "Vous");
@@ -448,6 +452,9 @@ test("D Gemini adapter is server-only, structured, bounded and has no research t
   assert.match(geminiSource, /REQUEST_TIMEOUT_MS = 20_000/);
   assert.match(geminiSource, /maxOutputTokens: 4000/);
   assert.match(geminiSource, /thinkingLevel: "low"/);
+  assert.match(geminiSource, /Avoid generic filler/);
+  assert.match(geminiSource, /admission probability/);
+  assert.match(geminiSource, /cost-of-living claim/);
   assert.match(geminiSource, /CACHE_TTL_MS = 30 \* 60 \* 1000/);
   assert.match(geminiSource, /const inFlight = new Map<string, Promise<OrientationWriterResult>>/);
   assert.match(geminiSource, /const pending = inFlight\.get\(key\)/);
