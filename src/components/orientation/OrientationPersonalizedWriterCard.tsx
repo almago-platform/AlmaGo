@@ -54,7 +54,7 @@ const copy = {
     priorityParallelText: "Pendant que vous progressez en allemand, nous poursuivons la vérification des programmes et préparons les décisions qui viendront ensuite.",
     reassurance: "Vous n’avez pas besoin de tout régler aujourd’hui. Votre prochaine étape est claire, et nous gardons le reste du projet en vue.",
     closingEyebrow: "À retenir aujourd’hui",
-    closingText: "Avancez sur une seule étape à la fois. Campus Allemagne continue de structurer la suite avec vous.",
+    closingText: "Ce rapport est notre point de départ. Avant la sélection finale, nous reprenons avec vous les points importants et nous confirmons la stratégie.",
     journey: "Votre parcours vers l’Allemagne",
     journeyCurrent: "Étape actuelle",
     journeyCurrentText: [
@@ -110,7 +110,7 @@ const copy = {
     priorityParallelText: "بينما تتقدم في اللغة الألمانية، نواصل مراجعة البرامج ونجهز القرارات التالية في مشروعك.",
     reassurance: "لا تحتاج إلى حل كل شيء اليوم. خطوتك التالية واضحة، ونحن نحافظ على رؤية المشروع كاملًا.",
     closingEyebrow: "ما يجب أن تتذكره اليوم",
-    closingText: "تقدم خطوة واحدة في كل مرة. ويواصل Campus Allemagne تنظيم الخطوات القادمة معك.",
+    closingText: "هذا التقرير هو نقطة البداية. قبل الاختيار النهائي، نراجع معك النقاط المهمة ونؤكد معك الخطة الأنسب.",
     journey: "مسارك نحو ألمانيا",
     journeyCurrent: "المرحلة الحالية",
     journeyCurrentText: [
@@ -166,7 +166,7 @@ const copy = {
     priorityParallelText: "While you progress in German, we keep checking the programmes and prepare the decisions that come next.",
     reassurance: "You do not need to solve everything today. Your next step is clear, and we keep the whole project in view.",
     closingEyebrow: "What to remember today",
-    closingText: "Move one step at a time. Campus Allemagne keeps structuring what comes next with you.",
+    closingText: "This report is our starting point. Before the final selection, we review the important points with you and confirm the strategy.",
     journey: "Your path to Germany",
     journeyCurrent: "Current stage",
     journeyCurrentText: [
@@ -222,7 +222,7 @@ const copy = {
     priorityParallelText: "Während du dein Deutsch verbesserst, prüfen wir die Studiengänge weiter und bereiten die nächsten Entscheidungen vor.",
     reassurance: "Du musst heute nicht alles lösen. Dein nächster Schritt ist klar, und wir behalten das Gesamtprojekt im Blick.",
     closingEyebrow: "Was heute wichtig ist",
-    closingText: "Gehe Schritt für Schritt. Campus Allemagne strukturiert mit dir weiter, was als Nächstes kommt.",
+    closingText: "Dieser Bericht ist unser Ausgangspunkt. Vor der finalen Auswahl gehen wir die wichtigen Punkte mit dir durch und bestätigen die Strategie.",
     journey: "Dein Weg nach Deutschland",
     journeyCurrent: "Aktuelle Etappe",
     journeyCurrentText: [
@@ -609,7 +609,7 @@ function summarySignalText(
   }
   if (locale === "de") {
     return strongCount > 0
-      ? `${strongCount} Option${strongCount > 1 ? "en" : ""} fällt in der ersten Einschätzung mit guten bis sehr guten Zulassungschancen auf.`
+      ? `${strongCount} Option${strongCount > 1 ? "en" : ""} ${strongCount > 1 ? "fallen" : "fällt"} in der ersten Einschätzung mit guten bis sehr guten Zulassungschancen auf.`
       : `${total} Optionen zeigen positive Signale, die wir weiter vertiefen.`;
   }
   return strongCount > 0
