@@ -294,7 +294,7 @@ export function PublicOrientationForm({
   ] as const;
 
   return (
-    <div className="orientation-print-page min-h-screen bg-[var(--background)] text-[var(--foreground)]" dir={direction}>
+    <div className={`orientation-print-page min-h-screen bg-[var(--background)] text-[var(--foreground)] ${step > 4 ? "orientation-color-theme" : ""}`} dir={direction}>
       <a className="skip-link orientation-print-hide" href="#orientation-main">{copy.header.skip}</a>
 
       <header className="orientation-print-hide border-b border-[var(--border)] bg-[var(--surface)]">
@@ -689,7 +689,7 @@ export function PublicOrientationForm({
                   />
                 ) : null}
 
-                <section className="orientation-print-hide mt-7 rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] px-4 py-4 sm:flex sm:items-center sm:justify-between sm:gap-6 sm:px-5" aria-label={resultActionsCopy.title}>
+                <section className="orientation-print-hide orientation-tone-actions mt-7 rounded-[var(--radius-panel)] border border-[var(--border)] px-4 py-4 sm:flex sm:items-center sm:justify-between sm:gap-6 sm:px-5" aria-label={resultActionsCopy.title}>
                   <p className="text-sm font-semibold">{resultActionsCopy.title}</p>
                   <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-3 sm:mt-0 sm:justify-end">
                     <button
