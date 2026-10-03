@@ -26,7 +26,7 @@ test("SO-V3.5 route covers priority through post-admission instead of a generic 
 
   assert.match(guidance, /Campus Allemagne vérifie 2 ou 3 établissements réellement adaptés/);
   assert.match(guidance, /envoyer les candidatures par le canal officiel/);
-  assert.match(guidance, /Après une admission : financement, assurance, visa/);
+  assert.match(guidance, /Après une admission : nous vous guidons dans l’ordre des démarches/);
   assert.doesNotMatch(form, /diagnostic\.paths|diagnostic\.priorities|diagnostic\.checks/);
 });
 
