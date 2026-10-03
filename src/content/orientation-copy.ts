@@ -63,7 +63,7 @@ const fr: OrientationCopy = {
     eyebrow: "Orientation gratuite",
     title: "Par où commencer pour étudier en Allemagne ?",
     lead: "Répondez à quelques questions simples. Aucun compte n’est nécessaire.",
-    privacy: "Pour le moment, vos réponses restent uniquement dans cet onglet. Rien n’est envoyé à AlmaGo.",
+    privacy: "Vos réponses servent à générer cette orientation personnalisée. Elles ne constituent pas une demande de contact avec Campus Allemagne.",
   },
   progress: { label: "Progression de l’orientation", step: "Étape" },
   steps: {
@@ -112,7 +112,7 @@ const ar: OrientationCopy = {
     eyebrow: "توجيه مجاني",
     title: "من أين تبدأ مشروع الدراسة في ألمانيا؟",
     lead: "أجب عن أسئلة بسيطة حول دراستك ولغتك. لا تحتاج إلى إنشاء حساب.",
-    privacy: "في هذه المرحلة تبقى إجاباتك داخل هذا التبويب فقط، ولا يتم إرسالها إلى AlmaGo.",
+    privacy: "تُستخدم إجاباتك لإنشاء هذا التوجيه المخصص، ولا تُعدّ طلب تواصل مع Campus Allemagne.",
   },
   progress: { label: "تقدم التوجيه", step: "الخطوة" },
   steps: {
@@ -161,7 +161,7 @@ const en: OrientationCopy = {
     eyebrow: "Free orientation",
     title: "Where should you start for studying in Germany?",
     lead: "Answer a few simple questions about your studies and languages. No account is required.",
-    privacy: "For now, your answers stay only in this browser tab. Nothing is sent to AlmaGo.",
+    privacy: "Your answers are used to generate this personalised orientation. They do not constitute a request to be contacted by Campus Allemagne.",
   },
   progress: { label: "Orientation progress", step: "Step" },
   steps: {
@@ -210,7 +210,7 @@ const de: OrientationCopy = {
     eyebrow: "Kostenlose Orientierung",
     title: "Wo solltest du für ein Studium in Deutschland anfangen?",
     lead: "Beantworte ein paar einfache Fragen zu deiner Ausbildung und deinen Sprachen. Ein Konto ist nicht nötig.",
-    privacy: "Deine Antworten bleiben vorerst nur in diesem Browser-Tab. Es wird nichts an AlmaGo gesendet.",
+    privacy: "Deine Antworten werden für diese personalisierte Orientierung verwendet. Sie sind keine Kontaktanfrage an Campus Allemagne.",
   },
   progress: { label: "Fortschritt der Orientierung", step: "Schritt" },
   steps: {

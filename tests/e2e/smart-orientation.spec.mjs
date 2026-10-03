@@ -342,6 +342,8 @@ test.describe("Smart Orientation Partner-Ready rehearsal", () => {
     if ((primaryPayload?.personalized?.selected?.length || 0) > 0) {
       await expect(page.getByText("Programmes sélectionnés pour votre projet")).toBeVisible();
       await expect(page.getByText("Votre prochaine étape")).toBeVisible();
+      await expect(page.getByText("Votre rôle, notre accompagnement")).toBeVisible();
+      await expect(page.getByText("Campus Allemagne pilote le reste")).toBeVisible();
       await expect(page.getByText("Voir les informations vérifiées et les sources officielles")).toBeVisible();
     }
 
