@@ -10,12 +10,12 @@ const journey = readFileSync("src/components/public/HomeJourneySection.tsx", "ut
 const nativeCopy = readFileSync("src/content/native-copy.ts", "utf8");
 const css = readFileSync("src/components/public/Homepage.module.css", "utf8");
 
-test("photographic story remains between quick access and journey", () => {
-  assert.ok(page.indexOf("<HomeQuickAccess quick={copy.home.quick} />") < page.indexOf("<HomePhotoBand photo={copy.home.photo} />"));
-  assert.ok(page.indexOf("<HomePhotoBand photo={copy.home.photo} />") < page.indexOf("<HomeJourneySection"));
+test("current homepage replaces the legacy photographic story with the product-led landing", () => {
+  assert.ok(page.includes("<HomeLanding copy={landingCopy} primaryHref={primaryHref} />"));
+  assert.ok(!page.includes("<HomeQuickAccess"));
+  assert.ok(!page.includes("<HomePhotoBand"));
+  assert.ok(!page.includes("<HomeJourneySection"));
   assert.ok(band.includes("6684514"));
-  assert.ok(band.includes("5965674"));
-  assert.ok(band.includes("5553958"));
 });
 
 test("current hero uses a high-resolution campus image without claiming a German location", () => {
