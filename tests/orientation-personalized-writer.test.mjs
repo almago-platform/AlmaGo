@@ -324,12 +324,15 @@ test("D parser accepts a grounded structured payload and injects programme names
   assert.equal(parsed.studyOptions.length, 3);
 });
 
-test("D rejects a Gemini option that is not in the deterministic C shortlist", () => {
+test("D normalizes Gemini option ids to the deterministic C shortlist", () => {
   const writerInput = input();
   const raw = validPayload(writerInput);
   raw.study_options[0].option_id = "option_99";
 
-  assert.equal(parseOrientationWriterPayload(writerInput, raw), null);
+  const parsed = parseOrientationWriterPayload(writerInput, raw);
+  assert.ok(parsed);
+  assert.equal(parsed.studyOptions[0].optionId, "option_1");
+  assert.equal(parsed.studyOptions[0].institution, "University 1");
 });
 
 test("D accepts schema-valid Gemini prose without a second semantic rejection layer", () => {
@@ -364,6 +367,17 @@ test("D keeps backend language metadata without rejecting Gemini wording mismatc
   assert.equal(parsed.languagePlan.nextLevel, "B1");
 });
 
+test("D normalizes duplicate roadmap ids instead of rejecting Gemini prose", () => {
+  const writerInput = input();
+  const raw = validPayload(writerInput);
+  raw.roadmap[1].id = raw.roadmap[0].id;
+
+  const parsed = parseOrientationWriterPayload(writerInput, raw);
+  assert.ok(parsed);
+  assert.equal(parsed.roadmap.length, 3);
+  assert.equal(new Set(parsed.roadmap.map((item) => item.id)).size, 3);
+});
+
 test("D CTA must be one of the backend actions actually available", () => {
   const writerInput = input();
   const raw = validPayload(writerInput);
@@ -390,6 +404,9 @@ test("D Gemini adapter is server-only, structured, bounded and has no research t
   assert.doesNotMatch(geminiSource, /responseSchema: responseSchema\(input\)/);
   assert.match(geminiSource, /REQUEST_TIMEOUT_MS = 20_000/);
   assert.match(geminiSource, /CACHE_TTL_MS = 30 \* 60 \* 1000/);
+  assert.match(geminiSource, /const inFlight = new Map<string, Promise<OrientationWriterResult>>/);
+  assert.match(geminiSource, /const pending = inFlight\.get\(key\)/);
+  assert.match(geminiSource, /return pending/);
   assert.match(geminiSource, /orientation_v4_gemini_http/);
   assert.match(geminiSource, /status: response\.status/);
   assert.doesNotMatch(geminiSource, /googleSearch|web_search|urlContext|tools:/);
