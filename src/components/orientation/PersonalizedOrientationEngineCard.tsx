@@ -7,6 +7,7 @@ import { OrientationPersonalizedWriterCard } from "@/components/orientation/Orie
 import type { Locale } from "@/lib/i18n";
 import type { PublicOrientationAnswers } from "@/lib/orientation/public";
 import type { OrientationPublicPersonalizedResult } from "@/lib/orientation-engine/result/types";
+import type { OrientationCanonicalShortlist } from "@/lib/orientation-engine/result/canonical";
 import type {
   OrientationAdvisorOutput,
   OrientationEngineResult,
