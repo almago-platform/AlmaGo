@@ -58,6 +58,10 @@ body {
   --brand-soft: #f7dfe3;
   --brand-border: #e99aa7;
   --accent-light: #f9e8af;
+  --success: #3f8a61;
+  --success-strong: #245c40;
+  --success-soft: #e5f2e9;
+  --success-border: #a8cdb4;
   --muted: #655f5a;
   --border: #d2c2ae;
   --border-strong: #bca990;
@@ -91,6 +95,12 @@ body {
 
 .orientation-tone-actions {
   background: #f3e9dc;
+}
+
+.orientation-tone-success {
+  background:
+    linear-gradient(145deg, rgba(63, 138, 97, 0.09) 0%, transparent 56%),
+    #f5f8f2;
 }
 
 a, button, input, select, textarea { -webkit-tap-highlight-color: transparent; }
