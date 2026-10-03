@@ -96,6 +96,7 @@ export function validatePublicOrientationAnswers(value: unknown) {
 
   if (
     answers.targetField === "Sciences"
+    && answers.scienceSpecialty
     && !allowed.scienceSpecialty.has(answers.scienceSpecialty)
   ) return null;
 
