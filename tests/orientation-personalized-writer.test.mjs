@@ -332,46 +332,36 @@ test("D rejects a Gemini option that is not in the deterministic C shortlist", (
   assert.equal(parseOrientationWriterPayload(writerInput, raw), null);
 });
 
-test("D rejects invented CEFR levels and unsupported numeric claims", () => {
-  const writerInput = input();
-
-  const inventedLevel = validPayload(writerInput);
-  inventedLevel.language_plan.text =
-    "Vous êtes à A2 mais ce programme exige C2.";
-  assert.equal(
-    parseOrientationWriterPayload(writerInput, inventedLevel),
-    null,
-  );
-
-  const inventedDuration = validPayload(writerInput);
-  inventedDuration.main_priority.text =
-    "Votre préparation durera exactement 6 mois.";
-  assert.equal(
-    parseOrientationWriterPayload(writerInput, inventedDuration),
-    null,
-  );
-});
-
-test("D rejects admission guarantees even when all programme core facts are verified", () => {
+test("D accepts schema-valid Gemini prose without a second semantic rejection layer", () => {
   const writerInput = input();
   const raw = validPayload(writerInput);
-  raw.reassurance = "Votre admission est garantie avec ces pistes.";
 
-  assert.equal(parseOrientationWriterPayload(writerInput, raw), null);
+  raw.reassurance = "Votre admission est garantie avec ces pistes.";
+  raw.project_status = "Toutes vos candidatures passeront obligatoirement par uni-assist.";
+  raw.main_priority.text = "Votre préparation durera exactement 6 mois.";
+  raw.language_plan.text = "Vous êtes à A2 mais ce programme exige C2.";
+
+  const parsed = parseOrientationWriterPayload(writerInput, raw);
+  assert.ok(parsed);
+  assert.equal(parsed.reassurance, raw.reassurance);
+  assert.equal(parsed.projectStatus, raw.project_status);
+  assert.equal(parsed.mainPriority.text, raw.main_priority.text);
+  assert.equal(parsed.languagePlan.text, raw.language_plan.text);
 });
 
-test("D rejects invented Studienkolleg or uni-assist claims when absent from context", () => {
+test("D keeps backend language metadata without rejecting Gemini wording mismatches", () => {
   const writerInput = input();
+  const raw = validPayload(writerInput);
 
-  const studienkolleg = validPayload(writerInput);
-  studienkolleg.project_status =
-    "Vous devrez obligatoirement passer par un Studienkolleg.";
-  assert.equal(parseOrientationWriterPayload(writerInput, studienkolleg), null);
+  raw.language_plan.show = false;
+  raw.language_plan.current_level = "C2";
+  raw.language_plan.next_level = null;
 
-  const uniAssist = validPayload(writerInput);
-  uniAssist.project_status =
-    "Toutes vos candidatures passeront obligatoirement par uni-assist.";
-  assert.equal(parseOrientationWriterPayload(writerInput, uniAssist), null);
+  const parsed = parseOrientationWriterPayload(writerInput, raw);
+  assert.ok(parsed);
+  assert.equal(parsed.languagePlan.show, true);
+  assert.equal(parsed.languagePlan.currentLevel, "A2");
+  assert.equal(parsed.languagePlan.nextLevel, "B1");
 });
 
 test("D CTA must be one of the backend actions actually available", () => {
