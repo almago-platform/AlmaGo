@@ -3,6 +3,7 @@ import type {
   PublicOrientationBacStatus,
   PublicOrientationHigherEducationStatus,
   PublicOrientationIntakeSeason,
+  PublicOrientationScienceSpecialty,
   PublicOrientationStudyIntent,
 } from "@/lib/orientation/public";
 
@@ -37,6 +38,7 @@ export type OrientationDiscoveryProfile = {
   targetDegree: string | null;
   targetField: string | null;
   engineeringSpecialty: string | null;
+  scienceSpecialty: Exclude<PublicOrientationScienceSpecialty, ""> | null;
   germanLevel: string | null;
   englishLevel: string | null;
   studyLanguage: string | null;
