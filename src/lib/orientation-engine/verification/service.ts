@@ -66,7 +66,7 @@ export async function runOrientationVerification(
     ).length;
 
     logVerification({
-      provider: "verification_cache",
+      provider: "deterministic",
       status: "ready",
       reason: null,
       requests: 0,
@@ -77,7 +77,7 @@ export async function runOrientationVerification(
     });
 
     return {
-      provider: "verification_cache",
+      provider: "deterministic",
       model: null,
       status: "ready",
       reason: null,
@@ -117,10 +117,8 @@ export async function runOrientationVerification(
   const status = programmes.length > 0 ? "ready" : fresh.status;
   const reason = programmes.length > 0 ? null : fresh.reason;
   const provider =
-    cachedProgrammes.length > 0
-      ? fresh.usage.requests > 0
-        ? "mixed"
-        : "verification_cache"
+    cachedProgrammes.length > 0 && fresh.usage.requests === 0
+      ? "deterministic"
       : fresh.provider;
 
   logVerification({
