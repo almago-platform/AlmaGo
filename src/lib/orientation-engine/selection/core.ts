@@ -215,6 +215,26 @@ function fieldMatch(
   return includesAny(programme, aliases) ? "field" as const : "none" as const;
 }
 
+function targetSpecializationMatches(
+  profile: PublicOrientationAnswers,
+  verification: OrientationProgrammeVerification,
+) {
+  if (canonicalDegree(profile.targetDegree) !== "master") return false;
+
+  const specialization = normalize(profile.targetSpecialization);
+  const programme = normalize(verification.candidate.programme);
+  if (!specialization || !programme) return false;
+
+  if (programme.includes(specialization)) return true;
+
+  const specializationPhrases = specialization
+    .split(/\s+(?:and|und|et)\s+|[\/,&;+]+/)
+    .map((value) => value.trim())
+    .filter((value) => value.length >= 6);
+
+  return specializationPhrases.some((phrase) => programme.includes(phrase));
+}
+
 function teachingLanguages(value: string | null) {
   const normalized = normalize(value);
   return {
@@ -331,6 +351,7 @@ function emptyBreakdown(): OrientationSelectionScoreBreakdown {
     verification: 0,
     degree: 0,
     field: 0,
+    specialization: 0,
     language: 0,
     city: 0,
     intake: 0,
@@ -401,6 +422,11 @@ export function evaluateOrientationSelectionCandidate(
     addReason(reasons, "field_match");
   } else if (field === "none") {
     addWarning(warnings, "field_needs_review");
+  }
+
+  if (targetSpecializationMatches(profile, verification)) {
+    breakdown.specialization += 24;
+    addReason(reasons, "target_specialization_match");
   }
 
   const teaching = fact(verification, "teaching_language");
@@ -581,6 +607,19 @@ function sortedByBaseScore(
   });
 }
 
+function uniqueByProgrammeIdentity(
+  evaluations: readonly OrientationSelectionCandidateEvaluation[],
+) {
+  const seen = new Set<string>();
+
+  return evaluations.filter((item) => {
+    const key = evaluationTieKey(item);
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
 function candidateCity(item: OrientationSelectionCandidateEvaluation) {
   return canonicalCity(
     factString(fact(item.verification, "city"))
@@ -639,11 +678,13 @@ export function buildOrientationSelection(
     evaluations.filter((item) => item.excluded),
   );
 
-  const pool = sortedByBaseScore(
-    evaluations.filter(
-      (item) =>
-        !item.excluded
-        && item.verification.overallStatus !== "unknown",
+  const pool = uniqueByProgrammeIdentity(
+    sortedByBaseScore(
+      evaluations.filter(
+        (item) =>
+          !item.excluded
+          && item.verification.overallStatus !== "unknown",
+      ),
     ),
   );
 
