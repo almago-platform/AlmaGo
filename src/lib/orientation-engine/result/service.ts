@@ -1,6 +1,7 @@
 import "server-only";
 
 import type { PublicOrientationAnswers } from "@/lib/orientation/public";
+import { getAcademicAccessConclusion } from "@/lib/orientation/verified-academic-options";
 import { buildOrientationDiscoveryPlan } from "@/lib/orientation-engine/discovery/contract";
 import { runOrientationDiscovery } from "@/lib/orientation-engine/discovery/service";
 import type {
@@ -82,6 +83,7 @@ async function writeOrientation(
     locale,
     profile,
     selection,
+    academicAccessStatus: getAcademicAccessConclusion(profile).status,
   };
 
   try {

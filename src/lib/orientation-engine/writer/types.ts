@@ -19,6 +19,7 @@ export type OrientationWriterInput = {
   locale: OrientationWriterLocale;
   profile: PublicOrientationAnswers;
   selection: OrientationSelectionResult;
+  academicAccessStatus?: string | null;
   campusOptions?: readonly OrientationWriterCampusOption[];
   availableActions?: readonly OrientationWriterAvailableAction[];
 };

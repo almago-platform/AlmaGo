@@ -164,11 +164,21 @@ function input(overrides = {}) {
     ...selection(3),
     profile: p,
   };
+  const academicAccessStatus =
+    overrides.academicAccessStatus
+    || (
+      p.bacStatus === "obtained"
+      && p.targetDegree === "Bachelor"
+      && p.bacTrack === "Sciences techniques"
+        ? "direct_subject_restricted"
+        : "needs_human_verification"
+    );
 
   return {
     locale: "fr",
     profile: p,
     selection: s,
+    academicAccessStatus,
     campusOptions: [
       {
         code: "document_preparation",
@@ -193,7 +203,7 @@ function input(overrides = {}) {
 }
 
 function validPayload(writerInput = input()) {
-  const focus = orientationWriterLanguageFocus(writerInput.profile);
+  const focus = orientationWriterLanguageFocus(writerInput.profile, writerInput.selection);
   return {
     opening: "Félicitations pour votre Bac avec 15/20. Votre projet automobile peut maintenant avancer concrètement.",
     project_status: "Nous avons plusieurs pistes sérieuses à comparer avant les candidatures.",
@@ -277,9 +287,11 @@ test("D separates verified facts from needs-review facts before Gemini sees them
   assert.ok(programme.missing_facts.includes("english_language_requirement"));
 });
 
-test("D language plan focuses on only the immediate next level", () => {
+test("D language plan advances only toward a verified unmet programme requirement", () => {
+  const a2 = profile({ germanLevel: "A2" });
+  const a2Selection = { ...selection(3), profile: a2 };
   assert.deepEqual(
-    orientationWriterLanguageFocus(profile({ germanLevel: "A2" })),
+    orientationWriterLanguageFocus(a2, a2Selection),
     {
       show: true,
       current_level: "A2",
@@ -287,12 +299,54 @@ test("D language plan focuses on only the immediate next level", () => {
     },
   );
 
+  const b2 = profile({ germanLevel: "B2" });
+  const b2Selection = { ...selection(3), profile: b2 };
   assert.deepEqual(
-    orientationWriterLanguageFocus(profile({ germanLevel: "B2" })),
+    orientationWriterLanguageFocus(b2, b2Selection),
     {
-      show: true,
+      show: false,
       current_level: "B2",
-      next_level: "C1",
+      next_level: null,
+    },
+  );
+
+  const c1English = profile({
+    germanLevel: "B1",
+    englishLevel: "C1",
+    studyLanguage: "Anglais",
+  });
+  const c1Selection = { ...selection(3), profile: c1English };
+  for (const item of c1Selection.selected) {
+    item.verification.facts = item.verification.facts.map((entry) =>
+      entry.field === "english_language_requirement"
+        ? fact("english_language_requirement", "B2", "verified")
+        : entry
+    );
+  }
+  assert.deepEqual(
+    orientationWriterLanguageFocus(c1English, c1Selection),
+    {
+      show: false,
+      current_level: "C1",
+      next_level: null,
+    },
+  );
+
+  const needsReview = profile({ germanLevel: "B2" });
+  const needsReviewSelection = { ...selection(3), profile: needsReview };
+  for (const item of needsReviewSelection.selected) {
+    item.verification.facts = item.verification.facts.map((entry) =>
+      entry.field === "german_language_requirement"
+        ? fact("german_language_requirement", "C1", "needs_review")
+        : entry
+    );
+  }
+  assert.deepEqual(
+    orientationWriterLanguageFocus(needsReview, needsReviewSelection),
+    {
+      show: false,
+      current_level: "B2",
+      next_level: null,
     },
   );
 });
@@ -319,6 +373,31 @@ test("D deterministic fallback remains useful when Gemini is unavailable", () =>
   assert.equal(content.roadmap[0].label, "Vous");
   assert.equal(content.roadmap[1].label, "Campus Allemagne");
   assert.match(content.studyOptions[0].verificationNote, /Campus Allemagne/i);
+});
+
+test("D gates strong admission wording on obtained Bac and verified direct academic access", () => {
+  const preparingProfile = profile({
+    bacStatus: "preparing",
+    bacTrack: "Sciences techniques",
+  });
+  const preparing = buildDeterministicOrientationWriterContent(input({
+    profile: preparingProfile,
+    selection: { ...selection(3), profile: preparingProfile },
+  }));
+  assert.doesNotMatch(preparing.studyOptions[0].whyItFits, /fortes chances d’admission/i);
+  assert.match(preparing.studyOptions[0].whyItFits, /bon potentiel d’admission/i);
+
+  const accessPendingProfile = profile({
+    bacStatus: "obtained",
+    bacTrack: "Informatique",
+    engineeringSpecialty: "computer_engineering",
+  });
+  const accessPending = buildDeterministicOrientationWriterContent(input({
+    profile: accessPendingProfile,
+    selection: { ...selection(3), profile: accessPendingProfile },
+  }));
+  assert.doesNotMatch(accessPending.studyOptions[0].whyItFits, /fortes chances d’admission/i);
+  assert.match(accessPending.studyOptions[0].whyItFits, /bon potentiel d’admission/i);
 });
 
 test("D human fallback adapts the opening to the candidate academic stage", () => {
@@ -382,6 +461,49 @@ test("D normalizes Gemini option ids to the deterministic C shortlist", () => {
   assert.ok(parsed);
   assert.equal(parsed.studyOptions[0].optionId, "option_1");
   assert.equal(parsed.studyOptions[0].institution, "University 1");
+});
+
+test("D backend downgrades unsupported Gemini strong-admission wording", () => {
+  const accessPendingProfile = profile({
+    bacTrack: "Informatique",
+    engineeringSpecialty: "computer_engineering",
+  });
+  const writerInput = input({
+    profile: accessPendingProfile,
+    selection: { ...selection(3), profile: accessPendingProfile },
+  });
+  const raw = validPayload(writerInput);
+  raw.study_options[0].why_it_fits =
+    "Cette piste est très cohérente avec votre projet. Première estimation Campus Allemagne : fortes chances d’admission.";
+
+  const parsed = parseOrientationWriterPayload(writerInput, raw);
+  assert.ok(parsed);
+  assert.doesNotMatch(parsed.studyOptions[0].whyItFits, /fortes chances d’admission/i);
+  assert.match(parsed.studyOptions[0].whyItFits, /bon potentiel d’admission/i);
+});
+
+test("D backend removes invented language escalation when no verified unmet requirement exists", () => {
+  const b2Profile = profile({ germanLevel: "B2" });
+  const writerInput = input({
+    profile: b2Profile,
+    selection: { ...selection(3), profile: b2Profile },
+  });
+  const raw = validPayload(writerInput);
+  raw.main_priority = {
+    title: "Viser le niveau C1 en allemand",
+    text: "Votre priorité est de progresser en langue vers C1.",
+    next_step: "Atteindre C1 en allemand.",
+  };
+  raw.language_plan.text = "Continuez vers C1.";
+
+  const parsed = parseOrientationWriterPayload(writerInput, raw);
+  assert.ok(parsed);
+  assert.doesNotMatch(
+    [parsed.mainPriority.title, parsed.mainPriority.text, parsed.mainPriority.nextStep].join(" "),
+    /C1/i,
+  );
+  assert.equal(parsed.languagePlan.show, false);
+  assert.equal(parsed.languagePlan.nextLevel, null);
 });
 
 test("D accepts schema-valid Gemini prose without a second semantic rejection layer", () => {
@@ -483,6 +605,9 @@ test("D Gemini adapter is server-only, structured, bounded and has no research t
   assert.match(geminiSource, /If bac_status is obtained, congratulate the achievement naturally/i);
   assert.match(geminiSource, /If bac_status is preparing, encourage the candidate/i);
   assert.match(geminiSource, /If bac_status is no_bac, do not shame, alarm or imply that Germany is impossible/i);
+  assert.match(geminiSource, /LANGUAGE_FOCUS is authoritative/i);
+  assert.match(geminiSource, /do not invent a higher language target/i);
+  assert.match(geminiSource, /academic_access_status is direct_subject_restricted/i);
   assert.match(geminiSource, /Never say 'you will get the Bac'/i);
   assert.match(geminiSource, /project_status: exactly 1 short transition sentence/i);
   assert.match(geminiSource, /move from emotion to action without repeating the opening or the hero title/i);
