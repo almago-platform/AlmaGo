@@ -7,6 +7,7 @@ const read = (path) => readFileSync(path, "utf8");
 const service = read("src/lib/orientation-engine/result/service.ts");
 const publicTypes = read("src/lib/orientation-engine/result/types.ts");
 const route = read("src/app/api/orientation/engine/route.ts");
+const canonical = read("src/lib/orientation-engine/result/canonical.ts");
 const engineCard = read("src/components/orientation/PersonalizedOrientationEngineCard.tsx");
 const writerCard = read("src/components/orientation/OrientationPersonalizedWriterCard.tsx");
 const form = read("src/components/orientation/PublicOrientationForm.tsx");
@@ -46,8 +47,15 @@ test("E public projection does not expose selection scores or provider internals
   assert.doesNotMatch(publicTypes, /pending_admin_approval|counselor_validation_required/);
 });
 
-test("E makes the controlled writer primary only when a real shortlist exists", () => {
-  assert.match(engineCard, /result\.personalized\.selected\.length > 0/);
+test("E exposes one canonical shortlist source and lets it drive presentation", () => {
+  assert.match(route, /buildOrientationCanonicalShortlist\([\s\S]*?engineResult,[\s\S]*?personalized/);
+  assert.match(route, /shortlist,/);
+  assert.match(canonical, /source: "personalized_verified"/);
+  assert.match(canonical, /source: "deterministic_fallback"/);
+  assert.match(canonical, /source: "none"/);
+  assert.match(canonical, /personalized\.selected\.map/);
+  assert.match(canonical, /engine\.recommendations\.map/);
+  assert.match(engineCard, /result\?\.shortlist\.source === "personalized_verified"/);
   assert.match(engineCard, /<OrientationPersonalizedWriterCard/);
   assert.match(engineCard, /personalized \? \(/);
   assert.match(engineCard, /<OrientationLetterCard/);
