@@ -8013,3 +8013,211 @@
     padding-right: 18px;
   }
 }
+
+
+/* Photo band V4 — match the approved visual reference. */
+.photoBand {
+  padding-block: 74px 80px;
+  background:
+    radial-gradient(circle at 88% 12%, rgba(219, 4, 35, 0.025), transparent 24%),
+    linear-gradient(180deg, #f8f4ec 0%, #f5f1e9 100%);
+}
+
+.photoBandLayout {
+  grid-template-columns: 1fr;
+  gap: 34px;
+}
+
+.photoBandHeading {
+  position: relative;
+  width: min(100%, 1240px);
+  margin: 0 auto;
+  padding: 6px 0 8px 70px;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  text-align: left;
+}
+
+.photoBandHeading::before {
+  content: "";
+  position: absolute;
+  top: 6px;
+  bottom: 8px;
+  left: 0;
+  width: 18px;
+  height: auto;
+  border-radius: 999px;
+  background:
+    linear-gradient(
+      180deg,
+      var(--brand) 0%,
+      var(--brand) 68%,
+      var(--accent) 68%,
+      var(--accent) 100%
+    );
+}
+
+.photoBandHeading::after {
+  display: none;
+}
+
+.photoBandTitle {
+  max-width: 1080px;
+  margin: 0;
+  color: var(--foreground);
+  font-size: clamp(62px, 6.2vw, 96px);
+  line-height: 0.96;
+  font-weight: 720;
+  letter-spacing: -0.055em;
+  text-align: left;
+}
+
+.photoBandTitle em {
+  color: var(--brand);
+  font-style: normal;
+}
+
+.photoBandEyebrow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 34px 0 0;
+  color: #5f6f82;
+  font-size: clamp(15px, 1.5vw, 22px);
+  font-weight: 760;
+  letter-spacing: 0.12em;
+  line-height: 1.25;
+  text-transform: uppercase;
+}
+
+.photoBandEyebrowMarker {
+  width: 0;
+  height: 0;
+  flex: 0 0 auto;
+  border-top: 9px solid transparent;
+  border-bottom: 9px solid transparent;
+  border-left: 14px solid var(--brand);
+}
+
+.photoBandLead {
+  max-width: 1120px;
+  margin: 14px 0 0;
+  color: #68778a;
+  font-size: clamp(16px, 1.45vw, 23px);
+  line-height: 1.5;
+  text-align: left;
+}
+
+.photoBandGrid {
+  width: min(100%, 1180px);
+  margin-inline: auto;
+}
+
+@media (max-width: 999px) {
+  .photoBandHeading {
+    width: min(100%, 900px);
+    padding-left: 54px;
+  }
+
+  .photoBandHeading::before {
+    width: 14px;
+  }
+
+  .photoBandTitle {
+    font-size: clamp(54px, 8vw, 76px);
+  }
+
+  .photoBandEyebrow {
+    margin-top: 28px;
+    font-size: 16px;
+  }
+
+  .photoBandLead {
+    font-size: 17px;
+  }
+}
+
+@media (max-width: 767px) {
+  .photoBand {
+    padding-block: 48px 54px;
+  }
+
+  .photoBandHeading {
+    width: 100%;
+    padding: 2px 0 4px 30px;
+  }
+
+  .photoBandHeading::before {
+    top: 2px;
+    bottom: 4px;
+    width: 9px;
+  }
+
+  .photoBandTitle {
+    font-size: clamp(42px, 12vw, 58px);
+    line-height: 0.98;
+  }
+
+  .photoBandEyebrow {
+    gap: 10px;
+    margin-top: 22px;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+  }
+
+  .photoBandEyebrowMarker {
+    border-top-width: 6px;
+    border-bottom-width: 6px;
+    border-left-width: 10px;
+  }
+
+  .photoBandLead {
+    margin-top: 10px;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+}
+
+:global(html[dir="rtl"]) .photoBandHeading {
+  padding-left: 0;
+  padding-right: 70px;
+  text-align: right;
+}
+
+:global(html[dir="rtl"]) .photoBandHeading::before {
+  left: auto;
+  right: 0;
+}
+
+:global(html[dir="rtl"]) .photoBandTitle,
+:global(html[dir="rtl"]) .photoBandLead {
+  text-align: right;
+}
+
+:global(html[dir="rtl"]) .photoBandEyebrow {
+  flex-direction: row-reverse;
+  justify-content: flex-end;
+  text-align: right;
+}
+
+:global(html[dir="rtl"]) .photoBandEyebrowMarker {
+  border-left: 0;
+  border-right: 14px solid var(--brand);
+}
+
+@media (max-width: 999px) {
+  :global(html[dir="rtl"]) .photoBandHeading {
+    padding-right: 54px;
+  }
+}
+
+@media (max-width: 767px) {
+  :global(html[dir="rtl"]) .photoBandHeading {
+    padding-right: 30px;
+  }
+
+  :global(html[dir="rtl"]) .photoBandEyebrowMarker {
+    border-right-width: 10px;
+  }
+}
