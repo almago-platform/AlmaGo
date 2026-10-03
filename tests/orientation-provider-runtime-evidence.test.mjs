@@ -20,7 +20,7 @@ test("Orientation V4 emits only redacted provider execution evidence", () => {
   assert.match(discovery, /webSearchCalls: research\.usage\.webSearchCalls/);
 
   assert.match(verification, /stage: "verification"/);
-  assert.match(verification, /requests: result\.usage\.requests/);
+  assert.match(verification, /requests: fresh\.usage\.requests/);
 
   assert.match(writer, /stage: "writer"/);
   assert.match(writer, /requests: result\.usage\.requests/);
