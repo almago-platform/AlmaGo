@@ -60,7 +60,7 @@ test("E exposes one canonical shortlist source and lets it drive presentation", 
   assert.match(engineCard, /<OrientationPersonalizedWriterCard/);
   assert.match(engineCard, /personalized \? \(/);
   assert.match(engineCard, /<OrientationLetterCard/);
-  assert.match(engineCard, /!personalized \? \(/);
+  assert.match(engineCard, /!personalized && result\.shortlist\.source === "deterministic_fallback" \? \(/);
 });
 
 test("E no-Bac route cannot surface deterministic or AI university suggestions", () => {
