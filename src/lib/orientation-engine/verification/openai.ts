@@ -23,7 +23,6 @@ import type {
 const OPENAI_RESPONSES_URL = "https://api.openai.com/v1/responses";
 const DEFAULT_MODEL = "gpt-6-luna";
 const QUERY_TIMEOUT_MS = 12_000;
-const MAX_PROVIDER_REQUESTS = ORIENTATION_VERIFICATION_MAX_CANDIDATES + 1;
 
 type OpenAIWebSource = {
   url?: string;
@@ -389,8 +388,9 @@ function fallbackResult(
   status: OrientationVerificationResult["status"],
   reason: OrientationVerificationResult["reason"],
   model: string | null,
+  limit = ORIENTATION_VERIFICATION_MAX_CANDIDATES,
 ): OrientationVerificationResult {
-  const selected = selectOrientationCandidatesForVerification(candidates);
+  const selected = selectOrientationCandidatesForVerification(candidates, limit);
   return {
     provider: "deterministic",
     model,
@@ -407,8 +407,17 @@ function fallbackResult(
 
 export async function runOpenAIOrientationVerification(
   candidates: readonly OrientationDiscoveryResearchCandidate[],
+  maxCandidates = ORIENTATION_VERIFICATION_MAX_CANDIDATES,
 ): Promise<OrientationVerificationResult> {
-  const selected = selectOrientationCandidatesForVerification(candidates);
+  const candidateLimit = Math.max(
+    1,
+    Math.min(maxCandidates, ORIENTATION_VERIFICATION_MAX_CANDIDATES),
+  );
+  const selected = selectOrientationCandidatesForVerification(
+    candidates,
+    candidateLimit,
+  );
+  const maxProviderRequests = candidateLimit + 1;
 
   if (selected.length === 0) {
     return fallbackResult([], "unavailable", "no_candidates", null);
@@ -436,7 +445,7 @@ export async function runOpenAIOrientationVerification(
     (result) => !result.ok && result.retriable,
   );
 
-  if (retryIndex >= 0 && results.length < MAX_PROVIDER_REQUESTS) {
+  if (retryIndex >= 0 && results.length < maxProviderRequests) {
     results.push(await verifyCandidate({
       apiKey,
       model,
