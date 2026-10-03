@@ -71,7 +71,7 @@ export type OrientationVerificationProviderReason =
   | null;
 
 export type OrientationVerificationResult = {
-  provider: "openai" | "deterministic" | "verification_cache" | "mixed";
+  provider: "openai" | "deterministic";
   model: string | null;
   status: OrientationVerificationProviderStatus;
   reason: OrientationVerificationProviderReason;
