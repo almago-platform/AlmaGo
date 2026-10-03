@@ -164,11 +164,21 @@ function input(overrides = {}) {
     ...selection(3),
     profile: p,
   };
+  const academicAccessStatus =
+    overrides.academicAccessStatus
+    || (
+      p.bacStatus === "obtained"
+      && p.targetDegree === "Bachelor"
+      && p.bacTrack === "Sciences techniques"
+        ? "direct_subject_restricted"
+        : "needs_human_verification"
+    );
 
   return {
     locale: "fr",
     profile: p,
     selection: s,
+    academicAccessStatus,
     campusOptions: [
       {
         code: "document_preparation",
