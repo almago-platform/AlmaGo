@@ -59,3 +59,12 @@ test("V7 retains responsive hero and card behavior", () => {
   assert.ok(css.includes("min-height: 760px"));
   assert.ok(css.includes(".photoBandGrid"));
 });
+
+
+test("full-bleed desktop hero fills the visual field without a split-layout photo card", () => {
+  assert.ok(css.includes("Homepage hero — full-bleed immersive treatment"));
+  assert.match(css, /@media \(min-width: 900px\)[\s\S]*\.heroBackdrop,[\s\S]*inset: 0;[\s\S]*width: 100%;[\s\S]*border-radius: 0;/);
+  assert.match(css, /\.heroShade \{[\s\S]*linear-gradient/);
+  assert.match(css, /\.hero \.heroCopy \{[\s\S]*color: #fffdf8/);
+  assert.match(css, /\.hero \.heroDossier \{[\s\S]*background: rgba\(255, 253, 248, 0\.96\)/);
+});
