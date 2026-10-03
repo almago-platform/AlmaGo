@@ -464,9 +464,41 @@ function optionStatus(
   };
 }
 
-function highlightedFacts(option: OrientationPublicPersonalizedOption) {
+function highlightedFacts(
+  option: OrientationPublicPersonalizedOption,
+  answers: PublicOrientationAnswers | null,
+) {
+  const targetDeadline =
+    answers?.targetIntakeSeason === "winter"
+      ? "winter_deadline"
+      : answers?.targetIntakeSeason === "summer"
+        ? "summer_deadline"
+        : null;
+
   return option.facts
-    .filter((fact) => fact.status === "verified" && factPriority.includes(fact.field))
+    .filter((fact) => {
+      if (fact.status !== "verified" || !factPriority.includes(fact.field)) return false;
+      if (
+        targetDeadline
+        && (fact.field === "winter_deadline" || fact.field === "summer_deadline")
+        && fact.field !== targetDeadline
+      ) {
+        return false;
+      }
+      if (
+        fact.field === "winter_deadline"
+        || fact.field === "summer_deadline"
+      ) {
+        const value = String(fact.value || "");
+        if (
+          value.length > 44
+          || /applicants?|candidates?|bewerber|non[- ]?eu|eu applicants?/i.test(value)
+        ) {
+          return false;
+        }
+      }
+      return true;
+    })
     .sort((a, b) => factPriority.indexOf(a.field) - factPriority.indexOf(b.field))
     .slice(0, 4);
 }
@@ -494,14 +526,13 @@ function determineJourneyStep(
   return 1;
 }
 
-function compactFactLabel(
+function decisionFactParts(
   fact: OrientationPublicPersonalizedFact,
   locale: Locale,
 ) {
   const value = formatFactValue(fact.value, locale);
-  if (!value) return factLabels[locale][fact.field];
+  let text = value ? String(value) : factLabels[locale][fact.field];
 
-  let text = String(value);
   if (fact.field === "degree_level") {
     if (/bachelor/i.test(text)) text = "Bachelor";
     if (/master/i.test(text)) text = "Master";
@@ -517,9 +548,73 @@ function compactFactLabel(
     if (level) text = level.toUpperCase();
   }
 
-  const conciseValue = text.length > 26 ? `${text.slice(0, 23).trim()}…` : text;
-  const prefix = compactFactPrefixes[locale][fact.field];
-  return prefix ? `${prefix} : ${conciseValue}` : conciseValue;
+  return {
+    label: compactFactPrefixes[locale][fact.field] || factLabels[locale][fact.field],
+    value: text,
+  };
+}
+
+function admissionOutlook(
+  text: string,
+  locale: Locale,
+) {
+  const patterns: Record<Locale, { strong: RegExp; good: RegExp }> = {
+    fr: {
+      strong: /première estimation Campus Allemagne\s*:\s*fortes chances d[’']admission[^.]*\.?/i,
+      good: /première estimation Campus Allemagne\s*:\s*bon potentiel d[’']admission[^.]*\.?/i,
+    },
+    ar: {
+      strong: /التقدير الأولي من Campus Allemagne[^.؟!]*فرص القبول قوية[^.؟!]*[.؟!]?/i,
+      good: /التقدير الأولي من Campus Allemagne[^.؟!]*(?:فرصة قبول جيدة|إمكانات جيدة للقبول)[^.؟!]*[.؟!]?/i,
+    },
+    en: {
+      strong: /initial Campus Allemagne estimate\s*:\s*strong admission chances[^.]*\.?/i,
+      good: /initial Campus Allemagne estimate\s*:\s*good admission potential[^.]*\.?/i,
+    },
+    de: {
+      strong: /erste Einschätzung von Campus Allemagne\s*:\s*(?:gute bis sehr gute|starke) Zulassungschancen[^.]*\.?/i,
+      good: /erste Einschätzung von Campus Allemagne\s*:\s*gutes Zulassungspotenzial[^.]*\.?/i,
+    },
+  };
+
+  const strong = patterns[locale].strong.test(text);
+  const good = !strong && patterns[locale].good.test(text);
+  const cleaned = text
+    .replace(patterns[locale].strong, "")
+    .replace(patterns[locale].good, "")
+    .replace(/\s{2,}/g, " ")
+    .replace(/^\s*[.,;:]\s*/, "")
+    .trim();
+
+  return {
+    level: strong ? "strong" as const : good ? "good" as const : null,
+    cleanWhy: cleaned || text,
+  };
+}
+
+function summarySignalText(
+  locale: Locale,
+  strongCount: number,
+  total: number,
+) {
+  if (locale === "ar") {
+    return strongCount > 0
+      ? `${strongCount} من المسارات تظهر فرص قبول قوية في التقدير الأولي.`
+      : `${total} مسارات تحمل مؤشرات إيجابية نواصل دراستها.`;
+  }
+  if (locale === "en") {
+    return strongCount > 0
+      ? `${strongCount} path${strongCount > 1 ? "s" : ""} stand out with strong admission chances in the initial estimate.`
+      : `${total} paths show positive signals that we are continuing to develop.`;
+  }
+  if (locale === "de") {
+    return strongCount > 0
+      ? `${strongCount} Option${strongCount > 1 ? "en" : ""} fällt in der ersten Einschätzung mit guten bis sehr guten Zulassungschancen auf.`
+      : `${total} Optionen zeigen positive Signale, die wir weiter vertiefen.`;
+  }
+  return strongCount > 0
+    ? `${strongCount} piste${strongCount > 1 ? "s" : ""} ressort${strongCount > 1 ? "ent" : ""} avec de fortes chances d’admission en première estimation.`
+    : `${total} pistes présentent des signaux positifs que nous continuons à approfondir.`;
 }
 
 function splitGuidanceChoice(choice: string, locale: Locale) {
