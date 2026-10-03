@@ -472,56 +472,140 @@ const fallbackCopy = {
   },
 } as const;
 
+function localizedAdmissionOutlook(
+  locale: OrientationWriterLocale,
+  item: OrientationSelectionItem,
+) {
+  const strongSignals = [
+    "degree_match",
+    "field_match",
+    "specialty_match",
+    "study_language_match",
+    "preferred_city_match",
+    "intake_match",
+    "current_language_sufficient",
+    "deadline_known",
+    "application_route_known",
+  ].filter((reason) =>
+    item.reasons.includes(reason as OrientationSelectionReasonCode)
+  ).length;
+
+  const strong =
+    item.verification.overallStatus === "verified"
+    && strongSignals >= 4;
+
+  const copy = {
+    fr: strong
+      ? "Première estimation Campus Allemagne : fortes chances d’admission, à confirmer ensemble lors de la vérification finale."
+      : "Première estimation Campus Allemagne : bon potentiel d’admission, à confirmer ensemble lors de la vérification finale.",
+    ar: strong
+      ? "التقدير الأولي من Campus Allemagne: فرص القبول قوية، وسنؤكد ذلك معك بعد المراجعة النهائية."
+      : "التقدير الأولي من Campus Allemagne: لديك فرصة قبول جيدة، وسنؤكد ذلك معك بعد المراجعة النهائية.",
+    en: strong
+      ? "Initial Campus Allemagne estimate: strong admission chances, to be confirmed together during the final review."
+      : "Initial Campus Allemagne estimate: good admission potential, to be confirmed together during the final review.",
+    de: strong
+      ? "Erste Einschätzung von Campus Allemagne: gute bis sehr gute Zulassungschancen, die wir in der Abschlussprüfung gemeinsam bestätigen."
+      : "Erste Einschätzung von Campus Allemagne: gutes Zulassungspotenzial, das wir in der Abschlussprüfung gemeinsam bestätigen.",
+  };
+
+  return copy[locale];
+}
+
 function localizedReason(
   locale: OrientationWriterLocale,
   item: OrientationSelectionItem,
 ) {
-  const reason = item.reasons[0];
+  const city = item.verification.candidate.city;
+  const hasSpecialtyMatch = item.reasons.includes("specialty_match");
+  const priorities: OrientationSelectionReasonCode[] = [
+    "specialty_match",
+    "field_match",
+    "study_language_match",
+    "preferred_city_match",
+    "intake_match",
+    "current_language_sufficient",
+    "deadline_known",
+    "application_route_known",
+    "degree_match",
+    "core_verified",
+  ];
+
   const labels: Record<
     OrientationWriterLocale,
     Partial<Record<OrientationSelectionReasonCode, string>>
   > = {
     fr: {
-      specialty_match: "Cette piste correspond directement à la spécialité recherchée.",
-      field_match: "Cette piste correspond au domaine d’études visé.",
-      study_language_match: "La langue d’enseignement correspond à votre préférence.",
-      preferred_city_match: "La ville correspond à l’une de vos préférences.",
-      current_language_sufficient: "Votre niveau actuel couvre déjà l’exigence linguistique vérifiée.",
-      intake_match: "Le semestre visé est proposé d’après les informations vérifiées.",
-      core_verified: "Le cœur du programme a été vérifié sur une source officielle.",
+      specialty_match: "spécialité recherchée",
+      field_match: "domaine d’études visé",
+      study_language_match: "langue d’enseignement conforme à votre choix",
+      preferred_city_match: city ? `${city} fait partie de vos villes préférées` : "ville correspondant à votre préférence",
+      intake_match: "rentrée visée disponible",
+      current_language_sufficient: "niveau de langue actuel déjà suffisant",
+      deadline_known: "date limite de la rentrée visée déjà vérifiée",
+      application_route_known: "voie de candidature déjà identifiée",
+      degree_match: "niveau de diplôme correspondant",
+      core_verified: "informations principales vérifiées sur une source officielle",
     },
     ar: {
-      specialty_match: "هذا المسار قريب مباشرة من التخصص الذي تبحث عنه.",
-      field_match: "هذا المسار يطابق مجال الدراسة المطلوب.",
-      study_language_match: "لغة الدراسة تتوافق مع تفضيلك.",
-      preferred_city_match: "المدينة من بين المدن التي تفضلها.",
-      current_language_sufficient: "مستواك الحالي يغطي شرط اللغة الذي تم التحقق منه.",
-      intake_match: "الفصل المستهدف متاح وفق المعلومات التي تم التحقق منها.",
-      core_verified: "تم التحقق من المعلومات الأساسية للبرنامج من مصدر رسمي.",
+      specialty_match: "التخصص الذي تبحث عنه",
+      field_match: "مجال الدراسة الذي تستهدفه",
+      study_language_match: "لغة تدريس متوافقة مع اختيارك",
+      preferred_city_match: city ? `${city} من المدن التي تفضلها` : "مدينة توافق تفضيلك",
+      intake_match: "فترة الدخول التي تستهدفها متاحة",
+      current_language_sufficient: "مستواك اللغوي الحالي يفي بالشرط الموثق",
+      deadline_known: "آخر موعد للفترة المستهدفة تم التحقق منه",
+      application_route_known: "طريقة التقديم محددة",
+      degree_match: "مستوى الشهادة يطابق هدفك",
+      core_verified: "المعلومات الأساسية موثقة من مصدر رسمي",
     },
     en: {
-      specialty_match: "This path directly matches the specialty you are targeting.",
-      field_match: "This path matches your target study field.",
-      study_language_match: "The teaching language matches your preference.",
-      preferred_city_match: "The city matches one of your preferences.",
-      current_language_sufficient: "Your current level already covers the verified language requirement.",
-      intake_match: "The target intake is available according to verified information.",
-      core_verified: "The programme core has been verified on an official source.",
+      specialty_match: "your target specialty",
+      field_match: "your target study field",
+      study_language_match: "teaching language matching your preference",
+      preferred_city_match: city ? `${city} is one of your preferred cities` : "a city matching your preference",
+      intake_match: "your target intake is available",
+      current_language_sufficient: "your current language level already meets the verified requirement",
+      deadline_known: "the target-intake deadline is already verified",
+      application_route_known: "the application route is already identified",
+      degree_match: "the degree level matches your target",
+      core_verified: "the main programme information is verified on an official source",
     },
     de: {
-      specialty_match: "Diese Option passt direkt zur gewünschten Fachrichtung.",
-      field_match: "Diese Option passt zum gewünschten Studienbereich.",
-      study_language_match: "Die Unterrichtssprache passt zu deiner Präferenz.",
-      preferred_city_match: "Die Stadt entspricht einer deiner Präferenzen.",
-      current_language_sufficient: "Dein aktuelles Niveau deckt die geprüfte Sprachanforderung bereits ab.",
-      intake_match: "Der gewünschte Studienstart ist laut geprüften Angaben verfügbar.",
-      core_verified: "Die Kerndaten des Programms wurden auf einer offiziellen Quelle geprüft.",
+      specialty_match: "gewünschte Fachrichtung",
+      field_match: "gewünschter Studienbereich",
+      study_language_match: "Unterrichtssprache passend zu deiner Wahl",
+      preferred_city_match: city ? `${city} gehört zu deinen bevorzugten Städten` : "Stadt passend zu deiner Präferenz",
+      intake_match: "gewünschter Studienstart verfügbar",
+      current_language_sufficient: "aktuelles Sprachniveau erfüllt bereits die geprüfte Anforderung",
+      deadline_known: "Frist für den gewünschten Studienstart bereits geprüft",
+      application_route_known: "Bewerbungsweg bereits identifiziert",
+      degree_match: "Abschlussniveau passend zu deinem Ziel",
+      core_verified: "zentrale Programminformationen aus offizieller Quelle geprüft",
     },
   };
 
-  return labels[locale][reason]
-    || labels[locale].core_verified
-    || "";
+  const selectedReasons = priorities
+    .filter((reason) =>
+      item.reasons.includes(reason)
+      && !(reason === "field_match" && hasSpecialtyMatch)
+    )
+    .map((reason) => labels[locale][reason])
+    .filter((value): value is string => Boolean(value))
+    .slice(0, 3);
+
+  if (selectedReasons.length === 0) {
+    return labels[locale].core_verified || "";
+  }
+
+  const prefix = {
+    fr: "Cette piste est étudiée pour des raisons concrètes : ",
+    ar: "ندرس هذا المسار لأسباب ملموسة: ",
+    en: "We are reviewing this path for concrete reasons: ",
+    de: "Wir prüfen diese Option aus konkreten Gründen: ",
+  }[locale];
+
+  return `${localizedAdmissionOutlook(locale, item)} ${prefix}${selectedReasons.join(" · ")}.`;
 }
 
 function localizedVerificationNote(
