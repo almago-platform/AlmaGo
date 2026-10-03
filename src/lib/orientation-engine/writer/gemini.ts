@@ -41,6 +41,8 @@ const cache = new Map<
   }
 >();
 
+const inFlight = new Map<string, Promise<OrientationWriterResult>>();
+
 function emptyUsage(durationMs = 0): OrientationWriterUsage {
   return {
     requests: 0,
@@ -298,32 +300,12 @@ function cacheKey(input: OrientationWriterInput, model: string) {
   });
 }
 
-export async function runGeminiOrientationWriter(
+async function executeGeminiOrientationWriter(
   input: OrientationWriterInput,
+  model: string,
+  apiKey: string,
+  key: string,
 ): Promise<OrientationWriterResult> {
-  const model =
-    process.env.ALMAGO_ORIENTATION_WRITER_MODEL?.trim() || DEFAULT_MODEL;
-
-  if (input.selection.selected.length === 0) {
-    return fallbackResult(input, "no_selection", model);
-  }
-
-  if (process.env.ALMAGO_ORIENTATION_WRITER_PROVIDER !== "gemini") {
-    return fallbackResult(input, "feature_disabled", model);
-  }
-
-  const apiKey = process.env.GEMINI_API_KEY?.trim();
-  if (!apiKey) {
-    return fallbackResult(input, "missing_credentials", model);
-  }
-
-  const key = cacheKey(input, model);
-  pruneCache();
-  const cached = cache.get(key);
-  if (cached && cached.expiresAt > Date.now()) {
-    return cached.value;
-  }
-
   const startedAt = Date.now();
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
@@ -410,5 +392,53 @@ export async function runGeminiOrientationWriter(
     );
   } finally {
     clearTimeout(timeout);
+  }
+}
+
+export async function runGeminiOrientationWriter(
+  input: OrientationWriterInput,
+): Promise<OrientationWriterResult> {
+  const model =
+    process.env.ALMAGO_ORIENTATION_WRITER_MODEL?.trim() || DEFAULT_MODEL;
+
+  if (input.selection.selected.length === 0) {
+    return fallbackResult(input, "no_selection", model);
+  }
+
+  if (process.env.ALMAGO_ORIENTATION_WRITER_PROVIDER !== "gemini") {
+    return fallbackResult(input, "feature_disabled", model);
+  }
+
+  const apiKey = process.env.GEMINI_API_KEY?.trim();
+  if (!apiKey) {
+    return fallbackResult(input, "missing_credentials", model);
+  }
+
+  const key = cacheKey(input, model);
+  pruneCache();
+  const cached = cache.get(key);
+  if (cached && cached.expiresAt > Date.now()) {
+    return cached.value;
+  }
+
+  const pending = inFlight.get(key);
+  if (pending) {
+    return pending;
+  }
+
+  const execution = executeGeminiOrientationWriter(
+    input,
+    model,
+    apiKey,
+    key,
+  );
+  inFlight.set(key, execution);
+
+  try {
+    return await execution;
+  } finally {
+    if (inFlight.get(key) === execution) {
+      inFlight.delete(key);
+    }
   }
 }
