@@ -56,3 +56,12 @@ test("premium journey connects the six public steps and becomes a mobile timelin
   assert.match(css, /@media \(max-width: 767px\)[\s\S]*\.journey \.stepIndex[\s\S]*left:\s*-46px/);
   assert.match(css, /\.journey \.journeyFoot a[\s\S]*background:\s*var\(--brand\)/);
 });
+
+
+test("photo-band editorial copy is centered above the visual cards", () => {
+  assert.match(css, /\.photoBandLayout[\s\S]*grid-template-columns:\s*1fr/);
+  assert.match(css, /\.photoBandHeading[\s\S]*margin:\s*0 auto[\s\S]*text-align:\s*center/);
+  assert.match(css, /\.photoBandHeading \.eyebrow[\s\S]*justify-content:\s*center/);
+  assert.match(css, /\.photoBandTitle[\s\S]*margin-inline:\s*auto[\s\S]*text-align:\s*center/);
+  assert.match(css, /\.photoBandHeading > p:last-child[\s\S]*margin:\s*18px auto 0[\s\S]*text-align:\s*center/);
+});
