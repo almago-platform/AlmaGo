@@ -35,6 +35,9 @@ export function HomeTrustSection({
 
             return (
               <a className={s.helpfulToolCard} href={href} key={title}>
+                <span className={s.helpfulToolIndex} aria-hidden="true">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
                 <span className={s.helpfulToolIcon} aria-hidden="true">
                   <HomeIcon name={meta[index].icon} />
                 </span>
