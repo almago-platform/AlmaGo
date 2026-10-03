@@ -559,7 +559,7 @@ function localizedReason(
   }
 
   const prefix = {
-    fr: "Cette piste est étudiée pour trois raisons concrètes : ",
+    fr: "Cette piste est étudiée pour des raisons concrètes : ",
     ar: "ندرس هذا المسار لأسباب ملموسة: ",
     en: "We are reviewing this path for concrete reasons: ",
     de: "Wir prüfen diese Option aus konkreten Gründen: ",
