@@ -58,15 +58,17 @@ test("premium journey connects the six public steps and becomes a mobile timelin
 });
 
 
-test("photo-band uses the cohesive V5 composition", () => {
-  assert.match(css, /Photo band V5 — cohesive editorial composition/);
-  assert.ok(band.indexOf("photoBandTitle") < band.indexOf("photoBandEyebrow"));
-  assert.match(band, /className=\{s\.photoBandEyebrowMarker\}/);
-  assert.match(band, /className=\{s\.photoBandLead\}/);
-  assert.match(css, /\.photoBandHeading[\s\S]*width:\s*min\(100%, 1180px\)[\s\S]*padding:\s*4px 0 8px 56px/);
-  assert.match(css, /\.photoBandTitle[\s\S]*font-size:\s*clamp\(58px, 5\.4vw, 84px\)[\s\S]*line-height:\s*0\.98/);
-  assert.match(css, /\.photoBandEyebrow[\s\S]*margin:\s*28px 0 0/);
-  assert.match(css, /\.photoBandLead[\s\S]*max-width:\s*820px[\s\S]*margin:\s*10px 0 0/);
-  assert.match(css, /Undo the previous offset that separated the supporting copy from the title/);
-  assert.match(css, /\.photoBandEyebrow,[\s\S]*\.photoBandLead[\s\S]*margin-left:\s*0/);
+test("photo-band uses the isolated V6 composition", () => {
+  assert.match(css, /Photo band V6 — isolated structure/);
+  assert.ok(band.includes("className={s.photoBandHero}"));
+  assert.ok(band.includes("className={s.photoBandAccent}"));
+  assert.ok(band.includes("className={s.photoBandContent}"));
+  assert.ok(band.includes("className={s.photoBandMeta}"));
+  assert.equal(band.includes("className={s.photoBandHeading}"), false);
+  assert.ok(band.indexOf("photoBandTitle") < band.indexOf("photoBandMeta"));
+  assert.match(css, /\.photoBandHero[\s\S]*grid-template-columns:\s*14px minmax\(0, 1fr\)[\s\S]*gap:\s*42px/);
+  assert.match(css, /\.photoBandContent[\s\S]*flex-direction:\s*column[\s\S]*align-items:\s*flex-start/);
+  assert.match(css, /\.photoBandMeta[\s\S]*flex-direction:\s*column[\s\S]*align-items:\s*flex-start/);
+  assert.match(css, /\.photoBandEyebrow[\s\S]*margin:\s*0[\s\S]*text-align:\s*left/);
+  assert.match(css, /\.photoBandLead[\s\S]*margin:\s*0[\s\S]*text-align:\s*left/);
 });

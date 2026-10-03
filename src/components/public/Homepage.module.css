@@ -8437,3 +8437,223 @@
     padding-right: 26px;
   }
 }
+
+
+/* Photo band V6 — isolated structure, immune to legacy photoBandHeading rules. */
+.photoBand {
+  padding-block: 68px 76px;
+  background: linear-gradient(180deg, #f8f4ec 0%, #f5f1e9 100%);
+}
+
+.photoBandLayout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 34px;
+}
+
+.photoBandHero {
+  display: grid;
+  width: min(100%, 1180px);
+  margin-inline: auto;
+  grid-template-columns: 14px minmax(0, 1fr);
+  gap: 42px;
+  align-items: stretch;
+}
+
+.photoBandAccent {
+  width: 14px;
+  min-height: 310px;
+  border-radius: 999px;
+  background:
+    linear-gradient(
+      180deg,
+      var(--home-red) 0%,
+      var(--home-red) 68%,
+      var(--home-gold) 68%,
+      var(--home-gold) 100%
+    );
+}
+
+.photoBandContent {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.photoBandTitle {
+  max-width: 940px;
+  margin: 0;
+  color: var(--home-ink);
+  font-size: clamp(58px, 5.4vw, 84px);
+  line-height: 0.98;
+  font-weight: 720;
+  letter-spacing: -0.055em;
+  text-align: left;
+}
+
+.photoBandTitle em {
+  color: var(--home-red);
+  font-style: normal;
+}
+
+.photoBandMeta {
+  display: flex;
+  width: min(100%, 820px);
+  margin-top: 28px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.photoBandEyebrow {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  width: auto;
+  max-width: 100%;
+  margin: 0;
+  color: #5f6f82;
+  font-size: clamp(13px, 1.15vw, 17px);
+  font-weight: 760;
+  letter-spacing: 0.11em;
+  line-height: 1.35;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.photoBandEyebrowMarker {
+  width: 0;
+  height: 0;
+  flex: 0 0 auto;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+  border-left: 12px solid var(--home-red);
+}
+
+.photoBandLead {
+  width: auto;
+  max-width: 820px;
+  margin: 0;
+  color: #68778a;
+  font-size: clamp(15px, 1.2vw, 18px);
+  line-height: 1.58;
+  text-align: left;
+}
+
+.photoBandGrid {
+  width: min(100%, 1180px);
+  margin-inline: auto;
+}
+
+@media (max-width: 999px) {
+  .photoBandHero {
+    width: min(100%, 900px);
+    grid-template-columns: 12px minmax(0, 1fr);
+    gap: 32px;
+  }
+
+  .photoBandAccent {
+    width: 12px;
+    min-height: 270px;
+  }
+
+  .photoBandTitle {
+    font-size: clamp(50px, 7.6vw, 70px);
+  }
+
+  .photoBandMeta {
+    margin-top: 24px;
+  }
+}
+
+@media (max-width: 767px) {
+  .photoBand {
+    padding-block: 46px 52px;
+  }
+
+  .photoBandHero {
+    width: 100%;
+    grid-template-columns: 8px minmax(0, 1fr);
+    gap: 18px;
+  }
+
+  .photoBandAccent {
+    width: 8px;
+    min-height: 220px;
+  }
+
+  .photoBandTitle {
+    max-width: 100%;
+    font-size: clamp(40px, 11.5vw, 54px);
+    line-height: 1;
+  }
+
+  .photoBandMeta {
+    width: 100%;
+    margin-top: 20px;
+    gap: 8px;
+  }
+
+  .photoBandEyebrow {
+    gap: 9px;
+    font-size: 11px;
+    line-height: 1.4;
+  }
+
+  .photoBandEyebrowMarker {
+    border-top-width: 6px;
+    border-bottom-width: 6px;
+    border-left-width: 9px;
+  }
+
+  .photoBandLead {
+    font-size: 14px;
+  }
+}
+
+:global(html[dir="rtl"]) .photoBandHero {
+  grid-template-columns: minmax(0, 1fr) 14px;
+}
+
+:global(html[dir="rtl"]) .photoBandAccent {
+  grid-column: 2;
+}
+
+:global(html[dir="rtl"]) .photoBandContent {
+  grid-column: 1;
+  grid-row: 1;
+  align-items: flex-start;
+}
+
+:global(html[dir="rtl"]) .photoBandTitle,
+:global(html[dir="rtl"]) .photoBandEyebrow,
+:global(html[dir="rtl"]) .photoBandLead {
+  text-align: right;
+}
+
+:global(html[dir="rtl"]) .photoBandEyebrow {
+  flex-direction: row-reverse;
+}
+
+:global(html[dir="rtl"]) .photoBandEyebrowMarker {
+  border-left: 0;
+  border-right: 12px solid var(--home-red);
+}
+
+@media (max-width: 999px) {
+  :global(html[dir="rtl"]) .photoBandHero {
+    grid-template-columns: minmax(0, 1fr) 12px;
+  }
+}
+
+@media (max-width: 767px) {
+  :global(html[dir="rtl"]) .photoBandHero {
+    grid-template-columns: minmax(0, 1fr) 8px;
+  }
+
+  :global(html[dir="rtl"]) .photoBandEyebrowMarker {
+    border-right-width: 9px;
+  }
+}
