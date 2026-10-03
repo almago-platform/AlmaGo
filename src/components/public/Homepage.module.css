@@ -5781,7 +5781,7 @@
 }
 
 
-/* Header readability: keep desktop navigation labels on a single line. */
+/* Keep desktop navigation labels on a single line. */
 @media (min-width: 1200px) {
   .headerInner {
     gap: 18px;
