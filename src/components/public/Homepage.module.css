@@ -6953,3 +6953,165 @@
     transform: none;
   }
 }
+
+
+/* Centered composition for homepage tools + FAQ.
+   Keeps the premium treatment while tightening the reading axis. */
+.helpfulToolsHeading {
+  display: block;
+  max-width: 780px;
+  margin-inline: auto;
+  margin-bottom: 46px;
+  text-align: center;
+}
+
+.helpfulToolsHeading .eyebrow {
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.helpfulToolsHeading h2 {
+  max-width: 720px;
+  margin-inline: auto;
+  text-align: center;
+}
+
+.helpfulToolsHeading > p:last-child {
+  max-width: 560px;
+  margin: 14px auto 0;
+  padding-bottom: 0;
+  text-align: center;
+}
+
+.helpfulToolsGrid {
+  width: min(100%, 1120px);
+  margin-inline: auto;
+}
+
+.helpfulToolCard {
+  align-items: center;
+  text-align: center;
+}
+
+.helpfulToolIcon {
+  margin-inline: auto;
+}
+
+.helpfulToolCard h3,
+.helpfulToolCard > p {
+  max-width: 300px;
+  margin-inline: auto;
+  text-align: center;
+}
+
+.helpfulToolAction {
+  margin-inline: auto;
+  justify-content: center;
+}
+
+.faqGrid {
+  display: block;
+  width: min(100%, 980px);
+  margin-inline: auto;
+}
+
+.faqIntro {
+  position: relative;
+  top: auto;
+  width: min(100%, 720px);
+  margin: 0 auto 34px;
+  padding: 30px 34px;
+  text-align: center;
+}
+
+.faqIntro::after {
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, var(--brand), var(--accent));
+}
+
+.faqIntro .eyebrow {
+  justify-content: center;
+}
+
+.faqIntro .sectionTitle,
+.faqIntro .lead {
+  max-width: 620px;
+  margin-inline: auto;
+  text-align: center;
+}
+
+.faqIntro .textLink {
+  justify-content: center;
+}
+
+.faqList {
+  width: min(100%, 900px);
+  margin-inline: auto;
+}
+
+@media (max-width: 767px) {
+  .helpfulToolsHeading {
+    margin-bottom: 30px;
+  }
+
+  .helpfulToolCard {
+    display: flex;
+    min-height: 0;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    padding: 22px 18px;
+    text-align: center;
+  }
+
+  .helpfulToolIcon {
+    grid-row: auto;
+    margin: 0 auto 18px;
+  }
+
+  .helpfulToolCard h3 {
+    padding: 0 38px;
+    text-align: center;
+  }
+
+  .helpfulToolCard > p {
+    margin-top: 7px;
+    text-align: center;
+  }
+
+  .helpfulToolAction {
+    margin-top: 12px;
+  }
+
+  .faqIntro {
+    padding: 24px 20px;
+  }
+
+  .faqList details > p {
+    padding-inline: 46px;
+    text-align: center;
+  }
+}
+
+:global(html[dir="rtl"]) .helpfulToolsHeading,
+:global(html[dir="rtl"]) .helpfulToolCard,
+:global(html[dir="rtl"]) .faqIntro {
+  text-align: center;
+}
+
+:global(html[dir="rtl"]) .faqIntro::after {
+  right: 0;
+  left: 0;
+}
+
+@media (max-width: 767px) {
+  :global(html[dir="rtl"]) .helpfulToolCard h3 {
+    padding-right: 38px;
+    padding-left: 38px;
+  }
+
+  :global(html[dir="rtl"]) .faqList details > p {
+    padding-inline: 46px;
+  }
+}
