@@ -20,6 +20,7 @@ type EngineResponse = {
   advisor: OrientationAdvisorOutput;
   letter: OrientationLetterOutput;
   scout: OrientationScoutResult;
+  shortlist: OrientationCanonicalShortlist;
   personalized: OrientationPublicPersonalizedResult | null;
 };
 
@@ -344,9 +345,12 @@ export function PersonalizedOrientationEngineCard({
     : requestState.error
       ? "error"
       : "ready";
-  const personalized = result?.personalized && result.personalized.selected.length > 0
-    ? result.personalized
-    : null;
+  const personalized =
+    result?.shortlist.source === "personalized_verified"
+    && result.personalized
+    && result.personalized.selected.length > 0
+      ? result.personalized
+      : null;
 
   useEffect(() => {
     const controller = new AbortController();
