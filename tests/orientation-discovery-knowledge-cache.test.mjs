@@ -261,7 +261,7 @@ test("A3 only treats the cache as sufficient when explicit city preferences are 
 });
 
 test("A3 is cache-first and avoids OpenAI when the reusable pool is sufficient", () => {
-  assert.match(knowledgeSource, /ORIENTATION_KNOWLEDGE_MIN_CANDIDATES = 8/);
+  assert.match(knowledgeSource, /ORIENTATION_KNOWLEDGE_MIN_CANDIDATES = 4/);
   assert.match(knowledgeSource, /ORIENTATION_MAJOR_REFRESH_DATES = \["04-15", "10-15"\]/);
   assert.doesNotMatch(knowledgeSource, /ORIENTATION_KNOWLEDGE_FRESHNESS_DAYS|freshnessCutoff/);
 
@@ -274,6 +274,9 @@ test("A3 is cache-first and avoids OpenAI when the reusable pool is sufficient",
   assert.ok(openAIIndex > hitIndex);
   assert.match(serviceSource, /provider: "knowledge_cache"/);
   assert.match(serviceSource, /provider: cachedCandidates.length > 0 \? "mixed" : "openai"/);
+  assert.match(serviceSource, /ORIENTATION_DISCOVERY_MAX_FRESH_QUERIES = 3/);
+  assert.match(serviceSource, /ORIENTATION_DISCOVERY_MAX_PARTIAL_QUERIES = 2/);
+  assert.match(serviceSource, /discoveryQueryBudget\(cachedCandidates\.length\)/);
 });
 
 test("A3 persists every researched candidate into a reusable global knowledge pool", () => {
