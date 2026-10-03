@@ -59,3 +59,15 @@ test("tools stay centered while FAQ uses the refined split editorial layout", ()
   assert.match(css, /\.faqList details\[open\]::before[\s\S]*background:\s*var\(--brand\)/);
   assert.match(css, /\.faqList details\[open\] summary svg[\s\S]*background:\s*var\(--brand\)/);
 });
+
+
+test("homepage uses one solid AlmaGo red", () => {
+  assert.match(css, /--home-red:\s*#db0423/);
+  assert.match(css, /--brand:\s*var\(--home-red\)/);
+  assert.match(css, /--brand-strong:\s*var\(--home-red\)/);
+  assert.match(css, /--brand-hover:\s*var\(--home-red\)/);
+  for (const legacyRed of ["#ff405a", "#930018", "#b6031d", "#e1062d", "#ff5c72"]) {
+    assert.equal(css.toLowerCase().includes(legacyRed), false, legacyRed);
+  }
+  assert.match(css, /Homepage brand-color lock — one solid AlmaGo red everywhere/);
+});
