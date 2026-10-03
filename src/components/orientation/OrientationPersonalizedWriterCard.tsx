@@ -582,6 +582,23 @@ function decisionFactParts(
   ) {
     const level = text.match(/\b(A1|A2|B1|B2|C1|C2)\b/i)?.[1];
     if (level) text = level.toUpperCase();
+  } else if (fact.field === "application_route") {
+    const direct = /^direct(?:e|ly)?$/i.test(text.trim());
+    if (direct) {
+      text = { fr: "directe", ar: "مباشر", en: "direct", de: "direkt" }[locale];
+    }
+  } else if (fact.field === "tuition_or_semester_fees") {
+    const euro = text.match(/€\s?([\d.,]+)|([\d.,]+)\s?€/i);
+    const amount = euro?.[1] || euro?.[2];
+    if (amount) {
+      const cleanAmount = amount.replace(/,(?=\d{3}\b)/g, ".");
+      text = {
+        fr: `env. ${cleanAmount} € / semestre`,
+        ar: `حوالي ${cleanAmount} € / فصل دراسي`,
+        en: `about €${cleanAmount} / semester`,
+        de: `ca. ${cleanAmount} € / Semester`,
+      }[locale];
+    }
   }
 
   return {
@@ -659,24 +676,24 @@ function splitGuidanceChoice(choice: string, locale: Locale) {
 
   const concise: Record<Locale, Record<string, string>> = {
     fr: {
-      Tunisie: "Nous pouvons vous orienter vers une école de langue partenaire en Tunisie lorsqu’une solution adaptée est réellement disponible.",
-      "En ligne": "Nous pouvons vous proposer une préparation à distance adaptée à votre niveau, lorsqu’elle est disponible.",
-      Allemagne: "Si votre situation le permet, nous pouvons vous orienter vers une école de langue partenaire en Allemagne et vous expliquer quelles démarches sont possibles dans votre situation.",
+      Tunisie: "Préparation avec une solution partenaire disponible en Tunisie.",
+      "En ligne": "Préparation à distance adaptée à votre niveau.",
+      Allemagne: "Préparation en Allemagne lorsque votre situation le permet.",
     },
     ar: {
-      تونس: "يمكننا توجيهك إلى مدرسة لغة شريكة في تونس عندما تتوفر صيغة مناسبة فعلًا.",
-      "عبر الإنترنت": "يمكننا اقتراح تحضير عن بُعد مناسب لمستواك عندما يكون متاحًا.",
-      ألمانيا: "إذا سمحت وضعيتك، يمكننا توجيهك إلى مدرسة لغة شريكة في ألمانيا وشرح الخطوات الممكنة في حالتك.",
+      تونس: "تحضير مع حل شريك متاح في تونس.",
+      "عبر الإنترنت": "تحضير عن بُعد مناسب لمستواك.",
+      ألمانيا: "تحضير في ألمانيا عندما تسمح وضعيتك بذلك.",
     },
     en: {
-      Tunisia: "We can direct you to a partner language school in Tunisia when a suitable option is genuinely available.",
-      Online: "We can offer remote preparation suited to your level when available.",
-      Germany: "If your situation allows it, we can direct you to a partner language school in Germany and explain which steps are possible in your situation.",
+      Tunisia: "Preparation with an available partner option in Tunisia.",
+      Online: "Remote preparation suited to your level.",
+      Germany: "Preparation in Germany when your situation allows it.",
     },
     de: {
-      Tunesien: "Wir können dich an eine Partnersprachschule in Tunesien vermitteln, wenn eine passende Möglichkeit tatsächlich verfügbar ist.",
-      Online: "Wir können eine Online-Vorbereitung anbieten, die zu deinem Niveau passt, wenn sie verfügbar ist.",
-      Deutschland: "Wenn deine Situation es erlaubt, können wir dich an eine Partnersprachschule in Deutschland vermitteln und erklären, welche Schritte in deiner Situation möglich sind.",
+      Tunesien: "Vorbereitung mit einer verfügbaren Partnerlösung in Tunesien.",
+      Online: "Online-Vorbereitung passend zu deinem Niveau.",
+      Deutschland: "Vorbereitung in Deutschland, wenn deine Situation es erlaubt.",
     },
   };
 
