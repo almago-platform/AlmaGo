@@ -816,7 +816,7 @@ export function OrientationPersonalizedWriterCard({
     : content.studyOptions;
 
   return (
-    <article className="space-y-6 sm:space-y-7 lg:space-y-8">
+    <article className="orientation-unified-shell overflow-hidden rounded-[calc(var(--radius-panel)+0.35rem)] p-3 sm:p-4 lg:p-5">
       <header className="relative overflow-hidden rounded-[var(--radius-panel)] bg-[var(--foreground)] px-5 py-6 text-white shadow-[var(--shadow-card)] sm:px-8 sm:py-7">
         <div aria-hidden="true" className="absolute inset-x-0 top-0 h-0.5 bg-[var(--brand)]" />
         <div className="relative max-w-4xl">
@@ -848,7 +848,7 @@ export function OrientationPersonalizedWriterCard({
 
       <section
         aria-labelledby="orientation-journey"
-        className="overflow-hidden rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow-card)]"
+        className="orientation-chapter mt-4 overflow-hidden pt-5 sm:mt-5 sm:pt-6"
       >
         <div className="flex flex-col gap-4 border-b border-[var(--border)] px-5 py-5 sm:px-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-3xl">
@@ -985,7 +985,7 @@ export function OrientationPersonalizedWriterCard({
 
       <section
         aria-labelledby="orientation-summary"
-        className="orientation-tone-summary rounded-[var(--radius-panel)] border border-[var(--border)] p-4 sm:p-5 lg:p-6"
+        className="orientation-chapter mt-5 px-1 pt-5 sm:mt-6 sm:px-2 sm:pt-6"
       >
         <div className="max-w-4xl">
           <h4 id="orientation-summary" className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--brand-strong)]">
@@ -1027,7 +1027,7 @@ export function OrientationPersonalizedWriterCard({
         </div>
       </section>
 
-      <section aria-labelledby="orientation-premium-options">
+      <section aria-labelledby="orientation-premium-options" className="orientation-chapter mt-5 px-1 pt-5 sm:mt-6 sm:px-2 sm:pt-6">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--accent-strong)]">
@@ -1215,7 +1215,7 @@ export function OrientationPersonalizedWriterCard({
 
       <section
         aria-labelledby="orientation-main-priority"
-        className="orientation-tone-priority relative overflow-hidden rounded-[var(--radius-panel)] border border-[var(--border)] p-5 sm:p-6 lg:p-7"
+        className="orientation-chapter relative mt-5 overflow-hidden px-1 pt-5 sm:mt-6 sm:px-2 sm:pt-6"
       >
         <div aria-hidden="true" className="absolute inset-y-0 start-0 w-0.5 bg-[var(--brand)]" />
         <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,0.68fr)] lg:items-start">
@@ -1300,7 +1300,7 @@ export function OrientationPersonalizedWriterCard({
 
       </section>
 
-      <section aria-labelledby="orientation-responsibilities">
+      <section aria-labelledby="orientation-responsibilities" className="orientation-chapter mt-5 px-1 pt-5 sm:mt-6 sm:px-2 sm:pt-6">
         <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--accent-strong)]">
           {t.withYouEyebrow}
         </p>
@@ -1334,7 +1334,7 @@ export function OrientationPersonalizedWriterCard({
         </div>
       </section>
 
-      <section className="relative overflow-hidden rounded-[var(--radius-panel)] bg-[var(--foreground)] px-5 py-5 text-white sm:px-6 sm:py-6">
+      <section className="orientation-chapter relative mt-5 overflow-hidden rounded-[var(--radius-panel)] bg-[var(--foreground)] px-5 py-5 text-white sm:mt-6 sm:px-6 sm:py-6">
         <div aria-hidden="true" className="absolute inset-y-0 start-0 w-1 bg-[var(--brand)]" />
         <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--accent)]">{t.closingEyebrow}</p>
         <h4 className="mt-2 max-w-3xl text-2xl font-semibold tracking-tight">{t.humanTitle}</h4>
@@ -1349,7 +1349,7 @@ export function OrientationPersonalizedWriterCard({
         ) : null}
       </section>
 
-      <details className="border-t border-[var(--border)] pt-4">
+      <details className="orientation-chapter mt-5 px-1 pt-5 sm:mt-6 sm:px-2 sm:pt-6">
         <summary className="cursor-pointer text-sm font-semibold text-[var(--foreground)]">
           {t.details}
         </summary>
