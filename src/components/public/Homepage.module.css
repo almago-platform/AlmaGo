@@ -6345,3 +6345,611 @@
     transform: none;
   }
 }
+
+
+/* Homepage tools + FAQ V2 — warmer, more distinctive AlmaGo surfaces. */
+.helpfulTools {
+  position: relative;
+  overflow: hidden;
+  border-color: var(--border);
+  background:
+    radial-gradient(circle at 10% 18%, rgba(252, 181, 10, 0.10), transparent 24%),
+    radial-gradient(circle at 92% 10%, rgba(219, 4, 35, 0.07), transparent 22%),
+    linear-gradient(180deg, #fffdf8 0%, #f7f4ec 100%);
+}
+
+.helpfulTools::before {
+  content: "";
+  position: absolute;
+  top: 42px;
+  right: max(24px, calc((100vw - 1420px) / 2));
+  width: 118px;
+  height: 118px;
+  border: 1px solid rgba(219, 4, 35, 0.10);
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 22px rgba(219, 4, 35, 0.035),
+    0 0 0 44px rgba(252, 181, 10, 0.025);
+  pointer-events: none;
+}
+
+.helpfulTools > .container {
+  position: relative;
+  z-index: 1;
+}
+
+.helpfulTools.section {
+  padding-block: 94px 96px;
+}
+
+.helpfulToolsHeading {
+  display: grid;
+  max-width: none;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, .58fr);
+  gap: 64px;
+  align-items: end;
+  margin-bottom: 44px;
+}
+
+.helpfulToolsHeading .eyebrow {
+  grid-column: 1 / -1;
+  margin-bottom: -42px;
+}
+
+.helpfulToolsHeading h2 {
+  max-width: 720px;
+  font-size: clamp(42px, 4vw, 58px);
+  line-height: 1.02;
+  font-weight: 650;
+  letter-spacing: -.045em;
+}
+
+.helpfulToolsHeading > p:last-child {
+  max-width: 420px;
+  margin: 0;
+  padding-bottom: 4px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.helpfulToolsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.helpfulToolCard {
+  position: relative;
+  overflow: hidden;
+  min-height: 330px;
+  padding: 28px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.62), rgba(255,255,255,.18)),
+    var(--surface-raised);
+  color: var(--foreground);
+  text-align: left;
+  box-shadow: 0 18px 45px -34px rgba(28, 33, 36, .34);
+  transition:
+    transform var(--duration-base) var(--ease-standard),
+    border-color var(--duration-base) var(--ease-standard),
+    box-shadow var(--duration-base) var(--ease-standard),
+    background-color var(--duration-base) var(--ease-standard);
+}
+
+.helpfulToolCard::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto auto 0;
+  width: 100%;
+  height: 4px;
+  background: var(--brand);
+  opacity: .82;
+}
+
+.helpfulToolCard:nth-child(2)::before {
+  background: var(--accent);
+}
+
+.helpfulToolCard:nth-child(3)::before {
+  background: linear-gradient(90deg, var(--brand), var(--accent));
+}
+
+.helpfulToolCard:first-child {
+  border-color: #2e3438;
+  background:
+    radial-gradient(circle at 90% 8%, rgba(219, 4, 35, .28), transparent 30%),
+    linear-gradient(155deg, #202629 0%, #171c1f 100%);
+  color: #fffdf8;
+  box-shadow: 0 26px 60px -38px rgba(17, 21, 23, .72);
+}
+
+.helpfulToolCard:hover {
+  transform: translateY(-6px);
+  border-color: var(--brand-border);
+  box-shadow: 0 28px 58px -34px rgba(28, 33, 36, .42);
+}
+
+.helpfulToolCard:first-child:hover {
+  border-color: rgba(219, 4, 35, .72);
+  box-shadow: 0 32px 64px -38px rgba(17, 21, 23, .88);
+}
+
+.helpfulToolIndex {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 42px;
+  min-height: 28px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface-subtle);
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .10em;
+}
+
+.helpfulToolCard:first-child .helpfulToolIndex {
+  border-color: rgba(255,255,255,.18);
+  background: rgba(255,255,255,.08);
+  color: rgba(255,255,255,.72);
+}
+
+.helpfulToolIcon {
+  position: relative;
+  width: 70px;
+  height: 70px;
+  margin-bottom: 34px;
+  border: 1px solid var(--brand-border);
+  border-radius: 20px;
+  background:
+    radial-gradient(circle at 30% 24%, rgba(255,255,255,.65), transparent 40%),
+    var(--brand-soft);
+  color: var(--brand-strong);
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.4),
+    0 14px 30px -24px rgba(219,4,35,.45);
+}
+
+.helpfulToolCard:nth-child(2) .helpfulToolIcon {
+  border-color: rgba(252,181,10,.34);
+  background:
+    radial-gradient(circle at 30% 24%, rgba(255,255,255,.72), transparent 40%),
+    rgba(252,181,10,.11);
+  color: #9a6c00;
+}
+
+.helpfulToolCard:first-child .helpfulToolIcon {
+  border-color: rgba(255,255,255,.16);
+  background: rgba(255,255,255,.08);
+  color: #ff405a;
+  box-shadow: none;
+}
+
+.helpfulToolIcon svg {
+  width: 32px;
+  height: 32px;
+}
+
+.helpfulToolCard h3 {
+  max-width: 290px;
+  margin: 0;
+  color: inherit;
+  font-size: 20px;
+  line-height: 1.28;
+  font-weight: 720;
+  letter-spacing: -.02em;
+}
+
+.helpfulToolCard > p {
+  max-width: 330px;
+  margin-top: 11px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.helpfulToolCard:first-child > p {
+  color: rgba(255,253,248,.72);
+}
+
+.helpfulToolAction {
+  display: inline-flex;
+  width: fit-content;
+  min-height: 38px;
+  align-items: center;
+  gap: 10px;
+  margin-top: auto;
+  border-radius: 999px;
+  color: var(--brand-strong);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.helpfulToolAction svg {
+  width: 15px;
+  transition: transform var(--duration-base) var(--ease-standard);
+}
+
+.helpfulToolCard:hover .helpfulToolAction svg {
+  transform: translateX(4px);
+}
+
+.helpfulToolCard:first-child .helpfulToolAction {
+  padding: 8px 12px;
+  background: var(--brand);
+  color: white;
+}
+
+.faq {
+  position: relative;
+  overflow: hidden;
+  border-top: 1px solid var(--border);
+  background:
+    linear-gradient(180deg, #f4f0e8 0%, #f7f4ec 100%);
+}
+
+.faq::before {
+  content: "?";
+  position: absolute;
+  left: -16px;
+  bottom: -112px;
+  color: rgba(219, 4, 35, .035);
+  font-size: 340px;
+  font-weight: 800;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.faq.section {
+  padding-block: 88px;
+}
+
+.faqGrid {
+  position: relative;
+  z-index: 1;
+  grid-template-columns: minmax(300px, .72fr) minmax(0, 1.28fr);
+  gap: 72px;
+  align-items: start;
+}
+
+.faqIntro {
+  position: sticky;
+  top: 112px;
+  overflow: hidden;
+  padding: 32px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(219,4,35,.09), transparent 34%),
+    var(--surface-raised);
+  box-shadow: 0 20px 48px -38px rgba(28,33,36,.32);
+}
+
+.faqIntro::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(180deg, var(--brand), var(--accent));
+}
+
+.faqIntro .eyebrow {
+  margin-bottom: 16px;
+}
+
+.faqIntro .sectionTitle {
+  font-size: clamp(38px, 3.3vw, 50px);
+  line-height: 1.04;
+}
+
+.faqIntro .sectionTitle em {
+  color: var(--brand);
+}
+
+.faqIntro .lead {
+  margin-top: 18px;
+  font-size: 14px;
+  line-height: 1.75;
+}
+
+.faqIntro .textLink {
+  margin-top: 18px;
+}
+
+.faqList {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.faqList details {
+  overflow: hidden;
+  margin-bottom: 12px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: rgba(255,253,248,.86);
+  box-shadow: 0 12px 30px -28px rgba(28,33,36,.34);
+  transition:
+    border-color var(--duration-base) var(--ease-standard),
+    box-shadow var(--duration-base) var(--ease-standard),
+    transform var(--duration-base) var(--ease-standard),
+    background-color var(--duration-base) var(--ease-standard);
+}
+
+.faqList details:hover {
+  transform: translateX(4px);
+  border-color: var(--brand-border);
+  box-shadow: 0 16px 34px -26px rgba(28,33,36,.42);
+}
+
+.faqList details[open] {
+  border-color: rgba(219,4,35,.28);
+  background:
+    linear-gradient(90deg, rgba(219,4,35,.055), transparent 42%),
+    var(--surface-raised);
+  box-shadow: 0 18px 42px -32px rgba(219,4,35,.32);
+}
+
+.faqList summary {
+  min-height: 76px;
+  padding: 0 18px;
+  gap: 18px;
+}
+
+.faqQuestion {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 14px;
+}
+
+.faqNumber {
+  display: inline-grid;
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--surface-subtle);
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .08em;
+}
+
+.faqList details[open] .faqNumber {
+  background: var(--brand);
+  color: white;
+}
+
+.faqToggle {
+  display: grid;
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--surface-subtle);
+  color: var(--foreground);
+  transition:
+    transform var(--duration-base) var(--ease-standard),
+    background-color var(--duration-base) var(--ease-standard),
+    color var(--duration-base) var(--ease-standard);
+}
+
+.faqToggle svg {
+  width: 15px;
+  height: 15px;
+}
+
+.faqList details[open] .faqToggle {
+  transform: rotate(45deg);
+  border-color: var(--brand);
+  background: var(--brand);
+  color: white;
+}
+
+.faqList details > p {
+  margin: 0;
+  padding: 0 70px 20px 66px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.75;
+}
+
+@media (max-width: 899px) {
+  .helpfulToolsHeading {
+    display: block;
+  }
+
+  .helpfulToolsHeading .eyebrow {
+    margin-bottom: 16px;
+  }
+
+  .helpfulToolsHeading > p:last-child {
+    margin-top: 14px;
+  }
+
+  .helpfulToolsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .helpfulToolCard {
+    min-height: 0;
+  }
+
+  .faqGrid {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+
+  .faqIntro {
+    position: relative;
+    top: auto;
+  }
+}
+
+@media (max-width: 767px) {
+  .helpfulTools.section,
+  .faq.section {
+    padding-block: 52px;
+  }
+
+  .helpfulTools::before,
+  .faq::before {
+    display: none;
+  }
+
+  .helpfulToolsHeading h2 {
+    font-size: 36px;
+  }
+
+  .helpfulToolCard {
+    display: grid;
+    grid-template-columns: 62px minmax(0, 1fr);
+    gap: 4px 14px;
+    padding: 18px;
+    border-radius: 14px;
+  }
+
+  .helpfulToolIndex {
+    top: 18px;
+    right: 18px;
+    min-width: 36px;
+    min-height: 24px;
+    font-size: 9px;
+  }
+
+  .helpfulToolIcon {
+    grid-row: 1 / span 3;
+    width: 58px;
+    height: 58px;
+    margin: 0;
+    border-radius: 16px;
+  }
+
+  .helpfulToolIcon svg {
+    width: 27px;
+    height: 27px;
+  }
+
+  .helpfulToolCard h3 {
+    padding-right: 44px;
+    font-size: 15px;
+  }
+
+  .helpfulToolCard > p {
+    margin-top: 3px;
+    font-size: 11px;
+    line-height: 1.55;
+  }
+
+  .helpfulToolAction {
+    min-height: 30px;
+    margin-top: 4px;
+    font-size: 10px;
+  }
+
+  .helpfulToolCard:first-child .helpfulToolAction {
+    padding: 5px 9px;
+  }
+
+  .faqIntro {
+    padding: 24px;
+    border-radius: 14px;
+  }
+
+  .faqIntro .sectionTitle {
+    font-size: 36px;
+  }
+
+  .faqList details {
+    border-radius: 12px;
+  }
+
+  .faqList details:hover {
+    transform: none;
+  }
+
+  .faqList summary {
+    min-height: 68px;
+    padding: 0 14px;
+    gap: 10px;
+    font-size: 13px;
+  }
+
+  .faqQuestion {
+    gap: 10px;
+  }
+
+  .faqNumber,
+  .faqToggle {
+    width: 30px;
+    height: 30px;
+  }
+
+  .faqList details > p {
+    padding: 0 50px 18px 54px;
+    font-size: 12px;
+  }
+}
+
+:global(html[dir="rtl"]) .helpfulToolIndex {
+  right: auto;
+  left: 24px;
+}
+
+:global(html[dir="rtl"]) .faqIntro::after {
+  left: auto;
+  right: 0;
+}
+
+:global(html[dir="rtl"]) .faqList details:hover {
+  transform: translateX(-4px);
+}
+
+:global(html[dir="rtl"]) .faqList details > p {
+  padding: 0 66px 20px 70px;
+}
+
+@media (max-width: 767px) {
+  :global(html[dir="rtl"]) .helpfulToolIndex {
+    left: 18px;
+  }
+
+  :global(html[dir="rtl"]) .helpfulToolCard h3 {
+    padding-right: 0;
+    padding-left: 44px;
+  }
+
+  :global(html[dir="rtl"]) .faqList details > p {
+    padding: 0 54px 18px 50px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .helpfulToolCard,
+  .helpfulToolAction svg,
+  .faqList details,
+  .faqToggle {
+    transition: none;
+  }
+
+  .helpfulToolCard:hover,
+  .faqList details:hover,
+  .helpfulToolCard:hover .helpfulToolAction svg {
+    transform: none;
+  }
+}
