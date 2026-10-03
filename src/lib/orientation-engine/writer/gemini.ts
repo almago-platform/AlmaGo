@@ -135,7 +135,7 @@ function systemPrompt(locale: OrientationWriterInput["locale"]) {
     "reassurance: close with calm confidence, emphasizing that the candidate does not have to manage the whole process alone.",
     "cta: make the label/action feel concrete and immediate while keeping exactly one allowed action_id.",
     "",
-    "STUDY OPTIONS:"
+    "STUDY OPTIONS:",
     "Return exactly the supplied option_ids, once each, in their existing order.",
     "Do not add another university or programme.",
     "The backend injects institution/programme/city names, so study_options must contain only option_id, why_it_fits and verification_note.",
