@@ -53,21 +53,24 @@ test("E makes the controlled writer primary only when a real shortlist exists", 
   assert.match(engineCard, /!personalized \? \(/);
 });
 
-test("E writer UI is letter-first with pistes, roadmap, one prospect CTA and verified details", () => {
+test("E writer UI presents a premium progressive result with one CTA and verified details", () => {
   assert.match(writerCard, /content\.opening/);
   assert.match(writerCard, /content\.projectStatus/);
   assert.match(writerCard, /content\.mainPriority/);
   assert.match(writerCard, /content\.studyOptions\.map/);
-  assert.match(writerCard, /content\.roadmap\.map/);
+  assert.match(writerCard, /content\.roadmap\[0\]/);
+  assert.match(writerCard, /content\.campusValue/);
   assert.match(writerCard, /content\.cta\.label/);
   assert.match(writerCard, /href="#orientation-prospect-capture"/);
   assert.equal((writerCard.match(/href="#orientation-prospect-capture"/g) || []).length, 1);
   assert.match(writerCard, /result\.selected\.map/);
   assert.match(writerCard, /fact\.sourceUrl/);
   assert.match(writerCard, /humanReview\.mode === "post_result_audit"/);
-  assert.match(writerCard, /poursuivons les contrôles en arrière-plan/);
-  assert.match(writerCard, /Ce que nous vérifions pour vous/);
-  assert.match(writerCard, /Qui fait quoi maintenant/);
+  assert.match(writerCard, /Les programmes retenus pour vous/);
+  assert.match(writerCard, /Comment nous avançons ensemble/);
+  assert.match(writerCard, /Votre priorité du moment/);
+  assert.match(writerCard, /Voir les informations vérifiées et les sources officielles/);
+  assert.match(engineCard, /answers=\{answers\}/);
 });
 
 test("E returns the candidate result without waiting for any admin approval state", () => {
