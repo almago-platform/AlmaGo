@@ -37,6 +37,7 @@ import {
   higherEducationStatusOptions,
   languageLevelOptions,
   preferredCityOptions,
+  scienceSpecialtyOptions,
   studyFieldOptions,
   studyIntentOptions,
   studyLanguageOptions,
@@ -97,6 +98,10 @@ export function PublicOrientationForm({
   const fields = useMemo(() => localizeProfileOptions(locale, studyFieldOptions), [locale]);
   const engineeringSpecialties = useMemo(
     () => localizeProfileOptions(locale, engineeringSpecialtyOptions),
+    [locale],
+  );
+  const scienceSpecialties = useMemo(
+    () => localizeProfileOptions(locale, scienceSpecialtyOptions),
     [locale],
   );
   const higherEducationStatuses = useMemo(
@@ -171,6 +176,24 @@ export function PublicOrientationForm({
     de: {
       label: "Ingenieurfachrichtung",
       help: "So können wir Studiengänge suchen, die wirklich zu deinem Projekt passen.",
+    },
+  }[locale];
+  const scienceSpecialtyCopy = {
+    fr: {
+      label: "Branche scientifique",
+      help: "Choisissez la branche qui vous intéresse pour éviter de mélanger des sciences très différentes.",
+    },
+    ar: {
+      label: "الفرع العلمي",
+      help: "اختر الفرع الذي يهمك حتى لا نخلط بين تخصصات علمية مختلفة جدًا.",
+    },
+    en: {
+      label: "Science subject",
+      help: "Choose the science area you are interested in so unrelated subjects are not mixed together.",
+    },
+    de: {
+      label: "Naturwissenschaftliches Fach",
+      help: "Wähle den Bereich, der dich interessiert, damit sehr unterschiedliche Fächer nicht vermischt werden.",
     },
   }[locale];
 
@@ -249,6 +272,11 @@ export function PublicOrientationForm({
       && answers.targetField === "Ingénierie"
       && !answers.engineeringSpecialty
     ) return copy.validation.required;
+    if (
+      step === 2
+      && answers.targetField === "Sciences"
+      && !answers.scienceSpecialty
+    ) return copy.validation.required;
     if (step === 3 && (!answers.germanLevel || !answers.englishLevel || !answers.studyLanguage)) return copy.validation.required;
     if (step === 4 && !answers.budgetRange) return copy.validation.required;
 
@@ -316,6 +344,9 @@ export function PublicOrientationForm({
     [copy.summary.labels.field, localizedValue(answers.targetField, fields)],
     ...(answers.targetField === "Ingénierie"
       ? [[engineeringSpecialtyCopy.label, localizedValue(answers.engineeringSpecialty, engineeringSpecialties)]]
+      : []),
+    ...(answers.targetField === "Sciences"
+      ? [[scienceSpecialtyCopy.label, localizedValue(answers.scienceSpecialty, scienceSpecialties)]]
       : []),
     [copy.summary.labels.german, localizedValue(answers.germanLevel, levels)],
     [copy.summary.labels.english, localizedValue(answers.englishLevel, levels)],
@@ -619,6 +650,8 @@ export function PublicOrientationForm({
                               targetField: nextField,
                               engineeringSpecialty:
                                 nextField === "Ingénierie" ? current.engineeringSpecialty : "",
+                              scienceSpecialty:
+                                nextField === "Sciences" ? current.scienceSpecialty : "",
                             }));
                             setError("");
                           }}
@@ -661,6 +694,25 @@ export function PublicOrientationForm({
                         </select>
                         <span className="mt-1 block text-xs font-normal text-[var(--muted)]">
                           {engineeringSpecialtyCopy.help}
+                        </span>
+                      </label>
+                    ) : null}
+
+                    {answers.targetField === "Sciences" ? (
+                      <label className="block text-sm font-semibold">
+                        {scienceSpecialtyCopy.label}
+                        <select
+                          className="field"
+                          value={answers.scienceSpecialty}
+                          onChange={(event) => setField("scienceSpecialty", event.target.value as Answers["scienceSpecialty"])}
+                        >
+                          <option value="">{copy.controls.choose}</option>
+                          {scienceSpecialties.map((option) => (
+                            <option key={option.value} value={option.value}>{option.label}</option>
+                          ))}
+                        </select>
+                        <span className="mt-1 block text-xs font-normal text-[var(--muted)]">
+                          {scienceSpecialtyCopy.help}
                         </span>
                       </label>
                     ) : null}
