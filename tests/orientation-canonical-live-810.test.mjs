@@ -9,9 +9,17 @@ const profiles={
 };
 
 async function call(answers){
-  const response=await fetch(URL,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({locale:"fr",answers})});
-  assert.equal(response.status,200);
-  return response.json();
+  let lastStatus=null;
+  for(let attempt=1;attempt<=6;attempt++){
+    const response=await fetch(URL,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({locale:"fr",answers})});
+    lastStatus=response.status;
+    if(response.status===200) return response.json();
+    if(![502,503,504].includes(response.status)) {
+      assert.equal(response.status,200);
+    }
+    if(attempt<6) await new Promise(r=>setTimeout(r,10000));
+  }
+  assert.equal(lastStatus,200);
 }
 
 function identity(items){
