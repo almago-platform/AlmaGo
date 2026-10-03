@@ -794,6 +794,8 @@ export function OrientationPersonalizedWriterCard({
   ];
   const languageChoices = guidance?.languageChoices.map((choice) => splitGuidanceChoice(choice, locale)) || [];
   const journeyStep = determineJourneyStep(result, answers);
+  const journeyCompletedCount = Math.min(journeyStep, t.journeySteps.length);
+  const journeyRemainingCount = Math.max(t.journeySteps.length - journeyCompletedCount, 0);
   const optionOutlooks = new Map(
     content.studyOptions.map((option) => [
       option.optionId,
@@ -843,6 +845,143 @@ export function OrientationPersonalizedWriterCard({
           </div>
         </div>
       </header>
+
+      <section
+        aria-labelledby="orientation-journey"
+        className="overflow-hidden rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow-card)]"
+      >
+        <div className="flex flex-col gap-4 border-b border-[var(--border)] px-5 py-5 sm:px-6 lg:flex-row lg:items-end lg:justify-between">
+          <div className="max-w-3xl">
+            <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand-strong)]">
+              {t.journeyEyebrow}
+            </p>
+            <h4 id="orientation-journey" className="mt-1 text-2xl font-semibold tracking-tight sm:text-3xl">
+              {t.journey}
+            </h4>
+            <p className="mt-1.5 text-sm leading-6 text-[var(--muted)]">{t.journeySubtitle}</p>
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            <span className="rounded-full bg-[var(--success-soft)] px-3 py-1.5 text-xs font-semibold text-[var(--success-strong)] ring-1 ring-inset ring-[var(--success-border)]">
+              {journeyCompletedCount}/{t.journeySteps.length}{" "}
+              {journeyCompletedCount === 1 ? t.journeyCompletedLabel : t.journeyCompletedPlural}
+            </span>
+            <span className="rounded-full bg-[var(--surface-subtle)] px-3 py-1.5 text-xs font-semibold text-[var(--foreground)] ring-1 ring-inset ring-[var(--border)]">
+              {journeyRemainingCount}{" "}
+              {journeyRemainingCount === 1 ? t.journeyRemainingLabel : t.journeyRemainingPlural}
+            </span>
+            <span className="rounded-full bg-[var(--brand-soft)] px-3 py-1.5 text-xs font-semibold text-[var(--brand-strong)] ring-1 ring-inset ring-[var(--brand-border)]">
+              {t.journeyGoal}
+            </span>
+          </div>
+        </div>
+
+        <div className="px-5 py-5 sm:px-6">
+          <ol className="hidden grid-cols-5 gap-2 sm:grid">
+            {t.journeySteps.map((step, index) => {
+              const completed = index < journeyStep;
+              const current = index === journeyStep;
+              return (
+                <li key={step} aria-current={current ? "step" : undefined} className="relative">
+                  <div className="flex items-center">
+                    <span
+                      className={`relative z-10 flex size-9 shrink-0 items-center justify-center rounded-full text-xs font-bold ring-4 ring-[var(--surface)] ${
+                        completed
+                          ? "bg-[var(--success)] text-white"
+                          : current
+                            ? "bg-[var(--brand)] text-white"
+                            : "bg-[var(--surface)] text-[var(--muted)] ring-1 ring-inset ring-[var(--border-strong)]"
+                      }`}
+                    >
+                      {completed ? "✓" : index + 1}
+                    </span>
+                    {index < t.journeySteps.length - 1 ? (
+                      <span
+                        aria-hidden="true"
+                        className={`h-0.5 min-w-0 flex-1 ${
+                          index < journeyStep
+                            ? "bg-[var(--success)]"
+                            : current
+                              ? "bg-[var(--brand)]/30"
+                              : "bg-[var(--border)]"
+                        }`}
+                      />
+                    ) : null}
+                  </div>
+                  <p className={`mt-2 text-xs leading-5 ${
+                    completed
+                      ? "font-semibold text-[var(--success-strong)]"
+                      : current
+                        ? "font-bold text-[var(--brand-strong)]"
+                        : "text-[var(--muted)]"
+                  }`}>
+                    {step}
+                  </p>
+                </li>
+              );
+            })}
+          </ol>
+
+          <ol className="space-y-0 sm:hidden">
+            {t.journeySteps.map((step, index) => {
+              const completed = index < journeyStep;
+              const current = index === journeyStep;
+              return (
+                <li
+                  key={step}
+                  aria-current={current ? "step" : undefined}
+                  className="relative flex min-h-12 gap-3 ps-1"
+                >
+                  {index < t.journeySteps.length - 1 ? (
+                    <span
+                      aria-hidden="true"
+                      className={`absolute start-[0.83rem] top-7 h-[calc(100%-0.25rem)] w-px ${
+                        index < journeyStep ? "bg-[var(--success)]" : "bg-[var(--border)]"
+                      }`}
+                    />
+                  ) : null}
+                  <span
+                    className={`relative z-10 flex size-6 shrink-0 items-center justify-center rounded-full text-[11px] font-bold ${
+                      completed
+                        ? "bg-[var(--success)] text-white"
+                        : current
+                          ? "bg-[var(--brand)] text-white"
+                          : "bg-[var(--surface-subtle)] text-[var(--muted)] ring-1 ring-inset ring-[var(--border)]"
+                    }`}
+                  >
+                    {completed ? "✓" : index + 1}
+                  </span>
+                  <p className={`pb-4 text-sm leading-6 ${
+                    completed
+                      ? "font-semibold text-[var(--success-strong)]"
+                      : current
+                        ? "font-bold"
+                        : "text-[var(--muted)]"
+                  }`}>
+                    {step}
+                  </p>
+                </li>
+              );
+            })}
+          </ol>
+        </div>
+
+        <div className="grid gap-3 border-t border-[var(--border)] bg-[var(--surface-subtle)] px-5 py-4 sm:px-6 md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
+          <div>
+            <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-[var(--brand-strong)]">
+              {t.journeyNextAction}
+            </p>
+            <p className="mt-1 text-base font-semibold text-[var(--foreground)]">{content.mainPriority.title}</p>
+            <p className="mt-1 text-xs leading-5 text-[var(--muted)]">{t.journeyCurrentText[journeyStep]}</p>
+          </div>
+          <a
+            href="#orientation-main-priority"
+            className="inline-flex min-h-10 items-center justify-center rounded-[var(--radius-control)] bg-[var(--brand)] px-4 py-2 text-xs font-bold text-white transition hover:bg-[var(--brand-strong)]"
+          >
+            {t.journeyOpenAction} <span aria-hidden="true" className="ms-2">→</span>
+          </a>
+        </div>
+      </section>
 
       <section
         aria-labelledby="orientation-summary"
@@ -1176,89 +1315,6 @@ export function OrientationPersonalizedWriterCard({
         <div className="mt-2 rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--accent-light)] px-4 py-3.5 sm:px-5">
           <p className="text-xs font-bold uppercase tracking-[0.1em] text-[var(--accent-strong)]">{t.togetherLabel}</p>
           <p className="mt-2 text-sm font-semibold leading-6 text-[var(--foreground)]">{t.togetherText}</p>
-        </div>
-      </section>
-
-      <section aria-labelledby="orientation-journey">
-        <h4 id="orientation-journey" className="text-2xl font-semibold tracking-tight">
-          {t.journey}
-        </h4>
-
-        <ol className="mt-3 hidden grid-cols-5 gap-2 sm:grid">
-          {t.journeySteps.map((step, index) => {
-            const completed = index < journeyStep;
-            const current = index === journeyStep;
-            return (
-              <li key={step} aria-current={current ? "step" : undefined}>
-                <div
-                  className={`h-1.5 rounded-full ${
-                    completed
-                      ? "bg-[var(--accent)]"
-                      : current
-                        ? "bg-[var(--brand)]"
-                        : "bg-[var(--border)]"
-                  }`}
-                />
-                <div className="mt-3 flex items-center gap-2">
-                  <span
-                    className={`flex size-7 shrink-0 items-center justify-center rounded-full text-[11px] font-bold ${
-                      completed
-                        ? "bg-[var(--accent-light)] text-[var(--accent-strong)]"
-                        : current
-                          ? "bg-[var(--brand)] text-white"
-                          : "bg-[var(--surface-subtle)] text-[var(--muted)]"
-                    }`}
-                  >
-                    {completed ? "✓" : index + 1}
-                  </span>
-                  <p className={`text-xs leading-5 ${current ? "font-bold text-[var(--foreground)]" : "text-[var(--muted)]"}`}>
-                    {step}
-                  </p>
-                </div>
-              </li>
-            );
-          })}
-        </ol>
-
-        <ol className="mt-4 space-y-0 sm:hidden">
-          {t.journeySteps.map((step, index) => {
-            const completed = index < journeyStep;
-            const current = index === journeyStep;
-            return (
-              <li
-                key={step}
-                aria-current={current ? "step" : undefined}
-                className="relative flex min-h-12 gap-3 ps-1"
-              >
-                {index < t.journeySteps.length - 1 ? (
-                  <span
-                    aria-hidden="true"
-                    className={`absolute start-[0.83rem] top-7 h-[calc(100%-0.25rem)] w-px ${index < journeyStep ? "bg-[var(--accent)]" : "bg-[var(--border)]"}`}
-                  />
-                ) : null}
-                <span
-                  className={`relative z-10 flex size-6 shrink-0 items-center justify-center rounded-full text-[11px] font-bold ${
-                    completed
-                      ? "bg-[var(--accent-light)] text-[var(--accent-strong)]"
-                      : current
-                        ? "bg-[var(--brand)] text-white"
-                        : "bg-[var(--surface-subtle)] text-[var(--muted)] ring-1 ring-inset ring-[var(--border)]"
-                  }`}
-                >
-                  {completed ? "✓" : index + 1}
-                </span>
-                <p className={`pb-4 text-sm leading-6 ${current ? "font-bold" : "text-[var(--muted)]"}`}>
-                  {step}
-                </p>
-              </li>
-            );
-          })}
-        </ol>
-
-        <div className="mt-3 rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4 sm:p-5">
-          <p className="text-xs font-bold uppercase tracking-[0.08em] text-[var(--brand-strong)]">{t.journeyCurrent}</p>
-          <p className="mt-1.5 text-base font-semibold text-[var(--foreground)]">{t.journeySteps[journeyStep]}</p>
-          <p className="mt-1.5 max-w-3xl text-sm leading-6 text-[var(--muted)]">{t.journeyCurrentText[journeyStep]}</p>
         </div>
       </section>
 
