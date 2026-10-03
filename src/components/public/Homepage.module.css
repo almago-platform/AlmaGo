@@ -7399,3 +7399,503 @@
     padding: 0 0 16px 28px;
   }
 }
+
+
+/* Editorial refinement V2 — photo band + FAQ.
+   A richer AlmaGo composition without changing copy or behaviour. */
+.photoBand {
+  position: relative;
+  overflow: hidden;
+  padding-block: 76px 82px;
+  background:
+    radial-gradient(circle at 88% 16%, rgba(219, 4, 35, 0.06), transparent 22%),
+    radial-gradient(circle at 12% 92%, rgba(252, 181, 10, 0.08), transparent 24%),
+    linear-gradient(180deg, #f8f5ee 0%, #f4f0e8 100%);
+}
+
+.photoBand::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(28,33,36,.025) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(28,33,36,.02) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: linear-gradient(180deg, rgba(0,0,0,.24), transparent 72%);
+}
+
+.photoBand > .container {
+  position: relative;
+  z-index: 1;
+}
+
+.photoBandLayout {
+  grid-template-columns: 1fr;
+  gap: 34px;
+}
+
+.photoBandHeading {
+  position: relative;
+  overflow: hidden;
+  width: min(100%, 980px);
+  margin: 0 auto;
+  padding: 34px 40px 36px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.58), rgba(255,255,255,.16)),
+    var(--surface-raised);
+  box-shadow: 0 24px 58px -42px rgba(28,33,36,.34);
+  text-align: left;
+}
+
+.photoBandHeading::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  inset-inline: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--brand) 0 58%, var(--accent) 58% 100%);
+}
+
+.photoBandHeading::after {
+  content: "";
+  position: absolute;
+  right: -54px;
+  bottom: -70px;
+  width: 190px;
+  height: 190px;
+  border: 26px solid rgba(219,4,35,.045);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.photoBandHeading .eyebrow {
+  position: relative;
+  z-index: 1;
+  justify-content: flex-start;
+  margin-bottom: 14px;
+}
+
+.photoBandTitle {
+  position: relative;
+  z-index: 1;
+  max-width: 720px;
+  margin: 0;
+  font-size: clamp(44px, 4vw, 58px);
+  line-height: 1.02;
+  font-weight: 650;
+  letter-spacing: -.045em;
+  text-align: left;
+}
+
+.photoBandTitle em {
+  color: var(--brand);
+}
+
+.photoBandHeading > p:last-child {
+  position: relative;
+  z-index: 1;
+  max-width: 620px;
+  margin: 18px 0 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.72;
+  text-align: left;
+}
+
+.photoBandGrid {
+  width: min(100%, 1180px);
+  margin-inline: auto;
+  gap: 18px;
+}
+
+.photoCard {
+  border-radius: 16px;
+  box-shadow: 0 18px 44px -34px rgba(28,33,36,.42);
+  transition:
+    transform var(--duration-base) var(--ease-standard),
+    box-shadow var(--duration-base) var(--ease-standard),
+    border-color var(--duration-base) var(--ease-standard);
+}
+
+.photoCard:hover {
+  transform: translateY(-4px);
+  border-color: var(--brand-border);
+  box-shadow: 0 28px 54px -36px rgba(28,33,36,.5);
+}
+
+.photoCardMedia {
+  border-radius: 15px;
+}
+
+.photoCardBody {
+  margin: -28px 12px 0;
+  border-radius: 12px;
+  box-shadow: 0 18px 34px -28px rgba(28,33,36,.5);
+}
+
+.photoCardBody > span {
+  background: var(--brand-soft);
+  color: var(--brand-strong);
+}
+
+.photoCard:nth-child(2) .photoCardBody > span {
+  background: rgba(252,181,10,.14);
+  color: #8b6200;
+}
+
+.photoCard:nth-child(3) .photoCardBody > span {
+  background: var(--foreground);
+  color: white;
+}
+
+/* FAQ V2 — keep the split layout, refine hierarchy and interaction. */
+.faq {
+  position: relative;
+  overflow: hidden;
+  border-top: 1px solid var(--border);
+  background:
+    linear-gradient(180deg, #fffdf8 0%, #f7f4ec 100%);
+}
+
+.faq::before {
+  display: block;
+  content: "";
+  position: absolute;
+  top: -90px;
+  right: -90px;
+  width: 260px;
+  height: 260px;
+  border: 34px solid rgba(252,181,10,.045);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.faq.section {
+  padding-block: 82px 88px;
+}
+
+.faqGrid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  width: min(100%, 1180px);
+  margin-inline: auto;
+  grid-template-columns: minmax(300px, .78fr) minmax(0, 1.22fr);
+  gap: 54px;
+  align-items: start;
+}
+
+.faqIntro {
+  position: sticky;
+  top: 112px;
+  width: auto;
+  margin: 0;
+  padding: 30px 30px 28px 34px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(219,4,35,.065), transparent 34%),
+    rgba(255,253,248,.88);
+  box-shadow: 0 20px 48px -38px rgba(28,33,36,.32);
+  text-align: left;
+}
+
+.faqIntro::after {
+  display: block;
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(180deg, var(--brand), var(--accent));
+}
+
+.faqIntro .eyebrow {
+  justify-content: flex-start;
+  margin-bottom: 14px;
+}
+
+.faqIntro .sectionTitle {
+  max-width: 420px;
+  margin: 0;
+  font-size: clamp(40px, 3.4vw, 50px);
+  line-height: 1.04;
+  font-weight: 630;
+  text-align: left;
+}
+
+.faqIntro .sectionTitle em {
+  color: var(--brand);
+}
+
+.faqIntro .lead {
+  max-width: 350px;
+  margin: 16px 0 0;
+  color: var(--muted);
+  font-size: 13.5px;
+  line-height: 1.72;
+  text-align: left;
+}
+
+.faqIntro .textLink {
+  justify-content: flex-start;
+  margin-top: 17px;
+}
+
+.faqList {
+  width: auto;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.faqList details {
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 10px;
+  padding: 0 20px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: rgba(255,255,255,.72);
+  box-shadow: 0 12px 30px -28px rgba(28,33,36,.32);
+  transition:
+    border-color var(--duration-base) var(--ease-standard),
+    background-color var(--duration-base) var(--ease-standard),
+    box-shadow var(--duration-base) var(--ease-standard);
+}
+
+.faqList details:hover {
+  border-color: rgba(219,4,35,.22);
+  background: rgba(255,255,255,.92);
+}
+
+.faqList details[open] {
+  border-color: rgba(219,4,35,.32);
+  background:
+    linear-gradient(90deg, rgba(219,4,35,.055), transparent 42%),
+    var(--surface-raised);
+  box-shadow: 0 18px 38px -30px rgba(219,4,35,.25);
+}
+
+.faqList details[open]::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 3px;
+  background: var(--brand);
+}
+
+.faqList summary {
+  display: flex;
+  min-height: 64px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 14px 0;
+  list-style: none;
+  cursor: pointer;
+  color: var(--foreground);
+  font-size: 14px;
+  font-weight: 650;
+  line-height: 1.45;
+}
+
+.faqList summary::-webkit-details-marker {
+  display: none;
+}
+
+.faqList summary:hover,
+.faqList details[open] summary {
+  color: var(--brand-strong);
+}
+
+.faqList summary svg {
+  width: 30px;
+  height: 30px;
+  padding: 7px;
+  flex: 0 0 auto;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--surface-subtle);
+  transition:
+    transform var(--duration-base) var(--ease-standard),
+    color var(--duration-base) var(--ease-standard),
+    background-color var(--duration-base) var(--ease-standard),
+    border-color var(--duration-base) var(--ease-standard);
+}
+
+.faqList details[open] summary svg {
+  transform: rotate(45deg);
+  border-color: var(--brand);
+  background: var(--brand);
+  color: white;
+}
+
+.faqList details > p {
+  max-width: 690px;
+  margin: 0;
+  padding: 0 48px 18px 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.75;
+  text-align: left;
+}
+
+@media (max-width: 899px) {
+  .photoBand {
+    padding-block: 58px 62px;
+  }
+
+  .photoBandHeading {
+    width: min(100%, 820px);
+    padding: 28px 28px 30px;
+  }
+
+  .faq.section {
+    padding-block: 62px;
+  }
+
+  .faqGrid {
+    grid-template-columns: 1fr;
+    gap: 26px;
+  }
+
+  .faqIntro {
+    position: relative;
+    top: auto;
+    width: min(100%, 760px);
+  }
+}
+
+@media (max-width: 767px) {
+  .photoBand {
+    padding-block: 46px 50px;
+  }
+
+  .photoBandLayout {
+    gap: 24px;
+  }
+
+  .photoBandHeading {
+    width: 100%;
+    padding: 24px 20px 26px;
+    border-radius: 14px;
+  }
+
+  .photoBandHeading::after {
+    right: -90px;
+    bottom: -95px;
+  }
+
+  .photoBandTitle {
+    max-width: 100%;
+    font-size: 36px;
+    line-height: 1.06;
+  }
+
+  .photoBandHeading > p:last-child {
+    margin-top: 14px;
+    font-size: 13px;
+  }
+
+  .photoCard:hover {
+    transform: none;
+  }
+
+  .faq.section {
+    padding-block: 52px;
+  }
+
+  .faqIntro {
+    padding: 24px 22px 22px 26px;
+    border-radius: 14px;
+  }
+
+  .faqIntro .sectionTitle {
+    font-size: 34px;
+  }
+
+  .faqList details {
+    padding: 0 15px;
+    border-radius: 10px;
+  }
+
+  .faqList summary {
+    min-height: 58px;
+    gap: 12px;
+    padding: 12px 0;
+    font-size: 13px;
+  }
+
+  .faqList summary svg {
+    width: 28px;
+    height: 28px;
+    padding: 6px;
+  }
+
+  .faqList details > p {
+    padding: 0 40px 16px 0;
+    font-size: 12px;
+    line-height: 1.68;
+  }
+}
+
+:global(html[dir="rtl"]) .photoBandHeading,
+:global(html[dir="rtl"]) .photoBandTitle,
+:global(html[dir="rtl"]) .photoBandHeading > p:last-child,
+:global(html[dir="rtl"]) .faqIntro,
+:global(html[dir="rtl"]) .faqIntro .sectionTitle,
+:global(html[dir="rtl"]) .faqIntro .lead,
+:global(html[dir="rtl"]) .faqList details > p {
+  text-align: right;
+}
+
+:global(html[dir="rtl"]) .photoBandHeading::after {
+  right: auto;
+  left: -54px;
+}
+
+:global(html[dir="rtl"]) .faqIntro::after {
+  left: auto;
+  right: 0;
+}
+
+:global(html[dir="rtl"]) .faqList details[open]::before {
+  left: auto;
+  right: 0;
+}
+
+:global(html[dir="rtl"]) .faqList details > p {
+  padding: 0 0 18px 48px;
+}
+
+@media (max-width: 767px) {
+  :global(html[dir="rtl"]) .photoBandHeading::after {
+    left: -90px;
+  }
+
+  :global(html[dir="rtl"]) .faqList details > p {
+    padding: 0 0 16px 40px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .photoCard,
+  .faqList details,
+  .faqList summary svg {
+    transition: none;
+  }
+
+  .photoCard:hover {
+    transform: none;
+  }
+}
