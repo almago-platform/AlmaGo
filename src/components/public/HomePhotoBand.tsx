@@ -15,15 +15,16 @@ export function HomePhotoBand({ photo }: { photo: PhotoCopy }) {
     <section className={s.photoBand} aria-labelledby="photo-band-title">
       <div className={`${s.container} ${s.photoBandLayout}`}>
         <div className={s.photoBandHeading}>
-          <p className={s.eyebrow}>
-            <span className={s.dot} /> {photo.eyebrow}
-          </p>
           <h2 id="photo-band-title" className={s.photoBandTitle}>
             {photo.title1}
             <br />
             <em>{photo.title2}</em>
           </h2>
-          <p>{photo.text}</p>
+          <p className={s.photoBandEyebrow}>
+            <span className={s.photoBandEyebrowMarker} aria-hidden="true" />
+            {photo.eyebrow}
+          </p>
+          <p className={s.photoBandLead}>{photo.text}</p>
         </div>
 
         <div className={s.photoBandGrid} tabIndex={0} role="region" aria-label={photo.regionAria}>
