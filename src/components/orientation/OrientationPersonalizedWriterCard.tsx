@@ -9,15 +9,17 @@ import type { OrientationVerificationFactKey } from "@/lib/orientation-engine/ve
 
 const copy = {
   fr: {
-    priority: "Votre priorité maintenant",
-    language: "Langue",
-    campus: "Comment Campus Allemagne vous aide",
+    priority: "Votre prochaine action",
+    language: "Votre progression en langue",
+    campus: "Pendant ce temps, Campus Allemagne avance pour vous",
     options: "Vos pistes universitaires",
-    optionsHelp: "Ces pistes viennent de la sélection contrôlée par AlmaGo. Elles ne constituent pas une admission.",
-    roadmap: "Votre feuille de route",
-    next: "Prochaine étape",
-    review: "Contrôle qualité a posteriori",
-    reviewText: "Votre résultat est disponible immédiatement. L’équipe Campus Allemagne peut revoir plus tard les sources, les faits et les pistes pour le contrôle qualité, sans bloquer ce résultat.",
+    optionsHelp: "Nous avons identifié ces pistes à partir de votre profil et des informations disponibles. Elles constituent une base de travail pour votre dossier, pas une admission.",
+    why: "Pourquoi cette piste",
+    progress: "Ce que nous vérifions pour vous",
+    roadmap: "Qui fait quoi maintenant",
+    next: "Votre prochaine action",
+    review: "Suivi Campus Allemagne",
+    reviewText: "Nous conservons les faits et les sources de cette orientation et poursuivons les contrôles en arrière-plan, sans bloquer votre résultat.",
     details: "Voir les faits et sources",
     verified: "Vérifié",
     reviewNeeded: "À confirmer",
@@ -26,15 +28,17 @@ const copy = {
     noFacts: "Aucun fait publiable supplémentaire n’est disponible pour cette piste.",
   },
   ar: {
-    priority: "أولويتك الآن",
-    language: "اللغة",
-    campus: "كيف يساعدك Campus Allemagne",
+    priority: "خطوتك التالية",
+    language: "تقدمك في اللغة",
+    campus: "في الوقت نفسه، يواصل Campus Allemagne العمل من أجلك",
     options: "مساراتك الجامعية",
-    optionsHelp: "هذه المسارات ناتجة عن اختيار مضبوط من AlmaGo، ولا تعني قبولًا جامعيًا.",
-    roadmap: "خارطة الطريق",
-    next: "الخطوة التالية",
-    review: "مراجعة جودة لاحقة",
-    reviewText: "نتيجة التوجيه متاحة لك فورًا. يمكن لفريق Campus Allemagne مراجعة المصادر والحقائق والمسارات لاحقًا لأغراض الجودة، من دون تعطيل هذه النتيجة.",
+    optionsHelp: "حددنا هذه المسارات انطلاقًا من ملفك والمعلومات المتاحة. هي قاعدة عمل لملفك وليست قبولًا جامعيًا.",
+    why: "لماذا هذا المسار",
+    progress: "ما نتحقق منه من أجلك",
+    roadmap: "من يقوم بماذا الآن",
+    next: "خطوتك التالية",
+    review: "متابعة Campus Allemagne",
+    reviewText: "نحتفظ بالحقائق والمصادر ونواصل التحقق في الخلفية من دون تعطيل نتيجتك.",
     details: "عرض الحقائق والمصادر",
     verified: "موثّق",
     reviewNeeded: "يحتاج إلى تأكيد",
@@ -43,15 +47,17 @@ const copy = {
     noFacts: "لا توجد حقائق إضافية قابلة للعرض لهذه المسار حاليًا.",
   },
   en: {
-    priority: "Your priority now",
-    language: "Language",
-    campus: "How Campus Allemagne helps",
+    priority: "Your next action",
+    language: "Your language progress",
+    campus: "Meanwhile, Campus Allemagne keeps your project moving",
     options: "Your university paths",
-    optionsHelp: "These paths come from AlmaGo’s controlled selection. They are not an admission decision.",
-    roadmap: "Your roadmap",
-    next: "Next step",
-    review: "Post-result quality review",
-    reviewText: "Your orientation result is available immediately. Campus Allemagne may review the sources, facts and paths later for quality control without blocking this result.",
+    optionsHelp: "We identified these paths from your profile and the information currently available. They are a working shortlist for your file, not an admission decision.",
+    why: "Why this path",
+    progress: "What we are checking for you",
+    roadmap: "Who does what now",
+    next: "Your next action",
+    review: "Campus Allemagne follow-up",
+    reviewText: "We keep the facts and sources behind this orientation and continue the checks in the background without blocking your result.",
     details: "View facts and sources",
     verified: "Verified",
     reviewNeeded: "To confirm",
@@ -60,15 +66,17 @@ const copy = {
     noFacts: "No additional publishable facts are currently available for this path.",
   },
   de: {
-    priority: "Deine Priorität jetzt",
-    language: "Sprache",
-    campus: "Wie Campus Allemagne dich unterstützt",
+    priority: "Dein nächster Schritt",
+    language: "Dein Sprachfortschritt",
+    campus: "Währenddessen bringt Campus Allemagne dein Projekt weiter",
     options: "Deine Studienoptionen",
-    optionsHelp: "Diese Optionen stammen aus der kontrollierten AlmaGo-Auswahl. Sie sind keine Zulassungsentscheidung.",
-    roadmap: "Dein Fahrplan",
-    next: "Nächster Schritt",
-    review: "Nachgelagerte Qualitätsprüfung",
-    reviewText: "Dein Orientierungsergebnis ist sofort verfügbar. Campus Allemagne kann Quellen, Fakten und Optionen später zur Qualitätssicherung prüfen, ohne dieses Ergebnis zu blockieren.",
+    optionsHelp: "Wir haben diese Optionen aus deinem Profil und den derzeit verfügbaren Informationen abgeleitet. Sie sind eine Arbeitsauswahl für dein Dossier, keine Zulassungsentscheidung.",
+    why: "Warum diese Option",
+    progress: "Was wir für dich noch prüfen",
+    roadmap: "Wer macht jetzt was",
+    next: "Dein nächster Schritt",
+    review: "Campus-Allemagne-Begleitung",
+    reviewText: "Wir behalten die Fakten und Quellen dieser Orientierung im Blick und führen die Prüfungen im Hintergrund weiter, ohne dein Ergebnis zu blockieren.",
     details: "Fakten und Quellen anzeigen",
     verified: "Geprüft",
     reviewNeeded: "Zu bestätigen",
@@ -209,7 +217,7 @@ export function OrientationPersonalizedWriterCard({
         </section>
       ) : null}
 
-      <section className="mt-5">
+      <section className="mt-5 rounded-[var(--radius-control)] border border-[var(--brand-border)] bg-[var(--brand-soft)] p-4">
         <p className="eyebrow">{t.campus}</p>
         <p className="mt-2 text-sm leading-6">{content.campusValue}</p>
       </section>
@@ -232,8 +240,14 @@ export function OrientationPersonalizedWriterCard({
               <p className="mt-1 text-sm font-semibold text-[var(--foreground)]">
                 {option.institution}{option.city ? ` · ${option.city}` : ""}
               </p>
-              <p className="mt-3 text-sm leading-6">{option.whyItFits}</p>
-              <p className="mt-2 text-xs leading-5 text-[var(--muted)]">
+              <p className="mt-3 text-xs font-bold uppercase tracking-wide text-[var(--muted)]">
+                {t.why}
+              </p>
+              <p className="mt-1 text-sm leading-6">{option.whyItFits}</p>
+              <p className="mt-3 text-xs font-bold uppercase tracking-wide text-[var(--muted)]">
+                {t.progress}
+              </p>
+              <p className="mt-1 text-sm leading-6 text-[var(--foreground)]">
                 {option.verificationNote}
               </p>
             </article>
@@ -274,7 +288,7 @@ export function OrientationPersonalizedWriterCard({
       </section>
 
       {result.humanReview.mode === "post_result_audit" ? (
-        <aside className="mt-5 rounded-[var(--radius-control)] border border-amber-200 bg-amber-50/70 p-4 text-amber-950">
+        <aside className="mt-5 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4 text-[var(--foreground)]">
           <p className="text-sm font-bold">{t.review}</p>
           <p className="mt-1 text-xs leading-5">{t.reviewText}</p>
         </aside>
