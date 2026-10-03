@@ -1,7 +1,9 @@
 import type {
   PublicOrientationAverageType,
   PublicOrientationBacStatus,
+  PublicOrientationHigherEducationStatus,
   PublicOrientationIntakeSeason,
+  PublicOrientationStudyIntent,
 } from "@/lib/orientation/public";
 
 export type OrientationDiscoveryStatus =
@@ -27,6 +29,11 @@ export type OrientationDiscoveryProfile = {
   averageOutOf20: number | null;
   averageType: Exclude<PublicOrientationAverageType, ""> | null;
   lastDiploma: string | null;
+  higherEducationStatus: Exclude<PublicOrientationHigherEducationStatus, ""> | null;
+  currentStudyField: string | null;
+  universitySemesters: number | null;
+  studyIntent: Exclude<PublicOrientationStudyIntent, ""> | null;
+  targetSpecialization: string | null;
   targetDegree: string | null;
   targetField: string | null;
   engineeringSpecialty: string | null;
