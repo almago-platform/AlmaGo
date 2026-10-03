@@ -7,6 +7,7 @@ import { OrientationPersonalizedWriterCard } from "@/components/orientation/Orie
 import type { Locale } from "@/lib/i18n";
 import type { PublicOrientationAnswers } from "@/lib/orientation/public";
 import type { OrientationPublicPersonalizedResult } from "@/lib/orientation-engine/result/types";
+import type { OrientationCanonicalShortlist } from "@/lib/orientation-engine/result/canonical";
 import type {
   OrientationAdvisorOutput,
   OrientationEngineResult,
@@ -20,6 +21,7 @@ type EngineResponse = {
   advisor: OrientationAdvisorOutput;
   letter: OrientationLetterOutput;
   scout: OrientationScoutResult;
+  shortlist: OrientationCanonicalShortlist;
   personalized: OrientationPublicPersonalizedResult | null;
 };
 
@@ -344,9 +346,12 @@ export function PersonalizedOrientationEngineCard({
     : requestState.error
       ? "error"
       : "ready";
-  const personalized = result?.personalized && result.personalized.selected.length > 0
-    ? result.personalized
-    : null;
+  const personalized =
+    result?.shortlist.source === "personalized_verified"
+    && result.personalized
+    && result.personalized.selected.length > 0
+      ? result.personalized
+      : null;
 
   useEffect(() => {
     const controller = new AbortController();

@@ -6,6 +6,7 @@ import { loadVerifiedProgrammeCatalogue } from "@/lib/orientation-engine/catalog
 import { buildOrientationEngineResult } from "@/lib/orientation-engine/service";
 import { buildOrientationIntelligence } from "@/lib/orientation-engine/intelligence";
 import { runOrientationResultPipeline } from "@/lib/orientation-engine/result/service";
+import { buildOrientationCanonicalShortlist } from "@/lib/orientation-engine/result/canonical";
 import type { OrientationPublicPersonalizedResult } from "@/lib/orientation-engine/result/types";
 
 const MAX_BODY_BYTES = 24_000;
@@ -59,12 +60,18 @@ export async function POST(request: Request) {
       personalized = null;
     }
 
+    const shortlist = buildOrientationCanonicalShortlist(
+      engineResult,
+      personalized,
+    );
+
     return NextResponse.json(
       {
         engine: engineResult,
         advisor: advisorResult,
         letter: intelligence.letter,
         scout: intelligence.scout,
+        shortlist,
         personalized,
       },
       {
