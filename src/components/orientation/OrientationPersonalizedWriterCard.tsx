@@ -21,11 +21,19 @@ import {
 
 const copy = {
   fr: {
-    heroEyebrow: "Votre orientation Campus Allemagne",
-    heroTitle: "Voici votre orientation pour l’Allemagne.",
-    summaryTitle: "Votre projet, en bref",
-    summaryLead: "Vous avancez étape par étape. Nous gardons le cap avec vous.",
-    summaryText: "Votre prochaine priorité est claire. Pendant que vous avancez, Campus Allemagne vérifie les conditions des programmes et prépare les prochaines étapes avec vous.",
+    heroEyebrow: "Votre projet avec Campus Allemagne",
+    heroTitle: "Votre projet pour l’Allemagne prend forme.",
+    summaryTitle: "Ce que nous retenons de votre dossier",
+    summaryLead: "Vous avez déjà des éléments encourageants pour avancer.",
+    summaryText: "Nous avons identifié des pistes à approfondir. Votre prochaine action reste simple pendant que nous faisons avancer le reste du dossier.",
+    summarySignal: "Ce qui est encourageant",
+    summaryAction: "Votre prochaine action",
+    summaryCampus: "De notre côté",
+    summaryCampusText: "Nous affinons les programmes, leurs conditions et la voie de candidature pour préparer la sélection finale.",
+    outlookEyebrow: "Première estimation Campus Allemagne",
+    outlookStrong: "Fortes chances d’admission",
+    outlookGood: "Bon potentiel d’admission",
+    outlookNote: "Nous confirmerons cette première estimation avec vous lors de la vérification finale.",
     options: "Les programmes que nous étudions pour votre projet",
     why: "Pourquoi nous l’étudions",
     confirmed: "Repères vérifiés pour votre décision",
@@ -33,16 +41,20 @@ const copy = {
     verifiedStatus: "Infos vérifiées",
     progressStatus: "Analyse en cours",
     unknownStatus: "À clarifier",
-    roles: "Votre priorité est claire. Notre rôle aussi.",
-    roleYou: "Votre priorité",
-    roleCampus: "Ce que nous vérifions",
-    roleTogether: "Ce que nous préparons avec vous",
+    roles: "Vous n’avez pas à porter tout le projet seul.",
+    roleYou: "Votre rôle maintenant",
+    roleCampus: "Campus Allemagne avance avec vous",
+    roleTogether: "Ce que nous préparons ensuite avec vous",
     languagePaths: "Vos options pour avancer en allemand",
     campusLead: "Programmes, conditions d’accès, langue, Studienkolleg si nécessaire, dates limites et procédure de candidature.",
     campusCommitment: "Dossier, documents nécessaires, traductions ou légalisations utiles, candidatures et suivi. Après l’admission, nous vous guidons étape par étape pour le financement, l’assurance, le visa, le logement et l’arrivée.",
     priority: "Votre prochaine étape",
     language: "Progression linguistique",
-    reassurance: "Vous gardez une prochaine action claire. Nous gardons la vue d’ensemble.",
+    priorityParallelTitle: "Pendant ce temps, nous avançons aussi.",
+    priorityParallelText: "Pendant que vous progressez en allemand, nous poursuivons la vérification des programmes et préparons les décisions qui viendront ensuite.",
+    reassurance: "Vous n’avez pas besoin de tout régler aujourd’hui. Votre prochaine étape est claire, et nous gardons le reste du projet en vue.",
+    closingEyebrow: "À retenir aujourd’hui",
+    closingText: "Ce rapport est notre point de départ. Avant la sélection finale, nous reprenons avec vous les points importants et nous confirmons la stratégie.",
     journey: "Votre parcours vers l’Allemagne",
     journeyCurrent: "Étape actuelle",
     journeyCurrentText: [
@@ -65,11 +77,19 @@ const copy = {
     pathsCount: "pistes",
   },
   ar: {
-    heroEyebrow: "توجيهك مع Campus Allemagne",
-    heroTitle: "إليك توجيهك للدراسة في ألمانيا.",
-    summaryTitle: "مشروعك باختصار",
-    summaryLead: "تتقدم خطوة بخطوة، ونحن نحافظ معك على اتجاه المشروع.",
-    summaryText: "أولويتك التالية واضحة. أثناء تقدمك، يتحقق Campus Allemagne من شروط البرامج ويحضّر معك الخطوات القادمة.",
+    heroEyebrow: "مشروعك مع Campus Allemagne",
+    heroTitle: "مشروعك للدراسة في ألمانيا بدأ يتضح.",
+    summaryTitle: "ما نراه اليوم في ملفك",
+    summaryLead: "لديك بالفعل مؤشرات مشجعة تسمح للمشروع بالتقدم.",
+    summaryText: "حددنا مسارات تستحق المتابعة. تبقى خطوتك التالية بسيطة بينما نواصل نحن العمل على بقية الملف.",
+    summarySignal: "ما هو مشجع",
+    summaryAction: "خطوتك التالية",
+    summaryCampus: "ما نقوم به الآن",
+    summaryCampusText: "نراجع البرامج وشروطها وطريقة التقديم حتى نجهز معك الاختيار النهائي.",
+    outlookEyebrow: "التقدير الأولي من Campus Allemagne",
+    outlookStrong: "فرص قبول قوية",
+    outlookGood: "فرصة قبول جيدة",
+    outlookNote: "سنؤكد هذا التقدير الأولي معك خلال المراجعة النهائية.",
     options: "البرامج التي ندرسها لمشروعك",
     why: "لماذا ندرس هذا المسار",
     confirmed: "معلومات موثقة تساعدك على الاختيار",
@@ -77,16 +97,20 @@ const copy = {
     verifiedStatus: "موثّق",
     progressStatus: "التحليل جارٍ",
     unknownStatus: "بحاجة إلى توضيح",
-    roles: "أولويتك واضحة، ودورنا واضح أيضًا.",
-    roleYou: "أولويتك",
-    roleCampus: "ما نتحقق منه",
-    roleTogether: "ما نحضّره معك",
+    roles: "لا تحتاج إلى حمل المشروع كله وحدك.",
+    roleYou: "دورك الآن",
+    roleCampus: "Campus Allemagne يتقدم معك",
+    roleTogether: "ما سنحضّره معك بعد ذلك",
     languagePaths: "خياراتك للتقدم في الألمانية",
     campusLead: "البرامج، شروط القبول، اللغة، Studienkolleg عند الحاجة، المواعيد وطريقة التقديم.",
     campusCommitment: "الملف، الوثائق المطلوبة، الترجمات أو التصديقات اللازمة، طلبات التقديم ومتابعتها. وبعد القبول نرافقك خطوة بخطوة في التمويل والتأمين والتأشيرة والسكن والوصول.",
     priority: "خطوتك التالية",
     language: "التقدم اللغوي",
-    reassurance: "لديك خطوة واضحة الآن، ونحن نحتفظ بالصورة الكاملة للمشروع.",
+    priorityParallelTitle: "وفي الوقت نفسه، نحن نتقدم أيضًا.",
+    priorityParallelText: "بينما تتقدم في اللغة الألمانية، نواصل مراجعة البرامج ونجهز القرارات التالية في مشروعك.",
+    reassurance: "لا تحتاج إلى حل كل شيء اليوم. خطوتك التالية واضحة، ونحن نحافظ على رؤية المشروع كاملًا.",
+    closingEyebrow: "ما يجب أن تتذكره اليوم",
+    closingText: "هذا التقرير هو نقطة البداية. قبل الاختيار النهائي، نراجع معك النقاط المهمة ونؤكد معك الخطة الأنسب.",
     journey: "مسارك نحو ألمانيا",
     journeyCurrent: "المرحلة الحالية",
     journeyCurrentText: [
@@ -109,11 +133,19 @@ const copy = {
     pathsCount: "مسارات",
   },
   en: {
-    heroEyebrow: "Your Campus Allemagne orientation",
-    heroTitle: "Here is your orientation for studying in Germany.",
-    summaryTitle: "Your project, at a glance",
-    summaryLead: "You move forward step by step. We keep the project on course with you.",
-    summaryText: "Your next priority is clear. While you move forward, Campus Allemagne checks programme requirements and prepares the next steps with you.",
+    heroEyebrow: "Your project with Campus Allemagne",
+    heroTitle: "Your Germany study project is taking shape.",
+    summaryTitle: "What we see in your file today",
+    summaryLead: "You already have encouraging signals to build on.",
+    summaryText: "We have identified paths worth developing. Your next action stays simple while we move the rest of the file forward.",
+    summarySignal: "What is encouraging",
+    summaryAction: "Your next action",
+    summaryCampus: "On our side",
+    summaryCampusText: "We refine the programmes, their requirements and the application route so we can prepare the final selection with you.",
+    outlookEyebrow: "Initial Campus Allemagne estimate",
+    outlookStrong: "Strong admission chances",
+    outlookGood: "Good admission potential",
+    outlookNote: "We will confirm this initial estimate with you during the final review.",
     options: "Programmes we are reviewing for your project",
     why: "Why we are reviewing it",
     confirmed: "Verified decision points",
@@ -121,16 +153,20 @@ const copy = {
     verifiedStatus: "Info verified",
     progressStatus: "Analysis in progress",
     unknownStatus: "To clarify",
-    roles: "Your priority is clear. So is our role.",
-    roleYou: "Your priority",
-    roleCampus: "What we verify",
-    roleTogether: "What we prepare with you",
+    roles: "You do not have to carry the whole project alone.",
+    roleYou: "Your role right now",
+    roleCampus: "Campus Allemagne moves forward with you",
+    roleTogether: "What we prepare next with you",
     languagePaths: "Your options for progressing in German",
     campusLead: "Programmes, entry requirements, language, Studienkolleg where needed, deadlines and the application process.",
     campusCommitment: "Dossier, required documents, useful translations or legalisations, applications and follow-up. After admission, we guide you step by step through funding, insurance, visa, housing and arrival.",
     priority: "Your next step",
     language: "Language progress",
-    reassurance: "You keep one clear next action. We keep the full project in view.",
+    priorityParallelTitle: "Meanwhile, we are moving forward too.",
+    priorityParallelText: "While you progress in German, we keep checking the programmes and prepare the decisions that come next.",
+    reassurance: "You do not need to solve everything today. Your next step is clear, and we keep the whole project in view.",
+    closingEyebrow: "What to remember today",
+    closingText: "This report is our starting point. Before the final selection, we review the important points with you and confirm the strategy.",
     journey: "Your path to Germany",
     journeyCurrent: "Current stage",
     journeyCurrentText: [
@@ -153,11 +189,19 @@ const copy = {
     pathsCount: "paths",
   },
   de: {
-    heroEyebrow: "Deine Orientierung mit Campus Allemagne",
-    heroTitle: "Hier ist deine Orientierung für dein Studium in Deutschland.",
-    summaryTitle: "Dein Projekt auf einen Blick",
-    summaryLead: "Du gehst Schritt für Schritt weiter. Wir halten mit dir den Kurs.",
-    summaryText: "Deine nächste Priorität ist klar. Während du weitergehst, prüft Campus Allemagne die Bedingungen der Studiengänge und bereitet mit dir die nächsten Schritte vor.",
+    heroEyebrow: "Dein Projekt mit Campus Allemagne",
+    heroTitle: "Dein Studienprojekt für Deutschland nimmt Form an.",
+    summaryTitle: "Was wir heute in deinem Profil sehen",
+    summaryLead: "Du hast bereits ermutigende Anhaltspunkte, auf denen wir aufbauen können.",
+    summaryText: "Wir haben Optionen identifiziert, die wir weiter vertiefen. Dein nächster Schritt bleibt einfach, während wir den Rest vorbereiten.",
+    summarySignal: "Was ermutigend ist",
+    summaryAction: "Dein nächster Schritt",
+    summaryCampus: "Auf unserer Seite",
+    summaryCampusText: "Wir präzisieren Studiengänge, Voraussetzungen und Bewerbungswege, damit wir die finale Auswahl mit dir vorbereiten können.",
+    outlookEyebrow: "Erste Einschätzung von Campus Allemagne",
+    outlookStrong: "Gute bis sehr gute Zulassungschancen",
+    outlookGood: "Gutes Zulassungspotenzial",
+    outlookNote: "Diese erste Einschätzung bestätigen wir mit dir in der abschließenden Prüfung.",
     options: "Studiengänge, die wir für dein Projekt prüfen",
     why: "Warum wir diese Option prüfen",
     confirmed: "Geprüfte Entscheidungspunkte",
@@ -165,16 +209,20 @@ const copy = {
     verifiedStatus: "Infos geprüft",
     progressStatus: "Analyse läuft",
     unknownStatus: "Zu klären",
-    roles: "Deine Priorität ist klar. Unsere Rolle auch.",
-    roleYou: "Deine Priorität",
-    roleCampus: "Was wir prüfen",
-    roleTogether: "Was wir mit dir vorbereiten",
+    roles: "Du musst nicht das ganze Projekt allein tragen.",
+    roleYou: "Deine Rolle jetzt",
+    roleCampus: "Campus Allemagne geht mit dir weiter",
+    roleTogether: "Was wir als Nächstes mit dir vorbereiten",
     languagePaths: "Deine Wege für den Deutschfortschritt",
     campusLead: "Studiengänge, Zugangsvoraussetzungen, Sprache, Studienkolleg falls nötig, Fristen und Bewerbungsverfahren.",
     campusCommitment: "Unterlagen, notwendige Dokumente, Übersetzungen oder Legalisierungen, Bewerbungen und Nachverfolgung. Nach der Zulassung begleiten wir dich Schritt für Schritt durch Finanzierung, Versicherung, Visum, Wohnen und Ankunft.",
     priority: "Dein nächster Schritt",
     language: "Sprachfortschritt",
-    reassurance: "Du behältst einen klaren nächsten Schritt. Wir behalten das Gesamtprojekt im Blick.",
+    priorityParallelTitle: "Währenddessen gehen auch wir weiter.",
+    priorityParallelText: "Während du dein Deutsch verbesserst, prüfen wir die Studiengänge weiter und bereiten die nächsten Entscheidungen vor.",
+    reassurance: "Du musst heute nicht alles lösen. Dein nächster Schritt ist klar, und wir behalten das Gesamtprojekt im Blick.",
+    closingEyebrow: "Was heute wichtig ist",
+    closingText: "Dieser Bericht ist unser Ausgangspunkt. Vor der finalen Auswahl gehen wir die wichtigen Punkte mit dir durch und bestätigen die Strategie.",
     journey: "Dein Weg nach Deutschland",
     journeyCurrent: "Aktuelle Etappe",
     journeyCurrentText: [
@@ -416,9 +464,41 @@ function optionStatus(
   };
 }
 
-function highlightedFacts(option: OrientationPublicPersonalizedOption) {
+function highlightedFacts(
+  option: OrientationPublicPersonalizedOption,
+  answers: PublicOrientationAnswers | null,
+) {
+  const targetDeadline =
+    answers?.targetIntakeSeason === "winter"
+      ? "winter_deadline"
+      : answers?.targetIntakeSeason === "summer"
+        ? "summer_deadline"
+        : null;
+
   return option.facts
-    .filter((fact) => fact.status === "verified" && factPriority.includes(fact.field))
+    .filter((fact) => {
+      if (fact.status !== "verified" || !factPriority.includes(fact.field)) return false;
+      if (
+        targetDeadline
+        && (fact.field === "winter_deadline" || fact.field === "summer_deadline")
+        && fact.field !== targetDeadline
+      ) {
+        return false;
+      }
+      if (
+        fact.field === "winter_deadline"
+        || fact.field === "summer_deadline"
+      ) {
+        const value = String(fact.value || "");
+        if (
+          value.length > 44
+          || /applicants?|candidates?|bewerber|non[- ]?eu|eu applicants?/i.test(value)
+        ) {
+          return false;
+        }
+      }
+      return true;
+    })
     .sort((a, b) => factPriority.indexOf(a.field) - factPriority.indexOf(b.field))
     .slice(0, 4);
 }
@@ -446,14 +526,13 @@ function determineJourneyStep(
   return 1;
 }
 
-function compactFactLabel(
+function decisionFactParts(
   fact: OrientationPublicPersonalizedFact,
   locale: Locale,
 ) {
   const value = formatFactValue(fact.value, locale);
-  if (!value) return factLabels[locale][fact.field];
+  let text = value ? String(value) : factLabels[locale][fact.field];
 
-  let text = String(value);
   if (fact.field === "degree_level") {
     if (/bachelor/i.test(text)) text = "Bachelor";
     if (/master/i.test(text)) text = "Master";
@@ -469,9 +548,73 @@ function compactFactLabel(
     if (level) text = level.toUpperCase();
   }
 
-  const conciseValue = text.length > 26 ? `${text.slice(0, 23).trim()}…` : text;
-  const prefix = compactFactPrefixes[locale][fact.field];
-  return prefix ? `${prefix} : ${conciseValue}` : conciseValue;
+  return {
+    label: compactFactPrefixes[locale][fact.field] || factLabels[locale][fact.field],
+    value: text,
+  };
+}
+
+function admissionOutlook(
+  text: string,
+  locale: Locale,
+) {
+  const patterns: Record<Locale, { strong: RegExp; good: RegExp }> = {
+    fr: {
+      strong: /première estimation Campus Allemagne\s*:\s*fortes chances d[’']admission[^.]*\.?/i,
+      good: /première estimation Campus Allemagne\s*:\s*bon potentiel d[’']admission[^.]*\.?/i,
+    },
+    ar: {
+      strong: /التقدير الأولي من Campus Allemagne[^.؟!]*فرص القبول قوية[^.؟!]*[.؟!]?/i,
+      good: /التقدير الأولي من Campus Allemagne[^.؟!]*(?:فرصة قبول جيدة|إمكانات جيدة للقبول)[^.؟!]*[.؟!]?/i,
+    },
+    en: {
+      strong: /initial Campus Allemagne estimate\s*:\s*strong admission chances[^.]*\.?/i,
+      good: /initial Campus Allemagne estimate\s*:\s*good admission potential[^.]*\.?/i,
+    },
+    de: {
+      strong: /erste Einschätzung von Campus Allemagne\s*:\s*(?:gute bis sehr gute|starke) Zulassungschancen[^.]*\.?/i,
+      good: /erste Einschätzung von Campus Allemagne\s*:\s*gutes Zulassungspotenzial[^.]*\.?/i,
+    },
+  };
+
+  const strong = patterns[locale].strong.test(text);
+  const good = !strong && patterns[locale].good.test(text);
+  const cleaned = text
+    .replace(patterns[locale].strong, "")
+    .replace(patterns[locale].good, "")
+    .replace(/\s{2,}/g, " ")
+    .replace(/^\s*[.,;:]\s*/, "")
+    .trim();
+
+  return {
+    level: strong ? "strong" as const : good ? "good" as const : null,
+    cleanWhy: cleaned || text,
+  };
+}
+
+function summarySignalText(
+  locale: Locale,
+  strongCount: number,
+  total: number,
+) {
+  if (locale === "ar") {
+    return strongCount > 0
+      ? `${strongCount} من المسارات تظهر فرص قبول قوية في التقدير الأولي.`
+      : `${total} مسارات تحمل مؤشرات إيجابية نواصل دراستها.`;
+  }
+  if (locale === "en") {
+    return strongCount > 0
+      ? `${strongCount} path${strongCount > 1 ? "s" : ""} stand out with strong admission chances in the initial estimate.`
+      : `${total} paths show positive signals that we are continuing to develop.`;
+  }
+  if (locale === "de") {
+    return strongCount > 0
+      ? `${strongCount} Option${strongCount > 1 ? "en" : ""} ${strongCount > 1 ? "fallen" : "fällt"} in der ersten Einschätzung mit guten bis sehr guten Zulassungschancen auf.`
+      : `${total} Optionen zeigen positive Signale, die wir weiter vertiefen.`;
+  }
+  return strongCount > 0
+    ? `${strongCount} piste${strongCount > 1 ? "s" : ""} ressort${strongCount > 1 ? "ent" : ""} avec de fortes chances d’admission en première estimation.`
+    : `${total} pistes présentent des signaux positifs que nous continuons à approfondir.`;
 }
 
 function splitGuidanceChoice(choice: string, locale: Locale) {
@@ -529,6 +672,15 @@ export function OrientationPersonalizedWriterCard({
   ];
   const languageChoices = guidance?.languageChoices.map((choice) => splitGuidanceChoice(choice, locale)) || [];
   const journeyStep = determineJourneyStep(result, answers);
+  const optionOutlooks = new Map(
+    content.studyOptions.map((option) => [
+      option.optionId,
+      admissionOutlook(option.whyItFits, locale),
+    ]),
+  );
+  const strongOutlookCount = [...optionOutlooks.values()].filter(
+    (outlook) => outlook.level === "strong",
+  ).length;
 
   return (
     <article className="space-y-7 sm:space-y-8">
@@ -562,18 +714,39 @@ export function OrientationPersonalizedWriterCard({
 
       <section
         aria-labelledby="orientation-summary"
-        className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface-subtle)] px-4 py-4 sm:px-5"
+        className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4 sm:p-5"
       >
         <div className="max-w-4xl">
           <h4 id="orientation-summary" className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--brand-strong)]">
             {t.summaryTitle}
           </h4>
-          <p className="mt-1.5 text-base font-semibold leading-6 text-[var(--foreground)]">
+          <p className="mt-1.5 max-w-3xl text-base font-semibold leading-6 text-[var(--foreground)]">
             {t.summaryLead}
           </p>
-          <p className="mt-1.5 text-sm leading-6 text-[var(--muted)]">
+          <p className="mt-1.5 max-w-3xl text-sm leading-6 text-[var(--muted)]">
             {t.summaryText}
           </p>
+
+          <div className="mt-4 grid gap-2 sm:grid-cols-3">
+            <div className="rounded-[var(--radius-control)] bg-[var(--surface)] p-3.5 ring-1 ring-inset ring-[var(--border)]">
+              <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-emerald-700">{t.summarySignal}</p>
+              <p className="mt-1.5 text-sm font-semibold leading-5 text-[var(--foreground)]">
+                {summarySignalText(locale, strongOutlookCount, content.studyOptions.length)}
+              </p>
+            </div>
+            <div className="rounded-[var(--radius-control)] bg-[var(--surface)] p-3.5 ring-1 ring-inset ring-[var(--border)]">
+              <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-[var(--brand-strong)]">{t.summaryAction}</p>
+              <p className="mt-1.5 text-sm font-semibold leading-5 text-[var(--foreground)]">
+                {content.mainPriority.title}
+              </p>
+            </div>
+            <div className="rounded-[var(--radius-control)] bg-[var(--brand-soft)] p-3.5 ring-1 ring-inset ring-[var(--brand-border)]">
+              <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-[var(--brand-strong)]">{t.summaryCampus}</p>
+              <p className="mt-1.5 text-sm font-medium leading-5 text-[var(--foreground)]">
+                {t.summaryCampusText}
+              </p>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -587,16 +760,20 @@ export function OrientationPersonalizedWriterCard({
           </span>
         </div>
 
-        <div className="mt-4 grid items-start gap-3 lg:grid-cols-2">
+        <div className="mt-4 grid items-stretch gap-3 lg:grid-cols-2">
           {content.studyOptions.map((option) => {
             const selected = result.selected.find((item) => item.optionId === option.optionId);
             const status = selected ? optionStatus(selected, locale) : null;
-            const facts = selected ? highlightedFacts(selected) : [];
+            const facts = selected ? highlightedFacts(selected, answers) : [];
+            const outlook = optionOutlooks.get(option.optionId) || {
+              level: null,
+              cleanWhy: option.whyItFits,
+            };
 
             return (
               <article
                 key={option.optionId}
-                className="professional-hover rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-4 shadow-[0_4px_14px_rgba(0,0,0,0.035)]"
+                className="professional-hover flex h-full flex-col rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-4 shadow-[0_4px_14px_rgba(0,0,0,0.035)] sm:p-5"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
@@ -615,46 +792,58 @@ export function OrientationPersonalizedWriterCard({
                   ) : null}
                 </div>
 
+                {outlook.level ? (
+                  <div
+                    className={`mt-4 rounded-[var(--radius-control)] px-3.5 py-3 ring-1 ring-inset ${
+                      outlook.level === "strong"
+                        ? "bg-emerald-50 text-emerald-950 ring-emerald-200"
+                        : "bg-blue-50 text-blue-950 ring-blue-200"
+                    }`}
+                  >
+                    <p className="text-[10px] font-bold uppercase tracking-[0.08em] opacity-70">
+                      {t.outlookEyebrow}
+                    </p>
+                    <p className="mt-1 text-base font-bold leading-5">
+                      {outlook.level === "strong" ? t.outlookStrong : t.outlookGood}
+                    </p>
+                    <p className="mt-1 text-xs leading-5 opacity-75">{t.outlookNote}</p>
+                  </div>
+                ) : null}
+
                 {facts.length ? (
                   <div className="mt-4">
                     <p className="text-xs font-semibold text-[var(--muted)]">{t.confirmed}</p>
-                    <div className="mt-2 flex flex-wrap gap-2">
-                      {facts.map((fact) => (
-                        <span
-                          key={fact.field}
-                          title={`${factLabels[locale][fact.field]}: ${formatFactValue(fact.value, locale)}`}
-                          className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-semibold text-emerald-800 ring-1 ring-inset ring-emerald-100"
-                        >
-                          <span aria-hidden="true">✓</span>
-                          {compactFactLabel(fact, locale)}
-                        </span>
-                      ))}
-                    </div>
+                    <dl className="mt-2 grid gap-2 sm:grid-cols-2">
+                      {facts.map((fact) => {
+                        const parts = decisionFactParts(fact, locale);
+                        return (
+                          <div
+                            key={fact.field}
+                            className="min-w-0 rounded-[var(--radius-control)] bg-emerald-50/70 px-3 py-2.5 ring-1 ring-inset ring-emerald-100"
+                          >
+                            <dt className="text-[10px] font-bold uppercase tracking-[0.06em] text-emerald-800">
+                              {parts.label}
+                            </dt>
+                            <dd className="mt-0.5 break-words text-xs font-semibold leading-5 text-emerald-950">
+                              {parts.value}
+                            </dd>
+                          </div>
+                        );
+                      })}
+                    </dl>
                   </div>
                 ) : null}
 
                 <div className="mt-4">
                   <p className="text-xs font-semibold text-[var(--muted)]">{t.why}</p>
-                  <p className="mt-1.5 text-sm leading-6">{option.whyItFits}</p>
+                  <p className="mt-1.5 text-sm leading-6">{outlook.cleanWhy}</p>
                 </div>
 
-                <div className="mt-4 border-t border-[var(--border)] pt-3">
-                  <div className="hidden sm:block">
-                    {selected?.overallStatus === "verified" ? (
-                      <p className="text-xs font-semibold text-blue-800">{t.checking}</p>
-                    ) : null}
-                    <p className={`${selected?.overallStatus === "verified" ? "mt-1.5" : ""} text-sm leading-6 text-[var(--muted)]`}>
-                      {option.verificationNote}
-                    </p>
-                  </div>
-                  <details className="sm:hidden">
-                    <summary className="cursor-pointer text-xs font-semibold text-blue-800">
-                      {selected?.overallStatus === "verified" ? t.checking : status?.label || t.checking}
-                    </summary>
-                    <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
-                      {option.verificationNote}
-                    </p>
-                  </details>
+                <div className="mt-auto border-t border-[var(--border)] pt-4">
+                  <p className="text-xs font-semibold text-blue-800">{t.checking}</p>
+                  <p className="mt-1.5 text-sm leading-6 text-[var(--muted)]">
+                    {option.verificationNote}
+                  </p>
                 </div>
               </article>
             );
@@ -667,54 +856,64 @@ export function OrientationPersonalizedWriterCard({
         className="relative overflow-hidden rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface-subtle)] p-5 sm:p-6"
       >
         <div aria-hidden="true" className="absolute inset-y-0 start-0 w-0.5 bg-[var(--brand)]" />
-        <p className="text-xs font-semibold text-[var(--brand-strong)]">{t.priority}</p>
-        <h4 id="orientation-main-priority" className="mt-2 text-2xl font-semibold tracking-tight">
-          {content.mainPriority.title}
-        </h4>
-        <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
-          {content.mainPriority.text}
-        </p>
+        <div className="grid gap-4 lg:grid-cols-[minmax(0,1.2fr)_minmax(15rem,0.8fr)]">
+          <div>
+            <p className="text-xs font-semibold text-[var(--brand-strong)]">{t.priority}</p>
+            <h4 id="orientation-main-priority" className="mt-2 text-2xl font-semibold tracking-tight">
+              {content.mainPriority.title}
+            </h4>
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--muted)]">
+              {content.mainPriority.text}
+            </p>
 
-        {content.languagePlan.show ? (
-          <>
-            <div className="mt-4 flex flex-wrap items-center gap-2">
-              <span className="text-xs font-semibold text-[var(--muted)]">{t.language}</span>
-              {content.languagePlan.currentLevel ? (
-                <span className="rounded-full bg-[var(--surface)] px-3 py-1 text-xs font-semibold ring-1 ring-inset ring-[var(--border)]">
-                  {content.languagePlan.currentLevel}
-                </span>
-              ) : null}
-              {content.languagePlan.currentLevel && content.languagePlan.nextLevel ? (
-                <span aria-hidden="true" className="text-[var(--muted)]">→</span>
-              ) : null}
-              {content.languagePlan.nextLevel ? (
-                <span className="rounded-full bg-[var(--brand-soft)] px-3 py-1 text-xs font-bold text-[var(--brand-strong)]">
-                  {content.languagePlan.nextLevel}
-                </span>
-              ) : null}
-            </div>
-
-            {languageChoices.length ? (
-              <div className="mt-4 border-t border-[var(--border)] pt-4">
-                <p className="text-xs font-semibold text-[var(--muted)]">{t.languagePaths}</p>
-                <div className="mt-2 grid gap-2 sm:grid-cols-3">
-                  {languageChoices.map((choice) => (
-                    <div key={choice.title} className="rounded-[var(--radius-control)] bg-[var(--surface)] p-3 ring-1 ring-inset ring-[var(--border)]">
-                      <p className="text-sm font-semibold">{choice.title}</p>
-                      {choice.text ? (
-                        <p className="mt-1 text-xs leading-5 text-[var(--muted)]">{choice.text}</p>
-                      ) : null}
-                    </div>
-                  ))}
-                </div>
+            {content.languagePlan.show ? (
+              <div className="mt-4 flex flex-wrap items-center gap-2">
+                <span className="text-xs font-semibold text-[var(--muted)]">{t.language}</span>
+                {content.languagePlan.currentLevel ? (
+                  <span className="rounded-full bg-[var(--surface)] px-3 py-1 text-xs font-semibold ring-1 ring-inset ring-[var(--border)]">
+                    {content.languagePlan.currentLevel}
+                  </span>
+                ) : null}
+                {content.languagePlan.currentLevel && content.languagePlan.nextLevel ? (
+                  <span aria-hidden="true" className="text-[var(--muted)]">→</span>
+                ) : null}
+                {content.languagePlan.nextLevel ? (
+                  <span className="rounded-full bg-[var(--brand-soft)] px-3 py-1 text-xs font-bold text-[var(--brand-strong)]">
+                    {content.languagePlan.nextLevel}
+                  </span>
+                ) : null}
               </div>
-            ) : null}
-          </>
-        ) : (
-          <p className="mt-4 text-sm font-semibold leading-6">
-            {content.mainPriority.nextStep}
-          </p>
-        )}
+            ) : (
+              <p className="mt-4 text-sm font-semibold leading-6">
+                {content.mainPriority.nextStep}
+              </p>
+            )}
+          </div>
+
+          <aside className="rounded-[var(--radius-control)] bg-[var(--surface)] p-4 ring-1 ring-inset ring-[var(--border)]">
+            <p className="text-xs font-bold text-[var(--foreground)]">{t.priorityParallelTitle}</p>
+            <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{t.priorityParallelText}</p>
+          </aside>
+        </div>
+
+        {content.languagePlan.show && languageChoices.length ? (
+          <div className="mt-5 border-t border-[var(--border)] pt-4">
+            <p className="text-xs font-semibold text-[var(--muted)]">{t.languagePaths}</p>
+            <div className="mt-2 grid gap-2 sm:grid-cols-3">
+              {languageChoices.map((choice) => (
+                <div
+                  key={choice.title}
+                  className="rounded-[var(--radius-control)] bg-[var(--surface)] p-3.5 ring-1 ring-inset ring-[var(--border)]"
+                >
+                  <p className="text-sm font-semibold">{choice.title}</p>
+                  {choice.text ? (
+                    <p className="mt-1 text-xs leading-5 text-[var(--muted)]">{choice.text}</p>
+                  ) : null}
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : null}
 
         {showCta ? (
           <a
@@ -727,26 +926,24 @@ export function OrientationPersonalizedWriterCard({
       </section>
 
       <section aria-labelledby="orientation-responsibilities">
-        <h4 id="orientation-responsibilities" className="text-2xl font-semibold tracking-tight">
+        <h4 id="orientation-responsibilities" className="max-w-3xl text-2xl font-semibold tracking-tight">
           {t.roles}
         </h4>
-        <div className="mt-4 grid gap-3 md:grid-cols-3">
-          <div className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-4">
+        <div className="mt-4 grid gap-3 md:grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)]">
+          <div className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5">
             <p className="text-xs font-bold text-[var(--brand-strong)]">01</p>
             <h5 className="mt-1.5 text-base font-semibold">{t.roleYou}</h5>
             <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{roleTexts[0]}</p>
           </div>
 
-          <div className="rounded-[var(--radius-panel)] bg-[var(--foreground)] p-4 text-white sm:p-5">
+          <div className="rounded-[var(--radius-panel)] bg-[var(--foreground)] p-5 text-white sm:p-6">
             <p className="text-xs font-bold text-white/[0.55]">02</p>
-            <h5 className="mt-1.5 text-base font-semibold">{t.roleCampus}</h5>
-            <p className="mt-2 text-sm leading-6 text-white/[0.78]">{t.campusLead}</p>
-          </div>
-
-          <div className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4">
-            <p className="text-xs font-bold text-[var(--brand-strong)]">03</p>
-            <h5 className="mt-1.5 text-base font-semibold">{t.roleTogether}</h5>
-            <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{t.campusCommitment}</p>
+            <h5 className="mt-1.5 text-lg font-semibold">{t.roleCampus}</h5>
+            <p className="mt-2 text-sm leading-6 text-white/[0.8]">{t.campusLead}</p>
+            <div className="mt-4 border-t border-white/[0.12] pt-4">
+              <p className="text-xs font-bold uppercase tracking-[0.08em] text-white/[0.5]">{t.roleTogether}</p>
+              <p className="mt-2 text-sm leading-6 text-white/[0.8]">{t.campusCommitment}</p>
+            </div>
           </div>
         </div>
       </section>
@@ -763,33 +960,29 @@ export function OrientationPersonalizedWriterCard({
             return (
               <li key={step} aria-current={current ? "step" : undefined}>
                 <div
-                  className={`h-1.5 rounded-full ${completed
-                    ? "bg-emerald-500"
-                    : current
-                      ? "bg-[var(--brand)]"
-                      : "bg-[var(--border)]"}`}
-                />
-                <div className="mt-3 flex items-start gap-2">
-                  <span
-                    className={`flex size-6 shrink-0 items-center justify-center rounded-full text-[11px] font-bold ${completed
-                      ? "bg-emerald-100 text-emerald-800"
+                  className={`h-1.5 rounded-full ${
+                    completed
+                      ? "bg-emerald-500"
                       : current
-                        ? "bg-[var(--brand-soft)] text-[var(--brand-strong)]"
-                        : "bg-[var(--surface-subtle)] text-[var(--muted)]"}`}
+                        ? "bg-[var(--brand)]"
+                        : "bg-[var(--border)]"
+                  }`}
+                />
+                <div className="mt-3 flex items-center gap-2">
+                  <span
+                    className={`flex size-7 shrink-0 items-center justify-center rounded-full text-[11px] font-bold ${
+                      completed
+                        ? "bg-emerald-100 text-emerald-800"
+                        : current
+                          ? "bg-[var(--brand)] text-white"
+                          : "bg-[var(--surface-subtle)] text-[var(--muted)]"
+                    }`}
                   >
                     {completed ? "✓" : index + 1}
                   </span>
-                  <div>
-                    <p className={`text-xs leading-5 ${current ? "font-bold" : "text-[var(--muted)]"}`}>
-                      {step}
-                    </p>
-                    {current ? (
-                      <>
-                        <p className="mt-0.5 text-[10px] font-semibold text-[var(--brand-strong)]">{t.journeyCurrent}</p>
-                        <p className="mt-1 text-[10px] leading-4 text-[var(--muted)]">{t.journeyCurrentText[journeyStep]}</p>
-                      </>
-                    ) : null}
-                  </div>
+                  <p className={`text-xs leading-5 ${current ? "font-bold text-[var(--foreground)]" : "text-[var(--muted)]"}`}>
+                    {step}
+                  </p>
                 </div>
               </li>
             );
@@ -804,7 +997,7 @@ export function OrientationPersonalizedWriterCard({
               <li
                 key={step}
                 aria-current={current ? "step" : undefined}
-                className="relative flex min-h-14 gap-3 ps-1"
+                className="relative flex min-h-12 gap-3 ps-1"
               >
                 {index < t.journeySteps.length - 1 ? (
                   <span
@@ -813,29 +1006,37 @@ export function OrientationPersonalizedWriterCard({
                   />
                 ) : null}
                 <span
-                  className={`relative z-10 flex size-6 shrink-0 items-center justify-center rounded-full text-[11px] font-bold ${completed
-                    ? "bg-emerald-100 text-emerald-800"
-                    : current
-                      ? "bg-[var(--brand)] text-white"
-                      : "bg-[var(--surface-subtle)] text-[var(--muted)] ring-1 ring-inset ring-[var(--border)]"}`}
+                  className={`relative z-10 flex size-6 shrink-0 items-center justify-center rounded-full text-[11px] font-bold ${
+                    completed
+                      ? "bg-emerald-100 text-emerald-800"
+                      : current
+                        ? "bg-[var(--brand)] text-white"
+                        : "bg-[var(--surface-subtle)] text-[var(--muted)] ring-1 ring-inset ring-[var(--border)]"
+                  }`}
                 >
                   {completed ? "✓" : index + 1}
                 </span>
-                <div className="pb-5">
-                  <p className={`text-sm leading-6 ${current ? "font-bold" : "text-[var(--muted)]"}`}>
-                    {step}
-                  </p>
-                  {current ? (
-                    <>
-                      <p className="mt-0.5 text-xs font-semibold text-[var(--brand-strong)]">{t.journeyCurrent}</p>
-                      <p className="mt-1 max-w-xl text-xs leading-5 text-[var(--muted)]">{t.journeyCurrentText[journeyStep]}</p>
-                    </>
-                  ) : null}
-                </div>
+                <p className={`pb-4 text-sm leading-6 ${current ? "font-bold" : "text-[var(--muted)]"}`}>
+                  {step}
+                </p>
               </li>
             );
           })}
         </ol>
+
+        <div className="mt-4 rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4 sm:p-5">
+          <p className="text-xs font-bold uppercase tracking-[0.08em] text-[var(--brand-strong)]">{t.journeyCurrent}</p>
+          <p className="mt-1.5 text-base font-semibold text-[var(--foreground)]">{t.journeySteps[journeyStep]}</p>
+          <p className="mt-1.5 max-w-3xl text-sm leading-6 text-[var(--muted)]">{t.journeyCurrentText[journeyStep]}</p>
+        </div>
+      </section>
+
+      <section className="rounded-[var(--radius-panel)] bg-[var(--brand-soft)] px-4 py-4 sm:px-5">
+        <p className="text-xs font-bold uppercase tracking-[0.08em] text-[var(--brand-strong)]">{t.closingEyebrow}</p>
+        <p className="mt-1.5 max-w-3xl text-base font-semibold leading-6 text-[var(--foreground)]">
+          {content.reassurance}
+        </p>
+        <p className="mt-1 max-w-3xl text-sm leading-6 text-[var(--muted)]">{t.closingText}</p>
       </section>
 
       <details className="border-t border-[var(--border)] pt-4">

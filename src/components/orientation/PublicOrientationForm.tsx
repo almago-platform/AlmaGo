@@ -121,25 +121,25 @@ export function PublicOrientationForm({
   }[locale];
   const resultActionsCopy = {
     fr: {
-      title: "Conservez votre orientation",
+      title: "Gardez votre rapport",
       pdf: "Enregistrer mon rapport (PDF)",
       adjust: "Ajuster mon profil",
       home: "Retour à l’accueil",
     },
     ar: {
-      title: "احتفظ بنتيجة توجيهك",
+      title: "احتفظ بتقريرك",
       pdf: "حفظ تقريري (PDF)",
       adjust: "تعديل ملفي",
       home: "العودة إلى الصفحة الرئيسية",
     },
     en: {
-      title: "Keep your orientation report",
+      title: "Keep your report",
       pdf: "Save my report (PDF)",
       adjust: "Adjust my profile",
       home: "Back to home",
     },
     de: {
-      title: "Orientierung sichern",
+      title: "Bericht speichern",
       pdf: "Bericht als PDF speichern",
       adjust: "Profil anpassen",
       home: "Zur Startseite",
@@ -332,7 +332,7 @@ export function PublicOrientationForm({
           </section>
         ) : null}
 
-        <section className={`mx-auto max-w-3xl ${step <= 4 ? "mt-8" : "mt-0"}`}>
+        <section className={`mx-auto ${step <= 4 ? "max-w-3xl mt-8" : "max-w-5xl mt-0"}`}>
           {step <= 4 ? (
             <div
               role="progressbar"
