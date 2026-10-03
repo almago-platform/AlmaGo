@@ -32,7 +32,7 @@ test("SO-6 browser matrix covers owner scenarios", () => {
   assert.match(spec, /generalAverage: "10"/);
   assert.match(spec, /generalAverage: ""/);
   assert.match(spec, /Votre orientation pour étudier en Allemagne/);
-  assert.match(spec, /Voir les réponses utilisées/);
+  assert.match(spec, /Voir les informations de mon profil/);
   assert.match(spec, /#smart-orientation-title/);
   assert.match(spec, /#orientation-route-title/);
   assert.match(spec, /Pour quelle rentrée souhaitez-vous commencer/);

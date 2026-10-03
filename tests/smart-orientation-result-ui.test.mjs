@@ -15,7 +15,7 @@ test("SO-2 keeps legacy Smart Orientation available outside the Bachelor first-c
   assert.match(form, /!isBachelorFirstContact \? \(/);
   assert.match(form, /<SmartOrientationResultCard[\s\S]*result=\{smartPriority\}/);
   assert.match(form, /<OrientationRouteCard answers=\{answers\} locale=\{locale\} \/>/);
-  assert.match(form, /Voir les réponses utilisées/);
+  assert.match(form, /Voir les informations de mon profil/);
 });
 
 test("SO-2 exposes no technical priority enum to the visitor", () => {
