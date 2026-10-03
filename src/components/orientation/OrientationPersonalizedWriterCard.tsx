@@ -24,8 +24,8 @@ const copy = {
     heroEyebrow: "Votre orientation Campus Allemagne",
     heroTitle: "Votre projet Allemagne prend forme.",
     summaryTitle: "Votre projet, en bref",
-    summaryText: "Vous gardez une prochaine étape claire. Campus Allemagne garde la vue d’ensemble : nous comparons les programmes, vérifions les conditions, structurons votre dossier et vos candidatures, puis préparons avec vous la suite après admission selon l’accompagnement choisi. Vous n’avez pas à porter seul la complexité du projet.",
-    summaryTags: ["Prochaine étape claire", "Dossier structuré", "Parcours coordonné"],
+    summaryLead: "Avancez sereinement, nous orchestrons le reste.",
+    summaryText: "Votre priorité du moment reste simple et visible. Campus Allemagne garde la maîtrise d’ensemble, sécurise les points critiques et structure la suite du parcours. Vous savez toujours quoi faire, pourquoi, et ce qui vient ensuite.",
     options: "Programmes sélectionnés pour votre projet",
     why: "Pourquoi cette piste",
     confirmed: "Informations confirmées",
@@ -33,19 +33,13 @@ const copy = {
     verifiedStatus: "Vérifié",
     progressStatus: "Analyse en cours",
     unknownStatus: "À clarifier",
-    roles: "Votre rôle, notre accompagnement",
-    roleYou: "Votre rôle",
-    roleCampus: "Campus Allemagne coordonne votre parcours",
-    roleTogether: "Ensemble",
+    roles: "Avancez sereinement, nous orchestrons le reste.",
+    roleYou: "Votre focus",
+    roleCampus: "Notre ingénierie",
+    roleTogether: "Notre engagement",
     languagePaths: "Vos options pour avancer en allemand",
-    campusLead: "Pendant que vous avancez sur la langue, nous faisons progresser le reste du projet.",
-    campusTasks: [
-      "Comparer les programmes et confirmer leurs conditions d’accès.",
-      "Contrôler la langue, le Studienkolleg si nécessaire, les délais et la voie de candidature.",
-      "Organiser avec vous les documents, traductions ou légalisations nécessaires.",
-      "Préparer les candidatures et leur suivi.",
-      "Après une admission, préparer avec vous les étapes financement, assurance, visa et arrivée selon l’accompagnement choisi.",
-    ],
+    campusLead: "Nous auditons les options, verrouillons les points critiques et architecturons un parcours de candidature cohérent.",
+    campusCommitment: "Vous ne portez jamais seul la complexité du projet : chaque décision est cadrée et chaque étape préparée jusqu’aux décisions universitaires.",
     priority: "Votre prochaine étape",
     language: "Progression linguistique",
     reassurance: "Vous gardez une prochaine action claire. Nous gardons la vue d’ensemble.",
@@ -67,8 +61,8 @@ const copy = {
     heroEyebrow: "توجيهك مع Campus Allemagne",
     heroTitle: "مشروعك نحو ألمانيا يتضح.",
     summaryTitle: "مشروعك باختصار",
-    summaryText: "تبقى أمامك خطوة واضحة في كل مرة، بينما يحتفظ Campus Allemagne بالصورة الكاملة: نقارن البرامج، نتحقق من الشروط، ننظم ملفك وطلباتك، ثم نجهز معك ما بعد القبول حسب نوع المرافقة المختار. لست مضطرًا لتحمل تعقيد المشروع وحدك.",
-    summaryTags: ["خطوة واضحة", "ملف منظم", "مسار منسق"],
+    summaryLead: "تقدّم بهدوء، ونحن ننسّق الباقي.",
+    summaryText: "تبقى أولويتك الحالية بسيطة وواضحة. يحافظ Campus Allemagne على الرؤية الكاملة للمشروع، يضبط النقاط الحاسمة ويهيكل الخطوات التالية. تعرف دائمًا ماذا تفعل ولماذا وما الذي يأتي بعد ذلك.",
     options: "البرامج المختارة لمشروعك",
     why: "لماذا هذا المسار",
     confirmed: "معلومات مؤكدة",
@@ -76,19 +70,13 @@ const copy = {
     verifiedStatus: "موثّق",
     progressStatus: "التحليل جارٍ",
     unknownStatus: "بحاجة إلى توضيح",
-    roles: "دورك ومرافقتنا",
-    roleYou: "دورك",
-    roleCampus: "Campus Allemagne ينسّق مسارك",
-    roleTogether: "معًا",
+    roles: "تقدّم بهدوء، ونحن ننسّق الباقي.",
+    roleYou: "تركيزك",
+    roleCampus: "هندسة مسارك",
+    roleTogether: "التزامنا",
     languagePaths: "خياراتك للتقدم في الألمانية",
-    campusLead: "بينما تتقدم في اللغة، نواصل نحن دفع بقية المشروع إلى الأمام.",
-    campusTasks: [
-      "مقارنة البرامج وتأكيد شروط الالتحاق بها.",
-      "التحقق من اللغة وStudienkolleg عند الحاجة والمواعيد وطريقة التقديم.",
-      "تنظيم الوثائق والترجمات أو التصديقات اللازمة معك.",
-      "تحضير طلبات التقديم ومتابعتها.",
-      "بعد القبول، تحضير خطوات التمويل والتأمين والتأشيرة والوصول معك حسب نوع المرافقة المختار.",
-    ],
+    campusLead: "نراجع الخيارات، نضبط النقاط الحاسمة ونبني مسار تقديم متماسكًا وواضحًا.",
+    campusCommitment: "لن تتحمل تعقيد المشروع وحدك: كل قرار مؤطر وكل خطوة مجهزة حتى صدور القرارات الجامعية.",
     priority: "خطوتك التالية",
     language: "التقدم اللغوي",
     reassurance: "لديك خطوة واضحة الآن، ونحن نحتفظ بالصورة الكاملة للمشروع.",
@@ -110,8 +98,8 @@ const copy = {
     heroEyebrow: "Your Campus Allemagne orientation",
     heroTitle: "Your Germany project is taking shape.",
     summaryTitle: "Your project, at a glance",
-    summaryText: "You keep one clear next step. Campus Allemagne keeps the full picture in view: we compare programmes, check requirements, structure your dossier and applications, then prepare the post-admission steps with you according to the support selected. You do not have to carry the project’s complexity alone.",
-    summaryTags: ["Clear next step", "Dossier structured", "Journey coordinated"],
+    summaryLead: "Move forward calmly. We orchestrate the rest.",
+    summaryText: "Your immediate priority stays simple and visible. Campus Allemagne keeps control of the big picture, secures the critical points and structures what comes next. You always know what to do, why it matters and what follows.",
     options: "Programmes selected for your project",
     why: "Why this path",
     confirmed: "Confirmed information",
@@ -119,19 +107,13 @@ const copy = {
     verifiedStatus: "Verified",
     progressStatus: "Analysis in progress",
     unknownStatus: "To clarify",
-    roles: "Your role, our support",
-    roleYou: "Your role",
-    roleCampus: "Campus Allemagne coordinates your journey",
-    roleTogether: "Together",
+    roles: "Move forward calmly. We orchestrate the rest.",
+    roleYou: "Your focus",
+    roleCampus: "Our engineering",
+    roleTogether: "Our commitment",
     languagePaths: "Your options for progressing in German",
-    campusLead: "While you work on the language, we keep the rest of the project moving.",
-    campusTasks: [
-      "Compare programmes and confirm their access requirements.",
-      "Check language, Studienkolleg where relevant, deadlines and application route.",
-      "Organise the required documents, translations or legalisations with you.",
-      "Prepare applications and follow-up.",
-      "After an admission, prepare funding, insurance, visa and arrival steps with you according to the support selected.",
-    ],
+    campusLead: "We audit the options, lock down the critical points and architect a coherent application path.",
+    campusCommitment: "You never carry the project’s complexity alone: every decision is framed and every step prepared through the university decisions.",
     priority: "Your next step",
     language: "Language progress",
     reassurance: "You keep one clear next action. We keep the full project in view.",
@@ -153,8 +135,8 @@ const copy = {
     heroEyebrow: "Deine Orientierung mit Campus Allemagne",
     heroTitle: "Dein Deutschland-Projekt nimmt Form an.",
     summaryTitle: "Dein Projekt auf einen Blick",
-    summaryText: "Du behältst einen klaren nächsten Schritt. Campus Allemagne behält den Gesamtweg im Blick: Wir vergleichen Programme, prüfen Voraussetzungen, strukturieren Unterlagen und Bewerbungen und bereiten danach mit dir die Schritte nach einer Zulassung entsprechend der gewählten Begleitung vor. Du musst die Komplexität des Projekts nicht allein tragen.",
-    summaryTags: ["Klarer nächster Schritt", "Unterlagen strukturiert", "Weg koordiniert"],
+    summaryLead: "Geh deinen Weg ruhig weiter. Wir orchestrieren den Rest.",
+    summaryText: "Deine aktuelle Priorität bleibt einfach und sichtbar. Campus Allemagne behält den Gesamtweg im Griff, sichert die kritischen Punkte und strukturiert die nächsten Schritte. Du weißt immer, was zu tun ist, warum es wichtig ist und was danach kommt.",
     options: "Ausgewählte Programme für dein Projekt",
     why: "Warum diese Option",
     confirmed: "Bestätigte Informationen",
@@ -162,19 +144,13 @@ const copy = {
     verifiedStatus: "Geprüft",
     progressStatus: "Analyse läuft",
     unknownStatus: "Zu klären",
-    roles: "Deine Rolle, unsere Begleitung",
-    roleYou: "Deine Rolle",
-    roleCampus: "Campus Allemagne koordiniert deinen Weg",
-    roleTogether: "Gemeinsam",
+    roles: "Geh deinen Weg ruhig weiter. Wir orchestrieren den Rest.",
+    roleYou: "Dein Fokus",
+    roleCampus: "Unsere Projektarchitektur",
+    roleTogether: "Unser Versprechen",
     languagePaths: "Deine Wege für den Deutschfortschritt",
-    campusLead: "Während du an der Sprache arbeitest, bringen wir den restlichen Weg weiter voran.",
-    campusTasks: [
-      "Programme vergleichen und Zugangsbedingungen bestätigen.",
-      "Sprache, Studienkolleg falls nötig, Fristen und Bewerbungsweg prüfen.",
-      "Erforderliche Unterlagen, Übersetzungen oder Legalisierungen mit dir organisieren.",
-      "Bewerbungen und Nachverfolgung vorbereiten.",
-      "Nach einer Zulassung Finanzierung, Versicherung, Visum und Ankunft mit dir je nach gewählter Begleitung vorbereiten.",
-    ],
+    campusLead: "Wir prüfen die Optionen, sichern die kritischen Punkte und bauen einen stimmigen Bewerbungsweg auf.",
+    campusCommitment: "Du trägst die Komplexität des Projekts nie allein: Jede Entscheidung wird eingeordnet und jeder Schritt bis zu den Hochschulentscheidungen vorbereitet.",
     priority: "Dein nächster Schritt",
     language: "Sprachfortschritt",
     reassurance: "Du behältst einen klaren nächsten Schritt. Wir behalten das Gesamtprojekt im Blick.",
@@ -499,25 +475,16 @@ export function OrientationPersonalizedWriterCard({
         aria-labelledby="orientation-summary"
         className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface-subtle)] px-4 py-4 sm:px-5"
       >
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-          <div className="max-w-3xl">
-            <h4 id="orientation-summary" className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--brand-strong)]">
-              {t.summaryTitle}
-            </h4>
-            <p className="mt-1.5 text-sm leading-6 text-[var(--foreground)]">
-              {t.summaryText}
-            </p>
-          </div>
-          <div className="flex shrink-0 flex-wrap gap-2 sm:max-w-[15rem] sm:justify-end">
-            {t.summaryTags.map((tag) => (
-              <span
-                key={tag}
-                className="rounded-full bg-[var(--surface)] px-2.5 py-1 text-[11px] font-semibold text-[var(--muted)] ring-1 ring-inset ring-[var(--border)]"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
+        <div className="max-w-4xl">
+          <h4 id="orientation-summary" className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--brand-strong)]">
+            {t.summaryTitle}
+          </h4>
+          <p className="mt-1.5 text-base font-semibold leading-6 text-[var(--foreground)]">
+            {t.summaryLead}
+          </p>
+          <p className="mt-1.5 text-sm leading-6 text-[var(--muted)]">
+            {t.summaryText}
+          </p>
         </div>
       </section>
 
@@ -674,35 +641,23 @@ export function OrientationPersonalizedWriterCard({
         <h4 id="orientation-responsibilities" className="text-2xl font-semibold tracking-tight">
           {t.roles}
         </h4>
-        <div className="mt-4 grid items-start gap-3 lg:grid-cols-[0.8fr_1.4fr]">
-          <div className="grid gap-3">
-            <div className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-4">
-              <p className="text-xs font-bold text-[var(--brand-strong)]">01</p>
-              <h5 className="mt-1.5 text-base font-semibold">{t.roleYou}</h5>
-              <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{roleTexts[0]}</p>
-            </div>
-
-            <div className="flex gap-3 rounded-[var(--radius-control)] bg-[var(--surface-subtle)] px-4 py-3">
-              <span className="text-xs font-bold text-[var(--brand-strong)]">03</span>
-              <div>
-                <p className="text-sm font-semibold">{t.roleTogether}</p>
-                <p className="mt-0.5 text-sm leading-6 text-[var(--muted)]">{roleTexts[1]}</p>
-              </div>
-            </div>
+        <div className="mt-4 grid gap-3 md:grid-cols-3">
+          <div className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-4">
+            <p className="text-xs font-bold text-[var(--brand-strong)]">01</p>
+            <h5 className="mt-1.5 text-base font-semibold">{t.roleYou}</h5>
+            <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{roleTexts[0]}</p>
           </div>
 
           <div className="rounded-[var(--radius-panel)] bg-[var(--foreground)] p-4 text-white sm:p-5">
             <p className="text-xs font-bold text-white/[0.55]">02</p>
-            <h5 className="mt-1.5 text-lg font-semibold">{t.roleCampus}</h5>
-            <p className="mt-2 text-sm leading-6 text-white/[0.72]">{t.campusLead}</p>
-            <ul className="mt-3 grid gap-2 sm:grid-cols-2">
-              {t.campusTasks.map((task) => (
-                <li key={task} className="flex gap-2 text-sm leading-5 text-white/[0.88]">
-                  <span aria-hidden="true" className="text-emerald-300">✓</span>
-                  <span>{task}</span>
-                </li>
-              ))}
-            </ul>
+            <h5 className="mt-1.5 text-base font-semibold">{t.roleCampus}</h5>
+            <p className="mt-2 text-sm leading-6 text-white/[0.78]">{t.campusLead}</p>
+          </div>
+
+          <div className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4">
+            <p className="text-xs font-bold text-[var(--brand-strong)]">03</p>
+            <h5 className="mt-1.5 text-base font-semibold">{t.roleTogether}</h5>
+            <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{t.campusCommitment}</p>
           </div>
         </div>
       </section>
