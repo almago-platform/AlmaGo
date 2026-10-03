@@ -35,11 +35,6 @@ export function buildOrientationDiscoveryProfileFingerprint(
     universitySemesters: plan.profile.universitySemesters,
     studyIntent: plan.profile.studyIntent,
     targetSpecialization: plan.profile.targetSpecialization,
-    higherEducationStatus: plan.profile.higherEducationStatus,
-    currentStudyField: plan.profile.currentStudyField,
-    universitySemesters: plan.profile.universitySemesters,
-    studyIntent: plan.profile.studyIntent,
-    targetSpecialization: plan.profile.targetSpecialization,
     targetDegree: plan.profile.targetDegree,
     targetField: plan.profile.targetField,
     engineeringSpecialty: plan.profile.engineeringSpecialty,
@@ -68,6 +63,11 @@ export function buildOrientationDiscoverySearchContext(
   plan: OrientationDiscoveryPlan,
 ) {
   return {
+    higherEducationStatus: plan.profile.higherEducationStatus,
+    currentStudyField: plan.profile.currentStudyField,
+    universitySemesters: plan.profile.universitySemesters,
+    studyIntent: plan.profile.studyIntent,
+    targetSpecialization: plan.profile.targetSpecialization,
     targetDegree: plan.profile.targetDegree,
     targetField: plan.profile.targetField,
     engineeringSpecialty: plan.profile.engineeringSpecialty,
