@@ -7115,3 +7115,64 @@
     padding-inline: 46px;
   }
 }
+
+
+/* Photo band — centered editorial composition. */
+.photoBandLayout {
+  grid-template-columns: 1fr;
+  gap: 36px;
+}
+
+.photoBandHeading {
+  display: block;
+  width: min(100%, 820px);
+  margin: 0 auto;
+  text-align: center;
+}
+
+.photoBandHeading .eyebrow {
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.photoBandTitle {
+  max-width: 760px;
+  margin-inline: auto;
+  text-align: center;
+}
+
+.photoBandHeading > p:last-child {
+  max-width: 640px;
+  margin: 18px auto 0;
+  text-align: center;
+}
+
+.photoBandGrid {
+  width: min(100%, 1120px);
+  margin-inline: auto;
+}
+
+@media (max-width: 599px) {
+  .photoBandLayout {
+    gap: 24px;
+  }
+
+  .photoBandHeading {
+    width: 100%;
+    padding-inline: 6px;
+  }
+
+  .photoBandTitle {
+    max-width: 100%;
+  }
+
+  .photoBandHeading > p:last-child {
+    max-width: 34rem;
+  }
+}
+
+:global(html[dir="rtl"]) .photoBandHeading,
+:global(html[dir="rtl"]) .photoBandTitle,
+:global(html[dir="rtl"]) .photoBandHeading > p:last-child {
+  text-align: center;
+}
