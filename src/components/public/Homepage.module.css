@@ -7125,26 +7125,26 @@
 
 .photoBandHeading {
   display: block;
-  width: min(100%, 820px);
+  width: min(100%, 760px);
   margin: 0 auto;
-  text-align: center;
+  text-align: left;
 }
 
 .photoBandHeading .eyebrow {
-  justify-content: center;
+  justify-content: flex-start;
   margin-bottom: 16px;
 }
 
 .photoBandTitle {
   max-width: 760px;
-  margin-inline: auto;
-  text-align: center;
+  margin-inline: 0;
+  text-align: left;
 }
 
 .photoBandHeading > p:last-child {
   max-width: 640px;
-  margin: 18px auto 0;
-  text-align: center;
+  margin: 18px 0 0;
+  text-align: left;
 }
 
 .photoBandGrid {
@@ -7174,5 +7174,9 @@
 :global(html[dir="rtl"]) .photoBandHeading,
 :global(html[dir="rtl"]) .photoBandTitle,
 :global(html[dir="rtl"]) .photoBandHeading > p:last-child {
-  text-align: center;
+  text-align: right;
+}
+
+:global(html[dir="rtl"]) .photoBandHeading .eyebrow {
+  justify-content: flex-start;
 }
