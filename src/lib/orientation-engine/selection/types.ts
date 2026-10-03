@@ -14,6 +14,7 @@ export type OrientationSelectionReasonCode =
   | "degree_match"
   | "field_match"
   | "specialty_match"
+  | "target_specialization_match"
   | "study_language_match"
   | "preferred_city_match"
   | "intake_match"
@@ -48,6 +49,7 @@ export type OrientationSelectionScoreBreakdown = {
   verification: number;
   degree: number;
   field: number;
+  specialization: number;
   language: number;
   city: number;
   intake: number;
