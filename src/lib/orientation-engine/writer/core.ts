@@ -903,7 +903,13 @@ export function parseOrientationWriterPayload(
       institution: selected.verification.candidate.institution,
       programme: selected.verification.candidate.programme,
       city: selected.verification.candidate.city,
-      whyItFits: why,
+      whyItFits: normalizeAdmissionOutlook(
+        input.locale,
+        input.profile,
+        input.academicAccessStatus,
+        selected,
+        why,
+      ),
       verificationNote: note,
     }];
   });
