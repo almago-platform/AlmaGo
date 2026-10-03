@@ -51,6 +51,7 @@ const copy = {
     progressStatus: "Analyse en cours",
     unknownStatus: "À clarifier",
     roles: "Vous n’avez pas à porter tout le projet seul.",
+    withYouEyebrow: "Campus Allemagne avec vous",
     roleYou: "Votre rôle maintenant",
     roleCampus: "Campus Allemagne avance avec vous",
     roleTogether: "Ce que nous préparons ensuite avec vous",
@@ -116,6 +117,7 @@ const copy = {
     progressStatus: "التحليل جارٍ",
     unknownStatus: "بحاجة إلى توضيح",
     roles: "لا تحتاج إلى حمل المشروع كله وحدك.",
+    withYouEyebrow: "Campus Allemagne معك",
     roleYou: "دورك الآن",
     roleCampus: "Campus Allemagne يتقدم معك",
     roleTogether: "ما سنحضّره معك بعد ذلك",
@@ -181,6 +183,7 @@ const copy = {
     progressStatus: "Analysis in progress",
     unknownStatus: "To clarify",
     roles: "You do not have to carry the whole project alone.",
+    withYouEyebrow: "Campus Allemagne with you",
     roleYou: "Your role right now",
     roleCampus: "Campus Allemagne moves forward with you",
     roleTogether: "What we prepare next with you",
@@ -246,6 +249,7 @@ const copy = {
     progressStatus: "Analyse läuft",
     unknownStatus: "Zu klären",
     roles: "Du musst nicht das ganze Projekt allein tragen.",
+    withYouEyebrow: "Campus Allemagne an deiner Seite",
     roleYou: "Deine Rolle jetzt",
     roleCampus: "Campus Allemagne geht mit dir weiter",
     roleTogether: "Was wir als Nächstes mit dir vorbereiten",
@@ -749,7 +753,8 @@ export function OrientationPersonalizedWriterCard({
       <header className="relative overflow-hidden rounded-[var(--radius-panel)] bg-[var(--foreground)] px-5 py-6 text-white shadow-[var(--shadow-card)] sm:px-8 sm:py-7">
         <div aria-hidden="true" className="absolute inset-x-0 top-0 h-0.5 bg-[var(--brand)]" />
         <div className="relative max-w-4xl">
-          <p className="text-xs font-bold uppercase tracking-[0.16em] text-white/[0.55]">
+          <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.16em] text-[var(--accent)]">
+            <span aria-hidden="true" className="size-1.5 rounded-full bg-[var(--brand)]" />
             {t.heroEyebrow}
           </p>
           <h3 className="mt-2 max-w-3xl text-2xl font-semibold leading-tight tracking-tight sm:text-[2rem]">
@@ -1055,7 +1060,7 @@ export function OrientationPersonalizedWriterCard({
 
       <section aria-labelledby="orientation-responsibilities">
         <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--accent-strong)]">
-          Campus Allemagne avec vous
+          {t.withYouEyebrow}
         </p>
         <h4 id="orientation-responsibilities" className="mt-1 max-w-3xl text-2xl font-semibold tracking-tight">
           {t.roles}
