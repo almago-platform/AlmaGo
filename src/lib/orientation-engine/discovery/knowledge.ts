@@ -14,7 +14,7 @@ import type {
   OrientationDiscoveryResearchResult,
 } from "@/lib/orientation-engine/discovery/types";
 
-export const ORIENTATION_KNOWLEDGE_MIN_CANDIDATES = 8;
+export const ORIENTATION_KNOWLEDGE_MIN_CANDIDATES = 4;
 export const ORIENTATION_MAJOR_REFRESH_DATES = ["04-15", "10-15"] as const;
 const MAX_KNOWLEDGE_SCAN = 60;
 
