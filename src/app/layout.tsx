@@ -16,6 +16,7 @@ import { isPartnerPrelaunchModeEnabled } from "@/lib/prelaunch";
 import { isPublicIndexingEnabled } from "@/lib/public-indexing";
 import { getPublicOrigin } from "@/lib/public-origin";
 import "./globals.css";
+import "./design-system.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
 const notoSansArabic = Noto_Sans_Arabic({
