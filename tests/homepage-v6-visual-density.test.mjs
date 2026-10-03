@@ -58,13 +58,15 @@ test("premium journey connects the six public steps and becomes a mobile timelin
 });
 
 
-test("photo-band uses a clean editorial heading with one aligned reading axis", () => {
-  assert.match(css, /Photo band V3 — clean editorial treatment/);
-  assert.match(css, /\.photoBandLayout[\s\S]*grid-template-columns:\s*1fr/);
-  assert.match(css, /\.photoBandHeading[\s\S]*width:\s*min\(100%, 760px\)[\s\S]*border:\s*0[\s\S]*background:\s*transparent/);
-  assert.match(css, /\.photoBandHeading::before[\s\S]*linear-gradient\(180deg, var\(--brand\)[\s\S]*var\(--accent\)/);
-  assert.match(css, /\.photoBandHeading::after[\s\S]*display:\s*none/);
-  assert.match(css, /\.photoBandTitle[\s\S]*font-size:\s*clamp\(42px, 3\.8vw, 56px\)[\s\S]*text-align:\s*left/);
-  assert.match(css, /\.photoBandHeading > p:last-child[\s\S]*margin:\s*16px 0 0[\s\S]*text-align:\s*left/);
-  assert.match(css, /html\[dir="rtl"\][\s\S]*\.photoBandHeading[\s\S]*text-align:\s*right/);
+test("photo-band matches the approved reference composition", () => {
+  assert.match(css, /Photo band V4 — match the approved visual reference/);
+  assert.ok(band.indexOf("photoBandTitle") < band.indexOf("photoBandEyebrow"));
+  assert.match(band, /className=\{s\.photoBandEyebrowMarker\}/);
+  assert.match(band, /className=\{s\.photoBandLead\}/);
+  assert.match(css, /\.photoBandHeading[\s\S]*width:\s*min\(100%, 1240px\)[\s\S]*padding:\s*6px 0 8px 70px/);
+  assert.match(css, /\.photoBandHeading::before[\s\S]*width:\s*18px[\s\S]*var\(--brand\)[\s\S]*var\(--accent\)/);
+  assert.match(css, /\.photoBandTitle[\s\S]*font-size:\s*clamp\(62px, 6\.2vw, 96px\)[\s\S]*line-height:\s*0\.96/);
+  assert.match(css, /\.photoBandEyebrow[\s\S]*text-transform:\s*uppercase/);
+  assert.match(css, /\.photoBandEyebrowMarker[\s\S]*border-left:\s*14px solid var\(--brand\)/);
+  assert.match(css, /\.photoBandLead[\s\S]*font-size:\s*clamp\(16px, 1\.45vw, 23px\)/);
 });
