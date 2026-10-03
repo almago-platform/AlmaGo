@@ -149,10 +149,51 @@ const specialtyLabels: Record<Locale, Record<string, string>> = {
   },
 };
 
+const scienceSpecialtyLabels: Record<Locale, Record<string, string>> = {
+  fr: {
+    biology_life_sciences: "Biologie / Sciences de la vie",
+    chemistry: "Chimie",
+    physics: "Physique",
+    mathematics_sciences: "Mathématiques",
+    earth_environment: "Sciences de la Terre / Environnement",
+    undecided: "Sciences",
+  },
+  ar: {
+    biology_life_sciences: "الأحياء / علوم الحياة",
+    chemistry: "الكيمياء",
+    physics: "الفيزياء",
+    mathematics_sciences: "الرياضيات",
+    earth_environment: "علوم الأرض / البيئة",
+    undecided: "العلوم",
+  },
+  en: {
+    biology_life_sciences: "Biology / Life Sciences",
+    chemistry: "Chemistry",
+    physics: "Physics",
+    mathematics_sciences: "Mathematics",
+    earth_environment: "Earth / Environmental Sciences",
+    undecided: "Sciences",
+  },
+  de: {
+    biology_life_sciences: "Biologie / Lebenswissenschaften",
+    chemistry: "Chemie",
+    physics: "Physik",
+    mathematics_sciences: "Mathematik",
+    earth_environment: "Geo- / Umweltwissenschaften",
+    undecided: "Naturwissenschaften",
+  },
+};
+
 function degreeAndField(locale: Locale, profile: PublicOrientationAnswers) {
-  const specialty = profile.targetField === "Ingénierie" && profile.engineeringSpecialty
-    ? specialtyLabels[locale][profile.engineeringSpecialty] || profile.engineeringSpecialty
-    : "";
+  const engineeringSpecialty =
+    profile.targetField === "Ingénierie" && profile.engineeringSpecialty
+      ? specialtyLabels[locale][profile.engineeringSpecialty] || profile.engineeringSpecialty
+      : "";
+  const scienceSpecialty =
+    profile.targetField === "Sciences" && profile.scienceSpecialty
+      ? scienceSpecialtyLabels[locale][profile.scienceSpecialty] || profile.scienceSpecialty
+      : "";
+  const specialty = engineeringSpecialty || scienceSpecialty;
   const degree = degreeLabels[locale][profile.targetDegree] || profile.targetDegree;
   const field = fieldLabels[locale][profile.targetField] || profile.targetField;
   return specialty
@@ -390,6 +431,7 @@ function requestKey(locale: Locale, profile: PublicOrientationAnswers, engineRes
     targetDegree: profile.targetDegree,
     targetField: profile.targetField,
     engineeringSpecialty: profile.engineeringSpecialty,
+    scienceSpecialty: profile.scienceSpecialty,
     germanLevel: profile.germanLevel,
     englishLevel: profile.englishLevel,
     studyLanguage: profile.studyLanguage,
@@ -439,6 +481,7 @@ function buildPrompt(
     target_degree: profile.targetDegree,
     target_field: profile.targetField,
     engineering_specialty: profile.engineeringSpecialty,
+    science_specialty: profile.scienceSpecialty,
     german_level: profile.germanLevel,
     english_level: profile.englishLevel,
     preferred_study_language: profile.studyLanguage,
