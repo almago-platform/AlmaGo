@@ -142,7 +142,7 @@ export async function recordOrientationVerificationCacheHit(
   const { error } = await supabase
     .from("orientation_verification_runs")
     .insert({
-      provider: "verification_cache",
+      provider: "deterministic",
       model: null,
       status: "ready",
       reason: null,
