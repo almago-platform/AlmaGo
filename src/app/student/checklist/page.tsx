@@ -1,4 +1,5 @@
 import { StudentJourneyHeader } from "@/components/student/StudentJourneyHeader";
+import { AlmagoJourney } from "@/components/student/AlmagoJourney";
 import { redirect } from "next/navigation";
 import { Badge } from "@/components/ui/Badge";
 import { ButtonLink } from "@/components/ui/ButtonLink";
@@ -11,6 +12,8 @@ import { determineRegulatoryPath } from "@/lib/regulatory-path-engine";
 import { getRequestLocale } from "@/lib/i18n-server";
 import { studentChecklistCopy } from "@/content/student-checklist-copy";
 import { rebrandCopy } from "@/lib/brand";
+import { buildAlmagoJourney } from "@/lib/student/almago-journey";
+import { normalizeApplicationStatus } from "@/lib/application-workflow";
 
 const badgeVariants = {
   completed: "success",
@@ -49,6 +52,8 @@ export default async function ChecklistPage() {
     documentsResult,
     evidenceResult,
     selectionResult,
+    recommendationsResult,
+    applicationsResult,
   ] = await Promise.all([
     supabase
       .from("student_checklist_items")
@@ -72,6 +77,15 @@ export default async function ChecklistPage() {
       .select("language_course_id")
       .eq("student_id", user.id)
       .maybeSingle(),
+    supabase
+      .from("program_recommendations")
+      .select("id")
+      .eq("student_id", user.id)
+      .eq("is_archived", false),
+    supabase
+      .from("applications")
+      .select("status,next_action,required_documents")
+      .eq("student_id", user.id),
   ]);
 
   if (
@@ -80,6 +94,8 @@ export default async function ChecklistPage() {
     || documentsResult.error
     || evidenceResult.error
     || selectionResult.error
+    || recommendationsResult.error
+    || applicationsResult.error
   ) return <ChecklistUnavailable copy={t} />;
 
   let selectedCourse: {
@@ -190,6 +206,41 @@ export default async function ChecklistPage() {
     actionableItems.find((item) => item.status === "waiting_student") ||
     actionableItems[0];
 
+  const checklistStatusByKey = new Map(
+    checklistItems.flatMap((item) => {
+      const relation = Array.isArray(item.checklist_templates)
+        ? item.checklist_templates[0]
+        : item.checklist_templates;
+      return relation?.key ? [[relation.key, item.status] as const] : [];
+    }),
+  );
+  const documentChecklistOpen = checklistItems.filter((item) => {
+    const relation = Array.isArray(item.checklist_templates)
+      ? item.checklist_templates[0]
+      : item.checklist_templates;
+    return ["passport", "translation"].includes(relation?.key || "") && item.status !== "completed";
+  }).length;
+  const documentsNeedingAction = (documentsResult.data || []).filter((document) =>
+    ["rejected", "replace_required"].includes(document.status),
+  ).length;
+  const applications = applicationsResult.data || [];
+  const applicationNextActions = applications.filter((application) => Boolean(application.next_action)).length;
+  const applicationsMissingDocuments = applications.filter(
+    (application) => normalizeApplicationStatus(application.status) === "documents_missing",
+  ).length;
+
+  const almagoJourney = buildAlmagoJourney({
+    projectDefined: Boolean(projectResult.data?.path),
+    profileCompleted: Boolean(profile.onboarding_completed),
+    documentsNeedingAction,
+    documentChecklistOpen,
+    savedProgrammes: (recommendationsResult.data || []).length,
+    applicationStatuses: applications.map((application) => application.status),
+    applicationsMissingDocuments,
+    applicationNextActions,
+    germanyPreparationStatus: checklistStatusByKey.get("germany_preparation") || null,
+  });
+
   const groups = new Map<string, (typeof checklistItems)[number][]>();
   for (const item of checklistItems) {
     groups.set(item.localizedCategory, [...(groups.get(item.localizedCategory) || []), item]);
@@ -204,6 +255,14 @@ export default async function ChecklistPage() {
         description={t.page.description}
         actions={<ButtonLink href="/student/documents" variant="secondary">{t.page.documents}</ButtonLink>}
       />
+
+      <div className="mb-8">
+        <AlmagoJourney
+          model={almagoJourney}
+          nextAction={nextItem ? { label: nextItem.localizedTitle, detail: nextItem.localizedDescription || undefined, href: "/student/checklist" } : undefined}
+          variant="compact"
+        />
+      </div>
 
       <section className="mb-8" aria-labelledby="germany-plan-title">
         <div className="mb-5">
