@@ -342,6 +342,11 @@ test.describe("Smart Orientation Partner-Ready rehearsal", () => {
     if ((primaryPayload?.personalized?.selected?.length || 0) > 0) {
       await expect(page.getByText("Les programmes que nous étudions pour votre projet")).toBeVisible();
       await expect(page.getByText("Votre priorité maintenant")).toBeVisible();
+      await expect(page.getByText("Votre parcours vers l’Allemagne")).toBeVisible();
+      await expect(page.getByText(/Votre parcours, étape par étape/i)).toBeVisible();
+      await expect(page.getByText(/Objectif final · Départ/i)).toBeVisible();
+      await expect(page.getByText(/Prochaine action/i).first()).toBeVisible();
+      await expect(page.getByText(/Voir ma prochaine étape/i)).toBeVisible();
       await expect(page.getByText("Ce que nous retenons de votre dossier")).toBeVisible();
       await expect(page.getByText("Ce qui ressort")).toBeVisible();
       await expect(page.getByText(/Première estimation Campus Allemagne/i).first()).toBeVisible();
