@@ -87,7 +87,7 @@ export const studyIntentOptions: readonly SelectOption[] = [
   { value: "restart_bachelor", label: "Recommencer un Bachelor" },
   { value: "switch_field", label: "Changer de domaine" },
   { value: "master_after_degree", label: "Préparer un Master après mon diplôme" },
-  { value: "undecided", label: "Je ne sais pas encore" },
+  { value: "not_sure", label: "Je ne sais pas encore" },
 ];
 
 export const studyLanguageOptions: readonly SelectOption[] = [
