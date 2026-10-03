@@ -343,7 +343,7 @@ test.describe("Smart Orientation Partner-Ready rehearsal", () => {
       await expect(page.getByText("Programmes sélectionnés pour votre projet")).toBeVisible();
       await expect(page.getByText("Votre prochaine étape")).toBeVisible();
       await expect(page.getByText("Votre rôle, notre accompagnement")).toBeVisible();
-      await expect(page.getByText("Campus Allemagne pilote le reste")).toBeVisible();
+      await expect(page.getByText("Campus Allemagne coordonne votre parcours")).toBeVisible();
       await expect(page.getByText("Voir les informations vérifiées et les sources officielles")).toBeVisible();
     }
 
@@ -432,6 +432,8 @@ test.describe("Smart Orientation Partner-Ready rehearsal", () => {
 
     // The already-delivered candidate result remains present after the later admin audit.
     await expect(page.locator("#orientation-report")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Par où commencer pour étudier en Allemagne ?" })).toHaveCount(0);
+    await expect(page.getByRole("progressbar")).toHaveCount(0);
     const candidateTextAfterAudit = await page.locator("#orientation-report").innerText();
     expect(candidateTextAfterAudit).toBe(candidateTextBeforeAudit);
 

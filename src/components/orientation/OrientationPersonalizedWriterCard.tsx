@@ -32,7 +32,7 @@ const copy = {
     unknownStatus: "À clarifier",
     roles: "Votre rôle, notre accompagnement",
     roleYou: "Votre rôle",
-    roleCampus: "Campus Allemagne pilote le reste",
+    roleCampus: "Campus Allemagne coordonne votre parcours",
     roleTogether: "Ensemble",
     languagePaths: "Vos options pour avancer en allemand",
     campusLead: "Pendant que vous avancez sur la langue, nous faisons progresser le reste du projet.",
@@ -72,7 +72,7 @@ const copy = {
     unknownStatus: "بحاجة إلى توضيح",
     roles: "دورك ومرافقتنا",
     roleYou: "دورك",
-    roleCampus: "Campus Allemagne يدير بقية المسار",
+    roleCampus: "Campus Allemagne ينسّق مسارك",
     roleTogether: "معًا",
     languagePaths: "خياراتك للتقدم في الألمانية",
     campusLead: "بينما تتقدم في اللغة، نواصل نحن دفع بقية المشروع إلى الأمام.",
@@ -112,7 +112,7 @@ const copy = {
     unknownStatus: "To clarify",
     roles: "Your role, our support",
     roleYou: "Your role",
-    roleCampus: "Campus Allemagne coordinates the rest",
+    roleCampus: "Campus Allemagne coordinates your journey",
     roleTogether: "Together",
     languagePaths: "Your options for progressing in German",
     campusLead: "While you work on the language, we keep the rest of the project moving.",
@@ -152,7 +152,7 @@ const copy = {
     unknownStatus: "Zu klären",
     roles: "Deine Rolle, unsere Begleitung",
     roleYou: "Deine Rolle",
-    roleCampus: "Campus Allemagne koordiniert den Rest",
+    roleCampus: "Campus Allemagne koordiniert deinen Weg",
     roleTogether: "Gemeinsam",
     languagePaths: "Deine Wege für den Deutschfortschritt",
     campusLead: "Während du an der Sprache arbeitest, bringen wir den restlichen Weg weiter voran.",
@@ -397,12 +397,37 @@ function compactFactLabel(
   return text.length > 34 ? `${text.slice(0, 31).trim()}…` : text;
 }
 
-function splitGuidanceChoice(choice: string) {
+function splitGuidanceChoice(choice: string, locale: Locale) {
   const separator = choice.indexOf(":");
-  if (separator < 0) return { title: choice, text: "" };
+  const title = separator < 0 ? choice.trim() : choice.slice(0, separator).trim();
+
+  const concise: Record<Locale, Record<string, string>> = {
+    fr: {
+      Tunisie: "Préparation locale via un partenaire validé, s’il est disponible.",
+      "En ligne": "Préparation à distance adaptée à votre niveau, lorsqu’elle est disponible.",
+      Allemagne: "Préparation linguistique sur place si votre situation administrative le permet.",
+    },
+    ar: {
+      تونس: "تحضير محلي عبر شريك معتمد عند توفره.",
+      "عبر الإنترنت": "تحضير عن بُعد مناسب لمستواك عند توفره.",
+      ألمانيا: "تحضير لغوي في ألمانيا إذا سمحت وضعيتك والمسار الإداري بذلك.",
+    },
+    en: {
+      Tunisia: "Local preparation through a validated partner when available.",
+      Online: "Remote preparation suited to your level when available.",
+      Germany: "Language preparation in Germany when your situation and administrative route allow it.",
+    },
+    de: {
+      Tunesien: "Lokale Vorbereitung über einen geprüften Partner, wenn verfügbar.",
+      Online: "Online-Vorbereitung passend zu deinem Niveau, wenn verfügbar.",
+      Deutschland: "Sprachvorbereitung in Deutschland, wenn Situation und Verwaltungsweg es erlauben.",
+    },
+  };
+
+  const fallback = separator < 0 ? "" : choice.slice(separator + 1).trim();
   return {
-    title: choice.slice(0, separator).trim(),
-    text: choice.slice(separator + 1).trim(),
+    title,
+    text: concise[locale][title] || fallback,
   };
 }
 
@@ -425,7 +450,7 @@ export function OrientationPersonalizedWriterCard({
     content.roadmap[0]?.text || content.mainPriority.nextStep,
     content.roadmap[2]?.text || content.reassurance,
   ];
-  const languageChoices = guidance?.languageChoices.map(splitGuidanceChoice) || [];
+  const languageChoices = guidance?.languageChoices.map((choice) => splitGuidanceChoice(choice, locale)) || [];
   const journeyStep = determineJourneyStep(result, answers);
 
   return (
@@ -465,7 +490,7 @@ export function OrientationPersonalizedWriterCard({
           </span>
         </div>
 
-        <div className="mt-4 grid gap-3 lg:grid-cols-2">
+        <div className="mt-4 grid items-start gap-3 lg:grid-cols-2">
           {content.studyOptions.map((option) => {
             const selected = result.selected.find((item) => item.optionId === option.optionId);
             const status = selected ? optionStatus(selected, locale) : null;
@@ -518,14 +543,16 @@ export function OrientationPersonalizedWriterCard({
 
                 <div className="mt-4 border-t border-[var(--border)] pt-3">
                   <div className="hidden sm:block">
-                    <p className="text-xs font-semibold text-blue-800">{t.checking}</p>
-                    <p className="mt-1.5 text-sm leading-6 text-[var(--muted)]">
+                    {selected?.overallStatus === "verified" ? (
+                      <p className="text-xs font-semibold text-blue-800">{t.checking}</p>
+                    ) : null}
+                    <p className={`${selected?.overallStatus === "verified" ? "mt-1.5" : ""} text-sm leading-6 text-[var(--muted)]`}>
                       {option.verificationNote}
                     </p>
                   </div>
                   <details className="sm:hidden">
                     <summary className="cursor-pointer text-xs font-semibold text-blue-800">
-                      {t.checking}
+                      {selected?.overallStatus === "verified" ? t.checking : status?.label || t.checking}
                     </summary>
                     <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
                       {option.verificationNote}
@@ -606,7 +633,7 @@ export function OrientationPersonalizedWriterCard({
         <h4 id="orientation-responsibilities" className="text-2xl font-semibold tracking-tight">
           {t.roles}
         </h4>
-        <div className="mt-4 grid gap-3 lg:grid-cols-[0.8fr_1.4fr]">
+        <div className="mt-4 grid items-start gap-3 lg:grid-cols-[0.8fr_1.4fr]">
           <div className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-4">
             <p className="text-xs font-bold text-[var(--brand-strong)]">01</p>
             <h5 className="mt-1.5 text-base font-semibold">{t.roleYou}</h5>

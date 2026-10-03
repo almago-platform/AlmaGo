@@ -66,7 +66,7 @@ test("E writer UI presents a premium progressive result with one CTA and verifie
   assert.match(writerCard, /humanReview\.mode === "post_result_audit"/);
   assert.match(writerCard, /Programmes sélectionnés pour votre projet/);
   assert.match(writerCard, /Votre rôle, notre accompagnement/);
-  assert.match(writerCard, /Campus Allemagne pilote le reste/);
+  assert.match(writerCard, /Campus Allemagne coordonne votre parcours/);
   assert.match(writerCard, /Vos options pour avancer en allemand/);
   assert.match(writerCard, /buildUniversalOrientationGuidance/);
   assert.match(writerCard, /Votre prochaine étape/);
@@ -74,6 +74,8 @@ test("E writer UI presents a premium progressive result with one CTA and verifie
   assert.match(writerCard, /determineJourneyStep/);
   assert.doesNotMatch(writerCard, /bg-\[var\(--foreground\)\][\s\S]*bg-\[var\(--foreground\)\][\s\S]*orientation-main-priority/);
   assert.match(engineCard, /answers=\{answers\}/);
+  assert.match(form, /\{step <= 4 \? \([\s\S]*copy\.intro\.eyebrow/);
+  assert.match(form, /\{step <= 4 \? \([\s\S]*role="progressbar"/);
 });
 
 test("E returns the candidate result without waiting for any admin approval state", () => {
