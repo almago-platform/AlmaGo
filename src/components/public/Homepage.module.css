@@ -8221,3 +8221,44 @@
     border-right-width: 10px;
   }
 }
+
+
+/* Align the two supporting lines with the vertical accent start. */
+.photoBandEyebrow,
+.photoBandLead {
+  margin-left: -70px;
+}
+
+@media (max-width: 999px) {
+  .photoBandEyebrow,
+  .photoBandLead {
+    margin-left: -54px;
+  }
+}
+
+@media (max-width: 767px) {
+  .photoBandEyebrow,
+  .photoBandLead {
+    margin-left: -30px;
+  }
+}
+
+:global(html[dir="rtl"]) .photoBandEyebrow,
+:global(html[dir="rtl"]) .photoBandLead {
+  margin-left: 0;
+  margin-right: -70px;
+}
+
+@media (max-width: 999px) {
+  :global(html[dir="rtl"]) .photoBandEyebrow,
+  :global(html[dir="rtl"]) .photoBandLead {
+    margin-right: -54px;
+  }
+}
+
+@media (max-width: 767px) {
+  :global(html[dir="rtl"]) .photoBandEyebrow,
+  :global(html[dir="rtl"]) .photoBandLead {
+    margin-right: -30px;
+  }
+}
