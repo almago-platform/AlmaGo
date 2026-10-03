@@ -19,6 +19,7 @@ test("V7 uses an immersive full-width academic hero", () => {
   assert.ok(nativeCopy.includes('exampleAria: "Exemple de dossier AlmaGo"'));
   assert.ok(css.includes("min-height: 610px"));
   assert.ok(css.includes("linear-gradient"));
+  assert.ok(css.includes('url("/images/homepage/study-library.webp")'));
 });
 
 test("V7 keeps localized copy and product proof integrated inside the hero", () => {
