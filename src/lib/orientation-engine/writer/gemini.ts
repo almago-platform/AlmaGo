@@ -266,7 +266,10 @@ export function buildGeminiOrientationWriterRequest(
     }],
     generationConfig: {
       temperature: 0.45,
-      maxOutputTokens: 2600,
+      maxOutputTokens: 4000,
+      thinkingConfig: {
+        thinkingLevel: "low",
+      },
       responseMimeType: "application/json",
       responseJsonSchema: responseSchema(input),
     },
