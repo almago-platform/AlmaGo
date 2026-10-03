@@ -24,8 +24,8 @@ const copy = {
     heroEyebrow: "Votre orientation Campus Allemagne",
     heroTitle: "Votre projet Allemagne prend forme.",
     summaryTitle: "Votre projet, en bref",
-    summaryText: "Vous avancez sur ce qui dépend de vous. Campus Allemagne coordonne le reste : comparaison des programmes, vérification des conditions, préparation du dossier et des candidatures, puis accompagnement des démarches après admission selon la formule choisie. Vous n’avez pas à tout gérer seul.",
-    summaryTags: ["Vérifications suivies", "Dossier structuré", "Étapes guidées"],
+    summaryText: "Vous gardez une prochaine étape claire. Campus Allemagne garde la vue d’ensemble : nous comparons les programmes, vérifions les conditions, structurons votre dossier et vos candidatures, puis préparons avec vous la suite après admission selon l’accompagnement choisi. Vous n’avez pas à porter seul la complexité du projet.",
+    summaryTags: ["Prochaine étape claire", "Dossier structuré", "Parcours coordonné"],
     options: "Programmes sélectionnés pour votre projet",
     why: "Pourquoi cette piste",
     confirmed: "Informations confirmées",
@@ -67,8 +67,8 @@ const copy = {
     heroEyebrow: "توجيهك مع Campus Allemagne",
     heroTitle: "مشروعك نحو ألمانيا يتضح.",
     summaryTitle: "مشروعك باختصار",
-    summaryText: "أنت تتقدم في الخطوات التي تعتمد عليك، وCampus Allemagne ينسّق الباقي: مقارنة البرامج، التحقق من الشروط، إعداد الملف وطلبات التقديم، ثم مرافقة الخطوات بعد القبول حسب نوع الدعم المختار. لست مضطرًا لإدارة كل شيء وحدك.",
-    summaryTags: ["متابعة التحقق", "تنظيم الملف", "توجيه الخطوات"],
+    summaryText: "تبقى أمامك خطوة واضحة في كل مرة، بينما يحتفظ Campus Allemagne بالصورة الكاملة: نقارن البرامج، نتحقق من الشروط، ننظم ملفك وطلباتك، ثم نجهز معك ما بعد القبول حسب نوع المرافقة المختار. لست مضطرًا لتحمل تعقيد المشروع وحدك.",
+    summaryTags: ["خطوة واضحة", "ملف منظم", "مسار منسق"],
     options: "البرامج المختارة لمشروعك",
     why: "لماذا هذا المسار",
     confirmed: "معلومات مؤكدة",
@@ -110,8 +110,8 @@ const copy = {
     heroEyebrow: "Your Campus Allemagne orientation",
     heroTitle: "Your Germany project is taking shape.",
     summaryTitle: "Your project, at a glance",
-    summaryText: "You focus on the steps that depend on you. Campus Allemagne coordinates the rest: programme comparison, requirement checks, dossier and application preparation, then post-admission support according to the support package selected. You do not have to manage the whole process alone.",
-    summaryTags: ["Checks followed", "Dossier structured", "Steps guided"],
+    summaryText: "You keep one clear next step. Campus Allemagne keeps the full picture in view: we compare programmes, check requirements, structure your dossier and applications, then prepare the post-admission steps with you according to the support selected. You do not have to carry the project’s complexity alone.",
+    summaryTags: ["Clear next step", "Dossier structured", "Journey coordinated"],
     options: "Programmes selected for your project",
     why: "Why this path",
     confirmed: "Confirmed information",
@@ -153,8 +153,8 @@ const copy = {
     heroEyebrow: "Deine Orientierung mit Campus Allemagne",
     heroTitle: "Dein Deutschland-Projekt nimmt Form an.",
     summaryTitle: "Dein Projekt auf einen Blick",
-    summaryText: "Du konzentrierst dich auf die Schritte, die von dir abhängen. Campus Allemagne koordiniert den Rest: Programmvergleich, Prüfung der Voraussetzungen, Vorbereitung von Unterlagen und Bewerbungen sowie die Begleitung nach einer Zulassung entsprechend der gewählten Unterstützung. Du musst den gesamten Prozess nicht allein verwalten.",
-    summaryTags: ["Prüfungen begleitet", "Unterlagen strukturiert", "Schritte geführt"],
+    summaryText: "Du behältst einen klaren nächsten Schritt. Campus Allemagne behält den Gesamtweg im Blick: Wir vergleichen Programme, prüfen Voraussetzungen, strukturieren Unterlagen und Bewerbungen und bereiten danach mit dir die Schritte nach einer Zulassung entsprechend der gewählten Begleitung vor. Du musst die Komplexität des Projekts nicht allein tragen.",
+    summaryTags: ["Klarer nächster Schritt", "Unterlagen strukturiert", "Weg koordiniert"],
     options: "Ausgewählte Programme für dein Projekt",
     why: "Warum diese Option",
     confirmed: "Bestätigte Informationen",
@@ -501,10 +501,10 @@ export function OrientationPersonalizedWriterCard({
       >
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div className="max-w-3xl">
-            <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--brand-strong)]">
+            <h4 id="orientation-summary" className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--brand-strong)]">
               {t.summaryTitle}
-            </p>
-            <p id="orientation-summary" className="mt-1.5 text-sm leading-6 text-[var(--foreground)]">
+            </h4>
+            <p className="mt-1.5 text-sm leading-6 text-[var(--foreground)]">
               {t.summaryText}
             </p>
           </div>
