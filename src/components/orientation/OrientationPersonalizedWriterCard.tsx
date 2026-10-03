@@ -27,8 +27,8 @@ const copy = {
     summaryLead: "Vous avancez étape par étape. Nous gardons le cap avec vous.",
     summaryText: "Votre prochaine priorité est claire. Pendant que vous avancez, Campus Allemagne vérifie les conditions des programmes et prépare les prochaines étapes avec vous.",
     options: "Les programmes que nous étudions pour votre projet",
-    why: "Pourquoi cette piste",
-    confirmed: "Informations principales vérifiées",
+    why: "Pourquoi nous l’étudions",
+    confirmed: "Repères vérifiés pour votre décision",
     checking: "Encore à confirmer",
     verifiedStatus: "Infos vérifiées",
     progressStatus: "Analyse en cours",
@@ -71,8 +71,8 @@ const copy = {
     summaryLead: "تتقدم خطوة بخطوة، ونحن نحافظ معك على اتجاه المشروع.",
     summaryText: "أولويتك التالية واضحة. أثناء تقدمك، يتحقق Campus Allemagne من شروط البرامج ويحضّر معك الخطوات القادمة.",
     options: "البرامج التي ندرسها لمشروعك",
-    why: "لماذا هذا المسار",
-    confirmed: "المعلومات الأساسية الموثقة",
+    why: "لماذا ندرس هذا المسار",
+    confirmed: "معلومات موثقة تساعدك على الاختيار",
     checking: "ما زال يحتاج إلى تأكيد",
     verifiedStatus: "موثّق",
     progressStatus: "التحليل جارٍ",
@@ -115,8 +115,8 @@ const copy = {
     summaryLead: "You move forward step by step. We keep the project on course with you.",
     summaryText: "Your next priority is clear. While you move forward, Campus Allemagne checks programme requirements and prepares the next steps with you.",
     options: "Programmes we are reviewing for your project",
-    why: "Why this path",
-    confirmed: "Main verified information",
+    why: "Why we are reviewing it",
+    confirmed: "Verified decision points",
     checking: "Still to confirm",
     verifiedStatus: "Info verified",
     progressStatus: "Analysis in progress",
@@ -159,8 +159,8 @@ const copy = {
     summaryLead: "Du gehst Schritt für Schritt weiter. Wir halten mit dir den Kurs.",
     summaryText: "Deine nächste Priorität ist klar. Während du weitergehst, prüft Campus Allemagne die Bedingungen der Studiengänge und bereitet mit dir die nächsten Schritte vor.",
     options: "Studiengänge, die wir für dein Projekt prüfen",
-    why: "Warum diese Option",
-    confirmed: "Wichtige geprüfte Informationen",
+    why: "Warum wir diese Option prüfen",
+    confirmed: "Geprüfte Entscheidungspunkte",
     checking: "Noch zu klären",
     verifiedStatus: "Infos geprüft",
     progressStatus: "Analyse läuft",
@@ -266,13 +266,15 @@ const factLabels: Record<Locale, Record<OrientationVerificationFactKey, string>>
 };
 
 const factPriority: OrientationVerificationFactKey[] = [
-  "degree_level",
   "teaching_language",
   "german_language_requirement",
   "english_language_requirement",
-  "intake_terms",
+  "winter_deadline",
+  "summer_deadline",
   "application_route",
   "tuition_or_semester_fees",
+  "intake_terms",
+  "degree_level",
 ];
 
 const compactFactPrefixes: Record<Locale, Partial<Record<OrientationVerificationFactKey, string>>> = {
@@ -282,6 +284,8 @@ const compactFactPrefixes: Record<Locale, Partial<Record<OrientationVerification
     german_language_requirement: "Allemand",
     english_language_requirement: "Anglais",
     intake_terms: "Rentrée",
+    winter_deadline: "Date limite",
+    summer_deadline: "Date limite",
     application_route: "Candidature",
     tuition_or_semester_fees: "Frais",
   },
@@ -291,6 +295,8 @@ const compactFactPrefixes: Record<Locale, Partial<Record<OrientationVerification
     german_language_requirement: "الألمانية",
     english_language_requirement: "الإنجليزية",
     intake_terms: "الدخول",
+    winter_deadline: "آخر موعد",
+    summer_deadline: "آخر موعد",
     application_route: "التقديم",
     tuition_or_semester_fees: "الرسوم",
   },
@@ -300,6 +306,8 @@ const compactFactPrefixes: Record<Locale, Partial<Record<OrientationVerification
     german_language_requirement: "German",
     english_language_requirement: "English",
     intake_terms: "Intake",
+    winter_deadline: "Deadline",
+    summer_deadline: "Deadline",
     application_route: "Application",
     tuition_or_semester_fees: "Fees",
   },
@@ -309,6 +317,8 @@ const compactFactPrefixes: Record<Locale, Partial<Record<OrientationVerification
     german_language_requirement: "Deutsch",
     english_language_requirement: "Englisch",
     intake_terms: "Start",
+    winter_deadline: "Frist",
+    summer_deadline: "Frist",
     application_route: "Bewerbung",
     tuition_or_semester_fees: "Gebühren",
   },
@@ -410,7 +420,7 @@ function highlightedFacts(option: OrientationPublicPersonalizedOption) {
   return option.facts
     .filter((fact) => fact.status === "verified" && factPriority.includes(fact.field))
     .sort((a, b) => factPriority.indexOf(a.field) - factPriority.indexOf(b.field))
-    .slice(0, 3);
+    .slice(0, 4);
 }
 
 function determineJourneyStep(
