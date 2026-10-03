@@ -5802,3 +5802,142 @@
   }
   .headerCta { min-width: max-content; }
 }
+
+
+/* Homepage hero — full-bleed immersive treatment.
+   Keeps the current content and product proof while restoring the
+   image-led composition with less unused white space. */
+@media (min-width: 900px) {
+  .hero {
+    min-height: 690px;
+    background: #1c2124;
+  }
+
+  .heroBackdrop,
+  .heroShade {
+    inset: 0;
+    width: 100%;
+    border-radius: 0;
+  }
+
+  .heroBackdrop {
+    opacity: 1;
+    box-shadow: none;
+  }
+
+  .heroBackdrop img {
+    object-position: 58% center;
+    filter: saturate(0.9) contrast(1.04);
+  }
+
+  .heroShade {
+    background:
+      linear-gradient(
+        90deg,
+        rgba(18, 23, 26, 0.9) 0%,
+        rgba(18, 23, 26, 0.78) 28%,
+        rgba(18, 23, 26, 0.43) 51%,
+        rgba(18, 23, 26, 0.12) 73%,
+        rgba(18, 23, 26, 0.08) 100%
+      ),
+      linear-gradient(
+        180deg,
+        rgba(18, 23, 26, 0.08) 0%,
+        rgba(18, 23, 26, 0.1) 58%,
+        rgba(18, 23, 26, 0.46) 100%
+      );
+  }
+
+  .heroImmersiveInner {
+    min-height: 690px;
+    align-items: center;
+    padding-block: 64px;
+  }
+
+  .hero .heroCopy {
+    width: min(610px, 52%);
+    max-width: 610px;
+    color: #fffdf8;
+  }
+
+  .hero .eyebrow {
+    color: #ffd461;
+  }
+
+  .hero .dot {
+    background: #ff405a;
+  }
+
+  .hero h1 {
+    color: #fffdf8;
+    font-size: clamp(54px, 4.9vw, 74px);
+    text-shadow: 0 2px 22px rgba(0, 0, 0, 0.16);
+  }
+
+  .hero h1 em {
+    color: #ff405a;
+  }
+
+  .heroLead {
+    max-width: 560px;
+    color: rgba(255, 253, 248, 0.88);
+    text-shadow: 0 1px 14px rgba(0, 0, 0, 0.14);
+  }
+
+  .heroTextLink {
+    color: #fffdf8;
+  }
+
+  .heroTextLink:hover {
+    color: #ffd461;
+  }
+
+  .heroProof {
+    color: rgba(255, 253, 248, 0.82);
+  }
+
+  .heroProof svg {
+    color: #ffd461;
+  }
+
+  .hero .heroDossier {
+    right: clamp(34px, 5vw, 88px);
+    bottom: 46px;
+    width: min(390px, 36vw);
+    background: rgba(255, 253, 248, 0.96);
+    backdrop-filter: blur(16px);
+  }
+
+  :global(html[dir="rtl"]) .hero .heroCopy {
+    margin-inline-start: auto;
+  }
+
+  :global(html[dir="rtl"]) .hero .heroDossier {
+    right: auto;
+    left: clamp(34px, 5vw, 88px);
+  }
+
+  :global(html[dir="rtl"]) .heroShade {
+    background:
+      linear-gradient(
+        270deg,
+        rgba(18, 23, 26, 0.9) 0%,
+        rgba(18, 23, 26, 0.78) 28%,
+        rgba(18, 23, 26, 0.43) 51%,
+        rgba(18, 23, 26, 0.12) 73%,
+        rgba(18, 23, 26, 0.08) 100%
+      ),
+      linear-gradient(
+        180deg,
+        rgba(18, 23, 26, 0.08) 0%,
+        rgba(18, 23, 26, 0.1) 58%,
+        rgba(18, 23, 26, 0.46) 100%
+      );
+  }
+}
+
+@media (max-width: 899px) {
+  .heroBackdrop {
+    opacity: 0.56;
+  }
+}
