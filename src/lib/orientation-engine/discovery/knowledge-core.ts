@@ -30,6 +30,16 @@ export function buildOrientationDiscoveryProfileFingerprint(
   plan: OrientationDiscoveryPlan,
 ) {
   return sha256({
+    higherEducationStatus: plan.profile.higherEducationStatus,
+    currentStudyField: plan.profile.currentStudyField,
+    universitySemesters: plan.profile.universitySemesters,
+    studyIntent: plan.profile.studyIntent,
+    targetSpecialization: plan.profile.targetSpecialization,
+    higherEducationStatus: plan.profile.higherEducationStatus,
+    currentStudyField: plan.profile.currentStudyField,
+    universitySemesters: plan.profile.universitySemesters,
+    studyIntent: plan.profile.studyIntent,
+    targetSpecialization: plan.profile.targetSpecialization,
     targetDegree: plan.profile.targetDegree,
     targetField: plan.profile.targetField,
     engineeringSpecialty: plan.profile.engineeringSpecialty,
