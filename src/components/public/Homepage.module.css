@@ -5912,7 +5912,10 @@
   }
 
   :global(html[dir="rtl"]) .hero .heroCopy {
-    margin-inline-start: auto;
+    /* In RTL, inline-start is the right side. Auto here pushed the copy left.
+       Anchor Arabic hero copy to the right and keep the dossier on the left. */
+    margin-inline-start: 0;
+    margin-inline-end: auto;
   }
 
   :global(html[dir="rtl"]) .hero .heroDossier {
