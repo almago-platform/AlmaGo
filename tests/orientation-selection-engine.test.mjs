@@ -278,6 +278,52 @@ test("C never forces completely unknown B records into the shortlist", () => {
   );
 });
 
+test("C deduplicates exact programme and institution identities before shortlist selection", () => {
+  const programmes = [
+    verification({
+      institution: "Duplicate University",
+      programme: "Automotive Engineering",
+      city: "Aachen",
+    }),
+    verification({
+      institution: "Duplicate University",
+      programme: "Automotive Engineering",
+      city: "Aachen",
+    }),
+    verification({
+      institution: "Berlin University",
+      programme: "Vehicle Engineering",
+      city: "Berlin",
+    }),
+    verification({
+      institution: "Cologne University",
+      programme: "Mobility Engineering",
+      city: "Cologne",
+    }),
+    verification({
+      institution: "Darmstadt University",
+      programme: "Mechanical Engineering",
+      city: "Darmstadt",
+    }),
+  ];
+
+  const result = buildOrientationSelection(
+    profile({ preferredCities: [] }),
+    programmes,
+  );
+  const identities = result.selected.map((item) =>
+    `${item.verification.candidate.institution.toLowerCase()}::${item.verification.candidate.programme.toLowerCase()}`
+  );
+
+  assert.equal(new Set(identities).size, identities.length);
+  assert.equal(
+    identities.filter((identity) =>
+      identity === "duplicate university::automotive engineering"
+    ).length,
+    1,
+  );
+});
+
 test("C applies soft institution and city diversity after relevance scoring", () => {
   const programmes = [
     verification({
@@ -344,6 +390,65 @@ test("C rewards the requested engineering specialty without using an LLM ranker"
   assert.ok(automotiveEvaluation.baseScore > genericEvaluation.baseScore);
   assert.doesNotMatch(selectionSource, /OPENAI_API_KEY|GEMINI_API_KEY|web_search|fetch\(/);
   assert.doesNotMatch(serviceSource, /openai|gemini|fetch\(/i);
+});
+
+test("C treats an optional Master target specialization as relevance, never eligibility", () => {
+  const candidateProfile = profile({
+    targetDegree: "Master",
+    targetField: "Informatique",
+    engineeringSpecialty: "",
+    targetSpecialization: "Data Science and Artificial Intelligence",
+    studyLanguage: "Anglais",
+    germanLevel: "B1",
+    englishLevel: "C1",
+    preferredCities: [],
+  });
+  const specialized = verification({
+    institution: "Data University",
+    programme: "Data Science",
+    degree: "Master",
+    teachingLanguage: "English",
+    germanRequirement: null,
+    englishRequirement: "B2",
+  });
+  const generic = verification({
+    institution: "Generic University",
+    programme: "Computer Science",
+    degree: "Master",
+    teachingLanguage: "English",
+    germanRequirement: null,
+    englishRequirement: "B2",
+  });
+
+  const specializedEvaluation = evaluateOrientationSelectionCandidate(
+    candidateProfile,
+    specialized,
+  );
+  const genericEvaluation = evaluateOrientationSelectionCandidate(
+    candidateProfile,
+    generic,
+  );
+
+  assert.equal(specializedEvaluation.excluded, false);
+  assert.equal(genericEvaluation.excluded, false);
+  assert.ok(
+    specializedEvaluation.reasons.includes("target_specialization_match"),
+  );
+  assert.ok(specializedEvaluation.breakdown.specialization > 0);
+  assert.equal(
+    genericEvaluation.reasons.includes("target_specialization_match"),
+    false,
+  );
+  assert.ok(specializedEvaluation.baseScore > genericEvaluation.baseScore);
+
+  const result = buildOrientationSelection(
+    candidateProfile,
+    [generic, specialized],
+  );
+  assert.equal(
+    result.selected[0].verification.candidate.programme,
+    "Data Science",
+  );
 });
 
 test("C surfaces conditions such as Studienkolleg and unknown fees without converting them into hidden rejection", () => {
