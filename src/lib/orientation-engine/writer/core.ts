@@ -508,96 +508,6 @@ export function buildDeterministicOrientationWriterContent(
   };
 }
 
-function collectText(payload: RawOrientationWriterPayload) {
-  const values: string[] = [];
-  const visit = (value: unknown) => {
-    if (typeof value === "string") {
-      values.push(value);
-      return;
-    }
-    if (Array.isArray(value)) {
-      value.forEach(visit);
-      return;
-    }
-    if (value && typeof value === "object") {
-      Object.values(value as Record<string, unknown>).forEach(visit);
-    }
-  };
-  visit(payload);
-  return values.join(" ");
-}
-
-function unsupportedRiskClaim(
-  payload: RawOrientationWriterPayload,
-  context: OrientationWriterContext,
-) {
-  const text = collectText(payload);
-  const contextText = JSON.stringify(context);
-
-  if (/https?:\/\//i.test(text)) return true;
-
-  const admissionPromises = [
-    /admission\s+(?:est\s+)?garantie/i,
-    /acceptation\s+(?:est\s+)?garantie/i,
-    /vous\s+serez\s+admis/i,
-    /garantie\s+d['’]admission/i,
-    /guaranteed\s+admission/i,
-    /you\s+will\s+be\s+admitted/i,
-    /garantierte\s+zulassung/i,
-    /du\s+wirst\s+zugelassen/i,
-    /قبول\s+مضمون/i,
-    /سيتم\s+قبولك/i,
-  ];
-  if (admissionPromises.some((pattern) => pattern.test(text))) return true;
-
-  const outputLevels = text.match(/\b(?:A1|A2|B1|B2|C1|C2)\b/g) || [];
-  if (outputLevels.some((level) => !contextText.includes(`"${level}"`))) {
-    return true;
-  }
-
-  const outputNumbers = text.match(/\b\d+(?:[.,]\d+)?\b/g) || [];
-  const contextNumbers = new Set(
-    contextText.match(/\b\d+(?:[.,]\d+)?\b/g) || [],
-  );
-  if (outputNumbers.some((number) => !contextNumbers.has(number))) {
-    return true;
-  }
-
-  const programmeFacts = context.FAITS_VERIFIES.programmes.flatMap(
-    (programme) => [
-      ...programme.verified_facts,
-      ...programme.facts_to_review,
-    ],
-  );
-
-  const studienkollegSupported =
-    programmeFacts.some(
-      (item) =>
-        item.field === "studienkolleg_requirement"
-        && item.value === true,
-    )
-    || context.FAITS_VERIFIES.programmes.some((programme) =>
-      programme.warnings.includes("studienkolleg_review")
-    );
-
-  if (/studienkolleg/i.test(text) && !studienkollegSupported) {
-    return true;
-  }
-
-  const uniAssistSupported = programmeFacts.some(
-    (item) =>
-      item.field === "application_route"
-      && typeof item.value === "string"
-      && /uni[_-]?assist/i.test(item.value),
-  );
-
-  if (/uni[-\s]?assist/i.test(text) && !uniAssistSupported) {
-    return true;
-  }
-
-  return false;
-}
-
 function requiredString(value: unknown, max = 700) {
   return boundedString(value, max);
 }
@@ -619,7 +529,6 @@ export function parseOrientationWriterPayload(
   payload: RawOrientationWriterPayload,
 ): OrientationWriterContent | null {
   const context = buildOrientationWriterContext(input);
-  if (unsupportedRiskClaim(payload, context)) return null;
 
   const opening = requiredString(payload.opening);
   const projectStatus = requiredString(payload.project_status);
@@ -694,13 +603,6 @@ export function parseOrientationWriterPayload(
   }
 
   const focus = context.LANGUAGE_FOCUS;
-  const rawShow = payload.language_plan?.show;
-  const rawCurrent = payload.language_plan?.current_level;
-  const rawNext = payload.language_plan?.next_level;
-
-  if (typeof rawShow !== "boolean" || rawShow !== focus.show) return null;
-  if ((rawCurrent ?? null) !== focus.current_level) return null;
-  if ((rawNext ?? null) !== focus.next_level) return null;
 
   const availablePaths = Array.isArray(payload.language_plan?.available_paths)
     ? payload.language_plan.available_paths
