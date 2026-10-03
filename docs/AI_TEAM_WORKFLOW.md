@@ -148,6 +148,9 @@ Every task given to an agent must state:
 8. **Required validation commands**
 9. **Expected deliverable**
 10. **Stop condition**
+11. **Change category** from `docs/CHANGE_CONTROL.md`
+12. **Recovery anchor**: exact pre-change base SHA and checkpoint tag when required
+13. **Rollback scope**: exact paths/commits that can be restored without reverting unrelated work
 
 If writable paths overlap with another active implementation PR, the task is blocked until the supervisor resolves ownership.
 
@@ -173,10 +176,15 @@ Each agent PR must include:
 - agent name;
 - requested base branch;
 - actual head SHA;
+- change category or categories;
+- exact pre-change recovery SHA;
+- checkpoint tag when required;
 - exact files changed;
+- selective rollback instructions that preserve unrelated current work;
 - validation commands and results;
 - known limitations;
-- explicit statement that no out-of-scope files were intentionally changed.
+- explicit statement that no out-of-scope files were intentionally changed;
+- matching update to `docs/CHANGE_HISTORY.md`.
 
 The agent stops only after the **entire assigned block** is complete, then opens/updates its PR and publishes the required evidence. Internal checkpoints are not stop points unless the contract explicitly says so.
 

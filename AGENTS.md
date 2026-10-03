@@ -103,3 +103,29 @@ Quand un commentaire du superviseur contient exactement `@codex address that fee
 Le workflow `AlmaGo PR CI` est la preuve canonique des tests sur le HEAD distant. Ne bloque pas un checkpoint uniquement parce que les résultats de tests ne sont pas recopiés dans le texte du commentaire si les checks GitHub du HEAD sont verts.
 
 Si le push est impossible, le commentaire de fallback doit réellement COMMENCER par `ALMAGO PATCH`. Ne dis jamais seulement dans un résumé qu’un patch a été publié : le patch littéral doit être présent dans ce commentaire top-level, avec `BASE HEAD` et exactement un bloc fenced `diff`.
+
+
+## Mandatory change-history and recovery protocol
+
+Before editing any material surface, read `docs/CHANGE_CONTROL.md` and declare the change category plus the exact recovery anchor.
+
+For every coherent change block:
+
+- record the exact pre-change base SHA before edits;
+- use a dedicated branch and PR;
+- keep unrelated categories in separate commits/PRs whenever practical;
+- list the exact owned paths;
+- state how this category can be rolled back without reverting unrelated current work;
+- update `docs/CHANGE_HISTORY.md` in the same PR.
+
+For **DESIGN_UI** changes — including buttons, layout, spacing, typography, colors, imagery, responsive behavior, RTL presentation, and component styling — create and push an annotated checkpoint tag **before the first edit**:
+
+`checkpoint/design/YYYY-MM-DD-<slug>`
+
+The tag must point to the exact pre-change SHA and must never be moved or reused. One checkpoint is required per coherent design change block, not per individual line.
+
+A missing recovery SHA blocks implementation. A missing checkpoint tag blocks DESIGN_UI implementation.
+
+Selective rollback is preferred over whole-repository rollback. Restore only owned paths or revert category-pure commits.
+
+Database/schema changes are special: never treat deleting or restoring migration files as a valid production rollback. Prefer a reviewed forward corrective migration unless an explicitly approved recovery plan says otherwise.
