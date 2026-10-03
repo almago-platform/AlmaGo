@@ -34,9 +34,11 @@ import {
   degreeOptions,
   diplomaOptions,
   engineeringSpecialtyOptions,
+  higherEducationStatusOptions,
   languageLevelOptions,
   preferredCityOptions,
   studyFieldOptions,
+  studyIntentOptions,
   studyLanguageOptions,
   tunisianBacTrackOptions,
   type SelectOption,
@@ -95,6 +97,14 @@ export function PublicOrientationForm({
   const fields = useMemo(() => localizeProfileOptions(locale, studyFieldOptions), [locale]);
   const engineeringSpecialties = useMemo(
     () => localizeProfileOptions(locale, engineeringSpecialtyOptions),
+    [locale],
+  );
+  const higherEducationStatuses = useMemo(
+    () => localizeProfileOptions(locale, higherEducationStatusOptions),
+    [locale],
+  );
+  const studyIntents = useMemo(
+    () => localizeProfileOptions(locale, studyIntentOptions),
     [locale],
   );
   const levels = useMemo(() => localizeProfileOptions(locale, languageLevelOptions), [locale]);
@@ -222,6 +232,18 @@ export function PublicOrientationForm({
 
     if (step === 2 && (!answers.targetDegree || !answers.targetField)) return copy.validation.required;
     if (step === 2 && answers.bacStatus === "no_bac" && !answers.lastDiploma) return copy.validation.required;
+    if (step === 2 && !answers.higherEducationStatus) return copy.validation.required;
+    if (
+      step === 2
+      && answers.higherEducationStatus !== "not_started"
+      && (!answers.currentStudyField || !answers.studyIntent)
+    ) return copy.validation.required;
+    if (step === 2 && answers.universitySemesters) {
+      const semesters = Number(answers.universitySemesters);
+      if (!Number.isInteger(semesters) || semesters < 1 || semesters > 30) {
+        return copy.validation.required;
+      }
+    }
     if (
       step === 2
       && answers.targetField === "Ingénierie"
@@ -276,6 +298,20 @@ export function PublicOrientationForm({
     [copy.summary.labels.bacTrack, localizedValue(answers.bacTrack, bacTracks)],
     [copy.summary.labels.average, answers.generalAverage ? `${answers.generalAverage}/20` : "—"],
     [copy.summary.labels.diploma, localizedValue(answers.lastDiploma, diplomas)],
+    [
+      copy.summary.labels.higherEducationStatus,
+      localizedValue(answers.higherEducationStatus, higherEducationStatuses),
+    ],
+    ...(answers.higherEducationStatus && answers.higherEducationStatus !== "not_started"
+      ? [
+          [copy.summary.labels.currentStudyField, answers.currentStudyField || "—"],
+          [copy.summary.labels.universitySemesters, answers.universitySemesters || "—"],
+          [copy.summary.labels.studyIntent, localizedValue(answers.studyIntent, studyIntents)],
+        ]
+      : []),
+    ...(answers.targetDegree === "Master" && answers.targetSpecialization
+      ? [[copy.summary.labels.targetSpecialization, answers.targetSpecialization]]
+      : []),
     [copy.summary.labels.degree, localizedValue(answers.targetDegree, degrees)],
     [copy.summary.labels.field, localizedValue(answers.targetField, fields)],
     ...(answers.targetField === "Ingénierie"
@@ -469,10 +505,104 @@ export function PublicOrientationForm({
                       <span className="mt-1 block text-xs font-normal text-[var(--muted)]">{copy.fields.lastDiplomaHelp}</span>
                     </label>
 
+                    <fieldset className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4 sm:p-5">
+                      <legend className="px-1 text-sm font-semibold">
+                        {copy.fields.higherEducationStatus}
+                      </legend>
+                      <div className="mt-2 grid gap-2">
+                        {higherEducationStatuses.map((option) => (
+                          <label key={option.value} className="flex cursor-pointer items-start gap-3 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface)] px-3 py-3">
+                            <input
+                              type="radio"
+                              name="higherEducationStatus"
+                              value={option.value}
+                              checked={answers.higherEducationStatus === option.value}
+                              onChange={() => {
+                                setAnswers((current) => ({
+                                  ...current,
+                                  higherEducationStatus: option.value as Answers["higherEducationStatus"],
+                                  ...(option.value === "not_started"
+                                    ? {
+                                        currentStudyField: "",
+                                        universitySemesters: "",
+                                        studyIntent: "",
+                                      }
+                                    : {}),
+                                }));
+                                setError("");
+                              }}
+                              className="mt-1"
+                            />
+                            <span className="text-sm font-medium leading-5">{option.label}</span>
+                          </label>
+                        ))}
+                      </div>
+                    </fieldset>
+
+                    {answers.higherEducationStatus && answers.higherEducationStatus !== "not_started" ? (
+                      <div className="grid gap-4 sm:grid-cols-2">
+                        <label className="text-sm font-semibold sm:col-span-2">
+                          {copy.fields.currentStudyField}
+                          <input
+                            className="field"
+                            type="text"
+                            maxLength={120}
+                            value={answers.currentStudyField}
+                            onChange={(event) => setField("currentStudyField", event.target.value)}
+                            placeholder={copy.fields.currentStudyFieldHelp}
+                          />
+                          <span className="mt-1 block text-xs font-normal text-[var(--muted)]">
+                            {copy.fields.currentStudyFieldHelp}
+                          </span>
+                        </label>
+                        <label className="text-sm font-semibold">
+                          {copy.fields.universitySemesters} <span className="font-normal text-[var(--muted)]">({copy.controls.optional})</span>
+                          <input
+                            className="field"
+                            type="number"
+                            inputMode="numeric"
+                            min="1"
+                            max="30"
+                            value={answers.universitySemesters}
+                            onChange={(event) => setField("universitySemesters", event.target.value)}
+                          />
+                          <span className="mt-1 block text-xs font-normal text-[var(--muted)]">
+                            {copy.fields.universitySemestersHelp}
+                          </span>
+                        </label>
+                        <label className="text-sm font-semibold">
+                          {copy.fields.studyIntent}
+                          <select
+                            className="field"
+                            value={answers.studyIntent}
+                            onChange={(event) => setField("studyIntent", event.target.value as Answers["studyIntent"])}
+                          >
+                            <option value="">{copy.controls.choose}</option>
+                            {studyIntents.map((option) => (
+                              <option key={option.value} value={option.value}>{option.label}</option>
+                            ))}
+                          </select>
+                        </label>
+                      </div>
+                    ) : null}
+
                     <div className="grid gap-4 sm:grid-cols-2">
                       <label className="text-sm font-semibold">
                         {profileCopy.form.fields.target_degree}
-                        <select className="field" value={answers.targetDegree} onChange={(event) => setField("targetDegree", event.target.value)}>
+                        <select
+                          className="field"
+                          value={answers.targetDegree}
+                          onChange={(event) => {
+                            const targetDegree = event.target.value;
+                            setAnswers((current) => ({
+                              ...current,
+                              targetDegree,
+                              targetSpecialization:
+                                targetDegree === "Master" ? current.targetSpecialization : "",
+                            }));
+                            setError("");
+                          }}
+                        >
                           <option value="">{copy.controls.choose}</option>
                           {degrees.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
                         </select>
@@ -498,6 +628,23 @@ export function PublicOrientationForm({
                         </select>
                       </label>
                     </div>
+
+                    {answers.targetDegree === "Master" ? (
+                      <label className="block text-sm font-semibold">
+                        {copy.fields.targetSpecialization} <span className="font-normal text-[var(--muted)]">({copy.controls.optional})</span>
+                        <input
+                          className="field"
+                          type="text"
+                          maxLength={120}
+                          value={answers.targetSpecialization}
+                          onChange={(event) => setField("targetSpecialization", event.target.value)}
+                          placeholder={copy.fields.targetSpecializationHelp}
+                        />
+                        <span className="mt-1 block text-xs font-normal text-[var(--muted)]">
+                          {copy.fields.targetSpecializationHelp}
+                        </span>
+                      </label>
+                    ) : null}
 
                     {answers.targetField === "Ingénierie" ? (
                       <label className="block text-sm font-semibold">
