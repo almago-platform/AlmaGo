@@ -401,11 +401,12 @@ test("C treats an optional Master target specialization as relevance, never elig
     studyLanguage: "Anglais",
     germanLevel: "B1",
     englishLevel: "C1",
-    preferredCities: [],
+    preferredCities: ["Berlin"],
   });
   const specialized = verification({
     institution: "Data University",
     programme: "Data Science",
+    city: "Saarbrücken",
     degree: "Master",
     teachingLanguage: "English",
     germanRequirement: null,
@@ -414,6 +415,7 @@ test("C treats an optional Master target specialization as relevance, never elig
   const generic = verification({
     institution: "Generic University",
     programme: "Computer Science",
+    city: "Berlin",
     degree: "Master",
     teachingLanguage: "English",
     germanRequirement: null,

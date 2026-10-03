@@ -425,7 +425,7 @@ export function evaluateOrientationSelectionCandidate(
   }
 
   if (targetSpecializationMatches(profile, verification)) {
-    breakdown.specialization += 24;
+    breakdown.specialization += 32;
     addReason(reasons, "target_specialization_match");
   }
 

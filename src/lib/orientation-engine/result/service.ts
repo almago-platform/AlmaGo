@@ -193,7 +193,7 @@ export async function runOrientationResultPipeline(
 
   let verification: OrientationVerificationServiceResult | null = null;
   try {
-    verification = await runOrientationVerification(discovery.candidates);
+    verification = await runOrientationVerification(discovery.candidates, profile);
   } catch {
     return resultFromSelection({
       locale,

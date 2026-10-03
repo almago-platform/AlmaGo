@@ -21,7 +21,7 @@ test("E orchestrates A/B/C/D only after the discovery contract allows university
     service,
     /if \(plan\.status !== "ready"\) \{[\s\S]*?return resultFromSelection\(\{[\s\S]*?plan,[\s\S]*?selection: emptySelection\(\)[\s\S]*?\}\);[\s\S]*?runOrientationDiscovery\(plan\)/,
   );
-  assert.match(service, /runOrientationVerification\(discovery\.candidates\)/);
+  assert.match(service, /runOrientationVerification\(discovery\.candidates, profile\)/);
   assert.match(service, /runOrientationSelection\(profile, verification\.programmes\)/);
   assert.match(service, /runOrientationPersonalizedWriter\(input\)/);
 });
