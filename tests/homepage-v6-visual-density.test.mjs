@@ -58,23 +58,15 @@ test("premium journey connects the six public steps and becomes a mobile timelin
 });
 
 
-test("photo-band matches the approved reference composition", () => {
-  assert.match(css, /Photo band V4 — match the approved visual reference/);
+test("photo-band uses the cohesive V5 composition", () => {
+  assert.match(css, /Photo band V5 — cohesive editorial composition/);
   assert.ok(band.indexOf("photoBandTitle") < band.indexOf("photoBandEyebrow"));
   assert.match(band, /className=\{s\.photoBandEyebrowMarker\}/);
   assert.match(band, /className=\{s\.photoBandLead\}/);
-  assert.match(css, /\.photoBandHeading[\s\S]*width:\s*min\(100%, 1240px\)[\s\S]*padding:\s*6px 0 8px 70px/);
-  assert.match(css, /\.photoBandHeading::before[\s\S]*width:\s*18px[\s\S]*var\(--brand\)[\s\S]*var\(--accent\)/);
-  assert.match(css, /\.photoBandTitle[\s\S]*font-size:\s*clamp\(62px, 6\.2vw, 96px\)[\s\S]*line-height:\s*0\.96/);
-  assert.match(css, /\.photoBandEyebrow[\s\S]*text-transform:\s*uppercase/);
-  assert.match(css, /\.photoBandEyebrowMarker[\s\S]*border-left:\s*14px solid var\(--brand\)/);
-  assert.match(css, /\.photoBandLead[\s\S]*font-size:\s*clamp\(16px, 1\.45vw, 23px\)/);
-});
-
-
-test("supporting photo-band lines align with the vertical accent", () => {
-  assert.match(css, /Align the two supporting lines with the vertical accent start/);
-  assert.match(css, /\.photoBandEyebrow,[\s\S]*\.photoBandLead[\s\S]*margin-left:\s*-70px/);
-  assert.match(css, /@media \(max-width: 999px\)[\s\S]*\.photoBandEyebrow,[\s\S]*\.photoBandLead[\s\S]*margin-left:\s*-54px/);
-  assert.match(css, /@media \(max-width: 767px\)[\s\S]*\.photoBandEyebrow,[\s\S]*\.photoBandLead[\s\S]*margin-left:\s*-30px/);
+  assert.match(css, /\.photoBandHeading[\s\S]*width:\s*min\(100%, 1180px\)[\s\S]*padding:\s*4px 0 8px 56px/);
+  assert.match(css, /\.photoBandTitle[\s\S]*font-size:\s*clamp\(58px, 5\.4vw, 84px\)[\s\S]*line-height:\s*0\.98/);
+  assert.match(css, /\.photoBandEyebrow[\s\S]*margin:\s*28px 0 0/);
+  assert.match(css, /\.photoBandLead[\s\S]*max-width:\s*820px[\s\S]*margin:\s*10px 0 0/);
+  assert.match(css, /Undo the previous offset that separated the supporting copy from the title/);
+  assert.match(css, /\.photoBandEyebrow,[\s\S]*\.photoBandLead[\s\S]*margin-left:\s*0/);
 });
