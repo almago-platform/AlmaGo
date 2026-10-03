@@ -734,6 +734,15 @@ export function OrientationPersonalizedWriterCard({
   const strongOutlookCount = [...optionOutlooks.values()].filter(
     (outlook) => outlook.level === "strong",
   ).length;
+  const featuredOption =
+    content.studyOptions.find(
+      (option) => optionOutlooks.get(option.optionId)?.level === "strong",
+    )
+    || content.studyOptions[0]
+    || null;
+  const otherOptions = featuredOption
+    ? content.studyOptions.filter((option) => option.optionId !== featuredOption.optionId)
+    : content.studyOptions;
 
   return (
     <article className="space-y-7 sm:space-y-8">
@@ -805,103 +814,176 @@ export function OrientationPersonalizedWriterCard({
 
       <section aria-labelledby="orientation-premium-options">
         <div className="flex flex-wrap items-end justify-between gap-3">
-          <h4 id="orientation-premium-options" className="text-2xl font-semibold tracking-tight">
-            {t.options}
-          </h4>
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--accent-strong)]">
+              {t.options}
+            </p>
+            <h4 id="orientation-premium-options" className="mt-1 text-2xl font-semibold tracking-tight">
+              {t.featuredOption}
+            </h4>
+          </div>
           <span className="text-xs font-semibold text-[var(--muted)]">
             {result.selected.length} {t.pathsCount}
           </span>
         </div>
 
-        <div className="mt-4 grid items-stretch gap-3 lg:grid-cols-2">
-          {content.studyOptions.map((option) => {
-            const selected = result.selected.find((item) => item.optionId === option.optionId);
-            const status = selected ? optionStatus(selected, locale) : null;
-            const facts = selected ? highlightedFacts(selected, answers) : [];
-            const outlook = optionOutlooks.get(option.optionId) || {
-              level: null,
-              cleanWhy: option.whyItFits,
-            };
+        <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
+          {t.outlookSectionNote}
+        </p>
 
-            return (
-              <article
-                key={option.optionId}
-                className="professional-hover flex h-full flex-col rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-4 shadow-[0_4px_14px_rgba(0,0,0,0.035)] sm:p-5"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <p className="text-xs font-bold text-[var(--brand-strong)]">
-                      {String(option.position).padStart(2, "0")}
-                    </p>
-                    <h5 className="mt-1 text-lg font-semibold leading-6 tracking-tight">{option.programme}</h5>
-                    <p className="mt-1 text-sm leading-5 text-[var(--muted)]">
-                      {option.institution}{option.city ? ` · ${option.city}` : ""}
+        {featuredOption ? (() => {
+          const selected = result.selected.find((item) => item.optionId === featuredOption.optionId);
+          const status = selected ? optionStatus(selected, locale) : null;
+          const facts = selected ? highlightedFacts(selected, answers) : [];
+          const outlook = optionOutlooks.get(featuredOption.optionId) || {
+            level: null,
+            cleanWhy: featuredOption.whyItFits,
+          };
+
+          return (
+            <article
+              className="mt-5 overflow-hidden rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--surface)] shadow-[var(--shadow-card)]"
+            >
+              <div className="grid lg:grid-cols-[minmax(0,1.08fr)_minmax(17rem,0.92fr)]">
+                <div className="p-5 sm:p-6">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="text-xs font-bold text-[var(--brand-strong)]">
+                        {String(featuredOption.position).padStart(2, "0")}
+                      </p>
+                      <h5 className="mt-1 text-2xl font-semibold leading-tight tracking-tight">
+                        {featuredOption.programme}
+                      </h5>
+                      <p className="mt-1 text-sm leading-6 text-[var(--muted)]">
+                        {featuredOption.institution}{featuredOption.city ? ` · ${featuredOption.city}` : ""}
+                      </p>
+                    </div>
+                    {status ? (
+                      <span className={`shrink-0 rounded-full px-3 py-1.5 text-[11px] font-semibold ${status.className}`}>
+                        {status.label}
+                      </span>
+                    ) : null}
+                  </div>
+
+                  {outlook.level ? (
+                    <div className="mt-5 border-s-4 border-[var(--brand)] ps-4">
+                      <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-[var(--brand-strong)]">
+                        {t.outlookEyebrow}
+                      </p>
+                      <p className="mt-1 text-xl font-bold leading-6 text-[var(--foreground)]">
+                        {outlook.level === "strong" ? t.outlookStrong : t.outlookGood}
+                      </p>
+                    </div>
+                  ) : null}
+
+                  <div className="mt-5">
+                    <p className="text-xs font-bold uppercase tracking-[0.08em] text-[var(--muted)]">{t.why}</p>
+                    <p className="mt-2 text-sm leading-6 text-[var(--foreground)]">{outlook.cleanWhy}</p>
+                  </div>
+
+                  <div className="mt-5 border-t border-[var(--border)] pt-4">
+                    <p className="text-xs font-bold uppercase tracking-[0.08em] text-[var(--brand-strong)]">{t.checking}</p>
+                    <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
+                      {featuredOption.verificationNote}
                     </p>
                   </div>
-                  {status ? (
-                    <span className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-semibold ${status.className}`}>
-                      {status.label}
-                    </span>
-                  ) : null}
                 </div>
 
-                {outlook.level ? (
-                  <div
-                    className={`mt-4 rounded-[var(--radius-control)] px-3.5 py-3 ring-1 ring-inset ${
-                      outlook.level === "strong"
-                        ? "bg-emerald-50 text-emerald-950 ring-emerald-200"
-                        : "bg-blue-50 text-blue-950 ring-blue-200"
-                    }`}
-                  >
-                    <p className="text-[10px] font-bold uppercase tracking-[0.08em] opacity-70">
-                      {t.outlookEyebrow}
-                    </p>
-                    <p className="mt-1 text-base font-bold leading-5">
-                      {outlook.level === "strong" ? t.outlookStrong : t.outlookGood}
-                    </p>
-                    <p className="mt-1 text-xs leading-5 opacity-75">{t.outlookNote}</p>
-                  </div>
-                ) : null}
-
-                {facts.length ? (
-                  <div className="mt-4">
-                    <p className="text-xs font-semibold text-[var(--muted)]">{t.confirmed}</p>
-                    <dl className="mt-2 grid gap-2 sm:grid-cols-2">
+                <div className="border-t border-[var(--border)] bg-[var(--surface-subtle)] p-5 sm:p-6 lg:border-s lg:border-t-0">
+                  <p className="text-xs font-bold uppercase tracking-[0.08em] text-[var(--accent-strong)]">
+                    {t.confirmed}
+                  </p>
+                  {facts.length ? (
+                    <dl className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
                       {facts.map((fact) => {
                         const parts = decisionFactParts(fact, locale);
                         return (
                           <div
                             key={fact.field}
-                            className="min-w-0 rounded-[var(--radius-control)] bg-emerald-50/70 px-3 py-2.5 ring-1 ring-inset ring-emerald-100"
+                            className="rounded-[var(--radius-control)] bg-[var(--surface)] px-3.5 py-3 ring-1 ring-inset ring-[var(--border)]"
                           >
-                            <dt className="text-[10px] font-bold uppercase tracking-[0.06em] text-emerald-800">
+                            <dt className="text-[10px] font-bold uppercase tracking-[0.06em] text-[var(--accent-strong)]">
                               {parts.label}
                             </dt>
-                            <dd className="mt-0.5 break-words text-xs font-semibold leading-5 text-emerald-950">
+                            <dd className="mt-1 break-words text-sm font-semibold leading-5 text-[var(--foreground)]">
                               {parts.value}
                             </dd>
                           </div>
                         );
                       })}
                     </dl>
-                  </div>
-                ) : null}
-
-                <div className="mt-4">
-                  <p className="text-xs font-semibold text-[var(--muted)]">{t.why}</p>
-                  <p className="mt-1.5 text-sm leading-6">{outlook.cleanWhy}</p>
+                  ) : (
+                    <p className="mt-3 text-sm leading-6 text-[var(--muted)]">{t.noFacts}</p>
+                  )}
                 </div>
+              </div>
+            </article>
+          );
+        })() : null}
 
-                <div className="mt-auto border-t border-[var(--border)] pt-4">
-                  <p className="text-xs font-semibold text-blue-800">{t.checking}</p>
-                  <p className="mt-1.5 text-sm leading-6 text-[var(--muted)]">
-                    {option.verificationNote}
-                  </p>
-                </div>
-              </article>
-            );
-          })}
-        </div>
+        {otherOptions.length ? (
+          <div className="mt-7">
+            <h5 className="text-lg font-semibold tracking-tight">{t.otherOptions}</h5>
+            <div className="mt-3 grid gap-3 lg:grid-cols-3">
+              {otherOptions.map((option) => {
+                const selected = result.selected.find((item) => item.optionId === option.optionId);
+                const status = selected ? optionStatus(selected, locale) : null;
+                const outlook = optionOutlooks.get(option.optionId) || {
+                  level: null,
+                  cleanWhy: option.whyItFits,
+                };
+
+                return (
+                  <article
+                    key={option.optionId}
+                    className="professional-hover flex flex-col rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-4"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="text-xs font-bold text-[var(--brand-strong)]">
+                          {String(option.position).padStart(2, "0")}
+                        </p>
+                        <h6 className="mt-1 text-base font-semibold leading-5">{option.programme}</h6>
+                        <p className="mt-1 text-xs leading-5 text-[var(--muted)]">
+                          {option.institution}{option.city ? ` · ${option.city}` : ""}
+                        </p>
+                      </div>
+                      {status ? (
+                        <span className={`shrink-0 rounded-full px-2 py-1 text-[10px] font-semibold ${status.className}`}>
+                          {status.label}
+                        </span>
+                      ) : null}
+                    </div>
+
+                    {outlook.level ? (
+                      <div
+                        className={`mt-4 rounded-[var(--radius-control)] px-3 py-2.5 ${
+                          outlook.level === "strong"
+                            ? "bg-[var(--brand-soft)]"
+                            : "bg-[var(--accent-light)]"
+                        }`}
+                      >
+                        <p className="text-[10px] font-bold uppercase tracking-[0.06em] text-[var(--muted)]">
+                          {t.outlookEyebrow}
+                        </p>
+                        <p className="mt-1 text-sm font-bold leading-5 text-[var(--foreground)]">
+                          {outlook.level === "strong" ? t.outlookStrong : t.outlookGood}
+                        </p>
+                      </div>
+                    ) : null}
+
+                    <p className="mt-4 text-sm leading-6 text-[var(--foreground)]">{outlook.cleanWhy}</p>
+
+                    <div className="mt-auto border-t border-[var(--border)] pt-3">
+                      <p className="text-[10px] font-bold uppercase tracking-[0.06em] text-[var(--brand-strong)]">{t.checking}</p>
+                      <p className="mt-1.5 text-xs leading-5 text-[var(--muted)]">{option.verificationNote}</p>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          </div>
+        ) : null}
       </section>
 
       <section
