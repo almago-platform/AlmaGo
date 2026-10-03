@@ -103,19 +103,19 @@ export function PublicOrientationForm({
   const smartPriority = useMemo(() => evaluateSmartOrientationPriority(answers), [answers]);
   const firstContactCopy = {
     fr: {
-      answers: "Voir les réponses utilisées",
+      answers: "Voir les informations de mon profil",
       answersHelp: "Ces informations servent à personnaliser votre orientation. Vous pouvez les modifier à tout moment.",
     },
     ar: {
-      answers: "عرض الإجابات المستخدمة",
+      answers: "عرض معلومات ملفي",
       answersHelp: "تُستخدم هذه المعلومات لتخصيص توجيهك، ويمكنك تعديلها في أي وقت.",
     },
     en: {
-      answers: "View the answers used",
+      answers: "View my profile information",
       answersHelp: "These details personalise your orientation. You can change them at any time.",
     },
     de: {
-      answers: "Verwendete Antworten anzeigen",
+      answers: "Meine Profilangaben anzeigen",
       answersHelp: "Diese Angaben personalisieren deine Orientierung und können jederzeit geändert werden.",
     },
   }[locale];

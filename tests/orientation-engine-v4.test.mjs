@@ -106,7 +106,7 @@ test("Orientation V4 makes the simple letter primary and keeps technical evidenc
 test("Orientation V4 makes Bachelor first contact letter-first while retaining legacy paths elsewhere", () => {
   assert.match(form, /PersonalizedOrientationEngineCard/);
   assert.match(form, /isBachelorFirstContact = answers\.targetDegree === "Bachelor"/);
-  assert.match(form, /Voir les réponses utilisées/);
+  assert.match(form, /Voir les informations de mon profil/);
   assert.match(form, /OrientationRouteCard/);
   assert.match(form, /OrientationOnePagePrintReport/);
   assert.match(ui, /isBachelorFirstContact/);

@@ -75,7 +75,7 @@ test.describe("Smart Orientation Partner-Ready rehearsal", () => {
     await expect(page.locator("#smart-orientation-title")).toHaveCount(0);
     await expect(page.locator("#orientation-route-title")).toHaveCount(0);
     await expect(page.getByRole("heading", { name: "Votre orientation pour étudier en Allemagne" })).toBeVisible();
-    await expect(page.getByText("Voir les réponses utilisées")).toBeVisible();
+    await expect(page.getByText("Voir les informations de mon profil")).toBeVisible();
     await expect(page.getByText("Les options détaillées sont momentanément indisponibles", { exact: false })).toHaveCount(0);
     await expect(page.locator("#orientation-prospect-capture")).toHaveCount(0);
     await assertNoSeriousA11y(page);
@@ -340,15 +340,15 @@ test.describe("Smart Orientation Partner-Ready rehearsal", () => {
     await expect(page.getByText(/attente.*admin|approbation.*admin/i)).toHaveCount(0);
 
     if ((primaryPayload?.personalized?.selected?.length || 0) > 0) {
-      await expect(page.getByText("Programmes sélectionnés pour votre projet")).toBeVisible();
+      await expect(page.getByText("Les programmes que nous étudions pour votre projet")).toBeVisible();
       await expect(page.getByText("Votre prochaine étape")).toBeVisible();
       await expect(page.getByText("Vous avancez étape par étape. Nous gardons le cap avec vous.")).toBeVisible();
       await expect(page.getByText("Votre priorité")).toBeVisible();
-      await expect(page.getByText("Ce que nous sécurisons")).toBeVisible();
+      await expect(page.getByText("Ce que nous vérifions")).toBeVisible();
       await expect(page.getByText("Ce que nous préparons avec vous")).toBeVisible();
       await expect(page.getByText("Votre projet, en bref")).toBeVisible();
-      await expect(page.getByText(/Vous savez ce qui est prêt, ce qui reste à confirmer et quelle est la prochaine étape/)).toBeVisible();
-      await expect(page.getByText(/école de langue partenaire validée en Allemagne/i)).toBeVisible();
+      await expect(page.getByText(/Votre prochaine priorité est claire/)).toBeVisible();
+      await expect(page.getByText(/école de langue partenaire en Allemagne/i)).toBeVisible();
       await expect(page.getByText(/selon l’accompagnement choisi/i)).toHaveCount(0);
       await expect(page.getByText("Voir les informations vérifiées et les sources officielles")).toBeVisible();
     }
