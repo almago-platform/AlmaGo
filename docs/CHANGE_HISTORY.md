@@ -8,7 +8,7 @@ Policy: `docs/CHANGE_CONTROL.md`
 
 | Date | Category | Status | Recovery SHA | Checkpoint tag | Issue / PR | Summary | Selective rollback |
 |---|---|---|---|---|---|---|---|
-| 2026-10-03 | DOCUMENTS_ASSETS | active | `994086e1fd2ae7086152043c88f94e44028445cd` | N/A | #769 / pending | Introduce change-history and selective rollback governance | Revert only the governance PR/files |
+| 2026-10-03 | DOCUMENTS_ASSETS | active | `994086e1fd2ae7086152043c88f94e44028445cd` | N/A | #769 / #772 | Introduce change-history and selective rollback governance | Revert only the governance PR/files |
 | 2026-10-03 | ALL | baseline | `994086e1fd2ae7086152043c88f94e44028445cd` | N/A | — | Initial prospective recovery baseline | Use this immutable commit only as a verified repository-wide reference |
 
 > History begins prospectively on 2026-10-03. Older entries must be backed by verifiable GitHub evidence; they must not be reconstructed from memory.
@@ -38,7 +38,7 @@ Use for repository documentation, PDFs, templates and static/downloadable assets
 - Recovery SHA: `994086e1fd2ae7086152043c88f94e44028445cd`
 - Checkpoint tag: N/A — no design surface is changed
 - Issue: #769
-- PR: pending
+- PR: #772
 - Owned paths:
   - `AGENTS.md`
   - `.github/pull_request_template.md`
@@ -55,6 +55,7 @@ Use for repository documentation, PDFs, templates and static/downloadable assets
   - Revert only this governance PR/commit or restore only the listed files from `994086e1fd2ae7086152043c88f94e44028445cd`.
 - Validation:
   - Documentation consistency and GitHub diff/CI review.
+  - PR opened from a branch 5 commits ahead and 0 behind the recorded recovery SHA.
 
 ## FEATURES_WORKFLOWS
 
