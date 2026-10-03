@@ -50,6 +50,7 @@ export function buildOrientationHumanReviewProfileFingerprint(
       targetDegree: profile.targetDegree,
       targetField: profile.targetField,
       engineeringSpecialty: profile.engineeringSpecialty,
+      scienceSpecialty: profile.scienceSpecialty,
       germanLevel: profile.germanLevel,
       englishLevel: profile.englishLevel,
       studyLanguage: profile.studyLanguage,
