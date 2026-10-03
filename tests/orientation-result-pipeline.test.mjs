@@ -13,6 +13,7 @@ const writerCard = read("src/components/orientation/OrientationPersonalizedWrite
 const form = read("src/components/orientation/PublicOrientationForm.tsx");
 const adminPanel = read("src/components/admin/AdminOrientationPanel.tsx");
 const universalGuidance = read("src/lib/orientation/universal-guidance.ts");
+const intelligence = read("src/lib/orientation-engine/intelligence.ts");
 
 test("E orchestrates A/B/C/D only after the discovery contract allows university discovery", () => {
   assert.match(service, /buildOrientationDiscoveryPlan\(profile\)/);
@@ -60,6 +61,28 @@ test("E exposes one canonical shortlist source and lets it drive presentation", 
   assert.match(engineCard, /personalized \? \(/);
   assert.match(engineCard, /<OrientationLetterCard/);
   assert.match(engineCard, /!personalized \? \(/);
+});
+
+test("E no-Bac route cannot surface deterministic or AI university suggestions", () => {
+  assert.match(canonical, /engine\.profile\.bacStatus === "no_bac"[\s\S]*?source: "none"/);
+  assert.match(
+    intelligence,
+    /profile\.bacStatus === "no_bac"[\s\S]*?profile\.targetDegree !== "Bachelor"/,
+  );
+  assert.match(intelligence, /Nous ne proposons pas encore d’université à ce stade/);
+  assert.match(engineCard, /fallbackRecommendations/);
+  assert.match(
+    engineCard,
+    /result\?\.shortlist\.source === "deterministic_fallback"[\s\S]*?result\.engine\.recommendations/,
+  );
+  assert.match(
+    engineCard,
+    /!personalized && result\.shortlist\.source === "deterministic_fallback"/,
+  );
+  assert.doesNotMatch(
+    engineCard,
+    /recommendations=\{result\.engine\.recommendations\}/,
+  );
 });
 
 test("E writer UI presents a premium progressive result with one CTA and verified details", () => {
