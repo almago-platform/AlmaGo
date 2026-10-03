@@ -39,9 +39,25 @@ export function HomeJourneySection({
           </div>
           <p>{journey.intro}</p>
         </div>
+        <div className={s.journeyRail} aria-hidden="true">
+          {journey.steps.map(([title], index) => (
+            <div className={s.journeyRailStep} key={title}>
+              <span>{String(index + 1).padStart(2, "0")}</span>
+              <small>{title}</small>
+            </div>
+          ))}
+        </div>
         <ol className={s.steps} aria-label={journey.aria}>
           {journey.steps.map(([title, text, detail], index) => (
-            <li key={title} id={stepIds[index]} className={s.stepCard}>
+            <li
+              key={title}
+              id={stepIds[index]}
+              className={s.stepCard}
+              data-step={String(index + 1).padStart(2, "0")}
+            >
+              <span className={s.stepIndex} aria-hidden="true">
+                {String(index + 1).padStart(2, "0")}
+              </span>
               <div className={s.stepMedia}>
                 <Image
                   src={images[index]}
@@ -49,7 +65,6 @@ export function HomeJourneySection({
                   fill
                   sizes="(min-width: 1200px) 31vw, (min-width: 700px) 48vw, 100vw"
                 />
-                <span className={s.stepIndex}>{String(index + 1).padStart(2, "0")}</span>
               </div>
               <div className={s.stepBody}>
                 <div className={s.stepTopline}>

@@ -43,3 +43,16 @@ test("V6 has responsive visual-density styling", () => {
   assert.ok(css.includes("background: #252a2d"));
   assert.ok(css.includes("@media (max-width: 599px)"));
 });
+
+
+test("premium journey connects the six public steps and becomes a mobile timeline", () => {
+  assert.ok(journey.includes("className={s.journeyRail}"));
+  assert.ok(journey.includes("className={s.journeyRailStep}"));
+  assert.ok(journey.includes("data-step={String(index + 1).padStart(2, \"0\")}"));
+  assert.match(css, /\.journeyRail\s*\{[\s\S]*grid-template-columns:\s*repeat\(6/);
+  assert.match(css, /\.journey \.stepCard:hover/);
+  assert.match(css, /\.journey \.stepCard:last-child/);
+  assert.match(css, /@media \(max-width: 767px\)[\s\S]*\.journey \.steps::before/);
+  assert.match(css, /@media \(max-width: 767px\)[\s\S]*\.journey \.stepIndex[\s\S]*left:\s*-46px/);
+  assert.match(css, /\.journey \.journeyFoot a[\s\S]*background:\s*var\(--brand\)/);
+});
