@@ -33,7 +33,7 @@ test("admin finance catalogue filter has an accessible name", () => {
 });
 
 test("admin overview keeps small text on subtle surfaces above the A43 contrast floor", () => {
-  assert.match(shell, /text-slate-700">\s*Espace équipe/);
+  assert.match(shell, /text-\[var\(--foreground-soft\)\]">\s*Espace équipe/);
   assert.match(dashboard, /text-slate-700">Ordre de traitement/);
   assert.match(
     programsPanel,

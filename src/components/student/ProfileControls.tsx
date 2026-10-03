@@ -31,7 +31,7 @@ export function TextInput({
   inputDir?: "ltr" | "rtl" | "auto";
 }) {
   return (
-    <label className="block text-sm font-medium leading-6 text-slate-700">
+    <label className="block text-sm font-medium leading-6 text-[var(--foreground-soft)]">
       <FieldLabel label={label} required={required} />
       <input
         required={required}
@@ -65,7 +65,7 @@ export function SelectInput({
   const hasLegacyValue = value !== "" && !options.some((option) => option.value === value);
 
   return (
-    <label className="block text-sm font-medium leading-6 text-slate-700">
+    <label className="block text-sm font-medium leading-6 text-[var(--foreground-soft)]">
       <FieldLabel label={label} required={required} />
       <select required={required} value={value} onChange={(event) => onChange(event.target.value)} className="field">
         <option value="">{controls.choose}</option>
@@ -74,7 +74,7 @@ export function SelectInput({
           <option key={option.value} value={option.value}>{option.label}</option>
         ))}
       </select>
-      {hasLegacyValue && <span className="mt-1 block text-xs font-normal text-amber-700">{controls.updateWarning}</span>}
+      {hasLegacyValue && <span className="mt-1 block text-xs font-normal text-[var(--warning)]">{controls.updateWarning}</span>}
     </label>
   );
 }
@@ -103,7 +103,7 @@ export function SearchableDatalistInput({
   const hasLegacyValue = value !== "" && !options.some((option) => option.value === value);
 
   return (
-    <label className="block text-sm font-medium leading-6 text-slate-700">
+    <label className="block text-sm font-medium leading-6 text-[var(--foreground-soft)]">
       <FieldLabel label={label} required={required} />
       <select required={required} value={value} onChange={(event) => onChange(event.target.value)} className="field">
         <option value="">{controls.choose}</option>
@@ -112,7 +112,7 @@ export function SearchableDatalistInput({
           <option key={option.value} value={option.value}>{option.label}</option>
         ))}
       </select>
-      {hasLegacyValue && <span className="mt-1 block text-xs font-normal text-amber-700">{controls.updateWarning}</span>}
+      {hasLegacyValue && <span className="mt-1 block text-xs font-normal text-[var(--warning)]">{controls.updateWarning}</span>}
     </label>
   );
 }
@@ -138,7 +138,7 @@ export function PreferredCitiesPicker({ value, onChange }: { value: string[]; on
 
   return (
     <fieldset className="sm:col-span-2">
-      <legend className="text-sm font-medium text-slate-700"><FieldLabel label={controls.preferredCities} /></legend>
+      <legend className="text-sm font-medium text-[var(--foreground-soft)]"><FieldLabel label={controls.preferredCities} /></legend>
       <input
         value={query}
         dir={locale === "ar" ? "ltr" : undefined}
@@ -147,10 +147,10 @@ export function PreferredCitiesPicker({ value, onChange }: { value: string[]; on
         className="field"
       />
       {legacyCities.length > 0 && (
-        <div className="mt-2 rounded-[var(--radius-control)] border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">
+        <div className="mt-2 rounded-[var(--radius-control)] border border-[var(--warning-border)] bg-[var(--warning-soft)] p-3 text-sm text-[var(--warning-strong)]">
           {controls.legacyCities}:{" "}
           {legacyCities.map((city) => (
-            <button type="button" key={city} onClick={() => toggle(city)} className="mx-1 min-h-9 rounded-[var(--radius-control)] bg-white px-2 py-1 underline">
+            <button type="button" key={city} onClick={() => toggle(city)} className="mx-1 min-h-9 rounded-[var(--radius-control)] bg-[var(--surface-raised)] px-2 py-1 underline">
               <bdi dir={locale === "ar" ? "ltr" : undefined}>{city}</bdi> ×
             </button>
           ))}
@@ -164,7 +164,7 @@ export function PreferredCitiesPicker({ value, onChange }: { value: string[]; on
             onClick={() => toggle(city)}
             aria-pressed={value.includes(city)}
             className={`min-h-10 rounded-[var(--radius-control)] px-3 py-1.5 text-sm font-medium transition-colors ${
-              value.includes(city) ? "bg-[var(--brand)] text-white" : "bg-[var(--surface-muted)] text-slate-700 hover:bg-slate-200"
+              value.includes(city) ? "bg-[var(--brand)] text-white" : "bg-[var(--surface-muted)] text-[var(--foreground-soft)] hover:bg-[var(--surface-subtle)]"
             }`}
           >
             <bdi dir={locale === "ar" ? "ltr" : undefined}>{localizePreferredCity(locale, city)}</bdi>
@@ -172,12 +172,12 @@ export function PreferredCitiesPicker({ value, onChange }: { value: string[]; on
         ))}
       </div>
       {value.length > 0 && (
-        <div className="mt-3 flex flex-wrap items-center gap-2 text-sm text-slate-600">
+        <div className="mt-3 flex flex-wrap items-center gap-2 text-sm text-[var(--muted)]">
           <span>{controls.selection}:</span>
           {value.map((city) => (
             <span
               key={city}
-              className="rounded-full border border-[var(--border)] bg-[var(--surface-subtle)] px-2.5 py-1 text-xs font-semibold text-slate-700"
+              className="rounded-full border border-[var(--border)] bg-[var(--surface-subtle)] px-2.5 py-1 text-xs font-semibold text-[var(--foreground-soft)]"
             >
               <bdi dir={locale === "ar" ? "ltr" : undefined}>{localizePreferredCity(locale, city)}</bdi>
             </span>

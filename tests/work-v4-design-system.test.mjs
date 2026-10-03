@@ -30,7 +30,7 @@ test("public homepage uses the scoped AlmaGo module and current Brand V2 tokens"
 
 test("student and admin share the current Brand V2 shell tokens", () => {
   assert.match(shell, /bg-\[var\(--surface\)\]/);
-  assert.match(shell, /bg-\[#fffdf8\]\/95/);
+  assert.match(shell, /bg-\[var\(--surface\)\]\/95/);
   assert.match(shell, /bg-\[var\(--brand-soft\)\]/);
   assert.match(shell, /text-\[var\(--foreground\)\]/);
 });
