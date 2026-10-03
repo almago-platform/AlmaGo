@@ -6,6 +6,8 @@ import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Card } from "@/components/ui/Card";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { ProgressBar } from "@/components/ui/ProgressBar";
+import { AlmagoJourney } from "@/components/student/AlmagoJourney";
+import { buildAlmagoJourney } from "@/lib/student/almago-journey";
 import { createClient } from "@/lib/supabase/server";
 import { getRequestCopy } from "@/lib/i18n-server";
 import { studentDashboardCopy } from "@/content/student-dashboard-copy";
@@ -99,6 +101,17 @@ export default async function StudentEntry() {
   const waitingAlmaGo = checklist.filter((item) => item.status === "waiting_almago");
   const nextItem = actionableChecklist.find((item) => item.status === "waiting_student") || actionableChecklist[0];
 
+  const checklistStatusByKey = new Map(
+    checklist.flatMap((item) => {
+      const relation = firstRelation(item.checklist_templates);
+      return relation?.key ? [[relation.key, item.status] as const] : [];
+    }),
+  );
+  const documentChecklistOpen = checklist.filter((item) => {
+    const relation = firstRelation(item.checklist_templates);
+    return ["passport", "translation"].includes(relation?.key || "") && item.status !== "completed";
+  }).length;
+
   const approvedDocuments = studentDocuments.filter((document) => document.status === "approved").length;
   const documentsNeedingAction = studentDocuments.filter((document) =>
     ["rejected", "replace_required"].includes(document.status),
@@ -110,6 +123,20 @@ export default async function StudentEntry() {
 
   const studentActionCount = actionableChecklist.length + documentsNeedingAction + actionableApplications.length;
   const hasActionRequired = studentActionCount > 0;
+
+  const almagoJourney = buildAlmagoJourney({
+    projectDefined: Boolean(project?.path || project?.target_degree || project?.target_field || project?.target_intake),
+    profileCompleted: Boolean(profile.onboarding_completed),
+    documentsNeedingAction,
+    documentChecklistOpen,
+    savedProgrammes: studentRecommendations.length,
+    applicationStatuses: studentApplications.map((application) => application.status),
+    applicationsMissingDocuments: studentApplications.filter(
+      (application) => normalizeApplicationStatus(application.status) === "documents_missing",
+    ).length,
+    applicationNextActions: actionableApplications.length,
+    germanyPreparationStatus: checklistStatusByKey.get("germany_preparation") || null,
+  });
 
   const nextAction = documentsNeedingAction
     ? {
@@ -300,6 +327,13 @@ export default async function StudentEntry() {
           </p>
         </aside>
       </section>
+
+      <div className="mt-7">
+        <AlmagoJourney
+          model={almagoJourney}
+          nextAction={{ label: nextAction.label, detail: nextAction.detail, href: nextAction.href }}
+        />
+      </div>
 
       <section className="mt-7" aria-labelledby="deadlines-title">
         <div className="mb-3 flex items-end justify-between gap-4">
