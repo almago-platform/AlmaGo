@@ -304,13 +304,30 @@ const fallbackCopy = {
   fr: {
     opening: (profile: OrientationWriterContext["PROFIL_ETUDIANT"]) => {
       const bac = profile.bac_track ? `Bac ${profile.bac_track}` : "Bac";
+      const higherDiploma =
+        profile.target_degree === "Master"
+        && profile.last_diploma
+        && !["none", "Baccalauréat", "secondary_other"].includes(profile.last_diploma);
+
+      if (higherDiploma) {
+        return `Votre parcours universitaire jusqu’à ${profile.last_diploma} représente déjà une étape importante ; nous allons maintenant structurer votre projet de Master en Allemagne.`;
+      }
       if (profile.bac_status === "obtained" && profile.average_out_of_20) {
-        return `Avec votre ${bac} à ${profile.average_out_of_20}/20, Campus Allemagne peut maintenant structurer un projet d’études concret en Allemagne.`;
+        return `Félicitations pour votre ${bac} obtenu avec ${profile.average_out_of_20}/20. Nous allons maintenant structurer la suite de votre projet d’études en Allemagne.`;
       }
       if (profile.bac_status === "obtained") {
-        return `Avec votre ${bac}, Campus Allemagne peut maintenant structurer la suite de votre projet d’études en Allemagne.`;
+        return `Félicitations pour l’obtention de votre ${bac}. Nous allons maintenant structurer la suite de votre projet d’études en Allemagne.`;
       }
-      return "Votre projet Allemagne peut déjà avancer : nous clarifions la prochaine action et organisons les vérifications utiles en parallèle.";
+      if (profile.bac_status === "preparing") {
+        return "Bon courage pour cette étape vers le Bac. Votre projet d’études en Allemagne peut déjà se préparer dès maintenant.";
+      }
+      if (profile.bac_status === "no_bac") {
+        return "Votre projet d’études en Allemagne peut déjà commencer à se construire ; nous allons d’abord clarifier la prochaine étape académique adaptée.";
+      }
+      if (profile.german_level === "C1" || profile.german_level === "C2") {
+        return `Votre niveau ${profile.german_level} en allemand représente déjà une avancée importante dans votre projet ; nous pouvons maintenant structurer la suite.`;
+      }
+      return "Votre projet d’études en Allemagne peut commencer à prendre forme dès maintenant ; nous allons avancer étape par étape.";
     },
     projectReady: "Votre projet est suffisamment clair pour que nous commencions à structurer les prochaines étapes et à consolider les pistes universitaires adaptées.",
     projectPartial: "Nous avons déjà identifié des pistes utiles. Notre équipe complète maintenant les informations manquantes avant de resserrer la sélection.",
@@ -328,10 +345,32 @@ const fallbackCopy = {
     ],
   },
   ar: {
-    opening: (profile: OrientationWriterContext["PROFIL_ETUDIANT"]) =>
-      profile.bac_status === "obtained" && profile.average_out_of_20
-        ? `بمعدل ${profile.average_out_of_20}/20 في الباكالوريا، يمكن لـ Campus Allemagne الآن تنظيم مشروعك الدراسي في ألمانيا بشكل واضح.`
-        : "مشروعك للدراسة في ألمانيا يمكن أن يبدأ من الآن. سنعطيك خطوة واضحة ونواصل نحن بالتوازي تنظيم التحقق والملف.",
+    opening: (profile: OrientationWriterContext["PROFIL_ETUDIANT"]) => {
+      const higherDiploma =
+        profile.target_degree === "Master"
+        && profile.last_diploma
+        && !["none", "Baccalauréat", "secondary_other"].includes(profile.last_diploma);
+
+      if (higherDiploma) {
+        return `مسارك الجامعي حتى ${profile.last_diploma} يمثل خطوة مهمة أنجزتها بالفعل، وسنبدأ الآن بتنظيم مشروع الماستر في ألمانيا.`;
+      }
+      if (profile.bac_status === "obtained" && profile.average_out_of_20) {
+        return `مبروك على الحصول على الباكالوريا بمعدل ${profile.average_out_of_20}/20. سننظم الآن معك الخطوة التالية من مشروع الدراسة في ألمانيا.`;
+      }
+      if (profile.bac_status === "obtained") {
+        return "مبروك على الحصول على الباكالوريا. سننظم الآن معك الخطوة التالية من مشروع الدراسة في ألمانيا.";
+      }
+      if (profile.bac_status === "preparing") {
+        return "بالتوفيق في هذه المرحلة نحو الباكالوريا. يمكنك من الآن البدء في تحضير مشروع الدراسة في ألمانيا خطوة بخطوة.";
+      }
+      if (profile.bac_status === "no_bac") {
+        return "يمكن لمشروعك للدراسة في ألمانيا أن يبدأ من الآن؛ سنوضح أولًا الخطوة الأكاديمية التالية المناسبة لوضعك.";
+      }
+      if (profile.german_level === "C1" || profile.german_level === "C2") {
+        return `وصولك إلى مستوى ${profile.german_level} في الألمانية يمثل تقدمًا مهمًا في مشروعك، ويمكننا الآن تنظيم الخطوات التالية.`;
+      }
+      return "يمكن لمشروعك للدراسة في ألمانيا أن يبدأ من الآن، وسنتقدم معك خطوة بخطوة.";
+    },
     projectReady: "مشروعك واضح بما يكفي لنبدأ في تنظيم الخطوات القادمة وتثبيت الخيارات الجامعية المناسبة.",
     projectPartial: "حددنا بالفعل خيارات مفيدة، وفريقنا يكمل الآن المعلومات الناقصة قبل تضييق الاختيار.",
     projectEmpty: "سنثبت أولًا المعلومات الأكاديمية الأساسية حتى نبني اختيارًا جامعيًا موثوقًا.",
@@ -348,10 +387,32 @@ const fallbackCopy = {
     ],
   },
   en: {
-    opening: (profile: OrientationWriterContext["PROFIL_ETUDIANT"]) =>
-      profile.bac_status === "obtained" && profile.average_out_of_20
-        ? `With ${profile.average_out_of_20}/20 in your secondary diploma, Campus Allemagne can now structure a concrete Germany study plan around your profile.`
-        : "Your Germany project can start moving now. Campus Allemagne will give you one clear next action while we organise the complex checks in parallel.",
+    opening: (profile: OrientationWriterContext["PROFIL_ETUDIANT"]) => {
+      const higherDiploma =
+        profile.target_degree === "Master"
+        && profile.last_diploma
+        && !["none", "Baccalauréat", "secondary_other"].includes(profile.last_diploma);
+
+      if (higherDiploma) {
+        return `Your academic path through ${profile.last_diploma} is already an important milestone; we can now structure your Master project in Germany.`;
+      }
+      if (profile.bac_status === "obtained" && profile.average_out_of_20) {
+        return `Congratulations on completing your secondary diploma with ${profile.average_out_of_20}/20. We can now structure the next step of your Germany study project.`;
+      }
+      if (profile.bac_status === "obtained") {
+        return "Congratulations on completing your secondary diploma. We can now structure the next step of your Germany study project.";
+      }
+      if (profile.bac_status === "preparing") {
+        return "Good luck with this stage toward your secondary diploma. Your Germany study project can already start taking shape now.";
+      }
+      if (profile.bac_status === "no_bac") {
+        return "Your Germany study project can already start taking shape; we will first clarify the next academic step that fits your situation.";
+      }
+      if (profile.german_level === "C1" || profile.german_level === "C2") {
+        return `Your ${profile.german_level} German level is already meaningful progress in your project; we can now structure the next steps.`;
+      }
+      return "Your Germany study project can start taking shape now, one clear step at a time.";
+    },
     projectReady: "Your project is clear enough for us to structure the next steps and consolidate suitable university paths.",
     projectPartial: "We have already identified useful paths. Our team is completing the missing information before narrowing the shortlist.",
     projectEmpty: "We will first consolidate the essential academic information so we can build a reliable university shortlist.",
@@ -368,10 +429,32 @@ const fallbackCopy = {
     ],
   },
   de: {
-    opening: (profile: OrientationWriterContext["PROFIL_ETUDIANT"]) =>
-      profile.bac_status === "obtained" && profile.average_out_of_20
-        ? `Mit ${profile.average_out_of_20}/20 im Schulabschluss kann Campus Allemagne dein Deutschland-Projekt jetzt konkret strukturieren.`
-        : "Dein Deutschland-Projekt kann jetzt vorankommen. Campus Allemagne gibt dir einen klaren nächsten Schritt und koordiniert parallel die komplexeren Prüfungen.",
+    opening: (profile: OrientationWriterContext["PROFIL_ETUDIANT"]) => {
+      const higherDiploma =
+        profile.target_degree === "Master"
+        && profile.last_diploma
+        && !["none", "Baccalauréat", "secondary_other"].includes(profile.last_diploma);
+
+      if (higherDiploma) {
+        return `Dein bisheriger Hochschulweg bis ${profile.last_diploma} ist bereits ein wichtiger Meilenstein; jetzt strukturieren wir dein Master-Projekt in Deutschland.`;
+      }
+      if (profile.bac_status === "obtained" && profile.average_out_of_20) {
+        return `Glückwunsch zu deinem Schulabschluss mit ${profile.average_out_of_20}/20. Jetzt können wir den nächsten Schritt deines Deutschland-Projekts strukturieren.`;
+      }
+      if (profile.bac_status === "obtained") {
+        return "Glückwunsch zu deinem Schulabschluss. Jetzt können wir den nächsten Schritt deines Deutschland-Projekts strukturieren.";
+      }
+      if (profile.bac_status === "preparing") {
+        return "Viel Erfolg auf dem Weg zu deinem Schulabschluss. Dein Studienprojekt für Deutschland kann schon jetzt Schritt für Schritt vorbereitet werden.";
+      }
+      if (profile.bac_status === "no_bac") {
+        return "Dein Studienprojekt für Deutschland kann bereits Gestalt annehmen; zuerst klären wir den passenden nächsten akademischen Schritt.";
+      }
+      if (profile.german_level === "C1" || profile.german_level === "C2") {
+        return `Dein Deutschniveau ${profile.german_level} ist bereits ein wichtiger Fortschritt für dein Projekt; jetzt können wir die nächsten Schritte strukturieren.`;
+      }
+      return "Dein Studienprojekt für Deutschland kann jetzt Gestalt annehmen – Schritt für Schritt.";
+    },
     projectReady: "Dein Projekt ist klar genug, damit wir die nächsten Schritte strukturieren und passende Hochschuloptionen festigen können.",
     projectPartial: "Wir haben bereits sinnvolle Optionen gefunden. Unser Team ergänzt jetzt die fehlenden Informationen, bevor wir die Auswahl weiter eingrenzen.",
     projectEmpty: "Wir klären zuerst die wesentlichen akademischen Informationen, damit wir eine verlässliche Hochschulauswahl aufbauen können.",

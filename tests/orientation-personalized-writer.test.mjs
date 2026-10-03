@@ -300,8 +300,8 @@ test("D language plan focuses on only the immediate next level", () => {
 test("D deterministic fallback remains useful when Gemini is unavailable", () => {
   const content = buildDeterministicOrientationWriterContent(input());
 
+  assert.match(content.opening, /Félicitations/i);
   assert.match(content.opening, /15\/20/);
-  assert.match(content.opening, /Campus Allemagne/i);
   assert.equal(content.languagePlan.currentLevel, "A2");
   assert.equal(content.languagePlan.nextLevel, "B1");
   assert.equal(content.studyOptions.length, 3);
@@ -311,6 +311,44 @@ test("D deterministic fallback remains useful when Gemini is unavailable", () =>
   assert.equal(content.roadmap[0].label, "Vous");
   assert.equal(content.roadmap[1].label, "Campus Allemagne");
   assert.match(content.studyOptions[0].verificationNote, /Campus Allemagne/i);
+});
+
+test("D human fallback adapts the opening to the candidate academic stage", () => {
+  const preparingProfile = profile({
+    bacStatus: "preparing",
+    generalAverage: "13",
+    averageType: "current_estimate",
+  });
+  const preparing = buildDeterministicOrientationWriterContent(input({
+    profile: preparingProfile,
+    selection: { ...selection(3), profile: preparingProfile },
+  }));
+  assert.match(preparing.opening, /Bon courage/i);
+  assert.doesNotMatch(preparing.opening, /obtenu|réussi|garanti/i);
+
+  const noBacProfile = profile({
+    bacStatus: "no_bac",
+    generalAverage: "",
+    averageType: "",
+    lastDiploma: "none",
+  });
+  const noBac = buildDeterministicOrientationWriterContent(input({
+    profile: noBacProfile,
+    selection: { ...selection(3), profile: noBacProfile },
+  }));
+  assert.match(noBac.opening, /peut déjà commencer à se construire/i);
+  assert.doesNotMatch(noBac.opening, /impossible|échec|refus/i);
+
+  const masterProfile = profile({
+    targetDegree: "Master",
+    lastDiploma: "Licence",
+  });
+  const master = buildDeterministicOrientationWriterContent(input({
+    profile: masterProfile,
+    selection: { ...selection(3), profile: masterProfile },
+  }));
+  assert.match(master.opening, /parcours universitaire/i);
+  assert.match(master.opening, /Master/i);
 });
 
 test("D parser accepts a grounded structured payload and injects programme names from C", () => {
@@ -426,6 +464,11 @@ test("D Gemini adapter is server-only, structured, bounded and has no research t
   assert.match(geminiSource, /declared language level is not automatically a certified or validated level/i);
   assert.match(geminiSource, /Do not claim budget fit, direct academic access, Numerus Clausus status/i);
   assert.match(geminiSource, /Avoid words that imply a guarantee/i);
+  assert.match(geminiSource, /HUMAN OPENING/);
+  assert.match(geminiSource, /If bac_status is obtained, congratulate the achievement naturally/i);
+  assert.match(geminiSource, /If bac_status is preparing, encourage the candidate/i);
+  assert.match(geminiSource, /If bac_status is no_bac, do not shame, alarm or imply that Germany is impossible/i);
+  assert.match(geminiSource, /Never say 'you will get the Bac'/i);
 
 });
 
