@@ -89,18 +89,24 @@ function prioritizeCandidates(
   profile: PublicOrientationAnswers,
   candidates: readonly OrientationDiscoveryResearchCandidate[],
 ) {
+  if (targetSpecializationPhrases(profile).length === 0) {
+    return [...candidates];
+  }
+
   return candidates
     .map((candidate, index) => ({ candidate, index }))
     .sort((a, b) => {
-      const specializationDiff =
-        Number(matchesTargetSpecialization(profile, b.candidate))
-        - Number(matchesTargetSpecialization(profile, a.candidate));
+      const aMatches = matchesTargetSpecialization(profile, a.candidate);
+      const bMatches = matchesTargetSpecialization(profile, b.candidate);
+      const specializationDiff = Number(bMatches) - Number(aMatches);
       if (specializationDiff !== 0) return specializationDiff;
 
-      const languageDiff =
-        Number(teachingLanguageMatches(profile, b.candidate))
-        - Number(teachingLanguageMatches(profile, a.candidate));
-      if (languageDiff !== 0) return languageDiff;
+      if (aMatches && bMatches) {
+        const languageDiff =
+          Number(teachingLanguageMatches(profile, b.candidate))
+          - Number(teachingLanguageMatches(profile, a.candidate));
+        if (languageDiff !== 0) return languageDiff;
+      }
 
       return a.index - b.index;
     })
