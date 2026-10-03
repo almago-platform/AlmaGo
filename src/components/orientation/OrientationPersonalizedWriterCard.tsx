@@ -856,54 +856,64 @@ export function OrientationPersonalizedWriterCard({
         className="relative overflow-hidden rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface-subtle)] p-5 sm:p-6"
       >
         <div aria-hidden="true" className="absolute inset-y-0 start-0 w-0.5 bg-[var(--brand)]" />
-        <p className="text-xs font-semibold text-[var(--brand-strong)]">{t.priority}</p>
-        <h4 id="orientation-main-priority" className="mt-2 text-2xl font-semibold tracking-tight">
-          {content.mainPriority.title}
-        </h4>
-        <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
-          {content.mainPriority.text}
-        </p>
+        <div className="grid gap-4 lg:grid-cols-[minmax(0,1.2fr)_minmax(15rem,0.8fr)]">
+          <div>
+            <p className="text-xs font-semibold text-[var(--brand-strong)]">{t.priority}</p>
+            <h4 id="orientation-main-priority" className="mt-2 text-2xl font-semibold tracking-tight">
+              {content.mainPriority.title}
+            </h4>
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--muted)]">
+              {content.mainPriority.text}
+            </p>
 
-        {content.languagePlan.show ? (
-          <>
-            <div className="mt-4 flex flex-wrap items-center gap-2">
-              <span className="text-xs font-semibold text-[var(--muted)]">{t.language}</span>
-              {content.languagePlan.currentLevel ? (
-                <span className="rounded-full bg-[var(--surface)] px-3 py-1 text-xs font-semibold ring-1 ring-inset ring-[var(--border)]">
-                  {content.languagePlan.currentLevel}
-                </span>
-              ) : null}
-              {content.languagePlan.currentLevel && content.languagePlan.nextLevel ? (
-                <span aria-hidden="true" className="text-[var(--muted)]">→</span>
-              ) : null}
-              {content.languagePlan.nextLevel ? (
-                <span className="rounded-full bg-[var(--brand-soft)] px-3 py-1 text-xs font-bold text-[var(--brand-strong)]">
-                  {content.languagePlan.nextLevel}
-                </span>
-              ) : null}
-            </div>
-
-            {languageChoices.length ? (
-              <div className="mt-4 border-t border-[var(--border)] pt-4">
-                <p className="text-xs font-semibold text-[var(--muted)]">{t.languagePaths}</p>
-                <div className="mt-2 grid gap-2 sm:grid-cols-3">
-                  {languageChoices.map((choice) => (
-                    <div key={choice.title} className="rounded-[var(--radius-control)] bg-[var(--surface)] p-3 ring-1 ring-inset ring-[var(--border)]">
-                      <p className="text-sm font-semibold">{choice.title}</p>
-                      {choice.text ? (
-                        <p className="mt-1 text-xs leading-5 text-[var(--muted)]">{choice.text}</p>
-                      ) : null}
-                    </div>
-                  ))}
-                </div>
+            {content.languagePlan.show ? (
+              <div className="mt-4 flex flex-wrap items-center gap-2">
+                <span className="text-xs font-semibold text-[var(--muted)]">{t.language}</span>
+                {content.languagePlan.currentLevel ? (
+                  <span className="rounded-full bg-[var(--surface)] px-3 py-1 text-xs font-semibold ring-1 ring-inset ring-[var(--border)]">
+                    {content.languagePlan.currentLevel}
+                  </span>
+                ) : null}
+                {content.languagePlan.currentLevel && content.languagePlan.nextLevel ? (
+                  <span aria-hidden="true" className="text-[var(--muted)]">→</span>
+                ) : null}
+                {content.languagePlan.nextLevel ? (
+                  <span className="rounded-full bg-[var(--brand-soft)] px-3 py-1 text-xs font-bold text-[var(--brand-strong)]">
+                    {content.languagePlan.nextLevel}
+                  </span>
+                ) : null}
               </div>
-            ) : null}
-          </>
-        ) : (
-          <p className="mt-4 text-sm font-semibold leading-6">
-            {content.mainPriority.nextStep}
-          </p>
-        )}
+            ) : (
+              <p className="mt-4 text-sm font-semibold leading-6">
+                {content.mainPriority.nextStep}
+              </p>
+            )}
+          </div>
+
+          <aside className="rounded-[var(--radius-control)] bg-[var(--surface)] p-4 ring-1 ring-inset ring-[var(--border)]">
+            <p className="text-xs font-bold text-[var(--foreground)]">{t.priorityParallelTitle}</p>
+            <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{t.priorityParallelText}</p>
+          </aside>
+        </div>
+
+        {content.languagePlan.show && languageChoices.length ? (
+          <div className="mt-5 border-t border-[var(--border)] pt-4">
+            <p className="text-xs font-semibold text-[var(--muted)]">{t.languagePaths}</p>
+            <div className="mt-2 grid gap-2 sm:grid-cols-3">
+              {languageChoices.map((choice) => (
+                <div
+                  key={choice.title}
+                  className="rounded-[var(--radius-control)] bg-[var(--surface)] p-3.5 ring-1 ring-inset ring-[var(--border)]"
+                >
+                  <p className="text-sm font-semibold">{choice.title}</p>
+                  {choice.text ? (
+                    <p className="mt-1 text-xs leading-5 text-[var(--muted)]">{choice.text}</p>
+                  ) : null}
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : null}
 
         {showCta ? (
           <a
@@ -916,26 +926,24 @@ export function OrientationPersonalizedWriterCard({
       </section>
 
       <section aria-labelledby="orientation-responsibilities">
-        <h4 id="orientation-responsibilities" className="text-2xl font-semibold tracking-tight">
+        <h4 id="orientation-responsibilities" className="max-w-3xl text-2xl font-semibold tracking-tight">
           {t.roles}
         </h4>
-        <div className="mt-4 grid gap-3 md:grid-cols-3">
-          <div className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-4">
+        <div className="mt-4 grid gap-3 md:grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)]">
+          <div className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5">
             <p className="text-xs font-bold text-[var(--brand-strong)]">01</p>
             <h5 className="mt-1.5 text-base font-semibold">{t.roleYou}</h5>
             <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{roleTexts[0]}</p>
           </div>
 
-          <div className="rounded-[var(--radius-panel)] bg-[var(--foreground)] p-4 text-white sm:p-5">
+          <div className="rounded-[var(--radius-panel)] bg-[var(--foreground)] p-5 text-white sm:p-6">
             <p className="text-xs font-bold text-white/[0.55]">02</p>
-            <h5 className="mt-1.5 text-base font-semibold">{t.roleCampus}</h5>
-            <p className="mt-2 text-sm leading-6 text-white/[0.78]">{t.campusLead}</p>
-          </div>
-
-          <div className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4">
-            <p className="text-xs font-bold text-[var(--brand-strong)]">03</p>
-            <h5 className="mt-1.5 text-base font-semibold">{t.roleTogether}</h5>
-            <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{t.campusCommitment}</p>
+            <h5 className="mt-1.5 text-lg font-semibold">{t.roleCampus}</h5>
+            <p className="mt-2 text-sm leading-6 text-white/[0.8]">{t.campusLead}</p>
+            <div className="mt-4 border-t border-white/[0.12] pt-4">
+              <p className="text-xs font-bold uppercase tracking-[0.08em] text-white/[0.5]">{t.roleTogether}</p>
+              <p className="mt-2 text-sm leading-6 text-white/[0.8]">{t.campusCommitment}</p>
+            </div>
           </div>
         </div>
       </section>
@@ -952,33 +960,29 @@ export function OrientationPersonalizedWriterCard({
             return (
               <li key={step} aria-current={current ? "step" : undefined}>
                 <div
-                  className={`h-1.5 rounded-full ${completed
-                    ? "bg-emerald-500"
-                    : current
-                      ? "bg-[var(--brand)]"
-                      : "bg-[var(--border)]"}`}
-                />
-                <div className="mt-3 flex items-start gap-2">
-                  <span
-                    className={`flex size-6 shrink-0 items-center justify-center rounded-full text-[11px] font-bold ${completed
-                      ? "bg-emerald-100 text-emerald-800"
+                  className={`h-1.5 rounded-full ${
+                    completed
+                      ? "bg-emerald-500"
                       : current
-                        ? "bg-[var(--brand-soft)] text-[var(--brand-strong)]"
-                        : "bg-[var(--surface-subtle)] text-[var(--muted)]"}`}
+                        ? "bg-[var(--brand)]"
+                        : "bg-[var(--border)]"
+                  }`}
+                />
+                <div className="mt-3 flex items-center gap-2">
+                  <span
+                    className={`flex size-7 shrink-0 items-center justify-center rounded-full text-[11px] font-bold ${
+                      completed
+                        ? "bg-emerald-100 text-emerald-800"
+                        : current
+                          ? "bg-[var(--brand)] text-white"
+                          : "bg-[var(--surface-subtle)] text-[var(--muted)]"
+                    }`}
                   >
                     {completed ? "✓" : index + 1}
                   </span>
-                  <div>
-                    <p className={`text-xs leading-5 ${current ? "font-bold" : "text-[var(--muted)]"}`}>
-                      {step}
-                    </p>
-                    {current ? (
-                      <>
-                        <p className="mt-0.5 text-[10px] font-semibold text-[var(--brand-strong)]">{t.journeyCurrent}</p>
-                        <p className="mt-1 text-[10px] leading-4 text-[var(--muted)]">{t.journeyCurrentText[journeyStep]}</p>
-                      </>
-                    ) : null}
-                  </div>
+                  <p className={`text-xs leading-5 ${current ? "font-bold text-[var(--foreground)]" : "text-[var(--muted)]"}`}>
+                    {step}
+                  </p>
                 </div>
               </li>
             );
@@ -993,7 +997,7 @@ export function OrientationPersonalizedWriterCard({
               <li
                 key={step}
                 aria-current={current ? "step" : undefined}
-                className="relative flex min-h-14 gap-3 ps-1"
+                className="relative flex min-h-12 gap-3 ps-1"
               >
                 {index < t.journeySteps.length - 1 ? (
                   <span
@@ -1002,29 +1006,37 @@ export function OrientationPersonalizedWriterCard({
                   />
                 ) : null}
                 <span
-                  className={`relative z-10 flex size-6 shrink-0 items-center justify-center rounded-full text-[11px] font-bold ${completed
-                    ? "bg-emerald-100 text-emerald-800"
-                    : current
-                      ? "bg-[var(--brand)] text-white"
-                      : "bg-[var(--surface-subtle)] text-[var(--muted)] ring-1 ring-inset ring-[var(--border)]"}`}
+                  className={`relative z-10 flex size-6 shrink-0 items-center justify-center rounded-full text-[11px] font-bold ${
+                    completed
+                      ? "bg-emerald-100 text-emerald-800"
+                      : current
+                        ? "bg-[var(--brand)] text-white"
+                        : "bg-[var(--surface-subtle)] text-[var(--muted)] ring-1 ring-inset ring-[var(--border)]"
+                  }`}
                 >
                   {completed ? "✓" : index + 1}
                 </span>
-                <div className="pb-5">
-                  <p className={`text-sm leading-6 ${current ? "font-bold" : "text-[var(--muted)]"}`}>
-                    {step}
-                  </p>
-                  {current ? (
-                    <>
-                      <p className="mt-0.5 text-xs font-semibold text-[var(--brand-strong)]">{t.journeyCurrent}</p>
-                      <p className="mt-1 max-w-xl text-xs leading-5 text-[var(--muted)]">{t.journeyCurrentText[journeyStep]}</p>
-                    </>
-                  ) : null}
-                </div>
+                <p className={`pb-4 text-sm leading-6 ${current ? "font-bold" : "text-[var(--muted)]"}`}>
+                  {step}
+                </p>
               </li>
             );
           })}
         </ol>
+
+        <div className="mt-4 rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4 sm:p-5">
+          <p className="text-xs font-bold uppercase tracking-[0.08em] text-[var(--brand-strong)]">{t.journeyCurrent}</p>
+          <p className="mt-1.5 text-base font-semibold text-[var(--foreground)]">{t.journeySteps[journeyStep]}</p>
+          <p className="mt-1.5 max-w-3xl text-sm leading-6 text-[var(--muted)]">{t.journeyCurrentText[journeyStep]}</p>
+        </div>
+      </section>
+
+      <section className="rounded-[var(--radius-panel)] bg-[var(--brand-soft)] px-4 py-4 sm:px-5">
+        <p className="text-xs font-bold uppercase tracking-[0.08em] text-[var(--brand-strong)]">{t.closingEyebrow}</p>
+        <p className="mt-1.5 max-w-3xl text-base font-semibold leading-6 text-[var(--foreground)]">
+          {content.reassurance}
+        </p>
+        <p className="mt-1 max-w-3xl text-sm leading-6 text-[var(--muted)]">{t.closingText}</p>
       </section>
 
       <details className="border-t border-[var(--border)] pt-4">
