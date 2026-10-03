@@ -66,7 +66,10 @@ test("E writer UI presents a premium progressive result with one CTA and verifie
   assert.match(writerCard, /fact\.sourceUrl/);
   assert.match(writerCard, /humanReview\.mode === "post_result_audit"/);
   assert.match(writerCard, /Programmes sélectionnés pour votre projet/);
-  assert.match(writerCard, /Qui fait quoi maintenant/);
+  assert.match(writerCard, /Votre rôle, notre accompagnement/);
+  assert.match(writerCard, /Campus Allemagne pilote le reste/);
+  assert.match(writerCard, /Vos options pour avancer en allemand/);
+  assert.match(writerCard, /buildUniversalOrientationGuidance/);
   assert.match(writerCard, /Votre prochaine étape/);
   assert.match(writerCard, /Voir les informations vérifiées et les sources officielles/);
   assert.match(writerCard, /determineJourneyStep/);

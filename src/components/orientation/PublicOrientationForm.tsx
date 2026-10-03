@@ -613,7 +613,7 @@ export function PublicOrientationForm({
                     <p>{prospectCopy.report.title}</p>
                   </div>
                 </div>
-                <div className="mb-6 border-b border-[var(--border)] pb-5">
+                <div className="mb-4 border-b border-[var(--border)] pb-4">
                   <p className="eyebrow">{prospectCopy.report.label}</p>
                   <h2 className="mt-2 text-2xl font-bold">{prospectCopy.report.title}</h2>
                   {!isBachelorFirstContact ? (
@@ -682,7 +682,7 @@ export function PublicOrientationForm({
                   />
                 ) : null}
 
-                <section className="orientation-print-hide mt-9 border-t border-[var(--border)] pt-6" aria-label={resultActionsCopy.title}>
+                <section className="orientation-print-hide mt-7 border-t border-[var(--border)] pt-5" aria-label={resultActionsCopy.title}>
                   <p className="text-sm font-semibold">{resultActionsCopy.title}</p>
                   <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-3">
                     <button

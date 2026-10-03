@@ -3,6 +3,7 @@
 import { localizeProfileOptions } from "@/content/student-profile-copy";
 import type { Locale } from "@/lib/i18n";
 import type { PublicOrientationAnswers } from "@/lib/orientation/public";
+import { buildUniversalOrientationGuidance } from "@/lib/orientation/universal-guidance";
 import type {
   OrientationPublicPersonalizedFact,
   OrientationPublicPersonalizedOption,
@@ -29,10 +30,19 @@ const copy = {
     verifiedStatus: "Vérifié",
     progressStatus: "Analyse en cours",
     unknownStatus: "À clarifier",
-    roles: "Qui fait quoi maintenant",
-    roleYou: "Vous",
-    roleCampus: "Campus Allemagne",
+    roles: "Votre rôle, notre accompagnement",
+    roleYou: "Votre rôle",
+    roleCampus: "Campus Allemagne pilote le reste",
     roleTogether: "Ensemble",
+    languagePaths: "Vos options pour avancer en allemand",
+    campusLead: "Pendant que vous avancez sur la langue, nous faisons progresser le reste du projet.",
+    campusTasks: [
+      "Comparer les programmes et confirmer leurs conditions d’accès.",
+      "Contrôler la langue, le Studienkolleg si nécessaire, les délais et la voie de candidature.",
+      "Organiser avec vous les documents, traductions ou légalisations nécessaires.",
+      "Préparer les candidatures et leur suivi.",
+      "Après une admission, préparer avec vous les étapes financement, assurance, visa et arrivée selon l’accompagnement choisi.",
+    ],
     priority: "Votre prochaine étape",
     language: "Progression linguistique",
     reassurance: "Vous gardez une prochaine action claire. Nous gardons la vue d’ensemble.",
@@ -60,10 +70,19 @@ const copy = {
     verifiedStatus: "موثّق",
     progressStatus: "التحليل جارٍ",
     unknownStatus: "بحاجة إلى توضيح",
-    roles: "من يقوم بماذا الآن",
-    roleYou: "أنت",
-    roleCampus: "Campus Allemagne",
+    roles: "دورك ومرافقتنا",
+    roleYou: "دورك",
+    roleCampus: "Campus Allemagne يدير بقية المسار",
     roleTogether: "معًا",
+    languagePaths: "خياراتك للتقدم في الألمانية",
+    campusLead: "بينما تتقدم في اللغة، نواصل نحن دفع بقية المشروع إلى الأمام.",
+    campusTasks: [
+      "مقارنة البرامج وتأكيد شروط الالتحاق بها.",
+      "التحقق من اللغة وStudienkolleg عند الحاجة والمواعيد وطريقة التقديم.",
+      "تنظيم الوثائق والترجمات أو التصديقات اللازمة معك.",
+      "تحضير طلبات التقديم ومتابعتها.",
+      "بعد القبول، تحضير خطوات التمويل والتأمين والتأشيرة والوصول معك حسب نوع المرافقة المختار.",
+    ],
     priority: "خطوتك التالية",
     language: "التقدم اللغوي",
     reassurance: "لديك خطوة واضحة الآن، ونحن نحتفظ بالصورة الكاملة للمشروع.",
@@ -91,10 +110,19 @@ const copy = {
     verifiedStatus: "Verified",
     progressStatus: "Analysis in progress",
     unknownStatus: "To clarify",
-    roles: "Who does what now",
-    roleYou: "You",
-    roleCampus: "Campus Allemagne",
+    roles: "Your role, our support",
+    roleYou: "Your role",
+    roleCampus: "Campus Allemagne coordinates the rest",
     roleTogether: "Together",
+    languagePaths: "Your options for progressing in German",
+    campusLead: "While you work on the language, we keep the rest of the project moving.",
+    campusTasks: [
+      "Compare programmes and confirm their access requirements.",
+      "Check language, Studienkolleg where relevant, deadlines and application route.",
+      "Organise the required documents, translations or legalisations with you.",
+      "Prepare applications and follow-up.",
+      "After an admission, prepare funding, insurance, visa and arrival steps with you according to the support selected.",
+    ],
     priority: "Your next step",
     language: "Language progress",
     reassurance: "You keep one clear next action. We keep the full project in view.",
@@ -122,10 +150,19 @@ const copy = {
     verifiedStatus: "Geprüft",
     progressStatus: "Analyse läuft",
     unknownStatus: "Zu klären",
-    roles: "Wer macht jetzt was",
-    roleYou: "Du",
-    roleCampus: "Campus Allemagne",
+    roles: "Deine Rolle, unsere Begleitung",
+    roleYou: "Deine Rolle",
+    roleCampus: "Campus Allemagne koordiniert den Rest",
     roleTogether: "Gemeinsam",
+    languagePaths: "Deine Wege für den Deutschfortschritt",
+    campusLead: "Während du an der Sprache arbeitest, bringen wir den restlichen Weg weiter voran.",
+    campusTasks: [
+      "Programme vergleichen und Zugangsbedingungen bestätigen.",
+      "Sprache, Studienkolleg falls nötig, Fristen und Bewerbungsweg prüfen.",
+      "Erforderliche Unterlagen, Übersetzungen oder Legalisierungen mit dir organisieren.",
+      "Bewerbungen und Nachverfolgung vorbereiten.",
+      "Nach einer Zulassung Finanzierung, Versicherung, Visum und Ankunft mit dir je nach gewählter Begleitung vorbereiten.",
+    ],
     priority: "Dein nächster Schritt",
     language: "Sprachfortschritt",
     reassurance: "Du behältst einen klaren nächsten Schritt. Wir behalten das Gesamtprojekt im Blick.",
@@ -360,6 +397,15 @@ function compactFactLabel(
   return text.length > 34 ? `${text.slice(0, 31).trim()}…` : text;
 }
 
+function splitGuidanceChoice(choice: string) {
+  const separator = choice.indexOf(":");
+  if (separator < 0) return { title: choice, text: "" };
+  return {
+    title: choice.slice(0, separator).trim(),
+    text: choice.slice(separator + 1).trim(),
+  };
+}
+
 export function OrientationPersonalizedWriterCard({
   result,
   locale,
@@ -374,15 +420,16 @@ export function OrientationPersonalizedWriterCard({
   const t = copy[locale];
   const content = result.content;
   const profileHighlights = buildProfileHighlights(answers, locale);
+  const guidance = answers ? buildUniversalOrientationGuidance(answers, locale) : null;
   const roleTexts = [
     content.roadmap[0]?.text || content.mainPriority.nextStep,
-    content.roadmap[1]?.text || content.campusValue,
     content.roadmap[2]?.text || content.reassurance,
   ];
+  const languageChoices = guidance?.languageChoices.map(splitGuidanceChoice) || [];
   const journeyStep = determineJourneyStep(result, answers);
 
   return (
-    <article className="space-y-10 sm:space-y-12">
+    <article className="space-y-7 sm:space-y-8">
       <header className="relative overflow-hidden rounded-[var(--radius-panel)] bg-[var(--foreground)] px-5 py-6 text-white shadow-[var(--shadow-card)] sm:px-8 sm:py-7">
         <div aria-hidden="true" className="absolute inset-x-0 top-0 h-0.5 bg-[var(--brand)]" />
         <div className="relative max-w-4xl">
@@ -418,7 +465,7 @@ export function OrientationPersonalizedWriterCard({
           </span>
         </div>
 
-        <div className="mt-5 grid gap-4 lg:grid-cols-2">
+        <div className="mt-4 grid gap-3 lg:grid-cols-2">
           {content.studyOptions.map((option) => {
             const selected = result.selected.find((item) => item.optionId === option.optionId);
             const status = selected ? optionStatus(selected, locale) : null;
@@ -427,7 +474,7 @@ export function OrientationPersonalizedWriterCard({
             return (
               <article
                 key={option.optionId}
-                className="professional-hover rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-4 shadow-[0_4px_14px_rgba(0,0,0,0.035)] sm:p-5"
+                className="professional-hover rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-4 shadow-[0_4px_14px_rgba(0,0,0,0.035)]"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
@@ -505,22 +552,40 @@ export function OrientationPersonalizedWriterCard({
         </p>
 
         {content.languagePlan.show ? (
-          <div className="mt-4 flex flex-wrap items-center gap-2">
-            <span className="text-xs font-semibold text-[var(--muted)]">{t.language}</span>
-            {content.languagePlan.currentLevel ? (
-              <span className="rounded-full bg-[var(--surface)] px-3 py-1 text-xs font-semibold ring-1 ring-inset ring-[var(--border)]">
-                {content.languagePlan.currentLevel}
-              </span>
+          <>
+            <div className="mt-4 flex flex-wrap items-center gap-2">
+              <span className="text-xs font-semibold text-[var(--muted)]">{t.language}</span>
+              {content.languagePlan.currentLevel ? (
+                <span className="rounded-full bg-[var(--surface)] px-3 py-1 text-xs font-semibold ring-1 ring-inset ring-[var(--border)]">
+                  {content.languagePlan.currentLevel}
+                </span>
+              ) : null}
+              {content.languagePlan.currentLevel && content.languagePlan.nextLevel ? (
+                <span aria-hidden="true" className="text-[var(--muted)]">→</span>
+              ) : null}
+              {content.languagePlan.nextLevel ? (
+                <span className="rounded-full bg-[var(--brand-soft)] px-3 py-1 text-xs font-bold text-[var(--brand-strong)]">
+                  {content.languagePlan.nextLevel}
+                </span>
+              ) : null}
+            </div>
+
+            {languageChoices.length ? (
+              <div className="mt-4 border-t border-[var(--border)] pt-4">
+                <p className="text-xs font-semibold text-[var(--muted)]">{t.languagePaths}</p>
+                <div className="mt-2 grid gap-2 sm:grid-cols-3">
+                  {languageChoices.map((choice) => (
+                    <div key={choice.title} className="rounded-[var(--radius-control)] bg-[var(--surface)] p-3 ring-1 ring-inset ring-[var(--border)]">
+                      <p className="text-sm font-semibold">{choice.title}</p>
+                      {choice.text ? (
+                        <p className="mt-1 text-xs leading-5 text-[var(--muted)]">{choice.text}</p>
+                      ) : null}
+                    </div>
+                  ))}
+                </div>
+              </div>
             ) : null}
-            {content.languagePlan.currentLevel && content.languagePlan.nextLevel ? (
-              <span aria-hidden="true" className="text-[var(--muted)]">→</span>
-            ) : null}
-            {content.languagePlan.nextLevel ? (
-              <span className="rounded-full bg-[var(--brand-soft)] px-3 py-1 text-xs font-bold text-[var(--brand-strong)]">
-                {content.languagePlan.nextLevel}
-              </span>
-            ) : null}
-          </div>
+          </>
         ) : (
           <p className="mt-4 text-sm font-semibold leading-6">
             {content.mainPriority.nextStep}
@@ -541,21 +606,35 @@ export function OrientationPersonalizedWriterCard({
         <h4 id="orientation-responsibilities" className="text-2xl font-semibold tracking-tight">
           {t.roles}
         </h4>
-        <div className="mt-4 grid border-y border-[var(--border)] sm:grid-cols-3">
-          {[t.roleYou, t.roleCampus, t.roleTogether].map((label, index) => (
-            <div
-              key={label}
-              className="py-4 sm:px-5 sm:py-5 sm:first:ps-0 sm:last:pe-0 sm:[&:not(:first-child)]:border-s sm:[&:not(:first-child)]:border-[var(--border)]"
-            >
-              <p className="text-[11px] font-bold text-[var(--brand-strong)]">0{index + 1}</p>
-              <h5 className="mt-1.5 text-base font-semibold">{label}</h5>
-              <p className="mt-1.5 text-sm leading-6 text-[var(--muted)]">{roleTexts[index]}</p>
-            </div>
-          ))}
+        <div className="mt-4 grid gap-3 lg:grid-cols-[0.8fr_1.4fr]">
+          <div className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-4">
+            <p className="text-xs font-bold text-[var(--brand-strong)]">01</p>
+            <h5 className="mt-1.5 text-base font-semibold">{t.roleYou}</h5>
+            <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{roleTexts[0]}</p>
+          </div>
+
+          <div className="rounded-[var(--radius-panel)] bg-[var(--foreground)] p-4 text-white sm:p-5">
+            <p className="text-xs font-bold text-white/[0.55]">02</p>
+            <h5 className="mt-1.5 text-lg font-semibold">{t.roleCampus}</h5>
+            <p className="mt-2 text-sm leading-6 text-white/[0.72]">{t.campusLead}</p>
+            <ul className="mt-3 grid gap-2 sm:grid-cols-2">
+              {t.campusTasks.map((task) => (
+                <li key={task} className="flex gap-2 text-sm leading-5 text-white/[0.88]">
+                  <span aria-hidden="true" className="text-emerald-300">✓</span>
+                  <span>{task}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
-        <p className="mt-4 max-w-3xl text-sm font-semibold leading-6">
-          {content.reassurance || t.reassurance}
-        </p>
+
+        <div className="mt-3 flex gap-3 rounded-[var(--radius-control)] bg-[var(--surface-subtle)] px-4 py-3">
+          <span className="text-xs font-bold text-[var(--brand-strong)]">03</span>
+          <div>
+            <p className="text-sm font-semibold">{t.roleTogether}</p>
+            <p className="mt-0.5 text-sm leading-6 text-[var(--muted)]">{roleTexts[1]}</p>
+          </div>
+        </div>
       </section>
 
       <section aria-labelledby="orientation-journey">
@@ -563,7 +642,7 @@ export function OrientationPersonalizedWriterCard({
           {t.journey}
         </h4>
 
-        <ol className="mt-5 hidden grid-cols-5 gap-2 sm:grid">
+        <ol className="mt-4 hidden grid-cols-5 gap-2 sm:grid">
           {t.journeySteps.map((step, index) => {
             const completed = index < journeyStep;
             const current = index === journeyStep;
@@ -600,7 +679,7 @@ export function OrientationPersonalizedWriterCard({
           })}
         </ol>
 
-        <ol className="mt-5 space-y-0 sm:hidden">
+        <ol className="mt-4 space-y-0 sm:hidden">
           {t.journeySteps.map((step, index) => {
             const completed = index < journeyStep;
             const current = index === journeyStep;
@@ -639,7 +718,7 @@ export function OrientationPersonalizedWriterCard({
         </ol>
       </section>
 
-      <details className="border-t border-[var(--border)] pt-5">
+      <details className="border-t border-[var(--border)] pt-4">
         <summary className="cursor-pointer text-sm font-semibold text-[var(--foreground)]">
           {t.details}
         </summary>
