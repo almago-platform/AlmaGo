@@ -13,6 +13,7 @@ const catalogue = read("src/app/prospect/catalogue/page.tsx");
 const solutions = read("src/app/prospect/solutions/page.tsx");
 const documents = read("src/components/prospect/StarterDocumentsPanel.tsx");
 const journeyProgress = read("src/components/prospect/ProspectJourneyProgress.tsx");
+const programmes = read("src/lib/prospect/programmes.ts");
 const hub = read("src/lib/prospect/hub.ts");
 
 test("prospect project hub has dedicated destinations instead of anchor-only navigation", () => {
@@ -109,4 +110,43 @@ test("journey progress keeps visible step labels localized in every supported lo
   assert.match(journeyProgress, /Visa & departure/);
   assert.match(journeyProgress, /Visum & Abreise/);
   assert.match(journeyProgress, /التأشيرة والمغادرة/);
+});
+
+
+test("journey percentage agrees with the displayed current step", () => {
+  assert.match(journeyProgress, /currentStepNumber = Math\.min\(steps\.length, activeIndex \+ 1\)/);
+  assert.match(journeyProgress, /currentStepNumber \/ steps\.length/);
+  assert.doesNotMatch(journeyProgress, /completed \/ \(steps\.length - 1\)/);
+});
+
+test("verified personalised programmes appear before general catalogue browsing", () => {
+  assert.match(programmes, /buildOrientationEngineResult/);
+  assert.match(programmes, /degree_match/);
+  assert.match(programmes, /field_match/);
+  assert.match(catalogue, /prospectCatalogueRecommendations/);
+  assert.match(catalogue, /recommendedTitle/);
+  assert.match(catalogue, /ProspectProgrammeRecommendationCard/);
+  assert.match(dashboard, /ProspectProgrammeRecommendationCard/);
+});
+
+test("proposal does not duplicate the full starter-document workflow while waiting", () => {
+  assert.match(proposal, /starterDocuments/);
+  assert.match(proposal, /documentPercent/);
+  assert.match(proposal, /href="\/prospect\/documents"/);
+  assert.match(proposal, /starterDocuments \? \(/);
+});
+
+test("prospect shell separates journey navigation from services", () => {
+  assert.match(shell, /journeyLinks/);
+  assert.match(shell, /serviceLinks/);
+  assert.match(shell, /journeyGroup/);
+  assert.match(shell, /servicesGroup/);
+});
+
+test("solution catalogue uses the orientation city only as a factual ordering signal", () => {
+  assert.match(solutions, /loadProspectHubState/);
+  assert.match(solutions, /preferredCities/);
+  assert.match(solutions, /isPreferredCity/);
+  assert.match(solutions, /forYourProject/);
+  assert.doesNotMatch(solutions, /partner_status|is_partner|official partner/i);
 });
