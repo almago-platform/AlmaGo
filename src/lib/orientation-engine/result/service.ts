@@ -2,7 +2,11 @@ import "server-only";
 
 import type { PublicOrientationAnswers } from "@/lib/orientation/public";
 import { getAcademicAccessConclusion } from "@/lib/orientation/verified-academic-options";
-import { buildOrientationDiscoveryPlan } from "@/lib/orientation-engine/discovery/contract";
+import {
+  buildOrientationDiscoveryPlan,
+  buildOrientationDiscoveryPlanForScope,
+} from "@/lib/orientation-engine/discovery/contract";
+import type { OrientationGeographicScope } from "@/lib/orientation-engine/geography";
 import { runOrientationDiscovery } from "@/lib/orientation-engine/discovery/service";
 import type {
   OrientationDiscoveryPlan,
@@ -107,6 +111,52 @@ async function writeOrientation(
   }
 }
 
+function selectionForGeographicScope(
+  profile: PublicOrientationAnswers,
+  selection: OrientationSelectionResult,
+) {
+  const selected = selection.selected.filter((item) => {
+    const hasReason = (reason: string) => item.reasons.includes(
+      reason as (typeof item.reasons)[number],
+    );
+
+    if (!hasReason("degree_match") || !hasReason("field_match")) return false;
+
+    if (
+      profile.targetDegree === "Master"
+      && profile.targetSpecialization
+      && !hasReason("target_specialization_match")
+    ) {
+      return false;
+    }
+
+    if (
+      profile.studyLanguage !== "À définir"
+      && !hasReason("study_language_match")
+    ) {
+      return false;
+    }
+
+    return true;
+  });
+
+  const status =
+    selected.length >= selection.targetSize.min
+      ? "ready" as const
+      : selected.length > 0
+        ? "partial" as const
+        : "insufficient_evidence" as const;
+
+  return {
+    ...selection,
+    status,
+    selected: selected.map((item, index) => ({
+      ...item,
+      position: index + 1,
+    })),
+  };
+}
+
 async function resultFromSelection(input: {
   locale: OrientationWriterLocale;
   profile: PublicOrientationAnswers;
@@ -149,9 +199,12 @@ async function resultFromSelection(input: {
 export async function runOrientationResultPipeline(
   locale: OrientationWriterLocale,
   profile: PublicOrientationAnswers,
+  geographicScope: OrientationGeographicScope | null = null,
 ): Promise<OrientationPublicPersonalizedResult> {
   const emptySelection = () => runOrientationSelection(profile, []);
-  const plan = buildOrientationDiscoveryPlan(profile);
+  const plan = geographicScope
+    ? buildOrientationDiscoveryPlanForScope(profile, geographicScope)
+    : buildOrientationDiscoveryPlan(profile);
 
   // A1 is authoritative here: a no-Bac or incomplete route must not silently
   // enter normal university discovery. The candidate still receives the
@@ -206,7 +259,10 @@ export async function runOrientationResultPipeline(
     });
   }
 
-  const selection = runOrientationSelection(profile, verification.programmes);
+  const rawSelection = runOrientationSelection(profile, verification.programmes);
+  const selection = geographicScope
+    ? selectionForGeographicScope(profile, rawSelection)
+    : rawSelection;
 
   return resultFromSelection({
     locale,
