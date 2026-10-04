@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { createPrivilegedSupabaseClient } from "@/lib/supabase/privileged";
 
-const TARGET_DOCUMENT_ID = "ed88d0ab-7528-434a-925d-44778bea378d";
+const TARGET_STORAGE_PATH =
+  "0993fa10-3544-47c0-a255-2f123c09ccca/ed88d0ab-7528-434a-925d-44778bea378d/ilef-.png";
 
 export async function GET(request: Request) {
   const maintenanceToken = process.env.MAINTENANCE_DELETE_TOKEN;
@@ -18,35 +19,14 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "Privileged client unavailable." }, { status: 503 });
   }
 
-  const { data: document, error: readError } = await privileged
-    .from("documents")
-    .select("id,storage_path,original_filename")
-    .eq("id", TARGET_DOCUMENT_ID)
-    .maybeSingle();
-
-  if (readError) {
-    return NextResponse.json({ error: "Unable to read target document." }, { status: 500 });
-  }
-  if (!document) {
-    return NextResponse.json({ ok: true, already_deleted: true });
-  }
-
   const { error: storageError } = await privileged.storage
     .from("student-documents")
-    .remove([document.storage_path]);
+    .remove([TARGET_STORAGE_PATH]);
 
   if (storageError) {
+    console.error("[maintenance] target storage deletion failed", storageError.message);
     return NextResponse.json({ error: "Storage deletion failed." }, { status: 500 });
   }
 
-  const { error: deleteError } = await privileged
-    .from("documents")
-    .delete()
-    .eq("id", TARGET_DOCUMENT_ID);
-
-  if (deleteError) {
-    return NextResponse.json({ error: "Database deletion failed after storage deletion." }, { status: 500 });
-  }
-
-  return NextResponse.json({ ok: true, deleted: TARGET_DOCUMENT_ID });
+  return NextResponse.json({ ok: true, storage_deleted: true });
 }
