@@ -44,6 +44,55 @@ alter table public.universities
 alter table public.universities
   add constraint universities_canonical_key_unique unique (canonical_key);
 
+create or replace function public.set_university_registry_identity()
+returns trigger
+language plpgsql
+security invoker
+set search_path = public
+as $$
+declare
+  canonical_url text;
+begin
+  canonical_url := coalesce(new.website_url, new.source_url);
+
+  if new.canonical_key is null
+    or (
+      new.canonical_key like 'name:%'
+      and canonical_url ~* '^https?://'
+    )
+  then
+    new.canonical_key := case
+      when canonical_url ~* '^https?://'
+        then 'host:' || lower(
+          regexp_replace(
+            split_part(split_part(canonical_url, '://', 2), '/', 1),
+            '^www\.',
+            ''
+          )
+        )
+      else 'name:'
+        || lower(regexp_replace(btrim(new.name), '[[:space:]]+', ' ', 'g'))
+        || '|city:'
+        || lower(regexp_replace(btrim(coalesce(new.city, '')), '[[:space:]]+', ' ', 'g'))
+    end;
+  end if;
+
+  if cardinality(new.aliases) = 0 then
+    new.aliases := array[new.name];
+  elsif not (new.name = any(new.aliases)) then
+    new.aliases := array_append(new.aliases, new.name);
+  end if;
+
+  return new;
+end;
+$$;
+
+drop trigger if exists universities_set_registry_identity on public.universities;
+create trigger universities_set_registry_identity
+  before insert or update of name, city, website_url, source_url, canonical_key, aliases
+  on public.universities
+  for each row execute function public.set_university_registry_identity();
+
 alter table public.orientation_research_programs
   add column if not exists university_id uuid
     references public.universities(id) on delete set null;
