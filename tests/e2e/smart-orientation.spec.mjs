@@ -42,15 +42,15 @@ function baseAnswers(overrides = {}) {
 async function showResult(page, answers) {
   await page.goto("/orientation", { waitUntil: "networkidle" });
   await page.evaluate(
-    ({ key, value }) => {
+    ({ key, value, identity }) => {
       window.sessionStorage.setItem(key, JSON.stringify({
-        identity: TEST_IDENTITY,
+        identity,
         identityComplete: true,
         answers: value,
         step: 5,
       }));
     },
-    { key: SESSION_KEY, value: answers },
+    { key: SESSION_KEY, value: answers, identity: TEST_IDENTITY },
   );
   await page.reload({ waitUntil: "networkidle" });
   await expect(page.locator("#orientation-report")).toBeVisible();
