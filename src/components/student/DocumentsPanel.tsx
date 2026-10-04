@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/Badge";
 import { Button, buttonClassName } from "@/components/ui/Button";
@@ -101,15 +101,12 @@ export function DocumentsPanel({
   const uploadCategories = allowedUploadCategories === undefined
     ? documentCategories
     : documentCategories.filter((item) => allowedUploadCategories.includes(item.value));
-  const [category, setCategory] = useState(uploadCategories[0]?.value || "passport");
+  const [category, setCategory] = useState("passport");
+  const activeUploadCategory = uploadCategories.some((item) => item.value === category)
+    ? category
+    : uploadCategories[0]?.value || category;
   const [feedback, setFeedback] = useState<Feedback>(null);
   const [busy, setBusy] = useState(false);
-
-  useEffect(() => {
-    if (uploadCategories.length > 0 && !uploadCategories.some((item) => item.value === category)) {
-      setCategory(uploadCategories[0].value);
-    }
-  }, [category, uploadCategories]);
 
   const approvedCount = documents.filter((document) => document.status === "approved").length;
   const reviewCount = documents.filter((document) => ["pending", "reviewed"].includes(document.status)).length;
@@ -132,7 +129,7 @@ export function DocumentsPanel({
 
     try {
       const formData = new FormData();
-      formData.append("category", category);
+      formData.append("category", activeUploadCategory);
       formData.append("file", file);
 
       const response = await fetch("/api/student/documents/upload", { method: "POST", body: formData });
@@ -314,7 +311,7 @@ export function DocumentsPanel({
               </span>
               {t.upload.typeLabel}
               <select
-                value={category}
+                value={activeUploadCategory}
                 onChange={(event) => setCategory(event.target.value)}
                 disabled={busy}
                 className="field"
