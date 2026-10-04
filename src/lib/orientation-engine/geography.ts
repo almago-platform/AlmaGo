@@ -22,6 +22,7 @@ type OrientationCityMetadata = {
 
 const CITY_METADATA: readonly OrientationCityMetadata[] = [
   { value: "Aachen", aliases: ["Aachen"], land: "Nordrhein-Westfalen", latitude: 50.7753, longitude: 6.0839 },
+  { value: "Augsburg", aliases: ["Augsburg"], land: "Bayern", latitude: 48.3705, longitude: 10.8978 },
   { value: "Berlin", aliases: ["Berlin"], land: "Berlin", latitude: 52.52, longitude: 13.405, regionalLands: ["Berlin", "Brandenburg"] },
   { value: "Bielefeld", aliases: ["Bielefeld"], land: "Nordrhein-Westfalen", latitude: 52.0302, longitude: 8.5325 },
   { value: "Bochum", aliases: ["Bochum"], land: "Nordrhein-Westfalen", latitude: 51.4818, longitude: 7.2162 },
@@ -39,6 +40,7 @@ const CITY_METADATA: readonly OrientationCityMetadata[] = [
   { value: "Hanovre", aliases: ["Hanovre", "Hannover"], land: "Niedersachsen", latitude: 52.3759, longitude: 9.732 },
   { value: "Heidelberg", aliases: ["Heidelberg"], land: "Baden-Württemberg", latitude: 49.3988, longitude: 8.6724 },
   { value: "Iéna", aliases: ["Iéna", "Jena"], land: "Thüringen", latitude: 50.9271, longitude: 11.5892 },
+  { value: "Ingolstadt", aliases: ["Ingolstadt"], land: "Bayern", latitude: 48.7665, longitude: 11.4258 },
   { value: "Karlsruhe", aliases: ["Karlsruhe"], land: "Baden-Württemberg", latitude: 49.0069, longitude: 8.4037 },
   { value: "Leipzig", aliases: ["Leipzig"], land: "Sachsen", latitude: 51.3397, longitude: 12.3731 },
   { value: "Mayence", aliases: ["Mayence", "Mainz"], land: "Rheinland-Pfalz", latitude: 49.9929, longitude: 8.2473 },
