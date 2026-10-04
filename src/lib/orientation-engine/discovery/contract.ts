@@ -349,30 +349,43 @@ export function buildOrientationDiscoverySearchQueries(
   const aliases = uniqueAliases(families);
   const queries: string[] = [];
 
+  const addQuery = (query: string) => {
+    if (!queries.includes(query)) queries.push(query);
+  };
+
+  const primaryAnchor =
+    degree === "Master" && profile.targetSpecialization
+      ? profile.targetSpecialization
+      : aliases[0];
+
+  if (primaryAnchor && profile.preferredCities.length > 0) {
+    const explicitCities = profile.preferredCities.slice(0, 3);
+
+    for (const city of explicitCities) {
+      addQuery(
+        `${primaryAnchor} ${degree} ${city} official university programme`,
+      );
+    }
+
+    if (explicitCities.length === 1) {
+      addQuery(
+        `${primaryAnchor} ${degree} near ${explicitCities[0]} official university programme`,
+      );
+    }
+
+    addQuery(
+      `${primaryAnchor} ${degree} Germany official university programme`,
+    );
+  }
+
   if (degree === "Master" && profile.targetSpecialization) {
-    queries.push(
+    addQuery(
       `${profile.targetSpecialization} Master Germany official university programme`,
     );
   }
 
-  const citySlots = Math.min(
-    profile.preferredCities.length,
-    3,
-    Math.max(0, DISCOVERY_MAX_SEARCH_QUERIES - 1),
-  );
-  const baseAliasLimit =
-    DISCOVERY_MAX_SEARCH_QUERIES - citySlots - queries.length;
-
-  for (const alias of aliases.slice(0, baseAliasLimit)) {
-    queries.push(`${alias} ${degree} Germany official university programme`);
-  }
-
-  const primaryAlias = aliases[0];
-  if (primaryAlias) {
-    for (const city of profile.preferredCities.slice(0, citySlots)) {
-      const query = `${primaryAlias} ${degree} ${city} official university programme`;
-      if (!queries.includes(query)) queries.push(query);
-    }
+  for (const alias of aliases) {
+    addQuery(`${alias} ${degree} Germany official university programme`);
   }
 
   return queries.slice(0, DISCOVERY_MAX_SEARCH_QUERIES);
