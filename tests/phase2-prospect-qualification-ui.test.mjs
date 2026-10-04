@@ -58,8 +58,8 @@ test("qualification copy exists in all supported locales and keeps admission/vis
 });
 
 test("P2.7D does not unlock Phase 1 or implement offers", () => {
-  assert.doesNotMatch(page, /client_active|payment_pending|paid_pending_validation/);
-  assert.doesNotMatch(page, /Bronze|Silver|Gold|checkout|payment/i);
+  assert.doesNotMatch(page + panel, /client_active|payment_pending|paid_pending_validation/);
+  assert.doesNotMatch(page + panel, /Bronze|Silver|Gold|checkout|payment/i);
 });
 
 test("qualification copy uses student-facing language instead of internal workflow jargon", () => {
