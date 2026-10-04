@@ -239,8 +239,12 @@ export async function POST(request: Request) {
       );
     }
 
-    const reportUrl = new URL(
+    const orientationReportUrl = new URL(
       `/orientation/report/${encodeURIComponent(resume.token)}`,
+      baseUrl,
+    ).toString();
+    const candidateReportUrl = new URL(
+      `/orientation/report/${encodeURIComponent(resume.token)}?document=candidate`,
       baseUrl,
     ).toString();
     const signupUrl = new URL("/signup", baseUrl);
@@ -255,7 +259,8 @@ export async function POST(request: Request) {
     const emailContent = buildOrientationProspectEmail({
       locale,
       diagnostic,
-      reportUrl,
+      orientationReportUrl,
+      candidateReportUrl,
       signupUrl: signupUrl.toString(),
       interestUrl,
     });

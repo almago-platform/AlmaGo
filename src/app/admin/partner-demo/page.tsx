@@ -36,7 +36,8 @@ function preview(locale: "fr" | "ar") {
   return buildOrientationProspectEmail({
     locale,
     diagnostic,
-    reportUrl: "https://partner-demo.invalid/orientation/report/demo-token",
+    orientationReportUrl: "https://partner-demo.invalid/orientation/report/demo-token",
+    candidateReportUrl: "https://partner-demo.invalid/orientation/report/demo-token?document=candidate",
     signupUrl: "https://partner-demo.invalid/signup?orientation_token=demo-token",
   });
 }
