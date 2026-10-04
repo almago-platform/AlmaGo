@@ -18,6 +18,7 @@ type Program = {
   degree_level: string;
   field: string | null;
   teaching_language: string | null;
+  intake_terms?: string[] | null;
   winter_deadline: string | null;
   summer_deadline?: string | null;
   application_url: string | null;
@@ -56,12 +57,14 @@ function firstUniversity(program: Program | null | undefined) {
 export function StudentOrientationPanel({
   recommendations,
   applicationProgramIds,
+  applicationStatuses = {},
   loadError,
   applicationStateError,
   criteriaStateError,
 }: {
   recommendations: Recommendation[];
   applicationProgramIds: string[];
+  applicationStatuses?: Record<string, string>;
   loadError?: string;
   applicationStateError?: string;
   criteriaStateError?: string;
@@ -78,6 +81,7 @@ export function StudentOrientationPanel({
   );
   const [feedback, setFeedback] = useState<Feedback>(null);
   const [busy, setBusy] = useState<string | null>(null);
+  const [compareIds, setCompareIds] = useState<string[]>([]);
 
   const interestedCount = items.filter((item) => Boolean(item.student_interest_at)).length;
   const comparableItems = items.filter((item) => firstProgram(item));
@@ -85,6 +89,16 @@ export function StudentOrientationPanel({
     ? undefined
     : items.find((item) => !item.student_interest_at && item.status !== "not_recommended");
   const nextProgram = actionable ? firstProgram(actionable) : undefined;
+
+  function toggleCompare(id: string) {
+    setCompareIds((current) =>
+      current.includes(id)
+        ? current.filter((item) => item !== id)
+        : current.length >= 3
+          ? [...current.slice(1), id]
+          : [...current, id],
+    );
+  }
 
   async function interested(id: string) {
     setBusy(id);
@@ -226,102 +240,162 @@ export function StudentOrientationPanel({
             <ButtonLink href="/student/applications" variant="secondary">{studentOrientationCopy[locale].page.applications}</ButtonLink>
           </div>
 
-          <div className="space-y-4">
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-4 py-3">
+            <p className="text-sm text-slate-600">{programCardCopy[locale].scanHint}</p>
+            <Badge variant={compareIds.length > 1 ? "info" : "neutral"}>
+              {programCardCopy[locale].compareCount(compareIds.length)}
+            </Badge>
+          </div>
+
+          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
             {items.map((recommendation) => {
               const program = firstProgram(recommendation);
               const university = firstUniversity(program);
 
               if (!program) return null;
 
+              const ui = programCardCopy[locale];
+              const applicationStatus = applicationStatusPresentation(
+                program.id ? applicationStatuses[program.id] : undefined,
+                Boolean(recommendation.student_interest_at),
+                locale,
+              );
+              const compatibility = compatibilityPresentation(recommendation.requirement_match, locale);
+              const compatibilityRows = compactCompatibilityCriteria(recommendation.requirement_match);
+              const semester = semesterSummary(program.intake_terms, locale);
+              const deadline = programmeDeadline(program, locale);
+              const isCompared = compareIds.includes(recommendation.id);
+
               return (
                 <Card
                   as="article"
                   key={recommendation.id}
                   aria-labelledby={`student-recommendation-title-${recommendation.id}`}
-                  className={`shadow-none ${recommendation.student_interest_at ? "border-[var(--brand-border)] bg-[var(--brand-soft)]/55" : ""}`}
+                  className={`flex h-full flex-col overflow-hidden p-0 shadow-none transition ${isCompared ? "border-[var(--brand)] ring-2 ring-[var(--brand-soft)]" : "border-[var(--border)]"}`}
                 >
-                  <div className="flex flex-col gap-4">
-                    <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div className="border-b border-[var(--border)] bg-[linear-gradient(135deg,var(--surface-subtle),white)] px-5 py-5 sm:px-6">
+                    <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
-                        <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">{t.institution}</p>
-                        <p className="mt-1 text-sm font-bold leading-5 text-slate-900 [overflow-wrap:anywhere]">
-                          <bdi dir="auto">{university?.name || t.universityUnknown}</bdi>{university?.city ? <> · <bdi dir="ltr">{university.city}</bdi></> : ""}
+                        <p className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">
+                          <bdi dir="auto">{university?.name || t.universityUnknown}</bdi>
                         </p>
+                        <h3
+                          id={`student-recommendation-title-${recommendation.id}`}
+                          className="mt-2 text-xl font-bold leading-7 tracking-[-0.02em] text-slate-950 [overflow-wrap:anywhere]"
+                        >
+                          <bdi dir="auto">{program.name}</bdi>
+                        </h3>
                       </div>
-                      <Badge variant={recommendation.student_interest_at ? "success" : recommendationVariant(recommendation.status)}>
-                        {recommendation.student_interest_at ? t.addedToApplications : t.recommendationLabels[recommendation.status] || recommendation.status}
-                      </Badge>
+                      <Badge variant={applicationStatus.tone}>{applicationStatus.label}</Badge>
                     </div>
-                    <div>
-                      <h3 id={`student-recommendation-title-${recommendation.id}`} className="text-xl font-bold leading-7 tracking-[-0.02em] text-slate-950 [overflow-wrap:anywhere]">
-                        <bdi dir="auto">{program.name}</bdi>
-                      </h3>
-                      <div className="mt-3 flex flex-wrap gap-2 text-xs font-semibold text-slate-600">
-                        <span className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-2.5 py-1.5"><bdi dir="auto">{localizeCatalogueLabel(locale, program.degree_level)}</bdi></span>
-                        <span className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-2.5 py-1.5"><bdi dir="auto">{localizeCatalogueLabel(locale, program.field) || t.fieldUnknown}</bdi></span>
-                        {program.teaching_language && <span className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-2.5 py-1.5"><bdi dir="auto">{localizeCatalogueLabel(locale, program.teaching_language)}</bdi></span>}
-                      </div>
+
+                    {university?.city ? (
+                      <p className="mt-3 flex items-center gap-2 text-sm text-slate-600">
+                        <span aria-hidden="true">⌖</span>
+                        <bdi dir="ltr">{university.city}</bdi>
+                      </p>
+                    ) : null}
+
+                    <div className="mt-4 flex flex-wrap gap-2 text-xs font-semibold text-slate-700">
+                      <span className="rounded-full bg-white px-3 py-1.5 shadow-[var(--shadow-xs)]">
+                        {localizeCatalogueLabel(locale, program.degree_level)}
+                      </span>
+                      <span className="rounded-full bg-white px-3 py-1.5 shadow-[var(--shadow-xs)]">
+                        {localizeCatalogueLabel(locale, program.teaching_language) || t.routeUnknown}
+                      </span>
+                      <span className="rounded-full bg-white px-3 py-1.5 shadow-[var(--shadow-xs)]">
+                        {semester}
+                      </span>
                     </div>
                   </div>
 
-                  <div className="mt-5 rounded-[var(--radius-control)] border border-[var(--brand-border)] bg-[var(--brand-soft)]/45 p-4">
-                    <h4 className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">{t.whyProgram}</h4>
-                    <p dir="auto" className="mt-2 text-sm leading-6 text-slate-700 [overflow-wrap:anywhere]">
-                      {recommendation.note || t.proposedBoundary}
-                    </p>
-                  </div>
-
-                  <div className="mt-5">
-                    <h4 className="text-xs font-bold uppercase tracking-[0.14em] text-slate-500">{t.recordedCriteria}</h4>
-                    <dl className="mt-3 grid gap-3 text-sm sm:grid-cols-2">
-                    <InfoItem label={t.teachingLanguage} value={localizeCatalogueLabel(locale, program.teaching_language) || studentOrientationCopy[locale].panel.routeUnknown} />
-                    <InfoItem label={t.winterDeadline} value={formatDeadline(program.winter_deadline, locale)} />
-                    <InfoItem label={t.summerDeadline} value={formatDeadline(program.summer_deadline || null, locale)} />
-                    <InfoItem label={t.diplomaRequired} value={localizeProgramRequirement(locale, program.diploma_required) || t.routeUnknown} />
-                    <div className="rounded-[var(--radius-control)] bg-[var(--surface-muted)] p-3 sm:col-span-2">
-                      <dt className="text-slate-500">{t.languageLevels}</dt>
-                      <dd className="mt-1 text-slate-900">
-                        {[
-                          program.german_level_required && `${t.german} \u2066${program.german_level_required}\u2069`,
-                          program.english_level_required && `${t.english} \u2066${program.english_level_required}\u2069`,
-                        ].filter(Boolean).join(" · ") || t.officialCheck}
-                      </dd>
-                    </div>
+                  <div className="flex flex-1 flex-col px-5 py-5 sm:px-6">
+                    <dl className="grid grid-cols-2 gap-3 border-b border-[var(--border)] pb-5">
+                      <div>
+                        <dt className="text-[11px] font-bold uppercase tracking-[0.08em] text-slate-500">{ui.fees}</dt>
+                        <dd className="mt-1 text-sm font-semibold text-slate-900">{ui.verify}</dd>
+                      </div>
+                      <div>
+                        <dt className="text-[11px] font-bold uppercase tracking-[0.08em] text-slate-500">{ui.deadline}</dt>
+                        <dd className="mt-1 text-sm font-semibold text-slate-900">{deadline}</dd>
+                      </div>
                     </dl>
-                  </div>
 
-                  <RequirementAssessment match={recommendation.requirement_match} programName={program.name} copy={t} />
+                    <section className={`mt-5 rounded-[var(--radius-control)] border p-4 ${compatibility.containerClass}`}>
+                      <div className="flex items-start gap-3">
+                        <span aria-hidden="true" className={`mt-0.5 text-lg font-black ${compatibility.iconClass}`}>
+                          {compatibility.icon}
+                        </span>
+                        <div>
+                          <h4 className="font-bold text-slate-950">{compatibility.label}</h4>
+                          <p className="mt-1 text-xs leading-5 text-slate-600">{compatibility.description}</p>
+                        </div>
+                      </div>
+                    </section>
 
-                  <div className="mt-5 rounded-[var(--radius-control)] border border-amber-200 bg-amber-50/60 p-3 text-xs leading-5 text-amber-900">
-                    {t.programLeadBoundary}
-                  </div>
+                    <div className="mt-4 space-y-2.5">
+                      {compatibilityRows.length ? compatibilityRows.map((item, index) => {
+                        const signal = criterionSignal(item.status);
+                        return (
+                          <div key={`${item.criterion}-${index}`} className="flex items-start gap-2.5 text-sm">
+                            <span aria-hidden="true" className={`w-4 shrink-0 font-black ${signal.className}`}>{signal.icon}</span>
+                            <span className="leading-5 text-slate-700">{criterionLabel(item.criterion, t)}</span>
+                          </div>
+                        );
+                      }) : (
+                        <div className="flex items-start gap-2.5 text-sm">
+                          <span aria-hidden="true" className="w-4 shrink-0 font-black text-amber-600">⚠</span>
+                          <span className="leading-5 text-slate-700">{ui.detailsToVerify}</span>
+                        </div>
+                      )}
+                    </div>
 
-                  <div className="mt-auto flex flex-col gap-2 border-t border-[var(--border)] pt-5 sm:flex-row sm:flex-wrap">
-                    {program.application_url && (
-                      <a
-                        href={program.application_url}
-                        aria-label={t.officialSourceAria(program.name)}
-                        target="_blank"
-                        rel="noreferrer"
-                        className={buttonClassName("secondary", "w-full sm:w-auto")}
-                      >
-                        {t.officialVerify}
-                      </a>
-                    )}
-                    <Button
-                      type="button"
-                      className="w-full sm:w-auto"
-                      disabled={Boolean(applicationStateError) || Boolean(recommendation.student_interest_at) || busy === recommendation.id || recommendation.status === "not_recommended"}
-                      onClick={() => interested(recommendation.id)}
-                    >
-                      {recommendation.student_interest_at
-                        ? t.addedToApplications
-                        : busy === recommendation.id
-                          ? t.saving
-                          : recommendation.status === "not_recommended"
-                            ? t.unavailableAction
-                            : t.addToApplications}
-                    </Button>
+                    <div className="mt-auto pt-6">
+                      <div className="grid grid-cols-2 gap-2">
+                        <Button
+                          type="button"
+                          variant="secondary"
+                          className="w-full"
+                          disabled={Boolean(applicationStateError) || Boolean(recommendation.student_interest_at) || busy === recommendation.id || recommendation.status === "not_recommended"}
+                          onClick={() => interested(recommendation.id)}
+                        >
+                          <span aria-hidden="true">♡</span>
+                          {recommendation.student_interest_at
+                            ? ui.saved
+                            : busy === recommendation.id
+                              ? t.saving
+                              : ui.save}
+                        </Button>
+
+                        <Button
+                          type="button"
+                          variant="secondary"
+                          className={`w-full ${isCompared ? "border-[var(--brand-border)] bg-[var(--brand-soft)] text-[var(--brand-strong)]" : ""}`}
+                          aria-pressed={isCompared}
+                          onClick={() => toggleCompare(recommendation.id)}
+                        >
+                          <span aria-hidden="true">⇄</span>
+                          {isCompared ? ui.comparing : ui.compare}
+                        </Button>
+                      </div>
+
+                      {program.application_url ? (
+                        <a
+                          href={program.application_url}
+                          aria-label={t.officialSourceAria(program.name)}
+                          target="_blank"
+                          rel="noreferrer"
+                          className={buttonClassName("primary", "mt-2 w-full")}
+                        >
+                          {ui.viewProgramme}
+                          <span aria-hidden="true">↗</span>
+                        </a>
+                      ) : (
+                        <span className={buttonClassName("secondary", "mt-2 w-full cursor-not-allowed opacity-60")}>
+                          {ui.viewProgramme}
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </Card>
               );
@@ -331,6 +405,177 @@ export function StudentOrientationPanel({
       )}
     </div>
   );
+}
+
+
+const programCardCopy = {
+  fr: {
+    scanHint: "Scannez rapidement l’essentiel avant d’ouvrir le détail.",
+    fees: "Frais / tuition",
+    deadline: "Deadline",
+    verify: "À vérifier",
+    save: "Enregistrer",
+    saved: "Enregistré",
+    compare: "Comparer",
+    comparing: "Comparé",
+    viewProgramme: "Voir le programme",
+    detailsToVerify: "Compatibilité détaillée à vérifier",
+    compareCount: (count: number) => count ? `${count}/3 à comparer` : "Sélectionnez jusqu’à 3",
+  },
+  ar: {
+    scanHint: "راجع المعلومات الأساسية بسرعة قبل فتح التفاصيل.",
+    fees: "الرسوم",
+    deadline: "آخر موعد",
+    verify: "يجب التحقق",
+    save: "حفظ",
+    saved: "محفوظ",
+    compare: "مقارنة",
+    comparing: "محدد للمقارنة",
+    viewProgramme: "عرض البرنامج",
+    detailsToVerify: "يجب التحقق من تفاصيل التوافق",
+    compareCount: (count: number) => count ? `${count}/3 للمقارنة` : "اختر حتى 3",
+  },
+  en: {
+    scanHint: "Scan the essentials quickly before opening the full programme.",
+    fees: "Tuition / fees",
+    deadline: "Deadline",
+    verify: "To verify",
+    save: "Save",
+    saved: "Saved",
+    compare: "Compare",
+    comparing: "Selected",
+    viewProgramme: "View programme",
+    detailsToVerify: "Detailed compatibility needs checking",
+    compareCount: (count: number) => count ? `${count}/3 to compare` : "Select up to 3",
+  },
+  de: {
+    scanHint: "Die wichtigsten Angaben schnell prüfen, bevor du das Programm öffnest.",
+    fees: "Gebühren",
+    deadline: "Frist",
+    verify: "Zu prüfen",
+    save: "Speichern",
+    saved: "Gespeichert",
+    compare: "Vergleichen",
+    comparing: "Ausgewählt",
+    viewProgramme: "Studiengang ansehen",
+    detailsToVerify: "Detaillierte Passung muss geprüft werden",
+    compareCount: (count: number) => count ? `${count}/3 zum Vergleich` : "Bis zu 3 auswählen",
+  },
+} as const;
+
+function applicationStatusPresentation(status: string | undefined, saved: boolean, locale: keyof typeof programCardCopy) {
+  const labels = {
+    fr: {
+      draft: "À préparer",
+      planned: "À préparer",
+      preparing: "En préparation",
+      documents_missing: "Pièces manquantes",
+      ready_to_submit: "Prête à déposer",
+      submitted: "Soumise",
+      waiting_university: "En attente",
+      in_review: "En cours",
+      admitted: "Admission",
+      rejected: "Refusée",
+      saved: "Enregistré",
+      none: "Non démarrée",
+    },
+    ar: { draft: "للتحضير", planned: "للتحضير", preparing: "قيد التحضير", documents_missing: "وثائق ناقصة", ready_to_submit: "جاهز للإرسال", submitted: "تم الإرسال", waiting_university: "في الانتظار", in_review: "قيد المعالجة", admitted: "قبول", rejected: "مرفوض", saved: "محفوظ", none: "لم يبدأ" },
+    en: { draft: "To prepare", planned: "To prepare", preparing: "Preparing", documents_missing: "Documents missing", ready_to_submit: "Ready to submit", submitted: "Submitted", waiting_university: "Waiting", in_review: "In progress", admitted: "Admitted", rejected: "Rejected", saved: "Saved", none: "Not started" },
+    de: { draft: "Vorbereiten", planned: "Vorbereiten", preparing: "In Vorbereitung", documents_missing: "Unterlagen fehlen", ready_to_submit: "Einreichbereit", submitted: "Eingereicht", waiting_university: "Warten", in_review: "In Bearbeitung", admitted: "Zulassung", rejected: "Abgelehnt", saved: "Gespeichert", none: "Nicht begonnen" },
+  }[locale];
+
+  const label = status ? labels[status as keyof typeof labels] || status : saved ? labels.saved : labels.none;
+  const tone: "success" | "warning" | "info" | "neutral" =
+    ["submitted", "admitted"].includes(status || "") ? "success"
+      : ["documents_missing", "rejected"].includes(status || "") ? "warning"
+        : ["preparing", "ready_to_submit", "waiting_university", "in_review"].includes(status || "") ? "info"
+          : "neutral";
+  return { label, tone };
+}
+
+function compatibilityPresentation(match: MasterRequirementsMatch | null | undefined, locale: keyof typeof programCardCopy) {
+  const copy = {
+    fr: {
+      good: ["Bonne compatibilité", "Les critères disponibles correspondent bien à votre profil."],
+      partial: ["Compatibilité à vérifier", "Votre profil semble adapté, avec quelques points à confirmer."],
+      limited: ["Compatibilité limitée", "Au moins une exigence connue n’est pas satisfaite."],
+      unknown: ["Compatibilité à vérifier", "Nous n’avons pas encore assez d’informations pour conclure."],
+    },
+    ar: {
+      good: ["توافق جيد", "المعايير المتوفرة متوافقة جيدًا مع ملفك."],
+      partial: ["التوافق يحتاج إلى تحقق", "ملفك مناسب مبدئيًا مع بعض النقاط التي يجب تأكيدها."],
+      limited: ["توافق محدود", "هناك شرط معروف واحد على الأقل غير مستوفى."],
+      unknown: ["التوافق يحتاج إلى تحقق", "لا توجد معلومات كافية بعد للوصول إلى نتيجة."],
+    },
+    en: {
+      good: ["Good compatibility", "The available criteria align well with your profile."],
+      partial: ["Compatibility to verify", "Your profile appears suitable, with a few points to confirm."],
+      limited: ["Limited compatibility", "At least one known requirement is not satisfied."],
+      unknown: ["Compatibility to verify", "There is not enough information yet to conclude."],
+    },
+    de: {
+      good: ["Gute Passung", "Die verfügbaren Kriterien passen gut zu deinem Profil."],
+      partial: ["Passung zu prüfen", "Dein Profil wirkt passend, einige Punkte müssen noch bestätigt werden."],
+      limited: ["Begrenzte Passung", "Mindestens eine bekannte Voraussetzung ist nicht erfüllt."],
+      unknown: ["Passung zu prüfen", "Für eine klare Einschätzung fehlen noch Informationen."],
+    },
+  }[locale];
+
+  if (!match) return { label: copy.unknown[0], description: copy.unknown[1], icon: "⚠", iconClass: "text-amber-600", containerClass: "border-amber-200 bg-amber-50/55" };
+  if (match.has_blocking_mismatch) return { label: copy.limited[0], description: copy.limited[1], icon: "✕", iconClass: "text-red-600", containerClass: "border-red-200 bg-red-50/55" };
+  if (match.needs_manual_review || match.has_unknowns) return { label: copy.partial[0], description: copy.partial[1], icon: "!", iconClass: "text-amber-600", containerClass: "border-amber-200 bg-amber-50/55" };
+  return { label: copy.good[0], description: copy.good[1], icon: "✓", iconClass: "text-emerald-600", containerClass: "border-emerald-200 bg-emerald-50/55" };
+}
+
+function compactCompatibilityCriteria(match: MasterRequirementsMatch | null | undefined) {
+  if (!match?.criteria?.length) return [];
+  const priorities = [
+    (item: RequirementMatchResult) => item.criterion.startsWith("language:"),
+    (item: RequirementMatchResult) => item.criterion === "prior_degree",
+    (item: RequirementMatchResult) => item.criterion === "minimum_ects" || item.criterion.startsWith("subject_credits:"),
+    (item: RequirementMatchResult) => item.status === "not_satisfied" || item.status === "needs_manual_review",
+  ];
+  const selected: RequirementMatchResult[] = [];
+  for (const pick of priorities) {
+    const item = match.criteria.find((candidate) => pick(candidate) && !selected.includes(candidate));
+    if (item) selected.push(item);
+  }
+  for (const item of match.criteria) {
+    if (selected.length >= 4) break;
+    if (!selected.includes(item)) selected.push(item);
+  }
+  return selected.slice(0, 4);
+}
+
+function criterionSignal(status: RequirementMatchResult["status"]) {
+  if (status === "satisfied") return { icon: "✓", className: "text-emerald-600" };
+  if (status === "not_satisfied") return { icon: "✕", className: "text-red-600" };
+  return { icon: "⚠", className: "text-amber-600" };
+}
+
+function semesterSummary(terms: string[] | null | undefined, locale: keyof typeof programCardCopy) {
+  const values = (terms || []).map((term) => term.toLowerCase());
+  const winter = values.some((term) => term.includes("winter"));
+  const summer = values.some((term) => term.includes("summer"));
+  const labels = {
+    fr: { winter: "Semestre d’hiver", summer: "Semestre d’été", both: "Hiver & été", unknown: "Semestre à vérifier" },
+    ar: { winter: "الفصل الشتوي", summer: "الفصل الصيفي", both: "شتاء وصيف", unknown: "الفصل يحتاج إلى تحقق" },
+    en: { winter: "Winter semester", summer: "Summer semester", both: "Winter & summer", unknown: "Semester to verify" },
+    de: { winter: "Wintersemester", summer: "Sommersemester", both: "Winter & Sommer", unknown: "Semester prüfen" },
+  }[locale];
+  if (winter && summer) return labels.both;
+  if (winter) return labels.winter;
+  if (summer) return labels.summer;
+  return labels.unknown;
+}
+
+function programmeDeadline(program: Program, locale: Parameters<typeof formatDeadline>[1]) {
+  const candidates = [program.winter_deadline, program.summer_deadline].filter((value): value is string => Boolean(value));
+  if (!candidates.length) return studentOrientationCopy[locale].panel.officialCheck;
+  const today = new Date().toISOString().slice(0, 10);
+  const future = candidates.filter((value) => value >= today).sort()[0];
+  const selected = future || [...candidates].sort().at(-1) || null;
+  return formatDeadline(selected, locale);
 }
 
 function SummaryCard({ title, value, badge, tone }: { title: string; value: number | string; badge: string; tone: "success" | "info" | "warning" | "neutral" }) {
