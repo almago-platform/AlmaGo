@@ -10,13 +10,14 @@ const pages = [
   ["orientation", "src/app/student/orientation/page.tsx"],
   ["checklist", "src/app/student/checklist/page.tsx"],
   ["applications", "src/app/student/applications/page.tsx"],
+  ["procedure", "src/app/student/procedure/page.tsx"],
   ["pathway", "src/app/student/pathway/page.tsx"],
 ];
 
-test("student journey header exposes the six localized core dossier steps", () => {
-  assert.ok(shared.includes('journeySteps: ["Mon projet", "Documents", "Programmes", "Démarches", "Candidatures", "Parcours"]'));
-  assert.ok(shared.includes('journeySteps: ["مشروعي", "المستندات", "البرامج", "الخطوات", "طلبات التقديم", "المسار"]'));
-  assert.equal(header.split('href: "/student/').length - 1, 6);
+test("student journey header exposes the seven localized core dossier steps", () => {
+  assert.ok(shared.includes('journeySteps: ["Mon projet", "Documents", "Programmes", "Démarches", "Candidatures", "Mon dossier", "Parcours"]'));
+  assert.ok(shared.includes('journeySteps: ["مشروعي", "المستندات", "البرامج", "الخطوات", "طلبات التقديم", "ملفي", "المسار"]'));
+  assert.equal(header.split('href: "/student/').length - 1, 7);
   assert.ok(header.includes("shared.journeyAria"));
   assert.ok(header.includes("aria-current="));
 });
@@ -35,11 +36,13 @@ test("student journey redesign does not alter data sources", () => {
   const orientation = readFileSync("src/app/student/orientation/page.tsx", "utf8");
   const applications = readFileSync("src/app/student/applications/page.tsx", "utf8");
   const checklist = readFileSync("src/app/student/checklist/page.tsx", "utf8");
+  const procedure = readFileSync("src/app/student/procedure/page.tsx", "utf8");
   const pathway = readFileSync("src/app/student/pathway/page.tsx", "utf8");
 
   assert.ok(documents.includes('from("documents")'));
   assert.ok(orientation.includes('from("program_recommendations")'));
   assert.ok(applications.includes('from("applications")'));
   assert.ok(checklist.includes('from("student_checklist_items")'));
+  assert.ok(procedure.includes('from("student_procedures")'));
   assert.ok(pathway.includes("determineRegulatoryPath"));
 });
