@@ -1,3 +1,4 @@
+import type { OrientationGeographicScope } from "@/lib/orientation-engine/geography";
 import type { OrientationUniversityMedia } from "@/lib/orientation-engine/types";
 import type {
   PublicOrientationAverageType,
@@ -84,6 +85,7 @@ export type OrientationDiscoveryPlan = {
   profile: OrientationDiscoveryProfile;
   programmeFamilies: OrientationProgrammeFamily[];
   searchQueries: string[];
+  geographicScope: OrientationGeographicScope | null;
   policy: OrientationDiscoveryPolicy;
 };
 
