@@ -378,6 +378,11 @@ a, button, input, select, textarea { -webkit-tap-highlight-color: transparent; }
 .mobile-nav-scroll { scrollbar-width: none; }
 .mobile-nav-scroll::-webkit-scrollbar { display: none; }
 
+.prospect-nav-active {
+  border-inline-start-width: 3px;
+  border-inline-start-color: var(--brand);
+}
+
 @layer components {
   .field {
     @apply mt-1 w-full border border-[var(--border-strong)] bg-[var(--surface)] px-3 py-2.5 text-[var(--foreground)] outline-none transition placeholder:text-[var(--muted)];
