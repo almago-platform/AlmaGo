@@ -103,6 +103,7 @@ export default async function ProspectRoadmapPage() {
           orientationConfirmed={state.orientationConfirmed}
           intake={state.intake}
           starterSummary={state.starterSummary}
+          locale={locale}
         />
       </section>
 
