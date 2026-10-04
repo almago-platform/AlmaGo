@@ -194,6 +194,9 @@ const premiumLabels = {
     togetherText: "Nous reprenons la shortlist avec vous avant les candidatures et la suite.",
     german: "Allemand",
     generated: "Rapport personnalisé",
+    student: "Étudiant",
+    birthDate: "Date de naissance",
+    email: "E-mail",
     factLabels: {
       degree_level: "Diplôme",
       teaching_language: "Langue",
@@ -224,6 +227,9 @@ const premiumLabels = {
     togetherText: "نراجع معك القائمة المختصرة قبل التقديم والخطوات التالية.",
     german: "الألمانية",
     generated: "تقرير شخصي",
+    student: "الطالب",
+    birthDate: "تاريخ الميلاد",
+    email: "البريد الإلكتروني",
     factLabels: {
       degree_level: "الشهادة",
       teaching_language: "اللغة",
@@ -254,6 +260,9 @@ const premiumLabels = {
     togetherText: "We review the shortlist with you before applications and the next steps.",
     german: "German",
     generated: "Personalised report",
+    student: "Student",
+    birthDate: "Date of birth",
+    email: "Email",
     factLabels: {
       degree_level: "Degree",
       teaching_language: "Language",
@@ -284,6 +293,9 @@ const premiumLabels = {
     togetherText: "Wir prüfen die Shortlist mit dir vor Bewerbungen und den nächsten Schritten.",
     german: "Deutsch",
     generated: "Personalisierter Bericht",
+    student: "Studierende Person",
+    birthDate: "Geburtsdatum",
+    email: "E-Mail",
     factLabels: {
       degree_level: "Abschluss",
       teaching_language: "Sprache",
@@ -310,7 +322,11 @@ function formatPersonalizedFactValue(
   fact: OrientationPublicPersonalizedFact,
   locale: Locale,
 ) {
-  if (Array.isArray(fact.value)) return fact.value.join(", ");
+  if (Array.isArray(fact.value)) {
+    return fact.value
+      .map((value) => formatPersonalizedFactValue({ ...fact, value }, locale))
+      .join(" · ");
+  }
   if (typeof fact.value === "boolean") {
     if (locale === "ar") return fact.value ? "نعم" : "لا";
     if (locale === "de") return fact.value ? "Ja" : "Nein";
@@ -318,11 +334,84 @@ function formatPersonalizedFactValue(
     return fact.value ? "Oui" : "Non";
   }
 
-  const text = String(fact.value);
-  if (fact.field === "application_route" && /^direct(?:e|ly)?$/i.test(text.trim())) {
+  const text = String(fact.value).trim();
+  const lower = text.toLowerCase();
+
+  if (fact.field === "application_route" && /^direct(?:e|ly)?$/i.test(text)) {
     return { fr: "directe", ar: "مباشر", en: "direct", de: "direkt" }[locale];
   }
+
+  if (fact.field === "teaching_language") {
+    if (/german|deutsch|allemand/i.test(text)) {
+      return { fr: "Allemand", ar: "الألمانية", en: "German", de: "Deutsch" }[locale];
+    }
+    if (/english|anglais/i.test(text)) {
+      return { fr: "Anglais", ar: "الإنجليزية", en: "English", de: "Englisch" }[locale];
+    }
+  }
+
+  if (fact.field === "intake_terms") {
+    const winter = /winter semester/i.test(text);
+    const summer = /summer semester/i.test(text);
+    const firstSemester = /first semester/i.test(text);
+    const higherOnly = /higher semesters only/i.test(text);
+
+    if (winter && summer) {
+      return {
+        fr: `Semestre d’hiver${firstSemester ? " (1er semestre)" : ""} · semestre d’été${higherOnly ? " (semestres supérieurs uniquement)" : ""}`,
+        ar: `الفصل الشتوي${firstSemester ? " (الفصل الأول)" : ""} · الفصل الصيفي${higherOnly ? " (للفصول المتقدمة فقط)" : ""}`,
+        en: `Winter semester${firstSemester ? " (first semester)" : ""} · summer semester${higherOnly ? " (higher semesters only)" : ""}`,
+        de: `Wintersemester${firstSemester ? " (1. Fachsemester)" : ""} · Sommersemester${higherOnly ? " (nur höhere Fachsemester)" : ""}`,
+      }[locale];
+    }
+    if (winter) {
+      return { fr: "Semestre d’hiver", ar: "الفصل الشتوي", en: "Winter semester", de: "Wintersemester" }[locale];
+    }
+    if (summer) {
+      return { fr: "Semestre d’été", ar: "الفصل الصيفي", en: "Summer semester", de: "Sommersemester" }[locale];
+    }
+  }
+
+  if (fact.field === "degree_level" && /^bachelor of science$/i.test(text)) {
+    return locale === "ar" ? "Bachelor of Science (B.Sc.)" : "Bachelor of Science (B.Sc.)";
+  }
+
+  if (fact.field === "german_language_requirement") {
+    const hasC1 = /\bC1\b/i.test(text);
+    const international = /international applicants/i.test(lower);
+    const germanEntrance = /german higher education entrance qualification/i.test(lower);
+
+    if (hasC1 && international) {
+      const main = {
+        fr: "Allemand C1 pour les candidats internationaux",
+        ar: "الألمانية C1 للمتقدمين الدوليين",
+        en: "German C1 for international applicants",
+        de: "Deutsch C1 für internationale Bewerber:innen",
+      }[locale];
+      if (!germanEntrance) return main;
+      const note = {
+        fr: "aucune exigence indiquée pour les candidats disposant d’un accès universitaire allemand",
+        ar: "لا يوجد شرط مذكور لمن لديهم مؤهل دخول جامعي ألماني",
+        en: "no requirement stated for applicants with a German higher-education entrance qualification",
+        de: "keine Anforderung für Bewerber:innen mit deutscher Hochschulzugangsberechtigung angegeben",
+      }[locale];
+      return `${main} · ${note}`;
+    }
+  }
+
   return text;
+}
+
+function formatIdentityDate(value: string | null | undefined, locale: Locale) {
+  if (!value) return null;
+  const date = new Date(`${value}T00:00:00Z`);
+  if (Number.isNaN(date.getTime())) return value;
+  return new Intl.DateTimeFormat(locale, {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC",
+  }).format(date);
 }
 
 function formatPersonalizedDate(value: string | null, locale: Locale) {
@@ -539,18 +628,38 @@ export function OrientationOnePagePrintReport({
           <div className="orientation-pdf-header-copy">
             <p className="orientation-pdf-kicker">{premium.report}</p>
             <p className="orientation-pdf-date">
-              {identityName ? <>{identityName} · {identity?.email} · </> : null}
               {premium.generated} · {new Intl.DateTimeFormat(locale, { day: "2-digit", month: "2-digit", year: "numeric" }).format(new Date())}
             </p>
           </div>
         </header>
 
+        {identityName ? (
+          <section className="orientation-pdf-student">
+            <div>
+              <p>{premium.student}</p>
+              <strong>{identityName}</strong>
+            </div>
+            {identity?.birthDate ? (
+              <div>
+                <p>{premium.birthDate}</p>
+                <strong>{formatIdentityDate(identity.birthDate, locale)}</strong>
+              </div>
+            ) : null}
+            {identity?.email ? (
+              <div className="orientation-pdf-student-email">
+                <p>{premium.email}</p>
+                <strong>{identity.email}</strong>
+              </div>
+            ) : null}
+          </section>
+        ) : null}
+
         <section className="orientation-pdf-hero">
           <div className="orientation-pdf-hero-main">
             <p className="orientation-pdf-hero-eyebrow">{premium.heroEyebrow}</p>
             <h1>{premium.heroTitle}</h1>
-            <p className="orientation-pdf-hero-opening">{compactPrintText(content.opening, 240)}</p>
-            <p className="orientation-pdf-hero-status">{compactPrintText(content.projectStatus, 190)}</p>
+            <p className="orientation-pdf-hero-opening">{compactPrintText(content.opening, 320)}</p>
+            <p className="orientation-pdf-hero-status">{compactPrintText(content.projectStatus, 260)}</p>
           </div>
           <div className="orientation-pdf-hero-profile">
             <p>{copy.profile}</p>
@@ -564,17 +673,17 @@ export function OrientationOnePagePrintReport({
           <div className="orientation-pdf-priority-main">
             <p className="orientation-pdf-section-label">{premium.priority}</p>
             <h2>{content.mainPriority.title}</h2>
-            <p>{compactPrintText(content.mainPriority.text, 230)}</p>
-            <strong>{compactPrintText(content.mainPriority.nextStep, 150)}</strong>
+            <p>{compactPrintText(content.mainPriority.text, 320)}</p>
+            <strong>{compactPrintText(content.mainPriority.nextStep, 210)}</strong>
           </div>
           <div className="orientation-pdf-responsibilities">
             <div>
               <p className="orientation-pdf-mini-label">{premium.you}</p>
-              <strong>{compactPrintText(youText, 130)}</strong>
+              <strong>{compactPrintText(youText, 190)}</strong>
             </div>
             <div>
               <p className="orientation-pdf-mini-label orientation-pdf-mini-label-accent">{premium.campus}</p>
-              <span>{compactPrintText(campusText, 145)}</span>
+              <span>{compactPrintText(campusText, 200)}</span>
             </div>
           </div>
         </section>
@@ -593,7 +702,7 @@ export function OrientationOnePagePrintReport({
             </div>
             <p className="orientation-pdf-mini-label orientation-pdf-on-dark">{premium.why}</p>
             <p className="orientation-pdf-why">
-              {compactPrintText(featuredWriter?.whyItFits || content.projectStatus, 230)}
+              {compactPrintText(featuredWriter?.whyItFits || content.projectStatus, 420)}
             </p>
           </div>
           <div className="orientation-pdf-facts">
@@ -616,7 +725,7 @@ export function OrientationOnePagePrintReport({
               <article key={item.id}>
                 <span>{String(index + 1).padStart(2, "0")}</span>
                 <h3>{item.label}</h3>
-                <p>{compactPrintText(item.text, 110)}</p>
+                <p>{compactPrintText(item.text, 170)}</p>
               </article>
             ))}
           </div>
@@ -628,7 +737,7 @@ export function OrientationOnePagePrintReport({
             <h2>{premium.together}</h2>
           </div>
           <div>
-            <p>{compactPrintText(content.reassurance, 210)}</p>
+            <p>{compactPrintText(content.reassurance, 300)}</p>
             <strong>{premium.togetherText}</strong>
           </div>
         </section>
@@ -636,6 +745,7 @@ export function OrientationOnePagePrintReport({
         <footer className="orientation-pdf-footer">
           <div>
             <strong>Campus Allemagne</strong>
+            {identityName ? <span>{identityName}{identity?.email ? " · " + identity.email : ""}</span> : null}
             <span>{featuredSelected.institution}</span>
             {latestVerified ? <span>{copy.verified} {formatPersonalizedDate(latestVerified, locale)}</span> : null}
           </div>
