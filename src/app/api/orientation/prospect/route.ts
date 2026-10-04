@@ -313,16 +313,6 @@ export async function POST(request: Request) {
       attachments,
     });
 
-    if (delivery.status === "failed") {
-      console.error("orientation_email_delivery_failed", {
-        orientationId: String(orientation.id),
-        provider: delivery.provider,
-        httpStatus: delivery.httpStatus ?? null,
-        errorCode: delivery.errorCode ?? null,
-        detail: delivery.detail ?? null,
-      });
-    }
-
     const deliveryMetadata: Record<string, string> = {
       delivery_attempted_at: new Date().toISOString(),
     };
