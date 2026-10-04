@@ -32,6 +32,16 @@ test("P2.3 personalized PDF reuses the exact verified orientation result", () =>
   assert.match(reviewCore, /verification\.facts/);
 });
 
+test("P2.3 premium PDF includes student identity and localized verified facts", () => {
+  assert.match(printReport, /orientation-pdf-student/);
+  assert.match(printReport, /formatIdentityDate/);
+  assert.match(printReport, /premium\.birthDate/);
+  assert.match(printReport, /premium\.email/);
+  assert.match(printReport, /Semestre d’hiver/);
+  assert.match(printReport, /Allemand C1 pour les candidats internationaux/);
+  assert.match(printReport, /compactPrintText\(featuredWriter\?\.whyItFits \|\| content\.projectStatus, 420\)/);
+});
+
 test("P2.3 report has an explicit A4 print contract", () => {
   assert.match(css, /\.orientation-print-only \{[\s\S]*display: none/);
   assert.match(css, /@media print \{[\s\S]*@page \{[\s\S]*size: A4;[\s\S]*margin: 10mm/);
@@ -39,6 +49,9 @@ test("P2.3 report has an explicit A4 print contract", () => {
   assert.match(css, /print-color-adjust: exact/);
   assert.match(css, /\.orientation-print-page \.orientation-print-hide \{[\s\S]*display: none !important/);
   assert.match(css, /\.orientation-print-page \.orientation-screen-report \{[\s\S]*display: none !important/);
+  assert.match(css, /\[data-partner-prelaunch="true"\] \{[\s\S]*display: none !important/);
+  assert.match(css, /\.orientation-one-page-premium \{[\s\S]*min-height: 270mm;[\s\S]*display: flex !important/);
+  assert.match(css, /\.orientation-pdf-student \{[\s\S]*grid-template-columns:/);
   assert.match(css, /\.orientation-print-page \.orientation-one-page-print \{[\s\S]*display: block !important/);
   assert.match(css, /\.orientation-print-page \.skip-link \{[\s\S]*display: none !important/);
   assert.match(css, /\.orientation-print-page \.eyebrow \{[\s\S]*letter-spacing: 0 !important/);
