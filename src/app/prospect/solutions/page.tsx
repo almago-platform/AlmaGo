@@ -9,6 +9,7 @@ import {
 } from "@/lib/finance-insurance";
 import { getRequestLocale } from "@/lib/i18n-server";
 import { getPhase2StudentAccess } from "@/lib/phase2/access";
+import { loadProspectHubState } from "@/lib/prospect/hub";
 
 type LanguageCourse = {
   id: string;
@@ -90,12 +91,43 @@ export default async function ProspectSolutionsPage() {
         .order("provider_name", { ascending: true })
     : Promise.resolve({ data: [], error: null });
 
-  const [languageResult, financeResult] = await Promise.all([
+  const [languageResult, financeResult, state] = await Promise.all([
     languagePromise,
     financePromise,
+    loadProspectHubState({
+      userId: access.user.id,
+      email: access.user.email,
+      emailConfirmed: Boolean(access.user.email_confirmed_at),
+    }),
   ]);
 
-  const languageCourses = (languageResult.data || []) as LanguageCourse[];
+  const preferredCities = new Set(
+    (state.answers?.preferredCities || []).map((city) =>
+      city
+        .trim()
+        .toLocaleLowerCase("de")
+        .normalize("NFD")
+        .replace(/\p{Diacritic}/gu, "")
+    ),
+  );
+
+  const languageCourses = ((languageResult.data || []) as LanguageCourse[])
+    .sort((a, b) => {
+      const aCity = (a.city || "")
+        .trim()
+        .toLocaleLowerCase("de")
+        .normalize("NFD")
+        .replace(/\p{Diacritic}/gu, "");
+      const bCity = (b.city || "")
+        .trim()
+        .toLocaleLowerCase("de")
+        .normalize("NFD")
+        .replace(/\p{Diacritic}/gu, "");
+      const aPreferred = preferredCities.has(aCity) ? 1 : 0;
+      const bPreferred = preferredCities.has(bCity) ? 1 : 0;
+      if (aPreferred !== bPreferred) return bPreferred - aPreferred;
+      return a.provider_name.localeCompare(b.provider_name);
+    });
   const financeOptions = ((financeResult.data || []) as FinanceInsuranceOption[])
     .filter((option) => isPublishableFinanceInsuranceOption(option, now));
 
@@ -103,10 +135,10 @@ export default async function ProspectSolutionsPage() {
 
   return (
     <main className="space-y-8">
-      <header>
-        <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">{t.eyebrow}</p>
-        <h1 className="mt-2 text-3xl font-bold tracking-[-0.03em]">{t.title}</h1>
-        <p className="mt-2 max-w-4xl text-sm leading-6 text-[var(--muted)]">{t.subtitle}</p>
+      <header className="overflow-hidden rounded-[var(--radius-panel)] border border-slate-800 bg-[var(--foreground)] px-5 py-7 text-white shadow-[var(--shadow-soft)] sm:px-7 sm:py-8">
+        <p className="text-xs font-bold uppercase tracking-[0.16em] text-amber-300">{t.eyebrow}</p>
+        <h1 className="mt-2 text-3xl font-bold tracking-[-0.03em] sm:text-4xl">{t.title}</h1>
+        <p className="mt-3 max-w-4xl text-sm leading-6 text-white/72 sm:text-base">{t.subtitle}</p>
       </header>
 
       <section aria-labelledby="prospect-language-solutions">
@@ -120,14 +152,27 @@ export default async function ProspectSolutionsPage() {
             {languageCourses.map((course) => {
               const level = languageLevel(course);
               const price = formatPrice(course.price_cents, course.currency, intlLocale);
+              const normalizedCity = (course.city || "")
+                .trim()
+                .toLocaleLowerCase("de")
+                .normalize("NFD")
+                .replace(/\p{Diacritic}/gu, "");
+              const isPreferredCity = preferredCities.has(normalizedCity);
               return (
                 <article
                   key={course.id}
-                  className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5"
+                  className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[var(--shadow-card)] transition hover:border-[var(--brand-border)]"
                 >
-                  <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--brand)]">
-                    <bdi dir="auto">{course.provider_name}</bdi>
-                  </p>
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--brand)]">
+                      <bdi dir="auto">{course.provider_name}</bdi>
+                    </p>
+                    {isPreferredCity ? (
+                      <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-[10px] font-bold text-emerald-800 ring-1 ring-inset ring-emerald-200">
+                        {t.forYourProject}
+                      </span>
+                    ) : null}
+                  </div>
                   <h3 className="mt-2 text-xl font-bold"><bdi dir="auto">{course.title}</bdi></h3>
                   <div className="mt-3 flex flex-wrap gap-2 text-xs">
                     {course.city ? (
@@ -192,7 +237,7 @@ export default async function ProspectSolutionsPage() {
                     {options.map((option) => (
                       <article
                         key={option.id}
-                        className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5"
+                        className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[var(--shadow-card)] transition hover:border-[var(--brand-border)]"
                       >
                         <p className="text-sm font-bold text-[var(--brand)]"><bdi dir="auto">{option.provider_name}</bdi></p>
                         {option.product_name ? (
