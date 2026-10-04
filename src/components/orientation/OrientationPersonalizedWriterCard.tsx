@@ -1076,9 +1076,13 @@ export function OrientationPersonalizedWriterCard({
             level: null,
             cleanWhy: featuredOption.whyItFits,
           };
-          const officialUrl = selected?.facts.find(
+          const officialApplicationFact = selected?.facts.find(
             (fact) => fact.field === "application_url" && typeof fact.value === "string" && /^https?:\/\//.test(fact.value),
-          )?.value
+          );
+          const applicationUrl =
+            typeof officialApplicationFact?.value === "string" ? officialApplicationFact.value : null;
+          const officialUrl =
+            applicationUrl
             || selected?.facts.find((fact) => fact.sourceUrl)?.sourceUrl
             || null;
 
