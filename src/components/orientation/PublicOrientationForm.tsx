@@ -63,6 +63,7 @@ export function PublicOrientationForm({
   initialAnswers = null,
   initialIdentity = null,
   authenticatedUpdate = false,
+  authenticatedEntry = false,
   acquisitionContext = null,
 }: {
   prospectCaptureEnabled?: boolean;
@@ -71,6 +72,7 @@ export function PublicOrientationForm({
   initialAnswers?: Answers | null;
   initialIdentity?: PublicOrientationIdentity | null;
   authenticatedUpdate?: boolean;
+  authenticatedEntry?: boolean;
   acquisitionContext?: AcquisitionContext | null;
 }) {
   const { locale, direction } = useLocale();
@@ -181,6 +183,7 @@ export function PublicOrientationForm({
       birthDate: "Date de naissance",
       email: "Adresse e-mail",
       privacy: "Vos informations servent uniquement à votre parcours Campus Allemagne. Aucun compte n’est créé à cette étape.",
+      authenticatedPrivacy: "Ces informations complètent votre dossier Campus Allemagne. Cette orientation sera rattachée à votre compte.",
       privacyLink: "Consulter la confidentialité",
       submit: "Commencer mon orientation",
       edit: "Modifier mes informations",
@@ -197,6 +200,7 @@ export function PublicOrientationForm({
       birthDate: "تاريخ الميلاد",
       email: "البريد الإلكتروني",
       privacy: "تُستخدم معلوماتك فقط ضمن مسارك مع Campus Allemagne، ولن يتم إنشاء حساب في هذه المرحلة.",
+      authenticatedPrivacy: "تُكمل هذه المعلومات ملفك لدى Campus Allemagne، وسيتم ربط هذا التوجيه بحسابك.",
       privacyLink: "سياسة الخصوصية",
       submit: "ابدأ توجيهي",
       edit: "تعديل معلوماتي",
@@ -213,6 +217,7 @@ export function PublicOrientationForm({
       birthDate: "Date of birth",
       email: "Email address",
       privacy: "Your details are used only for your Campus Allemagne journey. No account is created at this step.",
+      authenticatedPrivacy: "These details complete your Campus Allemagne file. This orientation will be linked to your account.",
       privacyLink: "View privacy information",
       submit: "Start my orientation",
       edit: "Edit my information",
@@ -229,6 +234,7 @@ export function PublicOrientationForm({
       birthDate: "Geburtsdatum",
       email: "E-Mail-Adresse",
       privacy: "Deine Angaben werden nur für deinen Campus-Allemagne-Weg verwendet. In diesem Schritt wird kein Konto erstellt.",
+      authenticatedPrivacy: "Diese Angaben ergänzen dein Campus-Allemagne-Dossier. Diese Orientierung wird mit deinem Konto verknüpft.",
       privacyLink: "Datenschutzhinweise ansehen",
       submit: "Meine Orientierung starten",
       edit: "Meine Angaben ändern",
@@ -518,10 +524,10 @@ export function PublicOrientationForm({
           <div className="flex items-center gap-2 sm:gap-4">
             <LanguageSwitcher compact />
             <Link
-              href={authenticatedUpdate ? "/prospect" : "/login"}
+              href={authenticatedUpdate || authenticatedEntry ? "/prospect" : "/login"}
               className="text-sm font-semibold text-[var(--foreground)] underline-offset-4 hover:underline"
             >
-              {authenticatedUpdate ? prospectDashboard.shell.area : copy.header.login}
+              {authenticatedUpdate || authenticatedEntry ? prospectDashboard.shell.area : copy.header.login}
             </Link>
           </div>
         </div>
@@ -597,6 +603,7 @@ export function PublicOrientationForm({
                       spellCheck={false}
                       maxLength={320}
                       required
+                      readOnly={authenticatedEntry}
                       value={identity.email}
                       onChange={(event) => setIdentityField("email", event.target.value)}
                     />
@@ -604,7 +611,7 @@ export function PublicOrientationForm({
                 </div>
 
                 <div className="mt-5 rounded-[var(--radius-control)] border border-[var(--brand-border)] bg-[var(--brand-soft)] px-4 py-3 text-sm leading-6">
-                  {identityCopy.privacy}{" "}
+                  {authenticatedEntry ? identityCopy.authenticatedPrivacy : identityCopy.privacy}{" "}
                   <Link
                     href="/legal/privacy"
                     target="_blank"
