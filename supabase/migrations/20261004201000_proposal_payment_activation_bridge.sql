@@ -442,6 +442,32 @@ create trigger commercial_purchase_sync_student_intake
 revoke all on function private.sync_student_intake_purchase_state()
   from public, anon, authenticated;
 
+create or replace function private.guard_student_intake_commercial_orientation_change()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $
+begin
+  if old.status in ('payment_pending', 'paid_pending_validation')
+    and new.orientation_id is distinct from old.orientation_id
+  then
+    raise exception 'commercial_flow_orientation_locked';
+  end if;
+
+  return new;
+end;
+$;
+
+drop trigger if exists student_intake_commercial_orientation_guard
+  on public.student_intake_cases;
+create trigger student_intake_commercial_orientation_guard
+  before update on public.student_intake_cases
+  for each row execute procedure private.guard_student_intake_commercial_orientation_change();
+
+revoke all on function private.guard_student_intake_commercial_orientation_change()
+  from public, anon, authenticated;
+
 create or replace function public.activate_phase2_paid_purchase(
   p_admin_user_id uuid,
   p_purchase_id uuid
