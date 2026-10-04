@@ -16,6 +16,7 @@ const journeyCopy: Record<Locale, { count: string; steps: JourneyStep[] }> = {
       { key: "documents", label: "Documents", href: "/prospect/documents" },
       { key: "review", label: "Analyse Campus", href: "/prospect/proposal" },
       { key: "proposal", label: "Proposition", href: "/prospect/proposal" },
+      { key: "payment", label: "Paiement", href: "/prospect/payment" },
       { key: "procedure", label: "Procédure", href: "/prospect/roadmap" },
       { key: "applications", label: "Candidatures", href: "/prospect/roadmap" },
       { key: "admission", label: "Admission", href: "/prospect/roadmap" },
@@ -29,6 +30,7 @@ const journeyCopy: Record<Locale, { count: string; steps: JourneyStep[] }> = {
       { key: "documents", label: "الوثائق", href: "/prospect/documents" },
       { key: "review", label: "مراجعة Campus", href: "/prospect/proposal" },
       { key: "proposal", label: "الاقتراح", href: "/prospect/proposal" },
+      { key: "payment", label: "الدفع", href: "/prospect/payment" },
       { key: "procedure", label: "الإجراءات", href: "/prospect/roadmap" },
       { key: "applications", label: "الترشحات", href: "/prospect/roadmap" },
       { key: "admission", label: "القبول", href: "/prospect/roadmap" },
@@ -42,6 +44,7 @@ const journeyCopy: Record<Locale, { count: string; steps: JourneyStep[] }> = {
       { key: "documents", label: "Documents", href: "/prospect/documents" },
       { key: "review", label: "Campus review", href: "/prospect/proposal" },
       { key: "proposal", label: "Proposal", href: "/prospect/proposal" },
+      { key: "payment", label: "Payment", href: "/prospect/payment" },
       { key: "procedure", label: "Procedure", href: "/prospect/roadmap" },
       { key: "applications", label: "Applications", href: "/prospect/roadmap" },
       { key: "admission", label: "Admission", href: "/prospect/roadmap" },
@@ -55,6 +58,7 @@ const journeyCopy: Record<Locale, { count: string; steps: JourneyStep[] }> = {
       { key: "documents", label: "Dokumente", href: "/prospect/documents" },
       { key: "review", label: "Campus-Prüfung", href: "/prospect/proposal" },
       { key: "proposal", label: "Vorschlag", href: "/prospect/proposal" },
+      { key: "payment", label: "Zahlung", href: "/prospect/payment" },
       { key: "procedure", label: "Verfahren", href: "/prospect/roadmap" },
       { key: "applications", label: "Bewerbungen", href: "/prospect/roadmap" },
       { key: "admission", label: "Zulassung", href: "/prospect/roadmap" },
@@ -73,6 +77,7 @@ const preBacJourneyCopy: Record<Locale, { count: string; steps: JourneyStep[] }>
       { key: "documents", label: "Documents finaux", href: "/prospect/documents" },
       { key: "review", label: "Analyse Campus", href: "/prospect/proposal" },
       { key: "proposal", label: "Proposition", href: "/prospect/proposal" },
+      { key: "payment", label: "Paiement", href: "/prospect/payment" },
       { key: "applications", label: "Candidatures", href: "/prospect/roadmap" },
       { key: "admission", label: "Admission", href: "/prospect/roadmap" },
       { key: "visa", label: "Visa & départ", href: "/prospect/roadmap" },
@@ -87,6 +92,7 @@ const preBacJourneyCopy: Record<Locale, { count: string; steps: JourneyStep[] }>
       { key: "documents", label: "الوثائق النهائية", href: "/prospect/documents" },
       { key: "review", label: "مراجعة Campus", href: "/prospect/proposal" },
       { key: "proposal", label: "الاقتراح", href: "/prospect/proposal" },
+      { key: "payment", label: "الدفع", href: "/prospect/payment" },
       { key: "applications", label: "الترشحات", href: "/prospect/roadmap" },
       { key: "admission", label: "القبول", href: "/prospect/roadmap" },
       { key: "visa", label: "التأشيرة والمغادرة", href: "/prospect/roadmap" },
@@ -101,6 +107,7 @@ const preBacJourneyCopy: Record<Locale, { count: string; steps: JourneyStep[] }>
       { key: "documents", label: "Final documents", href: "/prospect/documents" },
       { key: "review", label: "Campus review", href: "/prospect/proposal" },
       { key: "proposal", label: "Proposal", href: "/prospect/proposal" },
+      { key: "payment", label: "Payment", href: "/prospect/payment" },
       { key: "applications", label: "Applications", href: "/prospect/roadmap" },
       { key: "admission", label: "Admission", href: "/prospect/roadmap" },
       { key: "visa", label: "Visa & departure", href: "/prospect/roadmap" },
@@ -115,6 +122,7 @@ const preBacJourneyCopy: Record<Locale, { count: string; steps: JourneyStep[] }>
       { key: "documents", label: "Endgültige Unterlagen", href: "/prospect/documents" },
       { key: "review", label: "Campus-Prüfung", href: "/prospect/proposal" },
       { key: "proposal", label: "Vorschlag", href: "/prospect/proposal" },
+      { key: "payment", label: "Zahlung", href: "/prospect/payment" },
       { key: "applications", label: "Bewerbungen", href: "/prospect/roadmap" },
       { key: "admission", label: "Zulassung", href: "/prospect/roadmap" },
       { key: "visa", label: "Visum & Abreise", href: "/prospect/roadmap" },
@@ -136,11 +144,20 @@ function currentIndex({
   preBac?: boolean;
 }) {
   if (!hasOrientation || !orientationConfirmed) return 0;
-  if (preBac) return 1;
+
+  if (preBac) {
+    if (!intake || intake.status === "starter_documents") return 1;
+    if (intake.status === "route_proposed" || intake.status === "student_question") return 5;
+    if (intake.status === "payment_pending" || intake.status === "paid_pending_validation") return 6;
+    if (intake.status === "procedure_created") return 7;
+    return 1;
+  }
+
   if (!intake || intake.status === "starter_documents") return 1;
   if (intake.status === "campus_review") return 2;
   if (intake.status === "route_proposed" || intake.status === "student_question") return 3;
-  if (intake.status === "procedure_created") return 4;
+  if (intake.status === "payment_pending" || intake.status === "paid_pending_validation") return 4;
+  if (intake.status === "procedure_created") return 5;
 
   if (starterSummary.approved < starterSummary.required) return 1;
   return 2;
