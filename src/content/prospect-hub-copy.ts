@@ -69,6 +69,9 @@ type ProspectHubCopy = {
     degree: string;
     field: string;
     city: string;
+    german: string;
+    uniAssist: string;
+    yes: string;
     all: string;
     apply: string;
     reset: string;
@@ -193,6 +196,9 @@ const fr: ProspectHubCopy = {
     degree: "Diplôme",
     field: "Domaine",
     city: "Ville",
+    german: "Allemand",
+    uniAssist: "uni-assist",
+    yes: "Oui",
     all: "Tous",
     apply: "Appliquer",
     reset: "Réinitialiser",
@@ -317,6 +323,9 @@ const en: ProspectHubCopy = {
     degree: "Degree",
     field: "Field",
     city: "City",
+    german: "German",
+    uniAssist: "uni-assist",
+    yes: "Yes",
     all: "All",
     apply: "Apply",
     reset: "Reset",
@@ -441,6 +450,9 @@ const de: ProspectHubCopy = {
     degree: "Abschluss",
     field: "Fach",
     city: "Stadt",
+    german: "Deutsch",
+    uniAssist: "uni-assist",
+    yes: "Ja",
     all: "Alle",
     apply: "Anwenden",
     reset: "Zurücksetzen",
@@ -565,6 +577,9 @@ const ar: ProspectHubCopy = {
     degree: "الدرجة",
     field: "المجال",
     city: "المدينة",
+    german: "الألمانية",
+    uniAssist: "uni-assist",
+    yes: "نعم",
     all: "الكل",
     apply: "تطبيق",
     reset: "إعادة ضبط",
