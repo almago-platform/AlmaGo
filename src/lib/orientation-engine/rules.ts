@@ -580,6 +580,8 @@ export function evaluateProgramme(
 function preferredCityCoreMatch(
   evaluation: OrientationProgrammeEvaluation,
 ) {
+  if (normalize(evaluation.programme.degreeLevel) !== "bachelor") return false;
+
   const hasEligibleRule = (code: OrientationRuleCode) =>
     evaluation.rules.some(
       (rule) => rule.code === code && rule.status === "eligible",
