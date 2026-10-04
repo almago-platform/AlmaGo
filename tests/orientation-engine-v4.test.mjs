@@ -123,6 +123,20 @@ test("Orientation V4 audit documents privacy, cost and incremental conversation 
 });
 
 
+test("Orientation V4 makes a strong verified preferred-city catalogue match authoritative before external discovery", () => {
+  assert.match(service, /export function hasPreferredCityCatalogueMatch/);
+  assert.match(service, /hasEligibleRule\("degree_match"\)/);
+  assert.match(service, /hasEligibleRule\("field_match"\)/);
+  assert.match(service, /hasEligibleRule\("preferred_city"\)/);
+  assert.match(service, /hasEligibleRule\("teaching_language_match"\)/);
+  assert.match(api, /hasPreferredCityCatalogueMatch\(engineResult\)/);
+  assert.match(
+    api,
+    /if \(!catalogueHasPreferredCityMatch\) \{[\s\S]*?runOrientationResultPipeline\(locale, profile\)/,
+  );
+  assert.match(intelligence, /hasPreferredCityCatalogueMatch\(engineResult\)/);
+});
+
 test("Orientation V4 AI scout is optional, Bachelor-only and grounded", () => {
   assert.match(intelligence, /ALMAGO_ORIENTATION_AI_SCOUT !== "gemini"/);
   assert.match(intelligence, /profile\.targetDegree !== "Bachelor"/);

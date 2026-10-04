@@ -481,3 +481,38 @@ test("C output remains explainable through score breakdown, reasons, warnings an
   assert.ok(Array.isArray(item.warnings));
   assert.ok(Array.isArray(item.missingFacts));
 });
+
+test("C keeps a relevant exact preferred-city programme ahead of stronger outside-city alternatives", () => {
+  const candidateProfile = profile({
+    targetField: "Informatique",
+    engineeringSpecialty: "",
+    studyLanguage: "Allemand",
+    preferredCities: ["Aachen"],
+  });
+  const aachen = verification({
+    institution: "Aachen Informatics University",
+    programme: "Computer Science",
+    city: "Aachen",
+    teachingLanguage: "German",
+    germanRequirement: "B1",
+    overallStatus: "needs_review",
+    factStatus: "needs_review",
+  });
+  const berlin = verification({
+    institution: "Berlin Informatics University",
+    programme: "Computer Science",
+    city: "Berlin",
+    teachingLanguage: "German",
+    germanRequirement: "B1",
+  });
+
+  const result = buildOrientationSelection(
+    candidateProfile,
+    [berlin, aachen],
+  );
+
+  assert.equal(result.selected[0].verification.candidate.city, "Aachen");
+  assert.ok(result.selected[0].reasons.includes("preferred_city_match"));
+  assert.ok(result.selected[0].reasons.includes("field_match"));
+  assert.ok(result.selected[0].reasons.includes("study_language_match"));
+});
