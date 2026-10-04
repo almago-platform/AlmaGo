@@ -18,8 +18,8 @@ export default async function ProspectStarterDocumentsPage() {
     .eq("student_id", user.id)
     .maybeSingle();
 
-  if (!intake || intake.status === "procedure_created") {
-    redirect("/prospect");
+  if (!intake) {
+    redirect("/prospect/orientation");
   }
 
   const { data: documents } = await supabase

@@ -9,9 +9,11 @@ const phase2Access = read("src/lib/phase2/access.ts");
 const studentLayout = read("src/app/student/layout.tsx");
 const prospectLayout = read("src/app/prospect/layout.tsx");
 const prospectPage = read("src/app/prospect/page.tsx");
+const prospectHubState = read("src/lib/prospect/hub.ts");
 const prospectLoading = read("src/app/prospect/loading.tsx");
 const prospectShell = read("src/components/layout/ProspectShell.tsx");
 const prospectCopy = read("src/content/prospect-dashboard-copy.ts");
+const prospectHubCopy = read("src/content/prospect-hub-copy.ts");
 const documentView = read("src/app/api/documents/[id]/view/route.ts");
 
 test("P2.5 keeps technical role and commercial client access separate", () => {
@@ -38,21 +40,30 @@ test("prospect space is available only to authenticated non-client students", ()
   assert.match(prospectLayout, /ProspectShell/);
 });
 
-test("prospect dashboard reads only the linked prospect orientation", () => {
-  assert.match(prospectPage, /from\("prospects"\)/);
-  assert.match(prospectPage, /\.eq\("user_id", access\.user\.id\)/);
-  assert.match(prospectPage, /from\("orientations"\)/);
-  assert.match(prospectPage, /\.eq\("prospect_id", prospect\.id\)/);
-  assert.match(prospectPage, /public-orientation-v1/);
-  assert.doesNotMatch(prospectPage, /from\("documents"\)|from\("applications"\)|from\("student_checklist_items"\)/);
+test("prospect dashboard reads only the linked prospect orientation through the shared hub boundary", () => {
+  assert.match(prospectPage, /loadProspectHubState/);
+  assert.match(prospectHubState, /from\("prospects"\)/);
+  assert.match(prospectHubState, /\.eq\("user_id", userId\)/);
+  assert.match(prospectHubState, /from\("orientations"\)/);
+  assert.match(prospectHubState, /\.eq\("prospect_id", prospectId\)/);
+  assert.match(prospectHubState, /public-orientation-v1/);
+  assert.doesNotMatch(prospectPage, /from\("applications"\)|from\("student_checklist_items"\)/);
 });
 
-test("prospect navigation exposes free-space actions and no client routes", () => {
-  assert.match(prospectShell, /\/prospect#orientation/);
-  assert.match(prospectShell, /\/prospect#possibilities/);
-  assert.match(prospectShell, /\/prospect#roadmap/);
-  assert.match(prospectShell, /\/prospect#missing/);
-  assert.match(prospectShell, /href: "\/orientation\?mode=update"/);
+test("prospect navigation uses real hub routes and no dead hash anchors", () => {
+  for (const route of [
+    "/prospect/orientation",
+    "/prospect/catalogue",
+    "/prospect/proposal",
+    "/prospect/roadmap",
+    "/prospect/documents",
+    "/prospect/solutions",
+    "/prospect/offers",
+    "/prospect/payment",
+  ]) {
+    assert.match(prospectShell, new RegExp(route.replaceAll("/", "\\/")));
+  }
+  assert.doesNotMatch(prospectShell, /\/prospect#/);
   assert.doesNotMatch(prospectShell, /\/student\/documents|\/student\/applications|\/student\/checklist|\/student\/finance-insurance/);
 });
 
@@ -88,13 +99,30 @@ test("prospect dashboard has a localized accessible loading state", () => {
   assert.match(prospectLoading, /prospectDashboardCopy\[locale\]\.page/);
 });
 
-test("prospect navigation exposes the current section accessibly", () => {
+test("prospect navigation exposes the current route accessibly", () => {
   assert.match(prospectShell, /usePathname\(\)/);
-  assert.match(prospectShell, /useSyncExternalStore\(/);
-  assert.match(prospectShell, /window\.location\.hash \|\| "#orientation"/);
-  assert.match(prospectShell, /aria-current=\{active \? \(hash \? "location" : "page"\) : undefined\}/);
+  assert.match(prospectShell, /aria-current=\{active \? "page" : undefined\}/);
   assert.match(prospectShell, /pathname === item\.href \|\| pathname\.startsWith/);
   assert.match(prospectShell, /href: "\/prospect\/offers"/);
   assert.match(prospectShell, /href: "\/prospect\/payment"/);
-  assert.doesNotMatch(prospectShell, /setActiveHash|useEffect\(/);
+  assert.doesNotMatch(prospectShell, /useSyncExternalStore|window\.location\.hash|#orientation/);
+});
+
+
+test("prospect hub copy keeps the project relationship visible instead of framing the whole area as a limitation", () => {
+  assert.match(prospectHubCopy, /Mon espace Campus Allemagne/);
+  assert.match(prospectHubCopy, /Ma proposition/);
+  assert.match(prospectHubCopy, /Programmes & catalogue/);
+  assert.match(prospectHubCopy, /Prestataires & solutions/);
+  assert.match(prospectHubCopy, /Compte gratuit/);
+});
+
+test("prospect dashboard exposes progress, student action, Campus action and proposal status", () => {
+  assert.match(prospectPage, /ProspectJourneyProgress/);
+  assert.match(prospectPage, /nextAction/);
+  assert.match(prospectPage, /campusWork/);
+  assert.match(prospectPage, /proposalStatus/);
+  assert.match(prospectPage, /\/prospect\/catalogue/);
+  assert.match(prospectPage, /\/prospect\/solutions/);
+  assert.match(prospectPage, /<details/);
 });

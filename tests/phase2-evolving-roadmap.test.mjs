@@ -10,6 +10,8 @@ const form = read("src/components/orientation/PublicOrientationForm.tsx");
 const updateCard = read("src/components/orientation/ProspectOrientationUpdateCard.tsx");
 const orientationPage = read("src/app/orientation/page.tsx");
 const prospectPage = read("src/app/prospect/page.tsx");
+const prospectHub = read("src/lib/prospect/hub.ts");
+const prospectOrientationPage = read("src/app/prospect/orientation/page.tsx");
 const prospectShell = read("src/components/layout/ProspectShell.tsx");
 const updateCopy = read("src/content/prospect-orientation-update-copy.ts");
 const dashboardCopy = read("src/content/prospect-dashboard-copy.ts");
@@ -74,13 +76,13 @@ test("orientation update mode loads only the latest orientation linked to the au
 });
 
 test("prospect dashboard uses latest orientation plus a bounded append-only history", () => {
-  assert.match(prospectPage, /\.limit\(5\)/);
-  assert.match(prospectPage, /buildProspectRoadmap/);
-  assert.match(prospectPage, /validOrientations\[0\]/);
-  assert.match(prospectPage, /historyTitle/);
-  assert.match(prospectPage, /historyCurrent/);
-  assert.match(prospectPage, /href="\/orientation\?mode=update"/);
-  assert.match(prospectShell, /href: "\/orientation\?mode=update"/);
+  assert.match(prospectHub, /\.limit\(8\)/);
+  assert.match(prospectHub, /buildProspectRoadmap/);
+  assert.match(prospectHub, /orientations\[0\]/);
+  assert.match(prospectPage, /<details/);
+  assert.match(prospectPage, /currentVersion/);
+  assert.match(prospectOrientationPage, /href="\/orientation\?mode=update"/);
+  assert.match(prospectShell, /href: "\/prospect\/orientation"/);
 });
 
 test("authenticated update UI posts only answers and locale and explains version preservation", () => {

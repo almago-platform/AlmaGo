@@ -15,6 +15,8 @@ const publicOrientationRoute = read("src/app/api/orientation/prospect/route.ts")
 const orientationPage = read("src/app/orientation/page.tsx");
 const orientationForm = read("src/components/orientation/PublicOrientationForm.tsx");
 const prospectPage = read("src/app/prospect/page.tsx");
+const prospectHub = read("src/lib/prospect/hub.ts");
+const prospectProposalPage = read("src/app/prospect/proposal/page.tsx");
 const prospectIntake = read("src/lib/prospect/intake.ts");
 const intakeCard = read("src/components/prospect/IntakeFlowCard.tsx");
 const starterPanel = read("src/components/prospect/StarterDocumentsPanel.tsx");
@@ -129,8 +131,9 @@ test("study preparation confirmation maps to existing project path and versioned
 });
 
 test("student and admin surfaces project the same intake truth", () => {
-  assert.match(prospectPage, /loadProspectIntakeState/);
-  assert.match(prospectPage, /<IntakeFlowCard/);
+  assert.match(prospectPage, /loadProspectHubState/);
+  assert.match(prospectHub, /loadProspectIntakeState/);
+  assert.match(prospectProposalPage, /<IntakeFlowCard/);
   assert.doesNotMatch(prospectPage, /from\("documents"\)/);
   assert.match(prospectIntake, /from\("student_intake_cases"\)/);
   assert.match(prospectIntake, /from\("documents"\)/);

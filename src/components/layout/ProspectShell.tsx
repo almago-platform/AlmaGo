@@ -2,27 +2,14 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useSyncExternalStore, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import { BrandLogo } from "@/components/brand/BrandLogo";
 import { LanguageSwitcher } from "@/components/i18n/LanguageSwitcher";
 import { useLocale } from "@/components/i18n/LocaleProvider";
-import { prospectDashboardCopy } from "@/content/prospect-dashboard-copy";
+import { prospectHubCopy } from "@/content/prospect-hub-copy";
 import { prospectOffersCopy } from "@/content/prospect-offers-copy";
 import { prospectPaymentCopy } from "@/content/prospect-payment-copy";
 import { createClient } from "@/lib/supabase/client";
-
-function subscribeToHash(onStoreChange: () => void) {
-  window.addEventListener("hashchange", onStoreChange);
-  return () => window.removeEventListener("hashchange", onStoreChange);
-}
-
-function getHashSnapshot() {
-  return window.location.hash || "#orientation";
-}
-
-function getServerHashSnapshot() {
-  return "";
-}
 
 export function ProspectShell({
   children,
@@ -33,26 +20,22 @@ export function ProspectShell({
 }>) {
   const pathname = usePathname();
   const router = useRouter();
-  const hashSnapshot = useSyncExternalStore(
-    subscribeToHash,
-    getHashSnapshot,
-    getServerHashSnapshot,
-  );
-  const activeHash = pathname === "/prospect" ? hashSnapshot : "";
   const { locale, direction, copy } = useLocale();
-  const t = prospectDashboardCopy[locale].shell;
+  const t = prospectHubCopy[locale].shell;
   const offersCopy = prospectOffersCopy[locale];
   const paymentCopy = prospectPaymentCopy[locale];
   const name = displayName?.trim();
 
   const links = [
-    { href: "/prospect#orientation", label: t.links.orientation },
-    { href: "/prospect#possibilities", label: t.links.possibilities },
-    { href: "/prospect#roadmap", label: t.links.roadmap },
-    { href: "/prospect#missing", label: t.links.missing },
-    { href: "/orientation?mode=update", label: t.links.update },
-    { href: "/prospect/offers", label: offersCopy.nav },
-    { href: "/prospect/payment", label: paymentCopy.nav },
+    { href: "/prospect", label: t.links.dashboard },
+    { href: "/prospect/orientation", label: t.links.orientation },
+    { href: "/prospect/catalogue", label: t.links.catalogue },
+    { href: "/prospect/proposal", label: t.links.proposal },
+    { href: "/prospect/roadmap", label: t.links.roadmap },
+    { href: "/prospect/documents", label: t.links.documents },
+    { href: "/prospect/solutions", label: t.links.solutions },
+    { href: "/prospect/offers", label: offersCopy.nav || t.links.offers },
+    { href: "/prospect/payment", label: paymentCopy.nav || t.links.payment },
   ];
 
   async function signOut() {
@@ -70,7 +53,7 @@ export function ProspectShell({
           <Link href="/prospect" className="flex min-w-0 items-center gap-3" aria-label={t.homeAria}>
             <BrandLogo className="h-9 w-auto max-w-[11rem]" />
             <span className="hidden rounded-full border border-[var(--brand-border)] bg-[var(--brand-soft)] px-2.5 py-1 text-[11px] font-bold text-[var(--brand-strong)] sm:inline">
-              {t.freeBadge}
+              {t.badge}
             </span>
           </Link>
           <div className="flex shrink-0 items-center gap-2">
@@ -95,18 +78,15 @@ export function ProspectShell({
           <nav className="mt-5" aria-label={t.navigation}>
             <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-1">
               {links.map((item) => {
-                const hash = item.href.startsWith("/prospect#")
-                  ? item.href.slice("/prospect".length)
-                  : null;
-                const active = hash
-                  ? pathname === "/prospect" && activeHash === hash
+                const active = item.href === "/prospect"
+                  ? pathname === item.href
                   : pathname === item.href || pathname.startsWith(`${item.href}/`);
 
                 return (
                   <Link
                     key={item.href}
                     href={item.href}
-                    aria-current={active ? (hash ? "location" : "page") : undefined}
+                    aria-current={active ? "page" : undefined}
                     className={`rounded-[var(--radius-control)] border px-3 py-2.5 text-sm font-semibold transition-colors ${active ? "border-[var(--brand-border)] bg-[var(--brand-soft)] text-[var(--brand-strong)]" : "border-transparent text-[var(--foreground)] hover:border-[var(--brand-border)] hover:bg-[var(--brand-soft)] hover:text-[var(--brand-strong)]"}`}
                   >
                     {item.label}
