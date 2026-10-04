@@ -111,7 +111,10 @@ function uniqueCodes(codes: OrientationRuleCode[]) {
 export function hasPreferredCityCatalogueMatch(
   result: OrientationEngineResult,
 ) {
-  if (result.profile.preferredCities.length === 0) return false;
+  if (
+    result.profile.targetDegree !== "Bachelor"
+    || result.profile.preferredCities.length === 0
+  ) return false;
 
   return result.recommendations.some((recommendation) => {
     const hasEligibleRule = (code: OrientationRuleCode) =>
