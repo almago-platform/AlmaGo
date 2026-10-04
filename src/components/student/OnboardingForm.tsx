@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   PreferredCitiesPicker,
@@ -113,6 +113,22 @@ export function OnboardingForm({ profile }: { profile: Record<string, unknown> }
   const t = rebrandCopy(studentOnboardingCopy[locale]);
   const steps = t.steps;
 
+  useEffect(() => {
+    const saved = window.localStorage.getItem("almago-onboarding-draft");
+    if (!saved) return;
+    try {
+      const parsed = JSON.parse(saved) as { data?: FormData; step?: number };
+      if (parsed.data) setData((current) => ({ ...current, ...parsed.data }));
+      if (parsed.step && parsed.step >= 1 && parsed.step <= 5) setStep(parsed.step);
+    } catch {
+      window.localStorage.removeItem("almago-onboarding-draft");
+    }
+  }, []);
+
+  useEffect(() => {
+    window.localStorage.setItem("almago-onboarding-draft", JSON.stringify({ data, step }));
+  }, [data, step]);
+
   const set = (key: string, value: string | string[]) =>
     setData((current) => ({ ...current, [key]: value }));
 
@@ -145,7 +161,7 @@ export function OnboardingForm({ profile }: { profile: Record<string, unknown> }
         return;
       }
 
-      if (nextStep === 6) router.push("/student");
+      if (nextStep === 6) { window.localStorage.removeItem("almago-onboarding-draft"); router.push("/student"); }
       else {
         setStep(nextStep);
         window.scrollTo({ top: 0, behavior: "smooth" });
@@ -413,14 +429,25 @@ export function OnboardingForm({ profile }: { profile: Record<string, unknown> }
             >
               {t.back}
             </Button>
-            <Button
+            <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
+              <Button
+                type="button"
+                variant="secondary"
+                disabled={saving}
+                onClick={() => router.push("/student")}
+                className="w-full justify-center sm:w-auto"
+              >
+                {locale === "fr" ? "Continuer plus tard" : locale === "ar" ? "المتابعة لاحقًا" : locale === "de" ? "Später fortsetzen" : "Continue later"}
+              </Button>
+              <Button
               type="button"
               disabled={saving}
               onClick={() => save(step + 1)}
               className="w-full justify-center sm:min-w-44 sm:w-auto"
             >
               {saving ? t.saving : step === 5 ? t.finish : t.continue}
-            </Button>
+              </Button>
+            </div>
           </div>
         </div>
       </section>
