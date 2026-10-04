@@ -50,6 +50,37 @@ export function buildOrientationDiscoveryProfileFingerprint(
   });
 }
 
+function canonicalUniversityHost(value: string | null) {
+  if (!value) return null;
+
+  try {
+    const hostname = new URL(value).hostname
+      .trim()
+      .toLocaleLowerCase("en")
+      .replace(/^www\./, "");
+    return hostname || null;
+  } catch {
+    return null;
+  }
+}
+
+export function buildOrientationResearchUniversityDedupeKey(
+  candidate: Pick<
+    OrientationDiscoveryResearchCandidate,
+    "institution" | "city" | "officialUniversityUrl"
+  >,
+) {
+  const host = canonicalUniversityHost(candidate.officialUniversityUrl);
+  if (host) return `host:${host}`;
+
+  return [
+    "name:",
+    normalized(candidate.institution),
+    "|city:",
+    normalized(candidate.city),
+  ].join("");
+}
+
 export function buildOrientationResearchProgrammeDedupeKey(
   candidate: OrientationDiscoveryResearchCandidate,
 ) {
@@ -210,6 +241,10 @@ export function mergeOrientationKnowledgeCandidates(
         ...current.sourceUrls,
         ...candidate.sourceUrls,
       ])].slice(0, 8),
+      universityMedia:
+        candidate.universityMedia?.coverImageUrl
+          ? candidate.universityMedia
+          : current.universityMedia || candidate.universityMedia || null,
     });
   }
 
