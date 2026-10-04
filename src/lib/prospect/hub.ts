@@ -208,7 +208,10 @@ export async function loadProspectHubState({
     if (validStoredQualification(data)) qualification = data;
   }
 
-  const { intake, starterSummary } = await loadProspectIntakeState(userId);
+  const { intake, starterSummary } = await loadProspectIntakeState(
+    userId,
+    answers?.bacStatus,
+  );
   const orientationConfirmed = Boolean(
     current?.id
     && intake?.orientation_id === current.id
