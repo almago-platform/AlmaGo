@@ -581,16 +581,6 @@ function SummaryCard({ title, value, badge, tone }: { title: string; value: numb
   );
 }
 
-function InfoItem({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-[var(--radius-control)] border border-[var(--border)] bg-white p-3">
-      <dt className="text-xs font-semibold text-slate-500">{label}</dt>
-      <dd dir="auto" className="mt-1 text-sm font-medium text-slate-900 [overflow-wrap:anywhere]">{value}</dd>
-    </div>
-  );
-}
-
-
 function criterionLabel(criterion: string, copy: (typeof studentOrientationCopy)["fr"]["panel"]) {
   if (copy.requirementLabels[criterion]) return copy.requirementLabels[criterion];
   if (criterion.startsWith("language:")) {
