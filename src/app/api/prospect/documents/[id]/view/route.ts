@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getPhase2StudentAccess } from "@/lib/phase2/access";
 import { starterDocumentCategories } from "@/lib/campus-intake";
 
-const allowedStarterCategories = new Set(
+const allowedStarterCategories = new Set<string>(
   starterDocumentCategories.map((item) => item.category),
 );
 
