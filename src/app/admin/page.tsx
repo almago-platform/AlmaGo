@@ -110,7 +110,8 @@ export default async function AdminEntry() {
         description="Voyez d’abord ce qui demande l’attention de l’équipe, puis ouvrez directement la bonne file de travail."
         actions={
           <>
-            <ButtonLink href="/admin/documents">Traiter les documents</ButtonLink>
+            <ButtonLink href="/admin/intake">Valider les parcours</ButtonLink>
+            <ButtonLink href="/admin/documents" variant="secondary">Traiter les documents</ButtonLink>
             <ButtonLink href="/admin/applications" variant="secondary">Suivre les candidatures</ButtonLink>
           </>
         }

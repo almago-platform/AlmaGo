@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { getAuthenticatedUser } from "@/lib/auth/access";
 import { sendTransactionalEmail } from "@/lib/email/transactional";
 import { normalizeLocale } from "@/lib/i18n";
 import { buildPublicOrientationDiagnostic } from "@/lib/orientation/diagnostic";
@@ -75,6 +76,8 @@ export async function POST(request: Request) {
   if (!isPhase2ProspectCaptureEnabled()) {
     return NextResponse.json({ error: "Not found." }, { status: 404 });
   }
+
+  const { user: authenticatedUser } = await getAuthenticatedUser();
 
   const contentLength = Number(request.headers.get("content-length") || "0");
   if (contentLength > MAX_BODY_BYTES) {
@@ -171,6 +174,16 @@ export async function POST(request: Request) {
     }
 
     if (!prospectId) throw new Error("Prospect identity could not be resolved.");
+
+    if (
+      authenticatedUser?.email
+      && authenticatedUser.email.trim().toLowerCase() === email
+    ) {
+      await supabase.rpc("service_claim_prospect_by_verified_email", {
+        p_user_id: authenticatedUser.id,
+        p_user_email: authenticatedUser.email,
+      });
+    }
 
     const contactConsentWrite = contactConsent
       ? {

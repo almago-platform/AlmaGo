@@ -73,6 +73,44 @@ export default async function OrientationPage({
     : null;
 
   if (mode !== "update") {
+    const entryAccess = await getPhase2StudentAccess();
+    const authenticatedProspect = Boolean(
+      entryAccess.user
+      && entryAccess.isStudent
+      && entryAccess.phase2Enabled
+      && !entryAccess.canUseClientFeatures
+    );
+
+    let initialIdentity = null;
+
+    if (authenticatedProspect && entryAccess.user) {
+      const { data: profile } = await entryAccess.supabase
+        .from("profiles")
+        .select("first_name,last_name")
+        .eq("id", entryAccess.user.id)
+        .maybeSingle();
+
+      initialIdentity = {
+        firstName: profile?.first_name || "",
+        lastName: profile?.last_name || "",
+        birthDate: "",
+        email: entryAccess.user.email || "",
+      };
+    }
+
+    if (authenticatedProspect) {
+      return (
+        <PublicOrientationForm
+          prospectCaptureEnabled={isPhase2ProspectCaptureEnabled()}
+          emailDeliveryEnabled={isPhase2EmailDeliveryEnabled()}
+          accountLinkingEnabled={false}
+          initialIdentity={initialIdentity}
+          authenticatedEntry
+          acquisitionContext={acquisitionContext}
+        />
+      );
+    }
+
     return (
       <PublicOrientationForm
         prospectCaptureEnabled={isPhase2ProspectCaptureEnabled()}

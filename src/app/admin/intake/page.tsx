@@ -1,0 +1,132 @@
+import { AdminIntakePanel } from "@/components/admin/AdminIntakePanel";
+import { AdminLoadError } from "@/components/admin/AdminLoadError";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
+import { restorePublicOrientationAnswers } from "@/lib/orientation/public";
+import { createClient } from "@/lib/supabase/server";
+
+export const dynamic = "force-dynamic";
+
+export default async function AdminIntakePage() {
+  const supabase = await createClient();
+
+  const { data: intakeCases, error: intakeError } = await supabase
+    .from("student_intake_cases")
+    .select("student_id,orientation_id,status,proposed_route_key,proposal_reason,student_response_note,updated_at")
+    .order("updated_at", { ascending: false });
+
+  if (intakeError) {
+    return (
+      <main className="mx-auto w-full max-w-[92rem] px-4 py-5 sm:px-6 sm:py-6 xl:px-8">
+        <AdminPageHeader
+          section="Dossiers"
+          title="Validation du parcours"
+          description="Orientation, pièces de départ et décision Campus Allemagne."
+        />
+        <AdminLoadError
+          title="La file de validation est temporairement indisponible"
+          description="Impossible de charger les pré-dossiers pour le moment."
+          retryHref="/admin/intake"
+        />
+      </main>
+    );
+  }
+
+  const rows = intakeCases || [];
+  const studentIds = rows.map((item) => item.student_id);
+  const orientationIds = rows.map((item) => item.orientation_id);
+
+  const [profilesResult, prospectsResult, documentsResult, orientationsResult] = await Promise.all([
+    studentIds.length
+      ? supabase.from("profiles").select("id,first_name,last_name,full_name").in("id", studentIds)
+      : Promise.resolve({ data: [], error: null }),
+    studentIds.length
+      ? supabase.from("prospects").select("user_id,email").in("user_id", studentIds)
+      : Promise.resolve({ data: [], error: null }),
+    studentIds.length
+      ? supabase
+          .from("documents")
+          .select("student_id,category,status,created_at")
+          .in("student_id", studentIds)
+          .in("category", ["passport", "baccalaureate", "transcripts", "language_certificate"])
+          .order("created_at", { ascending: false })
+      : Promise.resolve({ data: [], error: null }),
+    orientationIds.length
+      ? supabase
+          .from("orientations")
+          .select("id,input,created_at")
+          .in("id", orientationIds)
+      : Promise.resolve({ data: [], error: null }),
+  ]);
+
+  if (
+    profilesResult.error
+    || prospectsResult.error
+    || documentsResult.error
+    || orientationsResult.error
+  ) {
+    return (
+      <main className="mx-auto w-full max-w-[92rem] px-4 py-5 sm:px-6 sm:py-6 xl:px-8">
+        <AdminPageHeader
+          section="Dossiers"
+          title="Validation du parcours"
+          description="Orientation, pièces de départ et décision Campus Allemagne."
+        />
+        <AdminLoadError
+          title="Une partie du pré-dossier est indisponible"
+          description="Réessayez avant de prendre une décision sur le parcours."
+          retryHref="/admin/intake"
+        />
+      </main>
+    );
+  }
+
+  const profileById = new Map((profilesResult.data || []).map((profile) => [profile.id, profile]));
+  const emailByUserId = new Map((prospectsResult.data || []).map((prospect) => [prospect.user_id, prospect.email]));
+  const orientationById = new Map((orientationsResult.data || []).map((orientation) => [orientation.id, orientation]));
+
+  const cases = rows.map((item) => {
+    const profile = profileById.get(item.student_id);
+    const orientation = orientationById.get(item.orientation_id);
+    const input = orientation?.input && typeof orientation.input === "object"
+      ? orientation.input as Record<string, unknown>
+      : {};
+    const answers = restorePublicOrientationAnswers(input.answers);
+    const name = [profile?.first_name, profile?.last_name].filter(Boolean).join(" ")
+      || profile?.full_name
+      || "Étudiant";
+
+    return {
+      studentId: item.student_id,
+      name,
+      email: emailByUserId.get(item.student_id) || "",
+      status: item.status,
+      orientation: {
+        targetDegree: answers.targetDegree,
+        targetField: answers.targetField,
+        germanLevel: answers.germanLevel,
+        bacStatus: answers.bacStatus,
+        savedAt: orientation?.created_at || "",
+      },
+      documents: (documentsResult.data || [])
+        .filter((document) => document.student_id === item.student_id)
+        .map((document) => ({
+          category: document.category,
+          status: document.status,
+        })),
+      proposedRouteKey: item.proposed_route_key,
+      proposalReason: item.proposal_reason,
+      studentResponseNote: item.student_response_note,
+    };
+  });
+
+  return (
+    <main className="mx-auto w-full max-w-[92rem] px-4 py-5 sm:px-6 sm:py-6 xl:px-8">
+      <AdminPageHeader
+        section="Dossiers"
+        title="Validation du parcours"
+        description="Vérifiez l’orientation et les pièces de départ, puis proposez le parcours. La procédure n’est créée qu’après confirmation de l’étudiant."
+      />
+      <AdminIntakePanel cases={cases} />
+    </main>
+  );
+}
