@@ -43,8 +43,8 @@ test("Munich cascade stays in Bavaria before Germany", () => {
 
   assert.ok(nearby);
   assert.ok(
-    nearby.cities.includes("Nuremberg")
-      || nearby.cities.includes("Erlangen"),
+    nearby.cities.includes("Augsburg")
+      || nearby.cities.includes("Ingolstadt"),
   );
   assert.ok(land);
   assert.ok(land.landNames.includes("Bayern"));
