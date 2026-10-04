@@ -319,6 +319,7 @@ export function PersonalizedOrientationEngineCard({
   onRefineAnswers,
   onReviewReady,
   onPersonalizedReady,
+  onResultReady,
   prospectCaptureEnabled = false,
   accountLinkingEnabled = false,
 }: {
@@ -327,6 +328,7 @@ export function PersonalizedOrientationEngineCard({
   onRefineAnswers?: (patch: Partial<PublicOrientationAnswers>) => void;
   onReviewReady?: (reviewId: string | null) => void;
   onPersonalizedReady?: (result: OrientationPublicPersonalizedResult | null) => void;
+  onResultReady?: (ready: boolean) => void;
   prospectCaptureEnabled?: boolean;
   accountLinkingEnabled?: boolean;
 }) {
@@ -363,6 +365,7 @@ export function PersonalizedOrientationEngineCard({
 
   useEffect(() => {
     const controller = new AbortController();
+    onResultReady?.(false);
 
     fetch("/api/orientation/engine", {
       method: "POST",
@@ -389,6 +392,7 @@ export function PersonalizedOrientationEngineCard({
             : null;
         onReviewReady?.(payload.personalized?.reviewId || null);
         onPersonalizedReady?.(printablePersonalized);
+        onResultReady?.(true);
       })
       .catch((error) => {
         if (error instanceof DOMException && error.name === "AbortError") return;
@@ -399,10 +403,11 @@ export function PersonalizedOrientationEngineCard({
         });
         onReviewReady?.(null);
         onPersonalizedReady?.(null);
+        onResultReady?.(false);
       });
 
     return () => controller.abort();
-  }, [requestBody, onReviewReady, onPersonalizedReady]);
+  }, [requestBody, onReviewReady, onPersonalizedReady, onResultReady]);
 
   return (
     <section
