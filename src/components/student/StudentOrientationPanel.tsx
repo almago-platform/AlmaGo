@@ -76,6 +76,19 @@ export function StudentOrientationPanel({
   const [feedback, setFeedback] = useState<Feedback>(null);
   const [busy, setBusy] = useState<string | null>(null);
   const [compareIds, setCompareIds] = useState<string[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [degreeFilter, setDegreeFilter] = useState("all");
+  const [languageFilter, setLanguageFilter] = useState("all");
+  const visibleItems = items.filter((item) => {
+    const program = firstProgram(item);
+    const university = firstUniversity(program);
+    if (!program) return false;
+    const haystack = [program.name, program.field, university?.name, university?.city].filter(Boolean).join(" ").toLocaleLowerCase(locale);
+    const matchesQuery = !searchQuery.trim() || haystack.includes(searchQuery.trim().toLocaleLowerCase(locale));
+    const matchesDegree = degreeFilter === "all" || program.degree_level === degreeFilter;
+    const matchesLanguage = languageFilter === "all" || program.teaching_language === languageFilter;
+    return matchesQuery && matchesDegree && matchesLanguage;
+  });
 
   const interestedCount = items.filter((item) => Boolean(item.student_interest_at)).length;
   const comparableItems = items.filter((item) => firstProgram(item));
@@ -234,6 +247,33 @@ export function StudentOrientationPanel({
             <ButtonLink href="/student/applications" variant="secondary">{studentOrientationCopy[locale].page.applications}</ButtonLink>
           </div>
 
+          <div className="mb-4 grid gap-3 rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-4 lg:grid-cols-[minmax(0,1fr)_auto_auto_auto]">
+            <label className="text-sm font-semibold text-slate-700">
+              <span className="sr-only">{locale === "fr" ? "Rechercher un programme" : "البحث عن برنامج"}</span>
+              <input
+                type="search"
+                value={searchQuery}
+                onChange={(event) => setSearchQuery(event.target.value)}
+                placeholder={locale === "fr" ? "Programme, université ou ville…" : "برنامج، جامعة أو مدينة…"}
+                className="field mt-0"
+              />
+            </label>
+            <select aria-label={locale === "fr" ? "Filtrer par niveau" : "التصفية حسب المستوى"} value={degreeFilter} onChange={(event) => setDegreeFilter(event.target.value)} className="field mt-0 min-w-40">
+              <option value="all">{locale === "fr" ? "Tous les niveaux" : "كل المستويات"}</option>
+              {[...new Set(items.map((item) => firstProgram(item)?.degree_level).filter(Boolean))].map((value) => <option key={value} value={value}>{value}</option>)}
+            </select>
+            <select aria-label={locale === "fr" ? "Filtrer par langue" : "التصفية حسب اللغة"} value={languageFilter} onChange={(event) => setLanguageFilter(event.target.value)} className="field mt-0 min-w-40">
+              <option value="all">{locale === "fr" ? "Toutes les langues" : "كل اللغات"}</option>
+              {[...new Set(items.map((item) => firstProgram(item)?.teaching_language).filter((value): value is string => Boolean(value)))].map((value) => <option key={value} value={value}>{localizeCatalogueLabel(locale, value)}</option>)}
+            </select>
+            <Button type="button" variant="secondary" onClick={() => { setSearchQuery(""); setDegreeFilter("all"); setLanguageFilter("all"); }}>
+              {locale === "fr" ? "Réinitialiser" : "إعادة الضبط"}
+            </Button>
+            <p className="text-xs text-slate-500 lg:col-span-4">
+              {locale === "fr" ? `${visibleItems.length} résultat${visibleItems.length > 1 ? "s" : ""}` : `${visibleItems.length} نتيجة`}
+            </p>
+          </div>
+
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-4 py-3">
             <p className="text-sm text-slate-600">{programCardCopy[locale].scanHint}</p>
             <Badge variant={compareIds.length > 1 ? "info" : "neutral"}>
@@ -242,7 +282,7 @@ export function StudentOrientationPanel({
           </div>
 
           <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-            {items.map((recommendation) => {
+            {visibleItems.map((recommendation) => {
               const program = firstProgram(recommendation);
               const university = firstUniversity(program);
 
