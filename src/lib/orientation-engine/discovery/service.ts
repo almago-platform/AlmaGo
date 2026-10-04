@@ -13,7 +13,10 @@ import {
   orientationKnowledgeCoverageSufficient,
 } from "@/lib/orientation-engine/discovery/knowledge-core";
 import { runOpenAIOrientationDiscovery } from "@/lib/orientation-engine/discovery/openai";
-import { orientationScopeContainsCity } from "@/lib/orientation-engine/geography";
+import {
+  candidatesForGeographicScope,
+  planForGeographicCoverage,
+} from "@/lib/orientation-engine/discovery/scope";
 import { emptyOrientationDiscoveryUsage } from "@/lib/orientation-engine/discovery/research";
 import type {
   OrientationDiscoveryKnowledgeCacheStatus,
@@ -45,34 +48,6 @@ function cacheStatus(
   return "miss";
 }
 
-function candidatesForGeographicScope(
-  plan: OrientationDiscoveryPlan,
-  candidates: OrientationDiscoveryResult["candidates"],
-) {
-  const scope = plan.geographicScope;
-  if (!scope) return [...candidates];
-  return candidates.filter((candidate) =>
-    orientationScopeContainsCity(scope, candidate.city)
-  );
-}
-
-function planForCoverage(plan: OrientationDiscoveryPlan): OrientationDiscoveryPlan {
-  if (!plan.geographicScope) return plan;
-
-  const preferredCities =
-    plan.geographicScope.tier === "germany"
-      ? []
-      : plan.geographicScope.cities;
-
-  return {
-    ...plan,
-    profile: {
-      ...plan.profile,
-      preferredCities,
-    },
-  };
-}
-
 export async function runOrientationDiscovery(
   plan: OrientationDiscoveryPlan,
 ): Promise<OrientationDiscoveryResult> {
@@ -88,7 +63,7 @@ export async function runOrientationDiscovery(
     plan,
     knowledge.entries.map((entry) => entry.candidate),
   );
-  const coveragePlan = planForCoverage(plan);
+  const coveragePlan = planForGeographicCoverage(plan);
   const initialCacheStatus = cacheStatus(
     knowledge.available,
     cachedCandidates.length,
@@ -147,8 +122,8 @@ export async function runOrientationDiscovery(
     provider: scopedResearch.provider,
     status: scopedResearch.status,
     reason: scopedResearch.reason,
-    requests: scopedResearch.usage.requests,
-    webSearchCalls: scopedResearch.usage.webSearchCalls,
+    requests: research.usage.requests,
+    webSearchCalls: research.usage.webSearchCalls,
     candidates: scopedResearch.candidates.length,
     geographicTier: plan.geographicScope?.tier || null,
     queryBudget: discoveryQueryBudget(cachedCandidates.length),
