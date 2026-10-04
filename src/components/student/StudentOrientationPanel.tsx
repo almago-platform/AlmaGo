@@ -64,6 +64,7 @@ export function StudentOrientationPanel({
 }) {
   const { locale } = useLocale();
   const t = studentOrientationCopy[locale].panel;
+  const copy = t;
   const [items, setItems] = useState(() =>
     recommendations.map((recommendation) => {
       const program = firstProgram(recommendation);
@@ -316,7 +317,7 @@ export function StudentOrientationPanel({
                     </dl>
 
                     <section
-                      aria-label={`${t.comparisonAria} - ${programName}`}
+                      aria-label={`${copy.comparisonAria} - ${programName}`}
                       className={`mt-5 rounded-[var(--radius-control)] border p-4 ${compatibility.containerClass}`}
                     >
                       <div className="flex items-start gap-3">
@@ -362,7 +363,7 @@ export function StudentOrientationPanel({
                             <span aria-hidden="true" className={`w-4 shrink-0 font-black ${signal.className}`}>{signal.icon}</span>
                             <span className="min-w-0 flex-1 leading-5 text-slate-700">{criterionLabel(item.criterion, t)}</span>
                             <span className="shrink-0 text-xs font-semibold text-slate-500">
-                              {t.statusLabels[item.status] || t.check}
+                              {copy.statusLabels[item.status] || t.check}
                             </span>
                           </div>
                         );
