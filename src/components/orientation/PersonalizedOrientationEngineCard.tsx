@@ -31,6 +31,14 @@ const copy = {
     title: "Votre orientation personnalisée",
     lead: "Une lettre simple pour comprendre votre chemin, puis choisir les universités avec Campus Allemagne.",
     loading: "Préparation de votre orientation…",
+    loadingTitle: "Nous préparons votre orientation personnalisée",
+    loadingLead: "Nous analysons votre profil et les pistes d’études les plus cohérentes pour votre projet en Allemagne.",
+    loadingSteps: [
+      "Analyse de votre profil",
+      "Vérification des pistes d’études",
+      "Préparation de votre rapport personnalisé",
+    ],
+    loadingNote: "Cela peut prendre quelques instants. Gardez cette page ouverte pendant la préparation.",
     unavailable: "Votre lettre détaillée est momentanément indisponible. Votre orientation générale reste valable.",
     details: "Voir les détails vérifiés",
     why: "Pourquoi cette option apparaît",
@@ -57,6 +65,14 @@ const copy = {
     title: "توجيهك الشخصي",
     lead: "رسالة بسيطة تساعدك على فهم طريقك، ثم نختار الجامعات معًا مع Campus Allemagne.",
     loading: "جارٍ إعداد توجيهك…",
+    loadingTitle: "نُعِدّ توجيهك الشخصي",
+    loadingLead: "نحلل ملفك والمسارات الدراسية الأكثر توافقًا مع مشروعك في ألمانيا.",
+    loadingSteps: [
+      "تحليل ملفك",
+      "التحقق من المسارات الدراسية",
+      "إعداد تقريرك الشخصي",
+    ],
+    loadingNote: "قد يستغرق ذلك بضع لحظات. أبقِ هذه الصفحة مفتوحة أثناء الإعداد.",
     unavailable: "رسالة التوجيه التفصيلية غير متاحة مؤقتًا. يبقى توجيهك العام صالحًا.",
     details: "عرض التفاصيل الموثقة",
     why: "لماذا يظهر هذا الخيار",
@@ -83,6 +99,14 @@ const copy = {
     title: "Your personalised orientation",
     lead: "A simple letter to understand your path, then choose universities together with Campus Allemagne.",
     loading: "Preparing your orientation…",
+    loadingTitle: "We’re preparing your personalised orientation",
+    loadingLead: "We’re analysing your profile and the study paths that best match your Germany project.",
+    loadingSteps: [
+      "Analysing your profile",
+      "Checking study pathways",
+      "Preparing your personalised report",
+    ],
+    loadingNote: "This can take a few moments. Keep this page open while we prepare your result.",
     unavailable: "Your detailed orientation letter is temporarily unavailable. Your general orientation remains valid.",
     details: "View verified details",
     why: "Why this option appears",
@@ -109,6 +133,14 @@ const copy = {
     title: "Deine persönliche Orientierung",
     lead: "Ein einfacher Brief, der deinen Weg erklärt. Danach wählen wir die Hochschulen gemeinsam mit Campus Allemagne aus.",
     loading: "Deine Orientierung wird vorbereitet…",
+    loadingTitle: "Wir bereiten deine persönliche Orientierung vor",
+    loadingLead: "Wir analysieren dein Profil und die Studienwege, die am besten zu deinem Deutschland-Projekt passen.",
+    loadingSteps: [
+      "Profil analysieren",
+      "Studienwege prüfen",
+      "Persönlichen Bericht vorbereiten",
+    ],
+    loadingNote: "Das kann einige Augenblicke dauern. Lass diese Seite während der Vorbereitung geöffnet.",
     unavailable: "Dein ausführliches Orientierungsschreiben ist vorübergehend nicht verfügbar. Die allgemeine Orientierung bleibt gültig.",
     details: "Geprüfte Details anzeigen",
     why: "Warum diese Option erscheint",
@@ -433,7 +465,59 @@ export function PersonalizedOrientationEngineCard({
         ) : null}
 
         {state === "loading" ? (
-          <p className="mt-5 text-sm font-semibold">{t.loading}</p>
+          <section
+            className="orientation-loading-experience mt-6"
+            role="status"
+            aria-live="polite"
+            aria-busy="true"
+            aria-label={t.loading}
+          >
+            <div className="orientation-loading-header">
+              <div className="orientation-loading-mark" aria-hidden="true">
+                <span className="orientation-loading-mark-core">CA</span>
+                <span className="orientation-loading-orbit orientation-loading-orbit-one" />
+                <span className="orientation-loading-orbit orientation-loading-orbit-two" />
+              </div>
+              <div>
+                <p className="eyebrow">Campus Allemagne</p>
+                <h3 className="mt-2 text-2xl font-bold tracking-tight">{t.loadingTitle}</h3>
+                <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--muted)]">
+                  {t.loadingLead}
+                </p>
+              </div>
+            </div>
+
+            <div className="orientation-loading-progress" aria-hidden="true">
+              <span />
+            </div>
+
+            <ol className="orientation-loading-steps" aria-label={t.loading}>
+              {t.loadingSteps.map((step, index) => (
+                <li key={step}>
+                  <span className="orientation-loading-step-index" aria-hidden="true">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+                  <span>{step}</span>
+                </li>
+              ))}
+            </ol>
+
+            <div className="orientation-loading-preview" aria-hidden="true">
+              <div className="orientation-loading-preview-hero">
+                <span className="orientation-loading-skeleton orientation-loading-skeleton-kicker" />
+                <span className="orientation-loading-skeleton orientation-loading-skeleton-title" />
+                <span className="orientation-loading-skeleton orientation-loading-skeleton-line" />
+                <span className="orientation-loading-skeleton orientation-loading-skeleton-line orientation-loading-skeleton-line-short" />
+              </div>
+              <div className="orientation-loading-preview-grid">
+                <span className="orientation-loading-skeleton orientation-loading-skeleton-card" />
+                <span className="orientation-loading-skeleton orientation-loading-skeleton-card" />
+                <span className="orientation-loading-skeleton orientation-loading-skeleton-card" />
+              </div>
+            </div>
+
+            <p className="orientation-loading-note">{t.loadingNote}</p>
+          </section>
         ) : null}
 
         {state === "error" ? (

@@ -42,7 +42,6 @@ export function ProspectCaptureCard({
   const copy = orientationProspectCopy[locale].capture;
   const [email, setEmail] = useState(initialEmail);
   const [privacyAcknowledged, setPrivacyAcknowledged] = useState(false);
-  const [contactConsent, setContactConsent] = useState(false);
   const [status, setStatus] = useState<"idle" | "saving" | "success" | "error">("idle");
   const [message, setMessage] = useState("");
   const [interestToken, setInterestToken] = useState<string | null>(null);
@@ -75,7 +74,7 @@ export function ProspectCaptureCard({
             ? { identity: { ...identity, email: normalized } }
             : {}),
           privacyAcknowledged: true,
-          contactConsent,
+          contactConsent: false,
           ...(reviewId ? { reviewId } : {}),
           ...(acquisitionContext ? { acquisition: acquisitionContext } : {}),
         }),
@@ -147,9 +146,23 @@ export function ProspectCaptureCard({
   const eyebrow = accountLinkingEnabled ? copy.continueEyebrow : copy.eyebrow;
   const title = accountLinkingEnabled ? copy.continueTitle : copy.title;
   const textCopy = accountLinkingEnabled ? copy.continueText : copy.text;
+  const privacyLabel = accountLinkingEnabled
+    ? copy.continuePrivacyLabel
+    : copy.privacyLabel;
 
   return (
     <section id="orientation-prospect-capture" className="orientation-print-hide mt-8 scroll-mt-6 rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface-subtle)] p-5 sm:p-6">
+      {accountLinkingEnabled ? (
+        <div className="mb-5 flex items-center gap-3 rounded-[var(--radius-control)] border border-[var(--brand-border)] bg-[var(--brand-soft)] px-4 py-3 text-sm">
+          <span
+            className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--brand)] font-bold text-white"
+            aria-hidden="true"
+          >
+            ✓
+          </span>
+          <span className="font-medium text-[var(--foreground)]">{copy.continueReady}</span>
+        </div>
+      ) : null}
       <p className="eyebrow">{eyebrow}</p>
       <h3 className="mt-2 text-xl font-bold">{title}</h3>
       <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{textCopy}</p>
@@ -180,7 +193,7 @@ export function ProspectCaptureCard({
           />
         </label>
 
-        <label className="flex items-start gap-3 text-sm leading-6">
+        <label className="flex items-start gap-3 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface)] p-4 text-sm leading-6">
           <input
             type="checkbox"
             name="privacyAcknowledged"
@@ -191,7 +204,7 @@ export function ProspectCaptureCard({
             disabled={status === "saving" || status === "success"}
           />
           <span>
-            {copy.privacyLabel}{" "}
+            {privacyLabel}{" "}
             <Link
               className="font-semibold underline"
               href="/legal/privacy"
@@ -200,23 +213,6 @@ export function ProspectCaptureCard({
             >
               {copy.privacyLink}
             </Link>
-          </span>
-        </label>
-
-        <label className="flex items-start gap-3 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface)] p-3 text-sm leading-6">
-          <input
-            type="checkbox"
-            name="contactConsent"
-            className="mt-1"
-            checked={contactConsent}
-            onChange={(event) => setContactConsent(event.target.checked)}
-            disabled={status === "saving" || status === "success"}
-          />
-          <span>
-            <span className="font-medium">{copy.contactConsentLabel}</span>
-            <span className="mt-1 block text-xs leading-5 text-[var(--muted)]">
-              {copy.contactConsentHelp}
-            </span>
           </span>
         </label>
 
