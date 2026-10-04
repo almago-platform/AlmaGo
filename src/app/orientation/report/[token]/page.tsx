@@ -21,7 +21,10 @@ import {
   type PublicOrientationDiagnostic,
 } from "@/lib/orientation/diagnostic";
 import { localeDirection, normalizeLocale } from "@/lib/i18n";
-import { restorePublicOrientationAnswers } from "@/lib/orientation/public";
+import {
+  restorePublicOrientationAnswers,
+  restorePublicOrientationIdentity,
+} from "@/lib/orientation/public";
 import { hashOrientationResumeToken } from "@/lib/orientation/resume-token";
 import {
   projectOrientationHumanReviewBundleToPublicResult,
@@ -135,6 +138,7 @@ export default async function OrientationReportPage({
   const locale = normalizeLocale(typeof input.locale === "string" ? input.locale : null);
   const direction = localeDirection(locale);
   const answers = restorePublicOrientationAnswers(input.answers);
+  const identity = restorePublicOrientationIdentity(input.identity);
   const copy = rebrandCopy(orientationCopy[locale]);
   const prospectCopy = rebrandCopy(orientationProspectCopy[locale]);
   const resumeCopy = rebrandCopy(orientationResumeCopy[locale]);
@@ -213,7 +217,7 @@ export default async function OrientationReportPage({
 
       <main id="orientation-main" className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
         <article id="orientation-report" className="orientation-print-report">
-          <OrientationOnePagePrintReport answers={answers} locale={locale} personalized={personalized} />
+          <OrientationOnePagePrintReport answers={answers} locale={locale} personalized={personalized} identity={identity} />
           <div className="orientation-screen-report">
           <div className="orientation-print-only mb-6 items-center justify-between gap-6 border-b border-slate-300 pb-5">
             <BrandLogo className="h-10 w-auto" priority />
