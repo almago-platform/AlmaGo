@@ -40,8 +40,16 @@ export default async function ProspectOrientationPage() {
   const diagnosticCopy = orientationDiagnosticCopy[locale];
   const qualificationCopy = prospectQualificationCopy[locale];
   const dateFormatter = new Intl.DateTimeFormat(locale, { dateStyle: "long" });
-  const showIntakeAction = Boolean(state.recovery || (state.current && !state.orientationConfirmed));
-  const waitingForDocuments = state.orientationConfirmed && state.intake?.status === "starter_documents";
+  const preBac = state.answers?.bacStatus === "preparing";
+  const showIntakeAction = Boolean(
+    state.recovery
+    || (state.current && !state.orientationConfirmed)
+    || (preBac && state.orientationConfirmed && state.intake?.status === "starter_documents"),
+  );
+  const waitingForDocuments =
+    !preBac
+    && state.orientationConfirmed
+    && state.intake?.status === "starter_documents";
   const recommendations = prospectCatalogueRecommendations(state.answers, catalogue);
   const recommendationLabels = {
     projectMatch: catalogueCopy.projectMatch,
@@ -61,7 +69,7 @@ export default async function ProspectOrientationPage() {
         {state.orientationConfirmed ? (
           <div className="mt-5 inline-flex items-center gap-2 rounded-full border border-emerald-300/20 bg-emerald-300/10 px-3 py-1.5 text-xs font-bold text-emerald-100">
             <span className="size-2 rounded-full bg-emerald-300" aria-hidden="true" />
-            {t.confirmed}
+            {preBac ? "Projet avant le Bac enregistré" : t.confirmed}
           </div>
         ) : null}
       </ProspectPageHero>
@@ -80,6 +88,7 @@ export default async function ProspectOrientationPage() {
               }
             : null}
           starterSummary={state.starterSummary}
+          bacStatus={state.answers?.bacStatus}
         />
       ) : null}
 
