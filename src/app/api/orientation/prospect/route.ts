@@ -3,6 +3,7 @@ import { sendTransactionalEmail } from "@/lib/email/transactional";
 import { normalizeLocale } from "@/lib/i18n";
 import { buildPublicOrientationDiagnostic } from "@/lib/orientation/diagnostic";
 import { buildOrientationProspectEmail } from "@/lib/orientation/prospect-email";
+import { buildOrientationEmailPdfAttachments } from "@/lib/orientation/pdf-attachments";
 import { validatePublicOrientationAnswers } from "@/lib/orientation/validate";
 import { createOrientationResumeToken } from "@/lib/orientation/resume-token";
 import {
@@ -11,6 +12,9 @@ import {
 } from "@/lib/orientation/public";
 import { evaluateSmartOrientationPriority } from "@/lib/phase2/smart-orientation";
 import { linkOrientationHumanReview } from "@/lib/orientation-engine/review/store";
+import {
+  projectOrientationHumanReviewBundleToPublicResult,
+} from "@/lib/orientation-engine/review/core";
 import { createFreeValidationInterestToken } from "@/lib/phase2/free-validation-interest-token";
 import {
   isPhase2AccountLinkingEnabled,
@@ -212,12 +216,32 @@ export async function POST(request: Request) {
 
     if (orientationError) throw orientationError;
 
+    let personalized: ReturnType<
+      typeof projectOrientationHumanReviewBundleToPublicResult
+    > = null;
+
     if (reviewId) {
-      await linkOrientationHumanReview({
+      const linked = await linkOrientationHumanReview({
         reviewId,
         profile: answers,
         orientationId: String(orientation.id),
       }).catch(() => false);
+
+      if (linked) {
+        const { data: linkedReview } = await supabase
+          .from("orientation_human_reviews")
+          .select("bundle")
+          .eq("id", reviewId)
+          .eq("orientation_id", orientation.id)
+          .maybeSingle();
+
+        if (linkedReview?.bundle) {
+          personalized = projectOrientationHumanReviewBundleToPublicResult(
+            linkedReview.bundle,
+            reviewId,
+          );
+        }
+      }
     }
 
     if (!isPhase2EmailDeliveryEnabled()) {
@@ -256,6 +280,20 @@ export async function POST(request: Request) {
         ).toString()
       : null;
 
+    let attachments: ReturnType<typeof buildOrientationEmailPdfAttachments> = [];
+    try {
+      attachments = buildOrientationEmailPdfAttachments({
+        locale,
+        answers,
+        identity,
+        email,
+        diagnostic,
+        personalized,
+      });
+    } catch {
+      attachments = [];
+    }
+
     const emailContent = buildOrientationProspectEmail({
       locale,
       diagnostic,
@@ -263,6 +301,7 @@ export async function POST(request: Request) {
       candidateReportUrl,
       signupUrl: signupUrl.toString(),
       interestUrl,
+      attachmentsIncluded: attachments.length === 2,
     });
 
     const delivery = await sendTransactionalEmail({
@@ -271,6 +310,7 @@ export async function POST(request: Request) {
       html: emailContent.html,
       text: emailContent.text,
       idempotencyKey: `phase2-orientation/${orientation.id}`,
+      attachments,
     });
 
     const deliveryMetadata: Record<string, string> = {
