@@ -14,6 +14,7 @@ type ProspectCaptureResponse = {
   saved?: boolean;
   delivery?: "sent" | "disabled" | "unavailable" | "failed";
   interestToken?: string;
+  signupPath?: string | null;
 };
 
 type InterestResponse = {
@@ -26,6 +27,7 @@ export function ProspectCaptureCard({
   initialEmail = "",
   reviewId = null,
   emailDeliveryEnabled = false,
+  accountLinkingEnabled = false,
   acquisitionContext = null,
 }: {
   answers: PublicOrientationAnswers;
@@ -33,6 +35,7 @@ export function ProspectCaptureCard({
   initialEmail?: string;
   reviewId?: string | null;
   emailDeliveryEnabled?: boolean;
+  accountLinkingEnabled?: boolean;
   acquisitionContext?: AcquisitionContext | null;
 }) {
   const { locale } = useLocale();
@@ -87,6 +90,16 @@ export function ProspectCaptureCard({
           ? payload.interestToken
           : null,
       );
+
+      if (
+        accountLinkingEnabled
+        && typeof payload.signupPath === "string"
+        && payload.signupPath.startsWith("/signup?orientation_token=")
+      ) {
+        window.location.assign(payload.signupPath);
+        return;
+      }
+
       if (payload.delivery === "sent") {
         setMessage(copy.emailSent);
       } else if (emailDeliveryEnabled) {
@@ -121,14 +134,25 @@ export function ProspectCaptureCard({
     }
   }
 
-  const submitLabel = emailDeliveryEnabled ? copy.emailSubmit : copy.submit;
-  const pendingLabel = emailDeliveryEnabled ? copy.sendingEmail : copy.sending;
+  const submitLabel = accountLinkingEnabled
+    ? copy.continueSubmit
+    : emailDeliveryEnabled
+      ? copy.emailSubmit
+      : copy.submit;
+  const pendingLabel = accountLinkingEnabled
+    ? copy.continueSaving
+    : emailDeliveryEnabled
+      ? copy.sendingEmail
+      : copy.sending;
+  const eyebrow = accountLinkingEnabled ? copy.continueEyebrow : copy.eyebrow;
+  const title = accountLinkingEnabled ? copy.continueTitle : copy.title;
+  const textCopy = accountLinkingEnabled ? copy.continueText : copy.text;
 
   return (
     <section id="orientation-prospect-capture" className="orientation-print-hide mt-8 scroll-mt-6 rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface-subtle)] p-5 sm:p-6">
-      <p className="eyebrow">{copy.eyebrow}</p>
-      <h3 className="mt-2 text-xl font-bold">{copy.title}</h3>
-      <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{copy.text}</p>
+      <p className="eyebrow">{eyebrow}</p>
+      <h3 className="mt-2 text-xl font-bold">{title}</h3>
+      <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{textCopy}</p>
 
       <form className="mt-5 space-y-4" onSubmit={submit} noValidate aria-busy={status === "saving"}>
         <label className="block text-sm font-semibold">
@@ -199,7 +223,11 @@ export function ProspectCaptureCard({
         <button
           type="submit"
           disabled={!privacyAcknowledged || status === "saving" || status === "success"}
-          className="rounded-[var(--radius-control)] bg-[var(--brand)] px-5 py-2.5 text-sm font-bold text-white disabled:cursor-not-allowed disabled:opacity-50"
+          className={
+            accountLinkingEnabled
+              ? "w-full rounded-[var(--radius-control)] bg-[var(--brand)] px-5 py-3 text-sm font-bold text-white shadow-[var(--shadow-card)] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+              : "rounded-[var(--radius-control)] bg-[var(--brand)] px-5 py-2.5 text-sm font-bold text-white disabled:cursor-not-allowed disabled:opacity-50"
+          }
         >
           {status === "saving" ? pendingLabel : submitLabel}
         </button>
