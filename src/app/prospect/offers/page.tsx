@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ProspectOfferSelector, type PublishedOfferCard } from "@/components/prospect/ProspectOfferSelector";
+import { ProspectPageHero } from "@/components/prospect/ProspectPageHero";
 import { prospectOffersCopy } from "@/content/prospect-offers-copy";
 import { rebrandCopy } from "@/lib/brand";
 import { getRequestLocale } from "@/lib/i18n-server";
@@ -65,12 +66,9 @@ export default async function ProspectOffersPage() {
     && access.customerStatus !== "payment_pending"
     && access.customerStatus !== "paid_pending_validation") {
     return (
-      <main>
-        <header className="mb-6">
-          <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">{copy.eyebrow}</p>
-          <h1 className="mt-2 text-3xl font-bold text-[var(--foreground)]">{copy.title}</h1>
-        </header>
-        <section className="rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--brand-soft)] p-5 sm:p-6">
+      <main className="space-y-6">
+        <ProspectPageHero eyebrow={copy.eyebrow} title={copy.title} subtitle={copy.intro} />
+        <section className="rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--brand-soft)] p-5 shadow-[var(--shadow-card)] sm:p-6">
           <h2 className="text-xl font-bold text-[var(--foreground)]">{copy.lockedTitle}</h2>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-700">{copy.lockedBody}</p>
           <Link
@@ -123,16 +121,12 @@ export default async function ProspectOffersPage() {
   });
 
   return (
-    <main>
-      <header className="mb-6">
-        <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">{copy.eyebrow}</p>
-        <h1 className="mt-2 text-3xl font-bold text-[var(--foreground)]">{copy.title}</h1>
-        <p className="mt-3 max-w-3xl text-sm leading-6 text-[var(--muted)]">{copy.intro}</p>
-      </header>
+    <main className="space-y-6">
+      <ProspectPageHero eyebrow={copy.eyebrow} title={copy.title} subtitle={copy.intro} />
 
       <ProspectOfferSelector offers={cards} copy={copy} />
 
-      <p className="mt-5 text-xs leading-5 text-[var(--muted)]">{copy.disclaimer}</p>
+      <p className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface)] p-4 text-xs leading-5 text-[var(--muted)] shadow-[var(--shadow-card)]">{copy.disclaimer}</p>
     </main>
   );
 }
