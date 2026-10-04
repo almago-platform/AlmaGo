@@ -30,6 +30,62 @@ function normalize(value: string | null | undefined) {
     .replace(/\s+/g, " ");
 }
 
+function canonicalCity(value: string | null | undefined) {
+  const normalized = normalize(value);
+  const aliases: Record<string, string> = {
+    cologne: "koln",
+    munich: "munchen",
+    nuremberg: "nurnberg",
+    francfort: "frankfurt",
+    hanovre: "hannover",
+    breme: "bremen",
+    dresde: "dresden",
+    fribourg: "freiburg",
+    iena: "jena",
+    mayence: "mainz",
+    sarrebruck: "saarbrucken",
+  };
+  return aliases[normalized] || normalized;
+}
+
+function candidateMatchesPreferredCity(
+  answers: PublicOrientationAnswers,
+  candidate: OrientationDiscoveryResearchCandidate,
+) {
+  if (answers.preferredCities.length === 0 || !candidate.city) return false;
+  const candidateCity = canonicalCity(candidate.city);
+  return answers.preferredCities.some(
+    (city) => canonicalCity(city) === candidateCity,
+  );
+}
+
+function verificationMatchesPreferredCity(
+  answers: PublicOrientationAnswers,
+  programme: OrientationProgrammeVerification,
+) {
+  return candidateMatchesPreferredCity(answers, programme.candidate);
+}
+
+function preferredCityCandidateAvailable(
+  answers: PublicOrientationAnswers,
+  candidates: readonly OrientationDiscoveryResearchCandidate[],
+) {
+  return answers.preferredCities.length > 0
+    && candidates.some((candidate) =>
+      candidateMatchesPreferredCity(answers, candidate)
+    );
+}
+
+function preferredCityCovered(
+  answers: PublicOrientationAnswers,
+  programmes: readonly OrientationProgrammeVerification[],
+) {
+  if (answers.preferredCities.length === 0) return true;
+  return programmes.some((programme) =>
+    verificationMatchesPreferredCity(answers, programme)
+  );
+}
+
 function targetSpecializationPhrases(answers: PublicOrientationAnswers) {
   if (!normalize(answers.targetDegree).includes("master")) return [];
 
@@ -89,24 +145,23 @@ function prioritizeCandidates(
   answers: PublicOrientationAnswers,
   candidates: readonly OrientationDiscoveryResearchCandidate[],
 ) {
-  if (targetSpecializationPhrases(answers).length === 0) {
-    return [...candidates];
-  }
-
   return candidates
     .map((candidate, index) => ({ candidate, index }))
     .sort((a, b) => {
+      const cityDiff =
+        Number(candidateMatchesPreferredCity(answers, b.candidate))
+        - Number(candidateMatchesPreferredCity(answers, a.candidate));
+      if (cityDiff !== 0) return cityDiff;
+
       const aMatches = matchesTargetSpecialization(answers, a.candidate);
       const bMatches = matchesTargetSpecialization(answers, b.candidate);
       const specializationDiff = Number(bMatches) - Number(aMatches);
       if (specializationDiff !== 0) return specializationDiff;
 
-      if (aMatches && bMatches) {
-        const languageDiff =
-          Number(teachingLanguageMatches(answers, b.candidate))
-          - Number(teachingLanguageMatches(answers, a.candidate));
-        if (languageDiff !== 0) return languageDiff;
-      }
+      const languageDiff =
+        Number(teachingLanguageMatches(answers, b.candidate))
+        - Number(teachingLanguageMatches(answers, a.candidate));
+      if (languageDiff !== 0) return languageDiff;
 
       return a.index - b.index;
     })
@@ -144,6 +199,11 @@ function takeReusable(
     .filter((programme) => programme.overallStatus !== "unknown")
     .map((programme, index) => ({ programme, index }))
     .sort((a, b) => {
+      const cityDiff =
+        Number(verificationMatchesPreferredCity(answers, b.programme))
+        - Number(verificationMatchesPreferredCity(answers, a.programme));
+      if (cityDiff !== 0) return cityDiff;
+
       const specializationDiff =
         Number(verificationMatchesTargetSpecialization(answers, b.programme))
         - Number(verificationMatchesTargetSpecialization(answers, a.programme));
@@ -178,9 +238,18 @@ export async function runOrientationVerification(
   const knowledge = await loadReusableOrientationVerifications(candidates);
   const cachedProgrammes = takeReusable(answers, knowledge.programmes);
 
+  const preferredCityAvailable = preferredCityCandidateAvailable(
+    answers,
+    candidates,
+  );
+
   if (
     cachedProgrammes.length >= ORIENTATION_VERIFICATION_REUSE_TARGET
     && targetSpecializationCovered(answers, cachedProgrammes)
+    && (
+      !preferredCityAvailable
+      || preferredCityCovered(answers, cachedProgrammes)
+    )
   ) {
     const persistence = await recordOrientationVerificationCacheHit(
       cachedProgrammes,
@@ -222,9 +291,21 @@ export async function runOrientationVerification(
       (candidate) => !cachedKeys.has(candidateKey(candidate)),
     ),
   );
+  const preferredCandidatesToVerify =
+    preferredCityAvailable
+    && !preferredCityCovered(answers, cachedProgrammes)
+      ? Math.min(
+          2,
+          uncachedCandidates.filter((candidate) =>
+            candidateMatchesPreferredCity(answers, candidate)
+          ).length,
+        )
+      : 0;
+
   const missing = Math.max(
     1,
     ORIENTATION_VERIFICATION_REUSE_TARGET - cachedProgrammes.length,
+    preferredCandidatesToVerify,
   );
 
   const fresh = await runOpenAIOrientationVerification(
