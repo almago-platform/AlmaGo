@@ -154,21 +154,30 @@ export function StarterDocumentsPanel({
           </div>
         </div>
         <div className="p-5 sm:p-6">
-          <div className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4">
-          <div className="flex items-center justify-between gap-3 text-sm">
-            <span className="font-semibold">
-              Pièces obligatoires validées : {approvedRequired}/{requiredStarterDocumentCategories.length}
-            </span>
-            <span className="text-[var(--muted)]">{requiredProgress}%</span>
-          </div>
-          <div className="mt-3 h-2 overflow-hidden rounded-full bg-[var(--surface-muted)]">
-            <div
-              className="h-full rounded-full bg-[var(--brand)]"
-              style={{ width: `${requiredProgress}%` }}
-              aria-hidden="true"
-            />
-          </div>
-        </div>
+          {preBac ? (
+            <div className="rounded-[var(--radius-control)] border border-emerald-200 bg-emerald-50/70 p-4">
+              <p className="font-bold text-emerald-900">Aucun document obligatoire avant les résultats du Bac.</p>
+              <p className="mt-1 text-sm leading-6 text-emerald-900">
+                Vous pouvez continuer votre préparation même avec 0 document envoyé. Le Bac et le relevé final seront demandés après vos résultats.
+              </p>
+            </div>
+          ) : (
+            <div className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4">
+              <div className="flex items-center justify-between gap-3 text-sm">
+                <span className="font-semibold">
+                  Pièces obligatoires validées : {approvedRequired}/{requiredCategories.length}
+                </span>
+                <span className="text-[var(--muted)]">{requiredProgress}%</span>
+              </div>
+              <div className="mt-3 h-2 overflow-hidden rounded-full bg-[var(--surface-muted)]">
+                <div
+                  className="h-full rounded-full bg-[var(--brand)]"
+                  style={{ width: `${requiredProgress}%` }}
+                  aria-hidden="true"
+                />
+              </div>
+            </div>
+          )}
 
         <div className="mt-5 grid gap-3 sm:grid-cols-2">
           {documentRequirements.map((requirement) => {
