@@ -631,6 +631,7 @@ function preferredCitySelectionPriority(
   profile: PublicOrientationAnswers,
   item: OrientationSelectionCandidateEvaluation,
 ) {
+  if (profile.targetDegree !== "Bachelor") return 0;
   if (profile.preferredCities.length === 0) return 0;
   if (!item.reasons.includes("degree_match")) return 0;
   if (!item.reasons.includes("field_match")) return 0;
