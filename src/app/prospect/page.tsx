@@ -26,6 +26,7 @@ function proposalStatus(
 function nextAction(
   state: Awaited<ReturnType<typeof loadProspectHubState>>,
   copy: (typeof prospectHubCopy)["fr"]["dashboard"],
+  locale: "fr" | "ar" | "en" | "de",
 ) {
   if (state.recovery || !state.current) {
     return { href: "/prospect/orientation", label: copy.startOrientation };
@@ -33,6 +34,16 @@ function nextAction(
 
   if (!state.orientationConfirmed) {
     return { href: "/prospect/orientation", label: copy.updateProject };
+  }
+
+  if (state.answers?.bacStatus === "preparing") {
+    const labels = {
+      fr: "Continuer ma préparation",
+      ar: "متابعة التحضير",
+      en: "Continue my preparation",
+      de: "Vorbereitung fortsetzen",
+    } as const;
+    return { href: "/prospect/roadmap", label: labels[locale] };
   }
 
   if (!state.intake || state.intake.status === "starter_documents") {
@@ -63,6 +74,7 @@ function campusWork(
       proposal: "Votre proposition est prête : nous attendons votre décision ou vos questions.",
       question: "Nous examinons votre demande de modification.",
       procedure: "Votre parcours est confirmé. La procédure peut maintenant avancer.",
+      preBac: "Nous suivons votre projet avant le Bac. Aucun dossier académique final n’est requis maintenant ; concentrez-vous sur la langue, les programmes et la préparation de la suite.",
     },
     ar: {
       none: "ننتظر معلوماتك الأولى.",
@@ -71,6 +83,7 @@ function campusWork(
       proposal: "اقتراحك جاهز وننتظر قرارك أو أسئلتك.",
       question: "نراجع طلبك لتعديل الاقتراح.",
       procedure: "تم تأكيد المسار ويمكن الآن متابعة الإجراءات.",
+      preBac: "نتابع مشروعك قبل البكالوريا. لا نطلب الآن ملفًا أكاديميًا نهائيًا؛ ركّز على اللغة والبرامج والاستعداد للمرحلة التالية.",
     },
     en: {
       none: "We are waiting for your first project information.",
@@ -79,6 +92,7 @@ function campusWork(
       proposal: "Your proposal is ready; we are waiting for your decision or questions.",
       question: "We are reviewing your request to change the proposal.",
       procedure: "Your route is confirmed and the procedure can now move forward.",
+      preBac: "We are following your project before the Bac. No final academic file is required now; focus on language, programmes and preparing the next stage.",
     },
     de: {
       none: "Wir warten auf die ersten Angaben zu deinem Projekt.",
@@ -87,9 +101,11 @@ function campusWork(
       proposal: "Dein Vorschlag ist bereit; wir warten auf deine Entscheidung oder Fragen.",
       question: "Wir prüfen deinen Änderungswunsch.",
       procedure: "Dein Weg ist bestätigt und die weitere Bearbeitung kann beginnen.",
+      preBac: "Wir begleiten dein Projekt schon vor dem Abitur. Ein endgültiges akademisches Dossier ist jetzt nicht nötig; konzentriere dich auf Sprache, Programme und die Vorbereitung der nächsten Phase.",
     },
   } as const;
 
+  if (state.answers?.bacStatus === "preparing") return copy[locale].preBac;
   if (!status) return copy[locale].none;
   if (status === "starter_documents") return copy[locale].documents;
   if (status === "campus_review") return copy[locale].review;
@@ -125,7 +141,8 @@ export default async function ProspectDashboardPage() {
   const recommendations = prospectCatalogueRecommendations(state.answers, catalogue);
   const diagnosticCopy = orientationDiagnosticCopy[locale];
   const qualificationCopy = prospectQualificationCopy[locale];
-  const action = nextAction(state, t);
+  const preBac = state.answers?.bacStatus === "preparing";
+  const action = nextAction(state, t, locale);
   const facts = state.answers ? orientationProjectFacts(state.answers, locale) : [];
   const dateFormatter = new Intl.DateTimeFormat(locale, {
     day: "2-digit",
@@ -192,6 +209,7 @@ export default async function ProspectDashboardPage() {
           starterSummary={state.starterSummary}
           locale={locale}
           compact
+          preBac={preBac}
         />
       </section>
 
@@ -203,7 +221,7 @@ export default async function ProspectDashboardPage() {
           <h2 className="mt-2 text-xl font-bold text-[var(--foreground)]">
             {action.label}
           </h2>
-          {(!state.intake || state.intake.status === "starter_documents") ? (
+          {!preBac && (!state.intake || state.intake.status === "starter_documents") ? (
             <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
               {t.documentsSummary(
                 state.starterSummary.approved,
