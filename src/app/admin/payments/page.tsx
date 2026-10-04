@@ -2,6 +2,7 @@ import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { AdminPaymentActivationForm } from "@/components/admin/AdminPaymentActivationForm";
 import { isPhase2PaymentOrchestrationEnabled } from "@/lib/phase2/config";
 import { createClient } from "@/lib/supabase/server";
+import { formatMinorCurrency } from "@/lib/money";
 
 type PurchaseRow = {
   id: string;
@@ -52,24 +53,6 @@ function offerName(snapshot: unknown) {
   if (!snapshot || typeof snapshot !== "object") return "Offre historisée";
   const value = (snapshot as Record<string, unknown>).display_name;
   return typeof value === "string" && value.trim() ? value : "Offre historisée";
-}
-
-function formatPrice(value: number | string, currency: string) {
-  const amount = Number(value);
-  if (!Number.isSafeInteger(amount) || amount < 0 || !/^[A-Z]{3}$/.test(currency)) {
-    return "Montant indisponible";
-  }
-
-  try {
-    const formatter = new Intl.NumberFormat("fr-FR", {
-      style: "currency",
-      currency,
-    });
-    const digits = formatter.resolvedOptions().maximumFractionDigits ?? 2;
-    return formatter.format(amount / 10 ** digits);
-  } catch {
-    return "Montant indisponible";
-  }
 }
 
 export const dynamic = "force-dynamic";
@@ -212,7 +195,7 @@ export default async function AdminPaymentsPage() {
                       {offerName(purchase.offer_snapshot)}
                     </p>
                     <h2 className="mt-1 text-xl font-bold text-slate-950">
-                      <bdi dir="auto">{formatPrice(purchase.amount_minor, purchase.currency)}</bdi>
+                      <bdi dir="auto">{formatMinorCurrency(purchase.amount_minor, purchase.currency, "fr-FR") ?? "Montant indisponible"}</bdi>
                     </h2>
                     <p className="mt-2 text-sm text-slate-700">
                       {email ? <bdi dir="auto">{email}</bdi> : "Compte " + purchase.user_id.slice(0, 8)}
