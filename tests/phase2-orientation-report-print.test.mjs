@@ -15,8 +15,8 @@ test("P2.3 printed orientation report keeps canonical brand identity", () => {
   assert.match(page, /const copy = rebrandCopy\(orientationCopy\[locale\]\)/);
   assert.match(page, /const prospectCopy = rebrandCopy\(orientationProspectCopy\[locale\]\)/);
   assert.match(page, /const resumeCopy = rebrandCopy\(orientationResumeCopy\[locale\]\)/);
-  assert.match(page, /<OrientationOnePagePrintReport answers=\{answers\} locale=\{locale\} personalized=\{personalized\} \/>/);
-  assert.match(form, /<OrientationOnePagePrintReport answers=\{answers\} locale=\{locale\} personalized=\{personalizedForPrint\} \/>/);
+  assert.match(page, /<OrientationOnePagePrintReport answers=\{answers\} locale=\{locale\} personalized=\{personalized\} identity=\{identity\} \/>/);
+  assert.match(form, /<OrientationOnePagePrintReport answers=\{answers\} locale=\{locale\} personalized=\{personalizedForPrint\} identity=\{identity\} \/>/);
 });
 
 test("P2.3 personalized PDF reuses the exact verified orientation result", () => {
