@@ -16,13 +16,10 @@ test("transactional email failures retain provider diagnostics without exposing 
   assert.match(mailer, /detail: safeProviderErrorDetail\(payload\?\.message\)/);
 });
 
-test("orientation save logs a safe provider failure and keeps the provider in delivery metadata", () => {
-  assert.match(route, /orientation_email_delivery_failed/);
-  assert.match(route, /httpStatus: delivery\.httpStatus \?\? null/);
-  assert.match(route, /errorCode: delivery\.errorCode \?\? null/);
-  assert.match(route, /detail: delivery\.detail \?\? null/);
+test("orientation save keeps the provider in delivery metadata without breaking the public-route telemetry boundary", () => {
   assert.match(route, /else if \(delivery\.status === "failed"\)/);
   assert.match(route, /deliveryMetadata\.delivery_provider = delivery\.provider/);
+  assert.doesNotMatch(route, /console\.(?:log|error)/);
 });
 
 test("account continuation remains independent from email delivery", () => {
