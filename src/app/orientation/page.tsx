@@ -98,13 +98,24 @@ export default async function OrientationPage({
       };
     }
 
+    if (authenticatedProspect) {
+      return (
+        <PublicOrientationForm
+          prospectCaptureEnabled={isPhase2ProspectCaptureEnabled()}
+          emailDeliveryEnabled={isPhase2EmailDeliveryEnabled()}
+          accountLinkingEnabled={false}
+          initialIdentity={initialIdentity}
+          authenticatedEntry
+          acquisitionContext={acquisitionContext}
+        />
+      );
+    }
+
     return (
       <PublicOrientationForm
         prospectCaptureEnabled={isPhase2ProspectCaptureEnabled()}
         emailDeliveryEnabled={isPhase2EmailDeliveryEnabled()}
-        accountLinkingEnabled={isPhase2AccountLinkingEnabled() && !authenticatedProspect}
-        initialIdentity={initialIdentity}
-        authenticatedEntry={authenticatedProspect}
+        accountLinkingEnabled={isPhase2AccountLinkingEnabled()}
         acquisitionContext={acquisitionContext}
       />
     );
