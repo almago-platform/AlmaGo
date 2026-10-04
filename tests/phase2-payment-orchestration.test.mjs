@@ -12,6 +12,7 @@ const devAdapter = readFileSync("src/lib/phase2/payment-dev-adapter.ts", "utf8")
 const purchaseRoute = readFileSync("src/app/api/phase2/purchases/route.ts", "utf8");
 const devRoute = readFileSync("src/app/api/phase2/payments/dev-confirm/route.ts", "utf8");
 const adminRoute = readFileSync("src/app/api/admin/payments/activate/route.ts", "utf8");
+const manualAdminRoute = readFileSync("src/app/api/admin/payments/manual-confirm/route.ts", "utf8");
 const adminPage = readFileSync("src/app/admin/payments/page.tsx", "utf8");
 const adminForm = readFileSync("src/components/admin/AdminPaymentActivationForm.tsx", "utf8");
 const prospectPage = readFileSync("src/app/prospect/payment/page.tsx", "utf8");
@@ -168,14 +169,41 @@ test("development payment confirmation is impossible in production and default-o
   assert.doesNotMatch(devRoute, /amountMinor|currency|providerTransactionId/);
 });
 
-test("admin activation derives admin identity from session and exposes only paid-pending records", () => {
+test("admin manual payment confirmation is authenticated, server-priced and audited", () => {
+  assert.match(manualAdminRoute, /supabase\.auth\.getUser\(\)/);
+  assert.match(manualAdminRoute, /role\?\.role !== "admin"/);
+  assert.match(
+    manualAdminRoute,
+    /recordManualPhase2Payment\(\s*user\.id,\s*purchaseId,\s*reference/,
+  );
+  assert.doesNotMatch(
+    manualAdminRoute,
+    /record\.(?:adminId|userId|user_id|status|amount|amountMinor|currency)/,
+  );
+
+  assert.match(payment, /MANUAL_PAYMENT_PROVIDER = "manual_admin"/);
+  assert.match(payment, /from\("commercial_purchases"\)/);
+  assert.match(payment, /purchase\.status !== "payment_pending"/);
+  assert.match(payment, /beginPhase2PaymentAttempt/);
+  assert.match(payment, /bindPhase2PaymentAttemptSession/);
+  assert.match(payment, /type: "charge_succeeded"/);
+  assert.match(payment, /providerTransactionId: `manual-charge-\$\{purchaseId\}`/);
+  assert.match(payment, /status === "paid_pending_validation"/);
+});
+
+test("admin activation derives admin identity and payment page exposes the two-step manual flow", () => {
   assert.match(adminRoute, /supabase\.auth\.getUser\(\)/);
   assert.match(adminRoute, /role\?\.role !== "admin"/);
   assert.match(adminRoute, /activatePhase2PaidPurchase\(user\.id, purchaseId\)/);
   assert.doesNotMatch(adminRoute, /record\.(?:adminId|userId|user_id|status|amount|currency)/);
+  assert.match(adminPage, /purchase\.status === "payment_pending"/);
   assert.match(adminPage, /purchase\.status === "paid_pending_validation"/);
-  assert.match(adminPage, /AdminPaymentActivationForm/);
-  assert.match(adminForm, /fetch\("\/api\/admin\/payments\/activate"/);
+  assert.match(adminPage, /status=\{purchase\.status\}/);
+  assert.match(adminForm, /fetch\(endpoint/);
+  assert.match(adminForm, /"\/api\/admin\/payments\/manual-confirm"/);
+  assert.match(adminForm, /"\/api\/admin\/payments\/activate"/);
+  assert.match(adminForm, /Confirmer le paiement reçu/);
+  assert.match(adminForm, /Valider et activer le client/);
 });
 
 test("prospect payment summary is read-only, localized and owner-scoped", () => {
