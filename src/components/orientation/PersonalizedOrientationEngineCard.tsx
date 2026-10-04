@@ -320,6 +320,7 @@ export function PersonalizedOrientationEngineCard({
   onReviewReady,
   onPersonalizedReady,
   prospectCaptureEnabled = false,
+  accountLinkingEnabled = false,
 }: {
   answers: PublicOrientationAnswers;
   locale: Locale;
@@ -327,6 +328,7 @@ export function PersonalizedOrientationEngineCard({
   onReviewReady?: (reviewId: string | null) => void;
   onPersonalizedReady?: (result: OrientationPublicPersonalizedResult | null) => void;
   prospectCaptureEnabled?: boolean;
+  accountLinkingEnabled?: boolean;
 }) {
   const t = copy[locale] as (typeof copy)["fr"];
   const isBachelorFirstContact = answers.targetDegree === "Bachelor";
@@ -443,6 +445,7 @@ export function PersonalizedOrientationEngineCard({
                 locale={locale}
                 answers={answers}
                 showCta={prospectCaptureEnabled && isBachelorFirstContact}
+                continueAccount={accountLinkingEnabled && prospectCaptureEnabled && isBachelorFirstContact}
               />
             ) : (
               <OrientationLetterCard
