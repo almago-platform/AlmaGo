@@ -13,6 +13,7 @@ import {
 } from "@/lib/orientation/diagnostic";
 import { restorePublicOrientationAnswers } from "@/lib/orientation/public";
 import { findRecoverableOrientationForAccount } from "@/lib/orientation/recovery";
+import { loadProspectIntakeState } from "@/lib/prospect/intake";
 import { buildProspectRoadmap, type ProspectRoadmap } from "@/lib/orientation/roadmap";
 import { getRequestLocale } from "@/lib/i18n-server";
 import { getPhase2StudentAccess } from "@/lib/phase2/access";
@@ -363,42 +364,7 @@ export default async function ProspectDashboardPage() {
     if (validStoredQualification(data)) qualification = data;
   }
 
-  const [intakeResult, starterDocumentsResult] = await Promise.all([
-    access.supabase
-      .from("student_intake_cases")
-      .select("orientation_id,status,orientation_confirmed_at,proposed_route_key,proposal_reason,procedure_id")
-      .eq("student_id", access.user.id)
-      .maybeSingle(),
-    access.supabase
-      .from("documents")
-      .select("category,status")
-      .in("category", ["passport", "baccalaureate", "transcripts", "language_certificate"]),
-  ]);
-
-  const intake = intakeResult.data;
-  const starterDocuments = starterDocumentsResult.data || [];
-  const requiredCategories = ["passport", "baccalaureate", "transcripts"];
-  const approvedCategories = new Set(
-    starterDocuments
-      .filter((document) => document.status === "approved")
-      .map((document) => document.category),
-  );
-  const pendingCategories = new Set(
-    starterDocuments
-      .filter((document) => ["pending", "reviewed"].includes(document.status))
-      .map((document) => document.category),
-  );
-  const replacementCategories = new Set(
-    starterDocuments
-      .filter((document) => ["rejected", "replace_required"].includes(document.status))
-      .map((document) => document.category),
-  );
-  const starterSummary = {
-    approved: requiredCategories.filter((category) => approvedCategories.has(category)).length,
-    required: requiredCategories.length,
-    pending: requiredCategories.filter((category) => pendingCategories.has(category)).length,
-    needsReplacement: requiredCategories.filter((category) => replacementCategories.has(category)).length,
-  };
+  const { intake, starterSummary } = await loadProspectIntakeState(access.user.id);
   const orientationConfirmed = Boolean(
     current?.id
     && intake?.orientation_id === current.id
