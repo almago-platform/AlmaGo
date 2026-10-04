@@ -14,6 +14,7 @@ const pages = [
   { path: "/student/orientation", name: "orientation" },
   { path: "/student/checklist", name: "checklist" },
   { path: "/student/applications", name: "applications" },
+  { path: "/student/procedure", name: "procedure" },
   { path: "/student/project", name: "project" },
   { path: "/student/pathway", name: "pathway" },
   { path: "/student/language-courses", name: "language-courses" },
@@ -66,6 +67,10 @@ test.describe("authenticated Student Space quality", () => {
       }
       if (target.name === "applications") {
         await expect(page.getByText("قبل التقديم", { exact: true })).toBeVisible();
+      }
+      if (target.name === "procedure") {
+        await expect(page.getByRole("heading", { name: "ملفك لألمانيا" })).toBeVisible();
+        await expect(page.getByText(/كامبوس ألمانيا/).first()).toBeVisible();
       }
       if (target.name === "pathway") {
         await expect(page.getByText("المعلومات الرسمية التي يجب التحقق منها", { exact: true })).toBeVisible();
