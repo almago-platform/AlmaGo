@@ -169,3 +169,131 @@ export function evaluateOrientationDeadline(
     cycleYear,
   };
 }
+
+
+export type CampusDeadlineKind =
+  | "official_hard_deadline"
+  | "official_external_date"
+  | "internal_target"
+  | "source_review_date";
+
+export type CampusDeadlineVerificationStatus =
+  | "open"
+  | "closed"
+  | "to_verify"
+  | "unknown";
+
+export type CampusVerifiedDeadline = {
+  kind: CampusDeadlineKind;
+  date: string | null;
+  cycle: string | null;
+  sourceUrl: string | null;
+  verifiedAt: string | null;
+  status: CampusDeadlineVerificationStatus;
+};
+
+export type CampusApplicationMethod =
+  | "direct"
+  | "uni_assist"
+  | "vpd_then_direct"
+  | "other_documented"
+  | "unknown";
+
+export type CampusInternalTargetKey =
+  | "documents_ready"
+  | "authentication_translation_ready"
+  | "uni_assist_submit_target"
+  | "vpd_request_target"
+  | "direct_submit_target"
+  | "final_review";
+
+export type CampusInternalTarget = {
+  key: CampusInternalTargetKey;
+  kind: "internal_target";
+  date: string;
+  offsetDays: number;
+};
+
+function addUtcDays(dateOnly: string, days: number) {
+  if (!validDateOnly(dateOnly)) return null;
+  const [year, month, day] = dateOnly.split("-").map(Number);
+  const date = new Date(Date.UTC(year, month - 1, day));
+  date.setUTCDate(date.getUTCDate() + days);
+  return date.toISOString().slice(0, 10);
+}
+
+function cycleMatches(dateOnly: string, cycle: string) {
+  const normalizedCycle = normalized(cycle);
+  if (!normalizedCycle) return false;
+
+  const yearMatch = normalizedCycle.match(/20\d{2}/)?.[0];
+  if (!yearMatch) return false;
+
+  const family = intakeFamily(normalizedCycle);
+  if (!family) return dateOnly.startsWith(yearMatch);
+
+  return deadlineCycleYear(family, dateOnly) === Number(yearMatch);
+}
+
+export function evaluateCampusOfficialDeadline(
+  input: {
+    kind: "official_hard_deadline" | "official_external_date";
+    date: string | null;
+    cycle: string | null;
+    sourceUrl: string | null;
+    verifiedAt: string | null;
+  },
+  now: Date = new Date(),
+): CampusVerifiedDeadline {
+  if (!input.date) {
+    return { ...input, status: "unknown" };
+  }
+
+  if (
+    !validDateOnly(input.date)
+    || !input.cycle
+    || !cycleMatches(input.date, input.cycle)
+    || !validVerifiedSource(input.sourceUrl, input.verifiedAt, now)
+  ) {
+    return { ...input, status: "to_verify" };
+  }
+
+  return {
+    ...input,
+    status: input.date < berlinDateOnly(now) ? "closed" : "open",
+  };
+}
+
+export function buildCampusInternalTargets(
+  officialDeadline: CampusVerifiedDeadline,
+  applicationMethod: CampusApplicationMethod = "unknown",
+): CampusInternalTarget[] {
+  if (
+    officialDeadline.kind !== "official_hard_deadline"
+    || officialDeadline.status !== "open"
+    || !officialDeadline.date
+  ) {
+    return [];
+  }
+
+  const targets: Array<[CampusInternalTargetKey, number]> = [
+    ["documents_ready", -84],
+    ["authentication_translation_ready", -70],
+  ];
+
+  if (applicationMethod === "uni_assist") {
+    targets.push(["uni_assist_submit_target", -56]);
+  } else if (applicationMethod === "vpd_then_direct") {
+    targets.push(["vpd_request_target", -70]);
+    targets.push(["direct_submit_target", -21]);
+  } else if (applicationMethod === "direct") {
+    targets.push(["direct_submit_target", -21]);
+  }
+
+  targets.push(["final_review", -7]);
+
+  return targets.flatMap(([key, offsetDays]) => {
+    const date = addUtcDays(officialDeadline.date as string, offsetDays);
+    return date ? [{ key, kind: "internal_target" as const, date, offsetDays }] : [];
+  });
+}
