@@ -104,6 +104,7 @@ export default async function OrientationPage({
         emailDeliveryEnabled={isPhase2EmailDeliveryEnabled()}
         accountLinkingEnabled={isPhase2AccountLinkingEnabled() && !authenticatedProspect}
         initialIdentity={initialIdentity}
+        authenticatedEntry={authenticatedProspect}
         acquisitionContext={acquisitionContext}
       />
     );
