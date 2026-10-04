@@ -3,7 +3,7 @@ import { getAdminUser } from "@/lib/auth/access";
 import { createPrivilegedSupabaseClient } from "@/lib/supabase/privileged";
 
 export async function DELETE(_: Request, { params }: { params: Promise<{ id: string }> }) {
-  const { user, isAdmin } = await getAdminUser();
+  const { supabase, user, isAdmin } = await getAdminUser();
 
   if (!user) return NextResponse.json({ error: "Non authentifié." }, { status: 401 });
   if (!isAdmin) return NextResponse.json({ error: "Accès administrateur requis." }, { status: 403 });
@@ -20,7 +20,7 @@ export async function DELETE(_: Request, { params }: { params: Promise<{ id: str
     );
   }
 
-  const { data: document, error: readError } = await privileged
+  const { data: document, error: readError } = await supabase
     .from("documents")
     .select("id,storage_path,original_filename")
     .eq("id", id)
@@ -44,7 +44,7 @@ export async function DELETE(_: Request, { params }: { params: Promise<{ id: str
     );
   }
 
-  const { error: deleteError } = await privileged.from("documents").delete().eq("id", id);
+  const { error: deleteError } = await supabase.from("documents").delete().eq("id", id);
 
   if (deleteError) {
     return NextResponse.json(
