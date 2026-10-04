@@ -35,6 +35,8 @@ const copy = {
     outlookGood: "Bon potentiel d’admission",
     outlookNote: "Nous confirmerons cette première estimation avec vous lors de la vérification finale.",
     options: "Les programmes que nous étudions pour votre projet",
+    cityFallbackEyebrow: "Votre ville reste prioritaire",
+    cityFallback: (cities: string) => `Nous avons recherché en priorité à ${cities}. Aucune piste suffisamment vérifiée n’a encore été retenue dans cette ville pour votre projet, donc nous avons élargi la recherche à d’autres villes. Nous continuerons à vérifier ${cities} avec vous.`,
     featuredOption: "La piste qui ressort le plus aujourd’hui",
     featuredCta: "Voir la page officielle",
     photoSource: "Source photo",
@@ -114,6 +116,8 @@ const copy = {
     outlookGood: "فرصة قبول جيدة",
     outlookNote: "سنؤكد هذا التقدير الأولي معك خلال المراجعة النهائية.",
     options: "البرامج التي ندرسها لمشروعك",
+    cityFallbackEyebrow: "مدينتك ما زالت أولوية",
+    cityFallback: (cities: string) => `بحثنا أولًا في ${cities}. لم نعتمد بعد مسارًا موثوقًا بما يكفي في هذه المدينة لمشروعك، لذلك وسّعنا البحث إلى مدن أخرى. وسنواصل التحقق من ${cities} معك.`,
     featuredOption: "المسار الذي يبرز أكثر اليوم",
     featuredCta: "عرض الصفحة الرسمية",
     photoSource: "مصدر الصورة",
@@ -193,6 +197,8 @@ const copy = {
     outlookGood: "Good admission potential",
     outlookNote: "We will confirm this initial estimate with you during the final review.",
     options: "Programmes we are reviewing for your project",
+    cityFallbackEyebrow: "Your city remains the priority",
+    cityFallback: (cities: string) => `We searched ${cities} first. No sufficiently verified path has yet been retained there for your project, so we widened the search to other cities. We will keep checking ${cities} with you.`,
     featuredOption: "The path that stands out most today",
     featuredCta: "View official page",
     photoSource: "Photo source",
@@ -272,6 +278,8 @@ const copy = {
     outlookGood: "Gutes Zulassungspotenzial",
     outlookNote: "Diese erste Einschätzung bestätigen wir mit dir in der abschließenden Prüfung.",
     options: "Studiengänge, die wir für dein Projekt prüfen",
+    cityFallbackEyebrow: "Deine Stadt bleibt Priorität",
+    cityFallback: (cities: string) => `Wir haben zuerst in ${cities} gesucht. Dort wurde für dein Projekt noch keine ausreichend geprüfte Option ausgewählt, deshalb haben wir die Suche auf andere Städte erweitert. ${cities} prüfen wir mit dir weiter.`,
     featuredOption: "Die Option, die heute am stärksten hervorsticht",
     featuredCta: "Offizielle Seite ansehen",
     photoSource: "Bildquelle",
@@ -496,6 +504,29 @@ function formatDate(value: string | null, locale: Locale) {
 function localizedValue(locale: Locale, value: string, options: readonly SelectOption[]) {
   if (!value) return "";
   return localizeProfileOptions(locale, options).find((option) => option.value === value)?.label || value;
+}
+
+function canonicalCity(value: string | null | undefined) {
+  const normalized = (value || "")
+    .trim()
+    .toLocaleLowerCase("en")
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+    .replace(/\s+/g, " ");
+  const aliases: Record<string, string> = {
+    cologne: "koln",
+    munich: "munchen",
+    nuremberg: "nurnberg",
+    francfort: "frankfurt",
+    hanovre: "hannover",
+    breme: "bremen",
+    dresde: "dresden",
+    fribourg: "freiburg",
+    iena: "jena",
+    mayence: "mainz",
+    sarrebruck: "saarbrucken",
+  };
+  return aliases[normalized] || normalized;
 }
 
 function buildProfileHighlights(
@@ -819,8 +850,29 @@ export function OrientationPersonalizedWriterCard({
   const strongOutlookCount = [...optionOutlooks.values()].filter(
     (outlook) => outlook.level === "strong",
   ).length;
+  const preferredCities = answers?.preferredCities || [];
+  const preferredOptionIds = new Set(
+    result.selected
+      .filter((option) =>
+        option.city
+        && preferredCities.some(
+          (city) => canonicalCity(city) === canonicalCity(option.city),
+        )
+      )
+      .map((option) => option.optionId),
+  );
+  const preferredStrongOption = content.studyOptions.find(
+    (option) =>
+      preferredOptionIds.has(option.optionId)
+      && optionOutlooks.get(option.optionId)?.level === "strong",
+  );
+  const preferredOption = content.studyOptions.find(
+    (option) => preferredOptionIds.has(option.optionId),
+  );
   const featuredOption =
-    content.studyOptions.find(
+    preferredStrongOption
+    || preferredOption
+    || content.studyOptions.find(
       (option) => optionOutlooks.get(option.optionId)?.level === "strong",
     )
     || content.studyOptions[0]
@@ -828,6 +880,10 @@ export function OrientationPersonalizedWriterCard({
   const otherOptions = featuredOption
     ? content.studyOptions.filter((option) => option.optionId !== featuredOption.optionId)
     : content.studyOptions;
+  const showCityFallback =
+    preferredCities.length > 0
+    && result.selected.length > 0
+    && preferredOptionIds.size === 0;
 
   return (
     <article className="orientation-unified-shell overflow-hidden rounded-[calc(var(--radius-panel)+0.35rem)] p-3 sm:p-4 lg:p-5">
@@ -1077,6 +1133,17 @@ export function OrientationPersonalizedWriterCard({
           </span>
         </div>
         <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">{t.outlookSectionNote}</p>
+
+        {showCityFallback ? (
+          <div className="mt-4 rounded-[var(--radius-control)] border border-[var(--accent-border)] bg-[var(--accent-soft)] px-4 py-3.5">
+            <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-[var(--accent-strong)]">
+              {t.cityFallbackEyebrow}
+            </p>
+            <p className="mt-1.5 text-sm leading-6 text-[var(--foreground)]">
+              {t.cityFallback(preferredCities.join(", "))}
+            </p>
+          </div>
+        ) : null}
 
         {featuredOption ? (() => {
           const selected = result.selected.find((item) => item.optionId === featuredOption.optionId);
