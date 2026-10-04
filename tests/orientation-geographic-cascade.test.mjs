@@ -14,6 +14,10 @@ const discoveryServiceSource = readFileSync(
   "src/lib/orientation-engine/discovery/service.ts",
   "utf8",
 );
+const discoveryScopeSource = readFileSync(
+  "src/lib/orientation-engine/discovery/scope.ts",
+  "utf8",
+);
 
 const {
   buildOrientationGeographicScopes,
@@ -150,7 +154,7 @@ test("route enforces catalogue before OpenAI at every geographic scope", () => {
 
 test("scoped discovery filters both cache and OpenAI candidates before selection", () => {
   assert.match(discoveryServiceSource, /candidatesForGeographicScope/);
-  assert.match(discoveryServiceSource, /orientationScopeContainsCity/);
+  assert.match(discoveryScopeSource, /orientationScopeContainsCity/);
   assert.match(
     discoveryServiceSource,
     /const cachedCandidates = candidatesForGeographicScope/,
