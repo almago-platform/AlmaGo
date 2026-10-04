@@ -6,6 +6,8 @@ type ProspectHubCopy = {
     badge: string;
     intro: string;
     navigation: string;
+    journeyGroup: string;
+    servicesGroup: string;
     homeAria: string;
     logout: string;
     links: {
@@ -132,6 +134,8 @@ const fr: ProspectHubCopy = {
     badge: "Compte gratuit",
     intro: "Votre projet, vos documents, votre proposition et les solutions utiles au même endroit.",
     navigation: "Navigation de mon espace",
+    journeyGroup: "Mon parcours",
+    servicesGroup: "Services & solutions",
     homeAria: "Accueil de mon espace Campus Allemagne",
     logout: "Déconnexion",
     links: {
@@ -259,6 +263,8 @@ const en: ProspectHubCopy = {
     badge: "Free account",
     intro: "Your project, documents, proposal and useful solutions in one place.",
     navigation: "My space navigation",
+    journeyGroup: "My journey",
+    servicesGroup: "Services & solutions",
     homeAria: "My Campus Allemagne home",
     logout: "Sign out",
     links: {
@@ -386,6 +392,8 @@ const de: ProspectHubCopy = {
     badge: "Kostenloses Konto",
     intro: "Projekt, Dokumente, Vorschlag und nützliche Lösungen an einem Ort.",
     navigation: "Navigation meines Bereichs",
+    journeyGroup: "Mein Weg",
+    servicesGroup: "Services & Lösungen",
     homeAria: "Startseite meines Campus-Allemagne-Bereichs",
     logout: "Abmelden",
     links: {
@@ -513,6 +521,8 @@ const ar: ProspectHubCopy = {
     badge: "حساب مجاني",
     intro: "مشروعك ووثائقك واقتراحك والحلول المفيدة في مكان واحد.",
     navigation: "التنقل داخل مساحتي",
+    journeyGroup: "مساري",
+    servicesGroup: "الخدمات والحلول",
     homeAria: "الصفحة الرئيسية لمساحتي في Campus Allemagne",
     logout: "تسجيل الخروج",
     links: {
