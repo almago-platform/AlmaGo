@@ -321,7 +321,7 @@ function compactPrintText(value: string, max = 220) {
 function formatPersonalizedFactValue(
   fact: OrientationPublicPersonalizedFact,
   locale: Locale,
-) {
+): string {
   if (Array.isArray(fact.value)) {
     return fact.value
       .map((value) => formatPersonalizedFactValue({ ...fact, value }, locale))
