@@ -478,7 +478,7 @@ export function OrientationOnePagePrintReport({
       : `${studyLanguage} · ${german}`;
   const profileLine = [
     educationProfile,
-    \`\${degree} · \${field}\`,
+    `${degree} · ${field}`,
     specialty,
     languageProfile,
     cities,
