@@ -1127,21 +1127,25 @@ export function PublicOrientationForm({
                   </>
                 ) : null}
 
-                <PersonalizedOrientationEngineCard
-                  answers={answers}
-                  locale={locale}
-                  prospectCaptureEnabled={prospectCaptureEnabled && !authenticatedUpdate}
-                  accountLinkingEnabled={accountLinkingEnabled && !authenticatedUpdate}
-                  onReviewReady={handleReviewReady}
-                  onPersonalizedReady={handlePersonalizedReady}
-                  onResultReady={handleResultReady}
-                  onRefineAnswers={(patch) => {
-                    setAnswers((current) => ({ ...current, ...patch }));
-                    setError("");
-                  }}
-                />
+                {authenticatedUpdate ? (
+                  <ProspectOrientationUpdateCard answers={answers} />
+                ) : (
+                  <PersonalizedOrientationEngineCard
+                    answers={answers}
+                    locale={locale}
+                    prospectCaptureEnabled={prospectCaptureEnabled}
+                    accountLinkingEnabled={accountLinkingEnabled}
+                    onReviewReady={handleReviewReady}
+                    onPersonalizedReady={handlePersonalizedReady}
+                    onResultReady={handleResultReady}
+                    onRefineAnswers={(patch) => {
+                      setAnswers((current) => ({ ...current, ...patch }));
+                      setError("");
+                    }}
+                  />
+                )}
 
-                {orientationResultReady ? (
+                {!authenticatedUpdate && orientationResultReady ? (
                   <>
                 {isBachelorFirstContact ? (
                   <details className="orientation-print-hide mt-5 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4">
@@ -1161,9 +1165,7 @@ export function PublicOrientationForm({
                 )}
 
 
-                {authenticatedUpdate ? (
-                  <ProspectOrientationUpdateCard answers={answers} />
-                ) : prospectCaptureEnabled ? (
+                {prospectCaptureEnabled ? (
                   <ProspectCaptureCard
                     answers={answers}
                     identity={identity}
