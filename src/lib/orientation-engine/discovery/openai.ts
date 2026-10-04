@@ -157,9 +157,9 @@ function userInput(plan: OrientationDiscoveryPlan, query: string) {
       requested_cities: plan.profile.preferredCities,
       preferred_cities: plan.geographicScope
         ? (
-            plan.geographicScope.tier === "germany"
-              ? []
-              : plan.geographicScope.cities
+            ["chosen_city", "nearby"].includes(plan.geographicScope.tier)
+              ? plan.geographicScope.cities
+              : []
           )
         : plan.profile.preferredCities,
       geographic_tier: plan.geographicScope?.tier || null,
