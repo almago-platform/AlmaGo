@@ -17,6 +17,7 @@ import { studentApplicationsCopy } from "@/content/student-applications-copy";
 import { rebrandCopy } from "@/lib/brand";
 import { normalizeApplicationStatus } from "@/lib/application-workflow";
 import { formatDeadline, isActiveApplication, isPastDeadline } from "@/lib/phase4";
+import { evaluateCampusApplicationDeadline } from "@/lib/orientation-engine/deadline";
 import { localizeApplicationStoredText, localizeCatalogueLabel } from "@/lib/student/arabic-display";
 
 export const dynamic = "force-dynamic";
@@ -67,7 +68,7 @@ export default async function StudentEntry() {
       .order("created_at", { ascending: false }),
     supabase
       .from("applications")
-      .select("id,status,deadline,next_action,required_documents,created_at,updated_at,programs(name,universities(name,city)),application_events(id,event_type,message,created_at)")
+      .select("id,status,deadline,deadline_kind,deadline_source_url,deadline_verified_at,deadline_cycle,application_method,next_action,required_documents,created_at,updated_at,programs(name,universities(name,city)),application_events(id,event_type,message,created_at)")
       .order("deadline", { ascending: true, nullsFirst: false }),
     supabase
       .from("student_projects")
@@ -179,7 +180,7 @@ export default async function StudentEntry() {
 
   const importantDeadlines = [
     ...activeApplications
-      .filter((application) => Boolean(application.deadline))
+      .filter((application) => evaluateCampusApplicationDeadline(application).status === "open")
       .map((application) => ({
         date: application.deadline as string,
         label: firstRelation(application.programs)?.name || applicationsCopy.programFallback,
@@ -431,7 +432,9 @@ export default async function StudentEntry() {
                       <Badge variant="info">{status}</Badge>
                     </div>
                     <p className="mt-1 text-xs text-[var(--muted)]">
-                      {application.deadline ? formatDeadline(application.deadline, locale) : applicationsCopy.noConfirmedDate}
+                      {evaluateCampusApplicationDeadline(application).status === "open"
+                        ? formatDeadline(application.deadline, locale)
+                        : applicationsCopy.noConfirmedDate}
                     </p>
                   </div>
                 );
