@@ -315,6 +315,12 @@ export function PublicOrientationForm({
   useEffect(() => {
     if (authenticatedUpdate) return;
 
+    if (authenticatedEntry) {
+      window.sessionStorage.removeItem(SESSION_KEY);
+      setHydrated(true);
+      return;
+    }
+
     const timer = window.setTimeout(() => {
       try {
         const stored = window.sessionStorage.getItem(SESSION_KEY);
@@ -344,15 +350,15 @@ export function PublicOrientationForm({
     }, 0);
 
     return () => window.clearTimeout(timer);
-  }, [authenticatedUpdate]);
+  }, [authenticatedEntry, authenticatedUpdate]);
 
   useEffect(() => {
-    if (!hydrated || authenticatedUpdate) return;
+    if (!hydrated || authenticatedUpdate || authenticatedEntry) return;
     window.sessionStorage.setItem(
       SESSION_KEY,
       JSON.stringify({ identity, identityComplete, answers, step }),
     );
-  }, [identity, identityComplete, answers, step, hydrated, authenticatedUpdate]);
+  }, [identity, identityComplete, answers, step, hydrated, authenticatedEntry, authenticatedUpdate]);
 
   useEffect(() => {
     if (hydrated && identityComplete) headingRef.current?.focus();
