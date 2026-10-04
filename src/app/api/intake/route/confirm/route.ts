@@ -19,10 +19,13 @@ export async function POST() {
 
   if (error || typeof data !== "string") {
     return NextResponse.json(
-      { error: "Le parcours ne peut pas être confirmé pour le moment." },
+      { error: "La proposition ne peut pas être acceptée pour le moment." },
       { status: 409 },
     );
   }
 
-  return NextResponse.json({ confirmed: true, procedureId: data }, { status: 200 });
+  return NextResponse.json(
+    { accepted: true, purchaseId: data, status: "payment_pending" },
+    { status: 200 },
+  );
 }
