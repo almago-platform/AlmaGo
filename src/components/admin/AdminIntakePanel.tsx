@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { campusRouteOptions, campusRouteLabel } from "@/lib/campus-intake";
+import { formatMinorCurrency } from "@/lib/money";
 
 type IntakeCase = {
   studentId: string;
@@ -50,18 +51,6 @@ function docState(documents: IntakeCase["documents"], category: string) {
   if (rows.some((document) => ["replace_required", "rejected"].includes(document.status))) return "À remplacer";
   if (rows.some((document) => ["pending", "reviewed"].includes(document.status))) return "À vérifier";
   return "Manquant";
-}
-
-function formatPrice(value: number, currency: string) {
-  if (!Number.isSafeInteger(value) || value < 0 || !/^[A-Z]{3}$/.test(currency)) return "—";
-
-  try {
-    const formatter = new Intl.NumberFormat("fr-FR", { style: "currency", currency });
-    const digits = formatter.resolvedOptions().maximumFractionDigits ?? 2;
-    return formatter.format(value / 10 ** digits);
-  } catch {
-    return "—";
-  }
 }
 
 export function AdminIntakePanel({
@@ -305,7 +294,7 @@ export function AdminIntakePanel({
                       <option value="">Choisir une offre publiée</option>
                       {offers.map((offer) => (
                         <option key={offer.id} value={offer.id}>
-                          {offer.displayName} · {formatPrice(offer.priceMinor, offer.currency)}
+                          {offer.displayName} · {formatMinorCurrency(offer.priceMinor, offer.currency, "fr-FR") ?? "—"}
                         </option>
                       ))}
                     </select>
@@ -319,7 +308,7 @@ export function AdminIntakePanel({
                         <p className="font-bold">{selectedOffer.displayName}</p>
                         <p className="mt-1 text-sm leading-6 text-[var(--muted)]">{selectedOffer.summary}</p>
                       </div>
-                      <p className="font-bold">{formatPrice(selectedOffer.priceMinor, selectedOffer.currency)}</p>
+                      <p className="font-bold">{formatMinorCurrency(selectedOffer.priceMinor, selectedOffer.currency, "fr-FR") ?? "—"}</p>
                     </div>
                     <ul className="mt-3 grid gap-1 text-sm sm:grid-cols-2">
                       {selectedOffer.services.map((service) => (

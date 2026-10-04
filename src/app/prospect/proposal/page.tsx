@@ -6,6 +6,7 @@ import { prospectHubCopy } from "@/content/prospect-hub-copy";
 import { getRequestLocale } from "@/lib/i18n-server";
 import { getPhase2StudentAccess } from "@/lib/phase2/access";
 import { loadProspectHubState } from "@/lib/prospect/hub";
+import { formatMinorCurrency } from "@/lib/money";
 
 const localeTags = {
   fr: "fr-FR",
@@ -18,27 +19,6 @@ function serviceItems(value: unknown) {
   return Array.isArray(value)
     ? value.filter((item): item is string => typeof item === "string").slice(0, 20)
     : [];
-}
-
-function formatMinorPrice(
-  value: number | string | null,
-  currency: string | null,
-  locale: keyof typeof localeTags,
-) {
-  if (value === null || !currency) return "—";
-  const amount = Number(value);
-  if (!Number.isSafeInteger(amount) || amount < 0) return "—";
-
-  try {
-    const formatter = new Intl.NumberFormat(localeTags[locale], {
-      style: "currency",
-      currency,
-    });
-    const digits = formatter.resolvedOptions().maximumFractionDigits ?? 2;
-    return formatter.format(amount / 10 ** digits);
-  } catch {
-    return "—";
-  }
 }
 
 export const dynamic = "force-dynamic";
@@ -80,7 +60,7 @@ export default async function ProspectProposalPage() {
         displayName: data.display_name,
         summary: data.summary,
         services: serviceItems(data.service_items),
-        priceLabel: formatMinorPrice(data.price_minor, data.currency, locale),
+        priceLabel: formatMinorCurrency(data.price_minor, data.currency, localeTags[locale]) ?? "—",
       };
     }
   }

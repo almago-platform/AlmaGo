@@ -130,7 +130,7 @@ export function CommercialOfferEditor({
             onChange={(event) => setPriceMinor(event.target.value)}
             className="mt-1.5 w-full rounded-[var(--radius-control)] border border-[var(--border)] bg-white px-3 py-2 text-sm text-slate-950"
           />
-          <p className="mt-1 text-xs text-slate-600">Ex. 9900 = 99,00 pour une devise à deux décimales.</p>
+          <p className="mt-1 text-xs text-slate-600">Ex. EUR : 9900 = 99,00 €. TND : 590000 = 590 DT.</p>
         </div>
         <div>
           <label className="text-sm font-semibold text-slate-900" htmlFor={offerCode + "-currency"}>

@@ -5,6 +5,7 @@ import { prospectOffersCopy } from "@/content/prospect-offers-copy";
 import { rebrandCopy } from "@/lib/brand";
 import { getRequestLocale } from "@/lib/i18n-server";
 import { getPhase2StudentAccess } from "@/lib/phase2/access";
+import { formatMinorCurrency } from "@/lib/money";
 
 type OfferRow = {
   id: string;
@@ -32,27 +33,6 @@ function serviceItems(value: unknown) {
   return Array.isArray(value)
     ? value.filter((item): item is string => typeof item === "string").slice(0, 20)
     : [];
-}
-
-function formatMinorPrice(
-  value: number | string | null,
-  currency: string | null,
-  locale: keyof typeof localeTags,
-) {
-  if (value === null || !currency) return null;
-  const amount = Number(value);
-  if (!Number.isSafeInteger(amount) || amount < 0) return null;
-
-  try {
-    const formatter = new Intl.NumberFormat(localeTags[locale], {
-      style: "currency",
-      currency,
-    });
-    const digits = formatter.resolvedOptions().maximumFractionDigits ?? 2;
-    return formatter.format(amount / 10 ** digits);
-  } catch {
-    return null;
-  }
 }
 
 export const dynamic = "force-dynamic";
@@ -102,7 +82,7 @@ export default async function ProspectOffersPage() {
   const offerById = new Map(offers.map((offer) => [offer.id, offer]));
   const cards: PublishedOfferCard[] = versions.flatMap((version) => {
     const offer = offerById.get(version.offer_id);
-    const priceLabel = formatMinorPrice(version.price_minor, version.currency, locale);
+    const priceLabel = formatMinorCurrency(version.price_minor, version.currency, localeTags[locale]);
     const services = serviceItems(version.service_items);
 
     if (!offer || !priceLabel || services.length === 0) return [];

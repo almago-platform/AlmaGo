@@ -4,6 +4,7 @@ import { prospectPaymentCopy } from "@/content/prospect-payment-copy";
 import { rebrandCopy } from "@/lib/brand";
 import { getRequestLocale } from "@/lib/i18n-server";
 import { getPhase2StudentAccess } from "@/lib/phase2/access";
+import { formatMinorCurrency } from "@/lib/money";
 
 type PurchaseStatus =
   | "payment_pending"
@@ -48,28 +49,6 @@ function offerName(snapshot: unknown) {
   if (!snapshot || typeof snapshot !== "object") return null;
   const value = (snapshot as Record<string, unknown>).display_name;
   return typeof value === "string" && value.trim() ? value : null;
-}
-
-function formatPrice(
-  value: number | string,
-  currency: string,
-  locale: keyof typeof localeTags,
-) {
-  const amount = Number(value);
-  if (!Number.isSafeInteger(amount) || amount < 0 || !/^[A-Z]{3}$/.test(currency)) {
-    return "—";
-  }
-
-  try {
-    const formatter = new Intl.NumberFormat(localeTags[locale], {
-      style: "currency",
-      currency,
-    });
-    const digits = formatter.resolvedOptions().maximumFractionDigits ?? 2;
-    return formatter.format(amount / 10 ** digits);
-  } catch {
-    return "—";
-  }
 }
 
 export const dynamic = "force-dynamic";
@@ -153,7 +132,7 @@ export default async function ProspectPaymentPage() {
           <div className="rounded-[var(--radius-control)] bg-[var(--surface-subtle)] p-4">
             <dt className="text-xs font-bold text-[var(--muted)]">{copy.amount}</dt>
             <dd className="mt-1 text-xl font-bold text-[var(--foreground)]">
-              <bdi dir="auto">{formatPrice(latest.amount_minor, latest.currency, locale)}</bdi>
+              <bdi dir="auto">{formatMinorCurrency(latest.amount_minor, latest.currency, localeTags[locale]) ?? "—"}</bdi>
             </dd>
           </div>
           <div className="rounded-[var(--radius-control)] bg-[var(--surface-subtle)] p-4">
