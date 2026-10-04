@@ -160,7 +160,9 @@ export default async function StudentEntry() {
             detail: t.checklistAction,
             reason: cockpit.checklistReason,
             duration: cockpit.durationChecklist,
-            href: "/student/checklist",
+            href: ["passport", "translation"].includes(firstRelation(nextItem.checklist_templates)?.key || "")
+              ? "/student/documents"
+              : "/student/checklist",
           }
         : {
             label: t.fileUpToDate,
