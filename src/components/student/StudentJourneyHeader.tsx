@@ -5,7 +5,7 @@ import type { ReactNode } from "react";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { studentSharedCopy } from "@/content/student-shared-copy";
 
-type StudentJourneyStep = "project" | "documents" | "orientation" | "checklist" | "applications" | "pathway";
+type StudentJourneyStep = "project" | "documents" | "orientation" | "checklist" | "applications" | "procedure" | "pathway";
 
 const journeySteps: Array<{ key: StudentJourneyStep; href: string }> = [
   { key: "project", href: "/student/project" },
@@ -13,6 +13,7 @@ const journeySteps: Array<{ key: StudentJourneyStep; href: string }> = [
   { key: "orientation", href: "/student/orientation" },
   { key: "checklist", href: "/student/checklist" },
   { key: "applications", href: "/student/applications" },
+  { key: "procedure", href: "/student/procedure" },
   { key: "pathway", href: "/student/pathway" },
 ];
 
