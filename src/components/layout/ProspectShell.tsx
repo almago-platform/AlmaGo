@@ -96,7 +96,7 @@ export function ProspectShell({
                     key={item.href}
                     href={item.href}
                     aria-current={active ? "page" : undefined}
-                    className={`relative rounded-[var(--radius-control)] border px-3 py-2.5 text-sm font-semibold transition-all ${active ? "border-[var(--brand-border)] bg-[var(--brand-soft)] text-[var(--brand-strong)] shadow-[inset_3px_0_0_var(--brand)]" : "border-transparent text-[var(--foreground)] hover:bg-[var(--surface-subtle)]"}`}
+                    className={`relative rounded-[var(--radius-control)] border px-3 py-2.5 text-sm font-semibold transition-all ${active ? "prospect-nav-active border-[var(--brand-border)] bg-[var(--brand-soft)] text-[var(--brand-strong)]" : "border-transparent text-[var(--foreground)] hover:bg-[var(--surface-subtle)]"}`}
                   >
                     {item.label}
                   </Link>
@@ -116,7 +116,7 @@ export function ProspectShell({
                     key={item.href}
                     href={item.href}
                     aria-current={active ? "page" : undefined}
-                    className={`relative rounded-[var(--radius-control)] border px-3 py-2.5 text-sm font-semibold transition-all ${active ? "border-[var(--brand-border)] bg-[var(--brand-soft)] text-[var(--brand-strong)] shadow-[inset_3px_0_0_var(--brand)]" : "border-transparent text-[var(--foreground)] hover:bg-[var(--surface-subtle)]"}`}
+                    className={`relative rounded-[var(--radius-control)] border px-3 py-2.5 text-sm font-semibold transition-all ${active ? "prospect-nav-active border-[var(--brand-border)] bg-[var(--brand-soft)] text-[var(--brand-strong)]" : "border-transparent text-[var(--foreground)] hover:bg-[var(--surface-subtle)]"}`}
                   >
                     {item.label}
                   </Link>
