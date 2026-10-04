@@ -1,8 +1,13 @@
 import { NextResponse } from "next/server";
 import { getAuthenticatedUser } from "@/lib/auth/access";
+import { isPhase2PaymentOrchestrationEnabled } from "@/lib/phase2/config";
 import { createPrivilegedSupabaseClient } from "@/lib/supabase/privileged";
 
 export async function POST() {
+  if (!isPhase2PaymentOrchestrationEnabled()) {
+    return NextResponse.json({ error: "Paiement indisponible pour le moment." }, { status: 503 });
+  }
+
   const { user } = await getAuthenticatedUser();
   if (!user) return NextResponse.json({ error: "Non authentifié." }, { status: 401 });
 
