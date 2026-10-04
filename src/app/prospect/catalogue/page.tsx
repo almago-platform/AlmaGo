@@ -8,7 +8,10 @@ import { getPhase2StudentAccess } from "@/lib/phase2/access";
 import { loadVerifiedProgrammeCatalogue } from "@/lib/orientation-engine/catalog";
 import type { OrientationProgrammeRecord } from "@/lib/orientation-engine/types";
 import { loadProspectHubState } from "@/lib/prospect/hub";
-import { prospectCatalogueRecommendations } from "@/lib/prospect/programmes";
+import {
+  prospectCatalogueProfileDefaults,
+  prospectCatalogueRecommendations,
+} from "@/lib/prospect/programmes";
 
 function normalized(value: string | null | undefined) {
   return (value || "")
@@ -42,6 +45,7 @@ export default async function ProspectCataloguePage({
     degree?: string;
     field?: string;
     city?: string;
+    view?: string;
   }>;
 }) {
   const [access, locale, params, catalogue] = await Promise.all([
@@ -65,11 +69,18 @@ export default async function ProspectCataloguePage({
   const recommendedIds = new Set(
     recommendations.map((recommendation) => recommendation.programme.id),
   );
+  const profileDefaults = prospectCatalogueProfileDefaults(state.answers, catalogue);
 
-  const degree = (params.degree || "").trim();
-  const field = (params.field || "").trim();
-  const city = (params.city || "").trim();
+  const requestedDegree = (params.degree || "").trim();
+  const requestedField = (params.field || "").trim();
+  const requestedCity = (params.city || "").trim();
+  const explicitFilters = Boolean(requestedDegree || requestedField || requestedCity);
+  const generalMode = params.view === "all" || explicitFilters;
+  const degree = generalMode ? requestedDegree : profileDefaults.degree;
+  const field = generalMode ? requestedField : profileDefaults.field;
+  const city = generalMode ? requestedCity : profileDefaults.city;
   const hasFilters = Boolean(degree || field || city);
+  const showGeneralResults = generalMode || recommendations.length === 0;
 
   const degrees = [...new Set(catalogue.map((item) => item.degreeLevel).filter(Boolean))]
     .sort((a, b) => a.localeCompare(b));
@@ -82,7 +93,7 @@ export default async function ProspectCataloguePage({
     .filter((programme) => !degree || normalized(programme.degreeLevel) === normalized(degree))
     .filter((programme) => !field || normalized(programme.field).includes(normalized(field)))
     .filter((programme) => !city || normalized(programme.university.city) === normalized(city))
-    .filter((programme) => hasFilters || !recommendedIds.has(programme.id))
+    .filter((programme) => generalMode || !recommendedIds.has(programme.id))
     .sort((a, b) => {
       const aMatch = matchesProject(a, state.answers) ? 1 : 0;
       const bMatch = matchesProject(b, state.answers) ? 1 : 0;
@@ -145,6 +156,7 @@ export default async function ProspectCataloguePage({
         </p>
 
         <form action="/prospect/catalogue" className="mt-5">
+          <input type="hidden" name="view" value="all" />
           <div className="grid gap-4 sm:grid-cols-3">
             <label className="text-sm font-semibold">
               {t.degree}
@@ -178,7 +190,7 @@ export default async function ProspectCataloguePage({
               {t.apply}
             </button>
             <Link
-              href="/prospect/catalogue"
+              href="/prospect/catalogue?view=all"
               className="inline-flex min-h-11 items-center rounded-[var(--radius-control)] border border-[var(--border-strong)] bg-[var(--surface)] px-5 text-sm font-semibold transition hover:border-[var(--brand-border)]"
             >
               {t.reset}
@@ -187,6 +199,7 @@ export default async function ProspectCataloguePage({
         </form>
       </section>
 
+      {showGeneralResults ? (
       <section aria-labelledby="prospect-catalogue-results">
         <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
           <div>
@@ -276,6 +289,7 @@ export default async function ProspectCataloguePage({
           </div>
         )}
       </section>
+      ) : null}
 
       <p className="rounded-[var(--radius-control)] border border-[var(--brand-border)] bg-[var(--brand-soft)] p-4 text-xs leading-5 text-[var(--foreground)]">
         {t.boundary}

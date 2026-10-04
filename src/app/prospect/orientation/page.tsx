@@ -2,13 +2,16 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { IntakeFlowCard } from "@/components/prospect/IntakeFlowCard";
 import { ProspectPageHero } from "@/components/prospect/ProspectPageHero";
+import { ProspectProgrammeRecommendationCard } from "@/components/prospect/ProspectProgrammeRecommendationCard";
 import { ProspectQualificationSummary } from "@/components/prospect/ProspectQualificationSummary";
 import { prospectHubCopy } from "@/content/prospect-hub-copy";
 import { prospectQualificationCopy } from "@/content/prospect-qualification-copy";
 import { orientationDiagnosticCopy } from "@/content/orientation-diagnostic-copy";
 import { getRequestLocale } from "@/lib/i18n-server";
 import { getPhase2StudentAccess } from "@/lib/phase2/access";
+import { loadVerifiedProgrammeCatalogue } from "@/lib/orientation-engine/catalog";
 import { loadProspectHubState } from "@/lib/prospect/hub";
+import { prospectCatalogueRecommendations } from "@/lib/prospect/programmes";
 
 export const dynamic = "force-dynamic";
 
@@ -22,18 +25,34 @@ export default async function ProspectOrientationPage() {
   if (!access.isStudent) redirect("/unauthorized");
   if (!access.phase2Enabled || access.canUseClientFeatures) redirect("/student");
 
-  const state = await loadProspectHubState({
-    userId: access.user.id,
-    email: access.user.email,
-    emailConfirmed: Boolean(access.user.email_confirmed_at),
-  });
+  const [state, catalogue] = await Promise.all([
+    loadProspectHubState({
+      userId: access.user.id,
+      email: access.user.email,
+      emailConfirmed: Boolean(access.user.email_confirmed_at),
+    }),
+    loadVerifiedProgrammeCatalogue(),
+  ]);
   const t = prospectHubCopy[locale].orientation;
   const dashboardCopy = prospectHubCopy[locale].dashboard;
+  const catalogueCopy = prospectHubCopy[locale].catalogue;
   const diagnosticCopy = orientationDiagnosticCopy[locale];
   const qualificationCopy = prospectQualificationCopy[locale];
   const dateFormatter = new Intl.DateTimeFormat(locale, { dateStyle: "long" });
   const showIntakeAction = Boolean(state.recovery || (state.current && !state.orientationConfirmed));
   const waitingForDocuments = state.orientationConfirmed && state.intake?.status === "starter_documents";
+  const recommendations = prospectCatalogueRecommendations(state.answers, catalogue);
+  const recommendationLabels = {
+    projectMatch: catalogueCopy.projectMatch,
+    preferredCity: catalogueCopy.preferredCity,
+    requirementCheck: catalogueCopy.requirementCheck,
+    field: catalogueCopy.field,
+    german: catalogueCopy.german,
+    uniAssist: catalogueCopy.uniAssist,
+    yes: catalogueCopy.yes,
+    source: catalogueCopy.source,
+    applyLink: catalogueCopy.applyLink,
+  };
 
   return (
     <main className="space-y-6">
@@ -133,25 +152,57 @@ export default async function ProspectOrientationPage() {
             />
           ) : null}
 
-          <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[var(--shadow-card)] sm:p-6">
-            <h2 className="text-xl font-bold">{diagnosticCopy.sections.paths}</h2>
-            <div className="mt-4 grid gap-3 md:grid-cols-2">
-              {state.current.diagnostic.paths.map((item) => {
-                const itemCopy = diagnosticCopy.items[item.code];
-                return (
-                  <article key={item.code} className="rounded-[var(--radius-control)] bg-[var(--surface-subtle)] p-4">
-                    <div className="flex flex-wrap items-start justify-between gap-3">
-                      <h3 className="font-semibold">{itemCopy.title}</h3>
-                      <span className="rounded-full bg-[var(--surface)] px-2.5 py-1 text-[11px] font-bold text-[var(--muted)]">
-                        {diagnosticCopy.status[item.status]}
-                      </span>
-                    </div>
-                    <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{itemCopy.body}</p>
-                  </article>
-                );
-              })}
-            </div>
-          </section>
+          {recommendations.length ? (
+            <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[var(--shadow-card)] sm:p-6">
+              <div className="flex flex-wrap items-end justify-between gap-4">
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--brand)]">
+                    {catalogueCopy.projectMatch}
+                  </p>
+                  <h2 className="mt-1 text-xl font-bold">{catalogueCopy.recommendedTitle}</h2>
+                  <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
+                    {catalogueCopy.recommendedSubtitle}
+                  </p>
+                </div>
+                <Link
+                  href="/prospect/catalogue"
+                  className="inline-flex min-h-10 items-center rounded-[var(--radius-control)] border border-[var(--border-strong)] px-4 text-sm font-semibold transition hover:border-[var(--brand-border)]"
+                >
+                  {dashboardCopy.recommendedViewAll}
+                </Link>
+              </div>
+              <div className="mt-4 grid gap-4 xl:grid-cols-2">
+                {recommendations.map((recommendation) => (
+                  <ProspectProgrammeRecommendationCard
+                    key={recommendation.programme.id}
+                    recommendation={recommendation}
+                    labels={recommendationLabels}
+                    compact
+                  />
+                ))}
+              </div>
+            </section>
+          ) : (
+            <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[var(--shadow-card)] sm:p-6">
+              <h2 className="text-xl font-bold">{diagnosticCopy.sections.paths}</h2>
+              <div className="mt-4 grid gap-3 md:grid-cols-2">
+                {state.current.diagnostic.paths.map((item) => {
+                  const itemCopy = diagnosticCopy.items[item.code];
+                  return (
+                    <article key={item.code} className="rounded-[var(--radius-control)] bg-[var(--surface-subtle)] p-4">
+                      <div className="flex flex-wrap items-start justify-between gap-3">
+                        <h3 className="font-semibold">{itemCopy.title}</h3>
+                        <span className="rounded-full bg-[var(--surface)] px-2.5 py-1 text-[11px] font-bold text-[var(--muted)]">
+                          {diagnosticCopy.status[item.status]}
+                        </span>
+                      </div>
+                      <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{itemCopy.body}</p>
+                    </article>
+                  );
+                })}
+              </div>
+            </section>
+          )}
 
           {state.orientations.length > 1 ? (
             <details className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[var(--shadow-card)] sm:p-6">

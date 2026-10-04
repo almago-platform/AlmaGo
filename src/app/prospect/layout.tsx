@@ -30,14 +30,26 @@ export default async function ProspectLayout({
     redirect("/student");
   }
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("first_name")
-    .eq("id", user.id)
-    .maybeSingle();
+  const [{ data: profile }, { data: purchase }] = await Promise.all([
+    supabase
+      .from("profiles")
+      .select("first_name")
+      .eq("id", user.id)
+      .maybeSingle(),
+    supabase
+      .from("commercial_purchases")
+      .select("id")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle(),
+  ]);
 
   return (
-    <ProspectShell displayName={profile?.first_name || null}>
+    <ProspectShell
+      displayName={profile?.first_name || null}
+      showPayment={Boolean(purchase)}
+    >
       {children}
     </ProspectShell>
   );
