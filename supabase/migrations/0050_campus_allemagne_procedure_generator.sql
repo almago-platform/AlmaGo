@@ -366,7 +366,8 @@ begin
   where student_id = p_student_id
     and is_current
   order by created_at desc
-  limit 1;
+  limit 1
+  for update;
 
   if found
     and current_record.procedure_template_id = template_record.id
@@ -414,7 +415,6 @@ begin
     update public.student_procedures
     set
       is_current = false,
-      superseded_by = new_procedure_id,
       updated_at = now()
     where id = current_record.id;
   end if;
@@ -447,6 +447,14 @@ begin
     true,
     auth.uid()
   );
+
+  if current_record.id is not null then
+    update public.student_procedures
+    set
+      superseded_by = new_procedure_id,
+      updated_at = now()
+    where id = current_record.id;
+  end if;
 
   return new_procedure_id;
 end;
