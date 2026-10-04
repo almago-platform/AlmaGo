@@ -49,9 +49,10 @@ function candidatesForGeographicScope(
   plan: OrientationDiscoveryPlan,
   candidates: OrientationDiscoveryResult["candidates"],
 ) {
-  if (!plan.geographicScope) return [...candidates];
+  const scope = plan.geographicScope;
+  if (!scope) return [...candidates];
   return candidates.filter((candidate) =>
-    orientationScopeContainsCity(plan.geographicScope!, candidate.city)
+    orientationScopeContainsCity(scope, candidate.city)
   );
 }
 
