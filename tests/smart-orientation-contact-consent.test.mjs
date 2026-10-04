@@ -23,18 +23,11 @@ test("SO-3 does not change anon/authenticated write permissions", () => {
   assert.doesNotMatch(migration, /create policy/i);
 });
 
-test("contact permission is an optional checkbox separate from privacy acknowledgement", () => {
+test("continuation uses one required privacy choice and does not solicit contact consent at this step", () => {
   assert.match(capture, /name="privacyAcknowledged"[\s\S]*?required/);
-  assert.match(
-    capture,
-    /name="contactConsent"[\s\S]*?checked=\{contactConsent\}[\s\S]*?setContactConsent/,
-  );
-  assert.doesNotMatch(
-    capture,
-    /name="contactConsent"\s+required/,
-  );
-  assert.match(capture, /useState\(false\)[\s\S]*contactConsent/);
-  assert.match(capture, /contactConsent,/);
+  assert.doesNotMatch(capture, /name="contactConsent"/);
+  assert.doesNotMatch(capture, /setContactConsent|checked=\{contactConsent\}/);
+  assert.match(capture, /contactConsent: false/);
 });
 
 test("SO-3 uses a versioned server-side consent marker", () => {
@@ -58,12 +51,12 @@ test("each orientation records whether contact consent was given for that submis
   );
 });
 
-test("SO-3 copy clearly separates contact consent from report delivery in every locale", () => {
-  assert.match(copy, /J’accepte que Campus Allemagne me contacte au sujet de mon projet d’études/);
-  assert.match(copy, /Ce choix n’est pas nécessaire pour sauvegarder ou recevoir votre orientation/);
-  assert.match(copy, /أوافق على أن يتواصل معي Campus Allemagne بخصوص مشروعي الدراسي/);
-  assert.match(copy, /I agree that Campus Allemagne may contact me about my study project/);
-  assert.match(copy, /Ich bin damit einverstanden, dass Campus Allemagne mich zu meinem Studienprojekt kontaktiert/);
+test("SO-3 keeps contact consent out of the continuation step while privacy copy stays explicit", () => {
+  assert.match(copy, /J’ai lu l’information de confidentialité et j’accepte la sauvegarde de cette orientation pour continuer mon parcours/);
+  assert.match(copy, /قرأت معلومات الخصوصية وأوافق على حفظ هذا التوجيه لمواصلة مساري/);
+  assert.match(copy, /I have read the privacy information and agree to save this orientation so I can continue my journey/);
+  assert.match(copy, /Ich habe die Datenschutzhinweise gelesen und stimme der Speicherung dieser Orientierung zu/);
+  assert.doesNotMatch(copy, /J’accepte que Campus Allemagne me contacte au sujet de mon projet d’études/);
 });
 
 test("SO-3 adds no automatic marketing or outreach sender", () => {
