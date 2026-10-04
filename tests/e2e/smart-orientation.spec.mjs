@@ -8,6 +8,12 @@ const adminPassword = process.env.ALMAGO_E2E_ADMIN_PASSWORD;
 const adminConfigured = Boolean(adminEmail && adminPassword);
 
 const SESSION_KEY = "almago_phase2_orientation_v1";
+const TEST_IDENTITY = {
+  firstName: "Test",
+  lastName: "Étudiant",
+  birthDate: "2005-06-15",
+  email: "orientation-e2e@example.com",
+};
 
 mkdirSync("artifacts/smart-orientation", { recursive: true });
 
@@ -37,7 +43,12 @@ async function showResult(page, answers) {
   await page.goto("/orientation", { waitUntil: "networkidle" });
   await page.evaluate(
     ({ key, value }) => {
-      window.sessionStorage.setItem(key, JSON.stringify({ answers: value, step: 5 }));
+      window.sessionStorage.setItem(key, JSON.stringify({
+        identity: TEST_IDENTITY,
+        identityComplete: true,
+        answers: value,
+        step: 5,
+      }));
     },
     { key: SESSION_KEY, value: answers },
   );
@@ -130,11 +141,17 @@ test.describe("Smart Orientation Partner-Ready rehearsal", () => {
     await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
 
     await page.evaluate(
-      ({ key, value }) => {
-        window.sessionStorage.setItem(key, JSON.stringify({ answers: value, step: 5 }));
+      ({ key, value, identity }) => {
+        window.sessionStorage.setItem(key, JSON.stringify({
+          identity,
+          identityComplete: true,
+          answers: value,
+          step: 5,
+        }));
       },
       {
         key: SESSION_KEY,
+        identity: TEST_IDENTITY,
         value: baseAnswers({
           bacStatus: "preparing",
           generalAverage: "14",
