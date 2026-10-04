@@ -265,6 +265,97 @@ export async function processNormalizedPaymentEvent(
   return !error && typeof data === "string" ? data : null;
 }
 
+const MANUAL_PAYMENT_PROVIDER = "manual_admin";
+
+export async function recordManualPhase2Payment(
+  adminUserId: string,
+  purchaseId: string,
+  reference: string,
+) {
+  const normalizedReference = reference.trim();
+  if (
+    !isPhase2PaymentOrchestrationEnabled()
+    || !UUID_RE.test(adminUserId)
+    || !UUID_RE.test(purchaseId)
+    || normalizedReference.length > 80
+  ) {
+    return false;
+  }
+
+  const privileged = createPrivilegedSupabaseClient();
+  const { data: role, error: roleError } = await privileged
+    .from("user_roles")
+    .select("role")
+    .eq("user_id", adminUserId)
+    .maybeSingle();
+
+  if (roleError || role?.role !== "admin") return false;
+
+  const { data: purchase, error: purchaseError } = await privileged
+    .from("commercial_purchases")
+    .select("id,user_id,amount_minor,currency,status")
+    .eq("id", purchaseId)
+    .maybeSingle();
+
+  if (
+    purchaseError
+    || !purchase
+    || purchase.status !== "payment_pending"
+    || typeof purchase.user_id !== "string"
+    || typeof purchase.currency !== "string"
+  ) {
+    return false;
+  }
+
+  const amountMinor = safeMinorAmount(purchase.amount_minor);
+  if (
+    amountMinor === null
+    || !UUID_RE.test(purchase.user_id)
+    || !CURRENCY_RE.test(purchase.currency)
+  ) {
+    return false;
+  }
+
+  const attemptId = await beginPhase2PaymentAttempt({
+    userId: purchase.user_id,
+    purchaseId,
+    provider: MANUAL_PAYMENT_PROVIDER,
+    idempotencyKey: `manual-attempt-${purchaseId}`,
+  });
+  if (!attemptId) return false;
+
+  const referenceToken = normalizedReference || "sans-reference";
+  const sessionBound = await bindPhase2PaymentAttemptSession({
+    attemptId,
+    provider: MANUAL_PAYMENT_PROVIDER,
+    providerSessionId: `admin:${adminUserId}:ref:${referenceToken}`,
+  });
+  if (!sessionBound) return false;
+
+  const stablePayload = JSON.stringify({
+    provider: MANUAL_PAYMENT_PROVIDER,
+    purchaseId,
+    attemptId,
+    amountMinor,
+    currency: purchase.currency,
+  });
+
+  const status = await processNormalizedPaymentEvent({
+    provider: MANUAL_PAYMENT_PROVIDER,
+    providerEventId: `manual-event-${purchaseId}`,
+    type: "charge_succeeded",
+    payloadSha256: hashPaymentPayload(stablePayload),
+    attemptId,
+    purchaseId,
+    amountMinor,
+    currency: purchase.currency,
+    providerTransactionId: `manual-charge-${purchaseId}`,
+    occurredAt: new Date().toISOString(),
+  });
+
+  return status === "paid_pending_validation";
+}
+
 export async function activatePhase2PaidPurchase(
   adminUserId: string,
   purchaseId: string,
