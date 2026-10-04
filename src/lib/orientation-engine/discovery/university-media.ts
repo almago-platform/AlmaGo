@@ -56,9 +56,9 @@ function sourceUrl(page: CommonsPage, info: CommonsImageInfo) {
   if (info.descriptionurl?.startsWith("https://")) return info.descriptionurl;
   if (!page.title) return null;
 
-  return \`https://commons.wikimedia.org/wiki/\${encodeURIComponent(
+  return `https://commons.wikimedia.org/wiki/${encodeURIComponent(
     page.title.replace(/ /g, "_"),
-  )}\`;
+  )}`;
 }
 
 function usefulPhoto(page: CommonsPage) {
@@ -108,7 +108,7 @@ export async function findWikimediaUniversityMedia(
   const timeout = setTimeout(() => controller.abort(), MEDIA_TIMEOUT_MS);
 
   try {
-    const response = await fetch(\`\${COMMONS_API_URL}?\${params.toString()}\`, {
+    const response = await fetch(`${COMMONS_API_URL}?${params.toString()}`, {
       signal: controller.signal,
       cache: "no-store",
       headers: {
