@@ -113,7 +113,7 @@ test("prospect hub copy keeps the project relationship visible instead of framin
   assert.match(prospectHubCopy, /Mon espace Campus Allemagne/);
   assert.match(prospectHubCopy, /Ma proposition/);
   assert.match(prospectHubCopy, /Programmes & catalogue/);
-  assert.match(prospectHubCopy, /Partenaires & solutions/);
+  assert.match(prospectHubCopy, /Prestataires & solutions/);
   assert.match(prospectHubCopy, /Compte gratuit/);
 });
 
