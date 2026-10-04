@@ -112,6 +112,8 @@ type ProspectHubCopy = {
     done: string;
     next: string;
     later: string;
+    completedGroup: string;
+    futureGroup: string;
   };
   solutions: {
     eyebrow: string;
@@ -241,6 +243,8 @@ const fr: ProspectHubCopy = {
     done: "Terminé",
     next: "Prochaine étape",
     later: "Plus tard",
+    completedGroup: "Étapes terminées",
+    futureGroup: "Étapes suivantes",
   },
   solutions: {
     eyebrow: "Solutions utiles",
@@ -370,6 +374,8 @@ const en: ProspectHubCopy = {
     done: "Done",
     next: "Next",
     later: "Later",
+    completedGroup: "Completed steps",
+    futureGroup: "Later steps",
   },
   solutions: {
     eyebrow: "Useful solutions",
@@ -499,6 +505,8 @@ const de: ProspectHubCopy = {
     done: "Erledigt",
     next: "Als Nächstes",
     later: "Später",
+    completedGroup: "Erledigte Schritte",
+    futureGroup: "Spätere Schritte",
   },
   solutions: {
     eyebrow: "Nützliche Lösungen",
@@ -628,6 +636,8 @@ const ar: ProspectHubCopy = {
     done: "مكتمل",
     next: "التالي",
     later: "لاحقًا",
+    completedGroup: "الخطوات المكتملة",
+    futureGroup: "الخطوات اللاحقة",
   },
   solutions: {
     eyebrow: "حلول مفيدة",
