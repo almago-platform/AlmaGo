@@ -1,11 +1,14 @@
 import "server-only";
 
 import { hashOrientationResumeToken } from "@/lib/orientation/resume-token";
+import { restorePublicOrientationIdentity } from "@/lib/orientation/public";
 import { createPrivilegedSupabaseClient } from "@/lib/supabase/privileged";
 
 export type OrientationActivationContext = {
   token: string;
   email: string;
+  firstName?: string;
+  lastName?: string;
 };
 
 export async function resolveOrientationActivation(
@@ -25,7 +28,7 @@ export async function resolveOrientationActivation(
 
   const { data: orientation, error: orientationError } = await supabase
     .from("orientations")
-    .select("prospect_id")
+    .select("prospect_id,input")
     .eq("resume_token_hash", tokenHash)
     .gt("resume_token_expires_at", new Date().toISOString())
     .maybeSingle();
@@ -40,8 +43,15 @@ export async function resolveOrientationActivation(
 
   if (prospectError || typeof prospect?.email !== "string") return null;
 
+  const input = orientation.input && typeof orientation.input === "object"
+    ? orientation.input as Record<string, unknown>
+    : {};
+  const identity = restorePublicOrientationIdentity(input.identity);
+
   return {
     token,
     email: prospect.email.trim().toLowerCase(),
+    ...(identity.firstName ? { firstName: identity.firstName } : {}),
+    ...(identity.lastName ? { lastName: identity.lastName } : {}),
   };
 }

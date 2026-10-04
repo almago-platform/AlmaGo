@@ -14,6 +14,8 @@ type Mode = "login" | "signup" | "forgot";
 type OrientationActivation = {
   token: string;
   email: string;
+  firstName?: string;
+  lastName?: string;
 };
 
 const subscribeHydration = () => () => {};
@@ -32,8 +34,8 @@ export function AuthForm({
   const [mode, setMode] = useState<Mode>(initialMode);
   const [email, setEmail] = useState(orientationActivation?.email ?? "");
   const [password, setPassword] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
+  const [firstName, setFirstName] = useState(orientationActivation?.firstName ?? "");
+  const [lastName, setLastName] = useState(orientationActivation?.lastName ?? "");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);

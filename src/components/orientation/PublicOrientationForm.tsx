@@ -59,6 +59,7 @@ function localizedValue(value: string, options: readonly SelectOption[]) {
 export function PublicOrientationForm({
   prospectCaptureEnabled = false,
   emailDeliveryEnabled = false,
+  accountLinkingEnabled = false,
   initialAnswers = null,
   initialIdentity = null,
   authenticatedUpdate = false,
@@ -66,6 +67,7 @@ export function PublicOrientationForm({
 }: {
   prospectCaptureEnabled?: boolean;
   emailDeliveryEnabled?: boolean;
+  accountLinkingEnabled?: boolean;
   initialAnswers?: Answers | null;
   initialIdentity?: PublicOrientationIdentity | null;
   authenticatedUpdate?: boolean;
@@ -1106,6 +1108,7 @@ export function PublicOrientationForm({
                   answers={answers}
                   locale={locale}
                   prospectCaptureEnabled={prospectCaptureEnabled && !authenticatedUpdate}
+                  accountLinkingEnabled={accountLinkingEnabled && !authenticatedUpdate}
                   onReviewReady={handleReviewReady}
                   onPersonalizedReady={handlePersonalizedReady}
                   onRefineAnswers={(patch) => {
@@ -1141,6 +1144,7 @@ export function PublicOrientationForm({
                     initialEmail={identity.email}
                     reviewId={orientationReviewId}
                     emailDeliveryEnabled={emailDeliveryEnabled}
+                    accountLinkingEnabled={accountLinkingEnabled}
                     acquisitionContext={acquisitionContext}
                   />
                 ) : null}

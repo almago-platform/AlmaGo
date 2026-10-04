@@ -45,6 +45,7 @@ const copy = {
     humanTitle: "On reprend ce rapport avec vous.",
     humanText: "Vous ne restez pas seul avec ce résultat. Un membre de l’équipe Campus Allemagne reprend avec vous les programmes qui ressortent, les points à confirmer et la prochaine décision.",
     humanCta: "Parler de mon orientation avec Campus Allemagne",
+    continueCta: "Continuer ma procédure",
     why: "Pourquoi elle ressort pour vous",
     confirmed: "Repères vérifiés pour votre décision",
     checking: "Ce que nous vérifions encore",
@@ -122,6 +123,7 @@ const copy = {
     humanTitle: "نراجع هذا التقرير معك.",
     humanText: "لن تبقى وحدك مع هذه النتيجة. يراجع معك أحد أعضاء فريق Campus Allemagne البرامج التي برزت، والنقاط التي تحتاج إلى تأكيد، والقرار التالي.",
     humanCta: "التحدث عن توجيهي مع Campus Allemagne",
+    continueCta: "متابعة إجراءاتي",
     why: "لماذا يبرز هذا المسار لك",
     confirmed: "معلومات موثقة تساعدك على الاختيار",
     checking: "ما زال يحتاج إلى تأكيد",
@@ -199,6 +201,7 @@ const copy = {
     humanTitle: "We review this report with you.",
     humanText: "You are not left alone with this result. A Campus Allemagne team member reviews the programmes that stand out, the remaining checks and the next decision with you.",
     humanCta: "Talk about my orientation with Campus Allemagne",
+    continueCta: "Continue my procedure",
     why: "Why it stands out for you",
     confirmed: "Verified decision points",
     checking: "Still to confirm",
@@ -276,6 +279,7 @@ const copy = {
     humanTitle: "Wir gehen diesen Bericht mit dir durch.",
     humanText: "Du bleibst mit diesem Ergebnis nicht allein. Ein Mitglied des Campus-Allemagne-Teams geht mit dir die auffälligen Optionen, offenen Punkte und die nächste Entscheidung durch.",
     humanCta: "Meine Orientierung mit Campus Allemagne besprechen",
+    continueCta: "Mein Verfahren fortsetzen",
     why: "Warum sie für dich auffällt",
     confirmed: "Geprüfte Entscheidungspunkte",
     checking: "Noch zu klären",
@@ -782,11 +786,13 @@ export function OrientationPersonalizedWriterCard({
   locale,
   answers = null,
   showCta = false,
+  continueAccount = false,
 }: {
   result: OrientationPublicPersonalizedResult;
   locale: Locale;
   answers?: PublicOrientationAnswers | null;
   showCta?: boolean;
+  continueAccount?: boolean;
 }) {
   const t = copy[locale];
   const content = result.content;
@@ -1248,7 +1254,7 @@ export function OrientationPersonalizedWriterCard({
             href="#orientation-prospect-capture"
             className="mt-6 inline-flex min-h-11 items-center justify-center rounded-[var(--radius-control)] bg-[var(--brand)] px-5 py-2.5 text-sm font-bold text-white transition hover:bg-[var(--brand-strong)]"
           >
-            {t.humanCta}
+            {continueAccount ? t.continueCta : t.humanCta}
           </a>
         ) : null}
       </section>

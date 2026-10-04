@@ -12,32 +12,32 @@ const fr: OrientationResumeCopy = {
   created: "Orientation créée le",
   validUntil: "Lien sécurisé valable jusqu’au",
   home: "Retour à Campus Allemagne",
-  signup: "Créer mon espace gratuit",
-  signupNote: "Facultatif. Si vous créez ou utilisez un compte avec ce lien, cette orientation y sera rattachée. Aucun accompagnement payant n’est activé.",
+  signup: "Continuer ma procédure et créer mon compte",
+  signupNote: "Votre orientation sera rattachée à votre espace étudiant gratuit. Vous pourrez reprendre votre parcours sans recommencer. Aucun accompagnement payant n’est activé automatiquement.",
 };
 
 const ar: OrientationResumeCopy = {
   created: "تم إنشاء التوجيه في",
   validUntil: "الرابط الآمن صالح حتى",
   home: "العودة إلى Campus Allemagne",
-  signup: "إنشاء مساحتي المجانية",
-  signupNote: "اختياري. إذا أنشأت حسابًا أو استخدمت حسابك عبر هذا الرابط، فسيتم ربط هذا التوجيه به. لا يتم تفعيل أي خدمة مدفوعة.",
+  signup: "متابعة إجراءاتي وإنشاء حسابي",
+  signupNote: "سيتم ربط هذا التوجيه بمساحتك الطلابية المجانية لتواصل المسار من دون البدء من جديد. لا يتم تفعيل أي خدمة مدفوعة تلقائيًا.",
 };
 
 const en: OrientationResumeCopy = {
   created: "Orientation created on",
   validUntil: "Secure link valid until",
   home: "Back to Campus Allemagne",
-  signup: "Create my free space",
-  signupNote: "Optional. If you create or use an account through this link, this orientation will be linked to it. No paid support is activated.",
+  signup: "Continue my procedure and create my account",
+  signupNote: "This orientation will be attached to your free student space so you can continue without starting again. No paid support is activated automatically.",
 };
 
 const de: OrientationResumeCopy = {
   created: "Orientierung erstellt am",
   validUntil: "Sicherer Link gültig bis",
   home: "Zurück zu Campus Allemagne",
-  signup: "Kostenlosen Bereich erstellen",
-  signupNote: "Freiwillig. Wenn du über diesen Link ein Konto erstellst oder nutzt, wird diese Orientierung damit verknüpft. Es wird keine kostenpflichtige Begleitung aktiviert.",
+  signup: "Verfahren fortsetzen und Konto erstellen",
+  signupNote: "Diese Orientierung wird mit deinem kostenlosen Studierendenbereich verknüpft, damit du ohne Neustart weitermachen kannst. Eine kostenpflichtige Begleitung wird nicht automatisch aktiviert.",
 };
 
 export const orientationResumeCopy: Record<Locale, OrientationResumeCopy> = { fr, ar, en, de };

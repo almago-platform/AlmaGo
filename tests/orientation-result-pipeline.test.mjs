@@ -126,6 +126,9 @@ test("E writer UI presents a premium progressive result with one CTA and verifie
   assert.match(writerCard, /Puis, on décide ensemble/);
   assert.match(writerCard, /On reprend ce rapport avec vous/);
   assert.match(writerCard, /Parler de mon orientation avec Campus Allemagne/);
+  assert.match(writerCard, /Continuer ma procédure/);
+  assert.match(writerCard, /continueAccount \? t\.continueCta : t\.humanCta/);
+  assert.match(engineCard, /continueAccount=\{accountLinkingEnabled && prospectCaptureEnabled && isBachelorFirstContact\}/);
   assert.match(writerCard, /simpleLanguagePriority/);
   assert.match(writerCard, /Passez de \$\{currentLevel\} à \$\{nextLevel\}/);
   assert.match(writerCard, /bg-\[var\(--brand-soft\)\]/);

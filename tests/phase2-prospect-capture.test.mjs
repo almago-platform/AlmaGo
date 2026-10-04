@@ -72,6 +72,18 @@ test("required identity is collected before orientation while persistence remain
   assert.match(route, /\.\.\.\(identity \? \{ identity \} : \{\}\)/);
 });
 
+test("orientation continuation saves the result before opening secure account signup", () => {
+  assert.match(form, /accountLinkingEnabled=\{accountLinkingEnabled && !authenticatedUpdate\}/);
+  assert.match(form, /accountLinkingEnabled=\{accountLinkingEnabled\}/);
+  assert.match(capture, /accountLinkingEnabled/);
+  assert.match(capture, /copy\.continueSubmit/);
+  assert.match(capture, /payload\.signupPath/);
+  assert.match(capture, /window\.location\.assign\(payload\.signupPath\)/);
+  assert.match(route, /isPhase2AccountLinkingEnabled/);
+  assert.match(route, /\/signup\?orientation_token=/);
+  assert.match(route, /signupPath/);
+});
+
 test("prospect email capture is mobile-friendly and accessibly validates without enabling the feature", () => {
   assert.match(capture, /noValidate aria-busy=\{status === "saving"\}/);
   assert.match(capture, /name="email"/);
