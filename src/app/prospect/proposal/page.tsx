@@ -27,6 +27,7 @@ export default async function ProspectProposalPage() {
 
   const t = prospectHubCopy[locale].proposal;
   const dashboardCopy = prospectHubCopy[locale].dashboard;
+  const preBac = state.answers?.bacStatus === "preparing";
   const starterDocuments = state.intake?.status === "starter_documents";
   const proposalAvailable = ["route_proposed", "student_question", "procedure_created"]
     .includes(state.intake?.status || "");
@@ -50,7 +51,45 @@ export default async function ProspectProposalPage() {
         </section>
       ) : null}
 
-      {starterDocuments ? (
+      {preBac && starterDocuments ? (
+        <section className="rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--brand-soft)] p-5 shadow-[var(--shadow-card)] sm:p-6">
+          <p className="text-xs font-bold uppercase tracking-[0.13em] text-[var(--brand)]">
+            Projet avant le Bac
+          </p>
+          <h2 className="mt-2 text-2xl font-bold">Votre accompagnement de préparation est déjà actif</h2>
+          <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
+            Vous n’avez pas besoin de fournir le Bac ni le relevé final maintenant. Campus Allemagne peut déjà
+            vous guider sur la langue, les programmes, le budget et les prochaines étapes. La proposition académique
+            définitive viendra après vos résultats et la mise à jour du projet.
+          </p>
+          <div className="mt-5 flex flex-wrap gap-3">
+            <Link
+              href="/prospect/roadmap"
+              className="inline-flex min-h-11 items-center rounded-[var(--radius-control)] bg-[var(--brand)] px-5 text-sm font-bold text-white"
+            >
+              Continuer ma préparation
+            </Link>
+            <Link
+              href="/prospect/catalogue"
+              className="inline-flex min-h-11 items-center rounded-[var(--radius-control)] border border-[var(--border-strong)] bg-[var(--surface)] px-5 text-sm font-semibold"
+            >
+              Explorer les programmes
+            </Link>
+            <Link
+              href="/prospect/solutions"
+              className="inline-flex min-h-11 items-center rounded-[var(--radius-control)] border border-[var(--border-strong)] bg-[var(--surface)] px-5 text-sm font-semibold"
+            >
+              Langue & solutions
+            </Link>
+            <Link
+              href="/prospect/documents"
+              className="inline-flex min-h-11 items-center rounded-[var(--radius-control)] border border-[var(--border-strong)] bg-[var(--surface)] px-5 text-sm font-semibold"
+            >
+              Documents facultatifs
+            </Link>
+          </div>
+        </section>
+      ) : starterDocuments ? (
         <section className="rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--brand-soft)] p-5 shadow-[var(--shadow-card)] sm:p-6">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="max-w-3xl">
@@ -99,10 +138,11 @@ export default async function ProspectProposalPage() {
               }
             : null}
           starterSummary={state.starterSummary}
+          bacStatus={state.answers?.bacStatus}
         />
       )}
 
-      {!proposalAvailable ? (
+      {!proposalAvailable && !preBac ? (
         <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[var(--shadow-card)]">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>

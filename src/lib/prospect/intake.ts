@@ -1,5 +1,6 @@
 import "server-only";
 
+import { requiredStarterDocumentCategoriesForBacStatus } from "@/lib/campus-intake";
 import { createClient } from "@/lib/supabase/server";
 
 export type ProspectIntakeRecord = {
@@ -18,7 +19,10 @@ export type StarterDocumentSummary = {
   needsReplacement: number;
 };
 
-export async function loadProspectIntakeState(studentId: string): Promise<{
+export async function loadProspectIntakeState(
+  studentId: string,
+  bacStatus?: string | null,
+): Promise<{
   intake: ProspectIntakeRecord | null;
   starterSummary: StarterDocumentSummary;
 }> {
@@ -37,7 +41,7 @@ export async function loadProspectIntakeState(studentId: string): Promise<{
       .in("category", ["passport", "baccalaureate", "transcripts", "language_certificate"]),
   ]);
 
-  const requiredCategories = ["passport", "baccalaureate", "transcripts"];
+  const requiredCategories = requiredStarterDocumentCategoriesForBacStatus(bacStatus);
   const documents = documentsResult.data || [];
   const approvedCategories = new Set(
     documents

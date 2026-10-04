@@ -94,7 +94,8 @@ export function AdminIntakePanel({ cases }: { cases: IntakeCase[] }) {
   return (
     <div className="grid gap-5">
       {cases.map((item) => {
-        const ready = ["passport", "baccalaureate", "transcripts"].every(
+        const preBac = item.orientation.bacStatus === "preparing";
+        const ready = !preBac && ["passport", "baccalaureate", "transcripts"].every(
           (category) => docState(item.documents, category) === "Validé",
         );
         const canPropose = ready && item.status !== "procedure_created";
@@ -115,7 +116,7 @@ export function AdminIntakePanel({ cases }: { cases: IntakeCase[] }) {
                 <p className="mt-1 text-sm text-[var(--muted)]">{item.email || item.studentId}</p>
               </div>
               <span className="rounded-full bg-[var(--surface-subtle)] px-3 py-1.5 text-xs font-bold">
-                {labelForStatus(item.status)}
+                {preBac ? "Préparation avant le Bac" : labelForStatus(item.status)}
               </span>
             </div>
 
@@ -137,16 +138,35 @@ export function AdminIntakePanel({ cases }: { cases: IntakeCase[] }) {
                     Ouvrir Documents
                   </a>
                 </div>
-                <dl className="mt-3 grid gap-2 text-sm sm:grid-cols-2">
-                  <div><dt className="text-[var(--muted)]">Passeport</dt><dd className="font-semibold">{docState(item.documents, "passport")}</dd></div>
-                  <div><dt className="text-[var(--muted)]">Baccalauréat</dt><dd className="font-semibold">{docState(item.documents, "baccalaureate")}</dd></div>
-                  <div><dt className="text-[var(--muted)]">Relevé de notes</dt><dd className="font-semibold">{docState(item.documents, "transcripts")}</dd></div>
-                  <div><dt className="text-[var(--muted)]">Langue</dt><dd className="font-semibold">{docState(item.documents, "language_certificate")} <span className="font-normal text-[var(--muted)]">(facultatif)</span></dd></div>
-                </dl>
+                {preBac ? (
+                  <>
+                    <p className="mt-3 text-sm leading-6 text-[var(--muted)]">
+                      Aucun Bac ni relevé final n’est attendu avant les résultats. Le passeport et la langue restent facultatifs s’ils sont déjà disponibles.
+                    </p>
+                    <dl className="mt-3 grid gap-2 text-sm sm:grid-cols-2">
+                      <div><dt className="text-[var(--muted)]">Passeport</dt><dd className="font-semibold">{docState(item.documents, "passport")} <span className="font-normal text-[var(--muted)]">(facultatif)</span></dd></div>
+                      <div><dt className="text-[var(--muted)]">Langue</dt><dd className="font-semibold">{docState(item.documents, "language_certificate")} <span className="font-normal text-[var(--muted)]">(facultatif)</span></dd></div>
+                    </dl>
+                  </>
+                ) : (
+                  <dl className="mt-3 grid gap-2 text-sm sm:grid-cols-2">
+                    <div><dt className="text-[var(--muted)]">Passeport</dt><dd className="font-semibold">{docState(item.documents, "passport")}</dd></div>
+                    <div><dt className="text-[var(--muted)]">Baccalauréat</dt><dd className="font-semibold">{docState(item.documents, "baccalaureate")}</dd></div>
+                    <div><dt className="text-[var(--muted)]">Relevé de notes</dt><dd className="font-semibold">{docState(item.documents, "transcripts")}</dd></div>
+                    <div><dt className="text-[var(--muted)]">Langue</dt><dd className="font-semibold">{docState(item.documents, "language_certificate")} <span className="font-normal text-[var(--muted)]">(facultatif)</span></dd></div>
+                  </dl>
+                )}
               </section>
             </div>
 
-            {item.status === "procedure_created" ? (
+            {preBac ? (
+              <section className="mt-5 rounded-[var(--radius-control)] border border-amber-200 bg-amber-50/70 p-4">
+                <h3 className="font-bold text-amber-950">Suivi avant le Bac</h3>
+                <p className="mt-2 text-sm leading-6 text-amber-950">
+                  Ne bloquez pas cet étudiant sur des pièces académiques qu’il ne possède pas encore. Le suivi peut continuer par les informations du profil et les échanges internes / e-mail. La proposition académique finale sera traitée après la mise à jour « Bac obtenu ».
+                </p>
+              </section>
+            ) : item.status === "procedure_created" ? (
               <div className="mt-5 rounded-[var(--radius-control)] border border-emerald-200 bg-emerald-50 p-4">
                 <p className="font-bold text-emerald-900">
                   Parcours confirmé : {campusRouteLabel(item.proposedRouteKey)}

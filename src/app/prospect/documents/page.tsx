@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { StarterDocumentsPanel } from "@/components/prospect/StarterDocumentsPanel";
+import { restorePublicOrientationAnswers } from "@/lib/orientation/public";
 import { getPhase2StudentAccess } from "@/lib/phase2/access";
 
 export const dynamic = "force-dynamic";
@@ -14,13 +15,26 @@ export default async function ProspectStarterDocumentsPage() {
 
   const { data: intake } = await supabase
     .from("student_intake_cases")
-    .select("status")
+    .select("status,orientation_id")
     .eq("student_id", user.id)
     .maybeSingle();
 
   if (!intake) {
     redirect("/prospect/orientation");
   }
+
+  const { data: orientation } = await supabase
+    .from("orientations")
+    .select("input")
+    .eq("id", intake.orientation_id)
+    .maybeSingle();
+
+  const answers = restorePublicOrientationAnswers(
+    orientation?.input && typeof orientation.input === "object"
+      ? (orientation.input as Record<string, unknown>).answers
+      : null,
+  );
+  const preBac = answers.bacStatus === "preparing";
 
   const { data: documents } = await supabase
     .from("documents")
@@ -30,7 +44,7 @@ export default async function ProspectStarterDocumentsPage() {
 
   return (
     <main>
-      <StarterDocumentsPanel documents={documents || []} />
+      <StarterDocumentsPanel documents={documents || []} preBac={preBac} />
     </main>
   );
 }

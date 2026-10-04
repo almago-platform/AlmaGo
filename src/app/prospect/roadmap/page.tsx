@@ -15,6 +15,7 @@ type Step = {
 
 function activeStepIndex(state: Awaited<ReturnType<typeof loadProspectHubState>>) {
   if (!state.current || !state.orientationConfirmed) return 0;
+  if (state.answers?.bacStatus === "preparing") return 1;
   if (!state.intake || state.intake.status === "starter_documents") return 1;
   if (state.intake.status === "campus_review") return 2;
   if (state.intake.status === "route_proposed" || state.intake.status === "student_question") return 3;
@@ -69,6 +70,57 @@ function steps(locale: "fr" | "ar" | "en" | "de"): Step[] {
   return all[locale].map(([title, body, href]) => ({ title, body, href }));
 }
 
+function preBacSteps(locale: "fr" | "ar" | "en" | "de"): Step[] {
+  const all = {
+    fr: [
+      ["Orientation", "Confirmer le projet qui servira de point de départ avant le Bac.", "/prospect/orientation"],
+      ["Préparation avant le Bac", "Progressez en langue, explorez les programmes et préparez votre projet. Aucun Bac ni relevé final n’est requis maintenant.", "/prospect/solutions"],
+      ["Résultats du Bac", "Après les résultats, mettez votre orientation à jour avec le statut Bac obtenu, votre moyenne finale et les informations académiques définitives.", "/prospect/orientation"],
+      ["Documents finaux", "Une fois le Bac obtenu, le parcours post-Bac demandera les pièces académiques nécessaires.", "/prospect/documents"],
+      ["Analyse Campus", "Campus Allemagne vérifie votre profil mis à jour et les pièces finales utiles.", "/prospect/proposal"],
+      ["Proposition", "Consultez le parcours proposé après vérification et discutez-le si nécessaire.", "/prospect/proposal"],
+      ["Candidatures", "Les candidatures viennent après validation du parcours et des exigences de chaque programme.", "/prospect/catalogue"],
+      ["Admission", "Une admission officielle appartient à l’université et ne peut jamais être garantie.", "/prospect/roadmap"],
+      ["Visa & départ", "Après admission, préparez financement, assurance, compte bloqué, visa et départ selon les exigences applicables.", "/prospect/solutions"],
+    ],
+    en: [
+      ["Orientation", "Confirm the project that will guide your preparation before the Bac.", "/prospect/orientation"],
+      ["Pre-Bac preparation", "Improve your language, explore programmes and prepare your project. No final Bac or final transcript is required now.", "/prospect/solutions"],
+      ["Bac results", "After the results, update your orientation with Bac obtained, your final average and final academic information.", "/prospect/orientation"],
+      ["Final documents", "Once the Bac is obtained, the post-Bac flow will request the academic documents that are actually needed.", "/prospect/documents"],
+      ["Campus review", "Campus Allemagne reviews your updated profile and useful final evidence.", "/prospect/proposal"],
+      ["Proposal", "Review the proposed route after verification and discuss it if needed.", "/prospect/proposal"],
+      ["Applications", "Applications come after the route and each programme’s requirements have been checked.", "/prospect/catalogue"],
+      ["Admission", "Official admission is decided by the university and can never be guaranteed.", "/prospect/roadmap"],
+      ["Visa & departure", "After admission, prepare funding, insurance, blocked account, visa and departure as required.", "/prospect/solutions"],
+    ],
+    de: [
+      ["Orientierung", "Bestätige das Projekt, das deine Vorbereitung vor dem Abitur leitet.", "/prospect/orientation"],
+      ["Vorbereitung vor dem Abitur", "Verbessere deine Sprache, erkunde Studiengänge und bereite dein Projekt vor. Abiturzeugnis und Abschlussnoten sind jetzt noch nicht nötig.", "/prospect/solutions"],
+      ["Abiturergebnisse", "Nach den Ergebnissen aktualisierst du dein Projekt mit bestandenem Abitur, Endnote und endgültigen akademischen Angaben.", "/prospect/orientation"],
+      ["Endgültige Unterlagen", "Nach dem Abitur fordert der Post-Abitur-Weg die tatsächlich benötigten akademischen Unterlagen an.", "/prospect/documents"],
+      ["Campus-Prüfung", "Campus Allemagne prüft dein aktualisiertes Profil und die relevanten endgültigen Nachweise.", "/prospect/proposal"],
+      ["Vorschlag", "Prüfe den vorgeschlagenen Weg nach der Verifizierung und besprich ihn bei Bedarf.", "/prospect/proposal"],
+      ["Bewerbungen", "Bewerbungen folgen nach Prüfung des Weges und der Programmbedingungen.", "/prospect/catalogue"],
+      ["Zulassung", "Über die Zulassung entscheidet die Hochschule; sie kann nie garantiert werden.", "/prospect/roadmap"],
+      ["Visum & Abreise", "Nach der Zulassung folgen Finanzierung, Versicherung, Sperrkonto, Visum und Abreise.", "/prospect/solutions"],
+    ],
+    ar: [
+      ["التوجيه", "أكد المشروع الذي سيقود تحضيرك قبل البكالوريا.", "/prospect/orientation"],
+      ["التحضير قبل البكالوريا", "طوّر لغتك واستكشف البرامج وجهّز مشروعك. لا نطلب الآن شهادة البكالوريا النهائية ولا كشف النقاط النهائي.", "/prospect/solutions"],
+      ["نتائج البكالوريا", "بعد صدور النتائج حدّث مشروعك إلى بكالوريا متحصّل عليها وأضف المعدل والمعلومات الأكاديمية النهائية.", "/prospect/orientation"],
+      ["الوثائق النهائية", "بعد الحصول على البكالوريا سيطلب مسار ما بعد البكالوريا الوثائق الأكاديمية اللازمة فقط.", "/prospect/documents"],
+      ["مراجعة Campus", "تراجع Campus Allemagne ملفك المحدّث والوثائق النهائية المفيدة.", "/prospect/proposal"],
+      ["الاقتراح", "راجع المسار المقترح بعد التحقق وناقشه عند الحاجة.", "/prospect/proposal"],
+      ["الترشحات", "تأتي الترشحات بعد التحقق من المسار وشروط كل برنامج.", "/prospect/catalogue"],
+      ["القبول", "قرار القبول الرسمي يعود للجامعة ولا يمكن ضمانه.", "/prospect/roadmap"],
+      ["التأشيرة والمغادرة", "بعد القبول حضّر التمويل والتأمين والحساب المغلق والتأشيرة والمغادرة.", "/prospect/solutions"],
+    ],
+  } as const;
+
+  return all[locale].map(([title, body, href]) => ({ title, body, href }));
+}
+
 export const dynamic = "force-dynamic";
 
 export default async function ProspectRoadmapPage() {
@@ -87,8 +139,9 @@ export default async function ProspectRoadmapPage() {
     emailConfirmed: Boolean(access.user.email_confirmed_at),
   });
   const t = prospectHubCopy[locale].roadmap;
+  const preBac = state.answers?.bacStatus === "preparing";
   const current = activeStepIndex(state);
-  const journey = steps(locale);
+  const journey = preBac ? preBacSteps(locale) : steps(locale);
   const currentStep = journey[current] ?? journey[0];
   const nextStep = journey[current + 1] ?? null;
   const completedSteps = journey.slice(0, current);
@@ -109,6 +162,7 @@ export default async function ProspectRoadmapPage() {
           intake={state.intake}
           starterSummary={state.starterSummary}
           locale={locale}
+          preBac={preBac}
         />
       </section>
 

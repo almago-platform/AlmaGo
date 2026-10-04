@@ -19,6 +19,26 @@ export const requiredStarterDocumentCategories = starterDocumentCategories
   .filter((item) => item.required)
   .map((item) => item.category);
 
+export const preBacStarterDocumentCategories = starterDocumentCategories
+  .filter((item) => item.category === "passport" || item.category === "language_certificate")
+  .map((item) => ({ ...item, required: false as const }));
+
+export function starterDocumentCategoriesForBacStatus(
+  bacStatus: string | null | undefined,
+) {
+  return bacStatus === "preparing"
+    ? preBacStarterDocumentCategories
+    : starterDocumentCategories;
+}
+
+export function requiredStarterDocumentCategoriesForBacStatus(
+  bacStatus: string | null | undefined,
+) {
+  return starterDocumentCategoriesForBacStatus(bacStatus)
+    .filter((item) => item.required)
+    .map((item) => item.category);
+}
+
 export function campusRouteLabel(routeKey: string | null | undefined) {
   return campusRouteOptions.find((route) => route.key === routeKey)?.label ?? "Parcours à confirmer";
 }
