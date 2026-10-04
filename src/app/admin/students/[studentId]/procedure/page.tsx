@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { Badge } from "@/components/ui/Badge";
+import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Card } from "@/components/ui/Card";
 import { createClient } from "@/lib/supabase/server";
 import { formatDeadline, isActiveApplication } from "@/lib/phase4";
@@ -60,7 +61,7 @@ export default async function AdminStudentProcedurePage({
     applicationsResult,
     historyResult,
   ] = await Promise.all([
-    supabase.from("profiles").select("id,first_name,last_name,email,education_level,target_degree,target_field").eq("id", studentId).maybeSingle(),
+    supabase.from("profiles").select("id,first_name,last_name,education_level,target_degree,target_field").eq("id", studentId).maybeSingle(),
     supabase.from("student_projects").select("id,path,target_degree,target_field,target_intake,preferred_cities,current_german_level,target_german_level,updated_at").eq("student_id", studentId).maybeSingle(),
     supabase.from("student_procedures").select("id,procedure_template_key,procedure_template_version,route_key,target_intake,status,template_snapshot,created_at,updated_at").eq("student_id", studentId).eq("is_current", true).maybeSingle(),
     supabase.from("student_document_requirements").select("id,requirement_key,label,category,status,document_id,requested_from_student,student_request_reason,student_request_due_date,requires_tunisian_authentication,requires_translation,requires_german_legalisation,legalisation_status,legalisation_reason,due_date,deadline_kind,source_url,source_verified_at,updated_at").eq("student_id", studentId).order("created_at", { ascending: true }),
@@ -117,8 +118,8 @@ export default async function AdminStudentProcedurePage({
         description="Cockpit opérationnel consolidé du dossier. Les actions étudiant restent exceptionnelles et les objectifs internes restent distincts des échéances officielles."
         actions={
           <>
-            <Link href="/admin/documents" className="btn-secondary">Documents</Link>
-            <Link href="/admin/applications" className="btn-secondary">Candidatures</Link>
+            <ButtonLink href="/admin/documents" variant="secondary">Documents</ButtonLink>
+            <ButtonLink href="/admin/applications" variant="secondary">Candidatures</ButtonLink>
           </>
         }
       />
@@ -305,8 +306,8 @@ export default async function AdminStudentProcedurePage({
             <h2 className="text-lg font-semibold text-slate-950">Outils existants</h2>
             <p className="mt-2 text-sm leading-6 text-slate-600">Le cockpit consolide la vérité. Les opérations spécialisées restent dans leurs files existantes.</p>
             <div className="mt-4 grid gap-2">
-              <Link href="/admin/documents" className="btn-secondary w-full justify-center">Ouvrir la revue Documents</Link>
-              <Link href="/admin/applications" className="btn-secondary w-full justify-center">Ouvrir les Candidatures</Link>
+              <ButtonLink href="/admin/documents" variant="secondary" className="w-full justify-center">Ouvrir la revue Documents</ButtonLink>
+              <ButtonLink href="/admin/applications" variant="secondary" className="w-full justify-center">Ouvrir les Candidatures</ButtonLink>
             </div>
           </Card>
         </aside>
