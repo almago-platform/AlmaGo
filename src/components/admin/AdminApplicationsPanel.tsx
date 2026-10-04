@@ -260,6 +260,12 @@ export function AdminApplicationsPanel({ applications }: { applications: any[] }
                   <p className="mt-1 text-sm font-bold text-slate-950 [overflow-wrap:anywhere]">
                     {student?.first_name || "Étudiant"} {student?.last_name || ""}
                   </p>
+                  <a
+                    href={`/admin/students/${application.student_id}/procedure`}
+                    className="mt-1 inline-flex text-xs font-bold text-[var(--brand)] hover:underline"
+                  >
+                    Ouvrir le dossier Campus Allemagne
+                  </a>
                   <h2
                     id={`admin-application-title-${application.id}`}
                     className="mt-4 text-xl font-bold leading-7 tracking-[-0.02em] text-slate-950 [overflow-wrap:anywhere]"
