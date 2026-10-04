@@ -3,6 +3,8 @@ import { getAdminUser } from "@/lib/auth/access";
 import { isCampusRouteKey } from "@/lib/campus-intake";
 import { createPrivilegedSupabaseClient } from "@/lib/supabase/privileged";
 
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
 export async function POST(
   request: Request,
   { params }: { params: Promise<{ studentId: string }> },
@@ -25,6 +27,8 @@ export async function POST(
     : {};
   const routeKey = record.routeKey;
   const reason = typeof record.reason === "string" ? record.reason.trim() : "";
+  const offerVersionId =
+    typeof record.offerVersionId === "string" ? record.offerVersionId.trim() : "";
 
   if (!isCampusRouteKey(routeKey)) {
     return NextResponse.json({ error: "Parcours invalide." }, { status: 400 });
@@ -32,6 +36,12 @@ export async function POST(
   if (reason.length < 3 || reason.length > 1200) {
     return NextResponse.json(
       { error: "Ajoutez une courte raison expliquant la proposition." },
+      { status: 400 },
+    );
+  }
+  if (!UUID_RE.test(offerVersionId)) {
+    return NextResponse.json(
+      { error: "Choisissez une offre publiée pour cette proposition." },
       { status: 400 },
     );
   }
@@ -48,13 +58,26 @@ export async function POST(
     p_student_id: studentId,
     p_route_key: routeKey,
     p_reason: reason,
+    p_offer_version_id: offerVersionId,
   });
 
   if (error) {
     const message = String(error.message || "");
-    const safeMessage = message.includes("starter_documents_not_approved")
-      ? "Les trois pièces obligatoires doivent être approuvées avant de proposer un parcours."
-      : "Impossible d’enregistrer la proposition.";
+    let safeMessage = "Impossible d’enregistrer la proposition.";
+
+    if (message.includes("starter_documents_not_approved")) {
+      safeMessage = "Passeport, Bac et relevé de notes doivent être approuvés pour ce parcours.";
+    } else if (message.includes("pre_bac_route_not_supported")) {
+      safeMessage = "Avant le Bac, proposez uniquement un parcours de préparation aux études ou de langue.";
+    } else if (message.includes("published_offer_required")) {
+      safeMessage = "Cette offre n’est plus publiée. Choisissez une offre active.";
+    } else if (
+      message.includes("commercial_flow_already_started")
+      || message.includes("commercial_access_not_proposable")
+    ) {
+      safeMessage = "Ce dossier a déjà commencé son parcours commercial ou client.";
+    }
+
     return NextResponse.json({ error: safeMessage }, { status: 409 });
   }
 

@@ -7,6 +7,40 @@ import { getRequestLocale } from "@/lib/i18n-server";
 import { getPhase2StudentAccess } from "@/lib/phase2/access";
 import { loadProspectHubState } from "@/lib/prospect/hub";
 
+const localeTags = {
+  fr: "fr-FR",
+  ar: "ar-TN",
+  en: "en-GB",
+  de: "de-DE",
+} as const;
+
+function serviceItems(value: unknown) {
+  return Array.isArray(value)
+    ? value.filter((item): item is string => typeof item === "string").slice(0, 20)
+    : [];
+}
+
+function formatMinorPrice(
+  value: number | string | null,
+  currency: string | null,
+  locale: keyof typeof localeTags,
+) {
+  if (value === null || !currency) return "—";
+  const amount = Number(value);
+  if (!Number.isSafeInteger(amount) || amount < 0) return "—";
+
+  try {
+    const formatter = new Intl.NumberFormat(localeTags[locale], {
+      style: "currency",
+      currency,
+    });
+    const digits = formatter.resolvedOptions().maximumFractionDigits ?? 2;
+    return formatter.format(amount / 10 ** digits);
+  } catch {
+    return "—";
+  }
+}
+
 export const dynamic = "force-dynamic";
 
 export default async function ProspectProposalPage() {
@@ -25,12 +59,43 @@ export default async function ProspectProposalPage() {
     emailConfirmed: Boolean(access.user.email_confirmed_at),
   });
 
+  let proposalOffer: {
+    id: string;
+    displayName: string;
+    summary: string;
+    services: string[];
+    priceLabel: string;
+  } | null = null;
+
+  if (state.intake?.proposed_offer_version_id) {
+    const { data } = await access.supabase
+      .from("commercial_offer_versions")
+      .select("id,display_name,summary,service_items,price_minor,currency")
+      .eq("id", state.intake.proposed_offer_version_id)
+      .maybeSingle();
+
+    if (data) {
+      proposalOffer = {
+        id: data.id,
+        displayName: data.display_name,
+        summary: data.summary,
+        services: serviceItems(data.service_items),
+        priceLabel: formatMinorPrice(data.price_minor, data.currency, locale),
+      };
+    }
+  }
+
   const t = prospectHubCopy[locale].proposal;
   const dashboardCopy = prospectHubCopy[locale].dashboard;
   const preBac = state.answers?.bacStatus === "preparing";
   const starterDocuments = state.intake?.status === "starter_documents";
-  const proposalAvailable = ["route_proposed", "student_question", "procedure_created"]
-    .includes(state.intake?.status || "");
+  const proposalAvailable = [
+    "route_proposed",
+    "student_question",
+    "payment_pending",
+    "paid_pending_validation",
+    "procedure_created",
+  ].includes(state.intake?.status || "");
   const documentPercent = state.starterSummary.required
     ? Math.round((state.starterSummary.approved / state.starterSummary.required) * 100)
     : 0;
@@ -134,11 +199,14 @@ export default async function ProspectProposalPage() {
                 status: state.intake.status,
                 proposed_route_key: state.intake.proposed_route_key,
                 proposal_reason: state.intake.proposal_reason,
+                proposed_offer_version_id: state.intake.proposed_offer_version_id,
+                purchase_id: state.intake.purchase_id,
                 procedure_id: state.intake.procedure_id,
               }
             : null}
           starterSummary={state.starterSummary}
           bacStatus={state.answers?.bacStatus}
+          offer={proposalOffer}
         />
       )}
 

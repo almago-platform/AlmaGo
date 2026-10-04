@@ -84,6 +84,8 @@ export default async function ProspectOrientationPage() {
                 status: state.intake.status,
                 proposed_route_key: state.intake.proposed_route_key,
                 proposal_reason: state.intake.proposal_reason,
+                proposed_offer_version_id: state.intake.proposed_offer_version_id,
+                purchase_id: state.intake.purchase_id,
                 procedure_id: state.intake.procedure_id,
               }
             : null}

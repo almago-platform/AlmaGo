@@ -16,7 +16,17 @@ type Intake = {
   status: string;
   proposed_route_key: string | null;
   proposal_reason: string | null;
+  proposed_offer_version_id: string | null;
+  purchase_id: string | null;
   procedure_id: string | null;
+};
+
+type ProposalOffer = {
+  id: string;
+  displayName: string;
+  summary: string;
+  services: string[];
+  priceLabel: string;
 };
 
 export function IntakeFlowCard({
@@ -26,6 +36,7 @@ export function IntakeFlowCard({
   intake,
   starterSummary,
   bacStatus,
+  offer,
 }: {
   recovery: Recovery | null;
   orientationId: string | null;
@@ -38,13 +49,18 @@ export function IntakeFlowCard({
     needsReplacement: number;
   };
   bacStatus?: string | null;
+  offer?: ProposalOffer | null;
 }) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [note, setNote] = useState("");
   const [error, setError] = useState<string | null>(null);
 
-  async function post(url: string, body?: Record<string, unknown>) {
+  async function post(
+    url: string,
+    body?: Record<string, unknown>,
+    successHref?: string,
+  ) {
     setBusy(true);
     setError(null);
 
@@ -61,7 +77,11 @@ export function IntakeFlowCard({
         return;
       }
 
-      router.refresh();
+      if (successHref) {
+        router.push(successHref);
+      } else {
+        router.refresh();
+      }
     } catch {
       setError("Connexion impossible. Réessayez.");
     } finally {
@@ -228,16 +248,39 @@ export function IntakeFlowCard({
           {intake.proposal_reason}
         </p>
 
+        {offer ? (
+          <div className="mt-5 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface)] p-4">
+            <div className="flex flex-wrap items-start justify-between gap-4">
+              <div className="max-w-2xl">
+                <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--brand)]">
+                  Accompagnement proposé
+                </p>
+                <h3 className="mt-1 text-lg font-bold">{offer.displayName}</h3>
+                <p className="mt-1 text-sm leading-6 text-[var(--muted)]">{offer.summary}</p>
+              </div>
+              <p className="text-xl font-bold"><bdi dir="auto">{offer.priceLabel}</bdi></p>
+            </div>
+            <ul className="mt-4 grid gap-2 text-sm sm:grid-cols-2">
+              {offer.services.map((service) => (
+                <li key={service} className="flex gap-2">
+                  <span aria-hidden="true" className="text-[var(--brand)]">✓</span>
+                  <span>{service}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
+
         {error ? <p role="alert" className="mt-4 text-sm font-semibold text-red-700">{error}</p> : null}
 
         <div className="mt-5 flex flex-wrap gap-3">
           <button
             type="button"
             disabled={busy}
-            onClick={() => post("/api/intake/route/confirm")}
+            onClick={() => post("/api/intake/route/confirm", undefined, "/prospect/payment")}
             className="inline-flex min-h-11 items-center rounded-[var(--radius-control)] bg-[var(--brand)] px-5 text-sm font-bold text-white disabled:opacity-60"
           >
-            {busy ? "Confirmation…" : "Je confirme ce parcours"}
+            {busy ? "Confirmation…" : "Accepter et passer au paiement"}
           </button>
         </div>
 
@@ -262,6 +305,41 @@ export function IntakeFlowCard({
             Je souhaite en discuter
           </button>
         </div>
+      </section>
+    );
+  }
+
+  if (intake.status === "payment_pending") {
+    return (
+      <section className="mt-6 rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--brand-soft)] p-5 sm:p-6">
+        <p className="text-[0.68rem] font-bold uppercase tracking-[0.15em] text-[var(--brand)]">
+          Proposition acceptée · Paiement attendu
+        </p>
+        <h2 className="mt-2 text-xl font-bold">Votre place dans la phase suivante est réservée après paiement</h2>
+        <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
+          Vous avez accepté la proposition Campus Allemagne. Aucun accès client ni procédure n’est créé avant la confirmation du paiement.
+        </p>
+        <Link
+          href="/prospect/payment"
+          className="mt-5 inline-flex min-h-11 items-center rounded-[var(--radius-control)] bg-[var(--brand)] px-5 text-sm font-bold text-white"
+        >
+          Ouvrir mon paiement
+        </Link>
+      </section>
+    );
+  }
+
+  if (intake.status === "paid_pending_validation") {
+    return (
+      <section className="mt-6 rounded-[var(--radius-panel)] border border-blue-200 bg-blue-50/60 p-5 sm:p-6">
+        <p className="text-[0.68rem] font-bold uppercase tracking-[0.15em] text-blue-800">
+          Paiement reçu · Validation Campus
+        </p>
+        <h2 className="mt-2 text-xl font-bold">Nous validons votre paiement</h2>
+        <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-700">
+          Le paiement a été enregistré. La phase suivante reste verrouillée jusqu’à la validation interne de Campus Allemagne.
+        </p>
+        <p className="mt-4 text-sm font-bold text-blue-900">Aucune autre action n’est requise pour le moment.</p>
       </section>
     );
   }

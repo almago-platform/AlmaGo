@@ -4,6 +4,12 @@ import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { restorePublicOrientationAnswers } from "@/lib/orientation/public";
 import { createClient } from "@/lib/supabase/server";
 
+function serviceItems(value: unknown) {
+  return Array.isArray(value)
+    ? value.filter((item): item is string => typeof item === "string").slice(0, 20)
+    : [];
+}
+
 export const dynamic = "force-dynamic";
 
 export default async function AdminIntakePage() {
@@ -11,7 +17,7 @@ export default async function AdminIntakePage() {
 
   const { data: intakeCases, error: intakeError } = await supabase
     .from("student_intake_cases")
-    .select("student_id,orientation_id,status,proposed_route_key,proposal_reason,student_response_note,updated_at")
+    .select("student_id,orientation_id,status,proposed_route_key,proposal_reason,proposed_offer_version_id,purchase_id,student_response_note,updated_at")
     .order("updated_at", { ascending: false });
 
   if (intakeError) {
@@ -35,7 +41,7 @@ export default async function AdminIntakePage() {
   const studentIds = rows.map((item) => item.student_id);
   const orientationIds = rows.map((item) => item.orientation_id);
 
-  const [profilesResult, prospectsResult, documentsResult, orientationsResult] = await Promise.all([
+  const [profilesResult, prospectsResult, documentsResult, orientationsResult, offersResult] = await Promise.all([
     studentIds.length
       ? supabase.from("profiles").select("id,first_name,last_name,full_name").in("id", studentIds)
       : Promise.resolve({ data: [], error: null }),
@@ -56,6 +62,11 @@ export default async function AdminIntakePage() {
           .select("id,input,created_at")
           .in("id", orientationIds)
       : Promise.resolve({ data: [], error: null }),
+    supabase
+      .from("commercial_offer_versions")
+      .select("id,display_name,summary,service_items,price_minor,currency")
+      .eq("status", "published")
+      .order("price_minor", { ascending: true }),
   ]);
 
   if (
@@ -63,6 +74,7 @@ export default async function AdminIntakePage() {
     || prospectsResult.error
     || documentsResult.error
     || orientationsResult.error
+    || offersResult.error
   ) {
     return (
       <main className="mx-auto w-full max-w-[92rem] px-4 py-5 sm:px-6 sm:py-6 xl:px-8">
@@ -115,6 +127,8 @@ export default async function AdminIntakePage() {
         })),
       proposedRouteKey: item.proposed_route_key,
       proposalReason: item.proposal_reason,
+      proposedOfferVersionId: item.proposed_offer_version_id,
+      purchaseId: item.purchase_id,
       studentResponseNote: item.student_response_note,
     };
   });
@@ -124,9 +138,25 @@ export default async function AdminIntakePage() {
       <AdminPageHeader
         section="Dossiers"
         title="Validation du parcours"
-        description="Vérifiez l’orientation et les pièces de départ, puis proposez le parcours. La procédure n’est créée qu’après confirmation de l’étudiant."
+        description="Proposez un parcours et une offre. L’acceptation ouvre le paiement ; la phase suivante n’est créée qu’après paiement reçu et validation Campus."
       />
-      <AdminIntakePanel cases={cases} />
+      <AdminIntakePanel
+        cases={cases}
+        offers={(offersResult.data || []).flatMap((offer) => {
+          if (offer.price_minor === null || typeof offer.currency !== "string") return [];
+          const priceMinor = Number(offer.price_minor);
+          if (!Number.isSafeInteger(priceMinor) || priceMinor < 0) return [];
+
+          return [{
+            id: offer.id,
+            displayName: offer.display_name,
+            summary: offer.summary,
+            services: serviceItems(offer.service_items),
+            priceMinor,
+            currency: offer.currency,
+          }];
+        })}
+      />
     </main>
   );
 }

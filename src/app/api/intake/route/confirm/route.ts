@@ -1,8 +1,13 @@
 import { NextResponse } from "next/server";
 import { getAuthenticatedUser } from "@/lib/auth/access";
+import { isPhase2PaymentOrchestrationEnabled } from "@/lib/phase2/config";
 import { createPrivilegedSupabaseClient } from "@/lib/supabase/privileged";
 
 export async function POST() {
+  if (!isPhase2PaymentOrchestrationEnabled()) {
+    return NextResponse.json({ error: "Paiement indisponible pour le moment." }, { status: 503 });
+  }
+
   const { user } = await getAuthenticatedUser();
   if (!user) return NextResponse.json({ error: "Non authentifié." }, { status: 401 });
 
@@ -19,10 +24,13 @@ export async function POST() {
 
   if (error || typeof data !== "string") {
     return NextResponse.json(
-      { error: "Le parcours ne peut pas être confirmé pour le moment." },
+      { error: "La proposition ne peut pas être acceptée pour le moment." },
       { status: 409 },
     );
   }
 
-  return NextResponse.json({ confirmed: true, procedureId: data }, { status: 200 });
+  return NextResponse.json(
+    { accepted: true, purchaseId: data, status: "payment_pending" },
+    { status: 200 },
+  );
 }

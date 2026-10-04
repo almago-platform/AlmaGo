@@ -9,6 +9,10 @@ export type ProspectIntakeRecord = {
   orientation_confirmed_at: string;
   proposed_route_key: string | null;
   proposal_reason: string | null;
+  proposed_offer_version_id: string | null;
+  purchase_id: string | null;
+  accepted_at: string | null;
+  payment_validated_at: string | null;
   procedure_id: string | null;
 };
 
@@ -31,7 +35,7 @@ export async function loadProspectIntakeState(
   const [intakeResult, documentsResult] = await Promise.all([
     supabase
       .from("student_intake_cases")
-      .select("orientation_id,status,orientation_confirmed_at,proposed_route_key,proposal_reason,procedure_id")
+      .select("orientation_id,status,orientation_confirmed_at,proposed_route_key,proposal_reason,proposed_offer_version_id,purchase_id,accepted_at,payment_validated_at,procedure_id")
       .eq("student_id", studentId)
       .maybeSingle(),
     supabase

@@ -15,11 +15,21 @@ type Step = {
 
 function activeStepIndex(state: Awaited<ReturnType<typeof loadProspectHubState>>) {
   if (!state.current || !state.orientationConfirmed) return 0;
-  if (state.answers?.bacStatus === "preparing") return 1;
+  const preBac = state.answers?.bacStatus === "preparing";
+
+  if (preBac) {
+    if (!state.intake || state.intake.status === "starter_documents") return 1;
+    if (state.intake.status === "route_proposed" || state.intake.status === "student_question") return 5;
+    if (state.intake.status === "payment_pending" || state.intake.status === "paid_pending_validation") return 6;
+    if (state.intake.status === "procedure_created") return 7;
+    return 1;
+  }
+
   if (!state.intake || state.intake.status === "starter_documents") return 1;
   if (state.intake.status === "campus_review") return 2;
   if (state.intake.status === "route_proposed" || state.intake.status === "student_question") return 3;
-  if (state.intake.status === "procedure_created") return 4;
+  if (state.intake.status === "payment_pending" || state.intake.status === "paid_pending_validation") return 4;
+  if (state.intake.status === "procedure_created") return 5;
   return 1;
 }
 
@@ -29,8 +39,9 @@ function steps(locale: "fr" | "ar" | "en" | "de"): Step[] {
       ["Orientation", "Confirmer les informations qui servent de point de départ à votre projet.", "/prospect/orientation"],
       ["Documents", "Envoyer les pièces nécessaires pour que Campus Allemagne puisse vérifier votre situation.", "/prospect/documents"],
       ["Analyse Campus", "Campus Allemagne examine votre orientation et les pièces validées.", "/prospect/proposal"],
-      ["Proposition", "Consulter le parcours proposé, le confirmer ou demander une modification.", "/prospect/proposal"],
-      ["Procédure", "Après confirmation, votre procédure structurée peut être créée et suivie.", "/prospect/roadmap"],
+      ["Proposition", "Consulter le parcours proposé, l’accepter ou demander une modification.", "/prospect/proposal"],
+      ["Paiement", "Après acceptation, finalisez le paiement. La phase suivante reste verrouillée jusqu’à sa validation par Campus Allemagne.", "/prospect/payment"],
+      ["Procédure", "Après validation du paiement, votre procédure structurée est créée et l’espace client est activé.", "/prospect/roadmap"],
       ["Candidatures", "Les candidatures viennent après validation du parcours et des exigences de chaque programme.", "/prospect/catalogue"],
       ["Admission", "Une admission officielle appartient à l’université et ne peut jamais être garantie.", "/prospect/roadmap"],
       ["Visa & départ", "Après admission, préparez financement, assurance, compte bloqué, visa et départ selon les exigences applicables.", "/prospect/solutions"],
@@ -39,8 +50,9 @@ function steps(locale: "fr" | "ar" | "en" | "de"): Step[] {
       ["Orientation", "Confirm the information used as the starting point for your project.", "/prospect/orientation"],
       ["Documents", "Send the documents Campus Allemagne needs to review your situation.", "/prospect/documents"],
       ["Campus review", "Campus Allemagne reviews your orientation and approved documents.", "/prospect/proposal"],
-      ["Proposal", "Review the proposed route, confirm it or request a change.", "/prospect/proposal"],
-      ["Procedure", "After confirmation, your structured procedure can be created and tracked.", "/prospect/roadmap"],
+      ["Proposal", "Review the proposed route, accept it or request a change.", "/prospect/proposal"],
+      ["Payment", "After acceptance, complete payment. The next phase stays locked until Campus Allemagne validates it.", "/prospect/payment"],
+      ["Procedure", "After payment validation, your structured procedure is created and client access is activated.", "/prospect/roadmap"],
       ["Applications", "Applications come after the route and each programme’s requirements have been checked.", "/prospect/catalogue"],
       ["Admission", "Official admission is decided by the university and can never be guaranteed.", "/prospect/roadmap"],
       ["Visa & departure", "After admission, prepare funding, insurance, blocked account, visa and departure as required.", "/prospect/solutions"],
@@ -49,8 +61,9 @@ function steps(locale: "fr" | "ar" | "en" | "de"): Step[] {
       ["Orientierung", "Bestätige die Angaben, die als Ausgangspunkt für dein Projekt dienen.", "/prospect/orientation"],
       ["Dokumente", "Sende die Unterlagen, die Campus Allemagne zur Prüfung braucht.", "/prospect/documents"],
       ["Campus-Prüfung", "Campus Allemagne prüft Orientierung und bestätigte Dokumente.", "/prospect/proposal"],
-      ["Vorschlag", "Prüfe den vorgeschlagenen Weg, bestätige ihn oder bitte um Änderung.", "/prospect/proposal"],
-      ["Verfahren", "Nach der Bestätigung kann dein strukturiertes Verfahren angelegt und verfolgt werden.", "/prospect/roadmap"],
+      ["Vorschlag", "Prüfe den vorgeschlagenen Weg, nimm ihn an oder bitte um Änderung.", "/prospect/proposal"],
+      ["Zahlung", "Nach der Annahme schließt du die Zahlung ab. Die nächste Phase bleibt bis zur Prüfung durch Campus Allemagne gesperrt.", "/prospect/payment"],
+      ["Verfahren", "Nach der Zahlungsprüfung wird dein Verfahren angelegt und der Kundenzugang aktiviert.", "/prospect/roadmap"],
       ["Bewerbungen", "Bewerbungen folgen nach Prüfung des Weges und der Programmbedingungen.", "/prospect/catalogue"],
       ["Zulassung", "Über die Zulassung entscheidet die Hochschule; sie kann nie garantiert werden.", "/prospect/roadmap"],
       ["Visum & Abreise", "Nach der Zulassung folgen Finanzierung, Versicherung, Sperrkonto, Visum und Abreise.", "/prospect/solutions"],
@@ -59,8 +72,9 @@ function steps(locale: "fr" | "ar" | "en" | "de"): Step[] {
       ["التوجيه", "أكد المعلومات التي يعتمد عليها مشروعك.", "/prospect/orientation"],
       ["الوثائق", "أرسل الوثائق التي تحتاجها Campus Allemagne لمراجعة وضعك.", "/prospect/documents"],
       ["مراجعة Campus", "تراجع Campus Allemagne توجيهك والوثائق التي تمت المصادقة عليها.", "/prospect/proposal"],
-      ["الاقتراح", "راجع المسار المقترح وأكده أو اطلب تعديله.", "/prospect/proposal"],
-      ["الإجراءات", "بعد التأكيد يمكن إنشاء إجراءاتك المنظمة ومتابعتها.", "/prospect/roadmap"],
+      ["الاقتراح", "راجع المسار المقترح واقبله أو اطلب تعديله.", "/prospect/proposal"],
+      ["الدفع", "بعد القبول أكمل الدفع. تبقى المرحلة التالية مقفلة إلى أن تتحقق Campus Allemagne من الدفع.", "/prospect/payment"],
+      ["الإجراءات", "بعد التحقق من الدفع يتم إنشاء إجراءاتك وتفعيل مساحة العميل.", "/prospect/roadmap"],
       ["الترشحات", "تأتي الترشحات بعد التحقق من المسار وشروط كل برنامج.", "/prospect/catalogue"],
       ["القبول", "قرار القبول الرسمي يعود للجامعة ولا يمكن ضمانه.", "/prospect/roadmap"],
       ["التأشيرة والمغادرة", "بعد القبول حضّر التمويل والتأمين والحساب المغلق والتأشيرة والمغادرة.", "/prospect/solutions"],
@@ -78,7 +92,8 @@ function preBacSteps(locale: "fr" | "ar" | "en" | "de"): Step[] {
       ["Résultats du Bac", "Après les résultats, mettez votre orientation à jour avec le statut Bac obtenu, votre moyenne finale et les informations académiques définitives.", "/prospect/orientation"],
       ["Documents finaux", "Une fois le Bac obtenu, le parcours post-Bac demandera les pièces académiques nécessaires.", "/prospect/documents"],
       ["Analyse Campus", "Campus Allemagne vérifie votre profil mis à jour et les pièces finales utiles.", "/prospect/proposal"],
-      ["Proposition", "Consultez le parcours proposé après vérification et discutez-le si nécessaire.", "/prospect/proposal"],
+      ["Proposition", "Consultez le parcours de préparation proposé et discutez-le si nécessaire.", "/prospect/proposal"],
+      ["Paiement", "Après acceptation, finalisez le paiement. Votre espace de préparation s’ouvre seulement après validation Campus.", "/prospect/payment"],
       ["Candidatures", "Les candidatures viennent après validation du parcours et des exigences de chaque programme.", "/prospect/catalogue"],
       ["Admission", "Une admission officielle appartient à l’université et ne peut jamais être garantie.", "/prospect/roadmap"],
       ["Visa & départ", "Après admission, préparez financement, assurance, compte bloqué, visa et départ selon les exigences applicables.", "/prospect/solutions"],
@@ -89,7 +104,8 @@ function preBacSteps(locale: "fr" | "ar" | "en" | "de"): Step[] {
       ["Bac results", "After the results, update your orientation with Bac obtained, your final average and final academic information.", "/prospect/orientation"],
       ["Final documents", "Once the Bac is obtained, the post-Bac flow will request the academic documents that are actually needed.", "/prospect/documents"],
       ["Campus review", "Campus Allemagne reviews your updated profile and useful final evidence.", "/prospect/proposal"],
-      ["Proposal", "Review the proposed route after verification and discuss it if needed.", "/prospect/proposal"],
+      ["Proposal", "Review the proposed preparation route and discuss it if needed.", "/prospect/proposal"],
+      ["Payment", "After acceptance, complete payment. Your preparation workspace opens only after Campus validation.", "/prospect/payment"],
       ["Applications", "Applications come after the route and each programme’s requirements have been checked.", "/prospect/catalogue"],
       ["Admission", "Official admission is decided by the university and can never be guaranteed.", "/prospect/roadmap"],
       ["Visa & departure", "After admission, prepare funding, insurance, blocked account, visa and departure as required.", "/prospect/solutions"],
@@ -100,7 +116,8 @@ function preBacSteps(locale: "fr" | "ar" | "en" | "de"): Step[] {
       ["Abiturergebnisse", "Nach den Ergebnissen aktualisierst du dein Projekt mit bestandenem Abitur, Endnote und endgültigen akademischen Angaben.", "/prospect/orientation"],
       ["Endgültige Unterlagen", "Nach dem Abitur fordert der Post-Abitur-Weg die tatsächlich benötigten akademischen Unterlagen an.", "/prospect/documents"],
       ["Campus-Prüfung", "Campus Allemagne prüft dein aktualisiertes Profil und die relevanten endgültigen Nachweise.", "/prospect/proposal"],
-      ["Vorschlag", "Prüfe den vorgeschlagenen Weg nach der Verifizierung und besprich ihn bei Bedarf.", "/prospect/proposal"],
+      ["Vorschlag", "Prüfe den vorgeschlagenen Vorbereitungsweg und besprich ihn bei Bedarf.", "/prospect/proposal"],
+      ["Zahlung", "Nach der Annahme schließt du die Zahlung ab. Dein Vorbereitungsbereich öffnet sich erst nach der Campus-Prüfung.", "/prospect/payment"],
       ["Bewerbungen", "Bewerbungen folgen nach Prüfung des Weges und der Programmbedingungen.", "/prospect/catalogue"],
       ["Zulassung", "Über die Zulassung entscheidet die Hochschule; sie kann nie garantiert werden.", "/prospect/roadmap"],
       ["Visum & Abreise", "Nach der Zulassung folgen Finanzierung, Versicherung, Sperrkonto, Visum und Abreise.", "/prospect/solutions"],
@@ -111,7 +128,8 @@ function preBacSteps(locale: "fr" | "ar" | "en" | "de"): Step[] {
       ["نتائج البكالوريا", "بعد صدور النتائج حدّث مشروعك إلى بكالوريا متحصّل عليها وأضف المعدل والمعلومات الأكاديمية النهائية.", "/prospect/orientation"],
       ["الوثائق النهائية", "بعد الحصول على البكالوريا سيطلب مسار ما بعد البكالوريا الوثائق الأكاديمية اللازمة فقط.", "/prospect/documents"],
       ["مراجعة Campus", "تراجع Campus Allemagne ملفك المحدّث والوثائق النهائية المفيدة.", "/prospect/proposal"],
-      ["الاقتراح", "راجع المسار المقترح بعد التحقق وناقشه عند الحاجة.", "/prospect/proposal"],
+      ["الاقتراح", "راجع مسار التحضير المقترح وناقشه عند الحاجة.", "/prospect/proposal"],
+      ["الدفع", "بعد القبول أكمل الدفع. لا تُفتح مساحة التحضير إلا بعد تحقق Campus من الدفع.", "/prospect/payment"],
       ["الترشحات", "تأتي الترشحات بعد التحقق من المسار وشروط كل برنامج.", "/prospect/catalogue"],
       ["القبول", "قرار القبول الرسمي يعود للجامعة ولا يمكن ضمانه.", "/prospect/roadmap"],
       ["التأشيرة والمغادرة", "بعد القبول حضّر التمويل والتأمين والحساب المغلق والتأشيرة والمغادرة.", "/prospect/solutions"],

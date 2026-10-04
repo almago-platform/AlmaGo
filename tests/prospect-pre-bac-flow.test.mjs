@@ -62,7 +62,10 @@ test("pre-Bac students continue in preparation instead of a mandatory document g
   assert.match(journey, /Préparation avant le Bac/);
   assert.match(journey, /Résultats du Bac/);
   assert.match(journey, /Documents finaux/);
-  assert.match(journey, /if \(preBac\) return 1/);
+  assert.match(journey, /if \(preBac\) \{/);
+  assert.match(journey, /intake\.status === "starter_documents"\) return 1/);
+  assert.match(journey, /intake\.status === "route_proposed"[\s\S]*return 5/);
+  assert.match(journey, /intake\.status === "payment_pending"[\s\S]*return 6/);
 
   assert.match(roadmap, /state\.answers\?\.bacStatus === "preparing"/);
   assert.match(roadmap, /preBacSteps\(locale\)/);
@@ -74,8 +77,9 @@ test("proposal and admin views distinguish preparation from the post-Bac dossier
   assert.match(proposal, /Documents facultatifs/);
 
   assert.match(admin, /const preBac = item\.orientation\.bacStatus === "preparing"/);
-  assert.match(admin, /Préparation avant le Bac/);
-  assert.match(admin, /Aucun Bac ni relevé final n’est attendu avant les résultats/);
-  assert.match(admin, /échanges internes \/ e-mail/);
-  assert.match(admin, /const ready = !preBac/);
+  assert.match(admin, /const preBac = item\.orientation\.bacStatus === "preparing"/);
+  assert.match(admin, /Avant le Bac[\s\S]*Préparation aux études[\s\S]*Langue seule/);
+  assert.match(admin, /Aucun Bac ni relevé final n’est exigé/);
+  assert.match(admin, /\(preBac \|\| academicReady\)/);
+  assert.match(admin, /"study_preparation", "standalone_language"/);
 });
