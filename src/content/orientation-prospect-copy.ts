@@ -33,6 +33,11 @@ export type OrientationProspectCopy = {
     interestSaving: string;
     interestSuccess: string;
     interestFailure: string;
+    continueEyebrow: string;
+    continueTitle: string;
+    continueText: string;
+    continueSubmit: string;
+    continueSaving: string;
   };
 };
 
@@ -69,6 +74,11 @@ const fr: OrientationProspectCopy = {
     interestSaving: "Enregistrement…",
     interestSuccess: "Votre intérêt est enregistré. Campus Allemagne pourra examiner votre projet pour la prochaine étape.",
     interestFailure: "Nous n’avons pas pu enregistrer ce choix. Vous pouvez réessayer.",
+    continueEyebrow: "La suite de votre projet",
+    continueTitle: "Continuer ma procédure",
+    continueText: "Créez votre espace étudiant gratuit pour rattacher cette orientation à votre compte et reprendre votre parcours sans recommencer.",
+    continueSubmit: "Continuer ma procédure et créer mon compte",
+    continueSaving: "Préparation de votre espace…",
   },
 };
 
@@ -105,6 +115,11 @@ const ar: OrientationProspectCopy = {
     interestSaving: "جارٍ التسجيل…",
     interestSuccess: "تم تسجيل اهتمامك. يمكن لـ Campus Allemagne مراجعة مشروعك للمرحلة التالية.",
     interestFailure: "تعذر تسجيل هذا الاختيار. يمكنك المحاولة من جديد.",
+    continueEyebrow: "الخطوة التالية في مشروعك",
+    continueTitle: "متابعة إجراءاتي",
+    continueText: "أنشئ مساحتك الطلابية المجانية لربط هذا التوجيه بحسابك ومواصلة المسار من دون البدء من جديد.",
+    continueSubmit: "متابعة إجراءاتي وإنشاء حسابي",
+    continueSaving: "جارٍ تجهيز مساحتك…",
   },
 };
 
@@ -141,6 +156,11 @@ const en: OrientationProspectCopy = {
     interestSaving: "Recording…",
     interestSuccess: "Your interest has been recorded. Campus Allemagne can review your project for the next step.",
     interestFailure: "We could not record this choice. You can try again.",
+    continueEyebrow: "The next step in your project",
+    continueTitle: "Continue my procedure",
+    continueText: "Create your free student space to attach this orientation to your account and continue without starting again.",
+    continueSubmit: "Continue my procedure and create my account",
+    continueSaving: "Preparing your space…",
   },
 };
 
@@ -177,6 +197,11 @@ const de: OrientationProspectCopy = {
     interestSaving: "Wird gespeichert…",
     interestSuccess: "Dein Interesse wurde gespeichert. Campus Allemagne kann dein Projekt für den nächsten Schritt prüfen.",
     interestFailure: "Diese Auswahl konnte nicht gespeichert werden. Du kannst es erneut versuchen.",
+    continueEyebrow: "Der nächste Schritt deines Projekts",
+    continueTitle: "Mein Verfahren fortsetzen",
+    continueText: "Erstelle deinen kostenlosen Studierendenbereich, um diese Orientierung mit deinem Konto zu verknüpfen und ohne Neustart weiterzumachen.",
+    continueSubmit: "Verfahren fortsetzen und Konto erstellen",
+    continueSaving: "Dein Bereich wird vorbereitet…",
   },
 };
 
