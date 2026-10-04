@@ -152,7 +152,7 @@ $$;
 
 drop trigger if exists documents_sync_student_intake on public.documents;
 create trigger documents_sync_student_intake
-  after insert or update of status, category or delete on public.documents
+  after insert or delete or update of status, category on public.documents
   for each row execute procedure private.sync_student_intake_document_state();
 
 revoke all on function private.sync_student_intake_document_state()
