@@ -15,6 +15,7 @@ const publicOrientationRoute = read("src/app/api/orientation/prospect/route.ts")
 const orientationPage = read("src/app/orientation/page.tsx");
 const orientationForm = read("src/components/orientation/PublicOrientationForm.tsx");
 const prospectPage = read("src/app/prospect/page.tsx");
+const prospectIntake = read("src/lib/prospect/intake.ts");
 const intakeCard = read("src/components/prospect/IntakeFlowCard.tsx");
 const starterPanel = read("src/components/prospect/StarterDocumentsPanel.tsx");
 const prospectUpload = read("src/app/api/prospect/documents/upload/route.ts");
@@ -58,9 +59,10 @@ test("old orientation is recoverable by the verified account email without depen
 test("account-first orientation reuses account identity and links matching verified email", () => {
   assert.match(orientationPage, /authenticatedProspect/);
   assert.match(orientationPage, /initialIdentity=\{initialIdentity\}/);
+  assert.match(orientationPage, /authenticatedEntry/);
   assert.match(
     orientationPage,
-    /accountLinkingEnabled=\{isPhase2AccountLinkingEnabled\(\) && !authenticatedProspect\}/,
+    /accountLinkingEnabled=\{isPhase2AccountLinkingEnabled\(\)\}/,
   );
   assert.match(publicOrientationRoute, /getAuthenticatedUser/);
   assert.match(publicOrientationRoute, /authenticatedUser\.email\.trim\(\)\.toLowerCase\(\) === email/);
@@ -127,9 +129,11 @@ test("study preparation confirmation maps to existing project path and versioned
 });
 
 test("student and admin surfaces project the same intake truth", () => {
-  assert.match(prospectPage, /from\("student_intake_cases"\)/);
+  assert.match(prospectPage, /loadProspectIntakeState/);
   assert.match(prospectPage, /<IntakeFlowCard/);
-  assert.match(prospectPage, /from\("documents"\)/);
+  assert.doesNotMatch(prospectPage, /from\("documents"\)/);
+  assert.match(prospectIntake, /from\("student_intake_cases"\)/);
+  assert.match(prospectIntake, /from\("documents"\)/);
   assert.match(intakeCard, /Campus Allemagne analyse maintenant votre orientation et vos preuves/);
 
   assert.match(adminPage, /from\("student_intake_cases"\)/);
