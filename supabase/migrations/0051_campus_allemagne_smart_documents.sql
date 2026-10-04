@@ -249,7 +249,12 @@ $$;
 
 drop trigger if exists documents_sync_campus_requirement on public.documents;
 create trigger documents_sync_campus_requirement
-  after insert or update of status, category or delete on public.documents
+  after insert or update of status, category on public.documents
+  for each row execute procedure private.sync_campus_document_requirement();
+
+drop trigger if exists documents_reset_campus_requirement_before_delete on public.documents;
+create trigger documents_reset_campus_requirement_before_delete
+  before delete on public.documents
   for each row execute procedure private.sync_campus_document_requirement();
 
 create or replace function public.admin_request_student_document(
@@ -362,6 +367,11 @@ begin
       when public.student_document_requirements.status = 'ready'
         then public.student_document_requirements.status
       else 'requested'
+    end,
+    document_id = case
+      when public.student_document_requirements.status = 'ready'
+        then public.student_document_requirements.document_id
+      else null
     end,
     required_for = excluded.required_for,
     requested_from_student = true,
