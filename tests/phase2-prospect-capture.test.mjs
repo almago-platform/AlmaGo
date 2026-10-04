@@ -72,6 +72,13 @@ test("required identity is collected before orientation while persistence remain
   assert.match(route, /\.\.\.\(identity \? \{ identity \} : \{\}\)/);
 });
 
+test("post-orientation save, PDF and account actions stay hidden until the engine result is ready", () => {
+  assert.match(form, /orientationResultReady/);
+  assert.match(form, /onResultReady=\{handleResultReady\}/);
+  assert.match(form, /\{orientationResultReady \? \([\s\S]*<ProspectCaptureCard/);
+  assert.match(form, /\{orientationResultReady \? \([\s\S]*window\.print\(\)/);
+});
+
 test("orientation continuation saves the result before opening secure account signup", () => {
   assert.match(form, /accountLinkingEnabled=\{accountLinkingEnabled && !authenticatedUpdate\}/);
   assert.match(form, /accountLinkingEnabled=\{accountLinkingEnabled\}/);
