@@ -40,6 +40,9 @@ type ProspectHubCopy = {
     browseSolutions: string;
     browseDocuments: string;
     viewProposal: string;
+    recommendedTitle: string;
+    recommendedText: string;
+    recommendedViewAll: string;
     history: string;
     historyHint: string;
     currentVersion: string;
@@ -72,6 +75,12 @@ type ProspectHubCopy = {
     results: (count: number) => string;
     projectMatch: string;
     generalCatalogue: string;
+    recommendedTitle: string;
+    recommendedSubtitle: string;
+    preferredCity: string;
+    requirementCheck: string;
+    browseAllTitle: string;
+    browseAllSubtitle: string;
     source: string;
     applyLink: string;
     noResults: string;
@@ -155,6 +164,9 @@ const fr: ProspectHubCopy = {
     browseSolutions: "Voir les solutions",
     browseDocuments: "Gérer mes documents",
     viewProposal: "Voir ma proposition",
+    recommendedTitle: "Programmes à regarder en priorité",
+    recommendedText: "Ces programmes vérifiés correspondent le mieux aux critères enregistrés dans votre orientation. Ils restent à vérifier programme par programme.",
+    recommendedViewAll: "Voir tous les programmes",
     history: "Historique de mon orientation",
     historyHint: "Les anciennes versions restent disponibles sans encombrer votre tableau de bord.",
     currentVersion: "Version actuelle",
@@ -187,6 +199,12 @@ const fr: ProspectHubCopy = {
     results: (count) => `${count} programme${count > 1 ? "s" : ""} affiché${count > 1 ? "s" : ""}`,
     projectMatch: "Correspond à des critères de votre projet",
     generalCatalogue: "Catalogue général",
+    recommendedTitle: "Recommandés pour votre projet",
+    recommendedSubtitle: "Sélection issue de votre orientation et du catalogue vérifié. Une correspondance ne garantit ni admission ni éligibilité finale.",
+    preferredCity: "Ville préférée",
+    requirementCheck: "Conditions à vérifier",
+    browseAllTitle: "Explorer tout le catalogue",
+    browseAllSubtitle: "Utilisez les filtres pour chercher au-delà de votre sélection personnalisée.",
     source: "Source officielle",
     applyLink: "Voir la candidature",
     noResults: "Aucun programme vérifié ne correspond à ces filtres pour le moment.",
@@ -270,6 +288,9 @@ const en: ProspectHubCopy = {
     browseSolutions: "View solutions",
     browseDocuments: "Manage my documents",
     viewProposal: "View my proposal",
+    recommendedTitle: "Programmes to review first",
+    recommendedText: "These verified programmes best match the criteria saved in your orientation. Each programme still needs its own requirement check.",
+    recommendedViewAll: "View all programmes",
     history: "Orientation history",
     historyHint: "Older versions remain available without cluttering your dashboard.",
     currentVersion: "Current version",
@@ -302,6 +323,12 @@ const en: ProspectHubCopy = {
     results: (count) => `${count} programme${count === 1 ? "" : "s"} shown`,
     projectMatch: "Matches criteria from your project",
     generalCatalogue: "General catalogue",
+    recommendedTitle: "Recommended for your project",
+    recommendedSubtitle: "Selected from your orientation and the verified catalogue. A match does not guarantee admission or final eligibility.",
+    preferredCity: "Preferred city",
+    requirementCheck: "Requirements to check",
+    browseAllTitle: "Explore the full catalogue",
+    browseAllSubtitle: "Use the filters to search beyond your personalised selection.",
     source: "Official source",
     applyLink: "Application information",
     noResults: "No verified programme currently matches these filters.",
@@ -385,6 +412,9 @@ const de: ProspectHubCopy = {
     browseSolutions: "Lösungen ansehen",
     browseDocuments: "Dokumente verwalten",
     viewProposal: "Vorschlag ansehen",
+    recommendedTitle: "Programme zuerst ansehen",
+    recommendedText: "Diese geprüften Programme passen am besten zu den in deiner Orientierung gespeicherten Kriterien. Die Bedingungen jedes Programms müssen trotzdem einzeln geprüft werden.",
+    recommendedViewAll: "Alle Programme ansehen",
     history: "Orientierungsverlauf",
     historyHint: "Frühere Versionen bleiben verfügbar, ohne die Übersicht zu überladen.",
     currentVersion: "Aktuelle Version",
@@ -417,6 +447,12 @@ const de: ProspectHubCopy = {
     results: (count) => `${count} Programm${count === 1 ? "" : "e"} angezeigt`,
     projectMatch: "Passt zu Kriterien deines Projekts",
     generalCatalogue: "Allgemeiner Katalog",
+    recommendedTitle: "Für dein Projekt empfohlen",
+    recommendedSubtitle: "Aus deiner Orientierung und dem geprüften Katalog abgeleitet. Eine Übereinstimmung garantiert weder Zulassung noch endgültige Eignung.",
+    preferredCity: "Bevorzugte Stadt",
+    requirementCheck: "Bedingungen prüfen",
+    browseAllTitle: "Gesamten Katalog durchsuchen",
+    browseAllSubtitle: "Nutze die Filter, um über deine persönliche Auswahl hinaus zu suchen.",
     source: "Offizielle Quelle",
     applyLink: "Bewerbungsinfo",
     noResults: "Zu diesen Filtern ist derzeit kein geprüftes Programm verfügbar.",
@@ -500,6 +536,9 @@ const ar: ProspectHubCopy = {
     browseSolutions: "عرض الحلول",
     browseDocuments: "إدارة الوثائق",
     viewProposal: "عرض اقتراحي",
+    recommendedTitle: "برامج ننصحك بمراجعتها أولًا",
+    recommendedText: "هذه البرامج الموثقة هي الأقرب إلى المعايير المسجلة في توجيهك، مع ضرورة التحقق من شروط كل برنامج على حدة.",
+    recommendedViewAll: "عرض جميع البرامج",
     history: "سجل التوجيه",
     historyHint: "تبقى النسخ السابقة متاحة دون أن تملأ لوحة المتابعة.",
     currentVersion: "النسخة الحالية",
@@ -532,6 +571,12 @@ const ar: ProspectHubCopy = {
     results: (count) => `تم عرض ${count} برنامج`,
     projectMatch: "يتوافق مع معايير من مشروعك",
     generalCatalogue: "الكتالوج العام",
+    recommendedTitle: "مقترحة لمشروعك",
+    recommendedSubtitle: "اختيار مبني على توجيهك والكتالوج الموثق. التطابق لا يضمن القبول أو الأهلية النهائية.",
+    preferredCity: "المدينة المفضلة",
+    requirementCheck: "شروط تحتاج إلى التحقق",
+    browseAllTitle: "استكشاف كامل الكتالوج",
+    browseAllSubtitle: "استخدم الفلاتر للبحث خارج اختيارك الشخصي.",
     source: "المصدر الرسمي",
     applyLink: "معلومات التقديم",
     noResults: "لا يوجد حاليًا برنامج موثّق يطابق هذه الفلاتر.",
