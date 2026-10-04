@@ -28,6 +28,15 @@ export type OrientationSource = {
   verifiedAt: string | null;
 };
 
+export type OrientationUniversityMedia = {
+  universityId: string | null;
+  canonicalName: string;
+  coverImageUrl: string | null;
+  coverImageSourceUrl: string | null;
+  coverImageAttribution: string | null;
+  coverImageLicense: string | null;
+};
+
 export type OrientationRuleCode =
   | "degree_match"
   | "field_match"
@@ -94,6 +103,7 @@ export type OrientationProgrammeRecord = {
     websiteUrl: string | null;
     sourceUrl: string | null;
     verifiedAt: string | null;
+    media: OrientationUniversityMedia | null;
   };
 };
 
