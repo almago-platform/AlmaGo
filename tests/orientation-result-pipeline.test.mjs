@@ -120,7 +120,7 @@ test("E writer UI presents a premium progressive result with one CTA and verifie
   assert.match(writerCard, /admissionOutlook/);
   assert.match(writerCard, /featuredOption/);
   assert.match(writerCard, /otherOptions/);
-  assert.match(writerCard, /mt-auto border-t/);
+  assert.match(writerCard, /otherOptions\\.length[\\s\\S]*?<details/);
   assert.match(writerCard, /env\. \$\{cleanAmount\} € \/ semestre/);
   assert.match(writerCard, /Préparation à distance adaptée à votre niveau/);
   assert.match(writerCard, /Puis, on décide ensemble/);
