@@ -157,6 +157,16 @@ test("E writer UI presents a premium progressive result with one CTA and verifie
   assert.match(form, /\{step <= 4 \? \([\s\S]*role="progressbar"/);
 });
 
+test("E gives the user a structured animated waiting state while the orientation is generated", () => {
+  assert.match(engineCard, /orientation-loading-experience/);
+  assert.match(engineCard, /orientation-loading-progress/);
+  assert.match(engineCard, /orientation-loading-steps/);
+  assert.match(engineCard, /orientation-loading-preview/);
+  assert.match(engineCard, /Nous préparons votre orientation personnalisée/);
+  assert.match(engineCard, /Analyse de votre profil/);
+  assert.match(engineCard, /aria-busy="true"/);
+});
+
 test("E signals result readiness only after the orientation engine has returned a result", () => {
   assert.match(engineCard, /onResultReady\?\.\(false\)/);
   assert.match(engineCard, /onResultReady\?\.\(true\)/);
