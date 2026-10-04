@@ -1,5 +1,9 @@
 import type { PublicOrientationAnswers } from "@/lib/orientation/public";
 import { getAcademicAccessConclusion } from "@/lib/orientation/verified-academic-options";
+import {
+  orientationScopeContainsCity,
+  type OrientationGeographicScope,
+} from "@/lib/orientation-engine/geography";
 import { evaluateProgramme, rankProgrammeEvaluations } from "@/lib/orientation-engine/rules";
 import { buildOrientationRefinementState } from "@/lib/orientation-engine/refinement";
 import {
@@ -129,6 +133,76 @@ export function hasPreferredCityCatalogueMatch(
       && hasEligibleRule("teaching_language_match")
     );
   });
+}
+
+function normalizedMatchValue(value: string | null | undefined) {
+  return (value || "")
+    .trim()
+    .toLocaleLowerCase("en")
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+    .replace(/\s+/g, " ");
+}
+
+function masterSpecializationMatches(
+  profile: PublicOrientationAnswers,
+  programme: OrientationProgrammeRecord,
+) {
+  if (profile.targetDegree !== "Master") return true;
+  const target = normalizedMatchValue(profile.targetSpecialization);
+  if (!target) return true;
+
+  const haystack = normalizedMatchValue(`${programme.field || ""} ${programme.name}`);
+  if (haystack.includes(target)) return true;
+
+  return target
+    .split(/\s+(?:and|und|et)\s+|[\/,&;+]+/)
+    .map((value) => value.trim())
+    .filter((value) => value.length >= 6)
+    .some((value) => haystack.includes(value));
+}
+
+export function hasStrongCatalogueMatch(
+  result: OrientationEngineResult,
+) {
+  return result.recommendations.some((recommendation) => {
+    const hasEligibleRule = (code: OrientationRuleCode) =>
+      recommendation.rules.some(
+        (rule) => rule.code === code && rule.status === "eligible",
+      );
+
+    return (
+      recommendation.status !== "not_eligible"
+      && hasEligibleRule("degree_match")
+      && hasEligibleRule("field_match")
+      && hasEligibleRule("teaching_language_match")
+      && hasEligibleRule("source_verified")
+      && masterSpecializationMatches(result.profile, recommendation.programme)
+    );
+  });
+}
+
+export function catalogueForGeographicScope(
+  catalogue: readonly OrientationProgrammeRecord[],
+  scope: OrientationGeographicScope,
+) {
+  if (scope.tier === "germany") return [...catalogue];
+  return catalogue.filter((programme) =>
+    orientationScopeContainsCity(scope, programme.university.city)
+  );
+}
+
+export function buildOrientationEngineResultForGeographicScope(
+  profile: PublicOrientationAnswers,
+  catalogue: readonly OrientationProgrammeRecord[],
+  scope: OrientationGeographicScope,
+  now: Date = new Date(),
+) {
+  return buildOrientationEngineResult(
+    profile,
+    catalogueForGeographicScope(catalogue, scope),
+    now,
+  );
 }
 
 export function buildOrientationEngineResult(

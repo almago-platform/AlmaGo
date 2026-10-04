@@ -13,6 +13,10 @@ import {
   orientationKnowledgeCoverageSufficient,
 } from "@/lib/orientation-engine/discovery/knowledge-core";
 import { runOpenAIOrientationDiscovery } from "@/lib/orientation-engine/discovery/openai";
+import {
+  candidatesForGeographicScope,
+  planForGeographicCoverage,
+} from "@/lib/orientation-engine/discovery/scope";
 import { emptyOrientationDiscoveryUsage } from "@/lib/orientation-engine/discovery/research";
 import type {
   OrientationDiscoveryKnowledgeCacheStatus,
@@ -55,7 +59,11 @@ export async function runOrientationDiscovery(
     nextMajorRefreshAt: refreshWindow.nextMajorRefreshAt,
   };
   const knowledge = await loadOrientationDiscoveryKnowledge(plan);
-  const cachedCandidates = knowledge.entries.map((entry) => entry.candidate);
+  const cachedCandidates = candidatesForGeographicScope(
+    plan,
+    knowledge.entries.map((entry) => entry.candidate),
+  );
+  const coveragePlan = planForGeographicCoverage(plan);
   const initialCacheStatus = cacheStatus(
     knowledge.available,
     cachedCandidates.length,
@@ -65,7 +73,7 @@ export async function runOrientationDiscovery(
     plan.status === "ready"
     && knowledge.available
     && orientationKnowledgeCoverageSufficient(
-      plan,
+      coveragePlan,
       cachedCandidates,
       ORIENTATION_KNOWLEDGE_MIN_CANDIDATES,
     )
@@ -92,25 +100,42 @@ export async function runOrientationDiscovery(
     plan,
     discoveryQueryBudget(cachedCandidates.length),
   );
+  const scopedResearchCandidates = candidatesForGeographicScope(
+    plan,
+    research.candidates,
+  );
+  const scopedResearch = {
+    ...research,
+    status:
+      research.status === "ready" && scopedResearchCandidates.length === 0
+        ? "unavailable" as const
+        : research.status,
+    reason:
+      research.status === "ready" && scopedResearchCandidates.length === 0
+        ? "provider_error" as const
+        : research.reason,
+    candidates: scopedResearchCandidates,
+  };
 
   console.info("orientation_v4_provider", JSON.stringify({
     stage: "discovery",
-    provider: research.provider,
-    status: research.status,
-    reason: research.reason,
+    provider: scopedResearch.provider,
+    status: scopedResearch.status,
+    reason: scopedResearch.reason,
     requests: research.usage.requests,
     webSearchCalls: research.usage.webSearchCalls,
-    candidates: research.candidates.length,
+    candidates: scopedResearch.candidates.length,
+    geographicTier: plan.geographicScope?.tier || null,
     queryBudget: discoveryQueryBudget(cachedCandidates.length),
   }));
 
-  if (research.status === "ready" && research.candidates.length > 0) {
-    const persistence = await persistOrientationDiscoveryResearch(plan, research);
+  if (scopedResearch.status === "ready" && scopedResearch.candidates.length > 0) {
+    const persistence = await persistOrientationDiscoveryResearch(plan, scopedResearch);
     const candidates = mergeOrientationKnowledgeCandidates(
       cachedCandidates,
       persistence.candidates.length > 0
         ? persistence.candidates
-        : research.candidates,
+        : scopedResearch.candidates,
       plan.policy.maxCandidates,
     );
 
@@ -151,11 +176,11 @@ export async function runOrientationDiscovery(
 
   return {
     provider: "openai",
-    model: research.model,
-    status: research.status,
-    reason: research.reason,
+    model: scopedResearch.model,
+    status: scopedResearch.status,
+    reason: scopedResearch.reason,
     candidates: [],
-    usage: research.usage,
+    usage: scopedResearch.usage,
     cache: {
       status: initialCacheStatus,
       candidatesLoaded: 0,

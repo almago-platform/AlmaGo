@@ -23,6 +23,17 @@ type EngineResponse = {
   scout: OrientationScoutResult;
   shortlist: OrientationCanonicalShortlist;
   personalized: OrientationPublicPersonalizedResult | null;
+  geography?: {
+    requestedCities: string[];
+    resolvedTier: "chosen_city" | "nearby" | "land" | "germany" | null;
+    source: "catalogue" | "openai" | null;
+    scopeCities: string[];
+    landNames: string[];
+    attempted: Array<{
+      tier: "chosen_city" | "nearby" | "land" | "germany";
+      source: "catalogue" | "openai";
+    }>;
+  };
 };
 
 const copy = {
@@ -163,6 +174,48 @@ const copy = {
     summer: "Sommer",
   },
 } satisfies Record<Locale, unknown>;
+
+function geographicFallbackMessage(
+  locale: Locale,
+  geography: EngineResponse["geography"],
+) {
+  if (
+    !geography
+    || geography.requestedCities.length === 0
+    || !geography.resolvedTier
+    || geography.resolvedTier === "chosen_city"
+  ) {
+    return null;
+  }
+
+  const cities = geography.requestedCities.join(", ");
+  const lands = geography.landNames.join(", ");
+
+  const messages = {
+    fr: {
+      nearby: `Nous n’avons pas trouvé de programme suffisamment vérifié à ${cities} correspondant à votre profil. Nous avons donc élargi la recherche d’abord aux villes proches.`,
+      land: `Nous n’avons pas trouvé de programme suffisamment vérifié à ${cities} ni dans les villes proches. Nous avons donc élargi la recherche à ${lands || "la région correspondante"}.`,
+      germany: `Nous n’avons pas trouvé de programme suffisamment vérifié à ${cities}, dans les villes proches ou dans la région correspondante. Nous avons donc élargi la recherche au reste de l’Allemagne.`,
+    },
+    ar: {
+      nearby: `لم نجد برنامجًا موثوقًا بما يكفي في ${cities} ومتوافقًا مع ملفك، لذلك وسّعنا البحث أولًا إلى المدن القريبة.`,
+      land: `لم نجد برنامجًا موثوقًا بما يكفي في ${cities} أو المدن القريبة، لذلك وسّعنا البحث إلى ${lands || "المنطقة المقابلة"}.`,
+      germany: `لم نجد برنامجًا موثوقًا بما يكفي في ${cities} أو المدن القريبة أو المنطقة المقابلة، لذلك وسّعنا البحث إلى بقية ألمانيا.`,
+    },
+    en: {
+      nearby: `We did not find a sufficiently verified programme in ${cities} matching your profile, so we widened the search first to nearby cities.`,
+      land: `We did not find a sufficiently verified programme in ${cities} or nearby cities, so we widened the search to ${lands || "the corresponding region"}.`,
+      germany: `We did not find a sufficiently verified programme in ${cities}, nearby cities or the corresponding region, so we widened the search to the rest of Germany.`,
+    },
+    de: {
+      nearby: `Wir haben in ${cities} keinen ausreichend geprüften Studiengang gefunden, der zu deinem Profil passt. Deshalb haben wir die Suche zuerst auf nahegelegene Städte erweitert.`,
+      land: `Wir haben in ${cities} und in den nahegelegenen Städten keinen ausreichend geprüften passenden Studiengang gefunden. Deshalb haben wir die Suche auf ${lands || "die entsprechende Region"} erweitert.`,
+      germany: `Wir haben in ${cities}, in nahegelegenen Städten und in der entsprechenden Region keinen ausreichend geprüften passenden Studiengang gefunden. Deshalb haben wir die Suche auf ganz Deutschland erweitert.`,
+    },
+  } as const;
+
+  return messages[locale][geography.resolvedTier];
+}
 
 const ruleLabels: Record<Locale, Partial<Record<OrientationRuleCode, string>>> = {
   fr: {
@@ -394,6 +447,8 @@ export function PersonalizedOrientationEngineCard({
     result?.shortlist.source === "deterministic_fallback"
       ? result.engine.recommendations
       : [];
+  const geographicFallback =
+    result ? geographicFallbackMessage(locale, result.geography) : null;
 
   useEffect(() => {
     const controller = new AbortController();
@@ -528,6 +583,13 @@ export function PersonalizedOrientationEngineCard({
 
         {state === "ready" && result ? (
           <>
+            {geographicFallback ? (
+              <div className="mb-5 rounded-[var(--radius-control)] border border-[var(--brand-border)] bg-[var(--brand-soft)] px-4 py-3.5">
+                <p className="text-sm leading-6 text-[var(--foreground)]">
+                  {geographicFallback}
+                </p>
+              </div>
+            ) : null}
             {personalized ? (
               <OrientationPersonalizedWriterCard
                 result={personalized}
