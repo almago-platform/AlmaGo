@@ -3,10 +3,7 @@
 import { useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import {
-  starterDocumentCategories,
-  requiredStarterDocumentCategories,
-} from "@/lib/campus-intake";
+import { starterDocumentCategoriesForBacStatus } from "@/lib/campus-intake";
 import { removableDocumentStatuses } from "@/lib/documents";
 
 type StarterDocument = {
@@ -32,7 +29,13 @@ function statusClass(status: string) {
   return "bg-blue-50 text-blue-800";
 }
 
-export function StarterDocumentsPanel({ documents }: { documents: StarterDocument[] }) {
+export function StarterDocumentsPanel({
+  documents,
+  preBac = false,
+}: {
+  documents: StarterDocument[];
+  preBac?: boolean;
+}) {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
   const [category, setCategory] = useState("passport");
@@ -41,6 +44,13 @@ export function StarterDocumentsPanel({ documents }: { documents: StarterDocumen
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const documentRequirements = starterDocumentCategoriesForBacStatus(
+    preBac ? "preparing" : "obtained",
+  );
+  const requiredCategories = documentRequirements
+    .filter((item) => item.required)
+    .map((item) => item.category);
+
   const latestByCategory = new Map<string, StarterDocument>();
   for (const document of documents) {
     if (!latestByCategory.has(document.category)) {
@@ -48,15 +58,15 @@ export function StarterDocumentsPanel({ documents }: { documents: StarterDocumen
     }
   }
 
-  const approvedRequired = requiredStarterDocumentCategories.filter((requiredCategory) =>
+  const approvedRequired = requiredCategories.filter((requiredCategory) =>
     documents.some(
       (document) => document.category === requiredCategory && document.status === "approved",
     ),
   ).length;
-  const requiredReady = approvedRequired === requiredStarterDocumentCategories.length;
-  const requiredProgress = Math.round(
-    (approvedRequired / requiredStarterDocumentCategories.length) * 100,
-  );
+  const requiredReady = !preBac && approvedRequired === requiredCategories.length;
+  const requiredProgress = requiredCategories.length
+    ? Math.round((approvedRequired / requiredCategories.length) * 100)
+    : 100;
 
   async function upload(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -131,12 +141,15 @@ export function StarterDocumentsPanel({ documents }: { documents: StarterDocumen
           <div className="pointer-events-none absolute -right-10 -top-16 size-48 rounded-full bg-[var(--brand)]/14 blur-3xl" aria-hidden="true" />
           <div className="relative">
             <p className="text-[0.68rem] font-bold uppercase tracking-[0.15em] text-amber-300">
-              Pièces de départ
+              {preBac ? "Préparation avant le Bac" : "Pièces de départ"}
             </p>
-            <h1 className="mt-2 text-2xl font-bold text-white sm:text-3xl">Complétez votre dossier de vérification</h1>
+            <h1 className="mt-2 text-2xl font-bold text-white sm:text-3xl">
+              {preBac ? "Ajoutez seulement ce que vous avez déjà" : "Complétez votre dossier de vérification"}
+            </h1>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-white/72">
-              Nous demandons seulement les preuves nécessaires pour décider du parcours adapté.
-              Le certificat de langue est facultatif si vous n’en avez pas encore.
+              {preBac
+                ? "Aucun document académique final n’est obligatoire maintenant. Vous pouvez ajouter votre passeport et votre certificat de langue s’ils sont déjà disponibles."
+                : "Nous demandons seulement les preuves nécessaires pour décider du parcours adapté. Le certificat de langue est facultatif si vous n’en avez pas encore."}
             </p>
           </div>
         </div>
@@ -158,7 +171,7 @@ export function StarterDocumentsPanel({ documents }: { documents: StarterDocumen
         </div>
 
         <div className="mt-5 grid gap-3 sm:grid-cols-2">
-          {starterDocumentCategories.map((requirement) => {
+          {documentRequirements.map((requirement) => {
             const document = latestByCategory.get(requirement.category);
             return (
               <article
@@ -169,7 +182,11 @@ export function StarterDocumentsPanel({ documents }: { documents: StarterDocumen
                   <div>
                     <h2 className="font-bold">{requirement.label}</h2>
                     <p className="mt-1 text-xs text-[var(--muted)]">
-                      {requirement.required ? "Obligatoire pour la première validation" : "Facultatif si vous l’avez déjà"}
+                      {preBac
+                        ? "Facultatif · si disponible"
+                        : requirement.required
+                          ? "Obligatoire pour la première validation"
+                          : "Facultatif si vous l’avez déjà"}
                     </p>
                   </div>
                   <span
@@ -224,10 +241,26 @@ export function StarterDocumentsPanel({ documents }: { documents: StarterDocumen
               </p>
             </div>
           ) : null}
+          {preBac ? (
+            <div className="mt-5 flex flex-wrap gap-3 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4">
+              <div className="min-w-0 flex-1">
+                <p className="font-bold">Votre projet peut avancer sans dossier académique final.</p>
+                <p className="mt-1 text-sm leading-6 text-[var(--muted)]">
+                  Continuez la langue, explorez les programmes et revenez mettre votre projet à jour après les résultats du Bac.
+                </p>
+              </div>
+              <Link
+                href="/prospect/roadmap"
+                className="inline-flex min-h-10 items-center rounded-[var(--radius-control)] border border-[var(--border-strong)] bg-[var(--surface)] px-4 text-sm font-semibold"
+              >
+                Continuer ma préparation
+              </Link>
+            </div>
+          ) : null}
         </div>
       </section>
 
-      {!requiredReady ? (
+      {(preBac || !requiredReady) ? (
         <form
           onSubmit={upload}
           className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[var(--shadow-card)] sm:p-6"
@@ -241,7 +274,7 @@ export function StarterDocumentsPanel({ documents }: { documents: StarterDocumen
                 value={category}
                 onChange={(event) => setCategory(event.target.value)}
               >
-                {starterDocumentCategories.map((item) => (
+                {documentRequirements.map((item) => (
                   <option key={item.category} value={item.category}>{item.label}</option>
                 ))}
               </select>
