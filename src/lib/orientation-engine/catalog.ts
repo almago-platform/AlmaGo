@@ -29,6 +29,10 @@ type ProgrammeCatalogRow = {
   university_website_url: string | null;
   university_source_url: string | null;
   university_verified_at: string | null;
+  university_cover_image_url: string | null;
+  university_cover_image_source_url: string | null;
+  university_cover_image_attribution: string | null;
+  university_cover_image_license: string | null;
 };
 
 function parseMasterAcademicPrerequisites(value: Record<string, unknown> | null) {
@@ -78,6 +82,14 @@ function mapProgramme(row: ProgrammeCatalogRow): OrientationProgrammeRecord {
       websiteUrl: row.university_website_url,
       sourceUrl: row.university_source_url,
       verifiedAt: row.university_verified_at,
+      media: {
+        universityId: row.university_id,
+        canonicalName: row.university_name,
+        coverImageUrl: row.university_cover_image_url,
+        coverImageSourceUrl: row.university_cover_image_source_url,
+        coverImageAttribution: row.university_cover_image_attribution,
+        coverImageLicense: row.university_cover_image_license,
+      },
     },
   };
 }
@@ -113,6 +125,10 @@ export async function loadVerifiedProgrammeCatalogue() {
       "university_website_url",
       "university_source_url",
       "university_verified_at",
+      "university_cover_image_url",
+      "university_cover_image_source_url",
+      "university_cover_image_attribution",
+      "university_cover_image_license",
     ].join(","))
     .order("name");
 
