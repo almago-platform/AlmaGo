@@ -147,6 +147,17 @@ export default async function ProspectDashboardPage() {
     month: "long",
     year: "numeric",
   });
+  const recommendationLabels = {
+    projectMatch: catalogueT.projectMatch,
+    preferredCity: catalogueT.preferredCity,
+    requirementCheck: catalogueT.requirementCheck,
+    field: catalogueT.field,
+    german: catalogueT.german,
+    uniAssist: catalogueT.uniAssist,
+    yes: catalogueT.yes,
+    source: catalogueT.source,
+    applyLink: catalogueT.applyLink,
+  };
 
   return (
     <main className="space-y-6">
@@ -245,6 +256,39 @@ export default async function ProspectDashboardPage() {
           </Link>
         </section>
       </div>
+
+      {recommendations.length ? (
+        <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[var(--shadow-card)] sm:p-6">
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--brand)]">
+                {catalogueT.projectMatch}
+              </p>
+              <h2 className="mt-1 text-2xl font-bold">{t.recommendedTitle}</h2>
+              <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
+                {t.recommendedText}
+              </p>
+            </div>
+            <Link
+              href="/prospect/catalogue"
+              className="inline-flex min-h-10 items-center rounded-[var(--radius-control)] border border-[var(--border-strong)] bg-[var(--surface)] px-4 text-sm font-semibold transition hover:border-[var(--brand-border)]"
+            >
+              {t.recommendedViewAll}
+            </Link>
+          </div>
+
+          <div className="mt-5 grid gap-4 xl:grid-cols-3">
+            {recommendations.map((recommendation) => (
+              <ProspectProgrammeRecommendationCard
+                key={recommendation.programme.id}
+                recommendation={recommendation}
+                labels={recommendationLabels}
+                compact
+              />
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       {state.qualification ? (
         <ProspectQualificationSummary
