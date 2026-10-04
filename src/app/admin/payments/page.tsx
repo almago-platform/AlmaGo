@@ -155,14 +155,14 @@ export default async function AdminPaymentsPage() {
       <AdminPageHeader
         section="Paiements"
         title="Paiements et activation client"
-        description="Un paiement confirmé reste en attente de validation interne. L’accès client n’est jamais accordé depuis un retour navigateur."
+        description="Les paiements sont vérifiés manuellement. Confirmez d’abord la réception, puis effectuez la validation finale qui active le client."
       />
 
       <section className="mb-6 rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--brand-soft)] p-5">
         <p className="text-sm font-bold text-[var(--foreground)]">État de l’orchestration</p>
         <p className="mt-2 text-sm leading-6 text-slate-700">
           {orchestrationEnabled
-            ? "L’orchestration serveur est active. Vérifiez le paiement confirmé avant toute activation client."
+            ? "L’orchestration serveur est active. Un paiement en attente peut être marqué reçu manuellement après vérification, puis validé pour activer le client."
             : "L’orchestration serveur est désactivée. Aucun nouveau paiement ni activation ne peut être déclenché depuis cette interface."}
         </p>
       </section>
@@ -221,7 +221,7 @@ export default async function AdminPaymentsPage() {
                   <div>
                     <dt className="text-xs font-bold text-slate-700">Tentative</dt>
                     <dd className="mt-1 text-slate-950">
-                      {attempt ? `${attempt.provider} · ${attempt.status}` : "Aucune"}
+                      {attempt ? `${attempt.provider === "manual_admin" ? "manuel admin" : attempt.provider} · ${attempt.status}` : "Aucune"}
                     </dd>
                   </div>
                   <div>
@@ -232,10 +232,11 @@ export default async function AdminPaymentsPage() {
                   </div>
                 </dl>
 
-                {purchase.status === "paid_pending_validation" ? (
+                {purchase.status === "payment_pending" || purchase.status === "paid_pending_validation" ? (
                   <AdminPaymentActivationForm
                     purchaseId={purchase.id}
                     enabled={orchestrationEnabled}
+                    status={purchase.status}
                   />
                 ) : null}
               </article>
