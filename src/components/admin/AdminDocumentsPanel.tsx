@@ -292,6 +292,12 @@ export function AdminDocumentsPanel({
 
                     <p className="mt-4 text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">Étudiant</p>
                     <p className="mt-1 text-sm font-bold text-slate-950 [overflow-wrap:anywhere]">{studentName}</p>
+                    <a
+                      href={`/admin/students/${document.student_id}/procedure`}
+                      className="mt-1 inline-flex text-xs font-bold text-[var(--brand)] hover:underline"
+                    >
+                      Ouvrir le dossier Campus Allemagne
+                    </a>
 
                     <h2
                       id={`admin-document-title-${document.id}`}
