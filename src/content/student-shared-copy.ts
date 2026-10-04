@@ -20,7 +20,7 @@ export const studentSharedCopy: Record<Locale, {
 }> = {
   fr: {
     journeyAria: "Étapes de mon dossier",
-    journeySteps: ["Mon projet", "Documents", "Programmes", "Démarches", "Candidatures", "Parcours"],
+    journeySteps: ["Mon projet", "Documents", "Programmes", "Démarches", "Candidatures", "Mon dossier", "Parcours"],
     resourceEyebrow: "Pour préparer votre projet",
     resourceAria: "Ressources liées au parcours Allemagne",
     resourceLinks: ["Parcours", "Cours de langue", "Finance & assurance"],
@@ -38,7 +38,7 @@ export const studentSharedCopy: Record<Locale, {
   },
   ar: {
     journeyAria: "خطوات ملفي",
-    journeySteps: ["مشروعي", "المستندات", "البرامج", "الخطوات", "طلبات التقديم", "المسار"],
+    journeySteps: ["مشروعي", "المستندات", "البرامج", "الخطوات", "طلبات التقديم", "ملفي", "المسار"],
     resourceEyebrow: "لتحضير مشروعك",
     resourceAria: "موارد مرتبطة بمسار الدراسة في ألمانيا",
     resourceLinks: ["المسار", "دورات اللغة", "التمويل والتأمين"],
@@ -56,7 +56,7 @@ export const studentSharedCopy: Record<Locale, {
   },
   en: {
     journeyAria: "Steps in my file",
-    journeySteps: ["My plan", "Documents", "Programmes", "Steps", "Applications", "Journey"],
+    journeySteps: ["My plan", "Documents", "Programmes", "Steps", "Applications", "My file", "Journey"],
     resourceEyebrow: "To prepare your plan",
     resourceAria: "Resources for your Germany study journey",
     resourceLinks: ["Journey", "Language courses", "Funding & insurance"],
@@ -74,7 +74,7 @@ export const studentSharedCopy: Record<Locale, {
   },
   de: {
     journeyAria: "Schritte in meiner Akte",
-    journeySteps: ["Mein Plan", "Unterlagen", "Studiengänge", "Schritte", "Bewerbungen", "Studienweg"],
+    journeySteps: ["Mein Plan", "Unterlagen", "Studiengänge", "Schritte", "Bewerbungen", "Meine Akte", "Studienweg"],
     resourceEyebrow: "Für deine Vorbereitung",
     resourceAria: "Ressourcen für deinen Studienweg in Deutschland",
     resourceLinks: ["Studienweg", "Sprachkurse", "Finanzierung & Versicherung"],
