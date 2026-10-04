@@ -1,6 +1,7 @@
 import "server-only";
 
 import type { PublicOrientationAnswers } from "@/lib/orientation/public";
+import { hasPreferredCityCatalogueMatch } from "@/lib/orientation-engine/service";
 import type {
   OrientationEngineResult,
   OrientationLetterOutput,
@@ -573,7 +574,8 @@ export async function buildOrientationIntelligence(
   const apiKey = process.env.GEMINI_API_KEY;
 
   if (
-    profile.bacStatus === "no_bac"
+    hasPreferredCityCatalogueMatch(engineResult)
+    || profile.bacStatus === "no_bac"
     || profile.targetDegree !== "Bachelor"
     || process.env.ALMAGO_ORIENTATION_AI_SCOUT !== "gemini"
     || !apiKey
