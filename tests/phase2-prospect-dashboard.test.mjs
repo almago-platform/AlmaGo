@@ -102,7 +102,8 @@ test("prospect dashboard has a localized accessible loading state", () => {
 test("prospect navigation exposes the current route accessibly", () => {
   assert.match(prospectShell, /usePathname\(\)/);
   assert.match(prospectShell, /aria-current=\{active \? "page" : undefined\}/);
-  assert.match(prospectShell, /pathname === item\.href \|\| pathname\.startsWith/);
+  assert.match(prospectShell, /const activeFor/);
+  assert.match(prospectShell, /pathname === href \|\| pathname\.startsWith/);
   assert.match(prospectShell, /href: "\/prospect\/offers"/);
   assert.match(prospectShell, /href: "\/prospect\/payment"/);
   assert.doesNotMatch(prospectShell, /useSyncExternalStore|window\.location\.hash|#orientation/);
