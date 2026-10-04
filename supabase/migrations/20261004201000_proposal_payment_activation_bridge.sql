@@ -455,6 +455,16 @@ begin
     raise exception 'commercial_flow_orientation_locked';
   end if;
 
+  -- Older orientation-refresh functions know only the original intake columns.
+  -- When they clear the route, clear the newly-added commercial linkage too so
+  -- a replaced orientation can never inherit a stale offer or purchase.
+  if new.proposed_route_key is null then
+    new.proposed_offer_version_id := null;
+    new.purchase_id := null;
+    new.accepted_at := null;
+    new.payment_validated_at := null;
+  end if;
+
   return new;
 end;
 $;
