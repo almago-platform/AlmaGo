@@ -36,6 +36,7 @@ const copy = {
     outlookNote: "Nous confirmerons cette première estimation avec vous lors de la vérification finale.",
     options: "Les programmes que nous étudions pour votre projet",
     featuredOption: "La piste qui ressort le plus aujourd’hui",
+    featuredCta: "Voir la page officielle",
     otherOptions: "Autres pistes que nous continuons à étudier",
     outlookSectionNote: "Aujourd’hui, une piste ressort clairement. Les autres restent ouvertes pendant que nous finissons les vérifications. Nous en reparlerons avec vous avant de décider.",
     languageIntro: "Nous regarderons avec vous la solution de préparation B1 la plus adaptée à votre situation.",
@@ -112,6 +113,7 @@ const copy = {
     outlookNote: "سنؤكد هذا التقدير الأولي معك خلال المراجعة النهائية.",
     options: "البرامج التي ندرسها لمشروعك",
     featuredOption: "المسار الذي يبرز أكثر اليوم",
+    featuredCta: "عرض الصفحة الرسمية",
     otherOptions: "مسارات أخرى نواصل دراستها",
     outlookSectionNote: "اليوم يبرز مسار بوضوح، بينما تبقى المسارات الأخرى مفتوحة إلى أن ننهي التحقق. ثم نراجعها معك قبل القرار.",
     languageIntro: "سنبحث معك عن أفضل طريقة مناسبة لوضعك للتقدم إلى مستوى B1.",
@@ -188,6 +190,7 @@ const copy = {
     outlookNote: "We will confirm this initial estimate with you during the final review.",
     options: "Programmes we are reviewing for your project",
     featuredOption: "The path that stands out most today",
+    featuredCta: "View official page",
     otherOptions: "Other paths we are continuing to review",
     outlookSectionNote: "One path stands out today. The others stay open while we finish the checks. We review them with you before deciding.",
     languageIntro: "We will look with you for the B1 preparation option that best fits your situation.",
@@ -264,6 +267,7 @@ const copy = {
     outlookNote: "Diese erste Einschätzung bestätigen wir mit dir in der abschließenden Prüfung.",
     options: "Studiengänge, die wir für dein Projekt prüfen",
     featuredOption: "Die Option, die heute am stärksten hervorsticht",
+    featuredCta: "Offizielle Seite ansehen",
     otherOptions: "Weitere Optionen, die wir weiter prüfen",
     outlookSectionNote: "Heute fällt eine Option klar auf. Die anderen bleiben offen, während wir die Prüfungen abschließen. Vor der Entscheidung gehen wir alles mit dir durch.",
     languageIntro: "Wir schauen mit dir, welche B1-Vorbereitung am besten zu deiner Situation passt.",
@@ -858,38 +862,31 @@ export function OrientationPersonalizedWriterCard({
             </a>
           </div>
 
-          <aside className="relative overflow-hidden rounded-[calc(var(--radius-panel)-0.2rem)] border border-white/[0.1] bg-white/[0.055] p-5 backdrop-blur-sm sm:p-6">
+          <aside className="relative self-center overflow-hidden rounded-[calc(var(--radius-panel)-0.2rem)] border border-white/[0.1] bg-white/[0.05] p-5 backdrop-blur-sm sm:p-6">
             <div aria-hidden="true" className="absolute end-0 top-0 h-1 w-24 bg-[var(--accent)]" />
             <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-[var(--accent)]">
               {t.summaryTitle}
             </p>
-            <p className="mt-2 text-xl font-semibold leading-7 text-white">
+            <p className="mt-2 max-w-xs text-xl font-semibold leading-7 text-white">
               {t.summaryLead}
             </p>
-            <p className="mt-2 text-sm leading-6 text-white/[0.66]">{t.summaryText}</p>
 
-            <div className="mt-5 space-y-0 border-y border-white/[0.1]">
-              <div className="grid grid-cols-[6.5rem_1fr] gap-3 py-3.5">
+            <div className="mt-6 space-y-4">
+              <div>
                 <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-[var(--accent)]">
                   {t.summarySignal}
                 </p>
-                <p className="text-xs font-semibold leading-5 text-white/[0.88]">
+                <p className="mt-1.5 text-sm font-semibold leading-5 text-white/[0.9]">
                   {summarySignalText(locale, strongOutlookCount, content.studyOptions.length)}
                 </p>
               </div>
-              <div className="grid grid-cols-[6.5rem_1fr] gap-3 border-t border-white/[0.1] py-3.5">
+              <div className="border-t border-white/[0.1] pt-4">
                 <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-[var(--brand)]">
                   {t.summaryAction}
                 </p>
-                <p className="text-xs font-semibold leading-5 text-white/[0.9]">
+                <p className="mt-1.5 text-sm font-semibold leading-5 text-white">
                   {content.mainPriority.title}
                 </p>
-              </div>
-              <div className="grid grid-cols-[6.5rem_1fr] gap-3 border-t border-white/[0.1] py-3.5">
-                <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-[var(--accent)]">
-                  {t.summaryCampus}
-                </p>
-                <p className="text-xs leading-5 text-white/[0.68]">{t.summaryCampusText}</p>
               </div>
             </div>
           </aside>
@@ -923,7 +920,14 @@ export function OrientationPersonalizedWriterCard({
               <li
                 key={step}
                 aria-current={current ? "step" : undefined}
-                className="relative flex min-h-11 items-start gap-3 border-s border-[var(--border)] pb-4 ps-4 sm:block sm:min-h-0 sm:border-s-0 sm:border-t sm:pb-0 sm:ps-0 sm:pt-4"
+                className={
+                  "relative flex min-h-11 items-start gap-3 border-s pb-4 ps-4 sm:block sm:min-h-0 sm:border-s-0 sm:border-t-2 sm:pb-0 sm:ps-0 sm:pt-4 " +
+                  (completed
+                    ? "border-[var(--success)]"
+                    : current
+                      ? "border-[var(--brand)]"
+                      : "border-[var(--border)] opacity-60")
+                }
               >
                 <span
                   className={
@@ -951,7 +955,9 @@ export function OrientationPersonalizedWriterCard({
                     {step}
                   </p>
                   {current ? (
-                    <p className="mt-1 text-xs font-semibold leading-5 text-[var(--brand-strong)]">{t.journeyCurrent}</p>
+                    <span className="mt-2 inline-flex rounded-full bg-[var(--brand-soft)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.08em] text-[var(--brand-strong)]">
+                      {t.journeyCurrent}
+                    </span>
                   ) : null}
                 </div>
               </li>
@@ -1030,7 +1036,7 @@ export function OrientationPersonalizedWriterCard({
             ) : null}
           </div>
 
-          <aside className="rounded-[var(--radius-control)] bg-[var(--surface-subtle)] p-5">
+          <aside className="lg:border-s lg:border-[var(--border)] lg:ps-8">
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-1">
               <div>
                 <p className="text-xs font-bold uppercase tracking-[0.1em] text-[var(--brand-strong)]">{t.roleYou}</p>
@@ -1070,13 +1076,18 @@ export function OrientationPersonalizedWriterCard({
             level: null,
             cleanWhy: featuredOption.whyItFits,
           };
+          const officialUrl = selected?.facts.find(
+            (fact) => fact.field === "application_url" && typeof fact.value === "string" && /^https?:\/\//.test(fact.value),
+          )?.value
+            || selected?.facts.find((fact) => fact.sourceUrl)?.sourceUrl
+            || null;
 
           return (
             <article className="relative mt-5 overflow-hidden rounded-[var(--radius-panel)] bg-[var(--foreground)] text-white shadow-[var(--shadow-card)]">
               <div aria-hidden="true" className="absolute inset-y-0 start-0 w-1 bg-[var(--brand)]" />
               <div aria-hidden="true" className="absolute -end-16 -top-16 size-56 rounded-full border border-white/[0.06]" />
 
-              <div className="relative grid gap-0 lg:grid-cols-[minmax(0,1.15fr)_minmax(19rem,0.85fr)]">
+              <div className="relative grid gap-0 lg:grid-cols-[minmax(0,1.32fr)_minmax(16rem,0.68fr)]">
                 <div className="px-5 py-6 sm:px-7 sm:py-7 lg:px-8 lg:py-8">
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div className="min-w-0">
@@ -1119,10 +1130,10 @@ export function OrientationPersonalizedWriterCard({
                   </details>
                 </div>
 
-                <aside className="border-t border-white/[0.1] bg-white/[0.05] px-5 py-6 sm:px-7 lg:border-s lg:border-t-0 lg:px-7 lg:py-8">
+                <aside className="flex flex-col border-t border-white/[0.1] bg-white/[0.05] px-5 py-6 sm:px-7 lg:border-s lg:border-t-0 lg:px-7 lg:py-8">
                   <p className="text-xs font-bold uppercase tracking-[0.08em] text-[var(--accent)]">{t.confirmed}</p>
                   {facts.length ? (
-                    <dl className="mt-3 grid gap-x-5 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+                    <dl className="mt-3 grid gap-x-5 sm:grid-cols-2 lg:grid-cols-1">
                       {facts.map((fact) => {
                         const parts = decisionFactParts(fact, locale);
                         return (
@@ -1140,6 +1151,18 @@ export function OrientationPersonalizedWriterCard({
                   ) : (
                     <p className="mt-3 text-sm leading-6 text-white/[0.65]">{t.noFacts}</p>
                   )}
+
+                  {officialUrl ? (
+                    <a
+                      href={officialUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="mt-6 inline-flex min-h-11 items-center justify-center rounded-[var(--radius-control)] bg-[var(--brand)] px-4 py-2.5 text-sm font-bold text-white transition hover:bg-[var(--brand-strong)] lg:mt-auto"
+                    >
+                      {t.featuredCta}
+                      <span aria-hidden="true" className="ms-2">↗</span>
+                    </a>
+                  ) : null}
                 </aside>
               </div>
             </article>
