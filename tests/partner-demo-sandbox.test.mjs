@@ -22,6 +22,7 @@ test("partner demo page is available only behind Partner-Ready mode", () => {
 
 test("email demo renders only synthetic previews and cannot send externally", () => {
   assert.match(page, /partner-demo\.invalid\/orientation\/report\/demo-token/);
+  assert.match(page, /document=candidate/);
   assert.match(page, /partner-demo\.invalid\/signup\?orientation_token=demo-token/);
   assert.match(page, /sandbox=""/);
   assert.match(page, /Aperçu local uniquement — aucun envoi/);
