@@ -352,13 +352,18 @@ export async function loadOrientationDiscoveryKnowledge(
     if (!orientationDegreeCompatible(plan.profile.targetDegree, row.degree)) {
       continue;
     }
-    if (seen.has(row.dedupe_key)) continue;
 
-    seen.add(row.dedupe_key);
+    // Recompute the current canonical identity on read so historical cache
+    // rows created under older raw-name keys collapse immediately.
+    const candidate = candidateFromRow(row);
+    const dedupeKey = buildOrientationResearchProgrammeDedupeKey(candidate);
+    if (seen.has(dedupeKey)) continue;
+
+    seen.add(dedupeKey);
     entries.push({
       researchProgramId: row.id,
-      dedupeKey: row.dedupe_key,
-      candidate: candidateFromRow(row),
+      dedupeKey,
+      candidate,
     });
     currentUniversityIds.set(row.id, row.university_id);
 
