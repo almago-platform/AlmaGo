@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ProspectJourneyProgress } from "@/components/prospect/ProspectJourneyProgress";
+import { ProspectQualificationSummary } from "@/components/prospect/ProspectQualificationSummary";
 import { prospectHubCopy } from "@/content/prospect-hub-copy";
+import { prospectQualificationCopy } from "@/content/prospect-qualification-copy";
 import { orientationDiagnosticCopy } from "@/content/orientation-diagnostic-copy";
 import { getRequestLocale } from "@/lib/i18n-server";
 import { getPhase2StudentAccess } from "@/lib/phase2/access";
@@ -129,6 +131,7 @@ export default async function ProspectDashboardPage() {
 
   const t = prospectHubCopy[locale].dashboard;
   const diagnosticCopy = orientationDiagnosticCopy[locale];
+  const qualificationCopy = prospectQualificationCopy[locale];
   const action = nextAction(state, t);
   const facts = state.answers ? projectFacts(state.answers) : [];
   const dateFormatter = new Intl.DateTimeFormat(locale, {
@@ -223,6 +226,11 @@ export default async function ProspectDashboardPage() {
           </Link>
         </section>
       </div>
+
+      <ProspectQualificationSummary
+        qualification={state.qualification}
+        copy={qualificationCopy}
+      />
 
       <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 sm:p-6">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
