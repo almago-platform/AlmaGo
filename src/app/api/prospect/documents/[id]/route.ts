@@ -3,7 +3,7 @@ import { getPhase2StudentAccess } from "@/lib/phase2/access";
 import { removableDocumentStatuses } from "@/lib/documents";
 import { starterDocumentCategories } from "@/lib/campus-intake";
 
-const allowedStarterCategories = new Set(
+const allowedStarterCategories = new Set<string>(
   starterDocumentCategories.map((item) => item.category),
 );
 
