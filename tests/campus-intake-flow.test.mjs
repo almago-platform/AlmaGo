@@ -13,6 +13,7 @@ const intake = read("supabase/migrations/0051_campus_intake_orientation_route_co
 const recovery = read("src/lib/orientation/recovery.ts");
 const publicOrientationRoute = read("src/app/api/orientation/prospect/route.ts");
 const orientationPage = read("src/app/orientation/page.tsx");
+const orientationForm = read("src/components/orientation/PublicOrientationForm.tsx");
 const prospectPage = read("src/app/prospect/page.tsx");
 const intakeCard = read("src/components/prospect/IntakeFlowCard.tsx");
 const starterPanel = read("src/components/prospect/StarterDocumentsPanel.tsx");
@@ -31,6 +32,8 @@ test("focused intake keeps orientation separate from Campus route decision", () 
   assert.doesNotMatch(publicOrientationRoute, /proposed_route_key|study_preparation/);
   assert.match(adminRoute, /service_admin_propose_student_route/);
   assert.match(adminPanel, /Décision Campus Allemagne/);
+  assert.match(adminPanel, /<option value="">Choisir un parcours<\/option>/);
+  assert.doesNotMatch(adminPanel, /\|\| "study_preparation"/);
 });
 
 test("old orientation is recoverable by the verified account email without depending on resume-token expiry", () => {
@@ -62,6 +65,8 @@ test("account-first orientation reuses account identity and links matching verif
   assert.match(publicOrientationRoute, /getAuthenticatedUser/);
   assert.match(publicOrientationRoute, /authenticatedUser\.email\.trim\(\)\.toLowerCase\(\) === email/);
   assert.match(publicOrientationRoute, /service_claim_prospect_by_verified_email/);
+  assert.match(orientationForm, /readOnly=\{authenticatedEntry\}/);
+  assert.match(orientationForm, /authenticatedEntry[\s\S]*sessionStorage\.removeItem\(SESSION_KEY\)/);
 });
 
 test("starter evidence burden is exactly passport, Bac, transcript plus optional existing language proof", () => {
