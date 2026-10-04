@@ -103,7 +103,7 @@ create table if not exists public.student_document_requirements (
     'ready',
     'not_applicable'
   )),
-  document_id uuid,
+  document_id uuid references public.documents(id) on delete set null,
   required_for text[] not null default '{}',
   requested_from_student boolean not null default false,
   student_request_reason text,
@@ -134,9 +134,6 @@ create table if not exists public.student_document_requirements (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   unique (student_procedure_id, requirement_key),
-  foreign key (document_id, student_id)
-    references public.documents(id, student_id)
-    on delete set null,
   check (
     not requested_from_student
     or (
