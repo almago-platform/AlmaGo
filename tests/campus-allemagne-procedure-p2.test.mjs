@@ -106,9 +106,14 @@ test("P2 generator is admin-only and idempotent for an unchanged project snapsho
 test("P2 route changes supersede the previous snapshot instead of mutating history", () => {
   assert.match(
     migration,
-    /update public\.student_procedures[\s\S]+is_current = false[\s\S]+superseded_by = new_procedure_id/i,
+    /update public\.student_procedures[\s\S]+is_current = false/i,
   );
   assert.match(migration, /insert into public\.student_procedures/i);
+  assert.match(
+    migration,
+    /insert into public\.student_procedures[\s\S]+update public\.student_procedures[\s\S]+superseded_by = new_procedure_id/i,
+  );
+  assert.match(migration, /for update/i);
   assert.match(migration, /template_snapshot/i);
   assert.match(migration, /project_snapshot/i);
 });
