@@ -470,7 +470,9 @@ export default async function ProspectDashboardPage() {
             ) : null}
           </section>
 
-          <QualificationPanel qualification={qualification} copy={qualificationCopy} />
+          {!intake ? (
+            <QualificationPanel qualification={qualification} copy={qualificationCopy} />
+          ) : null}
 
           <div className="mt-6 grid gap-5">
             <DiagnosticCards
@@ -479,16 +481,18 @@ export default async function ProspectDashboardPage() {
               items={diagnostic.paths}
               copy={diagnosticCopy}
             />
-            <RoadmapPanel
-              roadmap={roadmap}
-              copy={diagnosticCopy}
-              labels={{
-                title: t.roadmap,
-                now: t.roadmapNow,
-                afterResults: t.roadmapAfterResults,
-                verifyNext: t.roadmapVerifyNext,
-              }}
-            />
+            {!intake ? (
+              <RoadmapPanel
+                roadmap={roadmap}
+                copy={diagnosticCopy}
+                labels={{
+                  title: t.roadmap,
+                  now: t.roadmapNow,
+                  afterResults: t.roadmapAfterResults,
+                  verifyNext: t.roadmapVerifyNext,
+                }}
+              />
+            ) : null}
           </div>
 
           {validOrientations.length ? (
