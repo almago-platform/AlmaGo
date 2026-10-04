@@ -11,6 +11,7 @@ import {
   evaluateCampusApplicationDeadline,
   type CampusApplicationMethod,
 } from "@/lib/orientation-engine/deadline";
+import { evaluateSourceFreshness } from "@/lib/campus-source-freshness";
 
 export const dynamic = "force-dynamic";
 
@@ -59,6 +60,7 @@ export default async function AdminStudentProcedurePage({
     checklistResult,
     applicationsResult,
     historyResult,
+    sourcesResult,
   ] = await Promise.all([
     supabase.from("profiles").select("id,first_name,last_name,education_level,target_degree,target_field").eq("id", studentId).maybeSingle(),
     supabase.from("student_projects").select("id,path,target_degree,target_field,target_intake,preferred_cities,current_german_level,target_german_level,updated_at").eq("student_id", studentId).maybeSingle(),
@@ -67,6 +69,12 @@ export default async function AdminStudentProcedurePage({
     supabase.from("student_checklist_items").select("id,title,description,status,owner,requires_student_action,student_action_reason,student_action_kind,due_date,deadline_kind,deadline_cycle,official_source_url,official_source_verified_at,blocked_reason,updated_at").eq("student_id", studentId).order("created_at", { ascending: true }),
     supabase.from("applications").select("id,status,intake,deadline,deadline_kind,deadline_source_url,deadline_verified_at,deadline_cycle,application_method,next_action,required_documents,submitted_at,programs(name,universities(name,city))").eq("student_id", studentId).order("deadline", { ascending: true, nullsFirst: false }),
     supabase.from("student_history").select("id,event_type,message,metadata,created_at").eq("student_id", studentId).order("created_at", { ascending: false }).limit(30),
+    supabase
+      .from("regulatory_sources")
+      .select("id,authority,title,topic,source_url,verification_status,verified_at,review_due_at,is_active")
+      .eq("is_active", true)
+      .in("jurisdiction", ["DE", "DE-TN"])
+      .order("review_due_at", { ascending: true, nullsFirst: true }),
   ]);
 
   if (!profileResult.data) notFound();
@@ -78,6 +86,7 @@ export default async function AdminStudentProcedurePage({
   const checklist = checklistResult.data || [];
   const applications = applicationsResult.data || [];
   const history = historyResult.data || [];
+  const sources = sourcesResult.data || [];
   const loadErrors = [
     projectResult.error,
     procedureResult.error,
@@ -85,6 +94,7 @@ export default async function AdminStudentProcedurePage({
     checklistResult.error,
     applicationsResult.error,
     historyResult.error,
+    sourcesResult.error,
   ].filter(Boolean);
 
   const studentActions = [
@@ -108,6 +118,11 @@ export default async function AdminStudentProcedurePage({
 
   const verifiedOfficial = deadlineRows.filter((row) => ["open", "closed"].includes(row.evaluation.status));
   const toVerify = deadlineRows.filter((row) => ["to_verify", "unknown"].includes(row.evaluation.status));
+  const sourceFreshnessRows = sources.map((source) => ({
+    ...source,
+    freshness: evaluateSourceFreshness(source),
+  }));
+  const sourcesToReview = sourceFreshnessRows.filter((source) => source.freshness !== "verified");
 
   return (
     <main className="mx-auto w-full max-w-[96rem] px-4 py-5 sm:px-6 sm:py-6 xl:px-8">
@@ -285,6 +300,38 @@ export default async function AdminStudentProcedurePage({
               <Attention label="Externe" count={waitingExternal.length} detail="Attente d’une institution ou d’un tiers." tone="neutral" />
               <Attention label="Sources/dates" count={toVerify.length} detail="Échéances à vérifier avant affichage officiel." tone={toVerify.length ? "warning" : "success"} />
               <Attention label="Deadlines vérifiées" count={verifiedOfficial.length} detail="Échéances officielles actuellement vérifiées." tone="info" />
+            </div>
+          </Card>
+
+          <Card aria-labelledby="sources-title" className="shadow-none">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <h2 id="sources-title" className="text-lg font-semibold text-slate-950">Fraîcheur des sources</h2>
+              <Badge variant={sourcesToReview.length ? "warning" : "success"}>
+                {sourcesToReview.length ? `${sourcesToReview.length} à revoir` : "À jour"}
+              </Badge>
+            </div>
+            <p className="mt-1 text-xs leading-5 text-slate-500">
+              Les règles volatiles doivent rester vérifiées et datées avant usage opérationnel.
+            </p>
+            <div className="mt-4 space-y-3">
+              {sourceFreshnessRows.slice(0, 8).map((source) => (
+                <article key={source.id} className="rounded-[var(--radius-control)] border border-[var(--border)] p-3">
+                  <div className="flex flex-wrap items-start justify-between gap-2">
+                    <div>
+                      <p className="text-sm font-bold text-slate-900">{source.title}</p>
+                      <p className="mt-1 text-xs text-slate-500">{source.authority} · {source.topic}</p>
+                    </div>
+                    <Badge variant={source.freshness === "verified" ? "success" : "warning"}>
+                      {source.freshness === "verified" ? "Vérifiée" : "À revalider"}
+                    </Badge>
+                  </div>
+                  <p className="mt-2 text-xs text-slate-600">
+                    Revue prévue : {source.review_due_at
+                      ? new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium" }).format(new Date(source.review_due_at))
+                      : "non planifiée"}
+                  </p>
+                </article>
+              ))}
             </div>
           </Card>
 
