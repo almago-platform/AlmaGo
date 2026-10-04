@@ -218,6 +218,16 @@ export default async function ProspectDashboardPage() {
           <h2 className="mt-2 text-xl font-bold text-[var(--foreground)]">
             {action.label}
           </h2>
+          {(!state.intake || state.intake.status === "starter_documents") ? (
+            <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
+              {t.documentsSummary(
+                state.starterSummary.approved,
+                state.starterSummary.required,
+                state.starterSummary.pending,
+                state.starterSummary.needsReplacement,
+              )}
+            </p>
+          ) : null}
           <Link
             href={action.href}
             className="mt-5 inline-flex min-h-11 items-center rounded-[var(--radius-control)] bg-[var(--brand)] px-4 text-sm font-bold text-white transition hover:bg-[var(--brand-strong)]"
@@ -297,72 +307,44 @@ export default async function ProspectDashboardPage() {
         />
       ) : null}
 
-      <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 sm:p-6">
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <h2 className="text-xl font-bold">{t.documents}</h2>
-            <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
-              {t.documentsSummary(
-                state.starterSummary.approved,
-                state.starterSummary.required,
-                state.starterSummary.pending,
-                state.starterSummary.needsReplacement,
-              )}
-            </p>
-          </div>
-          <Link
-            href="/prospect/documents"
-            className="inline-flex min-h-10 items-center text-sm font-semibold text-[var(--brand-strong)] underline underline-offset-4"
-          >
-            {t.browseDocuments}
-          </Link>
-        </div>
-      </section>
-
-      <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 sm:p-6">
-        <h2 className="text-xl font-bold">{t.browseTitle}</h2>
-        <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
-          {t.browseText}
-        </p>
-        <div className="mt-5 grid gap-3 sm:grid-cols-3">
-          <Link
-            href="/prospect/catalogue"
-            className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4 font-semibold hover:border-[var(--brand-border)]"
-          >
-            {t.browseCatalogue}
-          </Link>
-          <Link
-            href="/prospect/solutions"
-            className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4 font-semibold hover:border-[var(--brand-border)]"
-          >
-            {t.browseSolutions}
-          </Link>
-          <Link
-            href="/prospect/proposal"
-            className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4 font-semibold hover:border-[var(--brand-border)]"
-          >
-            {t.viewProposal}
-          </Link>
-        </div>
-      </section>
+      <nav
+        aria-label={t.browseTitle}
+        className="grid gap-2 rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-3 shadow-[var(--shadow-card)] sm:grid-cols-3"
+      >
+        <Link
+          href="/prospect/catalogue"
+          className="rounded-[var(--radius-control)] px-4 py-3 text-sm font-semibold transition hover:bg-[var(--surface-subtle)]"
+        >
+          {t.browseCatalogue} →
+        </Link>
+        <Link
+          href="/prospect/solutions"
+          className="rounded-[var(--radius-control)] px-4 py-3 text-sm font-semibold transition hover:bg-[var(--surface-subtle)]"
+        >
+          {t.browseSolutions} →
+        </Link>
+        <Link
+          href="/prospect/orientation"
+          className="rounded-[var(--radius-control)] px-4 py-3 text-sm font-semibold transition hover:bg-[var(--surface-subtle)]"
+        >
+          {t.updateProject} →
+        </Link>
+      </nav>
 
       {state.current ? (
-        <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 sm:p-6">
-          <div className="flex flex-wrap items-start justify-between gap-4">
-            <div>
+        <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-4 shadow-[var(--shadow-card)] sm:p-5">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="min-w-0">
               <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--brand)]">
                 {t.project}
               </p>
-              <h2 className="mt-2 text-xl font-bold">
+              <h2 className="mt-1 text-lg font-bold">
                 {diagnosticCopy.headlines[state.current.diagnostic.headlineCode].title}
               </h2>
-              <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
-                {diagnosticCopy.headlines[state.current.diagnostic.headlineCode].body}
-              </p>
             </div>
             <Link
               href="/prospect/orientation"
-              className="text-sm font-semibold text-[var(--brand-strong)] underline underline-offset-4"
+              className="inline-flex min-h-10 shrink-0 items-center rounded-[var(--radius-control)] border border-[var(--border-strong)] px-4 text-sm font-semibold transition hover:border-[var(--brand-border)]"
             >
               {t.updateProject}
             </Link>
