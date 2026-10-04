@@ -577,10 +577,29 @@ export function evaluateProgramme(
   };
 }
 
+function preferredCityCoreMatch(
+  evaluation: OrientationProgrammeEvaluation,
+) {
+  const hasEligibleRule = (code: OrientationRuleCode) =>
+    evaluation.rules.some(
+      (rule) => rule.code === code && rule.status === "eligible",
+    );
+
+  return (
+    hasEligibleRule("degree_match")
+    && hasEligibleRule("field_match")
+    && hasEligibleRule("preferred_city")
+    && hasEligibleRule("teaching_language_match")
+  );
+}
+
 export function rankProgrammeEvaluations(evaluations: OrientationProgrammeEvaluation[]) {
   return evaluations
     .filter((evaluation) => evaluation.status !== "not_eligible")
     .sort((a, b) => {
+      const preferredCityDiff =
+        Number(preferredCityCoreMatch(b)) - Number(preferredCityCoreMatch(a));
+      if (preferredCityDiff !== 0) return preferredCityDiff;
       if (b.relevanceScore !== a.relevanceScore) return b.relevanceScore - a.relevanceScore;
       const cityA = a.programme.university.city || "";
       const cityB = b.programme.university.city || "";
