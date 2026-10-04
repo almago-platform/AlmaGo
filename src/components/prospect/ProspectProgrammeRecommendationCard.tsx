@@ -11,6 +11,10 @@ export function ProspectProgrammeRecommendationCard({
     projectMatch: string;
     preferredCity: string;
     requirementCheck: string;
+    field: string;
+    german: string;
+    uniAssist: string;
+    yes: string;
     source: string;
     applyLink: string;
   };
@@ -64,17 +68,17 @@ export function ProspectProgrammeRecommendationCard({
       {!compact ? (
         <dl className="mt-5 grid gap-3 sm:grid-cols-3">
           <div className="rounded-[var(--radius-control)] bg-[var(--surface-subtle)] p-3">
-            <dt className="text-xs font-semibold text-[var(--muted)]">Domaine</dt>
+            <dt className="text-xs font-semibold text-[var(--muted)]">{labels.field}</dt>
             <dd className="mt-1 text-sm font-semibold"><bdi dir="auto">{programme.field || "—"}</bdi></dd>
           </div>
           <div className="rounded-[var(--radius-control)] bg-[var(--surface-subtle)] p-3">
-            <dt className="text-xs font-semibold text-[var(--muted)]">Allemand</dt>
+            <dt className="text-xs font-semibold text-[var(--muted)]">{labels.german}</dt>
             <dd className="mt-1 text-sm font-semibold">{programme.germanLevelRequired || labels.requirementCheck}</dd>
           </div>
           <div className="rounded-[var(--radius-control)] bg-[var(--surface-subtle)] p-3">
-            <dt className="text-xs font-semibold text-[var(--muted)]">uni-assist</dt>
+            <dt className="text-xs font-semibold text-[var(--muted)]">{labels.uniAssist}</dt>
             <dd className="mt-1 text-sm font-semibold">
-              {programme.uniAssistRequired ? "Oui" : labels.requirementCheck}
+              {programme.uniAssistRequired ? labels.yes : labels.requirementCheck}
             </dd>
           </div>
         </dl>
