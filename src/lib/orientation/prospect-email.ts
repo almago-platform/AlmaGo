@@ -15,6 +15,7 @@ type EmailCopy = {
   orientationReportCta: string;
   candidateReportCta: string;
   reportsNote: string;
+  attachmentsNote: string;
   accountCta: string;
   accountNote: string;
   interestCta: string;
@@ -37,6 +38,7 @@ const emailCopy: Record<Locale, EmailCopy> = {
     orientationReportCta: "Voir mon orientation PDF",
     candidateReportCta: "Voir mon rapport candidat PDF",
     reportsNote: "Vous pouvez consulter et enregistrer ces deux rapports en PDF grâce aux boutons ci-dessous.",
+    attachmentsNote: "Les deux rapports sont également joints à cet e-mail au format PDF.",
     accountCta: "Continuer ma procédure",
     accountNote: "Créez votre espace étudiant Campus Allemagne pour rattacher cette orientation à votre compte et reprendre votre parcours sans recommencer.",
     interestCta: "Je veux continuer avec Campus Allemagne",
@@ -57,6 +59,7 @@ const emailCopy: Record<Locale, EmailCopy> = {
     orientationReportCta: "التوجيه (PDF)",
     candidateReportCta: "تقرير المترشح (PDF)",
     reportsNote: "يفتح كل رابط مستندًا آمنًا يمكنك حفظه بصيغة PDF.",
+    attachmentsNote: "ستجد أيضًا التقريرين مرفقين بهذا البريد الإلكتروني بصيغة PDF.",
     accountCta: "إنشاء مساحتي المجانية",
     accountNote: "إنشاء الحساب اختياري. يظل هذا التوجيه منفصلاً عن أي خدمة مرافقة مدفوعة.",
     interestCta: "أريد المتابعة مع Campus Allemagne",
@@ -77,6 +80,7 @@ const emailCopy: Record<Locale, EmailCopy> = {
     orientationReportCta: "Orientation (PDF)",
     candidateReportCta: "Candidate report (PDF)",
     reportsNote: "Each link opens a secure document that you can save as a PDF.",
+    attachmentsNote: "Both reports are also attached to this email as PDF files.",
     accountCta: "Create my free space",
     accountNote: "Creating an account is optional. This orientation remains separate from any paid support service.",
     interestCta: "I want to continue with Campus Allemagne",
@@ -97,6 +101,7 @@ const emailCopy: Record<Locale, EmailCopy> = {
     orientationReportCta: "Orientierung (PDF)",
     candidateReportCta: "Bewerberbericht (PDF)",
     reportsNote: "Jeder Link öffnet ein sicheres Dokument, das du als PDF speichern kannst.",
+    attachmentsNote: "Beide Berichte sind dieser E-Mail zusätzlich als PDF-Dateien beigefügt.",
     accountCta: "Kostenlosen Bereich erstellen",
     accountNote: "Ein Konto ist freiwillig. Diese Orientierung bleibt von einer kostenpflichtigen Begleitung getrennt.",
     interestCta: "Ich möchte mit Campus Allemagne weitermachen",
@@ -124,6 +129,7 @@ export function buildOrientationProspectEmail({
   candidateReportUrl,
   signupUrl,
   interestUrl,
+  attachmentsIncluded = false,
 }: {
   locale: Locale;
   diagnostic: PublicOrientationDiagnostic;
@@ -131,6 +137,7 @@ export function buildOrientationProspectEmail({
   candidateReportUrl: string;
   signupUrl: string;
   interestUrl?: string | null;
+  attachmentsIncluded?: boolean;
 }) {
   const copy = emailCopy[locale];
   const diagnosticCopy = orientationDiagnosticCopy[locale];
@@ -166,6 +173,7 @@ export function buildOrientationProspectEmail({
       copy.candidateReportDescription,
       `${copy.candidateReportCta}: ${candidateReportUrl}`,
       copy.reportsNote,
+      ...(attachmentsIncluded ? [copy.attachmentsNote] : []),
       "",
       `${copy.accountCta}: ${signupUrl}`,
       copy.accountNote,
@@ -202,6 +210,7 @@ export function buildOrientationProspectEmail({
             <a href="${escapeHtml(candidateReportUrl)}" style="display:inline-block;background:#182442;color:#ffffff;text-decoration:none;font-weight:700;padding:12px 18px;border-radius:10px">${escapeHtml(copy.candidateReportCta)}</a>
           </p>
           <p style="margin:0;font-size:12px;line-height:1.6;color:#546078">${escapeHtml(copy.reportsNote)}</p>
+          ${attachmentsIncluded ? `<p style="margin:8px 0 0;font-size:12px;line-height:1.6;font-weight:700;color:#182442">${escapeHtml(copy.attachmentsNote)}</p>` : ""}
         </div>
         <p style="margin:0 0 10px">
           <a href="${escapeHtml(signupUrl)}" style="font-weight:700;color:#2349c9">${escapeHtml(copy.accountCta)}</a>
