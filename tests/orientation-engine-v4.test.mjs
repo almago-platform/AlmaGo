@@ -123,16 +123,17 @@ test("Orientation V4 audit documents privacy, cost and incremental conversation 
 });
 
 
-test("Orientation V4 makes a strong verified preferred-city catalogue match authoritative before external discovery", () => {
-  assert.match(service, /export function hasPreferredCityCatalogueMatch/);
+test("Orientation V4 makes a strong verified catalogue match authoritative at each geographic tier", () => {
+  assert.match(service, /export function hasStrongCatalogueMatch/);
   assert.match(service, /hasEligibleRule\("degree_match"\)/);
   assert.match(service, /hasEligibleRule\("field_match"\)/);
-  assert.match(service, /hasEligibleRule\("preferred_city"\)/);
   assert.match(service, /hasEligibleRule\("teaching_language_match"\)/);
-  assert.match(api, /hasPreferredCityCatalogueMatch\(engineResult\)/);
+  assert.match(service, /hasEligibleRule\("source_verified"\)/);
+  assert.match(api, /buildOrientationEngineResultForGeographicScope/);
+  assert.match(api, /hasStrongCatalogueMatch\(scopedEngineResult\)/);
   assert.match(
     api,
-    /if \(!catalogueHasPreferredCityMatch\) \{[\s\S]*?runOrientationResultPipeline\(locale, profile\)/,
+    /hasStrongCatalogueMatch\(scopedEngineResult\)[\s\S]*?runOrientationSelectionPipeline\(profile, scope\)/,
   );
   assert.match(intelligence, /hasPreferredCityCatalogueMatch\(engineResult\)/);
 });
