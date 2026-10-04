@@ -7,12 +7,19 @@ import { connect as connectTls, type TLSSocket } from "node:tls";
 const RESEND_ENDPOINT = "https://api.resend.com/emails";
 const SMTP_TIMEOUT_MS = 12_000;
 
+export type TransactionalEmailAttachment = {
+  filename: string;
+  contentBase64: string;
+  contentType: string;
+};
+
 type TransactionalEmailMessage = {
   to: string;
   subject: string;
   html: string;
   text: string;
   idempotencyKey: string;
+  attachments?: readonly TransactionalEmailAttachment[];
 };
 
 type ResendConfiguration = {
@@ -112,6 +119,19 @@ function wrapBase64(value: string) {
   return encoded.match(/.{1,76}/g)?.join("\r\n") || "";
 }
 
+function wrapBase64Content(value: string) {
+  const encoded = value.replace(/\s+/g, "");
+  if (!/^[A-Za-z0-9+/]*={0,2}$/.test(encoded)) {
+    throw new Error("Invalid base64 attachment.");
+  }
+  return encoded.match(/.{1,76}/g)?.join("\r\n") || "";
+}
+
+function safeAttachmentFilename(value: string) {
+  const sanitized = value.replace(/[^A-Za-z0-9._-]/g, "-").slice(0, 120);
+  return sanitized || "attachment.bin";
+}
+
 function smtpMessageId(message: TransactionalEmailMessage, sender: string) {
   const digest = createHash("sha256")
     .update(message.idempotencyKey)
@@ -130,10 +150,26 @@ function buildSmtpMimeMessage(
   const digest = createHash("sha256")
     .update(message.idempotencyKey)
     .digest("hex");
-  const boundary = `almago-${digest.slice(0, 24)}`;
+  const alternativeBoundary = `almago-alt-${digest.slice(0, 20)}`;
+  const mixedBoundary = `almago-mixed-${digest.slice(0, 20)}`;
   const messageId = smtpMessageId(message, sender);
+  const attachments = message.attachments || [];
 
-  const raw = [
+  const alternativeParts = [
+    `--${alternativeBoundary}`,
+    'Content-Type: text/plain; charset="UTF-8"',
+    "Content-Transfer-Encoding: base64",
+    "",
+    wrapBase64(message.text),
+    `--${alternativeBoundary}`,
+    'Content-Type: text/html; charset="UTF-8"',
+    "Content-Transfer-Encoding: base64",
+    "",
+    wrapBase64(message.html),
+    `--${alternativeBoundary}--`,
+  ];
+
+  const headers = [
     `Date: ${new Date().toUTCString()}`,
     `From: ${from}`,
     `To: ${to}`,
@@ -141,21 +177,39 @@ function buildSmtpMimeMessage(
     `Message-ID: ${messageId}`,
     `X-AlmaGo-Idempotency-Key: ${sanitizeHeader(message.idempotencyKey)}`,
     "MIME-Version: 1.0",
-    `Content-Type: multipart/alternative; boundary="${boundary}"`,
-    "",
-    `--${boundary}`,
-    'Content-Type: text/plain; charset="UTF-8"',
-    "Content-Transfer-Encoding: base64",
-    "",
-    wrapBase64(message.text),
-    `--${boundary}`,
-    'Content-Type: text/html; charset="UTF-8"',
-    "Content-Transfer-Encoding: base64",
-    "",
-    wrapBase64(message.html),
-    `--${boundary}--`,
-    "",
-  ].join("\r\n");
+  ];
+
+  const body = attachments.length
+    ? [
+        `Content-Type: multipart/mixed; boundary="${mixedBoundary}"`,
+        "",
+        `--${mixedBoundary}`,
+        `Content-Type: multipart/alternative; boundary="${alternativeBoundary}"`,
+        "",
+        ...alternativeParts,
+        ...attachments.flatMap((attachment) => {
+          const filename = safeAttachmentFilename(attachment.filename);
+          const contentType = sanitizeHeader(attachment.contentType || "application/octet-stream");
+          return [
+            `--${mixedBoundary}`,
+            `Content-Type: ${contentType}; name="${filename}"`,
+            `Content-Disposition: attachment; filename="${filename}"`,
+            "Content-Transfer-Encoding: base64",
+            "",
+            wrapBase64Content(attachment.contentBase64),
+          ];
+        }),
+        `--${mixedBoundary}--`,
+        "",
+      ]
+    : [
+        `Content-Type: multipart/alternative; boundary="${alternativeBoundary}"`,
+        "",
+        ...alternativeParts,
+        "",
+      ];
+
+  const raw = [...headers, ...body].join("\r\n");
 
   return {
     sender,
@@ -401,6 +455,15 @@ async function sendWithResend(
         subject: message.subject,
         html: message.html,
         text: message.text,
+        ...(message.attachments?.length
+          ? {
+              attachments: message.attachments.map((attachment) => ({
+                filename: safeAttachmentFilename(attachment.filename),
+                content: attachment.contentBase64,
+                content_type: attachment.contentType,
+              })),
+            }
+          : {}),
       }),
     });
 
