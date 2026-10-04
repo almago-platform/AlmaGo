@@ -641,7 +641,7 @@ begin
   );
 
   if v_procedure_id is null then
-    return false;
+    raise exception 'procedure_creation_failed';
   end if;
 
   update public.commercial_purchases
@@ -651,7 +651,7 @@ begin
     and status = 'paid_pending_validation'::public.commercial_purchase_status;
 
   if not found then
-    return false;
+    raise exception 'purchase_activation_conflict';
   end if;
 
   update public.customer_access
@@ -662,7 +662,7 @@ begin
     and status = 'paid_pending_validation'::public.customer_lifecycle_status;
 
   if not found then
-    return false;
+    raise exception 'access_activation_conflict';
   end if;
 
   insert into public.customer_access_events (
