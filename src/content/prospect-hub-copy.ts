@@ -60,6 +60,9 @@ type ProspectHubCopy = {
     current: string;
     history: string;
     savedOn: string;
+    confirmed: string;
+    nextDocuments: string;
+    nextDocumentsBody: string;
     noOrientation: string;
   };
   catalogue: {
@@ -192,6 +195,9 @@ const fr: ProspectHubCopy = {
     current: "Orientation actuelle",
     history: "Voir les versions précédentes",
     savedOn: "Enregistrée le",
+    confirmed: "Orientation confirmée",
+    nextDocuments: "Prochaine étape : vos documents",
+    nextDocumentsBody: "Votre orientation est enregistrée. Complétez maintenant les pièces de départ pour permettre la vérification de votre dossier.",
     noOrientation: "Aucune orientation n’est encore disponible.",
   },
   catalogue: {
@@ -324,6 +330,9 @@ const en: ProspectHubCopy = {
     current: "Current orientation",
     history: "View previous versions",
     savedOn: "Saved on",
+    confirmed: "Orientation confirmed",
+    nextDocuments: "Next step: your documents",
+    nextDocumentsBody: "Your orientation is saved. Add the starter documents so your file can be reviewed.",
     noOrientation: "No orientation is available yet.",
   },
   catalogue: {
@@ -456,6 +465,9 @@ const de: ProspectHubCopy = {
     current: "Aktuelle Orientierung",
     history: "Frühere Versionen ansehen",
     savedOn: "Gespeichert am",
+    confirmed: "Orientierung bestätigt",
+    nextDocuments: "Nächster Schritt: deine Dokumente",
+    nextDocumentsBody: "Deine Orientierung ist gespeichert. Füge jetzt die Startdokumente hinzu, damit dein Dossier geprüft werden kann.",
     noOrientation: "Noch keine Orientierung verfügbar.",
   },
   catalogue: {
@@ -588,6 +600,9 @@ const ar: ProspectHubCopy = {
     current: "التوجيه الحالي",
     history: "عرض النسخ السابقة",
     savedOn: "تم الحفظ في",
+    confirmed: "تم تأكيد التوجيه",
+    nextDocuments: "الخطوة التالية: وثائقك",
+    nextDocumentsBody: "تم حفظ توجيهك. أضف الآن الوثائق الأساسية حتى يمكن مراجعة ملفك.",
     noOrientation: "لا يوجد توجيه متاح بعد.",
   },
   catalogue: {
