@@ -161,7 +161,8 @@ export function OnboardingForm({ profile }: { profile: Record<string, unknown> }
         return;
       }
 
-      if (nextStep === 6) { window.localStorage.removeItem("almago-onboarding-draft"); router.push("/student"); }
+      if (nextStep === 6) router.push("/student");
+      if (nextStep === 6) window.localStorage.removeItem("almago-onboarding-draft");
       else {
         setStep(nextStep);
         window.scrollTo({ top: 0, behavior: "smooth" });
