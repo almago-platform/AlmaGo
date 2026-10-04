@@ -1,3 +1,4 @@
+import type { OrientationUniversityMedia } from "@/lib/orientation-engine/types";
 import type {
   PublicOrientationAverageType,
   PublicOrientationBacStatus,
@@ -73,6 +74,7 @@ export type OrientationDiscoveryResearchCandidate = {
   officialUniversityUrl: string | null;
   discoveryReason: string;
   sourceUrls: string[];
+  universityMedia?: OrientationUniversityMedia | null;
   status: "research_candidate";
 };
 

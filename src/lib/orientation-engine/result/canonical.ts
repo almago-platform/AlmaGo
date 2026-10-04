@@ -1,4 +1,7 @@
-import type { OrientationEngineResult } from "@/lib/orientation-engine/types";
+import type {
+  OrientationEngineResult,
+  OrientationUniversityMedia,
+} from "@/lib/orientation-engine/types";
 import type {
   OrientationPublicPersonalizedResult,
 } from "@/lib/orientation-engine/result/types";
@@ -13,6 +16,7 @@ export type OrientationCanonicalShortlistItem = {
   institution: string;
   programme: string;
   city: string | null;
+  universityMedia?: OrientationUniversityMedia | null;
 };
 
 export type OrientationCanonicalShortlist = {
@@ -39,6 +43,9 @@ export function buildOrientationCanonicalShortlist(
         institution: item.institution,
         programme: item.programme,
         city: item.city,
+        ...(item.universityMedia
+          ? { universityMedia: item.universityMedia }
+          : {}),
       })),
     };
   }
@@ -51,6 +58,9 @@ export function buildOrientationCanonicalShortlist(
         institution: recommendation.programme.university.name,
         programme: recommendation.programme.name,
         city: recommendation.programme.university.city,
+        ...(recommendation.programme.university.media
+          ? { universityMedia: recommendation.programme.university.media }
+          : {}),
       })),
     };
   }

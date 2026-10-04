@@ -62,6 +62,7 @@ function projectPublicResult(
       institution: item.verification.candidate.institution,
       programme: item.verification.candidate.programme,
       city: item.verification.candidate.city,
+      universityMedia: item.verification.candidate.universityMedia || null,
       overallStatus: item.verification.overallStatus,
       facts: item.verification.facts
         .map(publicFact)

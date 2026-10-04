@@ -108,7 +108,9 @@ export async function runOrientationDiscovery(
     const persistence = await persistOrientationDiscoveryResearch(plan, research);
     const candidates = mergeOrientationKnowledgeCandidates(
       cachedCandidates,
-      research.candidates,
+      persistence.candidates.length > 0
+        ? persistence.candidates
+        : research.candidates,
       plan.policy.maxCandidates,
     );
 

@@ -8,6 +8,7 @@ import type {
 import type {
   OrientationWriterContent,
 } from "@/lib/orientation-engine/writer/types";
+import type { OrientationUniversityMedia } from "@/lib/orientation-engine/types";
 import type { OrientationSelectionStatus } from "@/lib/orientation-engine/selection/types";
 
 export type OrientationPublicPersonalizedFact = {
@@ -25,6 +26,7 @@ export type OrientationPublicPersonalizedOption = {
   institution: string;
   programme: string;
   city: string | null;
+  universityMedia: OrientationUniversityMedia | null;
   overallStatus: OrientationVerificationOverallStatus;
   facts: OrientationPublicPersonalizedFact[];
 };

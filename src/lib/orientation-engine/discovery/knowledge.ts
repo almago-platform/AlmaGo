@@ -5,22 +5,30 @@ import {
   buildOrientationDiscoveryProfileFingerprint,
   buildOrientationDiscoverySearchContext,
   buildOrientationResearchProgrammeDedupeKey,
+  buildOrientationResearchUniversityDedupeKey,
   getOrientationDiscoveryRefreshWindow,
   orientationDegreeCompatible,
 } from "@/lib/orientation-engine/discovery/knowledge-core";
+import {
+  findWikimediaUniversityMedia,
+} from "@/lib/orientation-engine/discovery/university-media";
 import type {
   OrientationDiscoveryPlan,
   OrientationDiscoveryResearchCandidate,
   OrientationDiscoveryResearchResult,
 } from "@/lib/orientation-engine/discovery/types";
+import type { OrientationUniversityMedia } from "@/lib/orientation-engine/types";
 
 export const ORIENTATION_KNOWLEDGE_MIN_CANDIDATES = 4;
 export const ORIENTATION_MAJOR_REFRESH_DATES = ["04-15", "10-15"] as const;
 const MAX_KNOWLEDGE_SCAN = 60;
+const MAX_MEDIA_LOOKUPS_PER_RUN = 4;
+const MEDIA_RETRY_DAYS = 30;
 
 type ResearchProgramRow = {
   id: string;
   dedupe_key: string;
+  university_id: string | null;
   institution: string;
   programme: string;
   degree: string | null;
@@ -33,6 +41,25 @@ type ResearchProgramRow = {
   research_status: string;
   refresh_cycle: string;
   next_major_refresh_at: string;
+};
+
+type UniversityRegistryRow = {
+  id: string;
+  canonical_key: string | null;
+  name: string;
+  aliases: string[] | null;
+  city: string | null;
+  country: string;
+  website_url: string | null;
+  source_url: string | null;
+  registry_status: string;
+  is_active: boolean;
+  is_public: boolean;
+  cover_image_url: string | null;
+  cover_image_source_url: string | null;
+  cover_image_attribution: string | null;
+  cover_image_license: string | null;
+  media_verified_at: string | null;
 };
 
 export type OrientationKnowledgeEntry = {
@@ -59,6 +86,7 @@ function knowledgeClient() {
 
 function candidateFromRow(
   row: ResearchProgramRow,
+  universityMedia: OrientationUniversityMedia | null = null,
 ): OrientationDiscoveryResearchCandidate {
   return {
     institution: row.institution,
@@ -70,12 +98,202 @@ function candidateFromRow(
     officialUniversityUrl: row.official_university_url,
     discoveryReason: "Programme déjà découvert par AlmaGo et conservé pour réutilisation.",
     sourceUrls: Array.isArray(row.source_urls) ? row.source_urls : [],
+    universityMedia,
     status: "research_candidate",
   };
 }
 
 function familyIds(plan: OrientationDiscoveryPlan) {
   return [...new Set(plan.programmeFamilies.map((family) => family.id))].slice(0, 16);
+}
+
+function mergedStringArray(
+  current: string[] | null | undefined,
+  incoming: readonly string[],
+  limit: number,
+) {
+  return [...new Set([
+    ...(Array.isArray(current) ? current : []),
+    ...incoming,
+  ].map((value) => value.trim()).filter(Boolean))].slice(0, limit);
+}
+
+function mediaProfile(row: UniversityRegistryRow): OrientationUniversityMedia {
+  return {
+    universityId: row.id,
+    canonicalName: row.name,
+    coverImageUrl: row.cover_image_url,
+    coverImageSourceUrl: row.cover_image_source_url,
+    coverImageAttribution: row.cover_image_attribution,
+    coverImageLicense: row.cover_image_license,
+  };
+}
+
+function shouldLookupMedia(row: UniversityRegistryRow | undefined) {
+  if (row?.cover_image_url) return false;
+  if (!row?.media_verified_at) return true;
+
+  const checkedAt = new Date(row.media_verified_at);
+  if (Number.isNaN(checkedAt.getTime())) return true;
+
+  return Date.now() - checkedAt.getTime()
+    >= MEDIA_RETRY_DAYS * 24 * 60 * 60 * 1_000;
+}
+
+function candidateGroups(
+  candidates: readonly OrientationDiscoveryResearchCandidate[],
+) {
+  const groups = new Map<string, OrientationDiscoveryResearchCandidate[]>();
+
+  for (const candidate of candidates) {
+    const key = buildOrientationResearchUniversityDedupeKey(candidate);
+    const existing = groups.get(key) || [];
+    existing.push(candidate);
+    groups.set(key, existing);
+  }
+
+  return groups;
+}
+
+async function ensureUniversityRegistry(
+  supabase: NonNullable<ReturnType<typeof knowledgeClient>>,
+  candidates: readonly OrientationDiscoveryResearchCandidate[],
+) {
+  const groups = candidateGroups(candidates);
+  const keys = [...groups.keys()];
+  const result = new Map<string, OrientationUniversityMedia>();
+  if (keys.length === 0) return result;
+
+  const { data: existingData, error: existingError } = await supabase
+    .from("universities")
+    .select([
+      "id",
+      "canonical_key",
+      "name",
+      "aliases",
+      "city",
+      "country",
+      "website_url",
+      "source_url",
+      "registry_status",
+      "is_active",
+      "is_public",
+      "cover_image_url",
+      "cover_image_source_url",
+      "cover_image_attribution",
+      "cover_image_license",
+      "media_verified_at",
+    ].join(","))
+    .in("canonical_key", keys);
+
+  // A branch preview may temporarily run against a database where the
+  // accompanying migration has not been applied yet. Discovery still works.
+  if (existingError) return result;
+
+  const existingRows = (existingData || []) as unknown as UniversityRegistryRow[];
+  const existingByKey = new Map(
+    existingRows
+      .filter((row) => row.canonical_key)
+      .map((row) => [String(row.canonical_key), row]),
+  );
+
+  let mediaLookups = 0;
+  const rows: Array<Record<string, unknown>> = [];
+  const checkedAt = new Date().toISOString();
+
+  for (const [canonicalKey, group] of groups) {
+    const primary = group[0];
+    const existing = existingByKey.get(canonicalKey);
+    let media = existing?.cover_image_url
+      ? {
+          coverImageUrl: existing.cover_image_url,
+          coverImageSourceUrl: existing.cover_image_source_url,
+          coverImageAttribution: existing.cover_image_attribution,
+          coverImageLicense: existing.cover_image_license,
+        }
+      : null;
+    let mediaVerifiedAt = existing?.media_verified_at || null;
+
+    if (
+      shouldLookupMedia(existing)
+      && mediaLookups < MAX_MEDIA_LOOKUPS_PER_RUN
+    ) {
+      mediaLookups += 1;
+      media = await findWikimediaUniversityMedia(
+        existing?.name || primary.institution,
+        existing?.city || primary.city,
+      );
+      mediaVerifiedAt = checkedAt;
+    }
+
+    const officialUniversityUrl =
+      group.find((candidate) => candidate.officialUniversityUrl)
+        ?.officialUniversityUrl
+      || null;
+
+    rows.push({
+      canonical_key: canonicalKey,
+      name: existing?.name || primary.institution,
+      aliases: mergedStringArray(
+        existing?.aliases,
+        group.map((candidate) => candidate.institution),
+        24,
+      ),
+      city: existing?.city || primary.city,
+      country: existing?.country || "DE",
+      website_url: existing?.website_url || officialUniversityUrl,
+      source_url: existing?.source_url || officialUniversityUrl,
+      registry_status: existing?.registry_status || "research_candidate",
+      is_active: existing?.is_active ?? false,
+      is_public: existing?.is_public ?? false,
+      cover_image_url: existing?.cover_image_url || media?.coverImageUrl || null,
+      cover_image_source_url:
+        existing?.cover_image_source_url
+        || media?.coverImageSourceUrl
+        || null,
+      cover_image_attribution:
+        existing?.cover_image_attribution
+        || media?.coverImageAttribution
+        || null,
+      cover_image_license:
+        existing?.cover_image_license
+        || media?.coverImageLicense
+        || null,
+      media_verified_at: mediaVerifiedAt,
+      updated_at: checkedAt,
+    });
+  }
+
+  const { data: upserted, error: upsertError } = await supabase
+    .from("universities")
+    .upsert(rows, { onConflict: "canonical_key" })
+    .select([
+      "id",
+      "canonical_key",
+      "name",
+      "aliases",
+      "city",
+      "country",
+      "website_url",
+      "source_url",
+      "registry_status",
+      "is_active",
+      "is_public",
+      "cover_image_url",
+      "cover_image_source_url",
+      "cover_image_attribution",
+      "cover_image_license",
+      "media_verified_at",
+    ].join(","));
+
+  if (upsertError || !upserted) return result;
+
+  for (const row of upserted as unknown as UniversityRegistryRow[]) {
+    if (!row.canonical_key) continue;
+    result.set(row.canonical_key, mediaProfile(row));
+  }
+
+  return result;
 }
 
 export async function loadOrientationDiscoveryKnowledge(
@@ -96,6 +314,7 @@ export async function loadOrientationDiscoveryKnowledge(
     .select([
       "id",
       "dedupe_key",
+      "university_id",
       "institution",
       "programme",
       "degree",
@@ -126,6 +345,7 @@ export async function loadOrientationDiscoveryKnowledge(
 
   const seen = new Set<string>();
   const entries: OrientationKnowledgeEntry[] = [];
+  const currentUniversityIds = new Map<string, string | null>();
 
   for (const raw of data || []) {
     const row = raw as unknown as ResearchProgramRow;
@@ -140,22 +360,49 @@ export async function loadOrientationDiscoveryKnowledge(
       dedupeKey: row.dedupe_key,
       candidate: candidateFromRow(row),
     });
+    currentUniversityIds.set(row.id, row.university_id);
 
     if (entries.length >= plan.policy.maxCandidates) break;
   }
 
-  return { available: true, entries };
-}
+  if (entries.length === 0) return { available: true, entries };
 
-function mergedStringArray(
-  current: string[] | null | undefined,
-  incoming: readonly string[],
-  limit: number,
-) {
-  return [...new Set([
-    ...(Array.isArray(current) ? current : []),
-    ...incoming,
-  ])].slice(0, limit);
+  const registry = await ensureUniversityRegistry(
+    supabase,
+    entries.map((entry) => entry.candidate),
+  );
+
+  const linkedEntries = entries.map((entry) => {
+    const university = registry.get(
+      buildOrientationResearchUniversityDedupeKey(entry.candidate),
+    ) || null;
+
+    return {
+      ...entry,
+      candidate: {
+        ...entry.candidate,
+        universityMedia: university,
+      },
+    };
+  });
+
+  const linksToUpdate = linkedEntries.filter((entry) => {
+    const universityId = entry.candidate.universityMedia?.universityId || null;
+    return universityId && currentUniversityIds.get(entry.researchProgramId) !== universityId;
+  });
+
+  await Promise.all(
+    linksToUpdate.map((entry) =>
+      supabase
+        .from("orientation_research_programs")
+        .update({
+          university_id: entry.candidate.universityMedia?.universityId,
+        })
+        .eq("id", entry.researchProgramId)
+    ),
+  );
+
+  return { available: true, entries: linkedEntries };
 }
 
 async function insertDiscoveryRun({
@@ -237,13 +484,35 @@ export async function persistOrientationDiscoveryResearch(
     || result.status !== "ready"
     || result.candidates.length === 0
   ) {
-    return { available: Boolean(knowledgeClient()), persisted: 0 };
+    return {
+      available: Boolean(knowledgeClient()),
+      persisted: 0,
+      candidates: result.candidates,
+    };
   }
 
   const supabase = knowledgeClient();
-  if (!supabase) return { available: false, persisted: 0 };
+  if (!supabase) {
+    return {
+      available: false,
+      persisted: 0,
+      candidates: result.candidates,
+    };
+  }
 
-  const keys = result.candidates.map(buildOrientationResearchProgrammeDedupeKey);
+  const registry = await ensureUniversityRegistry(
+    supabase,
+    result.candidates,
+  );
+  const enrichedCandidates = result.candidates.map((candidate) => ({
+    ...candidate,
+    universityMedia:
+      registry.get(buildOrientationResearchUniversityDedupeKey(candidate))
+      || candidate.universityMedia
+      || null,
+  }));
+
+  const keys = enrichedCandidates.map(buildOrientationResearchProgrammeDedupeKey);
   const { data: existingData, error: existingError } = await supabase
     .from("orientation_research_programs")
     .select([
@@ -258,7 +527,13 @@ export async function persistOrientationDiscoveryResearch(
     ].join(","))
     .in("dedupe_key", keys);
 
-  if (existingError) return { available: false, persisted: 0 };
+  if (existingError) {
+    return {
+      available: false,
+      persisted: 0,
+      candidates: enrichedCandidates,
+    };
+  }
 
   const existingRows = (existingData || []) as unknown as Array<Record<string, unknown>>;
   const existingByKey = new Map<string, Record<string, unknown>>(
@@ -271,9 +546,10 @@ export async function persistOrientationDiscoveryResearch(
   const now = new Date().toISOString();
   const refreshWindow = getOrientationDiscoveryRefreshWindow(new Date(now));
 
-  const rows = result.candidates.map((candidate) => {
+  const rows = enrichedCandidates.map((candidate) => {
     const dedupeKey = buildOrientationResearchProgrammeDedupeKey(candidate);
     const existing = existingByKey.get(dedupeKey);
+    const universityId = candidate.universityMedia?.universityId || null;
 
     return {
       dedupe_key: dedupeKey,
@@ -303,6 +579,7 @@ export async function persistOrientationDiscoveryResearch(
         families,
         16,
       ),
+      ...(universityId ? { university_id: universityId } : {}),
       last_seen_at: now,
       last_provider: "openai",
       last_model: result.model,
@@ -318,7 +595,11 @@ export async function persistOrientationDiscoveryResearch(
     .select("id,dedupe_key");
 
   if (upsertError || !upserted) {
-    return { available: false, persisted: 0 };
+    return {
+      available: false,
+      persisted: 0,
+      candidates: enrichedCandidates,
+    };
   }
 
   const upsertedRows = upserted as unknown as Array<{
@@ -329,18 +610,19 @@ export async function persistOrientationDiscoveryResearch(
     upsertedRows.map((row) => [String(row.dedupe_key), String(row.id)]),
   );
 
-  const entries = result.candidates
-    .map((candidate) => {
-      const dedupeKey = buildOrientationResearchProgrammeDedupeKey(candidate);
-      const researchProgramId = idByKey.get(dedupeKey);
-      if (!researchProgramId) return null;
-      return {
-        researchProgramId,
-        dedupeKey,
-        candidate,
-      } satisfies OrientationKnowledgeEntry;
-    })
-    .filter((entry): entry is OrientationKnowledgeEntry => Boolean(entry));
+  const entries: OrientationKnowledgeEntry[] = [];
+
+  for (const candidate of enrichedCandidates) {
+    const dedupeKey = buildOrientationResearchProgrammeDedupeKey(candidate);
+    const researchProgramId = idByKey.get(dedupeKey);
+    if (!researchProgramId) continue;
+
+    entries.push({
+      researchProgramId,
+      dedupeKey,
+      candidate,
+    });
+  }
 
   await insertDiscoveryRun({
     plan,
@@ -354,6 +636,7 @@ export async function persistOrientationDiscoveryResearch(
   return {
     available: true,
     persisted: entries.length,
+    candidates: enrichedCandidates,
   };
 }
 

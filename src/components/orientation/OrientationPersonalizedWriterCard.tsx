@@ -37,6 +37,7 @@ const copy = {
     options: "Les programmes que nous étudions pour votre projet",
     featuredOption: "La piste qui ressort le plus aujourd’hui",
     featuredCta: "Voir la page officielle",
+    photoSource: "Source photo",
     otherOptions: "Autres pistes que nous continuons à étudier",
     outlookSectionNote: "Aujourd’hui, une piste ressort clairement. Les autres restent ouvertes pendant que nous finissons les vérifications. Nous en reparlerons avec vous avant de décider.",
     languageIntro: "Nous regarderons avec vous la solution de préparation B1 la plus adaptée à votre situation.",
@@ -115,6 +116,7 @@ const copy = {
     options: "البرامج التي ندرسها لمشروعك",
     featuredOption: "المسار الذي يبرز أكثر اليوم",
     featuredCta: "عرض الصفحة الرسمية",
+    photoSource: "مصدر الصورة",
     otherOptions: "مسارات أخرى نواصل دراستها",
     outlookSectionNote: "اليوم يبرز مسار بوضوح، بينما تبقى المسارات الأخرى مفتوحة إلى أن ننهي التحقق. ثم نراجعها معك قبل القرار.",
     languageIntro: "سنبحث معك عن أفضل طريقة مناسبة لوضعك للتقدم إلى مستوى B1.",
@@ -193,6 +195,7 @@ const copy = {
     options: "Programmes we are reviewing for your project",
     featuredOption: "The path that stands out most today",
     featuredCta: "View official page",
+    photoSource: "Photo source",
     otherOptions: "Other paths we are continuing to review",
     outlookSectionNote: "One path stands out today. The others stay open while we finish the checks. We review them with you before deciding.",
     languageIntro: "We will look with you for the B1 preparation option that best fits your situation.",
@@ -271,6 +274,7 @@ const copy = {
     options: "Studiengänge, die wir für dein Projekt prüfen",
     featuredOption: "Die Option, die heute am stärksten hervorsticht",
     featuredCta: "Offizielle Seite ansehen",
+    photoSource: "Bildquelle",
     otherOptions: "Weitere Optionen, die wir weiter prüfen",
     outlookSectionNote: "Heute fällt eine Option klar auf. Die anderen bleiben offen, während wir die Prüfungen abschließen. Vor der Entscheidung gehen wir alles mit dir durch.",
     languageIntro: "Wir schauen mit dir, welche B1-Vorbereitung am besten zu deiner Situation passt.",
@@ -1094,6 +1098,35 @@ export function OrientationPersonalizedWriterCard({
 
           return (
             <article className="relative mt-5 overflow-hidden rounded-[var(--radius-panel)] bg-[var(--foreground)] text-white shadow-[var(--shadow-card)]">
+              {selected?.universityMedia?.coverImageUrl ? (
+                <figure className="relative border-b border-white/[0.1] bg-black/20">
+                  <div className="h-44 overflow-hidden sm:h-52">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={selected.universityMedia.coverImageUrl}
+                      alt={selected.universityMedia.canonicalName}
+                      loading="lazy"
+                      decoding="async"
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
+                  {selected.universityMedia.coverImageSourceUrl ? (
+                    <figcaption className="absolute bottom-2 end-2 max-w-[80%] rounded-md bg-black/65 px-2 py-1 text-[10px] leading-4 text-white/90 backdrop-blur-sm">
+                      <a
+                        href={selected.universityMedia.coverImageSourceUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="underline decoration-white/40 underline-offset-2"
+                      >
+                        {selected.universityMedia.coverImageAttribution || t.photoSource}
+                        {selected.universityMedia.coverImageLicense
+                          ? " · " + selected.universityMedia.coverImageLicense
+                          : ""}
+                      </a>
+                    </figcaption>
+                  ) : null}
+                </figure>
+              ) : null}
               <div aria-hidden="true" className="absolute inset-y-0 start-0 w-1 bg-[var(--brand)]" />
               <div aria-hidden="true" className="absolute -end-16 -top-16 size-56 rounded-full border border-white/[0.06]" />
 
@@ -1197,7 +1230,20 @@ export function OrientationPersonalizedWriterCard({
                   <article key={option.optionId} className="grid gap-3 py-4 md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] md:gap-6">
                     <div>
                       <div className="flex flex-wrap items-start justify-between gap-3">
-                        <div>
+                        <div className="flex min-w-0 gap-3">
+                          {selected?.universityMedia?.coverImageUrl ? (
+                            <div className="mt-0.5 size-16 shrink-0 overflow-hidden rounded-lg bg-[var(--surface-subtle)] sm:size-20">
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              <img
+                                src={selected.universityMedia.coverImageUrl}
+                                alt=""
+                                loading="lazy"
+                                decoding="async"
+                                className="h-full w-full object-cover"
+                              />
+                            </div>
+                          ) : null}
+                          <div className="min-w-0">
                           <p className="text-xs font-bold text-[var(--brand-strong)]">
                             {String(option.position).padStart(2, "0")}
                           </p>
@@ -1205,6 +1251,17 @@ export function OrientationPersonalizedWriterCard({
                           <p className="mt-1 text-xs leading-5 text-[var(--muted)]">
                             {option.institution}{option.city ? " · " + option.city : ""}
                           </p>
+                          {selected?.universityMedia?.coverImageSourceUrl ? (
+                            <a
+                              href={selected.universityMedia.coverImageSourceUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="mt-1 inline-block text-[10px] font-semibold text-[var(--brand-strong)] underline underline-offset-2"
+                            >
+                              {t.photoSource}
+                            </a>
+                          ) : null}
+                          </div>
                         </div>
                         {status ? (
                           <span className={"shrink-0 rounded-full px-2 py-1 text-[10px] font-semibold " + status.className}>
