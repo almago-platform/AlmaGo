@@ -15,7 +15,7 @@ export default async function StudentApplicationsPage() {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("applications")
-    .select("id,status,intake_term:intake,deadline,next_action,required_documents,student_notes,result,submitted_at,created_at,programs(name,degree_level,universities(name,city)),application_events(id,event_type,message,created_at)")
+    .select("id,status,intake_term:intake,deadline,deadline_kind,deadline_source_url,deadline_verified_at,deadline_cycle,application_method,next_action,required_documents,student_notes,result,submitted_at,created_at,programs(name,degree_level,universities(name,city)),application_events(id,event_type,message,created_at)")
     .order("created_at", { ascending: false });
 
   if (error) {
