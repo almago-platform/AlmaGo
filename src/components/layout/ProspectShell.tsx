@@ -26,17 +26,24 @@ export function ProspectShell({
   const paymentCopy = prospectPaymentCopy[locale];
   const name = displayName?.trim();
 
-  const links = [
+  const journeyLinks = [
     { href: "/prospect", label: t.links.dashboard },
     { href: "/prospect/orientation", label: t.links.orientation },
     { href: "/prospect/catalogue", label: t.links.catalogue },
     { href: "/prospect/proposal", label: t.links.proposal },
     { href: "/prospect/roadmap", label: t.links.roadmap },
     { href: "/prospect/documents", label: t.links.documents },
+  ];
+  const serviceLinks = [
     { href: "/prospect/solutions", label: t.links.solutions },
     { href: "/prospect/offers", label: offersCopy.nav || t.links.offers },
     { href: "/prospect/payment", label: paymentCopy.nav || t.links.payment },
   ];
+
+  const activeFor = (href: string) =>
+    href === "/prospect"
+      ? pathname === href
+      : pathname === href || pathname.startsWith(`${href}/`);
 
   async function signOut() {
     await createClient().auth.signOut();
@@ -48,7 +55,7 @@ export function ProspectShell({
     <div dir={direction} className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
       <a href="#main-content" className="skip-link">{copy.shell.skip}</a>
 
-      <header className="border-b border-[var(--border)] bg-[var(--surface)]">
+      <header className="sticky top-0 z-40 border-b border-[var(--border)] bg-[color:rgba(255,253,248,0.94)] backdrop-blur">
         <div className="mx-auto flex min-h-16 max-w-7xl items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
           <Link href="/prospect" className="flex min-w-0 items-center gap-3" aria-label={t.homeAria}>
             <BrandLogo className="h-9 w-auto max-w-[11rem]" />
@@ -70,24 +77,46 @@ export function ProspectShell({
       </header>
 
       <div className="mx-auto grid max-w-7xl gap-6 px-4 py-5 sm:px-6 sm:py-7 lg:grid-cols-[15rem_minmax(0,1fr)] lg:px-8 lg:py-9">
-        <aside className="h-fit rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-4 lg:sticky lg:top-6">
-          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--brand)]">{t.area}</p>
-          {name ? <p className="mt-2 text-sm font-bold"><bdi dir="auto">{name}</bdi></p> : null}
-          <p className="mt-2 text-xs leading-5 text-[var(--muted)]">{t.intro}</p>
+        <aside className="h-fit overflow-hidden rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow-card)] lg:sticky lg:top-24">
+          <div className="border-b border-[var(--border)] bg-[linear-gradient(145deg,var(--surface),var(--surface-subtle))] p-4">
+            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--brand)]">{t.area}</p>
+            {name ? <p className="mt-2 text-sm font-bold"><bdi dir="auto">{name}</bdi></p> : null}
+            <p className="mt-2 text-xs leading-5 text-[var(--muted)]">{t.intro}</p>
+          </div>
 
-          <nav className="mt-5" aria-label={t.navigation}>
-            <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-1">
-              {links.map((item) => {
-                const active = item.href === "/prospect"
-                  ? pathname === item.href
-                  : pathname === item.href || pathname.startsWith(`${item.href}/`);
-
+          <nav className="p-3" aria-label={t.navigation}>
+            <p className="px-2 pb-2 text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--muted)]">
+              {t.journeyGroup}
+            </p>
+            <div className="grid gap-1 sm:grid-cols-2 lg:grid-cols-1">
+              {journeyLinks.map((item) => {
+                const active = activeFor(item.href);
                 return (
                   <Link
                     key={item.href}
                     href={item.href}
                     aria-current={active ? "page" : undefined}
-                    className={`rounded-[var(--radius-control)] border px-3 py-2.5 text-sm font-semibold transition-colors ${active ? "border-[var(--brand-border)] bg-[var(--brand-soft)] text-[var(--brand-strong)]" : "border-transparent text-[var(--foreground)] hover:border-[var(--brand-border)] hover:bg-[var(--brand-soft)] hover:text-[var(--brand-strong)]"}`}
+                    className={`relative rounded-[var(--radius-control)] border px-3 py-2.5 text-sm font-semibold transition-all ${active ? "border-[var(--brand-border)] bg-[var(--brand-soft)] text-[var(--brand-strong)] shadow-[inset_3px_0_0_var(--brand)]" : "border-transparent text-[var(--foreground)] hover:bg-[var(--surface-subtle)]"}`}
+                  >
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </div>
+
+            <div className="my-3 border-t border-[var(--border)]" />
+            <p className="px-2 pb-2 text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--muted)]">
+              {t.servicesGroup}
+            </p>
+            <div className="grid gap-1 sm:grid-cols-2 lg:grid-cols-1">
+              {serviceLinks.map((item) => {
+                const active = activeFor(item.href);
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    aria-current={active ? "page" : undefined}
+                    className={`relative rounded-[var(--radius-control)] border px-3 py-2.5 text-sm font-semibold transition-all ${active ? "border-[var(--brand-border)] bg-[var(--brand-soft)] text-[var(--brand-strong)] shadow-[inset_3px_0_0_var(--brand)]" : "border-transparent text-[var(--foreground)] hover:bg-[var(--surface-subtle)]"}`}
                   >
                     {item.label}
                   </Link>
