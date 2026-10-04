@@ -104,11 +104,18 @@ export function PublicOrientationForm({
     profileKey: string | null;
     result: OrientationPublicPersonalizedResult | null;
   }>({ profileKey: null, result: null });
+  const [orientationResultState, setOrientationResultState] = useState<{
+    profileKey: string | null;
+    ready: boolean;
+  }>({ profileKey: null, ready: false });
   const handleReviewReady = useCallback((reviewId: string | null) => {
     setOrientationReview({ profileKey: reviewProfileKey, reviewId });
   }, [reviewProfileKey]);
   const handlePersonalizedReady = useCallback((result: OrientationPublicPersonalizedResult | null) => {
     setPrintPersonalized({ profileKey: reviewProfileKey, result });
+  }, [reviewProfileKey]);
+  const handleResultReady = useCallback((ready: boolean) => {
+    setOrientationResultState({ profileKey: reviewProfileKey, ready });
   }, [reviewProfileKey]);
   const orientationReviewId =
     orientationReview.profileKey === reviewProfileKey
@@ -118,6 +125,9 @@ export function PublicOrientationForm({
     printPersonalized.profileKey === reviewProfileKey
       ? printPersonalized.result
       : null;
+  const orientationResultReady =
+    orientationResultState.profileKey === reviewProfileKey
+      && orientationResultState.ready;
 
   const bacTracks = useMemo(() => localizeProfileOptions(locale, tunisianBacTrackOptions), [locale]);
   const diplomas = useMemo(() => localizeProfileOptions(locale, diplomaOptions), [locale]);
@@ -1111,12 +1121,15 @@ export function PublicOrientationForm({
                   accountLinkingEnabled={accountLinkingEnabled && !authenticatedUpdate}
                   onReviewReady={handleReviewReady}
                   onPersonalizedReady={handlePersonalizedReady}
+                  onResultReady={handleResultReady}
                   onRefineAnswers={(patch) => {
                     setAnswers((current) => ({ ...current, ...patch }));
                     setError("");
                   }}
                 />
 
+                {orientationResultReady ? (
+                  <>
                 {isBachelorFirstContact ? (
                   <details className="orientation-print-hide mt-5 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4">
                     <summary className="cursor-pointer text-sm font-bold">{firstContactCopy.answers}</summary>
@@ -1174,6 +1187,8 @@ export function PublicOrientationForm({
                     </Link>
                   </div>
                 </section>
+                  </>
+                ) : null}
                 </div>
               </div>
             )}
