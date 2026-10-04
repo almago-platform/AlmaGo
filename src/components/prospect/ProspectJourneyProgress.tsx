@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { Locale } from "@/lib/i18n";
 import type { ProspectIntakeRecord, StarterDocumentSummary } from "@/lib/prospect/intake";
 
 type JourneyStep = {
@@ -7,16 +8,60 @@ type JourneyStep = {
   href: string;
 };
 
-const steps: JourneyStep[] = [
-  { key: "orientation", label: "Orientation", href: "/prospect/orientation" },
-  { key: "documents", label: "Documents", href: "/prospect/documents" },
-  { key: "review", label: "Analyse Campus", href: "/prospect/proposal" },
-  { key: "proposal", label: "Proposition", href: "/prospect/proposal" },
-  { key: "procedure", label: "Procédure", href: "/prospect/roadmap" },
-  { key: "applications", label: "Candidatures", href: "/prospect/roadmap" },
-  { key: "admission", label: "Admission", href: "/prospect/roadmap" },
-  { key: "visa", label: "Visa & départ", href: "/prospect/roadmap" },
-];
+const journeyCopy: Record<Locale, { count: string; steps: JourneyStep[] }> = {
+  fr: {
+    count: "étapes",
+    steps: [
+      { key: "orientation", label: "Orientation", href: "/prospect/orientation" },
+      { key: "documents", label: "Documents", href: "/prospect/documents" },
+      { key: "review", label: "Analyse Campus", href: "/prospect/proposal" },
+      { key: "proposal", label: "Proposition", href: "/prospect/proposal" },
+      { key: "procedure", label: "Procédure", href: "/prospect/roadmap" },
+      { key: "applications", label: "Candidatures", href: "/prospect/roadmap" },
+      { key: "admission", label: "Admission", href: "/prospect/roadmap" },
+      { key: "visa", label: "Visa & départ", href: "/prospect/roadmap" },
+    ],
+  },
+  ar: {
+    count: "خطوات",
+    steps: [
+      { key: "orientation", label: "التوجيه", href: "/prospect/orientation" },
+      { key: "documents", label: "الوثائق", href: "/prospect/documents" },
+      { key: "review", label: "مراجعة Campus", href: "/prospect/proposal" },
+      { key: "proposal", label: "الاقتراح", href: "/prospect/proposal" },
+      { key: "procedure", label: "الإجراءات", href: "/prospect/roadmap" },
+      { key: "applications", label: "الترشحات", href: "/prospect/roadmap" },
+      { key: "admission", label: "القبول", href: "/prospect/roadmap" },
+      { key: "visa", label: "التأشيرة والمغادرة", href: "/prospect/roadmap" },
+    ],
+  },
+  en: {
+    count: "steps",
+    steps: [
+      { key: "orientation", label: "Orientation", href: "/prospect/orientation" },
+      { key: "documents", label: "Documents", href: "/prospect/documents" },
+      { key: "review", label: "Campus review", href: "/prospect/proposal" },
+      { key: "proposal", label: "Proposal", href: "/prospect/proposal" },
+      { key: "procedure", label: "Procedure", href: "/prospect/roadmap" },
+      { key: "applications", label: "Applications", href: "/prospect/roadmap" },
+      { key: "admission", label: "Admission", href: "/prospect/roadmap" },
+      { key: "visa", label: "Visa & departure", href: "/prospect/roadmap" },
+    ],
+  },
+  de: {
+    count: "Schritte",
+    steps: [
+      { key: "orientation", label: "Orientierung", href: "/prospect/orientation" },
+      { key: "documents", label: "Dokumente", href: "/prospect/documents" },
+      { key: "review", label: "Campus-Prüfung", href: "/prospect/proposal" },
+      { key: "proposal", label: "Vorschlag", href: "/prospect/proposal" },
+      { key: "procedure", label: "Verfahren", href: "/prospect/roadmap" },
+      { key: "applications", label: "Bewerbungen", href: "/prospect/roadmap" },
+      { key: "admission", label: "Zulassung", href: "/prospect/roadmap" },
+      { key: "visa", label: "Visum & Abreise", href: "/prospect/roadmap" },
+    ],
+  },
+};
 
 function currentIndex({
   hasOrientation,
@@ -44,8 +89,11 @@ export function ProspectJourneyProgress(props: {
   orientationConfirmed: boolean;
   intake: ProspectIntakeRecord | null;
   starterSummary: StarterDocumentSummary;
+  locale: Locale;
   compact?: boolean;
 }) {
+  const copy = journeyCopy[props.locale];
+  const steps = copy.steps;
   const activeIndex = currentIndex(props);
   const completed = Math.max(0, activeIndex);
   const percent = Math.round((completed / (steps.length - 1)) * 100);
@@ -54,7 +102,7 @@ export function ProspectJourneyProgress(props: {
     <div>
       <div className="mb-3 flex items-center justify-between gap-3 text-sm">
         <span className="font-semibold text-[var(--foreground)]">
-          {activeIndex + 1}/{steps.length} étapes
+          {activeIndex + 1}/{steps.length} {copy.count}
         </span>
         <span className="text-[var(--muted)]">{percent}%</span>
       </div>
