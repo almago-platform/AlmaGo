@@ -297,3 +297,30 @@ export function buildCampusInternalTargets(
     return date ? [{ key, kind: "internal_target" as const, date, offsetDays }] : [];
   });
 }
+
+
+export function evaluateCampusApplicationDeadline(
+  application: {
+    deadline: string | null;
+    deadline_kind?: string | null;
+    deadline_cycle?: string | null;
+    deadline_source_url?: string | null;
+    deadline_verified_at?: string | null;
+  },
+  now: Date = new Date(),
+): CampusVerifiedDeadline {
+  const kind = application.deadline_kind === "official_external_date"
+    ? "official_external_date"
+    : "official_hard_deadline";
+
+  return evaluateCampusOfficialDeadline(
+    {
+      kind,
+      date: application.deadline,
+      cycle: application.deadline_cycle || null,
+      sourceUrl: application.deadline_source_url || null,
+      verifiedAt: application.deadline_verified_at || null,
+    },
+    now,
+  );
+}
