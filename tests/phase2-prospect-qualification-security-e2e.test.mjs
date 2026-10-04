@@ -12,6 +12,8 @@ const prospectLayout = read("src/app/prospect/layout.tsx");
 const prospectUpdate = read("src/app/api/prospect/orientation/route.ts");
 const adminReview = read("src/app/api/admin/prospects/qualification-review/route.ts");
 const prospectPage = read("src/app/prospect/page.tsx");
+const prospectHub = read("src/lib/prospect/hub.ts");
+const prospectQualificationSummary = read("src/components/prospect/ProspectQualificationSummary.tsx");
 const prospectCopy = read("src/content/prospect-qualification-copy.ts");
 const historyMigration = read("supabase/migrations/0036_phase2_prospect_qualification_history.sql");
 const autoMigration = read("supabase/migrations/0037_phase2_atomic_orientation_qualification.sql");
@@ -184,12 +186,17 @@ test("P2.7 authorization never relies on user metadata", () => {
 });
 
 test("P2.7 prospect UI exposes only safe current qualification information", () => {
-  assert.match(prospectPage, /\.select\("state,next_action"\)/);
-  assert.match(prospectPage, /\.eq\("orientation_id", current\.id\)/);
-  assert.doesNotMatch(
-    prospectPage,
-    /review_reason|reviewer_user_id|supersedes_id|reason_codes|missing_fields|verification_requirements/,
-  );
+  assert.match(prospectHub, /\.select\("state,next_action"\)/);
+  assert.match(prospectHub, /\.eq\("orientation_id", current\.id\)/);
+  for (const source of [prospectPage, prospectHub, prospectQualificationSummary]) {
+    assert.doesNotMatch(
+      source,
+      /review_reason|reviewer_user_id|supersedes_id|reason_codes|missing_fields|verification_requirements/,
+    );
+  }
+  assert.match(prospectPage, /ProspectQualificationSummary/);
+  assert.match(prospectQualificationSummary, /qualification\.state/);
+  assert.match(prospectQualificationSummary, /qualification\.next_action/);
 
   for (const state of [
     "not_evaluated",
