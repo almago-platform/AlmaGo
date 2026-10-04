@@ -96,7 +96,7 @@ export function PublicOrientationForm({
   );
   const [step, setStep] = useState<Step>(1);
   const [error, setError] = useState("");
-  const [hydrated, setHydrated] = useState(authenticatedUpdate);
+  const [hydrated, setHydrated] = useState(authenticatedUpdate || authenticatedEntry);
   const reviewProfileKey = useMemo(() => JSON.stringify(answers), [answers]);
   const [orientationReview, setOrientationReview] = useState<{
     profileKey: string | null;
@@ -317,7 +317,6 @@ export function PublicOrientationForm({
 
     if (authenticatedEntry) {
       window.sessionStorage.removeItem(SESSION_KEY);
-      setHydrated(true);
       return;
     }
 
