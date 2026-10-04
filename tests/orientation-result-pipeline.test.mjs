@@ -158,8 +158,8 @@ test("E writer UI presents a premium progressive result with one CTA and verifie
 });
 
 test("E signals result readiness only after the orientation engine has returned a result", () => {
-  assert.match(engineCard, /onResultReady\?\(false\)/);
-  assert.match(engineCard, /onResultReady\?\(true\)/);
+  assert.match(engineCard, /onResultReady\?\.\(false\)/);
+  assert.match(engineCard, /onResultReady\?\.\(true\)/);
   assert.match(engineCard, /onResultReady\?: \(ready: boolean\) => void/);
   assert.match(form, /handleResultReady/);
   assert.match(form, /orientationResultState\.profileKey === reviewProfileKey/);
