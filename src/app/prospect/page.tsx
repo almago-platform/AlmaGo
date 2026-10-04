@@ -1,13 +1,16 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ProspectJourneyProgress } from "@/components/prospect/ProspectJourneyProgress";
+import { ProspectProgrammeRecommendationCard } from "@/components/prospect/ProspectProgrammeRecommendationCard";
 import { ProspectQualificationSummary } from "@/components/prospect/ProspectQualificationSummary";
 import { prospectHubCopy } from "@/content/prospect-hub-copy";
 import { prospectQualificationCopy } from "@/content/prospect-qualification-copy";
 import { orientationDiagnosticCopy } from "@/content/orientation-diagnostic-copy";
 import { getRequestLocale } from "@/lib/i18n-server";
 import { getPhase2StudentAccess } from "@/lib/phase2/access";
+import { loadVerifiedProgrammeCatalogue } from "@/lib/orientation-engine/catalog";
 import { loadProspectHubState } from "@/lib/prospect/hub";
+import { prospectCatalogueRecommendations } from "@/lib/prospect/programmes";
 
 function projectFacts(
   answers: NonNullable<Awaited<ReturnType<typeof loadProspectHubState>>["answers"]>,
@@ -123,13 +126,18 @@ export default async function ProspectDashboardPage() {
   if (!access.isStudent) redirect("/unauthorized");
   if (!access.phase2Enabled || access.canUseClientFeatures) redirect("/student");
 
-  const state = await loadProspectHubState({
-    userId: access.user.id,
-    email: access.user.email,
-    emailConfirmed: Boolean(access.user.email_confirmed_at),
-  });
+  const [state, catalogue] = await Promise.all([
+    loadProspectHubState({
+      userId: access.user.id,
+      email: access.user.email,
+      emailConfirmed: Boolean(access.user.email_confirmed_at),
+    }),
+    loadVerifiedProgrammeCatalogue(),
+  ]);
 
   const t = prospectHubCopy[locale].dashboard;
+  const catalogueT = prospectHubCopy[locale].catalogue;
+  const recommendations = prospectCatalogueRecommendations(state.answers, catalogue);
   const diagnosticCopy = orientationDiagnosticCopy[locale];
   const qualificationCopy = prospectQualificationCopy[locale];
   const action = nextAction(state, t);
