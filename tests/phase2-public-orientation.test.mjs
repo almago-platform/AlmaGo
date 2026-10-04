@@ -49,6 +49,13 @@ test("orientation keeps P2.1 questionnaire state browser-only", () => {
   assert.match(form, /prospectCaptureEnabled\s*\?\s*\([\s\S]*<ProspectCaptureCard/);
 });
 
+test("orientation exposes account continuation only through the gated prospect flow", () => {
+  assert.match(page, /isPhase2AccountLinkingEnabled/);
+  assert.match(page, /accountLinkingEnabled=\{isPhase2AccountLinkingEnabled\(\)\}/);
+  assert.match(form, /accountLinkingEnabled\?: boolean/);
+  assert.match(form, /<ProspectCaptureCard[\s\S]*accountLinkingEnabled=\{accountLinkingEnabled\}/);
+});
+
 test("orientation requires identity before the questionnaire", () => {
   assert.match(form, /createEmptyPublicOrientationIdentity/);
   assert.match(form, /isCompletePublicOrientationIdentity/);
