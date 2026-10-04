@@ -82,6 +82,29 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Unable to resolve the current project." }, { status: 500 });
   }
 
+  const { data: intakeCase, error: intakeError } = await access.supabase
+    .from("student_intake_cases")
+    .select("status")
+    .eq("student_id", access.user.id)
+    .maybeSingle();
+
+  if (intakeError) {
+    return NextResponse.json(
+      { error: "Unable to resolve the current intake." },
+      { status: 500 },
+    );
+  }
+
+  if (intakeCase?.status === "procedure_created") {
+    return NextResponse.json(
+      {
+        error: "Cette orientation ne peut plus être remplacée automatiquement car une procédure a déjà été créée.",
+        code: "procedure_already_created",
+      },
+      { status: 409 },
+    );
+  }
+
   const diagnostic = buildPublicOrientationDiagnostic(answers);
   const qualification = evaluateProspectQualification(answers, diagnostic);
   const smartPriority = evaluateSmartOrientationPriority(answers);
@@ -135,5 +158,17 @@ export async function POST(request: Request) {
     );
   }
 
-  return NextResponse.json({ saved: true }, { status: 201 });
+  return NextResponse.json(
+    {
+      saved: true,
+      orientationId: saved.orientation_id,
+      refreshed: true,
+    },
+    {
+      status: 201,
+      headers: {
+        "Cache-Control": "no-store, max-age=0",
+      },
+    },
+  );
 }
