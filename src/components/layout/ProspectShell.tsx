@@ -14,9 +14,11 @@ import { createClient } from "@/lib/supabase/client";
 export function ProspectShell({
   children,
   displayName,
+  showPayment = false,
 }: Readonly<{
   children: ReactNode;
   displayName?: string | null;
+  showPayment?: boolean;
 }>) {
   const pathname = usePathname();
   const router = useRouter();
@@ -37,7 +39,9 @@ export function ProspectShell({
   const serviceLinks = [
     { href: "/prospect/solutions", label: t.links.solutions },
     { href: "/prospect/offers", label: offersCopy.nav || t.links.offers },
-    { href: "/prospect/payment", label: paymentCopy.nav || t.links.payment },
+    ...(showPayment || pathname.startsWith("/prospect/payment")
+      ? [{ href: "/prospect/payment", label: paymentCopy.nav || t.links.payment }]
+      : []),
   ];
 
   const activeFor = (href: string) =>
