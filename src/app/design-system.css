@@ -340,3 +340,64 @@ html[dir="rtl"] .ds-h6 { text-transform: none; }
     animation: none;
   }
 }
+
+
+/* Cross-product UX quality layer */
+:where(a, button, input, select, textarea, summary):focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--brand) 72%, white);
+  outline-offset: 3px;
+}
+
+:where(button, [role="button"], a.ds-button) {
+  -webkit-tap-highlight-color: transparent;
+}
+
+:where(input, select, textarea).field {
+  min-height: 44px;
+}
+
+:where(textarea).field {
+  min-height: 7rem;
+  resize: vertical;
+}
+
+.ds-card {
+  overflow-wrap: anywhere;
+}
+
+.ds-card-interactive {
+  transition: border-color 180ms var(--ease-standard), box-shadow 180ms var(--ease-standard), transform 180ms var(--ease-standard);
+}
+
+.ds-card-interactive:hover {
+  transform: translateY(-1px);
+}
+
+.mobile-nav-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong) transparent;
+}
+
+@media (max-width: 639px) {
+  .ds-card {
+    padding: 1rem;
+  }
+
+  :where(button, a, input, select) {
+    scroll-margin-block: 5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+  }
+
+  .ds-card-interactive {
+    transition: none;
+  }
+
+  .ds-card-interactive:hover {
+    transform: none;
+  }
+}
