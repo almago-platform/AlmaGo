@@ -131,7 +131,7 @@ export function AppShell({
         {role === "student" ? shell.skip : "Aller au contenu"}
       </a>
 
-      <aside className="student-shell-sidebar admin-shell-sidebar hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-40 lg:flex lg:w-[16.5rem] lg:flex-col lg:border-r lg:border-[var(--border)] lg:bg-[var(--surface)]">
+      <aside className="student-shell-sidebar admin-shell-sidebar hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-40 lg:flex lg:w-[15.5rem] lg:flex-col lg:border-r lg:border-[var(--border)] lg:bg-[var(--surface)]">
         <div className="flex min-h-20 items-center border-b border-[var(--border)] px-5">
           <Link href={role === "admin" ? "/admin" : "/student"} className="flex items-center" aria-label={shellHomeAria}>
             <BrandLogo className="h-auto w-[13rem]" />
@@ -237,7 +237,7 @@ export function AppShell({
         </div>
       </aside>
 
-      <div className="student-shell-content admin-shell-content lg:pl-[16.5rem]">
+      <div className="student-shell-content admin-shell-content lg:pl-[15.5rem]">
         {role === "student" ? (
           <>
             <header className="sticky top-0 z-30 border-b border-[var(--border)] bg-[var(--surface)]/95 pt-[env(safe-area-inset-top)] shadow-[var(--shadow-sm)] backdrop-blur lg:hidden">
@@ -400,7 +400,7 @@ export function AppShell({
                   {currentItem.helper || "Pilotage opérationnel AlmaGo"}
                 </p>
               </div>
-              <div className="admin-team-chip rounded-[var(--radius-pill)] border border-[var(--brand-border)] bg-[var(--brand-subtle)] px-3 py-2 text-xs font-semibold text-[var(--brand-strong)]">
+              <div className="text-[var(--foreground-soft)]">
                 Espace équipe
               </div>
             </div>
