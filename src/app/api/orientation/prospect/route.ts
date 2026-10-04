@@ -13,6 +13,7 @@ import { evaluateSmartOrientationPriority } from "@/lib/phase2/smart-orientation
 import { linkOrientationHumanReview } from "@/lib/orientation-engine/review/store";
 import { createFreeValidationInterestToken } from "@/lib/phase2/free-validation-interest-token";
 import {
+  isPhase2AccountLinkingEnabled,
   isPhase2EmailDeliveryEnabled,
   isPhase2ProspectCaptureEnabled,
 } from "@/lib/phase2/config";
@@ -133,6 +134,9 @@ export async function POST(request: Request) {
   const smartPriority = evaluateSmartOrientationPriority(answers);
   const resume = createOrientationResumeToken();
   const interest = createFreeValidationInterestToken();
+  const signupPath = isPhase2AccountLinkingEnabled()
+    ? `/signup?orientation_token=${encodeURIComponent(resume.token)}`
+    : null;
 
   let supabase;
   try {
@@ -217,7 +221,10 @@ export async function POST(request: Request) {
     }
 
     if (!isPhase2EmailDeliveryEnabled()) {
-      return NextResponse.json({ saved: true, delivery: "disabled", interestToken: interest.token }, { status: 201 });
+      return NextResponse.json(
+        { saved: true, delivery: "disabled", interestToken: interest.token, signupPath },
+        { status: 201 },
+      );
     }
 
     const baseUrl = publicSiteUrl();
@@ -226,7 +233,10 @@ export async function POST(request: Request) {
         .from("orientations")
         .update({ delivery_attempted_at: new Date().toISOString() })
         .eq("id", orientation.id);
-      return NextResponse.json({ saved: true, delivery: "unavailable", interestToken: interest.token }, { status: 201 });
+      return NextResponse.json(
+        { saved: true, delivery: "unavailable", interestToken: interest.token, signupPath },
+        { status: 201 },
+      );
     }
 
     const reportUrl = new URL(
@@ -274,7 +284,7 @@ export async function POST(request: Request) {
       .eq("id", orientation.id);
 
     return NextResponse.json(
-      { saved: true, delivery: delivery.status, interestToken: interest.token },
+      { saved: true, delivery: delivery.status, interestToken: interest.token, signupPath },
       { status: 201 },
     );
   } catch {
