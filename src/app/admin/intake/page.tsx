@@ -142,14 +142,20 @@ export default async function AdminIntakePage() {
       />
       <AdminIntakePanel
         cases={cases}
-        offers={(offersResult.data || []).map((offer) => ({
-          id: offer.id,
-          displayName: offer.display_name,
-          summary: offer.summary,
-          services: serviceItems(offer.service_items),
-          priceMinor: Number(offer.price_minor),
-          currency: offer.currency,
-        }))}
+        offers={(offersResult.data || []).flatMap((offer) => {
+          if (offer.price_minor === null || typeof offer.currency !== "string") return [];
+          const priceMinor = Number(offer.price_minor);
+          if (!Number.isSafeInteger(priceMinor) || priceMinor < 0) return [];
+
+          return [{
+            id: offer.id,
+            displayName: offer.display_name,
+            summary: offer.summary,
+            services: serviceItems(offer.service_items),
+            priceMinor,
+            currency: offer.currency,
+          }];
+        })}
       />
     </main>
   );
