@@ -22,10 +22,10 @@ export default async function StudentOrientationPage() {
   ] = await Promise.all([
     supabase
       .from("program_recommendations")
-      .select("id,status,note,student_interest_at,programs(id,name,degree_level,field,teaching_language,winter_deadline,summer_deadline,application_url,german_level_required,english_level_required,diploma_required,requirements,universities(name,city,bundesland))")
+      .select("id,status,note,student_interest_at,programs(id,name,degree_level,field,teaching_language,intake_terms,winter_deadline,summer_deadline,application_url,german_level_required,english_level_required,diploma_required,requirements,universities(name,city,bundesland))")
       .eq("is_archived", false)
       .order("created_at", { ascending: false }),
-    supabase.from("applications").select("program_id"),
+    supabase.from("applications").select("program_id,status"),
     supabase
       .from("student_projects")
       .select("current_diploma,current_german_level,target_intake")
@@ -80,6 +80,9 @@ export default async function StudentOrientationPage() {
       <StudentOrientationPanel
         recommendations={recommendations}
         applicationProgramIds={(applications || []).map((application) => application.program_id)}
+        applicationStatuses={Object.fromEntries(
+          (applications || []).map((application) => [application.program_id, application.status]),
+        )}
         applicationStateError={applicationsError ? t.page.applicationsStateError : undefined}
         criteriaStateError={projectError ? t.page.criteriaStateError : undefined}
       />
