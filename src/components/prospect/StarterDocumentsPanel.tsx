@@ -37,6 +37,7 @@ export function StarterDocumentsPanel({ documents }: { documents: StarterDocumen
   const inputRef = useRef<HTMLInputElement>(null);
   const [category, setCategory] = useState("passport");
   const [busy, setBusy] = useState(false);
+  const [selectedFileName, setSelectedFileName] = useState("");
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -47,10 +48,14 @@ export function StarterDocumentsPanel({ documents }: { documents: StarterDocumen
     }
   }
 
-  const requiredReady = requiredStarterDocumentCategories.every((requiredCategory) =>
+  const approvedRequired = requiredStarterDocumentCategories.filter((requiredCategory) =>
     documents.some(
       (document) => document.category === requiredCategory && document.status === "approved",
     ),
+  ).length;
+  const requiredReady = approvedRequired === requiredStarterDocumentCategories.length;
+  const requiredProgress = Math.round(
+    (approvedRequired / requiredStarterDocumentCategories.length) * 100,
   );
 
   async function upload(event: React.FormEvent<HTMLFormElement>) {
@@ -82,6 +87,7 @@ export function StarterDocumentsPanel({ documents }: { documents: StarterDocumen
       }
 
       if (inputRef.current) inputRef.current.value = "";
+      setSelectedFileName("");
       setMessage("Document envoyé. Campus Allemagne va le vérifier.");
       router.refresh();
     } catch {
@@ -129,6 +135,21 @@ export function StarterDocumentsPanel({ documents }: { documents: StarterDocumen
           Nous demandons seulement les preuves nécessaires pour décider du parcours adapté.
           Le certificat de langue est facultatif si vous n’en avez pas encore.
         </p>
+        <div className="mt-5 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4">
+          <div className="flex items-center justify-between gap-3 text-sm">
+            <span className="font-semibold">
+              Pièces obligatoires validées : {approvedRequired}/{requiredStarterDocumentCategories.length}
+            </span>
+            <span className="text-[var(--muted)]">{requiredProgress}%</span>
+          </div>
+          <div className="mt-3 h-2 overflow-hidden rounded-full bg-[var(--surface-muted)]">
+            <div
+              className="h-full rounded-full bg-[var(--brand)]"
+              style={{ width: `${requiredProgress}%` }}
+              aria-hidden="true"
+            />
+          </div>
+        </div>
 
         <div className="mt-5 grid gap-3 sm:grid-cols-2">
           {starterDocumentCategories.map((requirement) => {
@@ -218,15 +239,31 @@ export function StarterDocumentsPanel({ documents }: { documents: StarterDocumen
                 ))}
               </select>
             </label>
-            <label className="text-sm font-semibold">
-              Fichier
+            <div>
+              <span className="text-sm font-semibold">Fichier</span>
               <input
                 ref={inputRef}
-                className="field mt-2"
+                id="prospect-document-file"
+                className="sr-only"
                 type="file"
                 accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"
+                onChange={(event) => {
+                  setSelectedFileName(event.target.files?.[0]?.name || "");
+                  setError(null);
+                }}
               />
-            </label>
+              <label
+                htmlFor="prospect-document-file"
+                className="mt-2 flex min-h-24 cursor-pointer flex-col items-center justify-center rounded-[var(--radius-control)] border border-dashed border-[var(--border-strong)] bg-[var(--surface-subtle)] px-4 py-4 text-center hover:border-[var(--brand-border)] hover:bg-[var(--brand-soft)]"
+              >
+                <span className="text-sm font-bold text-[var(--foreground)]">
+                  {selectedFileName || "Choisir un fichier"}
+                </span>
+                <span className="mt-1 text-xs leading-5 text-[var(--muted)]">
+                  PDF, JPG ou PNG · 10 MiB maximum
+                </span>
+              </label>
+            </div>
           </div>
 
           {error ? <p role="alert" className="mt-4 text-sm font-semibold text-red-700">{error}</p> : null}
@@ -234,8 +271,8 @@ export function StarterDocumentsPanel({ documents }: { documents: StarterDocumen
 
           <button
             type="submit"
-            disabled={busy}
-            className="mt-5 inline-flex min-h-11 items-center rounded-[var(--radius-control)] bg-[var(--brand)] px-5 text-sm font-bold text-white disabled:opacity-60"
+            disabled={busy || !selectedFileName}
+            className="mt-5 inline-flex min-h-11 items-center rounded-[var(--radius-control)] bg-[var(--brand)] px-5 text-sm font-bold text-white disabled:cursor-not-allowed disabled:opacity-50"
           >
             {busy ? "Envoi…" : "Envoyer le document"}
           </button>
