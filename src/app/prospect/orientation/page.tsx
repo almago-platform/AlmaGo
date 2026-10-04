@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { IntakeFlowCard } from "@/components/prospect/IntakeFlowCard";
+import { ProspectQualificationPanel } from "@/components/prospect/ProspectQualificationPanel";
 import { prospectHubCopy } from "@/content/prospect-hub-copy";
+import { prospectQualificationCopy } from "@/content/prospect-qualification-copy";
 import { orientationDiagnosticCopy } from "@/content/orientation-diagnostic-copy";
 import { getRequestLocale } from "@/lib/i18n-server";
 import { getPhase2StudentAccess } from "@/lib/phase2/access";
@@ -26,6 +28,7 @@ export default async function ProspectOrientationPage() {
   });
   const t = prospectHubCopy[locale].orientation;
   const diagnosticCopy = orientationDiagnosticCopy[locale];
+  const qualificationCopy = prospectQualificationCopy[locale];
   const dateFormatter = new Intl.DateTimeFormat(locale, { dateStyle: "long" });
 
   return (
@@ -53,6 +56,11 @@ export default async function ProspectOrientationPage() {
 
       {state.current ? (
         <>
+          <ProspectQualificationPanel
+            qualification={state.qualification}
+            copy={qualificationCopy}
+          />
+
           <section className="rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--brand-soft)]/55 p-5 sm:p-6">
             <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--brand)]">{t.current}</p>
             <h2 className="mt-2 text-2xl font-bold">
