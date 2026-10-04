@@ -85,11 +85,13 @@ test("prospect dashboard uses latest orientation plus a bounded append-only hist
   assert.match(prospectShell, /href: "\/prospect\/orientation"/);
 });
 
-test("authenticated update UI posts only answers and locale and explains version preservation", () => {
+test("authenticated update UI posts only answers and locale then refreshes the student space", () => {
   assert.match(updateCard, /fetch\("\/api\/prospect\/orientation"/);
   assert.match(updateCard, /JSON\.stringify\(\{ answers, locale \}\)/);
-  assert.match(updateCard, /href="\/prospect"/);
+  assert.match(updateCard, /router\.replace\("\/prospect\/orientation\?updated=1"\)/);
+  assert.match(updateCard, /router\.refresh\(\)/);
   assert.match(updateCopy, /Votre orientation précédente restera dans votre historique/);
+  assert.match(updateCopy, /tableau de bord, le catalogue, la roadmap et la proposition/);
   assert.match(updateCopy, /سيبقى توجيهك السابق في السجل/);
   assert.match(updateCopy, /Your previous orientation will stay in your history/);
   assert.match(updateCopy, /Deine bisherige Orientierung bleibt im Verlauf/);
@@ -103,4 +105,13 @@ test("roadmap and history copy is available in every supported locale", () => {
   assert.match(dashboardCopy, /بعد نتائج البكالوريا/);
   assert.match(dashboardCopy, /After your Baccalaureate results/);
   assert.match(dashboardCopy, /Nach deinen Baccalauréat-Ergebnissen/);
+});
+
+
+test("authenticated updates do not depend on optional personalized report generation", () => {
+  assert.match(
+    form,
+    /authenticatedUpdate \? \(\s*<ProspectOrientationUpdateCard answers=\{answers\} \/>\s*\) : \(\s*<PersonalizedOrientationEngineCard/,
+  );
+  assert.match(form, /!authenticatedUpdate && orientationResultReady/);
 });
