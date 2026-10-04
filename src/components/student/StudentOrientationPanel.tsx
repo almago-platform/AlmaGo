@@ -248,6 +248,7 @@ export function StudentOrientationPanel({
               if (!program) return null;
 
               const ui = programCardCopy[locale];
+              const programName = program.name;
               const applicationStatus = applicationStatusPresentation(
                 program.id ? applicationStatuses[program.id] : undefined,
                 Boolean(recommendation.student_interest_at),
@@ -314,7 +315,10 @@ export function StudentOrientationPanel({
                       </div>
                     </dl>
 
-                    <section className={`mt-5 rounded-[var(--radius-control)] border p-4 ${compatibility.containerClass}`}>
+                    <section
+                      aria-label={`${t.comparisonAria} - ${programName}`}
+                      className={`mt-5 rounded-[var(--radius-control)] border p-4 ${compatibility.containerClass}`}
+                    >
                       <div className="flex items-start gap-3">
                         <span aria-hidden="true" className={`mt-0.5 text-lg font-black ${compatibility.iconClass}`}>
                           {compatibility.icon}
@@ -356,7 +360,10 @@ export function StudentOrientationPanel({
                         return (
                           <div key={`${item.criterion}-${index}`} className="flex items-start gap-2.5 text-sm">
                             <span aria-hidden="true" className={`w-4 shrink-0 font-black ${signal.className}`}>{signal.icon}</span>
-                            <span className="leading-5 text-slate-700">{criterionLabel(item.criterion, t)}</span>
+                            <span className="min-w-0 flex-1 leading-5 text-slate-700">{criterionLabel(item.criterion, t)}</span>
+                            <span className="shrink-0 text-xs font-semibold text-slate-500">
+                              {t.statusLabels[item.status] || t.check}
+                            </span>
                           </div>
                         );
                       }) : (
@@ -366,6 +373,13 @@ export function StudentOrientationPanel({
                         </div>
                       )}
                     </div>
+
+                    {recommendation.requirement_match?.application_route ? (
+                      <div className="mt-4 border-t border-[var(--border)] pt-3 text-xs text-slate-600">
+                        <span className="font-bold text-slate-700">{t.applicationRoute}: </span>
+                        {applicationRouteLabel(recommendation.requirement_match.application_route, t)}
+                      </div>
+                    ) : null}
 
                     <div className="mt-auto pt-6">
                       <div className="grid grid-cols-2 gap-2">
@@ -562,6 +576,16 @@ function compactCompatibilityCriteria(match: MasterRequirementsMatch | null | un
     if (!selected.includes(item)) selected.push(item);
   }
   return selected.slice(0, 4);
+}
+
+function applicationRouteLabel(
+  route: MasterRequirementsMatch["application_route"],
+  copy: (typeof studentOrientationCopy)["fr"]["panel"],
+) {
+  if (route === "direct") return copy.routeDirect;
+  if (route === "uni_assist") return copy.routeUniAssist;
+  if (route === "vpd") return copy.routeVpd;
+  return copy.routeUnknown;
 }
 
 function criterionSignal(status: RequirementMatchResult["status"]) {
