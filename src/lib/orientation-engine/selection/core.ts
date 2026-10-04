@@ -627,6 +627,30 @@ function candidateCity(item: OrientationSelectionCandidateEvaluation) {
   );
 }
 
+function preferredCitySelectionPriority(
+  profile: PublicOrientationAnswers,
+  item: OrientationSelectionCandidateEvaluation,
+) {
+  if (profile.preferredCities.length === 0) return 0;
+  if (!item.reasons.includes("degree_match")) return 0;
+  if (!item.reasons.includes("field_match")) return 0;
+  if (
+    profile.studyLanguage !== "À définir"
+    && !item.reasons.includes("study_language_match")
+  ) {
+    return 0;
+  }
+
+  const city = candidateCity(item);
+  if (!city) return 0;
+
+  return profile.preferredCities.some(
+    (preferred) => canonicalCity(preferred) === city,
+  )
+    ? 1
+    : 0;
+}
+
 function withDiversity(
   item: OrientationSelectionCandidateEvaluation,
   selected: readonly OrientationSelectionCandidateEvaluation[],
@@ -698,6 +722,10 @@ export function buildOrientationSelection(
     const rescored = remaining
       .map((item) => withDiversity(item, selected))
       .sort((a, b) => {
+        const preferredCityDiff =
+          preferredCitySelectionPriority(profile, b)
+          - preferredCitySelectionPriority(profile, a);
+        if (preferredCityDiff !== 0) return preferredCityDiff;
         if (b.finalScore !== a.finalScore) {
           return b.finalScore - a.finalScore;
         }
