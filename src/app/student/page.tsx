@@ -85,6 +85,7 @@ export default async function StudentEntry() {
     const localizedTemplate = relation?.key ? checklistCopy.recorded.items[relation.key] : undefined;
     return {
       ...item,
+      templateKey: relation?.key || null,
       title: localizedTemplate?.title || item.title,
     };
   });
@@ -160,7 +161,9 @@ export default async function StudentEntry() {
             detail: t.checklistAction,
             reason: cockpit.checklistReason,
             duration: cockpit.durationChecklist,
-            href: "/student/checklist",
+            href: ["passport", "translation"].includes(nextItem.templateKey || "")
+              ? "/student/documents"
+              : "/student/checklist",
           }
         : {
             label: t.fileUpToDate,
