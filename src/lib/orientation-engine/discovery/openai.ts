@@ -154,7 +154,16 @@ function userInput(plan: OrientationDiscoveryPlan, query: string) {
       target_country: "Germany",
       target_degree: plan.profile.targetDegree,
       preferred_study_language: plan.profile.studyLanguage,
-      preferred_cities: plan.profile.preferredCities,
+      requested_cities: plan.profile.preferredCities,
+      preferred_cities: plan.geographicScope
+        ? (
+            ["chosen_city", "nearby"].includes(plan.geographicScope.tier)
+              ? plan.geographicScope.cities
+              : []
+          )
+        : plan.profile.preferredCities,
+      geographic_tier: plan.geographicScope?.tier || null,
+      geographic_land_names: plan.geographicScope?.landNames || [],
       maximum_candidates_for_this_query: MAX_CANDIDATES_PER_QUERY,
     },
   });

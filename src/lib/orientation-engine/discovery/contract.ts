@@ -1,4 +1,5 @@
 import type { PublicOrientationAnswers } from "@/lib/orientation/public";
+import type { OrientationGeographicScope } from "@/lib/orientation-engine/geography";
 import type {
   OrientationDiscoveryPlan,
   OrientationDiscoveryPolicy,
@@ -344,6 +345,7 @@ function uniqueAliases(families: OrientationProgrammeFamily[]) {
 export function buildOrientationDiscoverySearchQueries(
   profile: OrientationDiscoveryProfile,
   families: OrientationProgrammeFamily[],
+  geographicScope: OrientationGeographicScope | null = null,
 ) {
   const degree = profile.targetDegree || "Bachelor";
   const aliases = uniqueAliases(families);
@@ -358,7 +360,13 @@ export function buildOrientationDiscoverySearchQueries(
       ? profile.targetSpecialization
       : aliases[0];
 
-  if (primaryAnchor && profile.preferredCities.length > 0) {
+  if (geographicScope && primaryAnchor) {
+    for (const location of geographicScope.queryLocations.slice(0, 3)) {
+      addQuery(
+        `${primaryAnchor} ${degree} ${location} official university programme`,
+      );
+    }
+  } else if (primaryAnchor && profile.preferredCities.length > 0) {
     const explicitCities = profile.preferredCities.slice(0, 3);
 
     for (const city of explicitCities) {
@@ -379,20 +387,35 @@ export function buildOrientationDiscoverySearchQueries(
   }
 
   if (degree === "Master" && profile.targetSpecialization) {
-    addQuery(
-      `${profile.targetSpecialization} Master Germany official university programme`,
-    );
+    const location =
+      geographicScope?.queryLocations[0]
+      || (profile.preferredCities.length === 0 ? "Germany" : null);
+    if (location) {
+      addQuery(
+        `${profile.targetSpecialization} Master ${location} official university programme`,
+      );
+    }
   }
 
-  for (const alias of aliases) {
-    addQuery(`${alias} ${degree} Germany official university programme`);
+  if (!geographicScope) {
+    for (const alias of aliases) {
+      addQuery(`${alias} ${degree} Germany official university programme`);
+    }
+  } else {
+    const fallbackLocation = geographicScope.queryLocations[0] || "Germany";
+    for (const alias of aliases) {
+      addQuery(
+        `${alias} ${degree} ${fallbackLocation} official university programme`,
+      );
+    }
   }
 
   return queries.slice(0, DISCOVERY_MAX_SEARCH_QUERIES);
 }
 
-export function buildOrientationDiscoveryPlan(
+function buildOrientationDiscoveryPlanInternal(
   answers: PublicOrientationAnswers,
+  geographicScope: OrientationGeographicScope | null,
 ): OrientationDiscoveryPlan {
   const profile = normalizeOrientationDiscoveryProfile(answers);
   const programmeFamilies = resolveOrientationProgrammeFamilies(profile);
@@ -404,6 +427,7 @@ export function buildOrientationDiscoveryPlan(
       profile,
       programmeFamilies,
       searchQueries: [],
+      geographicScope,
       policy: ORIENTATION_DISCOVERY_POLICY,
     };
   }
@@ -415,6 +439,7 @@ export function buildOrientationDiscoveryPlan(
       profile,
       programmeFamilies,
       searchQueries: [],
+      geographicScope,
       policy: ORIENTATION_DISCOVERY_POLICY,
     };
   }
@@ -426,6 +451,7 @@ export function buildOrientationDiscoveryPlan(
       profile,
       programmeFamilies,
       searchQueries: [],
+      geographicScope,
       policy: ORIENTATION_DISCOVERY_POLICY,
     };
   }
@@ -435,9 +461,27 @@ export function buildOrientationDiscoveryPlan(
     reason: null,
     profile,
     programmeFamilies,
-    searchQueries: buildOrientationDiscoverySearchQueries(profile, programmeFamilies),
+    searchQueries: buildOrientationDiscoverySearchQueries(
+      profile,
+      programmeFamilies,
+      geographicScope,
+    ),
+    geographicScope,
     policy: ORIENTATION_DISCOVERY_POLICY,
   };
+}
+
+export function buildOrientationDiscoveryPlan(
+  answers: PublicOrientationAnswers,
+): OrientationDiscoveryPlan {
+  return buildOrientationDiscoveryPlanInternal(answers, null);
+}
+
+export function buildOrientationDiscoveryPlanForScope(
+  answers: PublicOrientationAnswers,
+  geographicScope: OrientationGeographicScope,
+): OrientationDiscoveryPlan {
+  return buildOrientationDiscoveryPlanInternal(answers, geographicScope);
 }
 
 function cleanUrl(value: unknown) {

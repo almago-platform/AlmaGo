@@ -2,7 +2,11 @@ import "server-only";
 
 import type { PublicOrientationAnswers } from "@/lib/orientation/public";
 import { getAcademicAccessConclusion } from "@/lib/orientation/verified-academic-options";
-import { buildOrientationDiscoveryPlan } from "@/lib/orientation-engine/discovery/contract";
+import {
+  buildOrientationDiscoveryPlan,
+  buildOrientationDiscoveryPlanForScope,
+} from "@/lib/orientation-engine/discovery/contract";
+import type { OrientationGeographicScope } from "@/lib/orientation-engine/geography";
 import { runOrientationDiscovery } from "@/lib/orientation-engine/discovery/service";
 import type {
   OrientationDiscoveryPlan,
@@ -107,6 +111,52 @@ async function writeOrientation(
   }
 }
 
+function selectionForGeographicScope(
+  profile: PublicOrientationAnswers,
+  selection: OrientationSelectionResult,
+) {
+  const selected = selection.selected.filter((item) => {
+    const hasReason = (reason: string) => item.reasons.includes(
+      reason as (typeof item.reasons)[number],
+    );
+
+    if (!hasReason("degree_match") || !hasReason("field_match")) return false;
+
+    if (
+      profile.targetDegree === "Master"
+      && profile.targetSpecialization
+      && !hasReason("target_specialization_match")
+    ) {
+      return false;
+    }
+
+    if (
+      profile.studyLanguage !== "À définir"
+      && !hasReason("study_language_match")
+    ) {
+      return false;
+    }
+
+    return true;
+  });
+
+  const status =
+    selected.length >= selection.targetSize.min
+      ? "ready" as const
+      : selected.length > 0
+        ? "partial" as const
+        : "insufficient_evidence" as const;
+
+  return {
+    ...selection,
+    status,
+    selected: selected.map((item, index) => ({
+      ...item,
+      position: index + 1,
+    })),
+  };
+}
+
 async function resultFromSelection(input: {
   locale: OrientationWriterLocale;
   profile: PublicOrientationAnswers;
@@ -146,74 +196,102 @@ async function resultFromSelection(input: {
   );
 }
 
-export async function runOrientationResultPipeline(
-  locale: OrientationWriterLocale,
+export type OrientationSelectionPipelineAttempt = {
+  plan: OrientationDiscoveryPlan;
+  discovery: OrientationDiscoveryResult | null;
+  verification: OrientationVerificationServiceResult | null;
+  selection: OrientationSelectionResult;
+};
+
+export async function runOrientationSelectionPipeline(
   profile: PublicOrientationAnswers,
-): Promise<OrientationPublicPersonalizedResult> {
+  geographicScope: OrientationGeographicScope | null = null,
+): Promise<OrientationSelectionPipelineAttempt> {
   const emptySelection = () => runOrientationSelection(profile, []);
-  const plan = buildOrientationDiscoveryPlan(profile);
+  const plan = geographicScope
+    ? buildOrientationDiscoveryPlanForScope(profile, geographicScope)
+    : buildOrientationDiscoveryPlan(profile);
 
   // A1 is authoritative here: a no-Bac or incomplete route must not silently
-  // enter normal university discovery. The candidate still receives the
-  // immediate deterministic result; this is separate from Phase F post-result audit.
+  // enter normal university discovery.
   if (plan.status !== "ready") {
-    return resultFromSelection({
-      locale,
-      profile,
+    return {
       plan,
       discovery: null,
       verification: null,
       selection: emptySelection(),
-    });
+    };
   }
 
   let discovery: OrientationDiscoveryResult | null = null;
   try {
     discovery = await runOrientationDiscovery(plan);
   } catch {
-    return resultFromSelection({
-      locale,
-      profile,
+    return {
       plan,
       discovery: null,
       verification: null,
       selection: emptySelection(),
-    });
+    };
   }
 
   if (discovery.status !== "ready" || discovery.candidates.length === 0) {
-    return resultFromSelection({
-      locale,
-      profile,
+    return {
       plan,
       discovery,
       verification: null,
       selection: emptySelection(),
-    });
+    };
   }
 
   let verification: OrientationVerificationServiceResult | null = null;
   try {
     verification = await runOrientationVerification(discovery.candidates, profile);
   } catch {
-    return resultFromSelection({
-      locale,
-      profile,
+    return {
       plan,
       discovery,
       verification: null,
       selection: emptySelection(),
-    });
+    };
   }
 
-  const selection = runOrientationSelection(profile, verification.programmes);
+  const rawSelection = runOrientationSelection(profile, verification.programmes);
+  const selection = geographicScope
+    ? selectionForGeographicScope(profile, rawSelection)
+    : rawSelection;
 
-  return resultFromSelection({
-    locale,
-    profile,
+  return {
     plan,
     discovery,
     verification,
     selection,
+  };
+}
+
+export async function finalizeOrientationSelectionPipeline(
+  locale: OrientationWriterLocale,
+  profile: PublicOrientationAnswers,
+  attempt: OrientationSelectionPipelineAttempt,
+): Promise<OrientationPublicPersonalizedResult> {
+  return resultFromSelection({
+    locale,
+    profile,
+    plan: attempt.plan,
+    discovery: attempt.discovery,
+    verification: attempt.verification,
+    selection: attempt.selection,
   });
+}
+
+export async function runOrientationResultPipeline(
+  locale: OrientationWriterLocale,
+  profile: PublicOrientationAnswers,
+  geographicScope: OrientationGeographicScope | null = null,
+): Promise<OrientationPublicPersonalizedResult> {
+  const attempt = await runOrientationSelectionPipeline(
+    profile,
+    geographicScope,
+  );
+  return finalizeOrientationSelectionPipeline(locale, profile, attempt);
 }
