@@ -362,12 +362,8 @@ export function buildOrientationDiscoverySearchQueries(
 
   if (geographicScope && primaryAnchor) {
     for (const location of geographicScope.queryLocations.slice(0, 3)) {
-      const prefix =
-        geographicScope.tier === "nearby"
-          ? `near ${location}`
-          : location;
       addQuery(
-        `${primaryAnchor} ${degree} ${prefix} official university programme`,
+        `${primaryAnchor} ${degree} ${location} official university programme`,
       );
     }
   } else if (primaryAnchor && profile.preferredCities.length > 0) {
