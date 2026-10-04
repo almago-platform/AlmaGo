@@ -61,6 +61,7 @@ test("prospect persistence succeeds independently from delivery", () => {
 
 test("resume URLs expose only an opaque token and lookup never uses prospect email or IDs", () => {
   assert.match(route, /\/orientation\/report\/\$\{encodeURIComponent\(resume\.token\)\}/);
+  assert.match(route, /document=candidate/);
   assert.match(report, /hashOrientationResumeToken\(token\)/);
   assert.match(report, /\.eq\("resume_token_hash", tokenHash\)/);
   assert.match(report, /\.gt\("resume_token_expires_at", now\)/);
@@ -68,9 +69,12 @@ test("resume URLs expose only an opaque token and lookup never uses prospect ema
   assert.doesNotMatch(route, /reportUrl.*email|orientation\/report\/.*prospectId/i);
 });
 
-test("transactional email is localized and contains report/account links without guarantees", () => {
+test("transactional email is localized and sends both secure PDF report links without guarantees", () => {
   assert.match(emailTemplate, /Record<Locale, EmailCopy>/);
-  assert.match(emailTemplate, /reportUrl/);
+  assert.match(emailTemplate, /orientationReportUrl/);
+  assert.match(emailTemplate, /candidateReportUrl/);
+  assert.match(emailTemplate, /Orientation \(PDF\)|التوجيه \(PDF\)|Orientierung \(PDF\)/);
+  assert.match(emailTemplate, /Rapport candidat \(PDF\)|تقرير المترشح \(PDF\)|Candidate report \(PDF\)|Bewerberbericht \(PDF\)/);
   assert.match(emailTemplate, /signupUrl/);
   assert.match(emailTemplate, /admission.*visa|قبول.*تأشيرة|Zulassungs.*Visum/i);
   assert.doesNotMatch(emailTemplate, /guaranteed admission|admission garantie|visa garanti/i);
