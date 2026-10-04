@@ -106,6 +106,20 @@ export function DocumentsPanel({
   const correctionCount = correctionDocuments.length;
   const latestDocument = documents[0];
   const priorityDocument = correctionDocuments[0] || documents.find((document) => document.status === "pending") || latestDocument;
+  const checklist = [
+    { id: "identity", label: locale === "fr" ? "Identité" : "الهوية", categories: ["passport"] },
+    { id: "academic", label: locale === "fr" ? "Académique" : "أكاديمي", categories: ["baccalaureate", "transcripts", "university_attestation"] },
+    { id: "languages", label: locale === "fr" ? "Langues" : "اللغات", categories: ["language_certificate"] },
+    { id: "application", label: locale === "fr" ? "Candidature" : "الترشح", categories: ["cv", "motivation_letter", "translation"] },
+    { id: "visa", label: locale === "fr" ? "Visa & préparation" : "التأشيرة والتحضير", categories: ["admission"] },
+  ].map((group) => {
+    const items = documents.filter((document) => group.categories.includes(document.category));
+    const ready = items.filter((document) => document.status === "approved").length;
+    const needsAction = items.some((document) => ["rejected", "replace_required"].includes(document.status));
+    const reviewing = items.some((document) => ["pending", "reviewed"].includes(document.status));
+    return { ...group, items, ready, needsAction, reviewing };
+  });
+  const checklistReady = checklist.filter((group) => group.items.length > 0 && group.ready === group.items.length).length;
 
   async function upload(event: React.FormEvent) {
     event.preventDefault();
@@ -211,6 +225,71 @@ export function DocumentsPanel({
           <SummaryCard id="documents-summary-review" title={t.summary.reviewTitle} value={reviewCount} badge={t.summary.reviewBadge} tone="info" />
           <SummaryCard id="documents-summary-correction" title={t.summary.correctionTitle} value={correctionCount} badge={correctionCount ? t.summary.actionRequired : t.summary.nothing} tone={correctionCount ? "warning" : "neutral"} />
         </section>
+      </section>
+
+      <section aria-labelledby="documents-checklist-title">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">
+              {locale === "fr" ? "Checklist intelligente" : "قائمة الوثائق الذكية"}
+            </p>
+            <h2 id="documents-checklist-title" className="mt-1 text-2xl font-semibold tracking-tight text-slate-950">
+              {locale === "fr" ? "Ton dossier, catégorie par catégorie" : "ملفك حسب الفئة"}
+            </h2>
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
+              {locale === "fr"
+                ? "Vois immédiatement ce qui est prêt, en vérification ou demande une action. Les exigences supplémentaires apparaissent seulement lorsqu’elles deviennent pertinentes pour ton parcours."
+                : "اعرف فورًا ما هو جاهز أو قيد المراجعة أو يحتاج إلى إجراء. تظهر المتطلبات الإضافية فقط عندما تصبح ضرورية لمسارك."}
+            </p>
+          </div>
+          <div className="rounded-[var(--radius-control)] border border-[var(--brand-border)] bg-[var(--brand-soft)] px-4 py-3 text-sm font-bold text-[var(--brand-strong)]">
+            {checklistReady} / {checklist.length} {locale === "fr" ? "catégories prêtes" : "فئات جاهزة"}
+          </div>
+        </div>
+
+        <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-5">
+          {checklist.map((group) => {
+            const status = group.needsAction
+              ? (locale === "fr" ? "Action requise" : "إجراء مطلوب")
+              : group.reviewing
+                ? (locale === "fr" ? "À vérifier" : "قيد المراجعة")
+                : group.items.length && group.ready === group.items.length
+                  ? (locale === "fr" ? "Prêt" : "جاهز")
+                  : (locale === "fr" ? "À préparer" : "للتحضير");
+            const variant = group.needsAction ? "warning" : group.reviewing ? "info" : group.items.length && group.ready === group.items.length ? "success" : "neutral";
+            return (
+              <Card as="article" key={group.id} className="h-full p-4 shadow-none">
+                <div className="flex items-start justify-between gap-2">
+                  <h3 className="font-bold text-slate-950">{group.label}</h3>
+                  <Badge variant={variant}>{status}</Badge>
+                </div>
+                <p className="mt-4 text-2xl font-semibold tracking-tight text-slate-950">
+                  {group.ready} / {group.items.length || group.categories.length}
+                </p>
+                <p className="mt-1 text-xs leading-5 text-slate-500">
+                  {group.items.length
+                    ? (locale === "fr" ? "documents de cette catégorie" : "وثائق في هذه الفئة")
+                    : (locale === "fr" ? "aucun document envoyé pour l’instant" : "لم يتم إرسال أي وثيقة بعد")}
+                </p>
+              </Card>
+            );
+          })}
+        </div>
+
+        <Card className="mt-4 border-[var(--brand-border)] bg-[var(--brand-soft)]/45 p-4 shadow-none">
+          <p className="text-sm font-bold text-slate-950">
+            {locale === "fr" ? "Prochaine action" : "الخطوة التالية"}
+          </p>
+          <p className="mt-1 text-sm leading-6 text-slate-700">
+            {correctionCount
+              ? (locale === "fr" ? "Corrige d’abord le document signalé par l’équipe AlmaGo." : "صحّح أولاً الوثيقة التي أشار إليها فريق AlmaGo.")
+              : reviewCount
+                ? (locale === "fr" ? "Tes documents envoyés sont en vérification. Tu peux continuer les autres étapes de ton projet." : "وثائقك المرسلة قيد المراجعة. يمكنك متابعة بقية خطوات مشروعك.")
+                : documents.length
+                  ? (locale === "fr" ? "Ajoute uniquement le prochain document demandé par ton parcours ou une candidature." : "أضف فقط الوثيقة التالية المطلوبة لمسارك أو لترشحك.")
+                  : (locale === "fr" ? "Commence par les documents essentiels indiqués dans ton parcours." : "ابدأ بالوثائق الأساسية الموضحة في مسارك.")}
+          </p>
+        </Card>
       </section>
 
       <section aria-labelledby="academic-evidence-title">

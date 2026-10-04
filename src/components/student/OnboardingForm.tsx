@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   PreferredCitiesPicker,
@@ -103,8 +103,24 @@ function valueOrDash(value: string | string[] | undefined) {
 }
 
 export function OnboardingForm({ profile }: { profile: Record<string, unknown> }) {
-  const [step, setStep] = useState(1);
-  const [data, setData] = useState(() => mergeProfile(profile));
+  const [draft] = useState<{ data?: FormData; step?: number } | null>(() => {
+    if (typeof window === "undefined") return null;
+    const saved = window.localStorage.getItem("almago-onboarding-draft");
+    if (!saved) return null;
+    try {
+      return JSON.parse(saved) as { data?: FormData; step?: number };
+    } catch {
+      window.localStorage.removeItem("almago-onboarding-draft");
+      return null;
+    }
+  });
+  const [step, setStep] = useState(() =>
+    draft?.step && draft.step >= 1 && draft.step <= 5 ? draft.step : 1,
+  );
+  const [data, setData] = useState(() => ({
+    ...mergeProfile(profile),
+    ...(draft?.data ?? {}),
+  }));
   const [consent, setConsent] = useState(false);
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
@@ -112,6 +128,11 @@ export function OnboardingForm({ profile }: { profile: Record<string, unknown> }
   const { locale } = useLocale();
   const t = rebrandCopy(studentOnboardingCopy[locale]);
   const steps = t.steps;
+
+
+  useEffect(() => {
+    window.localStorage.setItem("almago-onboarding-draft", JSON.stringify({ data, step }));
+  }, [data, step]);
 
   const set = (key: string, value: string | string[]) =>
     setData((current) => ({ ...current, [key]: value }));
@@ -146,6 +167,7 @@ export function OnboardingForm({ profile }: { profile: Record<string, unknown> }
       }
 
       if (nextStep === 6) router.push("/student");
+      if (nextStep === 6) window.localStorage.removeItem("almago-onboarding-draft");
       else {
         setStep(nextStep);
         window.scrollTo({ top: 0, behavior: "smooth" });
@@ -413,14 +435,25 @@ export function OnboardingForm({ profile }: { profile: Record<string, unknown> }
             >
               {t.back}
             </Button>
-            <Button
+            <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
+              <Button
+                type="button"
+                variant="secondary"
+                disabled={saving}
+                onClick={() => router.push("/student")}
+                className="w-full justify-center sm:w-auto"
+              >
+                {locale === "fr" ? "Continuer plus tard" : locale === "ar" ? "المتابعة لاحقًا" : locale === "de" ? "Später fortsetzen" : "Continue later"}
+              </Button>
+              <Button
               type="button"
               disabled={saving}
               onClick={() => save(step + 1)}
               className="w-full justify-center sm:min-w-44 sm:w-auto"
             >
               {saving ? t.saving : step === 5 ? t.finish : t.continue}
-            </Button>
+              </Button>
+            </div>
           </div>
         </div>
       </section>

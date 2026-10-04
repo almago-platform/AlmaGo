@@ -259,3 +259,154 @@ html[dir="rtl"] .ds-h6 { text-transform: none; }
   .ds-card-interactive:hover { transform: none; }
   .ds-spinner { animation-duration: 1.5s; }
 }
+
+
+/* Admin workspace polish */
+.admin-shell {
+  --admin-sidebar-width: 16.5rem;
+  background:
+    radial-gradient(circle at 92% 0%, rgba(219, 4, 35, 0.035), transparent 28rem),
+    linear-gradient(180deg, #fbf9f4 0%, var(--background) 30rem);
+}
+
+.admin-shell .admin-shell-sidebar {
+  background: linear-gradient(180deg, #fffefb 0%, var(--surface) 100%);
+  box-shadow: 12px 0 36px -34px rgba(28, 33, 36, 0.45);
+}
+
+.admin-shell .admin-shell-topbar {
+  box-shadow: 0 8px 28px -26px rgba(28, 33, 36, 0.38);
+}
+
+.admin-shell .student-shell-main > main {
+  animation: admin-page-enter 180ms var(--ease-standard);
+}
+
+.admin-page-header {
+  position: relative;
+}
+
+.admin-page-header::after {
+  content: "";
+  position: absolute;
+  inset-inline-start: 0;
+  bottom: -1px;
+  width: 4rem;
+  height: 2px;
+  border-radius: var(--radius-pill);
+  background: var(--brand);
+}
+
+.admin-shell .professional-panel,
+.admin-shell .ds-card {
+  background: color-mix(in srgb, var(--surface-raised) 88%, var(--surface) 12%);
+}
+
+.admin-shell .professional-hover:hover,
+.admin-shell .ds-card-interactive:hover {
+  border-color: var(--brand-border);
+  box-shadow: 0 18px 42px -32px rgba(28, 33, 36, 0.42);
+}
+
+.admin-shell table {
+  font-variant-numeric: tabular-nums;
+}
+
+.admin-shell :is(input, select, textarea) {
+  background-color: var(--surface-raised);
+}
+
+.admin-team-chip {
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.55);
+}
+
+@keyframes admin-page-enter {
+  from { opacity: .001; transform: translateY(3px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 1023px) {
+  .admin-shell .student-shell-main > main {
+    padding-top: 1rem;
+  }
+
+  .admin-page-actions > * {
+    flex: 1 1 12rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-shell .student-shell-main > main {
+    animation: none;
+  }
+}
+
+
+/* Cross-product UX quality layer */
+:where(a, button, input, select, textarea, summary):focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--brand) 72%, white);
+  outline-offset: 3px;
+}
+
+:where(button, [role="button"], a.ds-button) {
+  -webkit-tap-highlight-color: transparent;
+}
+
+:where(input, select, textarea).field {
+  min-height: 44px;
+}
+
+:where(textarea).field {
+  min-height: 7rem;
+  resize: vertical;
+}
+
+.ds-card {
+  overflow-wrap: anywhere;
+}
+
+.ds-card-interactive {
+  transition: border-color 180ms var(--ease-standard), box-shadow 180ms var(--ease-standard), transform 180ms var(--ease-standard);
+}
+
+.ds-card-interactive:hover {
+  transform: translateY(-1px);
+}
+
+.mobile-nav-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong) transparent;
+}
+
+@media (max-width: 639px) {
+  .ds-card {
+    padding: 1rem;
+  }
+
+  :where(button, a, input, select) {
+    scroll-margin-block: 5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+  }
+
+  .ds-card-interactive {
+    transition: none;
+  }
+
+  .ds-card-interactive:hover {
+    transform: none;
+  }
+}
+
+
+.ds-skeleton {
+  background: linear-gradient(90deg, var(--surface-muted) 25%, var(--surface-raised) 50%, var(--surface-muted) 75%);
+  background-size: 200% 100%;
+  animation: ds-skeleton-shimmer 1.4s ease-in-out infinite;
+}
+@keyframes ds-skeleton-shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+@media (prefers-reduced-motion: reduce) { .ds-skeleton { animation: none; } }

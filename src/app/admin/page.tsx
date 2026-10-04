@@ -159,7 +159,17 @@ export default async function AdminEntry() {
           </h2>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <section aria-labelledby="admin-load-title" className="mb-5">
+        <div className="mb-3 flex items-end justify-between gap-3">
+          <div>
+            <p className="text-[0.68rem] font-bold uppercase tracking-[0.14em] text-[var(--brand)]">Charge opérationnelle</p>
+            <h2 id="admin-load-title" className="mt-1 text-xl font-semibold tracking-[-0.025em] text-[var(--foreground)]">Ce qui demande l’attention de l’équipe</h2>
+          </div>
+          <p className="hidden text-xs text-[var(--muted)] sm:block">Traiter les blocages avant l’enrichissement du catalogue.</p>
+        </div>
+      </section>
+
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <AdminSummaryCard
             href="/admin/documents"
             title="Documents à traiter"

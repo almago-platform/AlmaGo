@@ -5,10 +5,6 @@ import { buildPublicOrientationDiagnostic } from "@/lib/orientation/diagnostic";
 import { buildOrientationProspectEmail } from "@/lib/orientation/prospect-email";
 import { validatePublicOrientationAnswers } from "@/lib/orientation/validate";
 import { createOrientationResumeToken } from "@/lib/orientation/resume-token";
-import {
-  isCompletePublicOrientationIdentity,
-  restorePublicOrientationIdentity,
-} from "@/lib/orientation/public";
 import { evaluateSmartOrientationPriority } from "@/lib/phase2/smart-orientation";
 import { linkOrientationHumanReview } from "@/lib/orientation-engine/review/store";
 import { createFreeValidationInterestToken } from "@/lib/phase2/free-validation-interest-token";
@@ -94,12 +90,6 @@ export async function POST(request: Request) {
   const record = body as Record<string, unknown>;
   const email = validEmail(record.email);
   const answers = validatePublicOrientationAnswers(record.answers);
-  const identityRecord = record.identity && typeof record.identity === "object"
-    ? record.identity
-    : null;
-  const identity = identityRecord
-    ? restorePublicOrientationIdentity(identityRecord)
-    : null;
   const privacyAcknowledged = record.privacyAcknowledged === true;
   const contactConsent = record.contactConsent === true;
   const reviewId =
@@ -116,17 +106,6 @@ export async function POST(request: Request) {
 
   if (!email || !answers || !privacyAcknowledged) {
     return NextResponse.json({ error: "Invalid orientation submission." }, { status: 400 });
-  }
-
-  if (
-    identityRecord
-    && (
-      !identity
-      || !isCompletePublicOrientationIdentity(identity)
-      || identity.email !== email
-    )
-  ) {
-    return NextResponse.json({ error: "Invalid orientation identity." }, { status: 400 });
   }
 
   const diagnostic = buildPublicOrientationDiagnostic(answers);
@@ -188,7 +167,6 @@ export async function POST(request: Request) {
         engine_version: ENGINE_VERSION,
         input: {
           answers,
-          ...(identity ? { identity } : {}),
           locale,
           privacy_notice_version: PRIVACY_NOTICE_VERSION,
           privacy_acknowledged: true,

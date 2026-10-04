@@ -21,14 +21,8 @@ import {
   type PublicOrientationDiagnostic,
 } from "@/lib/orientation/diagnostic";
 import { localeDirection, normalizeLocale } from "@/lib/i18n";
-import {
-  restorePublicOrientationAnswers,
-  restorePublicOrientationIdentity,
-} from "@/lib/orientation/public";
+import { restorePublicOrientationAnswers } from "@/lib/orientation/public";
 import { hashOrientationResumeToken } from "@/lib/orientation/resume-token";
-import {
-  projectOrientationHumanReviewBundleToPublicResult,
-} from "@/lib/orientation-engine/review/core";
 import {
   isPhase2AccessEnabled,
   isPhase2AccountLinkingEnabled,
@@ -112,7 +106,7 @@ export default async function OrientationReportPage({
   const now = new Date().toISOString();
   const { data, error } = await supabase
     .from("orientations")
-    .select("id,engine_version,input,result,created_at,resume_token_expires_at")
+    .select("engine_version,input,result,created_at,resume_token_expires_at")
     .eq("resume_token_hash", tokenHash)
     .gt("resume_token_expires_at", now)
     .maybeSingle();
@@ -120,25 +114,12 @@ export default async function OrientationReportPage({
   if (error || !data || data.engine_version !== "public-orientation-v1") notFound();
   if (!validDiagnostic(data.result)) notFound();
 
-  const { data: linkedReview } = await supabase
-    .from("orientation_human_reviews")
-    .select("id,bundle")
-    .eq("orientation_id", data.id)
-    .maybeSingle();
-  const personalized = linkedReview
-    ? projectOrientationHumanReviewBundleToPublicResult(
-        linkedReview.bundle,
-        String(linkedReview.id),
-      )
-    : null;
-
   const input = data.input && typeof data.input === "object"
     ? data.input as Record<string, unknown>
     : {};
   const locale = normalizeLocale(typeof input.locale === "string" ? input.locale : null);
   const direction = localeDirection(locale);
   const answers = restorePublicOrientationAnswers(input.answers);
-  const identity = restorePublicOrientationIdentity(input.identity);
   const copy = rebrandCopy(orientationCopy[locale]);
   const prospectCopy = rebrandCopy(orientationProspectCopy[locale]);
   const resumeCopy = rebrandCopy(orientationResumeCopy[locale]);
@@ -217,7 +198,7 @@ export default async function OrientationReportPage({
 
       <main id="orientation-main" className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
         <article id="orientation-report" className="orientation-print-report">
-          <OrientationOnePagePrintReport answers={answers} locale={locale} personalized={personalized} identity={identity} />
+          <OrientationOnePagePrintReport answers={answers} locale={locale} />
           <div className="orientation-screen-report">
           <div className="orientation-print-only mb-6 items-center justify-between gap-6 border-b border-slate-300 pb-5">
             <BrandLogo className="h-10 w-auto" priority />

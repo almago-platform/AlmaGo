@@ -55,21 +55,12 @@ test("orientation report can be saved through the browser print-to-PDF path", ()
   assert.match(css, /orientation-print-hide/);
 });
 
-test("required identity is collected before orientation while persistence remains explicit", () => {
-  assert.match(form, /name="firstName"/);
-  assert.match(form, /name="lastName"/);
-  assert.match(form, /name="birthDate"/);
-  assert.match(form, /name="email"/);
-  assert.match(form, /identityComplete/);
+test("email capture is optional and shown only when the server flag enables it", () => {
   assert.match(form, /prospectCaptureEnabled\s*\?\s*\([\s\S]*<ProspectCaptureCard/);
-  assert.match(capture, /initialEmail/);
-  assert.match(capture, /identity/);
+  assert.match(capture, /type="email"/);
   assert.match(capture, /privacyAcknowledged/);
   assert.match(capture, /\/legal\/privacy/);
   assert.match(capture, /fetch\("\/api\/orientation\/prospect"/);
-  assert.match(route, /restorePublicOrientationIdentity/);
-  assert.match(route, /isCompletePublicOrientationIdentity/);
-  assert.match(route, /\.\.\.\(identity \? \{ identity \} : \{\}\)/);
 });
 
 test("prospect email capture is mobile-friendly and accessibly validates without enabling the feature", () => {

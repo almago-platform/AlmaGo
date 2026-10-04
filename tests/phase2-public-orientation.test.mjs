@@ -49,24 +49,6 @@ test("orientation keeps P2.1 questionnaire state browser-only", () => {
   assert.match(form, /prospectCaptureEnabled\s*\?\s*\([\s\S]*<ProspectCaptureCard/);
 });
 
-test("orientation requires identity before the questionnaire", () => {
-  assert.match(form, /createEmptyPublicOrientationIdentity/);
-  assert.match(form, /isCompletePublicOrientationIdentity/);
-  assert.match(form, /name="firstName"/);
-  assert.match(form, /name="lastName"/);
-  assert.match(form, /name="birthDate"/);
-  assert.match(form, /name="email"/);
-  assert.match(form, /identityComplete/);
-  assert.match(form, /Commencer mon orientation/);
-  assert.match(form, /ابدأ توجيهي/);
-  assert.match(form, /Start my orientation/);
-  assert.match(form, /Meine Orientierung starten/);
-  assert.match(form, /href="\/legal\/privacy"/);
-  assert.match(publicOrientation, /export type PublicOrientationIdentity/);
-  assert.match(publicOrientation, /restorePublicOrientationIdentity/);
-  assert.match(publicOrientation, /isCompletePublicOrientationIdentity/);
-});
-
 test("orientation reuses the existing controlled profile option sets", () => {
   for (const name of [
     "tunisianBacTrackOptions",
