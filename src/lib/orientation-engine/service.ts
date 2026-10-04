@@ -108,6 +108,29 @@ function uniqueCodes(codes: OrientationRuleCode[]) {
   return [...new Set(codes)];
 }
 
+export function hasPreferredCityCatalogueMatch(
+  result: OrientationEngineResult,
+) {
+  if (
+    result.profile.targetDegree !== "Bachelor"
+    || result.profile.preferredCities.length === 0
+  ) return false;
+
+  return result.recommendations.some((recommendation) => {
+    const hasEligibleRule = (code: OrientationRuleCode) =>
+      recommendation.rules.some(
+        (rule) => rule.code === code && rule.status === "eligible",
+      );
+
+    return (
+      hasEligibleRule("degree_match")
+      && hasEligibleRule("field_match")
+      && hasEligibleRule("preferred_city")
+      && hasEligibleRule("teaching_language_match")
+    );
+  });
+}
+
 export function buildOrientationEngineResult(
   profile: PublicOrientationAnswers,
   catalogue: OrientationProgrammeRecord[],

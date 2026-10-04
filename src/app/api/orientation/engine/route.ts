@@ -3,7 +3,10 @@ import { normalizeLocale } from "@/lib/i18n";
 import { validatePublicOrientationAnswers } from "@/lib/orientation/validate";
 import { createOrientationAdvisor } from "@/lib/orientation-engine/advisor/deterministic";
 import { loadVerifiedProgrammeCatalogue } from "@/lib/orientation-engine/catalog";
-import { buildOrientationEngineResult } from "@/lib/orientation-engine/service";
+import {
+  buildOrientationEngineResult,
+  hasPreferredCityCatalogueMatch,
+} from "@/lib/orientation-engine/service";
 import { buildOrientationIntelligence } from "@/lib/orientation-engine/intelligence";
 import { runOrientationResultPipeline } from "@/lib/orientation-engine/result/service";
 import { buildOrientationCanonicalShortlist } from "@/lib/orientation-engine/result/canonical";
@@ -39,6 +42,8 @@ export async function POST(request: Request) {
   try {
     const catalogue = await loadVerifiedProgrammeCatalogue();
     const engineResult = buildOrientationEngineResult(profile, catalogue);
+    const catalogueHasPreferredCityMatch =
+      hasPreferredCityCatalogueMatch(engineResult);
     const advisor = createOrientationAdvisor();
     const advisorResult = await advisor.advise({
       locale,
@@ -52,12 +57,14 @@ export async function POST(request: Request) {
     );
 
     let personalized: OrientationPublicPersonalizedResult | null = null;
-    try {
-      personalized = await runOrientationResultPipeline(locale, profile);
-    } catch {
-      // E is additive. A provider/persistence failure must never remove the
-      // already-safe deterministic orientation returned below.
-      personalized = null;
+    if (!catalogueHasPreferredCityMatch) {
+      try {
+        personalized = await runOrientationResultPipeline(locale, profile);
+      } catch {
+        // E is additive. A provider/persistence failure must never remove the
+        // already-safe deterministic orientation returned below.
+        personalized = null;
+      }
     }
 
     const shortlist = buildOrientationCanonicalShortlist(

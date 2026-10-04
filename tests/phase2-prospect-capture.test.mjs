@@ -79,6 +79,14 @@ test("post-orientation save, PDF and account actions stay hidden until the engin
   assert.match(form, /\{orientationResultReady \? \([\s\S]*window\.print\(\)/);
 });
 
+test("continuation card uses one required privacy checkbox and a clear ready state", () => {
+  assert.match(capture, /copy\.continueReady/);
+  assert.match(capture, /copy\.continuePrivacyLabel/);
+  assert.match(capture, /name="privacyAcknowledged"/);
+  assert.doesNotMatch(capture, /name="contactConsent"/);
+  assert.match(capture, /contactConsent: false/);
+});
+
 test("orientation continuation saves the result before opening secure account signup", () => {
   assert.match(form, /accountLinkingEnabled=\{accountLinkingEnabled && !authenticatedUpdate\}/);
   assert.match(form, /accountLinkingEnabled=\{accountLinkingEnabled\}/);
