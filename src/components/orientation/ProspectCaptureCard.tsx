@@ -4,7 +4,10 @@ import Link from "next/link";
 import { useState } from "react";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { orientationProspectCopy } from "@/content/orientation-prospect-copy";
-import type { PublicOrientationAnswers } from "@/lib/orientation/public";
+import type {
+  PublicOrientationAnswers,
+  PublicOrientationIdentity,
+} from "@/lib/orientation/public";
 import type { AcquisitionContext } from "@/lib/phase2/acquisition";
 
 type ProspectCaptureResponse = {
@@ -19,18 +22,22 @@ type InterestResponse = {
 
 export function ProspectCaptureCard({
   answers,
+  identity,
+  initialEmail = "",
   reviewId = null,
   emailDeliveryEnabled = false,
   acquisitionContext = null,
 }: {
   answers: PublicOrientationAnswers;
+  identity?: PublicOrientationIdentity | null;
+  initialEmail?: string;
   reviewId?: string | null;
   emailDeliveryEnabled?: boolean;
   acquisitionContext?: AcquisitionContext | null;
 }) {
   const { locale } = useLocale();
   const copy = orientationProspectCopy[locale].capture;
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(initialEmail);
   const [privacyAcknowledged, setPrivacyAcknowledged] = useState(false);
   const [contactConsent, setContactConsent] = useState(false);
   const [status, setStatus] = useState<"idle" | "saving" | "success" | "error">("idle");
@@ -61,6 +68,9 @@ export function ProspectCaptureCard({
           email: normalized,
           locale,
           answers,
+          ...(identity
+            ? { identity: { ...identity, email: normalized } }
+            : {}),
           privacyAcknowledged: true,
           contactConsent,
           ...(reviewId ? { reviewId } : {}),
