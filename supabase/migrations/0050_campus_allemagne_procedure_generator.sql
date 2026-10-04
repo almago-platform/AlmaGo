@@ -304,7 +304,7 @@ declare
   project_record public.student_projects%rowtype;
   template_record public.procedure_templates%rowtype;
   current_record public.student_procedures%rowtype;
-  route_key text;
+  v_route_key text;
   new_procedure_id uuid := gen_random_uuid();
   procedure_snapshot jsonb;
   project_snapshot jsonb;
@@ -322,7 +322,7 @@ begin
     raise exception 'Student project not found';
   end if;
 
-  route_key := case project_record.path::text
+  v_route_key := case project_record.path::text
     when 'university_search' then 'study_place_search'
     when 'german_preparation_and_studies' then 'study_preparation'
     when 'master_and_language' then 'studies_master'
@@ -330,14 +330,14 @@ begin
     else null
   end;
 
-  if route_key is null then
+  if v_route_key is null then
     raise exception 'Unsupported student project path: %', project_record.path;
   end if;
 
   select *
   into template_record
   from public.procedure_templates
-  where route_key = route_key
+  where procedure_templates.route_key = v_route_key
     and is_active
     and (active_from is null or active_from <= current_date)
     and (active_to is null or active_to >= current_date)
@@ -345,7 +345,7 @@ begin
   limit 1;
 
   if not found then
-    raise exception 'No active Campus Allemagne procedure template for route %', route_key;
+    raise exception 'No active Campus Allemagne procedure template for route %', v_route_key;
   end if;
 
   project_snapshot := jsonb_build_object(
@@ -370,7 +370,7 @@ begin
 
   if found
     and current_record.procedure_template_id = template_record.id
-    and current_record.route_key = route_key
+    and current_record.route_key = v_route_key
     and current_record.target_intake is not distinct from project_record.target_intake
     and current_record.template_snapshot -> 'project' = project_snapshot
   then
@@ -440,7 +440,7 @@ begin
     template_record.id,
     template_record.key,
     template_record.version,
-    route_key,
+    v_route_key,
     project_record.target_intake,
     'ready',
     procedure_snapshot,
