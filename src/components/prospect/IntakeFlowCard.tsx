@@ -25,6 +25,7 @@ export function IntakeFlowCard({
   orientationConfirmed,
   intake,
   starterSummary,
+  bacStatus,
 }: {
   recovery: Recovery | null;
   orientationId: string | null;
@@ -36,6 +37,7 @@ export function IntakeFlowCard({
     pending: number;
     needsReplacement: number;
   };
+  bacStatus?: string | null;
 }) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
@@ -142,6 +144,35 @@ export function IntakeFlowCard({
   }
 
   if (!intake) return null;
+
+  if (intake.status === "starter_documents" && bacStatus === "preparing") {
+    return (
+      <section className="mt-6 rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--brand-soft)] p-5 sm:p-6">
+        <p className="text-[0.68rem] font-bold uppercase tracking-[0.15em] text-[var(--brand)]">
+          Projet avant le Bac
+        </p>
+        <h2 className="mt-2 text-xl font-bold">Continuez votre préparation sans attendre les résultats</h2>
+        <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
+          Aucun document académique final n’est obligatoire maintenant. Vous pouvez améliorer votre allemand,
+          explorer les programmes et ajouter seulement votre passeport ou votre certificat de langue s’ils sont disponibles.
+        </p>
+        <div className="mt-5 flex flex-wrap gap-3">
+          <Link
+            href="/prospect/roadmap"
+            className="inline-flex min-h-11 items-center rounded-[var(--radius-control)] bg-[var(--brand)] px-5 text-sm font-bold text-white"
+          >
+            Continuer ma préparation
+          </Link>
+          <Link
+            href="/prospect/documents"
+            className="inline-flex min-h-11 items-center rounded-[var(--radius-control)] border border-[var(--border-strong)] px-5 text-sm font-bold"
+          >
+            Ajouter un document facultatif
+          </Link>
+        </div>
+      </section>
+    );
+  }
 
   if (intake.status === "starter_documents") {
     return (
