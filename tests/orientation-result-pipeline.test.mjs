@@ -128,7 +128,7 @@ test("E writer UI presents a premium progressive result with one CTA and verifie
   assert.match(writerCard, /Parler de mon orientation avec Campus Allemagne/);
   assert.match(writerCard, /simpleLanguagePriority/);
   assert.match(writerCard, /Passez de \$\{currentLevel\} à \$\{nextLevel\}/);
-  assert.match(writerCard, /bg-\[var\(--accent-light\)\]/);
+  assert.match(writerCard, /bg-\[var\(--brand-soft\)\]/);
   assert.match(writerCard, /bg-\[var\(--brand\)\]/);
   assert.match(writerCard, /Studienkolleg si nécessaire/);
   assert.doesNotMatch(writerCard, /orchestrons|Notre ingénierie|auditons|verrouillons|architecturons/i);
