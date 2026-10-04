@@ -16,6 +16,48 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Le contenu du fichier ne correspond pas au format déclaré." }, { status: 400 });
   }
 
+  const { data: currentProcedure, error: procedureError } = await supabase
+    .from("student_procedures")
+    .select("id")
+    .eq("student_id", user.id)
+    .eq("is_current", true)
+    .maybeSingle();
+
+  if (procedureError) {
+    return NextResponse.json({ error: "Impossible de vérifier les pièces demandées." }, { status: 500 });
+  }
+
+  if (currentProcedure) {
+    const { data: requirements, error: requirementsError } = await supabase
+      .from("student_document_requirements")
+      .select("requirement_key,requested_from_student,status")
+      .eq("student_id", user.id)
+      .eq("student_procedure_id", currentProcedure.id)
+      .eq("category", category);
+
+    if (requirementsError) {
+      return NextResponse.json({ error: "Impossible de vérifier les pièces demandées." }, { status: 500 });
+    }
+
+    const uploadAllowed = (requirements || []).some((requirement) =>
+      (
+        requirement.requested_from_student
+        && ["requested", "replacement_required"].includes(requirement.status)
+      )
+      || (
+        requirement.requirement_key === "existing_language_certificate"
+        && ["not_applicable", "replacement_required"].includes(requirement.status)
+      )
+    );
+
+    if (!uploadAllowed) {
+      return NextResponse.json(
+        { error: "Cette pièce n’est pas demandée pour votre dossier actuellement." },
+        { status: 403 },
+      );
+    }
+  }
+
   const id = crypto.randomUUID();
   const storagePath = `${user.id}/${id}/${safeFilename(file.name)}`;
   const { error: documentError } = await supabase.from("documents").insert({
