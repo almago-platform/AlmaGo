@@ -22,12 +22,17 @@ import {
   studentProfileCopy,
 } from "@/content/student-profile-copy";
 import type { AcquisitionContext } from "@/lib/phase2/acquisition";
+import type { OrientationPublicPersonalizedResult } from "@/lib/orientation-engine/result/types";
 import { evaluateSmartOrientationPriority } from "@/lib/phase2/smart-orientation";
 import {
   PUBLIC_ORIENTATION_SESSION_KEY as SESSION_KEY,
   createEmptyPublicOrientationAnswers,
+  createEmptyPublicOrientationIdentity,
+  isCompletePublicOrientationIdentity,
   restorePublicOrientationAnswers,
+  restorePublicOrientationIdentity,
   type PublicOrientationAnswers as Answers,
+  type PublicOrientationIdentity,
 } from "@/lib/orientation/public";
 import {
   budgetOptions,
@@ -55,12 +60,14 @@ export function PublicOrientationForm({
   prospectCaptureEnabled = false,
   emailDeliveryEnabled = false,
   initialAnswers = null,
+  initialIdentity = null,
   authenticatedUpdate = false,
   acquisitionContext = null,
 }: {
   prospectCaptureEnabled?: boolean;
   emailDeliveryEnabled?: boolean;
   initialAnswers?: Answers | null;
+  initialIdentity?: PublicOrientationIdentity | null;
   authenticatedUpdate?: boolean;
   acquisitionContext?: AcquisitionContext | null;
 }) {
@@ -71,6 +78,13 @@ export function PublicOrientationForm({
   const prospectDashboard = prospectDashboardCopy[locale];
   const updateCopy = prospectOrientationUpdateCopy[locale];
   const headingRef = useRef<HTMLHeadingElement>(null);
+  const [identity, setIdentity] = useState<PublicOrientationIdentity>(() =>
+    initialIdentity
+      ? restorePublicOrientationIdentity(initialIdentity)
+      : createEmptyPublicOrientationIdentity(),
+  );
+  const [identityComplete, setIdentityComplete] = useState(authenticatedUpdate);
+  const [identityError, setIdentityError] = useState("");
   const [answers, setAnswers] = useState<Answers>(() =>
     initialAnswers
       ? restorePublicOrientationAnswers(initialAnswers)
@@ -84,12 +98,23 @@ export function PublicOrientationForm({
     profileKey: string | null;
     reviewId: string | null;
   }>({ profileKey: null, reviewId: null });
+  const [printPersonalized, setPrintPersonalized] = useState<{
+    profileKey: string | null;
+    result: OrientationPublicPersonalizedResult | null;
+  }>({ profileKey: null, result: null });
   const handleReviewReady = useCallback((reviewId: string | null) => {
     setOrientationReview({ profileKey: reviewProfileKey, reviewId });
+  }, [reviewProfileKey]);
+  const handlePersonalizedReady = useCallback((result: OrientationPublicPersonalizedResult | null) => {
+    setPrintPersonalized({ profileKey: reviewProfileKey, result });
   }, [reviewProfileKey]);
   const orientationReviewId =
     orientationReview.profileKey === reviewProfileKey
       ? orientationReview.reviewId
+      : null;
+  const personalizedForPrint =
+    printPersonalized.profileKey === reviewProfileKey
+      ? printPersonalized.result
       : null;
 
   const bacTracks = useMemo(() => localizeProfileOptions(locale, tunisianBacTrackOptions), [locale]);
@@ -134,6 +159,73 @@ export function PublicOrientationForm({
       answersHelp: "Diese Angaben personalisieren deine Orientierung und können jederzeit geändert werden.",
     },
   }[locale];
+  const identityCopy = {
+    fr: {
+      eyebrow: "Avant votre orientation",
+      title: "Commençons par faire connaissance.",
+      text: "Ces informations sont obligatoires pour personnaliser votre orientation et identifier correctement votre rapport.",
+      firstName: "Prénom",
+      lastName: "Nom",
+      birthDate: "Date de naissance",
+      email: "Adresse e-mail",
+      privacy: "Vos informations servent uniquement à votre parcours Campus Allemagne. Aucun compte n’est créé à cette étape.",
+      privacyLink: "Consulter la confidentialité",
+      submit: "Commencer mon orientation",
+      edit: "Modifier mes informations",
+      required: "Remplissez les quatre champs pour continuer.",
+      invalidEmail: "Indiquez une adresse e-mail valide.",
+      invalidBirthDate: "Indiquez une date de naissance valide.",
+    },
+    ar: {
+      eyebrow: "قبل بدء التوجيه",
+      title: "لنبدأ بالتعرّف عليك.",
+      text: "هذه المعلومات إلزامية لتخصيص توجيهك وربط التقرير بك بشكل صحيح.",
+      firstName: "الاسم",
+      lastName: "اللقب",
+      birthDate: "تاريخ الميلاد",
+      email: "البريد الإلكتروني",
+      privacy: "تُستخدم معلوماتك فقط ضمن مسارك مع Campus Allemagne، ولن يتم إنشاء حساب في هذه المرحلة.",
+      privacyLink: "سياسة الخصوصية",
+      submit: "ابدأ توجيهي",
+      edit: "تعديل معلوماتي",
+      required: "أكمل الحقول الأربعة للمتابعة.",
+      invalidEmail: "أدخل بريدًا إلكترونيًا صحيحًا.",
+      invalidBirthDate: "أدخل تاريخ ميلاد صحيحًا.",
+    },
+    en: {
+      eyebrow: "Before your orientation",
+      title: "First, tell us who you are.",
+      text: "These details are required to personalise your orientation and identify your report correctly.",
+      firstName: "First name",
+      lastName: "Last name",
+      birthDate: "Date of birth",
+      email: "Email address",
+      privacy: "Your details are used only for your Campus Allemagne journey. No account is created at this step.",
+      privacyLink: "View privacy information",
+      submit: "Start my orientation",
+      edit: "Edit my information",
+      required: "Complete all four fields to continue.",
+      invalidEmail: "Enter a valid email address.",
+      invalidBirthDate: "Enter a valid date of birth.",
+    },
+    de: {
+      eyebrow: "Vor deiner Orientierung",
+      title: "Zuerst möchten wir dich kennenlernen.",
+      text: "Diese Angaben sind erforderlich, um deine Orientierung zu personalisieren und deinen Bericht korrekt zuzuordnen.",
+      firstName: "Vorname",
+      lastName: "Nachname",
+      birthDate: "Geburtsdatum",
+      email: "E-Mail-Adresse",
+      privacy: "Deine Angaben werden nur für deinen Campus-Allemagne-Weg verwendet. In diesem Schritt wird kein Konto erstellt.",
+      privacyLink: "Datenschutzhinweise ansehen",
+      submit: "Meine Orientierung starten",
+      edit: "Meine Angaben ändern",
+      required: "Fülle alle vier Felder aus, um fortzufahren.",
+      invalidEmail: "Gib eine gültige E-Mail-Adresse ein.",
+      invalidBirthDate: "Gib ein gültiges Geburtsdatum ein.",
+    },
+  }[locale];
+
   const resultActionsCopy = {
     fr: {
       title: "Gardez votre rapport",
@@ -209,7 +301,18 @@ export function PublicOrientationForm({
       try {
         const stored = window.sessionStorage.getItem(SESSION_KEY);
         if (stored) {
-          const parsed = JSON.parse(stored) as { answers?: unknown; step?: unknown };
+          const parsed = JSON.parse(stored) as {
+            identity?: unknown;
+            identityComplete?: unknown;
+            answers?: unknown;
+            step?: unknown;
+          };
+          const restoredIdentity = restorePublicOrientationIdentity(parsed.identity);
+          setIdentity(restoredIdentity);
+          setIdentityComplete(
+            parsed.identityComplete === true
+            && isCompletePublicOrientationIdentity(restoredIdentity),
+          );
           setAnswers(restorePublicOrientationAnswers(parsed.answers));
           if (typeof parsed.step === "number" && parsed.step >= 1 && parsed.step <= 5) {
             setStep(parsed.step as Step);
@@ -227,12 +330,43 @@ export function PublicOrientationForm({
 
   useEffect(() => {
     if (!hydrated || authenticatedUpdate) return;
-    window.sessionStorage.setItem(SESSION_KEY, JSON.stringify({ answers, step }));
-  }, [answers, step, hydrated, authenticatedUpdate]);
+    window.sessionStorage.setItem(
+      SESSION_KEY,
+      JSON.stringify({ identity, identityComplete, answers, step }),
+    );
+  }, [identity, identityComplete, answers, step, hydrated, authenticatedUpdate]);
 
   useEffect(() => {
-    if (hydrated) headingRef.current?.focus();
-  }, [step, hydrated]);
+    if (hydrated && identityComplete) headingRef.current?.focus();
+  }, [step, hydrated, identityComplete]);
+
+  function setIdentityField<K extends keyof PublicOrientationIdentity>(
+    key: K,
+    value: PublicOrientationIdentity[K],
+  ) {
+    setIdentity((current) => ({ ...current, [key]: value }));
+    setIdentityError("");
+  }
+
+  function submitIdentity() {
+    const normalized = restorePublicOrientationIdentity(identity);
+    if (!normalized.firstName || !normalized.lastName || !normalized.birthDate || !normalized.email) {
+      setIdentityError(identityCopy.required);
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalized.email)) {
+      setIdentityError(identityCopy.invalidEmail);
+      return;
+    }
+    if (!isCompletePublicOrientationIdentity(normalized)) {
+      setIdentityError(identityCopy.invalidBirthDate);
+      return;
+    }
+
+    setIdentity(normalized);
+    setIdentityError("");
+    setIdentityComplete(true);
+  }
 
   function setField<K extends keyof Answers>(key: K, value: Answers[K]) {
     setAnswers((current) => ({ ...current, [key]: value }));
@@ -382,6 +516,114 @@ export function PublicOrientationForm({
       </header>
 
       <main id="orientation-main" className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-12">
+        {!authenticatedUpdate && !identityComplete ? (
+          <section className="orientation-print-hide mx-auto max-w-3xl">
+            <p className="eyebrow">{identityCopy.eyebrow}</p>
+            <h1 className="page-title max-w-3xl">{identityCopy.title}</h1>
+            <p className="page-subtitle">{identityCopy.text}</p>
+
+            <div className="professional-panel mt-8 rounded-[var(--radius-panel)] p-5 sm:p-7">
+              <form
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  submitIdentity();
+                }}
+                noValidate
+              >
+                <div className="grid gap-5 sm:grid-cols-2">
+                  <label className="text-sm font-semibold">
+                    {identityCopy.firstName}
+                    <input
+                      className="field"
+                      type="text"
+                      name="firstName"
+                      autoComplete="given-name"
+                      maxLength={80}
+                      required
+                      value={identity.firstName}
+                      onChange={(event) => setIdentityField("firstName", event.target.value)}
+                    />
+                  </label>
+
+                  <label className="text-sm font-semibold">
+                    {identityCopy.lastName}
+                    <input
+                      className="field"
+                      type="text"
+                      name="lastName"
+                      autoComplete="family-name"
+                      maxLength={80}
+                      required
+                      value={identity.lastName}
+                      onChange={(event) => setIdentityField("lastName", event.target.value)}
+                    />
+                  </label>
+
+                  <label className="text-sm font-semibold">
+                    {identityCopy.birthDate}
+                    <input
+                      className="field"
+                      type="date"
+                      name="birthDate"
+                      autoComplete="bday"
+                      max={new Date().toISOString().slice(0, 10)}
+                      required
+                      value={identity.birthDate}
+                      onChange={(event) => setIdentityField("birthDate", event.target.value)}
+                    />
+                  </label>
+
+                  <label className="text-sm font-semibold">
+                    {identityCopy.email}
+                    <input
+                      className="field"
+                      type="email"
+                      name="email"
+                      autoComplete="email"
+                      inputMode="email"
+                      autoCapitalize="none"
+                      spellCheck={false}
+                      maxLength={320}
+                      required
+                      value={identity.email}
+                      onChange={(event) => setIdentityField("email", event.target.value)}
+                    />
+                  </label>
+                </div>
+
+                <div className="mt-5 rounded-[var(--radius-control)] border border-[var(--brand-border)] bg-[var(--brand-soft)] px-4 py-3 text-sm leading-6">
+                  {identityCopy.privacy}{" "}
+                  <Link
+                    href="/legal/privacy"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-semibold underline underline-offset-2"
+                  >
+                    {identityCopy.privacyLink}
+                  </Link>
+                </div>
+
+                {identityError ? (
+                  <p
+                    role="alert"
+                    className="mt-5 rounded-[var(--radius-control)] border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-800"
+                  >
+                    {identityError}
+                  </p>
+                ) : null}
+
+                <button
+                  type="submit"
+                  className="mt-6 w-full rounded-[var(--radius-control)] bg-[var(--brand)] px-5 py-3 text-sm font-bold text-white hover:bg-[var(--brand-strong)] sm:w-auto"
+                >
+                  {identityCopy.submit}
+                  <span aria-hidden="true" className="ms-2">→</span>
+                </button>
+              </form>
+            </div>
+          </section>
+        ) : (
+          <>
         {step <= 4 ? (
           <section className="orientation-print-hide mx-auto max-w-3xl">
             <p className="eyebrow">
@@ -396,6 +638,18 @@ export function PublicOrientationForm({
             <div className="mt-5 rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--brand-soft)] px-4 py-3 text-sm leading-6">
               {authenticatedUpdate ? updateCopy.introNotice : copy.intro.privacy}
             </div>
+            {!authenticatedUpdate ? (
+              <button
+                type="button"
+                onClick={() => {
+                  setIdentityError("");
+                  setIdentityComplete(false);
+                }}
+                className="mt-3 text-sm font-semibold text-[var(--foreground)] underline decoration-[var(--border-strong)] underline-offset-4 hover:decoration-[var(--foreground)]"
+              >
+                {identityCopy.edit}
+              </button>
+            ) : null}
           </section>
         ) : null}
 
@@ -810,7 +1064,7 @@ export function PublicOrientationForm({
               </form>
             ) : (
               <div id="orientation-report" className="orientation-print-report">
-                <OrientationOnePagePrintReport answers={answers} locale={locale} />
+                <OrientationOnePagePrintReport answers={answers} locale={locale} personalized={personalizedForPrint} identity={identity} />
                 <div className="orientation-screen-report">
                 <div className="orientation-print-only mb-6 items-center justify-between gap-6 border-b border-slate-300 pb-5">
                   <BrandLogo className="h-10 w-auto" priority />
@@ -853,6 +1107,7 @@ export function PublicOrientationForm({
                   locale={locale}
                   prospectCaptureEnabled={prospectCaptureEnabled && !authenticatedUpdate}
                   onReviewReady={handleReviewReady}
+                  onPersonalizedReady={handlePersonalizedReady}
                   onRefineAnswers={(patch) => {
                     setAnswers((current) => ({ ...current, ...patch }));
                     setError("");
@@ -882,6 +1137,8 @@ export function PublicOrientationForm({
                 ) : prospectCaptureEnabled ? (
                   <ProspectCaptureCard
                     answers={answers}
+                    identity={identity}
+                    initialEmail={identity.email}
                     reviewId={orientationReviewId}
                     emailDeliveryEnabled={emailDeliveryEnabled}
                     acquisitionContext={acquisitionContext}
@@ -918,6 +1175,8 @@ export function PublicOrientationForm({
             )}
           </div>
         </section>
+          </>
+        )}
       </main>
     </div>
   );
