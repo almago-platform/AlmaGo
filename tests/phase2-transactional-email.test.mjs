@@ -27,12 +27,19 @@ test("resume tokens are random, hashed and expiring", () => {
   assert.doesNotMatch(migration, /grant\s+.*anon/i);
 });
 
-test("transactional email secrets stay server-only and provider access is idempotent", () => {
+test("transactional email secrets stay server-only and support Resend or the Supabase SMTP provider", () => {
   assert.match(mailer, /import "server-only"/);
   assert.match(mailer, /https:\/\/api\.resend\.com\/emails/);
   assert.match(mailer, /RESEND_API_KEY/);
   assert.match(mailer, /ALMAGO_TRANSACTIONAL_EMAIL_FROM/);
   assert.match(mailer, /"Idempotency-Key": message\.idempotencyKey/);
+  assert.match(mailer, /ALMAGO_SMTP_HOST/);
+  assert.match(mailer, /ALMAGO_SMTP_PORT/);
+  assert.match(mailer, /ALMAGO_SMTP_USERNAME/);
+  assert.match(mailer, /ALMAGO_SMTP_PASSWORD/);
+  assert.match(mailer, /STARTTLS/);
+  assert.match(mailer, /AUTH PLAIN|AUTH LOGIN/);
+  assert.match(mailer, /provider: "smtp"/);
   assert.doesNotMatch(mailer, /NEXT_PUBLIC_/);
   assert.doesNotMatch(mailer, /console\.(?:log|error)/);
 });
@@ -42,9 +49,21 @@ test("email delivery has an independent default-off Phase 2 gate", () => {
   assert.match(config, /isPhase2ProspectCaptureEnabled\(env\)/);
   assert.match(config, /ALMAGO_PHASE2_EMAIL_DELIVERY_ENABLED/);
   assert.match(env, /ALMAGO_PHASE2_EMAIL_DELIVERY_ENABLED=false/);
+  assert.match(env, /ALMAGO_TRANSACTIONAL_EMAIL_PROVIDER=smtp/);
+  assert.match(env, /ALMAGO_SMTP_HOST=smtp\.example\.com/);
+  assert.match(env, /ALMAGO_SMTP_USERNAME=your-smtp-user/);
+  assert.match(env, /ALMAGO_SMTP_PASSWORD=your-smtp-password/);
   assert.match(env, /ALMAGO_TRANSACTIONAL_EMAIL_PROVIDER=resend/);
   assert.match(env, /RESEND_API_KEY=re_/);
-  assert.doesNotMatch(env, /NEXT_PUBLIC_RESEND|NEXT_PUBLIC_.*EMAIL.*KEY/i);
+  assert.doesNotMatch(env, /NEXT_PUBLIC_RESEND|NEXT_PUBLIC_.*EMAIL.*KEY|NEXT_PUBLIC_.*SMTP/i);
+});
+
+test("SMTP transport refuses plaintext credentials and builds multipart UTF-8 mail", () => {
+  assert.match(mailer, /if \(!capabilities\.toUpperCase\(\)\.includes\("STARTTLS"\)\)/);
+  assert.match(mailer, /Content-Type: multipart\/alternative/);
+  assert.match(mailer, /Content-Transfer-Encoding: base64/);
+  assert.match(mailer, /X-AlmaGo-Idempotency-Key/);
+  assert.match(mailer, /Message-ID/);
 });
 
 test("prospect persistence succeeds independently from delivery", () => {
