@@ -14,6 +14,8 @@ const route = readFileSync("src/app/api/admin/offers/route.ts", "utf8");
 const adminPage = readFileSync("src/app/admin/offers/page.tsx", "utf8");
 const editor = readFileSync("src/components/admin/CommercialOfferEditor.tsx", "utf8");
 const prospectPage = readFileSync("src/app/prospect/offers/page.tsx", "utf8");
+const money = readFileSync("src/lib/money.ts", "utf8");
+const tunisiaPricing = readFileSync("supabase/migrations/20261004230000_tunisia_test_offer_pricing.sql", "utf8");
 const prospectLoading = readFileSync("src/app/prospect/offers/loading.tsx", "utf8");
 const selector = readFileSync("src/components/prospect/ProspectOfferSelector.tsx", "utf8");
 const copy = readFileSync("src/content/prospect-offers-copy.ts", "utf8");
@@ -153,7 +155,7 @@ test("prospect offer page requires qualified commercial state and reads publishe
   assert.match(prospectPage, /from\("commercial_offers"\)/);
   assert.match(prospectPage, /from\("commercial_offer_versions"\)/);
   assert.match(prospectPage, /\.eq\("status", "published"\)/);
-  assert.match(prospectPage, /formatMinorPrice/);
+  assert.match(prospectPage, /formatMinorCurrency/);
 });
 
 test("prospect selection is UI-only and cannot trigger payment or client access", () => {
@@ -226,4 +228,20 @@ test("offer empty states use student-facing language instead of internal product
 test("prospect offer page renders localized offer copy through the canonical brand layer", () => {
   assert.match(prospectPage, /const copy = rebrandCopy\(prospectOffersCopy\[locale\]\)/);
   assert.match(copy, /No AlmaGo offer guarantees university admission or a visa/);
+});
+
+
+test("Tunisia test offers are published in TND with versioned market pricing", () => {
+  assert.match(tunisiaPricing, /'bronze'::public\.commercial_offer_code[\s\S]*590000[\s\S]*'TND'/);
+  assert.match(tunisiaPricing, /'silver'::public\.commercial_offer_code[\s\S]*1490000[\s\S]*'TND'/);
+  assert.match(tunisiaPricing, /'gold'::public\.commercial_offer_code[\s\S]*2490000[\s\S]*'TND'/);
+  assert.match(tunisiaPricing, /status = 'retired'::public\.commercial_offer_version_status/);
+  assert.match(tunisiaPricing, /version,\n    status,[\s\S]*2,[\s\S]*'published'/);
+});
+
+test("shared money formatting renders whole Tunisian dinars as DT", () => {
+  assert.match(money, /currency === "TND"/);
+  assert.match(money, /"د\.ت"/);
+  assert.match(money, /"DT"/);
+  assert.match(money, /amount \/ 10 \*\* digits/);
 });
