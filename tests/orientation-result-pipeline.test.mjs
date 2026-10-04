@@ -157,6 +157,15 @@ test("E writer UI presents a premium progressive result with one CTA and verifie
   assert.match(form, /\{step <= 4 \? \([\s\S]*role="progressbar"/);
 });
 
+test("E signals result readiness only after the orientation engine has returned a result", () => {
+  assert.match(engineCard, /onResultReady\?\(false\)/);
+  assert.match(engineCard, /onResultReady\?\(true\)/);
+  assert.match(engineCard, /onResultReady\?: \(ready: boolean\) => void/);
+  assert.match(form, /handleResultReady/);
+  assert.match(form, /orientationResultState\.profileKey === reviewProfileKey/);
+  assert.match(form, /orientationResultState\.ready/);
+});
+
 test("E language and post-admission guidance keep partner and agency claims bounded", () => {
   assert.match(
     universalGuidance,
