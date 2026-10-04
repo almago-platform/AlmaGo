@@ -1,0 +1,93 @@
+import { NextResponse } from "next/server";
+import { getPhase2StudentAccess } from "@/lib/phase2/access";
+import {
+  hasAllowedDocumentSignature,
+  isDocumentCategory,
+  isSafeDocumentFile,
+  maxDocumentBytes,
+  safeFilename,
+} from "@/lib/documents";
+import { starterDocumentCategories } from "@/lib/campus-intake";
+
+const allowedStarterCategories = new Set(
+  starterDocumentCategories.map((item) => item.category),
+);
+
+export async function POST(request: Request) {
+  const access = await getPhase2StudentAccess();
+  const { supabase, user } = access;
+
+  if (!user) return NextResponse.json({ error: "Non authentifié." }, { status: 401 });
+  if (!access.isStudent || !access.phase2Enabled || access.canUseClientFeatures) {
+    return NextResponse.json({ error: "Espace de pré-dossier requis." }, { status: 403 });
+  }
+
+  const formData = await request.formData();
+  const file = formData.get("file");
+  const category = formData.get("category");
+
+  if (
+    !(file instanceof File)
+    || !isDocumentCategory(category)
+    || !allowedStarterCategories.has(category)
+  ) {
+    return NextResponse.json({ error: "Document ou catégorie invalide." }, { status: 400 });
+  }
+
+  if (!isSafeDocumentFile(file)) {
+    return NextResponse.json(
+      { error: "Utilise un PDF, JPEG ou PNG de 10 MiB maximum." },
+      { status: 400 },
+    );
+  }
+
+  if (!(await hasAllowedDocumentSignature(file))) {
+    return NextResponse.json(
+      { error: "Le contenu du fichier ne correspond pas au format déclaré." },
+      { status: 400 },
+    );
+  }
+
+  const { data: intake } = await supabase
+    .from("student_intake_cases")
+    .select("status")
+    .eq("student_id", user.id)
+    .maybeSingle();
+
+  if (!intake || intake.status === "procedure_created") {
+    return NextResponse.json(
+      { error: "Le pré-dossier n’accepte pas de nouvelles pièces à cette étape." },
+      { status: 409 },
+    );
+  }
+
+  const id = crypto.randomUUID();
+  const storagePath = `${user.id}/${id}/${safeFilename(file.name)}`;
+
+  const { error: documentError } = await supabase.from("documents").insert({
+    id,
+    student_id: user.id,
+    uploaded_by: user.id,
+    category,
+    storage_path: storagePath,
+    original_filename: file.name,
+    mime_type: file.type,
+    size_bytes: file.size,
+    status: "pending",
+  });
+
+  if (documentError) {
+    return NextResponse.json({ error: "Impossible de préparer le document." }, { status: 500 });
+  }
+
+  const { error: uploadError } = await supabase.storage
+    .from("student-documents")
+    .upload(storagePath, file, { contentType: file.type, upsert: false });
+
+  if (uploadError) {
+    await supabase.from("documents").delete().eq("id", id);
+    return NextResponse.json({ error: "Impossible d’envoyer le fichier." }, { status: 500 });
+  }
+
+  return NextResponse.json({ ok: true, id, maxSize: maxDocumentBytes }, { status: 201 });
+}
