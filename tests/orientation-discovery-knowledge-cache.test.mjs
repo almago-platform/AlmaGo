@@ -6,6 +6,7 @@ const {
   buildOrientationDiscoveryProfileFingerprint,
   buildOrientationDiscoverySearchContext,
   buildOrientationResearchProgrammeDedupeKey,
+  buildOrientationResearchUniversityDedupeKey,
   getOrientationDiscoveryRefreshWindow,
   mergeOrientationKnowledgeCandidates,
   orientationDegreeCompatible,
@@ -195,6 +196,55 @@ test("A3 programme dedupe keys ignore case and harmless whitespace", () => {
   assert.equal(
     buildOrientationResearchProgrammeDedupeKey(first),
     buildOrientationResearchProgrammeDedupeKey(second),
+  );
+});
+
+test("A3 university identity falls back to the official programme host and collapses institution aliases", () => {
+  const shortName = candidate({
+    institution: "FH Aachen",
+    programme: "Electrical Engineering",
+    degree: "Bachelor of Engineering (B.Eng.)",
+    city: "Aachen",
+    officialUniversityUrl: null,
+    officialProgrammeUrl:
+      "https://www.fh-aachen.de/en/studies/degree-programmes/electrical-engineering-beng",
+  });
+  const longName = candidate({
+    institution: "FH Aachen – University of Applied Sciences",
+    programme: "Electrical Engineering",
+    degree: "Bachelor of Engineering (B.Eng.)",
+    city: "Aachen",
+    officialUniversityUrl: null,
+    officialProgrammeUrl:
+      "https://www.fh-aachen.de/en/studies/degree-programmes/electrical-engineering-beng",
+  });
+
+  assert.equal(
+    buildOrientationResearchUniversityDedupeKey(shortName),
+    "host:fh-aachen.de",
+  );
+  assert.equal(
+    buildOrientationResearchUniversityDedupeKey(shortName),
+    buildOrientationResearchUniversityDedupeKey(longName),
+  );
+  assert.equal(
+    buildOrientationResearchProgrammeDedupeKey(shortName),
+    buildOrientationResearchProgrammeDedupeKey(longName),
+  );
+});
+
+test("A3 German faculty subdomains collapse to the canonical university host", () => {
+  const programmePage = candidate({
+    institution: "RWTH Aachen University",
+    city: "Aachen",
+    officialUniversityUrl: null,
+    officialProgrammeUrl:
+      "https://www.elektrotechnik.rwth-aachen.de/cms/elektrotechnik-und-informationstechnik/studium/",
+  });
+
+  assert.equal(
+    buildOrientationResearchUniversityDedupeKey(programmePage),
+    "host:rwth-aachen.de",
   );
 });
 
