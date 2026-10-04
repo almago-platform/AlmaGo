@@ -72,11 +72,11 @@ test("required identity is collected before orientation while persistence remain
   assert.match(route, /\.\.\.\(identity \? \{ identity \} : \{\}\)/);
 });
 
-test("post-orientation save, PDF and account actions stay hidden until the engine result is ready", () => {
+test("public post-orientation save, PDF and account actions stay hidden until the engine result is ready", () => {
   assert.match(form, /orientationResultReady/);
   assert.match(form, /onResultReady=\{handleResultReady\}/);
-  assert.match(form, /\{orientationResultReady \? \([\s\S]*<ProspectCaptureCard/);
-  assert.match(form, /\{orientationResultReady \? \([\s\S]*window\.print\(\)/);
+  assert.match(form, /\{!authenticatedUpdate && orientationResultReady \? \([\s\S]*<ProspectCaptureCard/);
+  assert.match(form, /\{!authenticatedUpdate && orientationResultReady \? \([\s\S]*window\.print\(\)/);
 });
 
 test("continuation card uses one required privacy checkbox and a clear ready state", () => {
@@ -88,7 +88,10 @@ test("continuation card uses one required privacy checkbox and a clear ready sta
 });
 
 test("orientation continuation saves the result before opening secure account signup", () => {
-  assert.match(form, /accountLinkingEnabled=\{accountLinkingEnabled && !authenticatedUpdate\}/);
+  assert.match(
+    form,
+    /authenticatedUpdate \? \([\s\S]*<ProspectOrientationUpdateCard[\s\S]*\) : \([\s\S]*<PersonalizedOrientationEngineCard/,
+  );
   assert.match(form, /accountLinkingEnabled=\{accountLinkingEnabled\}/);
   assert.match(capture, /accountLinkingEnabled/);
   assert.match(capture, /copy\.continueSubmit/);
