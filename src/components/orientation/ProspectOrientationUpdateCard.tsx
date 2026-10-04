@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { prospectOrientationUpdateCopy } from "@/content/prospect-orientation-update-copy";
@@ -12,6 +12,7 @@ export function ProspectOrientationUpdateCard({
   answers: PublicOrientationAnswers;
 }) {
   const { locale } = useLocale();
+  const router = useRouter();
   const copy = prospectOrientationUpdateCopy[locale];
   const [state, setState] = useState<"idle" | "saving" | "success" | "error">("idle");
 
@@ -26,27 +27,22 @@ export function ProspectOrientationUpdateCard({
         body: JSON.stringify({ answers, locale }),
       });
 
-      if (!response.ok) throw new Error("orientation update failed");
+      const result = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(
+          typeof result.error === "string"
+            ? result.error
+            : "orientation update failed",
+        );
+      }
+
       setState("success");
+      router.replace("/prospect/orientation?updated=1");
+      router.refresh();
     } catch {
       setState("error");
     }
-  }
-
-  if (state === "success") {
-    return (
-      <section className="orientation-print-hide mt-7 rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--brand-soft)] p-5">
-        <p className="eyebrow">{copy.eyebrow}</p>
-        <h3 className="mt-2 text-lg font-bold">{copy.successTitle}</h3>
-        <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{copy.successText}</p>
-        <Link
-          href="/prospect"
-          className="mt-4 inline-flex min-h-11 items-center rounded-[var(--radius-control)] bg-[var(--brand)] px-5 text-sm font-bold text-white"
-        >
-          {copy.returnSpace}
-        </Link>
-      </section>
-    );
   }
 
   return (
