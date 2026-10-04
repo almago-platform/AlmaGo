@@ -9,7 +9,7 @@ import { useLocale } from "@/components/i18n/LocaleProvider";
 import { studentOrientationCopy } from "@/content/student-orientation-copy";
 import type { MasterRequirementsMatch, RequirementMatchResult } from "@/lib/master-requirements";
 import { formatDeadline } from "@/lib/phase4";
-import { localizeCatalogueLabel } from "@/lib/student/arabic-display";
+import { localizeCatalogueLabel, localizeProgramRequirement } from "@/lib/student/arabic-display";
 
 type University = { name: string; city: string; bundesland?: string | null };
 type Program = {
@@ -327,6 +327,30 @@ export function StudentOrientationPanel({
                     </section>
 
                     <div className="mt-4 space-y-2.5">
+                      {program.diploma_required ? (
+                        <div className="flex items-start gap-2.5 text-sm">
+                          <span aria-hidden="true" className="w-4 shrink-0 font-black text-slate-400">•</span>
+                          <span className="leading-5 text-slate-700">
+                            {t.diplomaRequired}: <bdi dir="auto">{localizeProgramRequirement(locale, program.diploma_required)}</bdi>
+                          </span>
+                        </div>
+                      ) : null}
+                      {program.german_level_required ? (
+                        <div className="flex items-start gap-2.5 text-sm">
+                          <span aria-hidden="true" className="w-4 shrink-0 font-black text-slate-400">•</span>
+                          <span className="leading-5 text-slate-700">
+                            {t.german}: <bdi dir="auto">{`\u2066${program.german_level_required}\u2069`}</bdi>
+                          </span>
+                        </div>
+                      ) : null}
+                      {program.english_level_required ? (
+                        <div className="flex items-start gap-2.5 text-sm">
+                          <span aria-hidden="true" className="w-4 shrink-0 font-black text-slate-400">•</span>
+                          <span className="leading-5 text-slate-700">
+                            {t.english}: <bdi dir="auto">{`\u2066${program.english_level_required}\u2069`}</bdi>
+                          </span>
+                        </div>
+                      ) : null}
                       {compatibilityRows.length ? compatibilityRows.map((item, index) => {
                         const signal = criterionSignal(item.status);
                         return (
