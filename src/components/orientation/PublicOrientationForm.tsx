@@ -22,6 +22,7 @@ import {
   studentProfileCopy,
 } from "@/content/student-profile-copy";
 import type { AcquisitionContext } from "@/lib/phase2/acquisition";
+import type { OrientationPublicPersonalizedResult } from "@/lib/orientation-engine/result/types";
 import { evaluateSmartOrientationPriority } from "@/lib/phase2/smart-orientation";
 import {
   PUBLIC_ORIENTATION_SESSION_KEY as SESSION_KEY,
@@ -84,12 +85,23 @@ export function PublicOrientationForm({
     profileKey: string | null;
     reviewId: string | null;
   }>({ profileKey: null, reviewId: null });
+  const [printPersonalized, setPrintPersonalized] = useState<{
+    profileKey: string | null;
+    result: OrientationPublicPersonalizedResult | null;
+  }>({ profileKey: null, result: null });
   const handleReviewReady = useCallback((reviewId: string | null) => {
     setOrientationReview({ profileKey: reviewProfileKey, reviewId });
+  }, [reviewProfileKey]);
+  const handlePersonalizedReady = useCallback((result: OrientationPublicPersonalizedResult | null) => {
+    setPrintPersonalized({ profileKey: reviewProfileKey, result });
   }, [reviewProfileKey]);
   const orientationReviewId =
     orientationReview.profileKey === reviewProfileKey
       ? orientationReview.reviewId
+      : null;
+  const personalizedForPrint =
+    printPersonalized.profileKey === reviewProfileKey
+      ? printPersonalized.result
       : null;
 
   const bacTracks = useMemo(() => localizeProfileOptions(locale, tunisianBacTrackOptions), [locale]);
@@ -810,7 +822,7 @@ export function PublicOrientationForm({
               </form>
             ) : (
               <div id="orientation-report" className="orientation-print-report">
-                <OrientationOnePagePrintReport answers={answers} locale={locale} />
+                <OrientationOnePagePrintReport answers={answers} locale={locale} personalized={personalizedForPrint} />
                 <div className="orientation-screen-report">
                 <div className="orientation-print-only mb-6 items-center justify-between gap-6 border-b border-slate-300 pb-5">
                   <BrandLogo className="h-10 w-auto" priority />
@@ -853,6 +865,7 @@ export function PublicOrientationForm({
                   locale={locale}
                   prospectCaptureEnabled={prospectCaptureEnabled && !authenticatedUpdate}
                   onReviewReady={handleReviewReady}
+                  onPersonalizedReady={handlePersonalizedReady}
                   onRefineAnswers={(patch) => {
                     setAnswers((current) => ({ ...current, ...patch }));
                     setError("");
