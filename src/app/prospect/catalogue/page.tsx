@@ -1,11 +1,13 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { ProspectProgrammeRecommendationCard } from "@/components/prospect/ProspectProgrammeRecommendationCard";
 import { prospectHubCopy } from "@/content/prospect-hub-copy";
 import { getRequestLocale } from "@/lib/i18n-server";
 import { getPhase2StudentAccess } from "@/lib/phase2/access";
 import { loadVerifiedProgrammeCatalogue } from "@/lib/orientation-engine/catalog";
 import type { OrientationProgrammeRecord } from "@/lib/orientation-engine/types";
 import { loadProspectHubState } from "@/lib/prospect/hub";
+import { prospectCatalogueRecommendations } from "@/lib/prospect/programmes";
 
 function normalized(value: string | null | undefined) {
   return (value || "")
@@ -23,18 +25,11 @@ function matchesProject(
   if (!answers) return false;
 
   const degreeMatch = normalized(programme.degreeLevel) === normalized(answers.targetDegree);
-  const field = normalized(programme.field);
-  const targetField = normalized(answers.targetField);
-  const fieldMatch = Boolean(
-    field
-    && targetField
-    && (field.includes(targetField) || targetField.includes(field)),
-  );
   const cityMatch = answers.preferredCities.some(
     (city) => normalized(city) === normalized(programme.university.city),
   );
 
-  return degreeMatch && (fieldMatch || cityMatch);
+  return degreeMatch && cityMatch;
 }
 
 export const dynamic = "force-dynamic";
@@ -65,10 +60,15 @@ export default async function ProspectCataloguePage({
     emailConfirmed: Boolean(access.user.email_confirmed_at),
   });
   const t = prospectHubCopy[locale].catalogue;
+  const recommendations = prospectCatalogueRecommendations(state.answers, catalogue);
+  const recommendedIds = new Set(
+    recommendations.map((recommendation) => recommendation.programme.id),
+  );
 
   const degree = (params.degree || "").trim();
   const field = (params.field || "").trim();
   const city = (params.city || "").trim();
+  const hasFilters = Boolean(degree || field || city);
 
   const degrees = [...new Set(catalogue.map((item) => item.degreeLevel).filter(Boolean))]
     .sort((a, b) => a.localeCompare(b));
@@ -81,6 +81,7 @@ export default async function ProspectCataloguePage({
     .filter((programme) => !degree || normalized(programme.degreeLevel) === normalized(degree))
     .filter((programme) => !field || normalized(programme.field).includes(normalized(field)))
     .filter((programme) => !city || normalized(programme.university.city) === normalized(city))
+    .filter((programme) => hasFilters || !recommendedIds.has(programme.id))
     .sort((a, b) => {
       const aMatch = matchesProject(a, state.answers) ? 1 : 0;
       const bMatch = matchesProject(b, state.answers) ? 1 : 0;
@@ -90,64 +91,109 @@ export default async function ProspectCataloguePage({
     })
     .slice(0, 80);
 
+  const recommendationLabels = {
+    projectMatch: t.projectMatch,
+    preferredCity: t.preferredCity,
+    requirementCheck: t.requirementCheck,
+    field: t.field,
+    german: t.german,
+    uniAssist: t.uniAssist,
+    yes: t.yes,
+    source: t.source,
+    applyLink: t.applyLink,
+  };
+
   return (
-    <main className="space-y-6">
-      <header>
-        <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">{t.eyebrow}</p>
-        <h1 className="mt-2 text-3xl font-bold tracking-[-0.03em]">{t.title}</h1>
-        <p className="mt-2 max-w-4xl text-sm leading-6 text-[var(--muted)]">{t.subtitle}</p>
+    <main className="space-y-8">
+      <header className="overflow-hidden rounded-[var(--radius-panel)] border border-slate-800 bg-[var(--foreground)] px-5 py-7 text-white shadow-[var(--shadow-soft)] sm:px-7 sm:py-8">
+        <p className="text-xs font-bold uppercase tracking-[0.16em] text-amber-300">{t.eyebrow}</p>
+        <h1 className="mt-2 text-3xl font-bold tracking-[-0.03em] sm:text-4xl">{t.title}</h1>
+        <p className="mt-3 max-w-4xl text-sm leading-6 text-white/72 sm:text-base">{t.subtitle}</p>
       </header>
 
-      <form
-        action="/prospect/catalogue"
-        className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 sm:p-6"
-      >
-        <h2 className="text-lg font-bold">{t.filters}</h2>
-        <div className="mt-4 grid gap-4 sm:grid-cols-3">
-          <label className="text-sm font-semibold">
-            {t.degree}
-            <select name="degree" defaultValue={degree} className="field mt-2">
-              <option value="">{t.all}</option>
-              {degrees.map((value) => <option key={value} value={value}>{value}</option>)}
-            </select>
-          </label>
+      {recommendations.length ? (
+        <section aria-labelledby="prospect-recommended-programmes">
+          <div className="mb-4 flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">
+                {t.projectMatch}
+              </p>
+              <h2 id="prospect-recommended-programmes" className="mt-1 text-2xl font-bold">
+                {t.recommendedTitle}
+              </h2>
+              <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
+                {t.recommendedSubtitle}
+              </p>
+            </div>
+          </div>
+          <div className="grid gap-4 xl:grid-cols-2">
+            {recommendations.map((recommendation) => (
+              <ProspectProgrammeRecommendationCard
+                key={recommendation.programme.id}
+                recommendation={recommendation}
+                labels={recommendationLabels}
+              />
+            ))}
+          </div>
+        </section>
+      ) : null}
 
-          <label className="text-sm font-semibold">
-            {t.field}
-            <select name="field" defaultValue={field} className="field mt-2">
-              <option value="">{t.all}</option>
-              {fields.map((value) => <option key={value} value={value}>{value}</option>)}
-            </select>
-          </label>
+      <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[var(--shadow-card)] sm:p-6">
+        <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--muted)]">
+          {t.generalCatalogue}
+        </p>
+        <h2 className="mt-1 text-2xl font-bold">{t.browseAllTitle}</h2>
+        <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
+          {t.browseAllSubtitle}
+        </p>
 
-          <label className="text-sm font-semibold">
-            {t.city}
-            <select name="city" defaultValue={city} className="field mt-2">
-              <option value="">{t.all}</option>
-              {cities.map((value) => <option key={value} value={value}>{value}</option>)}
-            </select>
-          </label>
-        </div>
-        <div className="mt-5 flex flex-wrap gap-3">
-          <button
-            type="submit"
-            className="inline-flex min-h-11 items-center rounded-[var(--radius-control)] bg-[var(--brand)] px-5 text-sm font-bold text-white"
-          >
-            {t.apply}
-          </button>
-          <Link
-            href="/prospect/catalogue"
-            className="inline-flex min-h-11 items-center rounded-[var(--radius-control)] border border-[var(--border-strong)] bg-[var(--surface)] px-5 text-sm font-semibold"
-          >
-            {t.reset}
-          </Link>
-        </div>
-      </form>
+        <form action="/prospect/catalogue" className="mt-5">
+          <div className="grid gap-4 sm:grid-cols-3">
+            <label className="text-sm font-semibold">
+              {t.degree}
+              <select name="degree" defaultValue={degree} className="field mt-2">
+                <option value="">{t.all}</option>
+                {degrees.map((value) => <option key={value} value={value}>{value}</option>)}
+              </select>
+            </label>
+
+            <label className="text-sm font-semibold">
+              {t.field}
+              <select name="field" defaultValue={field} className="field mt-2">
+                <option value="">{t.all}</option>
+                {fields.map((value) => <option key={value} value={value}>{value}</option>)}
+              </select>
+            </label>
+
+            <label className="text-sm font-semibold">
+              {t.city}
+              <select name="city" defaultValue={city} className="field mt-2">
+                <option value="">{t.all}</option>
+                {cities.map((value) => <option key={value} value={value}>{value}</option>)}
+              </select>
+            </label>
+          </div>
+          <div className="mt-5 flex flex-wrap gap-3">
+            <button
+              type="submit"
+              className="inline-flex min-h-11 items-center rounded-[var(--radius-control)] bg-[var(--brand)] px-5 text-sm font-bold text-white transition hover:bg-[var(--brand-strong)]"
+            >
+              {t.apply}
+            </button>
+            <Link
+              href="/prospect/catalogue"
+              className="inline-flex min-h-11 items-center rounded-[var(--radius-control)] border border-[var(--border-strong)] bg-[var(--surface)] px-5 text-sm font-semibold transition hover:border-[var(--brand-border)]"
+            >
+              {t.reset}
+            </Link>
+          </div>
+        </form>
+      </section>
 
       <section aria-labelledby="prospect-catalogue-results">
         <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
           <div>
-            <h2 id="prospect-catalogue-results" className="text-2xl font-bold">{t.title}</h2>
+            <h2 id="prospect-catalogue-results" className="text-2xl font-bold">{t.browseAllTitle}</h2>
             <p className="mt-1 text-sm text-[var(--muted)]">{t.results(filtered.length)}</p>
           </div>
         </div>
@@ -159,7 +205,7 @@ export default async function ProspectCataloguePage({
               return (
                 <article
                   key={programme.id}
-                  className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 sm:p-6"
+                  className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[var(--shadow-card)] transition hover:border-[var(--brand-border)] sm:p-6"
                 >
                   <div className="flex flex-wrap items-start justify-between gap-4">
                     <div className="min-w-0">
@@ -180,7 +226,7 @@ export default async function ProspectCataloguePage({
                       </span>
                       {programme.teachingLanguage ? (
                         <span className="rounded-full bg-[var(--surface-subtle)] px-3 py-1 text-xs font-semibold">
-                          {programme.teachingLanguage}
+                          <bdi dir="auto">{programme.teachingLanguage}</bdi>
                         </span>
                       ) : null}
                     </div>
@@ -192,12 +238,12 @@ export default async function ProspectCataloguePage({
                       <dd className="mt-1 text-sm font-semibold"><bdi dir="auto">{programme.field || "—"}</bdi></dd>
                     </div>
                     <div className="rounded-[var(--radius-control)] bg-[var(--surface-subtle)] p-3">
-                      <dt className="text-xs font-semibold text-[var(--muted)]">Allemand</dt>
-                      <dd className="mt-1 text-sm font-semibold">{programme.germanLevelRequired || "À vérifier"}</dd>
+                      <dt className="text-xs font-semibold text-[var(--muted)]">{t.german}</dt>
+                      <dd className="mt-1 text-sm font-semibold">{programme.germanLevelRequired || t.requirementCheck}</dd>
                     </div>
                     <div className="rounded-[var(--radius-control)] bg-[var(--surface-subtle)] p-3">
-                      <dt className="text-xs font-semibold text-[var(--muted)]">uni-assist</dt>
-                      <dd className="mt-1 text-sm font-semibold">{programme.uniAssistRequired ? "Oui" : "À vérifier / non requis"}</dd>
+                      <dt className="text-xs font-semibold text-[var(--muted)]">{t.uniAssist}</dt>
+                      <dd className="mt-1 text-sm font-semibold">{programme.uniAssistRequired ? t.yes : t.requirementCheck}</dd>
                     </div>
                   </dl>
 
@@ -207,7 +253,7 @@ export default async function ProspectCataloguePage({
                         href={programme.programmeSourceUrl}
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-flex min-h-10 items-center rounded-[var(--radius-control)] border border-[var(--border-strong)] px-4 text-sm font-semibold"
+                        className="inline-flex min-h-10 items-center rounded-[var(--radius-control)] border border-[var(--border-strong)] px-4 text-sm font-semibold transition hover:border-[var(--brand-border)]"
                       >
                         {t.source}
                       </a>
@@ -217,7 +263,7 @@ export default async function ProspectCataloguePage({
                         href={programme.applicationUrl}
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-flex min-h-10 items-center rounded-[var(--radius-control)] bg-[var(--brand)] px-4 text-sm font-bold text-white"
+                        className="inline-flex min-h-10 items-center rounded-[var(--radius-control)] bg-[var(--brand)] px-4 text-sm font-bold text-white transition hover:bg-[var(--brand-strong)]"
                       >
                         {t.applyLink}
                       </a>
