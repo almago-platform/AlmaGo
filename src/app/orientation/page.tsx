@@ -5,7 +5,10 @@ import { notFound, redirect } from "next/navigation";
 import { PublicOrientationForm } from "@/components/orientation/PublicOrientationForm";
 import { orientationCopy } from "@/content/orientation-copy";
 import { LOCALE_COOKIE, normalizeLocale } from "@/lib/i18n";
-import { restorePublicOrientationAnswers } from "@/lib/orientation/public";
+import {
+  restorePublicOrientationAnswers,
+  restorePublicOrientationIdentity,
+} from "@/lib/orientation/public";
 import { getPublicOrigin } from "@/lib/public-origin";
 import { getPhase2StudentAccess } from "@/lib/phase2/access";
 import {
@@ -39,6 +42,12 @@ function savedAnswers(input: unknown) {
   if (!input || typeof input !== "object") return null;
   const answers = (input as Record<string, unknown>).answers;
   return answers ? restorePublicOrientationAnswers(answers) : null;
+}
+
+function savedIdentity(input: unknown) {
+  if (!input || typeof input !== "object") return null;
+  const identity = (input as Record<string, unknown>).identity;
+  return identity ? restorePublicOrientationIdentity(identity) : null;
 }
 
 export default async function OrientationPage({
@@ -98,11 +107,13 @@ export default async function OrientationPage({
   }
 
   const initialAnswers = savedAnswers(orientation.input);
+  const initialIdentity = savedIdentity(orientation.input);
   if (!initialAnswers) redirect("/prospect");
 
   return (
     <PublicOrientationForm
       initialAnswers={initialAnswers}
+      initialIdentity={initialIdentity}
       authenticatedUpdate
     />
   );
