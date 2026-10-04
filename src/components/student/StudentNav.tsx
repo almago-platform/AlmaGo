@@ -10,6 +10,7 @@ const primaryLinks = [
   ["Programmes", "/student/orientation"],
   ["Documents", "/student/documents"],
   ["Candidatures", "/student/applications"],
+  ["Calendrier", "/student/calendar"],
 ] as const;
 
 const secondaryLinks = [
