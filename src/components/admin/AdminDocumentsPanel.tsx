@@ -142,6 +142,44 @@ export function AdminDocumentsPanel({
     }
   }
 
+  async function deleteDocument(document: AdminDocument) {
+    const confirmed = window.confirm(
+      `Supprimer définitivement « ${document.original_filename} » ? Le fichier sera retiré du stockage privé et cette action est irréversible.`,
+    );
+    if (!confirmed) return;
+
+    setBusy(document.id);
+    setNotice(null);
+
+    try {
+      const response = await fetch(`/api/admin/documents/${document.id}`, {
+        method: "DELETE",
+      });
+      const result = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        setNotice({
+          tone: "error",
+          text: result.error || "Impossible de supprimer définitivement ce document pour le moment.",
+        });
+        return;
+      }
+
+      setNotice({
+        tone: "success",
+        text: "Le document et son fichier privé ont été supprimés définitivement.",
+      });
+      router.refresh();
+    } catch {
+      setNotice({
+        tone: "error",
+        text: "Impossible de supprimer définitivement ce document pour le moment. Vérifiez votre connexion puis réessayez.",
+      });
+    } finally {
+      setBusy(null);
+    }
+  }
+
   async function saveEvidence(
     document: AdminDocument,
     existing: AdminEvidence | undefined,
@@ -521,6 +559,15 @@ export function AdminDocumentsPanel({
                       className="w-full justify-center sm:w-auto"
                     >
                       Rejeter
+                    </Button>
+                    <Button
+                      type="button"
+                      disabled={isBusy}
+                      onClick={() => deleteDocument(document)}
+                      variant="secondary"
+                      className="w-full justify-center border-red-200 text-red-700 hover:border-red-300 hover:bg-red-50 sm:w-auto"
+                    >
+                      Supprimer définitivement
                     </Button>
                   </div>
                 </div>
