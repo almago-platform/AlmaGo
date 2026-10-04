@@ -5,6 +5,7 @@ import test from "node:test";
 const read = (path) => readFileSync(path, "utf8");
 
 const shell = read("src/components/layout/ProspectShell.tsx");
+const layout = read("src/app/prospect/layout.tsx");
 const dashboard = read("src/app/prospect/page.tsx");
 const orientation = read("src/app/prospect/orientation/page.tsx");
 const proposal = read("src/app/prospect/proposal/page.tsx");
@@ -149,4 +150,28 @@ test("solution catalogue uses the orientation city only as a factual ordering si
   assert.match(solutions, /isPreferredCity/);
   assert.match(solutions, /forYourProject/);
   assert.doesNotMatch(solutions, /partner_status|is_partner|official partner/i);
+});
+
+
+test("catalogue opens from the saved profile instead of a neutral national list", () => {
+  assert.match(programmes, /prospectCatalogueProfileDefaults/);
+  assert.match(programmes, /recommendations/);
+  assert.match(catalogue, /profileDefaults/);
+  assert.match(catalogue, /generalMode/);
+  assert.match(catalogue, /showGeneralResults/);
+  assert.match(catalogue, /name="view" value="all"/);
+});
+
+test("orientation replaces generic advice with verified programmes when catalogue matches exist", () => {
+  assert.match(orientation, /loadVerifiedProgrammeCatalogue/);
+  assert.match(orientation, /prospectCatalogueRecommendations/);
+  assert.match(orientation, /ProspectProgrammeRecommendationCard/);
+  assert.match(orientation, /recommendations\.length \? \(/);
+});
+
+test("payment navigation is progressive and appears only after a purchase exists", () => {
+  assert.match(layout, /commercial_purchases/);
+  assert.match(layout, /showPayment=\{Boolean\(purchase\)\}/);
+  assert.match(shell, /showPayment = false/);
+  assert.match(shell, /showPayment \|\| pathname\.startsWith\("\/prospect\/payment"\)/);
 });
