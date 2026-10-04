@@ -10,23 +10,8 @@ import { getRequestLocale } from "@/lib/i18n-server";
 import { getPhase2StudentAccess } from "@/lib/phase2/access";
 import { loadVerifiedProgrammeCatalogue } from "@/lib/orientation-engine/catalog";
 import { loadProspectHubState } from "@/lib/prospect/hub";
+import { orientationProjectFacts, orientationVersionSummary } from "@/lib/prospect/orientation-presentation";
 import { prospectCatalogueRecommendations } from "@/lib/prospect/programmes";
-
-function projectFacts(
-  answers: NonNullable<Awaited<ReturnType<typeof loadProspectHubState>>["answers"]>,
-) {
-  const facts = [
-    answers.targetDegree || null,
-    answers.targetField || null,
-    answers.preferredCities.length ? answers.preferredCities.join(", ") : null,
-    answers.germanLevel ? `Allemand ${answers.germanLevel}` : null,
-    answers.targetIntakeYear
-      ? `${answers.targetIntakeSeason || ""} ${answers.targetIntakeYear}`.trim()
-      : null,
-  ];
-
-  return facts.filter((value): value is string => Boolean(value));
-}
 
 function proposalStatus(
   intake: Awaited<ReturnType<typeof loadProspectHubState>>["intake"],
@@ -141,7 +126,7 @@ export default async function ProspectDashboardPage() {
   const diagnosticCopy = orientationDiagnosticCopy[locale];
   const qualificationCopy = prospectQualificationCopy[locale];
   const action = nextAction(state, t);
-  const facts = state.answers ? projectFacts(state.answers) : [];
+  const facts = state.answers ? orientationProjectFacts(state.answers, locale) : [];
   const dateFormatter = new Intl.DateTimeFormat(locale, {
     day: "2-digit",
     month: "long",
@@ -365,7 +350,7 @@ export default async function ProspectDashboardPage() {
                     className="flex flex-wrap items-center justify-between gap-3 rounded-[var(--radius-control)] bg-[var(--surface-subtle)] px-3 py-2.5"
                   >
                     <span className="text-sm font-semibold">
-                      {diagnosticCopy.headlines[orientation.diagnostic.headlineCode].title}
+                      {orientationVersionSummary(orientation.answers, locale)}
                     </span>
                     <span className="text-xs text-[var(--muted)]">
                       {index === 0 ? `${t.currentVersion} · ` : ""}

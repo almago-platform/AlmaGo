@@ -11,6 +11,7 @@ import { getRequestLocale } from "@/lib/i18n-server";
 import { getPhase2StudentAccess } from "@/lib/phase2/access";
 import { loadVerifiedProgrammeCatalogue } from "@/lib/orientation-engine/catalog";
 import { loadProspectHubState } from "@/lib/prospect/hub";
+import { orientationProjectFacts, orientationVersionSummary } from "@/lib/prospect/orientation-presentation";
 import { prospectCatalogueRecommendations } from "@/lib/prospect/programmes";
 
 export const dynamic = "force-dynamic";
@@ -115,18 +116,11 @@ export default async function ProspectOrientationPage() {
                   {diagnosticCopy.headlines[state.current.diagnostic.headlineCode].body}
                 </p>
                 <div className="mt-4 flex flex-wrap gap-2">
-                  {[
-                    state.answers?.targetDegree,
-                    state.answers?.targetField,
-                    state.answers?.preferredCities.length
-                      ? state.answers.preferredCities.join(", ")
-                      : null,
-                    state.answers?.germanLevel ? `Allemand ${state.answers.germanLevel}` : null,
-                  ].filter((value): value is string => Boolean(value)).map((value) => (
+                  {state.answers ? orientationProjectFacts(state.answers, locale).map((value) => (
                     <span key={value} className="rounded-full bg-[var(--surface-subtle)] px-3 py-1.5 text-xs font-semibold">
                       <bdi dir="auto">{value}</bdi>
                     </span>
-                  ))}
+                  )) : null}
                 </div>
               </div>
 
@@ -211,7 +205,7 @@ export default async function ProspectOrientationPage() {
                 {state.orientations.slice(1, 6).map((orientation) => (
                   <div key={orientation.id} className="rounded-[var(--radius-control)] bg-[var(--surface-subtle)] p-3">
                     <p className="font-semibold">
-                      {diagnosticCopy.headlines[orientation.diagnostic.headlineCode].title}
+                      {orientationVersionSummary(orientation.answers, locale)}
                     </p>
                     <p className="mt-1 text-xs text-[var(--muted)]">
                       <bdi dir="auto">{dateFormatter.format(new Date(orientation.created_at))}</bdi>
