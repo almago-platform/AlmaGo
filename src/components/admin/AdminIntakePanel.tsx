@@ -47,7 +47,7 @@ export function AdminIntakePanel({ cases }: { cases: IntakeCase[] }) {
   const [errorByStudent, setErrorByStudent] = useState<Record<string, string>>({});
 
   async function propose(item: IntakeCase) {
-    const routeKey = routeByStudent[item.studentId] || item.proposedRouteKey || "study_preparation";
+    const routeKey = routeByStudent[item.studentId] || item.proposedRouteKey || "";
     const reason = (reasonByStudent[item.studentId] ?? item.proposalReason ?? "").trim();
 
     setBusyStudent(item.studentId);
@@ -98,7 +98,7 @@ export function AdminIntakePanel({ cases }: { cases: IntakeCase[] }) {
           (category) => docState(item.documents, category) === "Validé",
         );
         const canPropose = ready && item.status !== "procedure_created";
-        const selectedRoute = routeByStudent[item.studentId] || item.proposedRouteKey || "study_preparation";
+        const selectedRoute = routeByStudent[item.studentId] || item.proposedRouteKey || "";
         const reason = reasonByStudent[item.studentId] ?? item.proposalReason ?? "";
 
         return (
@@ -185,6 +185,7 @@ export function AdminIntakePanel({ cases }: { cases: IntakeCase[] }) {
                         }))
                       }
                     >
+                      <option value="">Choisir un parcours</option>
                       {campusRouteOptions.map((route) => (
                         <option key={route.key} value={route.key}>{route.label}</option>
                       ))}
@@ -218,7 +219,7 @@ export function AdminIntakePanel({ cases }: { cases: IntakeCase[] }) {
 
                 <button
                   type="button"
-                  disabled={!canPropose || busyStudent === item.studentId || reason.trim().length < 3}
+                  disabled={!canPropose || busyStudent === item.studentId || !selectedRoute || reason.trim().length < 3}
                   onClick={() => propose(item)}
                   className="mt-4 inline-flex min-h-11 items-center rounded-[var(--radius-control)] bg-[var(--brand)] px-5 text-sm font-bold text-white disabled:cursor-not-allowed disabled:opacity-50"
                 >
