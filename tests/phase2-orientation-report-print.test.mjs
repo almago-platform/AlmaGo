@@ -50,7 +50,7 @@ test("P2.3 report has an explicit A4 print contract", () => {
   assert.match(css, /\.orientation-print-page \.orientation-print-hide \{[\s\S]*display: none !important/);
   assert.match(css, /\.orientation-print-page \.orientation-screen-report \{[\s\S]*display: none !important/);
   assert.match(css, /\[data-partner-prelaunch="true"\] \{[\s\S]*display: none !important/);
-  assert.match(css, /\.orientation-one-page-premium \{[\s\S]*min-height: 270mm;[\s\S]*display: flex !important/);
+  assert.match(css, /\.orientation-one-page-premium \{[\s\S]*display: flex !important;[\s\S]*min-height: 270mm/);
   assert.match(css, /\.orientation-pdf-student \{[\s\S]*grid-template-columns:/);
   assert.match(css, /\.orientation-print-page \.orientation-one-page-print \{[\s\S]*display: block !important/);
   assert.match(css, /\.orientation-print-page \.skip-link \{[\s\S]*display: none !important/);
