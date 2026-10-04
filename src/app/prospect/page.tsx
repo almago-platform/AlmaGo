@@ -18,7 +18,12 @@ function proposalStatus(
   copy: (typeof prospectHubCopy)["fr"]["dashboard"],
 ) {
   if (!intake) return copy.proposalWaiting;
-  if (intake.status === "route_proposed") return copy.proposalReady;
+  if (
+    intake.status === "route_proposed"
+    || intake.status === "student_question"
+    || intake.status === "payment_pending"
+    || intake.status === "paid_pending_validation"
+  ) return copy.proposalReady;
   if (intake.status === "procedure_created") return copy.proposalConfirmed;
   return copy.proposalWaiting;
 }
@@ -36,16 +41,6 @@ function nextAction(
     return { href: "/prospect/orientation", label: copy.updateProject };
   }
 
-  if (state.answers?.bacStatus === "preparing") {
-    const labels = {
-      fr: "Continuer ma préparation",
-      ar: "متابعة التحضير",
-      en: "Continue my preparation",
-      de: "Vorbereitung fortsetzen",
-    } as const;
-    return { href: "/prospect/roadmap", label: labels[locale] };
-  }
-
   if (!state.intake || state.intake.status === "starter_documents") {
     return { href: "/prospect/documents", label: copy.browseDocuments };
   }
@@ -55,6 +50,36 @@ function nextAction(
     || state.intake.status === "student_question"
   ) {
     return { href: "/prospect/proposal", label: copy.viewProposal };
+  }
+
+  if (state.intake.status === "payment_pending") {
+    const labels = {
+      fr: "Finaliser mon paiement",
+      ar: "إتمام الدفع",
+      en: "Complete my payment",
+      de: "Zahlung abschließen",
+    } as const;
+    return { href: "/prospect/payment", label: labels[locale] };
+  }
+
+  if (state.intake.status === "paid_pending_validation") {
+    const labels = {
+      fr: "Voir le statut du paiement",
+      ar: "عرض حالة الدفع",
+      en: "View payment status",
+      de: "Zahlungsstatus ansehen",
+    } as const;
+    return { href: "/prospect/payment", label: labels[locale] };
+  }
+
+  if (state.answers?.bacStatus === "preparing") {
+    const labels = {
+      fr: "Continuer ma préparation",
+      ar: "متابعة التحضير",
+      en: "Continue my preparation",
+      de: "Vorbereitung fortsetzen",
+    } as const;
+    return { href: "/prospect/roadmap", label: labels[locale] };
   }
 
   return { href: "/prospect/roadmap", label: copy.progress };
@@ -73,6 +98,8 @@ function campusWork(
       review: "Nous vérifions votre orientation et vos documents pour préparer votre proposition.",
       proposal: "Votre proposition est prête : nous attendons votre décision ou vos questions.",
       question: "Nous examinons votre demande de modification.",
+      payment: "Votre proposition est acceptée. Nous attendons maintenant le paiement avant toute ouverture de la phase suivante.",
+      paid: "Votre paiement est enregistré. Campus Allemagne doit encore le valider avant d’activer votre espace client.",
       procedure: "Votre parcours est confirmé. La procédure peut maintenant avancer.",
       preBac: "Nous suivons votre projet avant le Bac. Aucun dossier académique final n’est requis maintenant ; concentrez-vous sur la langue, les programmes et la préparation de la suite.",
     },
@@ -82,6 +109,8 @@ function campusWork(
       review: "نراجع توجيهك ووثائقك لإعداد اقتراحك.",
       proposal: "اقتراحك جاهز وننتظر قرارك أو أسئلتك.",
       question: "نراجع طلبك لتعديل الاقتراح.",
+      payment: "تم قبول الاقتراح. ننتظر الآن الدفع قبل فتح المرحلة التالية.",
+      paid: "تم تسجيل الدفع. يجب على Campus Allemagne التحقق منه قبل تفعيل مساحة العميل.",
       procedure: "تم تأكيد المسار ويمكن الآن متابعة الإجراءات.",
       preBac: "نتابع مشروعك قبل البكالوريا. لا نطلب الآن ملفًا أكاديميًا نهائيًا؛ ركّز على اللغة والبرامج والاستعداد للمرحلة التالية.",
     },
@@ -91,6 +120,8 @@ function campusWork(
       review: "We are reviewing your orientation and documents to prepare your proposal.",
       proposal: "Your proposal is ready; we are waiting for your decision or questions.",
       question: "We are reviewing your request to change the proposal.",
+      payment: "Your proposal is accepted. Payment is now required before the next phase can open.",
+      paid: "Your payment is recorded. Campus Allemagne must still validate it before client access is activated.",
       procedure: "Your route is confirmed and the procedure can now move forward.",
       preBac: "We are following your project before the Bac. No final academic file is required now; focus on language, programmes and preparing the next stage.",
     },
@@ -100,17 +131,20 @@ function campusWork(
       review: "Wir prüfen Orientierung und Dokumente, um deinen Vorschlag vorzubereiten.",
       proposal: "Dein Vorschlag ist bereit; wir warten auf deine Entscheidung oder Fragen.",
       question: "Wir prüfen deinen Änderungswunsch.",
+      payment: "Dein Vorschlag ist angenommen. Vor dem Start der nächsten Phase ist jetzt die Zahlung erforderlich.",
+      paid: "Deine Zahlung ist erfasst. Campus Allemagne muss sie noch prüfen, bevor der Kundenzugang aktiviert wird.",
       procedure: "Dein Weg ist bestätigt und die weitere Bearbeitung kann beginnen.",
       preBac: "Wir begleiten dein Projekt schon vor dem Abitur. Ein endgültiges akademisches Dossier ist jetzt nicht nötig; konzentriere dich auf Sprache, Programme und die Vorbereitung der nächsten Phase.",
     },
   } as const;
 
-  if (state.answers?.bacStatus === "preparing") return copy[locale].preBac;
-  if (!status) return copy[locale].none;
-  if (status === "starter_documents") return copy[locale].documents;
+  if (!status) return state.answers?.bacStatus === "preparing" ? copy[locale].preBac : copy[locale].none;
+  if (status === "starter_documents") return state.answers?.bacStatus === "preparing" ? copy[locale].preBac : copy[locale].documents;
   if (status === "campus_review") return copy[locale].review;
   if (status === "route_proposed") return copy[locale].proposal;
   if (status === "student_question") return copy[locale].question;
+  if (status === "payment_pending") return copy[locale].payment;
+  if (status === "paid_pending_validation") return copy[locale].paid;
   if (status === "procedure_created") return copy[locale].procedure;
   return copy[locale].none;
 }
