@@ -62,13 +62,17 @@ test("activation resolver is server-only and never looks up by public database I
   assert.doesNotMatch(activation, /searchParams.*prospect|searchParams.*orientation/i);
 });
 
-test("signup and login prefill the known prospect email only for a valid gated activation", () => {
+test("signup and login prefill the known prospect identity only for a valid gated activation", () => {
   for (const source of [signup, login]) {
     assert.match(source, /isPhase2AccountLinkingEnabled\(\)/);
     assert.match(source, /resolveOrientationActivation/);
     assert.match(source, /orientationActivation=\{orientationActivation \?\? undefined\}/);
   }
   assert.match(authForm, /useState\(orientationActivation\?\.email \?\? ""\)/);
+  assert.match(authForm, /useState\(orientationActivation\?\.firstName \?\? ""\)/);
+  assert.match(authForm, /useState\(orientationActivation\?\.lastName \?\? ""\)/);
+  assert.match(activation, /\.select\("prospect_id,input"\)/);
+  assert.match(activation, /restorePublicOrientationIdentity/);
   assert.match(authForm, /readOnly=\{Boolean\(orientationActivation\)\}/);
   assert.match(authForm, /orientation_token=/);
 });
