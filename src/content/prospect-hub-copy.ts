@@ -126,6 +126,7 @@ type ProspectHubCopy = {
     financeText: string;
     official: string;
     provider: string;
+    forYourProject: string;
     empty: string;
   };
 };
@@ -257,6 +258,7 @@ const fr: ProspectHubCopy = {
     financeText: "Options publiées avec source officielle et date de vérification.",
     official: "Source officielle",
     provider: "Site du prestataire",
+    forYourProject: "Près de votre ville",
     empty: "Aucune option vérifiée n’est disponible dans cette catégorie pour le moment.",
   },
 };
@@ -388,6 +390,7 @@ const en: ProspectHubCopy = {
     financeText: "Published options with an official source and verification date.",
     official: "Official source",
     provider: "Provider website",
+    forYourProject: "Near your preferred city",
     empty: "No verified option is currently available in this category.",
   },
 };
@@ -519,6 +522,7 @@ const de: ProspectHubCopy = {
     financeText: "Veröffentlichte Optionen mit offizieller Quelle und Prüfdatum.",
     official: "Offizielle Quelle",
     provider: "Anbieter-Website",
+    forYourProject: "In deiner bevorzugten Stadt",
     empty: "In dieser Kategorie ist derzeit keine geprüfte Option verfügbar.",
   },
 };
@@ -650,6 +654,7 @@ const ar: ProspectHubCopy = {
     financeText: "خيارات منشورة مع مصدر رسمي وتاريخ تحقق.",
     official: "المصدر الرسمي",
     provider: "موقع مقدم الخدمة",
+    forYourProject: "قريب من مدينتك المفضلة",
     empty: "لا يوجد خيار تم التحقق منه في هذه الفئة حاليًا.",
   },
 };
