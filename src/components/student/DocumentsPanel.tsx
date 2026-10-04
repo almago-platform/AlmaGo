@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/Badge";
 import { Button, buttonClassName } from "@/components/ui/Button";
@@ -85,20 +85,31 @@ export function DocumentsPanel({
   historyLoadError = false,
   evidence,
   evidenceLoadError = false,
+  allowedUploadCategories,
 }: {
   documents: StudentDocument[];
   history: HistoryEvent[];
   historyLoadError?: boolean;
   evidence: StudentEvidence[];
   evidenceLoadError?: boolean;
+  allowedUploadCategories?: string[];
 }) {
   const router = useRouter();
   const { locale } = useLocale();
   const t = rebrandCopy(studentDocumentsCopy[locale]);
   const fileInput = useRef<HTMLInputElement>(null);
-  const [category, setCategory] = useState("passport");
+  const uploadCategories = allowedUploadCategories === undefined
+    ? documentCategories
+    : documentCategories.filter((item) => allowedUploadCategories.includes(item.value));
+  const [category, setCategory] = useState(uploadCategories[0]?.value || "passport");
   const [feedback, setFeedback] = useState<Feedback>(null);
   const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    if (uploadCategories.length > 0 && !uploadCategories.some((item) => item.value === category)) {
+      setCategory(uploadCategories[0].value);
+    }
+  }, [category, uploadCategories]);
 
   const approvedCount = documents.filter((document) => document.status === "approved").length;
   const reviewCount = documents.filter((document) => ["pending", "reviewed"].includes(document.status)).length;
@@ -283,7 +294,7 @@ export function DocumentsPanel({
         )}
       </section>
 
-      <Card aria-labelledby="document-upload-title" className="overflow-hidden shadow-none">
+      {uploadCategories.length > 0 && <Card aria-labelledby="document-upload-title" className="overflow-hidden shadow-none">
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
           <div>
             <Badge variant="neutral">{t.upload.badge}</Badge>
@@ -308,7 +319,7 @@ export function DocumentsPanel({
                 disabled={busy}
                 className="field"
               >
-                {documentCategories.map((item) => (
+                {uploadCategories.map((item) => (
                   <option key={item.value} value={item.value}>{t.categories[item.value] || item.label}</option>
                 ))}
               </select>
@@ -357,7 +368,7 @@ export function DocumentsPanel({
             {t.upload.footer}
           </p>
         </form>
-      </Card>
+      </Card>}
 
       <section aria-labelledby="documents-list-title">
         <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
