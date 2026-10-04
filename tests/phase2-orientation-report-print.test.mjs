@@ -7,6 +7,7 @@ const form = readFileSync("src/components/orientation/PublicOrientationForm.tsx"
 const css = readFileSync("src/app/globals.css", "utf8");
 const engineCard = readFileSync("src/components/orientation/PersonalizedOrientationEngineCard.tsx", "utf8");
 const printReport = readFileSync("src/components/orientation/OrientationOnePagePrintReport.tsx", "utf8");
+const candidateReport = readFileSync("src/components/orientation/OrientationCandidatePrintReport.tsx", "utf8");
 const reviewCore = readFileSync("src/lib/orientation-engine/review/core.ts", "utf8");
 
 test("P2.3 printed orientation report keeps canonical brand identity", () => {
@@ -16,6 +17,8 @@ test("P2.3 printed orientation report keeps canonical brand identity", () => {
   assert.match(page, /const prospectCopy = rebrandCopy\(orientationProspectCopy\[locale\]\)/);
   assert.match(page, /const resumeCopy = rebrandCopy\(orientationResumeCopy\[locale\]\)/);
   assert.match(page, /<OrientationOnePagePrintReport answers=\{answers\} locale=\{locale\} personalized=\{personalized\} identity=\{identity\} \/>/);
+  assert.match(page, /<OrientationCandidatePrintReport/);
+  assert.match(page, /query\.document === "candidate"/);
   assert.match(form, /<OrientationOnePagePrintReport answers=\{answers\} locale=\{locale\} personalized=\{personalizedForPrint\} identity=\{identity\} \/>/);
 });
 
@@ -40,6 +43,19 @@ test("P2.3 premium PDF includes student identity and localized verified facts", 
   assert.match(printReport, /Semestre d’hiver/);
   assert.match(printReport, /Allemand C1 pour les candidats internationaux/);
   assert.match(printReport, /compactPrintText\(featuredWriter\?\.whyItFits \|\| content\.projectStatus, 420\)/);
+});
+
+test("P2.3 candidate PDF is a separate branded one-page profile report", () => {
+  assert.match(candidateReport, /Rapport candidat/);
+  assert.match(candidateReport, /candidate-pdf-hero/);
+  assert.match(candidateReport, /candidate-pdf-sections/);
+  assert.match(page, /candidateSections/);
+  assert.match(page, /candidateCopy\.identity/);
+  assert.match(page, /candidateCopy\.studies/);
+  assert.match(page, /candidateCopy\.languages/);
+  assert.match(page, /candidateCopy\.project/);
+  assert.match(css, /\.orientation-candidate-pdf \{[\s\S]*min-height: 270mm/);
+  assert.match(css, /\.candidate-pdf-sections \{[\s\S]*grid-template-columns: 1fr 1fr/);
 });
 
 test("P2.3 report has an explicit A4 print contract", () => {
