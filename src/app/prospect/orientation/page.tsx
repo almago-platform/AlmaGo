@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { IntakeFlowCard } from "@/components/prospect/IntakeFlowCard";
-import { ProspectQualificationPanel } from "@/components/prospect/ProspectQualificationPanel";
+import { ProspectQualificationSummary } from "@/components/prospect/ProspectQualificationSummary";
 import { prospectHubCopy } from "@/content/prospect-hub-copy";
 import { prospectQualificationCopy } from "@/content/prospect-qualification-copy";
 import { orientationDiagnosticCopy } from "@/content/orientation-diagnostic-copy";
@@ -56,7 +56,7 @@ export default async function ProspectOrientationPage() {
 
       {state.current ? (
         <>
-          <ProspectQualificationPanel
+          <ProspectQualificationSummary
             qualification={state.qualification}
             copy={qualificationCopy}
           />
