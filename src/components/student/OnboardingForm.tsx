@@ -103,8 +103,24 @@ function valueOrDash(value: string | string[] | undefined) {
 }
 
 export function OnboardingForm({ profile }: { profile: Record<string, unknown> }) {
-  const [step, setStep] = useState(1);
-  const [data, setData] = useState(() => mergeProfile(profile));
+  const [draft] = useState<{ data?: FormData; step?: number } | null>(() => {
+    if (typeof window === "undefined") return null;
+    const saved = window.localStorage.getItem("almago-onboarding-draft");
+    if (!saved) return null;
+    try {
+      return JSON.parse(saved) as { data?: FormData; step?: number };
+    } catch {
+      window.localStorage.removeItem("almago-onboarding-draft");
+      return null;
+    }
+  });
+  const [step, setStep] = useState(() =>
+    draft?.step && draft.step >= 1 && draft.step <= 5 ? draft.step : 1,
+  );
+  const [data, setData] = useState(() => ({
+    ...mergeProfile(profile),
+    ...(draft?.data ?? {}),
+  }));
   const [consent, setConsent] = useState(false);
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
@@ -113,17 +129,6 @@ export function OnboardingForm({ profile }: { profile: Record<string, unknown> }
   const t = rebrandCopy(studentOnboardingCopy[locale]);
   const steps = t.steps;
 
-  useEffect(() => {
-    const saved = window.localStorage.getItem("almago-onboarding-draft");
-    if (!saved) return;
-    try {
-      const parsed = JSON.parse(saved) as { data?: FormData; step?: number };
-      if (parsed.data) setData((current) => ({ ...current, ...parsed.data }));
-      if (parsed.step && parsed.step >= 1 && parsed.step <= 5) setStep(parsed.step);
-    } catch {
-      window.localStorage.removeItem("almago-onboarding-draft");
-    }
-  }, []);
 
   useEffect(() => {
     window.localStorage.setItem("almago-onboarding-draft", JSON.stringify({ data, step }));
