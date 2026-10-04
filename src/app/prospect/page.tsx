@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { IntakeFlowCard } from "@/components/prospect/IntakeFlowCard";
 import { redirect } from "next/navigation";
 import { orientationDiagnosticCopy } from "@/content/orientation-diagnostic-copy";
 import { prospectDashboardCopy } from "@/content/prospect-dashboard-copy";
@@ -11,6 +12,7 @@ import {
   type PublicOrientationDiagnostic,
 } from "@/lib/orientation/diagnostic";
 import { restorePublicOrientationAnswers } from "@/lib/orientation/public";
+import { findRecoverableOrientationForAccount } from "@/lib/orientation/recovery";
 import { buildProspectRoadmap, type ProspectRoadmap } from "@/lib/orientation/roadmap";
 import { getRequestLocale } from "@/lib/i18n-server";
 import { getPhase2StudentAccess } from "@/lib/phase2/access";
@@ -302,6 +304,14 @@ export default async function ProspectDashboardPage() {
     .eq("user_id", access.user.id)
     .maybeSingle();
 
+  const recovery = !prospect?.id
+    ? await findRecoverableOrientationForAccount({
+        userId: access.user.id,
+        email: access.user.email,
+        emailConfirmed: Boolean(access.user.email_confirmed_at),
+      })
+    : null;
+
   let orientations: StoredOrientation[] = [];
 
   if (prospect?.id) {
@@ -353,6 +363,48 @@ export default async function ProspectDashboardPage() {
     if (validStoredQualification(data)) qualification = data;
   }
 
+  const [intakeResult, starterDocumentsResult] = await Promise.all([
+    access.supabase
+      .from("student_intake_cases")
+      .select("orientation_id,status,orientation_confirmed_at,proposed_route_key,proposal_reason,procedure_id")
+      .eq("student_id", access.user.id)
+      .maybeSingle(),
+    access.supabase
+      .from("documents")
+      .select("category,status")
+      .in("category", ["passport", "baccalaureate", "transcripts", "language_certificate"]),
+  ]);
+
+  const intake = intakeResult.data;
+  const starterDocuments = starterDocumentsResult.data || [];
+  const requiredCategories = ["passport", "baccalaureate", "transcripts"];
+  const approvedCategories = new Set(
+    starterDocuments
+      .filter((document) => document.status === "approved")
+      .map((document) => document.category),
+  );
+  const pendingCategories = new Set(
+    starterDocuments
+      .filter((document) => ["pending", "reviewed"].includes(document.status))
+      .map((document) => document.category),
+  );
+  const replacementCategories = new Set(
+    starterDocuments
+      .filter((document) => ["rejected", "replace_required"].includes(document.status))
+      .map((document) => document.category),
+  );
+  const starterSummary = {
+    approved: requiredCategories.filter((category) => approvedCategories.has(category)).length,
+    required: requiredCategories.length,
+    pending: requiredCategories.filter((category) => pendingCategories.has(category)).length,
+    needsReplacement: requiredCategories.filter((category) => replacementCategories.has(category)).length,
+  };
+  const orientationConfirmed = Boolean(
+    current?.id
+    && intake?.orientation_id === current.id
+    && intake?.orientation_confirmed_at,
+  );
+
   return (
     <main>
       <section className="overflow-hidden rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)]">
@@ -368,7 +420,22 @@ export default async function ProspectDashboardPage() {
         </div>
       </section>
 
-      {!diagnostic || !roadmap ? (
+      <IntakeFlowCard
+        recovery={recovery}
+        orientationId={current?.id ?? null}
+        orientationConfirmed={orientationConfirmed}
+        intake={intake
+          ? {
+              status: intake.status,
+              proposed_route_key: intake.proposed_route_key,
+              proposal_reason: intake.proposal_reason,
+              procedure_id: intake.procedure_id,
+            }
+          : null}
+        starterSummary={starterSummary}
+      />
+
+      {!recovery && (!diagnostic || !roadmap) ? (
         <section className="mt-6 rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-6">
           <h2 className="text-xl font-bold">{t.noOrientationTitle}</h2>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--muted)]">{t.noOrientationText}</p>
@@ -379,7 +446,7 @@ export default async function ProspectDashboardPage() {
             {t.startOrientation}
           </Link>
         </section>
-      ) : (
+      ) : diagnostic && roadmap ? (
         <>
           <section id="orientation" className="mt-6 scroll-mt-6 rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--brand-soft)]/55 p-5 sm:p-6">
             <div className="flex flex-wrap items-start justify-between gap-4">
@@ -473,7 +540,7 @@ export default async function ProspectDashboardPage() {
             {t.disclaimer}
           </p>
         </>
-      )}
+      ) : null}
     </main>
   );
 }
