@@ -182,6 +182,7 @@ export default async function ProspectDashboardPage() {
           orientationConfirmed={state.orientationConfirmed}
           intake={state.intake}
           starterSummary={state.starterSummary}
+          locale={locale}
           compact
         />
       </section>
