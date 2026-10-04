@@ -353,7 +353,8 @@ export function PublicOrientationForm({
   }, [authenticatedEntry, authenticatedUpdate]);
 
   useEffect(() => {
-    if (!hydrated || authenticatedUpdate || authenticatedEntry) return;
+    if (!hydrated || authenticatedUpdate) return;
+    if (authenticatedEntry) return;
     window.sessionStorage.setItem(
       SESSION_KEY,
       JSON.stringify({ identity, identityComplete, answers, step }),
