@@ -12,6 +12,7 @@ const roadmap = read("src/app/prospect/roadmap/page.tsx");
 const catalogue = read("src/app/prospect/catalogue/page.tsx");
 const solutions = read("src/app/prospect/solutions/page.tsx");
 const documents = read("src/components/prospect/StarterDocumentsPanel.tsx");
+const journeyProgress = read("src/components/prospect/ProspectJourneyProgress.tsx");
 const hub = read("src/lib/prospect/hub.ts");
 
 test("prospect project hub has dedicated destinations instead of anchor-only navigation", () => {
@@ -97,4 +98,15 @@ test("shared hub loader keeps orientation recovery, qualification and intake in 
   assert.match(hub, /prospect_qualifications/);
   assert.match(hub, /loadProspectIntakeState/);
   assert.match(hub, /buildProspectRoadmap/);
+});
+
+
+test("journey progress keeps visible step labels localized in every supported locale", () => {
+  assert.match(journeyProgress, /count: "étapes"/);
+  assert.match(journeyProgress, /count: "خطوات"/);
+  assert.match(journeyProgress, /count: "steps"/);
+  assert.match(journeyProgress, /count: "Schritte"/);
+  assert.match(journeyProgress, /Visa & departure/);
+  assert.match(journeyProgress, /Visum & Abreise/);
+  assert.match(journeyProgress, /التأشيرة والمغادرة/);
 });
