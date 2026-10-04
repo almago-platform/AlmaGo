@@ -19,15 +19,28 @@ type IntakeCase = {
   documents: Array<{ category: string; status: string }>;
   proposedRouteKey: string | null;
   proposalReason: string | null;
+  proposedOfferVersionId: string | null;
+  purchaseId: string | null;
   studentResponseNote: string | null;
+};
+
+type PublishedOffer = {
+  id: string;
+  displayName: string;
+  summary: string;
+  services: string[];
+  priceMinor: number;
+  currency: string;
 };
 
 function labelForStatus(status: string) {
   if (status === "starter_documents") return "Pièces à compléter / valider";
   if (status === "campus_review") return "Prêt pour décision Campus Allemagne";
-  if (status === "route_proposed") return "En attente de confirmation étudiant";
+  if (status === "route_proposed") return "Proposition envoyée · réponse étudiant attendue";
   if (status === "student_question") return "Étudiant souhaite en discuter";
-  if (status === "procedure_created") return "Procédure créée";
+  if (status === "payment_pending") return "Proposition acceptée · paiement attendu";
+  if (status === "paid_pending_validation") return "Paiement reçu · validation Campus";
+  if (status === "procedure_created") return "Client actif · phase suivante créée";
   return status;
 }
 
@@ -39,16 +52,37 @@ function docState(documents: IntakeCase["documents"], category: string) {
   return "Manquant";
 }
 
-export function AdminIntakePanel({ cases }: { cases: IntakeCase[] }) {
+function formatPrice(value: number, currency: string) {
+  if (!Number.isSafeInteger(value) || value < 0 || !/^[A-Z]{3}$/.test(currency)) return "—";
+
+  try {
+    const formatter = new Intl.NumberFormat("fr-FR", { style: "currency", currency });
+    const digits = formatter.resolvedOptions().maximumFractionDigits ?? 2;
+    return formatter.format(value / 10 ** digits);
+  } catch {
+    return "—";
+  }
+}
+
+export function AdminIntakePanel({
+  cases,
+  offers,
+}: {
+  cases: IntakeCase[];
+  offers: PublishedOffer[];
+}) {
   const router = useRouter();
   const [busyStudent, setBusyStudent] = useState<string | null>(null);
   const [routeByStudent, setRouteByStudent] = useState<Record<string, string>>({});
   const [reasonByStudent, setReasonByStudent] = useState<Record<string, string>>({});
+  const [offerByStudent, setOfferByStudent] = useState<Record<string, string>>({});
   const [errorByStudent, setErrorByStudent] = useState<Record<string, string>>({});
 
   async function propose(item: IntakeCase) {
     const routeKey = routeByStudent[item.studentId] || item.proposedRouteKey || "";
     const reason = (reasonByStudent[item.studentId] ?? item.proposalReason ?? "").trim();
+    const offerVersionId =
+      offerByStudent[item.studentId] || item.proposedOfferVersionId || "";
 
     setBusyStudent(item.studentId);
     setErrorByStudent((current) => ({ ...current, [item.studentId]: "" }));
@@ -57,7 +91,7 @@ export function AdminIntakePanel({ cases }: { cases: IntakeCase[] }) {
       const response = await fetch(`/api/admin/intake/${item.studentId}/route`, {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ routeKey, reason }),
+        body: JSON.stringify({ routeKey, reason, offerVersionId }),
       });
       const result = await response.json().catch(() => ({}));
 
@@ -95,12 +129,28 @@ export function AdminIntakePanel({ cases }: { cases: IntakeCase[] }) {
     <div className="grid gap-5">
       {cases.map((item) => {
         const preBac = item.orientation.bacStatus === "preparing";
-        const ready = !preBac && ["passport", "baccalaureate", "transcripts"].every(
+        const academicReady = ["passport", "baccalaureate", "transcripts"].every(
           (category) => docState(item.documents, category) === "Validé",
         );
-        const canPropose = ready && item.status !== "procedure_created";
+        const commercialLocked = [
+          "payment_pending",
+          "paid_pending_validation",
+          "procedure_created",
+        ].includes(item.status);
         const selectedRoute = routeByStudent[item.studentId] || item.proposedRouteKey || "";
+        const selectedOfferId =
+          offerByStudent[item.studentId] || item.proposedOfferVersionId || "";
+        const selectedOffer = offers.find((offer) => offer.id === selectedOfferId) || null;
         const reason = reasonByStudent[item.studentId] ?? item.proposalReason ?? "";
+        const preBacRouteAllowed =
+          !preBac
+          || !selectedRoute
+          || ["study_preparation", "standalone_language"].includes(selectedRoute);
+        const canPropose =
+          !commercialLocked
+          && (preBac || academicReady)
+          && preBacRouteAllowed
+          && offers.length > 0;
 
         return (
           <article
@@ -116,7 +166,7 @@ export function AdminIntakePanel({ cases }: { cases: IntakeCase[] }) {
                 <p className="mt-1 text-sm text-[var(--muted)]">{item.email || item.studentId}</p>
               </div>
               <span className="rounded-full bg-[var(--surface-subtle)] px-3 py-1.5 text-xs font-bold">
-                {preBac ? "Préparation avant le Bac" : labelForStatus(item.status)}
+                {labelForStatus(item.status)}
               </span>
             </div>
 
@@ -141,7 +191,7 @@ export function AdminIntakePanel({ cases }: { cases: IntakeCase[] }) {
                 {preBac ? (
                   <>
                     <p className="mt-3 text-sm leading-6 text-[var(--muted)]">
-                      Aucun Bac ni relevé final n’est attendu avant les résultats. Le passeport et la langue restent facultatifs s’ils sont déjà disponibles.
+                      Aucun Bac ni relevé final n’est exigé pour une proposition de préparation avant les résultats.
                     </p>
                     <dl className="mt-3 grid gap-2 text-sm sm:grid-cols-2">
                       <div><dt className="text-[var(--muted)]">Passeport</dt><dd className="font-semibold">{docState(item.documents, "passport")} <span className="font-normal text-[var(--muted)]">(facultatif)</span></dd></div>
@@ -159,28 +209,49 @@ export function AdminIntakePanel({ cases }: { cases: IntakeCase[] }) {
               </section>
             </div>
 
-            {preBac ? (
-              <section className="mt-5 rounded-[var(--radius-control)] border border-amber-200 bg-amber-50/70 p-4">
-                <h3 className="font-bold text-amber-950">Suivi avant le Bac</h3>
-                <p className="mt-2 text-sm leading-6 text-amber-950">
-                  Ne bloquez pas cet étudiant sur des pièces académiques qu’il ne possède pas encore. Le suivi peut continuer par les informations du profil et les échanges internes / e-mail. La proposition académique finale sera traitée après la mise à jour « Bac obtenu ».
-                </p>
-              </section>
-            ) : item.status === "procedure_created" ? (
+            {item.status === "procedure_created" ? (
               <div className="mt-5 rounded-[var(--radius-control)] border border-emerald-200 bg-emerald-50 p-4">
                 <p className="font-bold text-emerald-900">
-                  Parcours confirmé : {campusRouteLabel(item.proposedRouteKey)}
+                  Client actif : {campusRouteLabel(item.proposedRouteKey)}
                 </p>
                 <p className="mt-1 text-sm text-emerald-900">
-                  La procédure a été créée. Ce pré-dossier est terminé.
+                  Paiement validé. La procédure et la phase suivante ont été créées.
                 </p>
               </div>
+            ) : commercialLocked ? (
+              <section className="mt-5 rounded-[var(--radius-control)] border border-blue-200 bg-blue-50/70 p-4">
+                <h3 className="font-bold text-blue-950">{labelForStatus(item.status)}</h3>
+                <p className="mt-2 text-sm leading-6 text-blue-950">
+                  {item.status === "payment_pending"
+                    ? "L’étudiant a accepté la proposition. La phase suivante reste verrouillée jusqu’au paiement reçu puis validé."
+                    : "Le paiement a été enregistré. Validez-le depuis la file Paiements pour activer le client et créer la phase suivante."}
+                </p>
+                {item.purchaseId ? (
+                  <a
+                    href="/admin/payments"
+                    className="mt-3 inline-flex text-sm font-bold text-blue-900 underline underline-offset-4"
+                  >
+                    Ouvrir les paiements
+                  </a>
+                ) : null}
+              </section>
             ) : (
               <section className="mt-5 border-t border-[var(--border)] pt-5">
-                <h3 className="font-bold">Décision Campus Allemagne</h3>
-                {!ready ? (
+                <h3 className="font-bold">Proposition Campus Allemagne</h3>
+
+                {preBac ? (
                   <p className="mt-2 text-sm leading-6 text-amber-900">
-                    Impossible de proposer un parcours tant que passeport, Bac et relevé de notes ne sont pas tous validés.
+                    Avant le Bac, vous pouvez proposer uniquement « Préparation aux études » ou « Langue seule ». Aucun document académique final n’est requis.
+                  </p>
+                ) : !academicReady ? (
+                  <p className="mt-2 text-sm leading-6 text-amber-900">
+                    Passeport, Bac et relevé de notes doivent être validés avant une proposition académique.
+                  </p>
+                ) : null}
+
+                {!offers.length ? (
+                  <p className="mt-3 rounded-[var(--radius-control)] border border-amber-200 bg-amber-50 p-3 text-sm font-semibold text-amber-950">
+                    Aucune offre commerciale publiée. Publiez d’abord une offre avant d’envoyer une proposition.
                   </p>
                 ) : null}
 
@@ -191,7 +262,7 @@ export function AdminIntakePanel({ cases }: { cases: IntakeCase[] }) {
                   </div>
                 ) : null}
 
-                <div className="mt-4 grid gap-4 lg:grid-cols-[minmax(14rem,0.55fr)_minmax(0,1fr)]">
+                <div className="mt-4 grid gap-4 lg:grid-cols-2">
                   <label className="text-sm font-semibold">
                     Parcours proposé
                     <select
@@ -207,29 +278,74 @@ export function AdminIntakePanel({ cases }: { cases: IntakeCase[] }) {
                     >
                       <option value="">Choisir un parcours</option>
                       {campusRouteOptions.map((route) => (
-                        <option key={route.key} value={route.key}>{route.label}</option>
+                        <option
+                          key={route.key}
+                          value={route.key}
+                          disabled={preBac && !["study_preparation", "standalone_language"].includes(route.key)}
+                        >
+                          {route.label}
+                        </option>
                       ))}
                     </select>
                   </label>
 
                   <label className="text-sm font-semibold">
-                    Pourquoi ce parcours ?
-                    <textarea
+                    Offre commerciale
+                    <select
                       className="field mt-2"
-                      rows={3}
-                      maxLength={1200}
-                      value={reason}
+                      value={selectedOfferId}
                       disabled={!canPropose || busyStudent === item.studentId}
                       onChange={(event) =>
-                        setReasonByStudent((current) => ({
+                        setOfferByStudent((current) => ({
                           ...current,
                           [item.studentId]: event.target.value,
                         }))
                       }
-                      placeholder="Expliquez simplement ce que les informations et les preuves du dossier montrent."
-                    />
+                    >
+                      <option value="">Choisir une offre publiée</option>
+                      {offers.map((offer) => (
+                        <option key={offer.id} value={offer.id}>
+                          {offer.displayName} · {formatPrice(offer.priceMinor, offer.currency)}
+                        </option>
+                      ))}
+                    </select>
                   </label>
                 </div>
+
+                {selectedOffer ? (
+                  <div className="mt-4 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4">
+                    <div className="flex flex-wrap items-start justify-between gap-3">
+                      <div>
+                        <p className="font-bold">{selectedOffer.displayName}</p>
+                        <p className="mt-1 text-sm leading-6 text-[var(--muted)]">{selectedOffer.summary}</p>
+                      </div>
+                      <p className="font-bold">{formatPrice(selectedOffer.priceMinor, selectedOffer.currency)}</p>
+                    </div>
+                    <ul className="mt-3 grid gap-1 text-sm sm:grid-cols-2">
+                      {selectedOffer.services.map((service) => (
+                        <li key={service}>✓ {service}</li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : null}
+
+                <label className="mt-4 block text-sm font-semibold">
+                  Pourquoi ce parcours ?
+                  <textarea
+                    className="field mt-2"
+                    rows={3}
+                    maxLength={1200}
+                    value={reason}
+                    disabled={!canPropose || busyStudent === item.studentId}
+                    onChange={(event) =>
+                      setReasonByStudent((current) => ({
+                        ...current,
+                        [item.studentId]: event.target.value,
+                      }))
+                    }
+                    placeholder="Expliquez simplement ce que Campus Allemagne propose et pourquoi."
+                  />
+                </label>
 
                 {errorByStudent[item.studentId] ? (
                   <p role="alert" className="mt-3 text-sm font-semibold text-red-700">
@@ -239,7 +355,13 @@ export function AdminIntakePanel({ cases }: { cases: IntakeCase[] }) {
 
                 <button
                   type="button"
-                  disabled={!canPropose || busyStudent === item.studentId || !selectedRoute || reason.trim().length < 3}
+                  disabled={
+                    !canPropose
+                    || busyStudent === item.studentId
+                    || !selectedRoute
+                    || !selectedOfferId
+                    || reason.trim().length < 3
+                  }
                   onClick={() => propose(item)}
                   className="mt-4 inline-flex min-h-11 items-center rounded-[var(--radius-control)] bg-[var(--brand)] px-5 text-sm font-bold text-white disabled:cursor-not-allowed disabled:opacity-50"
                 >
@@ -247,7 +369,7 @@ export function AdminIntakePanel({ cases }: { cases: IntakeCase[] }) {
                     ? "Enregistrement…"
                     : item.proposedRouteKey
                       ? "Mettre à jour la proposition"
-                      : "Envoyer la proposition à l’étudiant"}
+                      : "Envoyer parcours + offre à l’étudiant"}
                 </button>
               </section>
             )}
