@@ -33,7 +33,22 @@ export default async function StudentDocumentsPage() {
   if (profileError) return <DocumentsUnavailable copy={t} />;
   if (!profile?.onboarding_completed) redirect("/student/onboarding");
 
-  const [documentsResult, historyResult, evidenceResult] = await Promise.all([
+  const { data: currentProcedure, error: currentProcedureError } = await supabase
+    .from("student_procedures")
+    .select("id")
+    .eq("student_id", user.id)
+    .eq("is_current", true)
+    .maybeSingle();
+
+  const requirementsPromise = currentProcedure
+    ? supabase
+        .from("student_document_requirements")
+        .select("requirement_key,category,requested_from_student,status")
+        .eq("student_id", user.id)
+        .eq("student_procedure_id", currentProcedure.id)
+    : Promise.resolve({ data: null, error: null });
+
+  const [documentsResult, historyResult, evidenceResult, requirementsResult] = await Promise.all([
     supabase
       .from("documents")
       .select("id,category,original_filename,size_bytes,status,admin_comment,created_at")
@@ -48,6 +63,7 @@ export default async function StudentDocumentsPage() {
       .from("academic_evidence")
       .select("id,student_id,evidence_type,institution,evidence_date,origin,verification_status,document_id,verified_at,created_at,updated_at")
       .order("updated_at", { ascending: false }),
+    requirementsPromise,
   ]);
 
   if (documentsResult.error) return <DocumentsUnavailable copy={t} />;
@@ -55,6 +71,25 @@ export default async function StudentDocumentsPage() {
   const documentStatusById = new Map(
     (documentsResult.data || []).map((document) => [document.id, document.status]),
   );
+  const allowedUploadCategories = currentProcedureError
+    ? []
+    : currentProcedure
+      ? [...new Set(
+          (requirementsResult.data || [])
+            .filter((requirement) =>
+              (
+                requirement.requested_from_student
+                && ["requested", "replacement_required"].includes(requirement.status)
+              )
+              || (
+                requirement.requirement_key === "existing_language_certificate"
+                && ["not_applicable", "replacement_required"].includes(requirement.status)
+              ),
+            )
+            .map((requirement) => requirement.category),
+        )]
+      : undefined;
+
   const evidence = (evidenceResult.data || []).map((row) =>
     toStudentAcademicEvidenceView({
       ...row,
@@ -78,6 +113,7 @@ export default async function StudentDocumentsPage() {
         historyLoadError={Boolean(historyResult.error)}
         evidence={evidence}
         evidenceLoadError={Boolean(evidenceResult.error)}
+        allowedUploadCategories={allowedUploadCategories}
       />
     </main>
   );
