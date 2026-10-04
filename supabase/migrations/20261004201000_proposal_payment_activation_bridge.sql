@@ -447,7 +447,7 @@ returns trigger
 language plpgsql
 security definer
 set search_path = public
-as $
+as $$
 begin
   if old.status in ('payment_pending', 'paid_pending_validation')
     and new.orientation_id is distinct from old.orientation_id
@@ -467,7 +467,7 @@ begin
 
   return new;
 end;
-$;
+$$;
 
 drop trigger if exists student_intake_commercial_orientation_guard
   on public.student_intake_cases;
