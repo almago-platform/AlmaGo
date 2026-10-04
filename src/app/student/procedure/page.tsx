@@ -90,6 +90,11 @@ const copy = {
   },
 } as const;
 
+function relation<T>(value: T | T[] | null | undefined): T | null {
+  if (Array.isArray(value)) return value[0] || null;
+  return value || null;
+}
+
 function applicationMethod(value: unknown): CampusApplicationMethod {
   return ["direct", "uni_assist", "vpd_then_direct", "other_documented", "unknown"].includes(String(value))
     ? value as CampusApplicationMethod
@@ -287,9 +292,7 @@ export default async function StudentProcedurePage() {
           </p>
           {nextOfficial && (
             <p className="mt-2 text-sm text-slate-600">
-              {(Array.isArray(nextOfficial.application.programs)
-                ? nextOfficial.application.programs[0]?.name
-                : nextOfficial.application.programs?.name) || t.applications}
+              {relation(nextOfficial.application.programs)?.name || t.applications}
             </p>
           )}
         </Card>
