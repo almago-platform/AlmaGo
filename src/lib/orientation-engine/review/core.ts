@@ -137,6 +137,7 @@ export function projectOrientationHumanReviewBundleToPublicResult(
         institution: verification.candidate.institution,
         programme: verification.candidate.programme,
         city: verification.candidate.city,
+        universityMedia: verification.candidate.universityMedia || null,
         overallStatus: verification.overallStatus,
         facts: verification.facts
           .map(publicReviewFact)
