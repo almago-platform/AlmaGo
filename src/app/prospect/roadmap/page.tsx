@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ProspectJourneyProgress } from "@/components/prospect/ProspectJourneyProgress";
+import { ProspectPageHero } from "@/components/prospect/ProspectPageHero";
 import { prospectHubCopy } from "@/content/prospect-hub-copy";
 import { getRequestLocale } from "@/lib/i18n-server";
 import { getPhase2StudentAccess } from "@/lib/phase2/access";
@@ -88,14 +89,18 @@ export default async function ProspectRoadmapPage() {
   const t = prospectHubCopy[locale].roadmap;
   const current = activeStepIndex(state);
   const journey = steps(locale);
+  const currentStep = journey[current] ?? journey[0];
+  const nextStep = journey[current + 1] ?? null;
+  const completedSteps = journey.slice(0, current);
+  const futureSteps = journey.slice(current + 2);
 
   return (
     <main className="space-y-6">
-      <header>
-        <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">{t.eyebrow}</p>
-        <h1 className="mt-2 text-3xl font-bold tracking-[-0.03em]">{t.title}</h1>
-        <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">{t.subtitle}</p>
-      </header>
+      <ProspectPageHero
+        eyebrow={t.eyebrow}
+        title={t.title}
+        subtitle={t.subtitle}
+      />
 
       <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 sm:p-6">
         <ProspectJourneyProgress
@@ -107,46 +112,78 @@ export default async function ProspectRoadmapPage() {
         />
       </section>
 
-      <section className="grid gap-3">
-        {journey.map((step, index) => {
-          const status = index < current
-            ? t.done
-            : index === current
-              ? t.current
-              : index === current + 1
-                ? t.next
-                : t.later;
+      <section className="grid gap-4 xl:grid-cols-[1.25fr_0.9fr]">
+        <article className="rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--brand-soft)] p-5 shadow-[var(--shadow-card)] sm:p-6">
+          <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--brand)]">
+            {String(current + 1).padStart(2, "0")} · {t.current}
+          </p>
+          <h2 className="mt-2 text-2xl font-bold">{currentStep.title}</h2>
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--muted)]">{currentStep.body}</p>
+          <Link
+            href={currentStep.href}
+            className="mt-5 inline-flex min-h-11 items-center rounded-[var(--radius-control)] bg-[var(--brand)] px-5 text-sm font-bold text-white transition hover:bg-[var(--brand-strong)]"
+          >
+            {t.current}
+          </Link>
+        </article>
 
-          return (
-            <article
-              key={step.title}
-              className={`rounded-[var(--radius-panel)] border p-5 sm:p-6 ${
-                index === current
-                  ? "border-[var(--brand-border)] bg-[var(--brand-soft)]"
-                  : "border-[var(--border)] bg-[var(--surface)]"
-              }`}
+        {nextStep ? (
+          <article className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[var(--shadow-card)] sm:p-6">
+            <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--muted)]">
+              {String(current + 2).padStart(2, "0")} · {t.next}
+            </p>
+            <h2 className="mt-2 text-xl font-bold">{nextStep.title}</h2>
+            <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{nextStep.body}</p>
+            <Link
+              href={nextStep.href}
+              className="mt-5 inline-flex min-h-10 items-center rounded-[var(--radius-control)] border border-[var(--border-strong)] bg-[var(--surface)] px-4 text-sm font-semibold transition hover:border-[var(--brand-border)]"
             >
-              <div className="flex flex-wrap items-start justify-between gap-3">
-                <div className="max-w-3xl">
-                  <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--muted)]">
-                    {String(index + 1).padStart(2, "0")} · {status}
-                  </p>
-                  <h2 className="mt-2 text-xl font-bold">{step.title}</h2>
-                  <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{step.body}</p>
-                </div>
-                {(index === current || index === current + 1) ? (
-                  <Link
-                    href={step.href}
-                    className="inline-flex min-h-10 items-center rounded-[var(--radius-control)] border border-[var(--border-strong)] bg-[var(--surface)] px-4 text-sm font-semibold"
-                  >
-                    {status}
-                  </Link>
-                ) : null}
-              </div>
-            </article>
-          );
-        })}
+              {t.next}
+            </Link>
+          </article>
+        ) : null}
       </section>
+
+      {(completedSteps.length || futureSteps.length) ? (
+        <section className="grid gap-4 lg:grid-cols-2">
+          {completedSteps.length ? (
+            <details className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-4 shadow-[var(--shadow-card)]">
+              <summary className="cursor-pointer font-bold">{t.completedGroup}</summary>
+              <div className="mt-3 grid gap-2">
+                {completedSteps.map((step, index) => (
+                  <div key={step.title} className="flex items-center gap-3 rounded-[var(--radius-control)] bg-emerald-50/70 px-3 py-2.5">
+                    <span className="flex size-6 items-center justify-center rounded-full bg-emerald-600 text-[11px] font-bold text-white">✓</span>
+                    <div>
+                      <p className="text-sm font-semibold">{step.title}</p>
+                      <p className="text-xs text-[var(--muted)]">{String(index + 1).padStart(2, "0")} · {t.done}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </details>
+          ) : null}
+
+          {futureSteps.length ? (
+            <details className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-4 shadow-[var(--shadow-card)]">
+              <summary className="cursor-pointer font-bold">{t.futureGroup}</summary>
+              <div className="mt-3 grid gap-2">
+                {futureSteps.map((step, index) => (
+                  <Link
+                    key={step.title}
+                    href={step.href}
+                    className="flex items-center justify-between gap-3 rounded-[var(--radius-control)] bg-[var(--surface-subtle)] px-3 py-2.5 text-sm font-semibold transition hover:bg-[var(--brand-soft)]"
+                  >
+                    <span>{step.title}</span>
+                    <span className="text-xs font-normal text-[var(--muted)]">
+                      {String(current + index + 3).padStart(2, "0")}
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            </details>
+          ) : null}
+        </section>
+      ) : null}
     </main>
   );
 }

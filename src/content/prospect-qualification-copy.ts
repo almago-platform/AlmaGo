@@ -28,8 +28,8 @@ export type ProspectQualificationCopy = {
 const fr: ProspectQualificationCopy = {
   eyebrow: "Avancement du projet",
   title: "Où en est votre projet ?",
-  unavailableTitle: "État du projet pas encore disponible",
-  unavailableBody: "Cette ancienne orientation n’a pas encore d’état enregistré. Mettez à jour votre projet pour obtenir une nouvelle évaluation.",
+  unavailableTitle: "Orientation enregistrée — qualification à compléter",
+  unavailableBody: "Votre orientation est bien enregistrée. La qualification détaillée sera établie au fur et à mesure que vous confirmez vos informations et envoyez les pièces nécessaires.",
   states: {
     not_evaluated: { label: "À examiner", title: "Nous devons encore examiner votre projet", body: "Il manque encore des informations pour savoir quelle est la prochaine étape." },
     too_early: { label: "En préparation", title: "Votre projet est encore en préparation", body: "Continuez à avancer progressivement. Vous n’avez pas besoin d’un accompagnement payant maintenant." },
@@ -50,8 +50,8 @@ const fr: ProspectQualificationCopy = {
 const ar: ProspectQualificationCopy = {
   eyebrow: "تقدّم المشروع",
   title: "إلى أين وصل مشروعك؟",
-  unavailableTitle: "حالة المشروع غير متاحة بعد",
-  unavailableBody: "هذا التوجيه القديم لا يحتوي بعد على حالة مسجلة. حدّث مشروعك للحصول على تقييم جديد.",
+  unavailableTitle: "تم حفظ التوجيه — التأهيل ما زال بحاجة إلى الاستكمال",
+  unavailableBody: "تم حفظ توجيهك. سيتم استكمال حالة التأهيل بالتدريج عندما تؤكد معلوماتك وترسل الوثائق المطلوبة.",
   states: {
     not_evaluated: { label: "بانتظار المراجعة", title: "نحتاج إلى مراجعة مشروعك", body: "ما زالت بعض المعلومات ناقصة لتحديد الخطوة التالية." },
     too_early: { label: "قيد التحضير", title: "مشروعك ما زال في مرحلة التحضير", body: "واصل التقدم تدريجيًا. لا تحتاج إلى مرافقة مدفوعة الآن." },
@@ -72,8 +72,8 @@ const ar: ProspectQualificationCopy = {
 const en: ProspectQualificationCopy = {
   eyebrow: "Project progress",
   title: "Where does your project stand?",
-  unavailableTitle: "Project status is not available yet",
-  unavailableBody: "This older orientation does not yet have a saved status. Update your project to receive a new assessment.",
+  unavailableTitle: "Orientation saved — qualification still to complete",
+  unavailableBody: "Your orientation is saved. The detailed qualification status will be established as you confirm your information and provide the required documents.",
   states: {
     not_evaluated: { label: "To review", title: "We still need to review your project", body: "Some information is still missing before we can identify the next step." },
     too_early: { label: "In preparation", title: "Your project is still being prepared", body: "Keep progressing step by step. You do not need paid support yet." },
@@ -94,8 +94,8 @@ const en: ProspectQualificationCopy = {
 const de: ProspectQualificationCopy = {
   eyebrow: "Projektfortschritt",
   title: "Wie weit ist dein Projekt?",
-  unavailableTitle: "Projektstatus noch nicht verfügbar",
-  unavailableBody: "Für diese ältere Orientierung ist noch kein Status gespeichert. Aktualisiere dein Projekt, um eine neue Einschätzung zu erhalten.",
+  unavailableTitle: "Orientierung gespeichert — Qualifikation noch zu vervollständigen",
+  unavailableBody: "Deine Orientierung ist gespeichert. Der detaillierte Qualifikationsstatus wird aufgebaut, sobald du deine Angaben bestätigst und die erforderlichen Dokumente einreichst.",
   states: {
     not_evaluated: { label: "Zu prüfen", title: "Wir müssen dein Projekt noch prüfen", body: "Es fehlen noch einige Angaben, bevor wir den nächsten Schritt bestimmen können." },
     too_early: { label: "In Vorbereitung", title: "Dein Projekt befindet sich noch in Vorbereitung", body: "Arbeite Schritt für Schritt weiter. Eine bezahlte Begleitung brauchst du jetzt noch nicht." },

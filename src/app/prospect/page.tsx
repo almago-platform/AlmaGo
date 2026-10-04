@@ -1,13 +1,16 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ProspectJourneyProgress } from "@/components/prospect/ProspectJourneyProgress";
+import { ProspectProgrammeRecommendationCard } from "@/components/prospect/ProspectProgrammeRecommendationCard";
 import { ProspectQualificationSummary } from "@/components/prospect/ProspectQualificationSummary";
 import { prospectHubCopy } from "@/content/prospect-hub-copy";
 import { prospectQualificationCopy } from "@/content/prospect-qualification-copy";
 import { orientationDiagnosticCopy } from "@/content/orientation-diagnostic-copy";
 import { getRequestLocale } from "@/lib/i18n-server";
 import { getPhase2StudentAccess } from "@/lib/phase2/access";
+import { loadVerifiedProgrammeCatalogue } from "@/lib/orientation-engine/catalog";
 import { loadProspectHubState } from "@/lib/prospect/hub";
+import { prospectCatalogueRecommendations } from "@/lib/prospect/programmes";
 
 function projectFacts(
   answers: NonNullable<Awaited<ReturnType<typeof loadProspectHubState>>["answers"]>,
@@ -123,13 +126,18 @@ export default async function ProspectDashboardPage() {
   if (!access.isStudent) redirect("/unauthorized");
   if (!access.phase2Enabled || access.canUseClientFeatures) redirect("/student");
 
-  const state = await loadProspectHubState({
-    userId: access.user.id,
-    email: access.user.email,
-    emailConfirmed: Boolean(access.user.email_confirmed_at),
-  });
+  const [state, catalogue] = await Promise.all([
+    loadProspectHubState({
+      userId: access.user.id,
+      email: access.user.email,
+      emailConfirmed: Boolean(access.user.email_confirmed_at),
+    }),
+    loadVerifiedProgrammeCatalogue(),
+  ]);
 
   const t = prospectHubCopy[locale].dashboard;
+  const catalogueT = prospectHubCopy[locale].catalogue;
+  const recommendations = prospectCatalogueRecommendations(state.answers, catalogue);
   const diagnosticCopy = orientationDiagnosticCopy[locale];
   const qualificationCopy = prospectQualificationCopy[locale];
   const action = nextAction(state, t);
@@ -139,32 +147,47 @@ export default async function ProspectDashboardPage() {
     month: "long",
     year: "numeric",
   });
+  const recommendationLabels = {
+    projectMatch: catalogueT.projectMatch,
+    preferredCity: catalogueT.preferredCity,
+    requirementCheck: catalogueT.requirementCheck,
+    field: catalogueT.field,
+    german: catalogueT.german,
+    uniAssist: catalogueT.uniAssist,
+    yes: catalogueT.yes,
+    source: catalogueT.source,
+    applyLink: catalogueT.applyLink,
+  };
 
   return (
     <main className="space-y-6">
-      <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 sm:p-7">
-        <p className="text-[0.68rem] font-bold uppercase tracking-[0.15em] text-[var(--brand)]">
-          {t.eyebrow}
-        </p>
-        <h1 className="mt-2 max-w-3xl text-3xl font-bold tracking-[-0.03em] text-[var(--foreground)] sm:text-4xl">
-          {t.title}
-        </h1>
-        <p className="mt-3 max-w-3xl text-sm leading-6 text-[var(--muted)] sm:text-base">
-          {t.subtitle}
-        </p>
+      <section className="relative overflow-hidden rounded-[var(--radius-panel)] border border-slate-800 bg-[var(--foreground)] p-5 text-white shadow-[var(--shadow-soft)] sm:p-7">
+        <div className="pointer-events-none absolute -right-16 -top-24 size-64 rounded-full bg-[var(--brand)]/12 blur-3xl" aria-hidden="true" />
+        <div className="pointer-events-none absolute -bottom-28 left-1/3 size-64 rounded-full bg-amber-300/10 blur-3xl" aria-hidden="true" />
+        <div className="relative">
+          <p className="text-[0.68rem] font-bold uppercase tracking-[0.16em] text-amber-300">
+            {t.eyebrow}
+          </p>
+          <h1 className="mt-2 max-w-3xl text-3xl font-bold tracking-[-0.035em] text-white sm:text-4xl">
+            {t.title}
+          </h1>
+          <p className="mt-3 max-w-3xl text-sm leading-6 text-white/70 sm:text-base">
+            {t.subtitle}
+          </p>
 
-        {facts.length ? (
-          <div className="mt-5 flex flex-wrap gap-2">
-            {facts.map((fact) => (
-              <span
-                key={fact}
-                className="rounded-full border border-[var(--border)] bg-[var(--surface-subtle)] px-3 py-1.5 text-xs font-semibold text-[var(--foreground)]"
-              >
-                <bdi dir="auto">{fact}</bdi>
-              </span>
-            ))}
-          </div>
-        ) : null}
+          {facts.length ? (
+            <div className="mt-5 flex flex-wrap gap-2">
+              {facts.map((fact) => (
+                <span
+                  key={fact}
+                  className="rounded-full border border-white/15 bg-white/8 px-3 py-1.5 text-xs font-semibold text-white"
+                >
+                  <bdi dir="auto">{fact}</bdi>
+                </span>
+              ))}
+            </div>
+          ) : null}
+        </div>
       </section>
 
       <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 sm:p-6">
@@ -187,56 +210,15 @@ export default async function ProspectDashboardPage() {
         />
       </section>
 
-      <div className="grid gap-5 xl:grid-cols-3">
-        <section className="rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--brand-soft)] p-5">
+      <div className="grid gap-4 xl:grid-cols-[1.1fr_1fr_1fr]">
+        <section className="rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--brand-soft)] p-5 shadow-[var(--shadow-card)]">
           <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--brand)]">
             {t.nextAction}
           </p>
           <h2 className="mt-2 text-xl font-bold text-[var(--foreground)]">
             {action.label}
           </h2>
-          <Link
-            href={action.href}
-            className="mt-5 inline-flex min-h-11 items-center rounded-[var(--radius-control)] bg-[var(--brand)] px-4 text-sm font-bold text-white"
-          >
-            {action.label}
-          </Link>
-        </section>
-
-        <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5">
-          <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--muted)]">
-            {t.campusAction}
-          </p>
-          <p className="mt-3 text-sm leading-6 text-[var(--foreground)]">
-            {campusWork(state, locale)}
-          </p>
-        </section>
-
-        <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5">
-          <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--muted)]">
-            {t.proposal}
-          </p>
-          <p className="mt-2 text-xl font-bold text-[var(--foreground)]">
-            {proposalStatus(state.intake, t)}
-          </p>
-          <Link
-            href="/prospect/proposal"
-            className="mt-4 inline-flex text-sm font-semibold text-[var(--brand-strong)] underline underline-offset-4"
-          >
-            {t.viewProposal}
-          </Link>
-        </section>
-      </div>
-
-      <ProspectQualificationSummary
-        qualification={state.qualification}
-        copy={qualificationCopy}
-      />
-
-      <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 sm:p-6">
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <h2 className="text-xl font-bold">{t.documents}</h2>
+          {(!state.intake || state.intake.status === "starter_documents") ? (
             <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
               {t.documentsSummary(
                 state.starterSummary.approved,
@@ -245,60 +227,124 @@ export default async function ProspectDashboardPage() {
                 state.starterSummary.needsReplacement,
               )}
             </p>
-          </div>
+          ) : null}
           <Link
-            href="/prospect/documents"
-            className="inline-flex min-h-10 items-center text-sm font-semibold text-[var(--brand-strong)] underline underline-offset-4"
+            href={action.href}
+            className="mt-5 inline-flex min-h-11 items-center rounded-[var(--radius-control)] bg-[var(--brand)] px-4 text-sm font-bold text-white transition hover:bg-[var(--brand-strong)]"
           >
-            {t.browseDocuments}
+            {action.label}
           </Link>
-        </div>
-      </section>
+        </section>
 
-      <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 sm:p-6">
-        <h2 className="text-xl font-bold">{t.browseTitle}</h2>
-        <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
-          {t.browseText}
-        </p>
-        <div className="mt-5 grid gap-3 sm:grid-cols-3">
-          <Link
-            href="/prospect/catalogue"
-            className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4 font-semibold hover:border-[var(--brand-border)]"
-          >
-            {t.browseCatalogue}
-          </Link>
-          <Link
-            href="/prospect/solutions"
-            className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4 font-semibold hover:border-[var(--brand-border)]"
-          >
-            {t.browseSolutions}
-          </Link>
+        <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[var(--shadow-card)]">
+          <div className="flex items-center gap-2">
+            <span className="size-2 rounded-full bg-amber-400" aria-hidden="true" />
+            <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--muted)]">
+              {t.campusAction}
+            </p>
+          </div>
+          <p className="mt-3 text-sm leading-6 text-[var(--foreground)]">
+            {campusWork(state, locale)}
+          </p>
+        </section>
+
+        <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[var(--shadow-card)]">
+          <div className="flex items-center gap-2">
+            <span className="size-2 rounded-full bg-[var(--brand)]" aria-hidden="true" />
+            <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--muted)]">
+              {t.proposal}
+            </p>
+          </div>
+          <p className="mt-2 text-xl font-bold text-[var(--foreground)]">
+            {proposalStatus(state.intake, t)}
+          </p>
           <Link
             href="/prospect/proposal"
-            className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4 font-semibold hover:border-[var(--brand-border)]"
+            className="mt-4 inline-flex text-sm font-semibold text-[var(--brand-strong)] underline decoration-[var(--brand-border)] underline-offset-4"
           >
             {t.viewProposal}
           </Link>
-        </div>
-      </section>
+        </section>
+      </div>
 
-      {state.current ? (
-        <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 sm:p-6">
-          <div className="flex flex-wrap items-start justify-between gap-4">
+      {recommendations.length ? (
+        <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[var(--shadow-card)] sm:p-6">
+          <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--brand)]">
-                {t.project}
+                {catalogueT.projectMatch}
               </p>
-              <h2 className="mt-2 text-xl font-bold">
-                {diagnosticCopy.headlines[state.current.diagnostic.headlineCode].title}
-              </h2>
-              <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
-                {diagnosticCopy.headlines[state.current.diagnostic.headlineCode].body}
+              <h2 className="mt-1 text-2xl font-bold">{t.recommendedTitle}</h2>
+              <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
+                {t.recommendedText}
               </p>
             </div>
             <Link
+              href="/prospect/catalogue"
+              className="inline-flex min-h-10 items-center rounded-[var(--radius-control)] border border-[var(--border-strong)] bg-[var(--surface)] px-4 text-sm font-semibold transition hover:border-[var(--brand-border)]"
+            >
+              {t.recommendedViewAll}
+            </Link>
+          </div>
+
+          <div className="mt-5 grid gap-4 xl:grid-cols-3">
+            {recommendations.map((recommendation) => (
+              <ProspectProgrammeRecommendationCard
+                key={recommendation.programme.id}
+                recommendation={recommendation}
+                labels={recommendationLabels}
+                compact
+              />
+            ))}
+          </div>
+        </section>
+      ) : null}
+
+      {state.qualification ? (
+        <ProspectQualificationSummary
+          qualification={state.qualification}
+          copy={qualificationCopy}
+        />
+      ) : null}
+
+      <nav
+        aria-label={t.browseTitle}
+        className="grid gap-2 rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-3 shadow-[var(--shadow-card)] sm:grid-cols-3"
+      >
+        <Link
+          href="/prospect/catalogue"
+          className="rounded-[var(--radius-control)] px-4 py-3 text-sm font-semibold transition hover:bg-[var(--surface-subtle)]"
+        >
+          {t.browseCatalogue} →
+        </Link>
+        <Link
+          href="/prospect/solutions"
+          className="rounded-[var(--radius-control)] px-4 py-3 text-sm font-semibold transition hover:bg-[var(--surface-subtle)]"
+        >
+          {t.browseSolutions} →
+        </Link>
+        <Link
+          href="/prospect/orientation"
+          className="rounded-[var(--radius-control)] px-4 py-3 text-sm font-semibold transition hover:bg-[var(--surface-subtle)]"
+        >
+          {t.updateProject} →
+        </Link>
+      </nav>
+
+      {state.current ? (
+        <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-4 shadow-[var(--shadow-card)] sm:p-5">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="min-w-0">
+              <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--brand)]">
+                {t.project}
+              </p>
+              <h2 className="mt-1 text-lg font-bold">
+                {diagnosticCopy.headlines[state.current.diagnostic.headlineCode].title}
+              </h2>
+            </div>
+            <Link
               href="/prospect/orientation"
-              className="text-sm font-semibold text-[var(--brand-strong)] underline underline-offset-4"
+              className="inline-flex min-h-10 shrink-0 items-center rounded-[var(--radius-control)] border border-[var(--border-strong)] px-4 text-sm font-semibold transition hover:border-[var(--brand-border)]"
             >
               {t.updateProject}
             </Link>

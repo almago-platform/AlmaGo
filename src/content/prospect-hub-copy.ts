@@ -6,6 +6,8 @@ type ProspectHubCopy = {
     badge: string;
     intro: string;
     navigation: string;
+    journeyGroup: string;
+    servicesGroup: string;
     homeAria: string;
     logout: string;
     links: {
@@ -40,6 +42,9 @@ type ProspectHubCopy = {
     browseSolutions: string;
     browseDocuments: string;
     viewProposal: string;
+    recommendedTitle: string;
+    recommendedText: string;
+    recommendedViewAll: string;
     history: string;
     historyHint: string;
     currentVersion: string;
@@ -55,6 +60,9 @@ type ProspectHubCopy = {
     current: string;
     history: string;
     savedOn: string;
+    confirmed: string;
+    nextDocuments: string;
+    nextDocumentsBody: string;
     noOrientation: string;
   };
   catalogue: {
@@ -66,12 +74,21 @@ type ProspectHubCopy = {
     degree: string;
     field: string;
     city: string;
+    german: string;
+    uniAssist: string;
+    yes: string;
     all: string;
     apply: string;
     reset: string;
     results: (count: number) => string;
     projectMatch: string;
     generalCatalogue: string;
+    recommendedTitle: string;
+    recommendedSubtitle: string;
+    preferredCity: string;
+    requirementCheck: string;
+    browseAllTitle: string;
+    browseAllSubtitle: string;
     source: string;
     applyLink: string;
     noResults: string;
@@ -98,6 +115,8 @@ type ProspectHubCopy = {
     done: string;
     next: string;
     later: string;
+    completedGroup: string;
+    futureGroup: string;
   };
   solutions: {
     eyebrow: string;
@@ -110,6 +129,7 @@ type ProspectHubCopy = {
     financeText: string;
     official: string;
     provider: string;
+    forYourProject: string;
     empty: string;
   };
 };
@@ -120,6 +140,8 @@ const fr: ProspectHubCopy = {
     badge: "Compte gratuit",
     intro: "Votre projet, vos documents, votre proposition et les solutions utiles au même endroit.",
     navigation: "Navigation de mon espace",
+    journeyGroup: "Mon parcours",
+    servicesGroup: "Services & solutions",
     homeAria: "Accueil de mon espace Campus Allemagne",
     logout: "Déconnexion",
     links: {
@@ -155,6 +177,9 @@ const fr: ProspectHubCopy = {
     browseSolutions: "Voir les solutions",
     browseDocuments: "Gérer mes documents",
     viewProposal: "Voir ma proposition",
+    recommendedTitle: "Programmes à regarder en priorité",
+    recommendedText: "Ces programmes vérifiés correspondent le mieux aux critères enregistrés dans votre orientation. Ils restent à vérifier programme par programme.",
+    recommendedViewAll: "Voir tous les programmes",
     history: "Historique de mon orientation",
     historyHint: "Les anciennes versions restent disponibles sans encombrer votre tableau de bord.",
     currentVersion: "Version actuelle",
@@ -170,6 +195,9 @@ const fr: ProspectHubCopy = {
     current: "Orientation actuelle",
     history: "Voir les versions précédentes",
     savedOn: "Enregistrée le",
+    confirmed: "Orientation confirmée",
+    nextDocuments: "Prochaine étape : vos documents",
+    nextDocumentsBody: "Votre orientation est enregistrée. Complétez maintenant les pièces de départ pour permettre la vérification de votre dossier.",
     noOrientation: "Aucune orientation n’est encore disponible.",
   },
   catalogue: {
@@ -181,12 +209,21 @@ const fr: ProspectHubCopy = {
     degree: "Diplôme",
     field: "Domaine",
     city: "Ville",
+    german: "Allemand",
+    uniAssist: "uni-assist",
+    yes: "Oui",
     all: "Tous",
     apply: "Appliquer",
     reset: "Réinitialiser",
     results: (count) => `${count} programme${count > 1 ? "s" : ""} affiché${count > 1 ? "s" : ""}`,
     projectMatch: "Correspond à des critères de votre projet",
     generalCatalogue: "Catalogue général",
+    recommendedTitle: "Recommandés pour votre projet",
+    recommendedSubtitle: "Sélection issue de votre orientation et du catalogue vérifié. Une correspondance ne garantit ni admission ni éligibilité finale.",
+    preferredCity: "Ville préférée",
+    requirementCheck: "Conditions à vérifier",
+    browseAllTitle: "Explorer tout le catalogue",
+    browseAllSubtitle: "Utilisez les filtres pour chercher au-delà de votre sélection personnalisée.",
     source: "Source officielle",
     applyLink: "Voir la candidature",
     noResults: "Aucun programme vérifié ne correspond à ces filtres pour le moment.",
@@ -213,6 +250,8 @@ const fr: ProspectHubCopy = {
     done: "Terminé",
     next: "Prochaine étape",
     later: "Plus tard",
+    completedGroup: "Étapes terminées",
+    futureGroup: "Étapes suivantes",
   },
   solutions: {
     eyebrow: "Solutions utiles",
@@ -225,6 +264,7 @@ const fr: ProspectHubCopy = {
     financeText: "Options publiées avec source officielle et date de vérification.",
     official: "Source officielle",
     provider: "Site du prestataire",
+    forYourProject: "Près de votre ville",
     empty: "Aucune option vérifiée n’est disponible dans cette catégorie pour le moment.",
   },
 };
@@ -235,6 +275,8 @@ const en: ProspectHubCopy = {
     badge: "Free account",
     intro: "Your project, documents, proposal and useful solutions in one place.",
     navigation: "My space navigation",
+    journeyGroup: "My journey",
+    servicesGroup: "Services & solutions",
     homeAria: "My Campus Allemagne home",
     logout: "Sign out",
     links: {
@@ -270,6 +312,9 @@ const en: ProspectHubCopy = {
     browseSolutions: "View solutions",
     browseDocuments: "Manage my documents",
     viewProposal: "View my proposal",
+    recommendedTitle: "Programmes to review first",
+    recommendedText: "These verified programmes best match the criteria saved in your orientation. Each programme still needs its own requirement check.",
+    recommendedViewAll: "View all programmes",
     history: "Orientation history",
     historyHint: "Older versions remain available without cluttering your dashboard.",
     currentVersion: "Current version",
@@ -285,6 +330,9 @@ const en: ProspectHubCopy = {
     current: "Current orientation",
     history: "View previous versions",
     savedOn: "Saved on",
+    confirmed: "Orientation confirmed",
+    nextDocuments: "Next step: your documents",
+    nextDocumentsBody: "Your orientation is saved. Add the starter documents so your file can be reviewed.",
     noOrientation: "No orientation is available yet.",
   },
   catalogue: {
@@ -296,12 +344,21 @@ const en: ProspectHubCopy = {
     degree: "Degree",
     field: "Field",
     city: "City",
+    german: "German",
+    uniAssist: "uni-assist",
+    yes: "Yes",
     all: "All",
     apply: "Apply",
     reset: "Reset",
     results: (count) => `${count} programme${count === 1 ? "" : "s"} shown`,
     projectMatch: "Matches criteria from your project",
     generalCatalogue: "General catalogue",
+    recommendedTitle: "Recommended for your project",
+    recommendedSubtitle: "Selected from your orientation and the verified catalogue. A match does not guarantee admission or final eligibility.",
+    preferredCity: "Preferred city",
+    requirementCheck: "Requirements to check",
+    browseAllTitle: "Explore the full catalogue",
+    browseAllSubtitle: "Use the filters to search beyond your personalised selection.",
     source: "Official source",
     applyLink: "Application information",
     noResults: "No verified programme currently matches these filters.",
@@ -328,6 +385,8 @@ const en: ProspectHubCopy = {
     done: "Done",
     next: "Next",
     later: "Later",
+    completedGroup: "Completed steps",
+    futureGroup: "Later steps",
   },
   solutions: {
     eyebrow: "Useful solutions",
@@ -340,6 +399,7 @@ const en: ProspectHubCopy = {
     financeText: "Published options with an official source and verification date.",
     official: "Official source",
     provider: "Provider website",
+    forYourProject: "Near your preferred city",
     empty: "No verified option is currently available in this category.",
   },
 };
@@ -350,6 +410,8 @@ const de: ProspectHubCopy = {
     badge: "Kostenloses Konto",
     intro: "Projekt, Dokumente, Vorschlag und nützliche Lösungen an einem Ort.",
     navigation: "Navigation meines Bereichs",
+    journeyGroup: "Mein Weg",
+    servicesGroup: "Services & Lösungen",
     homeAria: "Startseite meines Campus-Allemagne-Bereichs",
     logout: "Abmelden",
     links: {
@@ -385,6 +447,9 @@ const de: ProspectHubCopy = {
     browseSolutions: "Lösungen ansehen",
     browseDocuments: "Dokumente verwalten",
     viewProposal: "Vorschlag ansehen",
+    recommendedTitle: "Programme zuerst ansehen",
+    recommendedText: "Diese geprüften Programme passen am besten zu den in deiner Orientierung gespeicherten Kriterien. Die Bedingungen jedes Programms müssen trotzdem einzeln geprüft werden.",
+    recommendedViewAll: "Alle Programme ansehen",
     history: "Orientierungsverlauf",
     historyHint: "Frühere Versionen bleiben verfügbar, ohne die Übersicht zu überladen.",
     currentVersion: "Aktuelle Version",
@@ -400,6 +465,9 @@ const de: ProspectHubCopy = {
     current: "Aktuelle Orientierung",
     history: "Frühere Versionen ansehen",
     savedOn: "Gespeichert am",
+    confirmed: "Orientierung bestätigt",
+    nextDocuments: "Nächster Schritt: deine Dokumente",
+    nextDocumentsBody: "Deine Orientierung ist gespeichert. Füge jetzt die Startdokumente hinzu, damit dein Dossier geprüft werden kann.",
     noOrientation: "Noch keine Orientierung verfügbar.",
   },
   catalogue: {
@@ -411,12 +479,21 @@ const de: ProspectHubCopy = {
     degree: "Abschluss",
     field: "Fach",
     city: "Stadt",
+    german: "Deutsch",
+    uniAssist: "uni-assist",
+    yes: "Ja",
     all: "Alle",
     apply: "Anwenden",
     reset: "Zurücksetzen",
     results: (count) => `${count} Programm${count === 1 ? "" : "e"} angezeigt`,
     projectMatch: "Passt zu Kriterien deines Projekts",
     generalCatalogue: "Allgemeiner Katalog",
+    recommendedTitle: "Für dein Projekt empfohlen",
+    recommendedSubtitle: "Aus deiner Orientierung und dem geprüften Katalog abgeleitet. Eine Übereinstimmung garantiert weder Zulassung noch endgültige Eignung.",
+    preferredCity: "Bevorzugte Stadt",
+    requirementCheck: "Bedingungen prüfen",
+    browseAllTitle: "Gesamten Katalog durchsuchen",
+    browseAllSubtitle: "Nutze die Filter, um über deine persönliche Auswahl hinaus zu suchen.",
     source: "Offizielle Quelle",
     applyLink: "Bewerbungsinfo",
     noResults: "Zu diesen Filtern ist derzeit kein geprüftes Programm verfügbar.",
@@ -443,6 +520,8 @@ const de: ProspectHubCopy = {
     done: "Erledigt",
     next: "Als Nächstes",
     later: "Später",
+    completedGroup: "Erledigte Schritte",
+    futureGroup: "Spätere Schritte",
   },
   solutions: {
     eyebrow: "Nützliche Lösungen",
@@ -455,6 +534,7 @@ const de: ProspectHubCopy = {
     financeText: "Veröffentlichte Optionen mit offizieller Quelle und Prüfdatum.",
     official: "Offizielle Quelle",
     provider: "Anbieter-Website",
+    forYourProject: "In deiner bevorzugten Stadt",
     empty: "In dieser Kategorie ist derzeit keine geprüfte Option verfügbar.",
   },
 };
@@ -465,6 +545,8 @@ const ar: ProspectHubCopy = {
     badge: "حساب مجاني",
     intro: "مشروعك ووثائقك واقتراحك والحلول المفيدة في مكان واحد.",
     navigation: "التنقل داخل مساحتي",
+    journeyGroup: "مساري",
+    servicesGroup: "الخدمات والحلول",
     homeAria: "الصفحة الرئيسية لمساحتي في Campus Allemagne",
     logout: "تسجيل الخروج",
     links: {
@@ -500,6 +582,9 @@ const ar: ProspectHubCopy = {
     browseSolutions: "عرض الحلول",
     browseDocuments: "إدارة الوثائق",
     viewProposal: "عرض اقتراحي",
+    recommendedTitle: "برامج ننصحك بمراجعتها أولًا",
+    recommendedText: "هذه البرامج الموثقة هي الأقرب إلى المعايير المسجلة في توجيهك، مع ضرورة التحقق من شروط كل برنامج على حدة.",
+    recommendedViewAll: "عرض جميع البرامج",
     history: "سجل التوجيه",
     historyHint: "تبقى النسخ السابقة متاحة دون أن تملأ لوحة المتابعة.",
     currentVersion: "النسخة الحالية",
@@ -515,6 +600,9 @@ const ar: ProspectHubCopy = {
     current: "التوجيه الحالي",
     history: "عرض النسخ السابقة",
     savedOn: "تم الحفظ في",
+    confirmed: "تم تأكيد التوجيه",
+    nextDocuments: "الخطوة التالية: وثائقك",
+    nextDocumentsBody: "تم حفظ توجيهك. أضف الآن الوثائق الأساسية حتى يمكن مراجعة ملفك.",
     noOrientation: "لا يوجد توجيه متاح بعد.",
   },
   catalogue: {
@@ -526,12 +614,21 @@ const ar: ProspectHubCopy = {
     degree: "الدرجة",
     field: "المجال",
     city: "المدينة",
+    german: "الألمانية",
+    uniAssist: "uni-assist",
+    yes: "نعم",
     all: "الكل",
     apply: "تطبيق",
     reset: "إعادة ضبط",
     results: (count) => `تم عرض ${count} برنامج`,
     projectMatch: "يتوافق مع معايير من مشروعك",
     generalCatalogue: "الكتالوج العام",
+    recommendedTitle: "مقترحة لمشروعك",
+    recommendedSubtitle: "اختيار مبني على توجيهك والكتالوج الموثق. التطابق لا يضمن القبول أو الأهلية النهائية.",
+    preferredCity: "المدينة المفضلة",
+    requirementCheck: "شروط تحتاج إلى التحقق",
+    browseAllTitle: "استكشاف كامل الكتالوج",
+    browseAllSubtitle: "استخدم الفلاتر للبحث خارج اختيارك الشخصي.",
     source: "المصدر الرسمي",
     applyLink: "معلومات التقديم",
     noResults: "لا يوجد حاليًا برنامج موثّق يطابق هذه الفلاتر.",
@@ -558,6 +655,8 @@ const ar: ProspectHubCopy = {
     done: "مكتمل",
     next: "التالي",
     later: "لاحقًا",
+    completedGroup: "الخطوات المكتملة",
+    futureGroup: "الخطوات اللاحقة",
   },
   solutions: {
     eyebrow: "حلول مفيدة",
@@ -570,6 +669,7 @@ const ar: ProspectHubCopy = {
     financeText: "خيارات منشورة مع مصدر رسمي وتاريخ تحقق.",
     official: "المصدر الرسمي",
     provider: "موقع مقدم الخدمة",
+    forYourProject: "قريب من مدينتك المفضلة",
     empty: "لا يوجد خيار تم التحقق منه في هذه الفئة حاليًا.",
   },
 };

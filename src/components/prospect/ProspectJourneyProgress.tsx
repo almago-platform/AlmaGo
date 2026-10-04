@@ -95,14 +95,14 @@ export function ProspectJourneyProgress(props: {
   const copy = journeyCopy[props.locale];
   const steps = copy.steps;
   const activeIndex = currentIndex(props);
-  const completed = Math.max(0, activeIndex);
-  const percent = Math.round((completed / (steps.length - 1)) * 100);
+  const currentStepNumber = Math.min(steps.length, activeIndex + 1);
+  const percent = Math.round((currentStepNumber / steps.length) * 100);
 
   return (
     <div>
       <div className="mb-3 flex items-center justify-between gap-3 text-sm">
         <span className="font-semibold text-[var(--foreground)]">
-          {activeIndex + 1}/{steps.length} {copy.count}
+          {currentStepNumber}/{steps.length} {copy.count}
         </span>
         <span className="text-[var(--muted)]">{percent}%</span>
       </div>

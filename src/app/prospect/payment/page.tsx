@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ProspectPageHero } from "@/components/prospect/ProspectPageHero";
 import { prospectPaymentCopy } from "@/content/prospect-payment-copy";
 import { rebrandCopy } from "@/lib/brand";
 import { getRequestLocale } from "@/lib/i18n-server";
@@ -92,14 +93,10 @@ export default async function ProspectPaymentPage() {
 
   if (!latest) {
     return (
-      <main>
-        <header className="mb-6">
-          <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">{copy.eyebrow}</p>
-          <h1 className="mt-2 text-3xl font-bold text-[var(--foreground)]">{copy.title}</h1>
-          <p className="mt-3 max-w-3xl text-sm leading-6 text-[var(--muted)]">{copy.intro}</p>
-        </header>
+      <main className="space-y-6">
+        <ProspectPageHero eyebrow={copy.eyebrow} title={copy.title} subtitle={copy.intro} />
 
-        <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 sm:p-6">
+        <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[var(--shadow-card)] sm:p-6">
           <h2 className="text-xl font-bold text-[var(--foreground)]">{copy.noneTitle}</h2>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--muted)]">{copy.noneText}</p>
           <Link
@@ -142,14 +139,10 @@ export default async function ProspectPaymentPage() {
   });
 
   return (
-    <main>
-      <header className="mb-6">
-        <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">{copy.eyebrow}</p>
-        <h1 className="mt-2 text-3xl font-bold text-[var(--foreground)]">{copy.title}</h1>
-        <p className="mt-3 max-w-3xl text-sm leading-6 text-[var(--muted)]">{copy.intro}</p>
-      </header>
+    <main className="space-y-6">
+      <ProspectPageHero eyebrow={copy.eyebrow} title={copy.title} subtitle={copy.intro} />
 
-      <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 sm:p-6">
+      <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[var(--shadow-card)] sm:p-6">
         {offerName(latest.offer_snapshot) ? (
           <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--brand)]">
             {offerName(latest.offer_snapshot)}

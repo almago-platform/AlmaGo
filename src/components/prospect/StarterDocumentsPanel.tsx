@@ -126,16 +126,22 @@ export function StarterDocumentsPanel({ documents }: { documents: StarterDocumen
 
   return (
     <div className="grid gap-6">
-      <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 sm:p-6">
-        <p className="text-[0.68rem] font-bold uppercase tracking-[0.15em] text-[var(--brand)]">
-          Pièces de départ
-        </p>
-        <h1 className="mt-2 text-2xl font-bold">Complétez votre dossier de vérification</h1>
-        <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
-          Nous demandons seulement les preuves nécessaires pour décider du parcours adapté.
-          Le certificat de langue est facultatif si vous n’en avez pas encore.
-        </p>
-        <div className="mt-5 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4">
+      <section className="overflow-hidden rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow-card)]">
+        <div className="relative overflow-hidden bg-[var(--foreground)] p-5 text-white sm:p-6">
+          <div className="pointer-events-none absolute -right-10 -top-16 size-48 rounded-full bg-[var(--brand)]/14 blur-3xl" aria-hidden="true" />
+          <div className="relative">
+            <p className="text-[0.68rem] font-bold uppercase tracking-[0.15em] text-amber-300">
+              Pièces de départ
+            </p>
+            <h1 className="mt-2 text-2xl font-bold text-white sm:text-3xl">Complétez votre dossier de vérification</h1>
+            <p className="mt-2 max-w-3xl text-sm leading-6 text-white/72">
+              Nous demandons seulement les preuves nécessaires pour décider du parcours adapté.
+              Le certificat de langue est facultatif si vous n’en avez pas encore.
+            </p>
+          </div>
+        </div>
+        <div className="p-5 sm:p-6">
+          <div className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4">
           <div className="flex items-center justify-between gap-3 text-sm">
             <span className="font-semibold">
               Pièces obligatoires validées : {approvedRequired}/{requiredStarterDocumentCategories.length}
@@ -210,20 +216,21 @@ export function StarterDocumentsPanel({ documents }: { documents: StarterDocumen
           })}
         </div>
 
-        {requiredReady ? (
-          <div className="mt-5 rounded-[var(--radius-control)] border border-emerald-200 bg-emerald-50 p-4">
-            <p className="font-bold text-emerald-900">Les pièces obligatoires sont validées.</p>
-            <p className="mt-1 text-sm leading-6 text-emerald-900">
-              Vous n’avez rien d’autre à faire maintenant. Campus Allemagne peut examiner votre parcours.
-            </p>
-          </div>
-        ) : null}
+          {requiredReady ? (
+            <div className="mt-5 rounded-[var(--radius-control)] border border-emerald-200 bg-emerald-50 p-4">
+              <p className="font-bold text-emerald-900">Les pièces obligatoires sont validées.</p>
+              <p className="mt-1 text-sm leading-6 text-emerald-900">
+                Vous n’avez rien d’autre à faire maintenant. Campus Allemagne peut examiner votre parcours.
+              </p>
+            </div>
+          ) : null}
+        </div>
       </section>
 
       {!requiredReady ? (
         <form
           onSubmit={upload}
-          className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 sm:p-6"
+          className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[var(--shadow-card)] sm:p-6"
         >
           <h2 className="text-xl font-bold">Ajouter un document</h2>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
