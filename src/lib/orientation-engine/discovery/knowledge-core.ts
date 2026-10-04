@@ -58,7 +58,18 @@ function canonicalUniversityHost(value: string | null) {
       .trim()
       .toLocaleLowerCase("en")
       .replace(/^www\./, "");
-    return hostname || null;
+    if (!hostname) return null;
+
+    // Orientation currently targets Germany. Faculty and localized programme
+    // pages often live on subdomains (for example f05.uni-stuttgart.de), while
+    // the university registry uses the institution host. Collapsing .de hosts
+    // to their registrable two-label form keeps those aliases on one identity.
+    if (hostname.endsWith(".de")) {
+      const labels = hostname.split(".").filter(Boolean);
+      if (labels.length > 2) return labels.slice(-2).join(".");
+    }
+
+    return hostname;
   } catch {
     return null;
   }
@@ -67,10 +78,12 @@ function canonicalUniversityHost(value: string | null) {
 export function buildOrientationResearchUniversityDedupeKey(
   candidate: Pick<
     OrientationDiscoveryResearchCandidate,
-    "institution" | "city" | "officialUniversityUrl"
+    "institution" | "city" | "officialUniversityUrl" | "officialProgrammeUrl"
   >,
 ) {
-  const host = canonicalUniversityHost(candidate.officialUniversityUrl);
+  const host = canonicalUniversityHost(
+    candidate.officialUniversityUrl || candidate.officialProgrammeUrl,
+  );
   if (host) return `host:${host}`;
 
   return [
@@ -85,7 +98,7 @@ export function buildOrientationResearchProgrammeDedupeKey(
   candidate: OrientationDiscoveryResearchCandidate,
 ) {
   return sha256({
-    institution: normalized(candidate.institution),
+    university: buildOrientationResearchUniversityDedupeKey(candidate),
     programme: normalized(candidate.programme),
     degree: normalized(candidate.degree),
   });
