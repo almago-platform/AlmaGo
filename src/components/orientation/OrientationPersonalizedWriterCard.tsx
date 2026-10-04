@@ -817,85 +817,88 @@ export function OrientationPersonalizedWriterCard({
 
   return (
     <article className="orientation-unified-shell overflow-hidden rounded-[calc(var(--radius-panel)+0.35rem)] p-3 sm:p-4 lg:p-5">
-      <header className="relative overflow-hidden rounded-[var(--radius-panel)] bg-[var(--foreground)] px-5 py-6 text-white shadow-[var(--shadow-card)] sm:px-8 sm:py-8">
+      <header className="relative overflow-hidden rounded-[var(--radius-panel)] bg-[var(--foreground)] text-white shadow-[var(--shadow-card)]">
         <div aria-hidden="true" className="absolute inset-x-0 top-0 h-0.5 bg-[var(--brand)]" />
-        <div className="relative max-w-4xl">
-          <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.16em] text-[var(--accent)]">
-            <span aria-hidden="true" className="size-1.5 rounded-full bg-[var(--brand)]" />
-            {t.heroEyebrow}
-          </p>
-          <h3 className="mt-2 max-w-3xl text-3xl font-semibold leading-tight tracking-tight sm:text-[2.35rem]">
-            {t.heroTitle}
-          </h3>
-          <p className="mt-3 max-w-3xl text-sm font-medium leading-6 text-white/[0.92] sm:text-base sm:leading-7">
-            {content.opening}
-          </p>
-          <p className="mt-2 max-w-3xl text-sm leading-6 text-white/[0.66]">
-            {content.projectStatus}
-          </p>
-          <div className="mt-5 flex flex-wrap gap-2">
-            {profileHighlights.map((item) => (
-              <span
-                key={item}
-                className="rounded-full border border-white/[0.12] bg-white/[0.07] px-3 py-1.5 text-xs font-semibold text-white/[0.88]"
-              >
-                {item}
-              </span>
-            ))}
+        <div aria-hidden="true" className="absolute -end-24 -top-24 size-72 rounded-full border border-white/[0.06]" />
+        <div aria-hidden="true" className="absolute -end-6 top-16 size-40 rounded-full bg-[var(--brand)]/[0.08] blur-2xl" />
+
+        <div className="relative grid gap-7 px-5 py-7 sm:px-8 sm:py-9 lg:grid-cols-[minmax(0,1.25fr)_minmax(17rem,0.75fr)] lg:items-stretch lg:gap-10">
+          <div className="flex min-w-0 flex-col justify-center">
+            <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.16em] text-[var(--accent)]">
+              <span aria-hidden="true" className="size-1.5 rounded-full bg-[var(--brand)]" />
+              {t.heroEyebrow}
+            </p>
+            <h3 className="mt-3 max-w-3xl text-3xl font-semibold leading-[1.08] tracking-tight sm:text-[2.6rem]">
+              {t.heroTitle}
+            </h3>
+            <p className="mt-4 max-w-3xl text-sm font-medium leading-6 text-white/[0.92] sm:text-base sm:leading-7">
+              {content.opening}
+            </p>
+            <p className="mt-2 max-w-3xl text-sm leading-6 text-white/[0.64]">
+              {content.projectStatus}
+            </p>
+
+            <div className="mt-5 flex flex-wrap gap-2">
+              {profileHighlights.map((item) => (
+                <span
+                  key={item}
+                  className="rounded-full border border-white/[0.12] bg-white/[0.06] px-3 py-1.5 text-xs font-semibold text-white/[0.88]"
+                >
+                  {item}
+                </span>
+              ))}
+            </div>
+
+            <a
+              href="#orientation-main-priority"
+              className="mt-7 inline-flex min-h-11 w-fit items-center justify-center rounded-[var(--radius-control)] bg-[var(--brand)] px-5 py-2.5 text-sm font-bold text-white transition hover:bg-[var(--brand-strong)]"
+            >
+              {t.journeyOpenAction}
+              <span aria-hidden="true" className="ms-2">→</span>
+            </a>
           </div>
-          <a
-            href="#orientation-main-priority"
-            className="mt-6 inline-flex min-h-11 items-center justify-center rounded-[var(--radius-control)] bg-[var(--brand)] px-5 py-2.5 text-sm font-bold text-white transition hover:bg-[var(--brand-strong)]"
-          >
-            {t.journeyOpenAction}
-            <span aria-hidden="true" className="ms-2">→</span>
-          </a>
+
+          <aside className="relative overflow-hidden rounded-[calc(var(--radius-panel)-0.2rem)] border border-white/[0.1] bg-white/[0.055] p-5 backdrop-blur-sm sm:p-6">
+            <div aria-hidden="true" className="absolute end-0 top-0 h-1 w-24 bg-[var(--accent)]" />
+            <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-[var(--accent)]">
+              {t.summaryTitle}
+            </p>
+            <p className="mt-2 text-xl font-semibold leading-7 text-white">
+              {t.summaryLead}
+            </p>
+            <p className="mt-2 text-sm leading-6 text-white/[0.66]">{t.summaryText}</p>
+
+            <div className="mt-5 space-y-0 border-y border-white/[0.1]">
+              <div className="grid grid-cols-[6.5rem_1fr] gap-3 py-3.5">
+                <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-[var(--accent)]">
+                  {t.summarySignal}
+                </p>
+                <p className="text-xs font-semibold leading-5 text-white/[0.88]">
+                  {summarySignalText(locale, strongOutlookCount, content.studyOptions.length)}
+                </p>
+              </div>
+              <div className="grid grid-cols-[6.5rem_1fr] gap-3 border-t border-white/[0.1] py-3.5">
+                <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-[var(--brand)]">
+                  {t.summaryAction}
+                </p>
+                <p className="text-xs font-semibold leading-5 text-white/[0.9]">
+                  {content.mainPriority.title}
+                </p>
+              </div>
+              <div className="grid grid-cols-[6.5rem_1fr] gap-3 border-t border-white/[0.1] py-3.5">
+                <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-[var(--accent)]">
+                  {t.summaryCampus}
+                </p>
+                <p className="text-xs leading-5 text-white/[0.68]">{t.summaryCampusText}</p>
+              </div>
+            </div>
+          </aside>
         </div>
       </header>
 
       <section
-        aria-labelledby="orientation-decision-summary"
-        className="orientation-chapter mt-4 border-b border-[var(--border)] px-2 py-5 sm:mt-5 sm:px-4 sm:py-6"
-      >
-        <div className="max-w-4xl">
-          <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand-strong)]">
-            {t.summaryTitle}
-          </p>
-          <h4 id="orientation-decision-summary" className="mt-1 text-2xl font-semibold tracking-tight">
-            {t.summaryLead}
-          </h4>
-          <p className="mt-1.5 max-w-3xl text-sm leading-6 text-[var(--muted)]">{t.summaryText}</p>
-        </div>
-
-        <div className="mt-5 grid divide-y divide-[var(--border)] border-y border-[var(--border)] md:grid-cols-3 md:divide-x md:divide-y-0">
-          <div className="py-4 md:pe-5">
-            <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-[var(--accent-strong)]">
-              {t.summarySignal}
-            </p>
-            <p className="mt-2 text-sm font-semibold leading-6 text-[var(--foreground)]">
-              {summarySignalText(locale, strongOutlookCount, content.studyOptions.length)}
-            </p>
-          </div>
-          <div className="py-4 md:px-5">
-            <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-[var(--brand-strong)]">
-              {t.summaryAction}
-            </p>
-            <p className="mt-2 text-sm font-semibold leading-6 text-[var(--foreground)]">
-              {content.mainPriority.title}
-            </p>
-          </div>
-          <div className="py-4 md:ps-5">
-            <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-[var(--accent-strong)]">
-              {t.summaryCampus}
-            </p>
-            <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{t.summaryCampusText}</p>
-          </div>
-        </div>
-      </section>
-
-      <section
         aria-labelledby="orientation-journey"
-        className="orientation-chapter mt-5 px-2 pt-3 sm:mt-6 sm:px-4"
+        className="orientation-chapter mt-6 px-2 sm:mt-7 sm:px-4"
       >
         <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
@@ -912,7 +915,7 @@ export function OrientationPersonalizedWriterCard({
           </p>
         </div>
 
-        <ol className="mt-5 grid grid-cols-1 gap-0 sm:grid-cols-5">
+        <ol className="mt-6 grid grid-cols-1 gap-0 sm:grid-cols-5">
           {t.journeySteps.map((step, index) => {
             const completed = index < journeyStep;
             const current = index === journeyStep;
@@ -928,7 +931,7 @@ export function OrientationPersonalizedWriterCard({
                     (completed
                       ? "bg-[var(--success)] text-white"
                       : current
-                        ? "bg-[var(--brand)] text-white"
+                        ? "bg-[var(--brand)] text-white ring-4 ring-[var(--brand-soft)]"
                         : "bg-[var(--surface)] text-[var(--muted)] ring-1 ring-inset ring-[var(--border-strong)]")
                   }
                 >
@@ -948,7 +951,7 @@ export function OrientationPersonalizedWriterCard({
                     {step}
                   </p>
                   {current ? (
-                    <p className="mt-1 text-xs leading-5 text-[var(--muted)]">{t.journeyCurrent}</p>
+                    <p className="mt-1 text-xs font-semibold leading-5 text-[var(--brand-strong)]">{t.journeyCurrent}</p>
                   ) : null}
                 </div>
               </li>
@@ -960,85 +963,91 @@ export function OrientationPersonalizedWriterCard({
       <section
         id="orientation-main-priority"
         aria-labelledby="orientation-main-priority-title"
-        className="orientation-chapter relative mt-6 overflow-hidden rounded-[var(--radius-panel)] bg-[var(--brand-soft)] px-5 py-6 sm:px-7 sm:py-7"
+        className="orientation-chapter relative mt-7 overflow-hidden rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] px-5 py-6 shadow-[var(--shadow-card)] sm:px-7 sm:py-7"
       >
         <div aria-hidden="true" className="absolute inset-y-0 start-0 w-1 bg-[var(--brand)]" />
-        <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--brand-strong)]">{t.priority}</p>
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(18rem,0.8fr)] lg:items-start lg:gap-10">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--brand-strong)]">{t.priority}</p>
 
-        {content.languagePlan.show && content.languagePlan.nextLevel ? (() => {
-          const simplePriority = simpleLanguagePriority(
-            locale,
-            content.languagePlan.currentLevel,
-            content.languagePlan.nextLevel,
-          );
-          return simplePriority ? (
-            <>
-              <h4 id="orientation-main-priority-title" className="mt-2 max-w-3xl text-2xl font-semibold tracking-tight sm:text-3xl">
-                {simplePriority.title}
-              </h4>
-              <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">{simplePriority.text}</p>
-            </>
-          ) : null;
-        })() : (
-          <>
-            <h4 id="orientation-main-priority-title" className="mt-2 max-w-3xl text-2xl font-semibold tracking-tight sm:text-3xl">
-              {content.mainPriority.title}
-            </h4>
-            <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">{content.mainPriority.text}</p>
-          </>
-        )}
+            {content.languagePlan.show && content.languagePlan.nextLevel ? (() => {
+              const simplePriority = simpleLanguagePriority(
+                locale,
+                content.languagePlan.currentLevel,
+                content.languagePlan.nextLevel,
+              );
+              return simplePriority ? (
+                <>
+                  <h4 id="orientation-main-priority-title" className="mt-2 max-w-3xl text-2xl font-semibold tracking-tight sm:text-3xl">
+                    {simplePriority.title}
+                  </h4>
+                  <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">{simplePriority.text}</p>
+                </>
+              ) : null;
+            })() : (
+              <>
+                <h4 id="orientation-main-priority-title" className="mt-2 max-w-3xl text-2xl font-semibold tracking-tight sm:text-3xl">
+                  {content.mainPriority.title}
+                </h4>
+                <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">{content.mainPriority.text}</p>
+              </>
+            )}
 
-        {content.languagePlan.show ? (
-          <div className="mt-4 flex flex-wrap items-center gap-2">
-            <span className="text-xs font-semibold text-[var(--muted)]">{t.language}</span>
-            {content.languagePlan.currentLevel ? (
-              <span className="rounded-full bg-[var(--surface)] px-3 py-1 text-xs font-semibold ring-1 ring-inset ring-[var(--border)]">
-                {content.languagePlan.currentLevel}
-              </span>
-            ) : null}
-            {content.languagePlan.currentLevel && content.languagePlan.nextLevel ? (
-              <span aria-hidden="true" className="text-[var(--muted)]">→</span>
-            ) : null}
-            {content.languagePlan.nextLevel ? (
-              <span className="rounded-full bg-[var(--surface)] px-3 py-1 text-xs font-bold text-[var(--brand-strong)] ring-1 ring-inset ring-[var(--brand-border)]">
-                {content.languagePlan.nextLevel}
-              </span>
+            {content.languagePlan.show ? (
+              <div className="mt-5 flex flex-wrap items-center gap-2">
+                <span className="text-xs font-semibold text-[var(--muted)]">{t.language}</span>
+                {content.languagePlan.currentLevel ? (
+                  <span className="rounded-full bg-[var(--surface-subtle)] px-3 py-1 text-xs font-semibold ring-1 ring-inset ring-[var(--border)]">
+                    {content.languagePlan.currentLevel}
+                  </span>
+                ) : null}
+                {content.languagePlan.currentLevel && content.languagePlan.nextLevel ? (
+                  <span aria-hidden="true" className="text-[var(--muted)]">→</span>
+                ) : null}
+                {content.languagePlan.nextLevel ? (
+                  <span className="rounded-full bg-[var(--brand-soft)] px-3 py-1 text-xs font-bold text-[var(--brand-strong)]">
+                    {content.languagePlan.nextLevel}
+                  </span>
+                ) : null}
+              </div>
+            ) : (
+              <p className="mt-5 text-sm font-semibold leading-6">{content.mainPriority.nextStep}</p>
+            )}
+
+            {content.languagePlan.show && languageChoices.length ? (
+              <details className="mt-6 border-t border-[var(--border)] pt-4">
+                <summary className="cursor-pointer text-sm font-semibold text-[var(--foreground)]">{t.languagePaths}</summary>
+                <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">{t.languageIntro}</p>
+                <ul className="mt-3 space-y-2">
+                  {languageChoices.map((choice) => (
+                    <li key={choice.title} className="border-s-2 border-[var(--accent)] ps-3">
+                      <p className="text-sm font-semibold">{choice.title}</p>
+                      {choice.text ? <p className="mt-1 text-xs leading-5 text-[var(--muted)]">{choice.text}</p> : null}
+                    </li>
+                  ))}
+                </ul>
+              </details>
             ) : null}
           </div>
-        ) : (
-          <p className="mt-4 text-sm font-semibold leading-6">{content.mainPriority.nextStep}</p>
-        )}
 
-        <div className="mt-6 grid gap-5 border-t border-[var(--brand-border)] pt-5 md:grid-cols-2 md:divide-x md:divide-[var(--brand-border)]">
-          <div className="md:pe-6">
-            <p className="text-xs font-bold uppercase tracking-[0.1em] text-[var(--brand-strong)]">{t.roleYou}</p>
-            <p className="mt-2 text-base font-semibold leading-6 text-[var(--foreground)]">{roleTexts[0]}</p>
-          </div>
-          <div className="md:ps-6">
-            <p className="text-xs font-bold uppercase tracking-[0.1em] text-[var(--accent-strong)]">{t.roleCampus}</p>
-            <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{t.priorityParallelText}</p>
-          </div>
+          <aside className="rounded-[var(--radius-control)] bg-[var(--surface-subtle)] p-5">
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-1">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-[0.1em] text-[var(--brand-strong)]">{t.roleYou}</p>
+                <p className="mt-2 text-base font-semibold leading-6 text-[var(--foreground)]">{roleTexts[0]}</p>
+              </div>
+              <div className="border-t border-[var(--border)] pt-5 sm:border-s sm:border-t-0 sm:ps-5 sm:pt-0 lg:border-s-0 lg:border-t lg:ps-0 lg:pt-5">
+                <p className="text-xs font-bold uppercase tracking-[0.1em] text-[var(--accent-strong)]">{t.roleCampus}</p>
+                <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{t.priorityParallelText}</p>
+              </div>
+            </div>
+          </aside>
         </div>
-
-        {content.languagePlan.show && languageChoices.length ? (
-          <details className="mt-5 border-t border-[var(--brand-border)] pt-4">
-            <summary className="cursor-pointer text-sm font-semibold text-[var(--foreground)]">{t.languagePaths}</summary>
-            <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">{t.languageIntro}</p>
-            <ul className="mt-3 space-y-2">
-              {languageChoices.map((choice) => (
-                <li key={choice.title} className="border-s-2 border-[var(--accent)] ps-3">
-                  <p className="text-sm font-semibold">{choice.title}</p>
-                  {choice.text ? <p className="mt-1 text-xs leading-5 text-[var(--muted)]">{choice.text}</p> : null}
-                </li>
-              ))}
-            </ul>
-          </details>
-        ) : null}
       </section>
 
       <section
         aria-labelledby="orientation-premium-options"
-        className="orientation-chapter mt-7 px-2 pt-2 sm:px-4"
+        className="orientation-chapter mt-8 px-2 sm:px-4"
       >
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
@@ -1063,18 +1072,21 @@ export function OrientationPersonalizedWriterCard({
           };
 
           return (
-            <article className="mt-5 border-y border-[var(--border)] py-5 sm:py-6">
-              <div className="grid gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(18rem,0.85fr)] lg:gap-10">
-                <div>
+            <article className="relative mt-5 overflow-hidden rounded-[var(--radius-panel)] bg-[var(--foreground)] text-white shadow-[var(--shadow-card)]">
+              <div aria-hidden="true" className="absolute inset-y-0 start-0 w-1 bg-[var(--brand)]" />
+              <div aria-hidden="true" className="absolute -end-16 -top-16 size-56 rounded-full border border-white/[0.06]" />
+
+              <div className="relative grid gap-0 lg:grid-cols-[minmax(0,1.15fr)_minmax(19rem,0.85fr)]">
+                <div className="px-5 py-6 sm:px-7 sm:py-7 lg:px-8 lg:py-8">
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div className="min-w-0">
-                      <p className="text-xs font-bold text-[var(--brand-strong)]">
-                        {String(featuredOption.position).padStart(2, "0")}
+                      <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--accent)]">
+                        {String(featuredOption.position).padStart(2, "0")} · {t.featuredOption}
                       </p>
-                      <h5 className="mt-1 text-2xl font-semibold leading-tight tracking-tight sm:text-3xl">
+                      <h5 className="mt-2 text-3xl font-semibold leading-tight tracking-tight sm:text-[2.2rem]">
                         {featuredOption.programme}
                       </h5>
-                      <p className="mt-1 text-sm leading-6 text-[var(--muted)]">
+                      <p className="mt-1 text-sm leading-6 text-white/[0.66]">
                         {featuredOption.institution}{featuredOption.city ? " · " + featuredOption.city : ""}
                       </p>
                     </div>
@@ -1086,39 +1098,39 @@ export function OrientationPersonalizedWriterCard({
                   </div>
 
                   {outlook.level ? (
-                    <div className="mt-5 border-s-4 border-[var(--accent)] ps-4">
-                      <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-[var(--accent-strong)]">
+                    <div className="mt-6 max-w-md rounded-[var(--radius-control)] bg-white/[0.08] px-4 py-3.5 ring-1 ring-inset ring-white/[0.08]">
+                      <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-[var(--accent)]">
                         {t.outlookEyebrow}
                       </p>
-                      <p className="mt-1 text-lg font-bold leading-6 text-[var(--foreground)]">
+                      <p className="mt-1 text-xl font-bold leading-6 text-white">
                         {outlook.level === "strong" ? t.outlookStrong : t.outlookGood}
                       </p>
                     </div>
                   ) : null}
 
-                  <div className="mt-5">
-                    <p className="text-xs font-bold uppercase tracking-[0.08em] text-[var(--muted)]">{t.why}</p>
-                    <p className="mt-2 text-sm leading-6 text-[var(--foreground)]">{outlook.cleanWhy}</p>
+                  <div className="mt-6 max-w-2xl">
+                    <p className="text-xs font-bold uppercase tracking-[0.08em] text-white/[0.52]">{t.why}</p>
+                    <p className="mt-2 text-sm leading-6 text-white/[0.9]">{outlook.cleanWhy}</p>
                   </div>
 
-                  <details className="mt-5 border-t border-[var(--border)] pt-4">
-                    <summary className="cursor-pointer text-xs font-semibold text-[var(--brand-strong)]">{t.checkingDetails}</summary>
-                    <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{featuredOption.verificationNote}</p>
+                  <details className="mt-6 border-t border-white/[0.12] pt-4">
+                    <summary className="cursor-pointer text-xs font-semibold text-[var(--accent)]">{t.checkingDetails}</summary>
+                    <p className="mt-2 text-sm leading-6 text-white/[0.66]">{featuredOption.verificationNote}</p>
                   </details>
                 </div>
 
-                <div className="lg:border-s lg:border-[var(--border)] lg:ps-7">
-                  <p className="text-xs font-bold uppercase tracking-[0.08em] text-[var(--accent-strong)]">{t.confirmed}</p>
+                <aside className="border-t border-white/[0.1] bg-white/[0.05] px-5 py-6 sm:px-7 lg:border-s lg:border-t-0 lg:px-7 lg:py-8">
+                  <p className="text-xs font-bold uppercase tracking-[0.08em] text-[var(--accent)]">{t.confirmed}</p>
                   {facts.length ? (
-                    <dl className="mt-3 grid gap-x-5 sm:grid-cols-2">
+                    <dl className="mt-3 grid gap-x-5 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
                       {facts.map((fact) => {
                         const parts = decisionFactParts(fact, locale);
                         return (
-                          <div key={fact.field} className="border-b border-[var(--border)] py-3">
-                            <dt className="text-[10px] font-bold uppercase tracking-[0.06em] text-[var(--accent-strong)]">
+                          <div key={fact.field} className="border-b border-white/[0.1] py-3.5">
+                            <dt className="text-[10px] font-bold uppercase tracking-[0.06em] text-white/[0.48]">
                               {parts.label}
                             </dt>
-                            <dd className="mt-1 break-words text-sm font-semibold leading-5 text-[var(--foreground)]">
+                            <dd className="mt-1 break-words text-sm font-semibold leading-5 text-white">
                               {parts.value}
                             </dd>
                           </div>
@@ -1126,16 +1138,16 @@ export function OrientationPersonalizedWriterCard({
                       })}
                     </dl>
                   ) : (
-                    <p className="mt-3 text-sm leading-6 text-[var(--muted)]">{t.noFacts}</p>
+                    <p className="mt-3 text-sm leading-6 text-white/[0.65]">{t.noFacts}</p>
                   )}
-                </div>
+                </aside>
               </div>
             </article>
           );
         })() : null}
 
         {otherOptions.length ? (
-          <details className="mt-5 border-b border-[var(--border)] pb-5">
+          <details className="mt-5 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface)] px-4 py-4 sm:px-5">
             <summary className="cursor-pointer text-base font-semibold text-[var(--foreground)]">
               {t.otherOptions} · {otherOptions.length}
             </summary>
@@ -1188,19 +1200,26 @@ export function OrientationPersonalizedWriterCard({
         ) : null}
       </section>
 
-      <section className="orientation-chapter relative mt-7 overflow-hidden rounded-[var(--radius-panel)] bg-[var(--foreground)] px-5 py-6 text-white sm:px-7 sm:py-7">
-        <div aria-hidden="true" className="absolute inset-y-0 start-0 w-1 bg-[var(--brand)]" />
-        <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--accent)]">{t.closingEyebrow}</p>
-        <h4 className="mt-2 max-w-3xl text-2xl font-semibold tracking-tight sm:text-3xl">{t.humanTitle}</h4>
-        <p className="mt-2 max-w-3xl text-sm leading-6 text-white/[0.78]">{t.humanText}</p>
-        <div className="mt-5 border-t border-white/[0.12] pt-4">
-          <p className="text-xs font-bold uppercase tracking-[0.1em] text-[var(--accent)]">{t.togetherLabel}</p>
-          <p className="mt-2 max-w-3xl text-sm font-semibold leading-6 text-white/[0.9]">{t.togetherText}</p>
+      <section className="orientation-chapter relative mt-8 overflow-hidden rounded-[var(--radius-panel)] bg-[var(--surface-subtle)] px-5 py-6 sm:px-7 sm:py-7">
+        <div aria-hidden="true" className="absolute inset-y-0 start-0 w-1 bg-[var(--accent)]" />
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(16rem,0.85fr)] lg:items-center lg:gap-10">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--accent-strong)]">{t.closingEyebrow}</p>
+            <h4 className="mt-2 max-w-3xl text-2xl font-semibold tracking-tight sm:text-3xl">{t.humanTitle}</h4>
+            <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">{t.humanText}</p>
+          </div>
+
+          <div className="border-t border-[var(--border)] pt-5 lg:border-s lg:border-t-0 lg:ps-7 lg:pt-0">
+            <p className="text-xs font-bold uppercase tracking-[0.1em] text-[var(--brand-strong)]">{t.togetherLabel}</p>
+            <p className="mt-2 text-sm font-semibold leading-6 text-[var(--foreground)]">{t.togetherText}</p>
+            <p className="mt-4 text-xs font-semibold text-[var(--muted)]">Campus Allemagne</p>
+          </div>
         </div>
+
         {showCta ? (
           <a
             href="#orientation-prospect-capture"
-            className="mt-5 inline-flex min-h-11 items-center justify-center rounded-[var(--radius-control)] bg-[var(--brand)] px-5 py-2.5 text-sm font-bold text-white transition hover:bg-[var(--brand-strong)]"
+            className="mt-6 inline-flex min-h-11 items-center justify-center rounded-[var(--radius-control)] bg-[var(--brand)] px-5 py-2.5 text-sm font-bold text-white transition hover:bg-[var(--brand-strong)]"
           >
             {t.humanCta}
           </a>
