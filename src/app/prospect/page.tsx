@@ -150,29 +150,33 @@ export default async function ProspectDashboardPage() {
 
   return (
     <main className="space-y-6">
-      <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 sm:p-7">
-        <p className="text-[0.68rem] font-bold uppercase tracking-[0.15em] text-[var(--brand)]">
-          {t.eyebrow}
-        </p>
-        <h1 className="mt-2 max-w-3xl text-3xl font-bold tracking-[-0.03em] text-[var(--foreground)] sm:text-4xl">
-          {t.title}
-        </h1>
-        <p className="mt-3 max-w-3xl text-sm leading-6 text-[var(--muted)] sm:text-base">
-          {t.subtitle}
-        </p>
+      <section className="relative overflow-hidden rounded-[var(--radius-panel)] border border-slate-800 bg-[var(--foreground)] p-5 text-white shadow-[var(--shadow-soft)] sm:p-7">
+        <div className="pointer-events-none absolute -right-16 -top-24 size-64 rounded-full bg-[var(--brand)]/12 blur-3xl" aria-hidden="true" />
+        <div className="pointer-events-none absolute -bottom-28 left-1/3 size-64 rounded-full bg-amber-300/10 blur-3xl" aria-hidden="true" />
+        <div className="relative">
+          <p className="text-[0.68rem] font-bold uppercase tracking-[0.16em] text-amber-300">
+            {t.eyebrow}
+          </p>
+          <h1 className="mt-2 max-w-3xl text-3xl font-bold tracking-[-0.035em] text-white sm:text-4xl">
+            {t.title}
+          </h1>
+          <p className="mt-3 max-w-3xl text-sm leading-6 text-white/70 sm:text-base">
+            {t.subtitle}
+          </p>
 
-        {facts.length ? (
-          <div className="mt-5 flex flex-wrap gap-2">
-            {facts.map((fact) => (
-              <span
-                key={fact}
-                className="rounded-full border border-[var(--border)] bg-[var(--surface-subtle)] px-3 py-1.5 text-xs font-semibold text-[var(--foreground)]"
-              >
-                <bdi dir="auto">{fact}</bdi>
-              </span>
-            ))}
-          </div>
-        ) : null}
+          {facts.length ? (
+            <div className="mt-5 flex flex-wrap gap-2">
+              {facts.map((fact) => (
+                <span
+                  key={fact}
+                  className="rounded-full border border-white/15 bg-white/8 px-3 py-1.5 text-xs font-semibold text-white"
+                >
+                  <bdi dir="auto">{fact}</bdi>
+                </span>
+              ))}
+            </div>
+          ) : null}
+        </div>
       </section>
 
       <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 sm:p-6">
@@ -195,8 +199,8 @@ export default async function ProspectDashboardPage() {
         />
       </section>
 
-      <div className="grid gap-5 xl:grid-cols-3">
-        <section className="rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--brand-soft)] p-5">
+      <div className="grid gap-4 xl:grid-cols-[1.1fr_1fr_1fr]">
+        <section className="rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--brand-soft)] p-5 shadow-[var(--shadow-card)]">
           <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--brand)]">
             {t.nextAction}
           </p>
@@ -205,41 +209,49 @@ export default async function ProspectDashboardPage() {
           </h2>
           <Link
             href={action.href}
-            className="mt-5 inline-flex min-h-11 items-center rounded-[var(--radius-control)] bg-[var(--brand)] px-4 text-sm font-bold text-white"
+            className="mt-5 inline-flex min-h-11 items-center rounded-[var(--radius-control)] bg-[var(--brand)] px-4 text-sm font-bold text-white transition hover:bg-[var(--brand-strong)]"
           >
             {action.label}
           </Link>
         </section>
 
-        <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5">
-          <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--muted)]">
-            {t.campusAction}
-          </p>
+        <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[var(--shadow-card)]">
+          <div className="flex items-center gap-2">
+            <span className="size-2 rounded-full bg-amber-400" aria-hidden="true" />
+            <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--muted)]">
+              {t.campusAction}
+            </p>
+          </div>
           <p className="mt-3 text-sm leading-6 text-[var(--foreground)]">
             {campusWork(state, locale)}
           </p>
         </section>
 
-        <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5">
-          <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--muted)]">
-            {t.proposal}
-          </p>
+        <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[var(--shadow-card)]">
+          <div className="flex items-center gap-2">
+            <span className="size-2 rounded-full bg-[var(--brand)]" aria-hidden="true" />
+            <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--muted)]">
+              {t.proposal}
+            </p>
+          </div>
           <p className="mt-2 text-xl font-bold text-[var(--foreground)]">
             {proposalStatus(state.intake, t)}
           </p>
           <Link
             href="/prospect/proposal"
-            className="mt-4 inline-flex text-sm font-semibold text-[var(--brand-strong)] underline underline-offset-4"
+            className="mt-4 inline-flex text-sm font-semibold text-[var(--brand-strong)] underline decoration-[var(--brand-border)] underline-offset-4"
           >
             {t.viewProposal}
           </Link>
         </section>
       </div>
 
-      <ProspectQualificationSummary
-        qualification={state.qualification}
-        copy={qualificationCopy}
-      />
+      {state.qualification ? (
+        <ProspectQualificationSummary
+          qualification={state.qualification}
+          copy={qualificationCopy}
+        />
+      ) : null}
 
       <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 sm:p-6">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
