@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { ProspectPageHero } from "@/components/prospect/ProspectPageHero";
 import { prospectHubCopy } from "@/content/prospect-hub-copy";
 import { studentFinanceCopy } from "@/content/student-finance-copy";
 import { catalogVerificationCutoff } from "@/lib/catalog-freshness";
@@ -135,11 +136,7 @@ export default async function ProspectSolutionsPage() {
 
   return (
     <main className="space-y-8">
-      <header className="overflow-hidden rounded-[var(--radius-panel)] border border-slate-800 bg-[var(--foreground)] px-5 py-7 text-white shadow-[var(--shadow-soft)] sm:px-7 sm:py-8">
-        <p className="text-xs font-bold uppercase tracking-[0.16em] text-amber-300">{t.eyebrow}</p>
-        <h1 className="mt-2 text-3xl font-bold tracking-[-0.03em] sm:text-4xl">{t.title}</h1>
-        <p className="mt-3 max-w-4xl text-sm leading-6 text-white/72 sm:text-base">{t.subtitle}</p>
-      </header>
+      <ProspectPageHero eyebrow={t.eyebrow} title={t.title} subtitle={t.subtitle} />
 
       <section aria-labelledby="prospect-language-solutions">
         <div className="mb-4">
