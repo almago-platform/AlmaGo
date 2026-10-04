@@ -9,6 +9,7 @@ import type {
   OrientationDiscoveryResult,
 } from "@/lib/orientation-engine/discovery/types";
 import type {
+  OrientationVerificationFact,
   OrientationVerificationServiceResult,
 } from "@/lib/orientation-engine/verification/types";
 import type {
@@ -19,6 +20,10 @@ import type {
   OrientationHumanReviewBundle,
   OrientationHumanReviewPipelineStatus,
 } from "@/lib/orientation-engine/review/types";
+import type {
+  OrientationPublicPersonalizedFact,
+  OrientationPublicPersonalizedResult,
+} from "@/lib/orientation-engine/result/types";
 
 function stableJson(value: unknown): unknown {
   if (Array.isArray(value)) return value.map(stableJson);
@@ -61,6 +66,94 @@ export function buildOrientationHumanReviewProfileFingerprint(
       masterSubjectCredits: profile.masterSubjectCredits || {},
     })))
     .digest("hex");
+}
+
+function publicReviewFact(
+  fact: OrientationVerificationFact,
+): OrientationPublicPersonalizedFact | null {
+  if (fact.status === "unknown" || fact.value === null) return null;
+
+  return {
+    field: fact.field,
+    status: fact.status,
+    value: fact.value,
+    sourceUrl: fact.sourceUrl,
+    sourceKind: fact.sourceKind,
+    verifiedAt: fact.verifiedAt,
+  };
+}
+
+function validReviewBundleShape(value: unknown): value is OrientationHumanReviewBundle {
+  if (!value || typeof value !== "object") return false;
+  const record = value as Record<string, unknown>;
+  if (record.version !== "orientation_v4_human_review_v1") return false;
+
+  const writer = record.writer && typeof record.writer === "object"
+    ? record.writer as Record<string, unknown>
+    : null;
+  const content = writer?.content && typeof writer.content === "object"
+    ? writer.content as Record<string, unknown>
+    : null;
+  const verification = record.verification && typeof record.verification === "object"
+    ? record.verification as Record<string, unknown>
+    : null;
+  const selection = record.selection && typeof record.selection === "object"
+    ? record.selection as Record<string, unknown>
+    : null;
+
+  return Boolean(
+    content
+    && typeof content.opening === "string"
+    && typeof content.projectStatus === "string"
+    && Array.isArray(content.studyOptions)
+    && verification
+    && Array.isArray(verification.programmes)
+    && selection
+    && typeof selection.status === "string"
+    && Array.isArray(selection.selected),
+  );
+}
+
+export function projectOrientationHumanReviewBundleToPublicResult(
+  value: unknown,
+  reviewId: string | null = null,
+): OrientationPublicPersonalizedResult | null {
+  if (!validReviewBundleShape(value)) return null;
+
+  const bundle = value;
+  const verificationByKey = new Map(
+    bundle.verification.programmes.map((item) => [item.candidateKey, item.verification]),
+  );
+
+  const selected = [...bundle.selection.selected]
+    .sort((a, b) => a.position - b.position)
+    .flatMap((item) => {
+      const verification = verificationByKey.get(item.candidateKey);
+      if (!verification) return [];
+
+      return [{
+        optionId: `option_${item.position}`,
+        position: item.position,
+        institution: verification.candidate.institution,
+        programme: verification.candidate.programme,
+        city: verification.candidate.city,
+        overallStatus: verification.overallStatus,
+        facts: verification.facts
+          .map(publicReviewFact)
+          .filter((fact): fact is OrientationPublicPersonalizedFact => Boolean(fact)),
+      }];
+    });
+
+  return {
+    status: bundle.selection.status,
+    reviewId,
+    content: bundle.writer.content,
+    selected,
+    humanReview: {
+      mode: "post_result_audit",
+      blocksResult: false,
+    },
+  };
 }
 
 function pipelineStatus(
