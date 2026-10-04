@@ -95,6 +95,16 @@ export async function POST(request: Request) {
     );
   }
 
+  if (["payment_pending", "paid_pending_validation"].includes(intakeCase?.status || "")) {
+    return NextResponse.json(
+      {
+        error: "Votre proposition a déjà été acceptée. Terminez d’abord le paiement en cours avant de modifier l’orientation.",
+        code: "commercial_flow_in_progress",
+      },
+      { status: 409 },
+    );
+  }
+
   if (intakeCase?.status === "procedure_created") {
     return NextResponse.json(
       {
