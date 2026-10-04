@@ -13,7 +13,6 @@ const prospectUpdate = read("src/app/api/prospect/orientation/route.ts");
 const adminReview = read("src/app/api/admin/prospects/qualification-review/route.ts");
 const prospectPage = read("src/app/prospect/page.tsx");
 const prospectHub = read("src/lib/prospect/hub.ts");
-const prospectHub = read("src/lib/prospect/hub.ts");
 const prospectQualificationSummary = read("src/components/prospect/ProspectQualificationSummary.tsx");
 const prospectCopy = read("src/content/prospect-qualification-copy.ts");
 const historyMigration = read("supabase/migrations/0036_phase2_prospect_qualification_history.sql");
