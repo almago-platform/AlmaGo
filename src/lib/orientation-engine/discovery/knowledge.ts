@@ -610,18 +610,19 @@ export async function persistOrientationDiscoveryResearch(
     upsertedRows.map((row) => [String(row.dedupe_key), String(row.id)]),
   );
 
-  const entries = enrichedCandidates
-    .map((candidate) => {
-      const dedupeKey = buildOrientationResearchProgrammeDedupeKey(candidate);
-      const researchProgramId = idByKey.get(dedupeKey);
-      if (!researchProgramId) return null;
-      return {
-        researchProgramId,
-        dedupeKey,
-        candidate,
-      } satisfies OrientationKnowledgeEntry;
-    })
-    .filter((entry): entry is OrientationKnowledgeEntry => Boolean(entry));
+  const entries: OrientationKnowledgeEntry[] = [];
+
+  for (const candidate of enrichedCandidates) {
+    const dedupeKey = buildOrientationResearchProgrammeDedupeKey(candidate);
+    const researchProgramId = idByKey.get(dedupeKey);
+    if (!researchProgramId) continue;
+
+    entries.push({
+      researchProgramId,
+      dedupeKey,
+      candidate,
+    });
+  }
 
   await insertDiscoveryRun({
     plan,
