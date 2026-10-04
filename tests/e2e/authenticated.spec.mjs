@@ -26,6 +26,13 @@ test.describe("authenticated role journeys", () => {
       data: {},
     });
     expect(deniedApi.status()).toBe(403);
+
+    const deniedProcedure = await page.request.get(
+      new URL("/admin/students/00000000-0000-0000-0000-000000000000/procedure", page.url()).toString(),
+      { maxRedirects: 0 },
+    );
+    expect([303, 307, 308]).toContain(deniedProcedure.status());
+    expect(deniedProcedure.headers().location || "").toMatch(/\/unauthorized$/);
   });
 
   test("admin account passes server-side page and API role guards", async ({ page }) => {
