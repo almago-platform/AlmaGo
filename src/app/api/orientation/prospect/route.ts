@@ -334,6 +334,8 @@ export async function POST(request: Request) {
       deliveryMetadata.delivery_provider = delivery.provider;
       deliveryMetadata.delivery_message_id = delivery.messageId;
       deliveryMetadata.delivered_at = new Date().toISOString();
+    } else if (delivery.status === "failed") {
+      deliveryMetadata.delivery_provider = delivery.provider;
     }
 
     await supabase
