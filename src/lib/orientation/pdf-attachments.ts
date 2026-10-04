@@ -399,7 +399,6 @@ class PdfLayout {
 function buildPdf(pages: string[][]) {
   const objects = new Map<number, Buffer>();
   const pageIds: number[] = [];
-  const contentIds: number[] = [];
 
   objects.set(1, Buffer.from("<< /Type /Catalog /Pages 2 0 R >>", "ascii"));
   objects.set(3, Buffer.from("<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>", "ascii"));
@@ -410,7 +409,6 @@ function buildPdf(pages: string[][]) {
     const pageId = nextId++;
     const contentId = nextId++;
     pageIds.push(pageId);
-    contentIds.push(contentId);
 
     const stream = Buffer.from(commands.join("\n"), "ascii");
     objects.set(
@@ -647,7 +645,7 @@ function buildOrientationPdf(input: {
     gapAfter: 10,
   });
 
-  if (input.personalized) {
+  if (input.personalized && input.locale !== "ar") {
     const content = input.personalized.content;
 
     layout.wrapped(content.opening, MARGIN_X, PAGE_WIDTH - MARGIN_X * 2, 10, {
