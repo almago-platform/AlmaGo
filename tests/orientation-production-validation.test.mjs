@@ -136,6 +136,22 @@ test("F fixed-city profiles reserve discovery budget for the requested city", ()
   assert.ok(plan.searchQueries.length <= 8);
 });
 
+test("F Bachelor Informatique + Aachen uses exact city, nearby, then Germany in the first query budget", () => {
+  const plan = buildOrientationDiscoveryPlan(profile({
+    targetDegree: "Bachelor",
+    targetField: "Informatique",
+    engineeringSpecialty: "",
+    preferredCities: ["Aachen"],
+  }));
+
+  assert.equal(plan.status, "ready");
+  assert.deepEqual(plan.searchQueries.slice(0, 3), [
+    "Computer Science Bachelor Aachen official university programme",
+    "Computer Science Bachelor near Aachen official university programme",
+    "Computer Science Bachelor Germany official university programme",
+  ]);
+});
+
 test("F programme-family coverage includes undecided engineering, Automotive, Computer Engineering and Architecture", () => {
   const undecided = buildOrientationDiscoveryPlan(profile({
     engineeringSpecialty: "undecided",
