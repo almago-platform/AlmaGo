@@ -1,6 +1,9 @@
 import { BrandLogo } from "@/components/brand/BrandLogo";
 import type { Locale } from "@/lib/i18n";
-import type { PublicOrientationAnswers } from "@/lib/orientation/public";
+import type {
+  PublicOrientationAnswers,
+  PublicOrientationIdentity,
+} from "@/lib/orientation/public";
 import type {
   OrientationPublicPersonalizedFact,
   OrientationPublicPersonalizedResult,
@@ -426,10 +429,12 @@ export function OrientationOnePagePrintReport({
   answers,
   locale,
   personalized = null,
+  identity = null,
 }: {
   answers: PublicOrientationAnswers;
   locale: Locale;
   personalized?: OrientationPublicPersonalizedResult | null;
+  identity?: PublicOrientationIdentity | null;
 }) {
   const copy = labels[locale] as (typeof labels)["fr"];
   const guidance = buildUniversalOrientationGuidance(answers, locale);
@@ -476,7 +481,12 @@ export function OrientationOnePagePrintReport({
     : answers.studyLanguage === "Allemand et anglais"
       ? `${studyLanguage} · DE ${german} · EN ${english}`
       : `${studyLanguage} · ${german}`;
+  const identityName = identity
+    ? [identity.firstName, identity.lastName].filter(Boolean).join(" ")
+    : "";
   const profileLine = [
+    identityName || null,
+    identity?.email || null,
     educationProfile,
     `${degree} · ${field}`,
     specialty,
@@ -529,6 +539,7 @@ export function OrientationOnePagePrintReport({
           <div className="orientation-pdf-header-copy">
             <p className="orientation-pdf-kicker">{premium.report}</p>
             <p className="orientation-pdf-date">
+              {identityName ? <>{identityName} · {identity?.email} · </> : null}
               {premium.generated} · {new Intl.DateTimeFormat(locale, { day: "2-digit", month: "2-digit", year: "numeric" }).format(new Date())}
             </p>
           </div>
