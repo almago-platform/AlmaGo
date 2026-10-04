@@ -611,7 +611,7 @@ function semesterSummary(terms: string[] | null | undefined, locale: keyof typeo
   return labels.unknown;
 }
 
-function programmeDeadline(program: Program, locale: Parameters<typeof formatDeadline>[1]) {
+function programmeDeadline(program: Program, locale: keyof typeof programCardCopy) {
   const candidates = [program.winter_deadline, program.summer_deadline].filter((value): value is string => Boolean(value));
   if (!candidates.length) return studentOrientationCopy[locale].panel.officialCheck;
   const today = new Date().toISOString().slice(0, 10);
