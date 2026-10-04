@@ -44,10 +44,26 @@ type SmtpSocket = Socket | TLSSocket;
 export type TransactionalEmailResult =
   | { status: "sent"; provider: "resend" | "smtp"; messageId: string }
   | { status: "unavailable" }
-  | { status: "failed" };
+  | {
+      status: "failed";
+      provider: "resend" | "smtp";
+      httpStatus?: number;
+      errorCode?: string;
+      detail?: string;
+    };
 
 function enabled(value: string | undefined) {
   return ["1", "true", "yes", "on"].includes(value?.trim().toLowerCase() || "");
+}
+
+function safeProviderErrorDetail(value: unknown) {
+  if (typeof value !== "string") return undefined;
+  const normalized = value
+    .replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi, "[redacted-email]")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 500);
+  return normalized || undefined;
 }
 
 function parseSmtpPort(value: string | undefined) {
@@ -429,8 +445,14 @@ async function sendWithSmtp(
       provider: "smtp",
       messageId: mime.messageId,
     };
-  } catch {
-    return { status: "failed" };
+  } catch (error) {
+    return {
+      status: "failed",
+      provider: "smtp",
+      detail: safeProviderErrorDetail(
+        error instanceof Error ? error.message : "SMTP delivery failed.",
+      ),
+    };
   } finally {
     socket?.end();
     socket?.destroy();
@@ -467,11 +489,29 @@ async function sendWithResend(
       }),
     });
 
-    if (!response.ok) return { status: "failed" };
+    const payload = await response.json().catch(() => null) as {
+      id?: unknown;
+      name?: unknown;
+      message?: unknown;
+    } | null;
 
-    const payload = await response.json().catch(() => null) as { id?: unknown } | null;
+    if (!response.ok) {
+      return {
+        status: "failed",
+        provider: "resend",
+        httpStatus: response.status,
+        errorCode: safeProviderErrorDetail(payload?.name),
+        detail: safeProviderErrorDetail(payload?.message),
+      };
+    }
+
     if (!payload || typeof payload.id !== "string" || !payload.id) {
-      return { status: "failed" };
+      return {
+        status: "failed",
+        provider: "resend",
+        httpStatus: response.status,
+        errorCode: "invalid_provider_response",
+      };
     }
 
     return {
@@ -479,8 +519,14 @@ async function sendWithResend(
       provider: "resend",
       messageId: payload.id,
     };
-  } catch {
-    return { status: "failed" };
+  } catch (error) {
+    return {
+      status: "failed",
+      provider: "resend",
+      detail: safeProviderErrorDetail(
+        error instanceof Error ? error.message : "Resend delivery failed.",
+      ),
+    };
   }
 }
 
