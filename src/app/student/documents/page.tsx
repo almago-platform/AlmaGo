@@ -1,4 +1,6 @@
-import { StudentJourneyHeader } from "@/components/student/StudentJourneyHeader";
+import Link from "next/link";
+import { DossierHeader } from "@/components/product/DossierHeader";
+import { NextActionPanel } from "@/components/product/NextActionPanel";
 import { redirect } from "next/navigation";
 import { DocumentsPanel } from "@/components/student/DocumentsPanel";
 import { ButtonLink } from "@/components/ui/ButtonLink";
@@ -33,7 +35,7 @@ export default async function StudentDocumentsPage() {
   if (profileError) return <DocumentsUnavailable copy={t} />;
   if (!profile?.onboarding_completed) redirect("/student/onboarding");
 
-  const [documentsResult, historyResult, evidenceResult] = await Promise.all([
+  const [documentsResult, historyResult, evidenceResult, requirementsResult] = await Promise.all([
     supabase
       .from("documents")
       .select("id,category,original_filename,size_bytes,status,admin_comment,created_at")
@@ -48,6 +50,11 @@ export default async function StudentDocumentsPage() {
       .from("academic_evidence")
       .select("id,student_id,evidence_type,institution,evidence_date,origin,verification_status,document_id,verified_at,created_at,updated_at")
       .order("updated_at", { ascending: false }),
+    supabase
+      .from("student_document_requirements")
+      .select("id,label,status,requested_from_student,student_request_reason,student_request_due_date")
+      .eq("student_id", user.id)
+      .order("created_at", { ascending: true }),
   ]);
 
   if (documentsResult.error) return <DocumentsUnavailable copy={t} />;
@@ -64,14 +71,46 @@ export default async function StudentDocumentsPage() {
     } as AcademicEvidenceStoreRow),
   );
 
+
+  const requirements = requirementsResult.data || [];
+  const requestedRequirement = requirements.find((item) =>
+    item.requested_from_student && ["requested", "replacement_required"].includes(item.status),
+  );
+  const approvedCount = (documentsResult.data || []).filter((item) => item.status === "approved").length;
+  const reviewCount = (documentsResult.data || []).filter((item) => ["pending", "reviewed"].includes(item.status)).length;
+  const correctionCount = (documentsResult.data || []).filter((item) => ["rejected", "replace_required"].includes(item.status)).length;
+
   return (
-    <main className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 sm:py-7 lg:px-8 lg:py-9">
-      <StudentJourneyHeader
-        current="documents"
+    <main className="mx-auto w-full max-w-[92rem] space-y-7 px-4 py-5 sm:px-6 sm:py-6 xl:px-8">
+      <DossierHeader
         eyebrow={t.page.eyebrow}
         title={t.page.title}
         description={t.page.description}
+        status={requestedRequirement || correctionCount ? t.summary.actionRequired : reviewCount ? t.priority.reviewBadge : t.summary.nothing}
+        statusVariant={requestedRequirement || correctionCount ? "warning" : reviewCount ? "info" : "success"}
+        facts={[
+          { label: t.summary.approvedTitle, value: approvedCount },
+          { label: t.summary.reviewTitle, value: reviewCount },
+          { label: t.summary.correctionTitle, value: correctionCount },
+          { label: t.priority.tracked, value: requirements.length },
+        ]}
+        actions={
+          <>
+            <Link href="/student/procedure" className="inline-flex min-h-10 items-center rounded-[var(--radius-control)] border border-[var(--border-strong)] bg-[var(--surface)] px-4 text-sm font-semibold">
+              {locale === "fr" ? "Voir ma procédure" : locale === "ar" ? "عرض إجراءاتي" : locale === "de" ? "Mein Verfahren" : "View procedure"}
+            </Link>
+          </>
+        }
       />
+
+      <NextActionPanel
+        eyebrow={locale === "fr" ? "Action documentaire" : locale === "ar" ? "إجراء الوثائق" : locale === "de" ? "Dokumentenaktion" : "Document action"}
+        title={requestedRequirement?.label || (correctionCount ? t.priority.correctionTitle : reviewCount ? t.priority.reviewTitle : t.priority.documentsTitle)}
+        description={requestedRequirement?.student_request_reason || (correctionCount ? t.priority.correctionText(correctionCount) : reviewCount ? t.priority.reviewText : t.priority.hasDocumentsText)}
+        waiting={!requestedRequirement && !correctionCount}
+        metadata={requestedRequirement?.student_request_due_date || undefined}
+      />
+
       <DocumentsPanel
         documents={documentsResult.data || []}
         history={historyResult.data || []}
@@ -85,8 +124,8 @@ export default async function StudentDocumentsPage() {
 
 function DocumentsUnavailable({ copy }: { copy: (typeof studentDocumentsCopy)["fr"] }) {
   return (
-    <main className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 sm:py-7 lg:px-8 lg:py-9">
-      <StudentJourneyHeader current="documents" eyebrow={copy.page.eyebrow} title={copy.page.title} />
+    <main className="mx-auto w-full max-w-[92rem] px-4 py-5 sm:px-6 sm:py-6 xl:px-8">
+      <DossierHeader eyebrow={copy.page.eyebrow} title={copy.page.title} status={copy.page.unavailableTitle} statusVariant="warning" />
       <Card>
         <div role="alert">
           <h2 className="text-xl font-semibold text-slate-950">{copy.page.unavailableTitle}</h2>

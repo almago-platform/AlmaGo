@@ -7,6 +7,11 @@ import { Card } from "@/components/ui/Card";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { AlmagoJourney } from "@/components/student/AlmagoJourney";
+import { DossierHeader } from "@/components/product/DossierHeader";
+import { JourneyRail, type JourneyRailStep } from "@/components/product/JourneyRail";
+import { NextActionPanel } from "@/components/product/NextActionPanel";
+import { ResponsibilityStrip } from "@/components/product/ResponsibilityStrip";
+import { SectionHeader } from "@/components/ui/SectionHeader";
 import { buildAlmagoJourney } from "@/lib/student/almago-journey";
 import { createClient } from "@/lib/supabase/server";
 import { getRequestCopy } from "@/lib/i18n-server";
@@ -14,6 +19,7 @@ import { studentDashboardCopy } from "@/content/student-dashboard-copy";
 import { studentDashboardCockpitCopy } from "@/content/student-dashboard-cockpit-copy";
 import { studentChecklistCopy } from "@/content/student-checklist-copy";
 import { studentApplicationsCopy } from "@/content/student-applications-copy";
+import { almagoJourneyCopy } from "@/content/almago-journey-copy";
 import { rebrandCopy } from "@/lib/brand";
 import { normalizeApplicationStatus } from "@/lib/application-workflow";
 import { formatDeadline, isActiveApplication, isPastDeadline } from "@/lib/phase4";
@@ -25,12 +31,74 @@ function firstRelation<T>(value: T | T[] | null | undefined): T | undefined {
   return Array.isArray(value) ? value[0] : value ?? undefined;
 }
 
+
+const studentV2Copy = {
+  fr: {
+    space: "Espace Étudiant",
+    active: "Étudiant actif",
+    overview: "Vue d’ensemble du dossier",
+    responsibility: "Qui fait quoi maintenant ?",
+    you: "Vous",
+    campus: "Campus Allemagne",
+    official: "Organismes officiels",
+    campusWorking: "Campus Allemagne poursuit les vérifications et la préparation des étapes qui ne nécessitent pas votre intervention.",
+    officialBoundary: "Les décisions d’admission, de visa et les confirmations officielles restent du ressort des organismes compétents.",
+    detailedJourney: "Voir le détail du parcours",
+    detailedJourneyHint: "Ouvrez cette vue seulement si vous souhaitez consulter les huit étapes historiques du dossier.",
+    procedure: "Ouvrir ma procédure",
+  },
+  ar: {
+    space: "مساحة الطالب",
+    active: "حساب الطالب مفعّل",
+    overview: "نظرة عامة على الملف",
+    responsibility: "من يقوم بماذا الآن؟",
+    you: "أنت",
+    campus: "Campus Allemagne",
+    official: "الجهات الرسمية",
+    campusWorking: "تواصل Campus Allemagne التحقق من الملف وتحضير الخطوات التي لا تتطلب تدخلك.",
+    officialBoundary: "تبقى قرارات القبول والتأشيرة والتأكيدات الرسمية من اختصاص الجهات المختصة.",
+    detailedJourney: "عرض تفاصيل المسار",
+    detailedJourneyHint: "افتح هذه النظرة فقط إذا أردت الاطلاع على المراحل التاريخية الثماني للملف.",
+    procedure: "فتح إجراءاتي",
+  },
+  en: {
+    space: "Student space",
+    active: "Student active",
+    overview: "Dossier overview",
+    responsibility: "Who is doing what now?",
+    you: "You",
+    campus: "Campus Allemagne",
+    official: "Official organisations",
+    campusWorking: "Campus Allemagne continues the checks and preparation that do not require your intervention.",
+    officialBoundary: "Admission, visa and other official decisions remain with the competent organisations.",
+    detailedJourney: "View detailed journey",
+    detailedJourneyHint: "Open this view only if you want to inspect the eight historical stages of the dossier.",
+    procedure: "Open my procedure",
+  },
+  de: {
+    space: "Studierendenbereich",
+    active: "Studierendenzugang aktiv",
+    overview: "Dossier-Übersicht",
+    responsibility: "Wer macht jetzt was?",
+    you: "Sie",
+    campus: "Campus Allemagne",
+    official: "Offizielle Stellen",
+    campusWorking: "Campus Allemagne führt die Prüfungen und Vorbereitungen fort, für die Ihre Mitwirkung nicht erforderlich ist.",
+    officialBoundary: "Zulassung, Visum und andere offizielle Entscheidungen liegen bei den zuständigen Stellen.",
+    detailedJourney: "Detaillierten Weg anzeigen",
+    detailedJourneyHint: "Öffnen Sie diese Ansicht nur, wenn Sie die acht historischen Dossier-Schritte sehen möchten.",
+    procedure: "Mein Verfahren öffnen",
+  },
+} as const;
+
 export default async function StudentEntry() {
   const { locale, copy } = await getRequestCopy();
   const t = rebrandCopy(studentDashboardCopy[locale]);
   const cockpit = rebrandCopy(studentDashboardCockpitCopy[locale]);
   const checklistCopy = rebrandCopy(studentChecklistCopy[locale]);
   const applicationsCopy = rebrandCopy(studentApplicationsCopy[locale].panel);
+  const journeyCopy = almagoJourneyCopy[locale];
+  const v2 = studentV2Copy[locale];
   const supabase = await createClient();
 
   const { data: { user } } = await supabase.auth.getUser();
@@ -139,6 +207,21 @@ export default async function StudentEntry() {
     germanyPreparationStatus: checklistStatusByKey.get("germany_preparation") || null,
   });
 
+
+  const v2JourneySteps: JourneyRailStep[] = almagoJourney.steps.map((step) => ({
+    label: journeyCopy.steps[step.key],
+    detail: journeyCopy.statuses[step.status],
+    status:
+      step.status === "completed"
+        ? "done"
+        : step.status === "current"
+          ? "active"
+          : step.status === "blocked"
+            ? "locked"
+            : "upcoming",
+    href: step.status === "blocked" ? undefined : step.href,
+  }));
+
   const nextAction = documentsNeedingAction
     ? {
         label: t.documentsAction,
@@ -243,100 +326,92 @@ export default async function StudentEntry() {
     .slice(0, 5);
 
   return (
-    <main className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8 lg:py-10">
-      <header className="border-b border-[var(--border)] pb-7 sm:pb-8">
-        <p className="text-[0.7rem] font-bold uppercase tracking-[0.15em] text-[var(--brand)]">
-          {t.heroEyebrow}
-        </p>
-        <h1 className="mt-2 text-[2.25rem] font-semibold tracking-[-0.045em] text-[var(--foreground)] sm:text-[3rem]">
-          {cockpit.greeting} <bdi dir="auto">{profile.first_name || t.studentFallback}</bdi>
-        </h1>
-        <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-2">
-          <p className="max-w-4xl text-sm font-medium leading-6 text-[var(--muted)] sm:text-base">
-            <span className="font-bold text-[var(--foreground-soft)]">{cockpit.projectLabel} :</span>{" "}
-            <bdi dir="auto">{projectSummary}</bdi>
-          </p>
-          <Link href="/student/pathway" className="text-xs font-bold text-[var(--brand)] hover:underline">
-            {t.pathwayCta}
-          </Link>
-        </div>
-      </header>
+    <main className="mx-auto w-full max-w-[92rem] space-y-7 px-4 py-5 sm:px-6 sm:py-6 xl:px-8">
+      <DossierHeader
+        eyebrow={v2.space}
+        title={<>{cockpit.greeting} <bdi dir="auto">{profile.first_name || t.studentFallback}</bdi></>}
+        description={<><span className="font-semibold text-[var(--foreground-soft)]">{cockpit.projectLabel} :</span>{" "}<bdi dir="auto">{projectSummary}</bdi></>}
+        status={hasActionRequired ? t.now : waitingAlmaGo.length ? t.tracking : v2.active}
+        statusVariant={hasActionRequired ? "warning" : waitingAlmaGo.length ? "info" : "success"}
+        facts={[
+          { label: v2.overview, value: <bdi dir="auto">{projectSummary}</bdi> },
+          { label: cockpit.progressTitle, value: checklist.length ? `${progression}%` : "—" },
+          { label: cockpit.documentsTitle, value: `${approvedDocuments}/${studentDocuments.length || 0}` },
+          { label: cockpit.applicationsTitle, value: activeApplications.length },
+        ]}
+        actions={
+          <>
+            <Link
+              href="/student/procedure"
+              className="inline-flex min-h-10 items-center rounded-[var(--radius-control)] bg-[var(--brand)] px-4 text-sm font-semibold text-white transition hover:bg-[var(--brand-strong)]"
+            >
+              {v2.procedure}
+            </Link>
+            <Link
+              href="/student/pathway"
+              className="inline-flex min-h-10 items-center rounded-[var(--radius-control)] border border-[var(--border-strong)] bg-[var(--surface)] px-4 text-sm font-semibold text-[var(--foreground)]"
+            >
+              {t.pathwayCta}
+            </Link>
+          </>
+        }
+      />
 
-      <section className="mt-6 grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,0.34fr)] lg:items-stretch">
-        <article className="rounded-[var(--radius-lg)] border border-[var(--brand-border)] bg-[var(--surface-raised)] p-5 shadow-[var(--shadow-card)] sm:p-7">
-          <div className="flex flex-wrap items-center gap-2">
-            <p className="text-[0.7rem] font-bold uppercase tracking-[0.15em] text-[var(--brand)]">{t.nextActionEyebrow}</p>
-            <Badge variant={hasActionRequired ? "warning" : waitingAlmaGo.length ? "info" : "neutral"}>
-              {hasActionRequired ? t.now : waitingAlmaGo.length ? t.tracking : t.upToDate}
-            </Badge>
-          </div>
-
-          <h2 className="mt-4 max-w-3xl text-[1.8rem] font-semibold leading-[1.08] tracking-[-0.035em] text-[var(--foreground)] sm:text-[2.35rem]">
-            {nextAction.label}
-          </h2>
-          <p dir="auto" className="mt-3 max-w-3xl text-sm leading-6 text-[var(--muted)] sm:text-base sm:leading-7">
-            {nextAction.detail}
-          </p>
-
-          <div className="mt-6 grid gap-3 sm:grid-cols-2">
-            <div className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4">
-              <p className="text-[0.68rem] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">
-                {cockpit.nextActionReason}
-              </p>
-              <p className="mt-2 text-sm leading-6 text-[var(--foreground-soft)]">{nextAction.reason}</p>
-            </div>
-            <div className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4">
-              <p className="text-[0.68rem] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">
-                {cockpit.duration}
-              </p>
-              <p className="mt-2 text-lg font-bold text-[var(--foreground)]">{nextAction.duration}</p>
-            </div>
-          </div>
-
-          <div className="mt-6 [&_a]:w-full sm:[&_a]:w-auto">
-            <ButtonLink href={nextAction.href}>{cockpit.continue}</ButtonLink>
-          </div>
-        </article>
-
-        <aside className="rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--surface-subtle)] p-5 sm:p-6">
-          <p className="text-[0.68rem] font-bold uppercase tracking-[0.14em] text-[var(--brand-strong)]">
-            {cockpit.progressEyebrow}
-          </p>
-          <div className="mt-5 flex items-end justify-between gap-4">
-            <div>
-              <p className="text-4xl font-semibold tracking-[-0.045em] text-[var(--foreground)]">
-                {checklist.length ? `${progression}%` : "—"}
-              </p>
-              <p className="mt-2 text-sm font-semibold text-[var(--foreground-soft)]">{cockpit.progressTitle}</p>
-            </div>
-            {checklist.length > 0 && (
-              <span className="rounded-full border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-1 text-xs font-bold text-[var(--muted)]">
-                {completed}/{checklist.length}
-              </span>
-            )}
-          </div>
-
-          {checklist.length > 0 && (
-            <div className="mt-5">
-              <ProgressBar value={progression} label={t.progressLabel} />
-              <p className="mt-3 text-xs leading-5 text-[var(--muted)]">
-                {cockpit.progressMeta(completed, checklist.length)}
-              </p>
-            </div>
-          )}
-
-          <p className="mt-5 border-t border-[var(--border)] pt-4 text-xs leading-5 text-[#626669]">
-            {t.progressBoundary}
-          </p>
-        </aside>
+      <section className="space-y-3">
+        <SectionHeader
+          eyebrow={cockpit.progressEyebrow}
+          title={journeyCopy.title}
+          description={t.progressBoundary}
+        />
+        <JourneyRail steps={v2JourneySteps} ariaLabel={journeyCopy.title} />
       </section>
 
-      <div className="mt-7">
-        <AlmagoJourney
-          model={almagoJourney}
-          nextAction={{ label: nextAction.label, detail: nextAction.detail, href: nextAction.href }}
-        />
-      </div>
+      <NextActionPanel
+        eyebrow={t.nextActionEyebrow}
+        title={nextAction.label}
+        description={nextAction.detail}
+        metadata={<>{cockpit.nextActionReason}: {nextAction.reason} · {cockpit.duration}: {nextAction.duration}</>}
+        waiting={!hasActionRequired}
+        action={
+          hasActionRequired ? (
+            <ButtonLink href={nextAction.href}>{cockpit.continue}</ButtonLink>
+          ) : undefined
+        }
+      />
+
+      <ResponsibilityStrip
+        title={v2.responsibility}
+        items={[
+          {
+            label: v2.you,
+            detail: hasActionRequired ? nextAction.label : t.upToDate,
+            tone: "user",
+          },
+          {
+            label: v2.campus,
+            detail: waitingAlmaGo.length ? v2.campusWorking : cockpit.noActionReason,
+            tone: "campus",
+          },
+          {
+            label: v2.official,
+            detail: v2.officialBoundary,
+            tone: "external",
+          },
+        ]}
+      />
+
+      <details className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)]">
+        <summary className="cursor-pointer list-none px-5 py-4 text-sm font-semibold text-[var(--foreground)]">
+          {v2.detailedJourney}
+          <span className="mt-1 block text-xs font-normal leading-5 text-[var(--muted)]">{v2.detailedJourneyHint}</span>
+        </summary>
+        <div className="border-t border-[var(--border)] p-4 sm:p-5">
+          <AlmagoJourney
+            model={almagoJourney}
+            nextAction={{ label: nextAction.label, detail: nextAction.detail, href: nextAction.href }}
+          />
+        </div>
+      </details>
 
       <section className="mt-7" aria-labelledby="deadlines-title">
         <div className="mb-3 flex items-end justify-between gap-4">

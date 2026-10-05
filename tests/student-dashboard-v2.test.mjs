@@ -55,15 +55,11 @@ test("dashboard retains legal framing around progress in every locale", () => {
   assert.ok(page.includes("t.progressBoundary"));
 });
 
-test("student dashboard progress disclaimer keeps WCAG AA contrast on the subtle panel", () => {
-  assert.match(
-    page,
-    /<p className="mt-5 border-t border-\[var\(--border\)\] pt-4 text-xs leading-5 text-\[#626669\]">\s*\{t\.progressBoundary\}/,
-  );
-  assert.doesNotMatch(
-    page,
-    /<p className="mt-4 text-xs leading-5 text-\[var\(--muted\)\]">\s*\{t\.progressBoundary\}/,
-  );
+test("student dashboard keeps the progress boundary in the V2 section hierarchy", () => {
+  assert.ok(page.includes("SectionHeader"));
+  assert.ok(page.includes("description={t.progressBoundary}"));
+  assert.ok(page.includes("JourneyRail"));
+  assert.ok(page.includes("ariaLabel={journeyCopy.title}"));
 });
 
 test("student dashboard renders localized copy through the canonical brand layer", () => {

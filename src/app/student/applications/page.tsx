@@ -1,11 +1,14 @@
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Card } from "@/components/ui/Card";
-import { StudentJourneyHeader } from "@/components/student/StudentJourneyHeader";
+import Link from "next/link";
+import { DossierHeader } from "@/components/product/DossierHeader";
 import { StudentApplicationsPanel } from "@/components/student/StudentApplicationsPanel";
 import { StudentGuidancePanel } from "@/components/student/StudentGuidancePanel";
 import { createClient } from "@/lib/supabase/server";
 import { getRequestLocale } from "@/lib/i18n-server";
 import { studentApplicationsCopy } from "@/content/student-applications-copy";
+import { isActiveApplication, isSubmittedApplicationStatus } from "@/lib/application-workflow";
+import { evaluateCampusApplicationDeadline } from "@/lib/student/procedure-deadline";
 
 export const dynamic = "force-dynamic";
 
@@ -15,21 +18,48 @@ export default async function StudentApplicationsPage() {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("applications")
-    .select("id,status,intake_term:intake,deadline,next_action,required_documents,student_notes,result,submitted_at,created_at,programs(name,degree_level,universities(name,city)),application_events(id,event_type,message,created_at)")
+    .select("id,status,intake_term:intake,deadline,deadline_kind,deadline_source_url,deadline_verified_at,deadline_cycle,application_method,next_action,required_documents,student_notes,result,submitted_at,created_at,programs(name,degree_level,universities(name,city)),application_events(id,event_type,message,created_at)")
     .order("created_at", { ascending: false });
 
   if (error) {
     return <ApplicationsUnavailable copy={t} />;
   }
 
+  const applications = data || [];
+  const activeCount = applications.filter((application) => isActiveApplication(application.status)).length;
+  const submittedCount = applications.filter((application) =>
+    Boolean(application.submitted_at) || isSubmittedApplicationStatus(application.status),
+  ).length;
+  const actionCount = applications.filter((application) =>
+    isActiveApplication(application.status) && Boolean(application.next_action),
+  ).length;
+  const verifiedDeadlineCount = applications.filter((application) => {
+    const status = evaluateCampusApplicationDeadline(application).status;
+    return status === "open" || status === "closed";
+  }).length;
+
   return (
-    <main className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 sm:py-7 lg:px-8 lg:py-9">
-      <StudentJourneyHeader
-        current="applications"
+    <main className="mx-auto w-full max-w-[92rem] space-y-7 px-4 py-5 sm:px-6 sm:py-6 xl:px-8">
+      <DossierHeader
         eyebrow={t.page.eyebrow}
         title={t.page.title}
         description={t.page.description}
-        actions={<ButtonLink href="/student/orientation" variant="secondary">{t.page.programmes}</ButtonLink>}
+        status={actionCount ? t.panel.actionNeeded : t.panel.tracking}
+        statusVariant={actionCount ? "warning" : "info"}
+        facts={[
+          { label: t.panel.activeApplications, value: activeCount },
+          { label: t.panel.submittedApplications, value: submittedCount },
+          { label: t.panel.todo, value: actionCount },
+          { label: t.panel.nextDeadline, value: verifiedDeadlineCount },
+        ]}
+        actions={
+          <>
+            <Link href="/student/procedure" className="inline-flex min-h-10 items-center rounded-[var(--radius-control)] border border-[var(--border-strong)] bg-[var(--surface)] px-4 text-sm font-semibold">
+              {locale === "fr" ? "Voir ma procédure" : locale === "ar" ? "عرض إجراءاتي" : locale === "de" ? "Mein Verfahren" : "View procedure"}
+            </Link>
+            <ButtonLink href="/student/orientation" variant="secondary">{t.page.programmes}</ButtonLink>
+          </>
+        }
       />
 
       <StudentGuidancePanel
@@ -39,15 +69,15 @@ export default async function StudentApplicationsPage() {
         points={[...t.page.guidancePoints]}
       />
 
-      <StudentApplicationsPanel applications={data || []} />
+      <StudentApplicationsPanel applications={applications} />
     </main>
   );
 }
 
 function ApplicationsUnavailable({ copy }: { copy: (typeof studentApplicationsCopy)["fr"] }) {
   return (
-    <main className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 sm:py-7 lg:px-8 lg:py-9">
-      <StudentJourneyHeader current="applications" eyebrow={copy.page.eyebrow} title={copy.page.title} />
+    <main className="mx-auto w-full max-w-[92rem] px-4 py-5 sm:px-6 sm:py-6 xl:px-8">
+      <DossierHeader eyebrow={copy.page.eyebrow} title={copy.page.title} status={copy.page.unavailableTitle} statusVariant="warning" />
       <Card>
         <div role="alert">
           <h2 className="text-xl font-semibold text-slate-950">{copy.page.unavailableTitle}</h2>

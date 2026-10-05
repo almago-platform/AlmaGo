@@ -10,7 +10,8 @@ import {
   isSubmittedApplicationStatus,
   normalizeApplicationStatus,
 } from "@/lib/application-workflow";
-import { formatDeadline, isActiveApplication, isPastDeadline, nextActiveDeadline } from "@/lib/phase4";
+import { formatDeadline, isActiveApplication } from "@/lib/phase4";
+import { evaluateCampusApplicationDeadline } from "@/lib/student/procedure-deadline";
 import { localizeApplicationStoredText, localizeCatalogueLabel } from "@/lib/student/arabic-display";
 
 function applicationVariant(status: string): "success" | "warning" | "info" | "neutral" {
@@ -139,8 +140,16 @@ export function StudentApplicationsPanel({
     (application) => Boolean(application.submitted_at) || isSubmittedApplicationStatus(application.status),
   );
   const activeApplications = applications.filter((application) => isActiveApplication(application.status));
-  const nextDeadlineApplication = nextActiveDeadline(applications);
-  const overdue = nextDeadlineApplication?.deadline && isPastDeadline(nextDeadlineApplication.deadline);
+  const verifiedDeadlineApplications = activeApplications
+    .filter((application) => {
+      const status = evaluateCampusApplicationDeadline(application).status;
+      return Boolean(application.deadline) && (status === "open" || status === "closed");
+    })
+    .sort((a, b) => String(a.deadline).localeCompare(String(b.deadline)));
+  const nextDeadlineApplication = verifiedDeadlineApplications[0];
+  const overdue = nextDeadlineApplication
+    ? evaluateCampusApplicationDeadline(nextDeadlineApplication).status === "closed"
+    : false;
   const priorityApplication = actionable[0] || nextDeadlineApplication || activeApplications[0];
   const priorityProgram = firstProgram(priorityApplication);
 
@@ -183,7 +192,12 @@ export function StudentApplicationsPanel({
                 <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">{t.trackedApplication}</p>
                 <p className="mt-2 font-bold text-slate-950"><bdi dir="auto">{priorityProgram?.name || t.programFallback}</bdi></p>
                 <p className="mt-1 text-sm text-slate-600">
-                  <bdi dir="auto">{localizeCatalogueLabel(locale, priorityApplication.intake_term) || t.intakeUnknown}</bdi> · {t.deadlineWord} <bdi dir="auto">{formatDeadline(priorityApplication.deadline, locale)}</bdi>
+                  <bdi dir="auto">{localizeCatalogueLabel(locale, priorityApplication.intake_term) || t.intakeUnknown}</bdi> · {t.deadlineWord}{" "}
+                  <bdi dir="auto">
+                    {["open", "closed"].includes(evaluateCampusApplicationDeadline(priorityApplication).status)
+                      ? formatDeadline(priorityApplication.deadline, locale)
+                      : t.noConfirmedDate}
+                  </bdi>
                 </p>
               </div>
             )}
@@ -215,7 +229,7 @@ export function StudentApplicationsPanel({
               <p className="mt-1 text-sm text-slate-600"><bdi dir="auto">{firstProgram(nextDeadlineApplication)?.name || t.programFallback}</bdi>{overdue ? ` · ${t.checkApplication}` : ""}</p>
             )}
           </div>
-          <ButtonLink href="/student/checklist" variant="secondary">{t.steps}</ButtonLink>
+          <ButtonLink href="/student/procedure" variant="secondary">{t.steps}</ButtonLink>
         </div>
       </Card>
 
@@ -248,7 +262,8 @@ export function StudentApplicationsPanel({
                 (a: any, b: any) => String(a.created_at).localeCompare(String(b.created_at)),
               );
               const active = isActiveApplication(application.status);
-              const applicationOverdue = Boolean(application.deadline && isPastDeadline(application.deadline));
+              const deadlineEvaluation = evaluateCampusApplicationDeadline(application);
+              const applicationOverdue = deadlineEvaluation.status === "closed";
               const nextAction = active
                 ? localizeApplicationStoredText(locale, application.next_action) ||
                   (applicationOverdue
@@ -274,7 +289,12 @@ export function StudentApplicationsPanel({
                         {program?.degree_level && <span className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-2.5 py-1.5"><bdi dir="auto">{localizeCatalogueLabel(locale, program.degree_level)}</bdi></span>}
                         <span className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-2.5 py-1.5"><bdi dir="auto">{localizeCatalogueLabel(locale, application.intake_term) || t.intakeUnknown}</bdi></span>
                         <span className={`rounded-full px-3 py-1.5 ${applicationOverdue ? "bg-amber-100 text-amber-900" : "bg-slate-100"}`}>
-                          {t.deadlineWord} <bdi dir="auto">{formatDeadline(application.deadline, locale)}</bdi>
+                          {t.deadlineWord}{" "}
+                          <bdi dir="auto">
+                            {["open", "closed"].includes(deadlineEvaluation.status)
+                              ? formatDeadline(application.deadline, locale)
+                              : t.noConfirmedDate}
+                          </bdi>
                         </span>
                       </div>
                     </div>
