@@ -17,7 +17,7 @@ export default async function AdminIntakePage() {
 
   const { data: intakeCases, error: intakeError } = await supabase
     .from("student_intake_cases")
-    .select("student_id,orientation_id,status,proposed_route_key,proposal_reason,proposed_offer_version_id,purchase_id,student_response_note,updated_at")
+    .select("student_id,orientation_id,status,proposed_route_key,proposal_reason,proposed_offer_version_id,purchase_id,student_response_note,student_responded_at,updated_at")
     .order("updated_at", { ascending: false });
 
   if (intakeError) {
@@ -37,7 +37,21 @@ export default async function AdminIntakePage() {
     );
   }
 
-  const rows = intakeCases || [];
+  const statusPriority: Record<string, number> = {
+    student_question: 0,
+    paid_pending_validation: 1,
+    campus_review: 2,
+    route_proposed: 3,
+    payment_pending: 4,
+    starter_documents: 5,
+    procedure_created: 6,
+  };
+  const rows = [...(intakeCases || [])].sort((left, right) => {
+    const priorityDelta =
+      (statusPriority[left.status] ?? 99) - (statusPriority[right.status] ?? 99);
+    if (priorityDelta !== 0) return priorityDelta;
+    return new Date(right.updated_at).getTime() - new Date(left.updated_at).getTime();
+  });
   const studentIds = rows.map((item) => item.student_id);
   const orientationIds = rows.map((item) => item.orientation_id);
 
@@ -130,6 +144,7 @@ export default async function AdminIntakePage() {
       proposedOfferVersionId: item.proposed_offer_version_id,
       purchaseId: item.purchase_id,
       studentResponseNote: item.student_response_note,
+      studentRespondedAt: item.student_responded_at,
     };
   });
 
@@ -138,7 +153,7 @@ export default async function AdminIntakePage() {
       <AdminPageHeader
         section="Dossiers"
         title="Validation du parcours"
-        description="Proposez un parcours et une offre. L’acceptation ouvre le paiement ; la phase suivante n’est créée qu’après paiement reçu et validation Campus."
+        description="Proposez un parcours et une offre. Les réponses étudiantes remontent ici ; l’acceptation ouvre le paiement, puis la phase suivante après validation Campus."
       />
       <AdminIntakePanel
         cases={cases}

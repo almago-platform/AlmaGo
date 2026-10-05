@@ -30,6 +30,8 @@ export default async function AdminEntry() {
     { count: programCount, error: programsError },
     { count: applicationCount, error: applicationsError },
     { count: documentsToReview, error: documentsError },
+    { count: intakeAttentionCount, error: intakeAttentionError },
+    { count: studentQuestionCount, error: studentQuestionError },
     { count: orientationCount, error: orientationError },
     { count: staleLanguageCount, error: staleLanguageError },
     { count: dueLanguageCount, error: dueLanguageError },
@@ -40,6 +42,8 @@ export default async function AdminEntry() {
     supabase.from("programs").select("id", { count: "exact", head: true }).eq("is_active", true),
     supabase.from("applications").select("id", { count: "exact", head: true }).not("status", "in", "(admission,rejection,withdrawn)"),
     supabase.from("documents").select("id", { count: "exact", head: true }).in("status", ["pending", "replace_required"]),
+    supabase.from("student_intake_cases").select("student_id", { count: "exact", head: true }).in("status", ["student_question", "campus_review", "paid_pending_validation"]),
+    supabase.from("student_intake_cases").select("student_id", { count: "exact", head: true }).eq("status", "student_question"),
     supabase.from("program_recommendations").select("id", { count: "exact", head: true }).eq("is_archived", false),
     supabase.from("language_courses").select("id", { count: "exact", head: true }).eq("is_active", true).lte("verified_at", staleCutoff),
     supabase.from("language_courses").select("id", { count: "exact", head: true }).eq("is_active", true).gt("verified_at", staleCutoff).lte("verified_at", dueSoonCutoff),
@@ -48,7 +52,8 @@ export default async function AdminEntry() {
   ]);
 
   if (
-    universitiesError || programsError || applicationsError || documentsError || orientationError
+    universitiesError || programsError || applicationsError || documentsError
+    || intakeAttentionError || studentQuestionError || orientationError
     || staleLanguageError || dueLanguageError || staleFinanceError || dueFinanceError
   ) {
     return (
@@ -60,6 +65,8 @@ export default async function AdminEntry() {
   }
 
   const documents = documentsToReview || 0;
+  const intakeAttention = intakeAttentionCount || 0;
+  const studentQuestions = studentQuestionCount || 0;
   const applications = applicationCount || 0;
   const orientations = orientationCount || 0;
   const catalogue = (universityCount || 0) + (programCount || 0);
@@ -70,37 +77,55 @@ export default async function AdminEntry() {
   const staleCatalogue = staleLanguage + staleFinance;
   const dueCatalogue = dueLanguage + dueFinance;
 
-  const priority = documents > 0
+  const priority = studentQuestions > 0
     ? {
-        badge: "Documents à traiter",
-        title: `${documents} document${documents > 1 ? "s" : ""} demande${documents > 1 ? "nt" : ""} votre attention`,
-        description: "Commencez par la file documentaire : une vérification ou un remplacement demandé peut bloquer la suite du dossier étudiant.",
-        href: "/admin/documents",
-        action: "Ouvrir la file documents",
+        badge: "Réponse étudiant reçue",
+        title: studentQuestions > 1
+          ? `${studentQuestions} étudiants attendent une réponse de Campus Allemagne`
+          : "1 étudiant attend une réponse de Campus Allemagne",
+        description: "Une demande de discussion a été envoyée depuis l’espace étudiant. Ouvrez la file des parcours pour répondre ou ajuster la proposition.",
+        href: "/admin/intake",
+        action: "Répondre aux étudiants",
       }
-    : applications > 0
+    : documents > 0
       ? {
-          badge: "Candidatures actives",
-          title: `${applications} candidature${applications > 1 ? "s" : ""} reste${applications > 1 ? "nt" : ""} en suivi`,
-          description: "Aucun document n’attend de revue. Vérifiez maintenant les échéances, statuts et prochaines actions des candidatures actives.",
-          href: "/admin/applications",
-          action: "Suivre les candidatures",
+          badge: "Documents à traiter",
+          title: `${documents} document${documents > 1 ? "s" : ""} demande${documents > 1 ? "nt" : ""} votre attention`,
+          description: "Commencez par la file documentaire : une vérification ou un remplacement demandé peut bloquer la suite du dossier étudiant.",
+          href: "/admin/documents",
+          action: "Ouvrir la file documents",
         }
-      : staleCatalogue > 0
+      : intakeAttention > 0
         ? {
-            badge: "Catalogue à revalider",
-            title: staleCatalogue > 1 ? `${staleCatalogue} fiches vérifiées ont expiré` : "1 fiche vérifiée a expiré",
-            description: "Ces fiches ne sont plus publiées aux étudiants. Revalidez leur source officielle avant de les remettre dans le catalogue visible.",
-            href: staleLanguage > 0 ? "/admin/language-courses" : "/admin/finance-insurance",
-            action: "Revalider le catalogue",
+            badge: "Dossiers à traiter",
+            title: `${intakeAttention} dossier${intakeAttention > 1 ? "s" : ""} demande${intakeAttention > 1 ? "nt" : ""} une décision Campus`,
+            description: "Des parcours sont prêts à être proposés ou un paiement reçu attend une validation interne.",
+            href: "/admin/intake",
+            action: "Ouvrir les dossiers",
           }
-        : {
-          badge: "File prioritaire à jour",
-          title: "Aucun blocage dossier prioritaire n’est visible",
-          description: "Les documents et candidatures ne signalent pas de charge prioritaire dans cette vue. Vous pouvez poursuivre l’orientation ou la maintenance du catalogue.",
-          href: "/admin/orientation",
-          action: "Voir l’orientation",
-        };
+        : applications > 0
+          ? {
+              badge: "Candidatures actives",
+              title: `${applications} candidature${applications > 1 ? "s" : ""} reste${applications > 1 ? "nt" : ""} en suivi`,
+              description: "Aucun dossier Campus ne demande d’action immédiate. Vérifiez les échéances, statuts et prochaines actions des candidatures actives.",
+              href: "/admin/applications",
+              action: "Suivre les candidatures",
+            }
+          : staleCatalogue > 0
+            ? {
+                badge: "Catalogue à revalider",
+                title: staleCatalogue > 1 ? `${staleCatalogue} fiches vérifiées ont expiré` : "1 fiche vérifiée a expiré",
+                description: "Ces fiches ne sont plus publiées aux étudiants. Revalidez leur source officielle avant de les remettre dans le catalogue visible.",
+                href: staleLanguage > 0 ? "/admin/language-courses" : "/admin/finance-insurance",
+                action: "Revalider le catalogue",
+              }
+            : {
+                badge: "File prioritaire à jour",
+                title: "Aucun blocage dossier prioritaire n’est visible",
+                description: "Les réponses étudiants, dossiers Campus, documents et candidatures ne signalent pas de charge prioritaire dans cette vue.",
+                href: "/admin/intake",
+                action: "Voir les dossiers",
+              };
 
   return (
     <main className="mx-auto w-full max-w-[92rem] px-4 py-5 sm:px-6 sm:py-6 xl:px-8">
@@ -121,7 +146,7 @@ export default async function AdminEntry() {
         <Card className="relative overflow-hidden border-[var(--brand-border)] bg-white shadow-none">
           <div aria-hidden="true" className="absolute inset-y-0 left-0 w-1 bg-[var(--brand)]" />
           <div className="pl-2 sm:pl-3">
-            <Badge variant={documents > 0 ? "warning" : applications > 0 ? "info" : staleCatalogue > 0 ? "warning" : "success"}>{priority.badge}</Badge>
+            <Badge variant={studentQuestions > 0 || documents > 0 ? "warning" : intakeAttention > 0 || applications > 0 ? "info" : staleCatalogue > 0 ? "warning" : "success"}>{priority.badge}</Badge>
             <p className="mt-5 text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">À traiter maintenant</p>
             <h2 className="mt-2 max-w-3xl text-2xl font-semibold tracking-[-0.03em] text-slate-950 sm:text-3xl">
               {priority.title}
@@ -138,11 +163,11 @@ export default async function AdminEntry() {
           <ol className="mt-5 space-y-4 text-sm leading-6 text-slate-600">
             <li className="flex gap-3">
               <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-[var(--brand)] text-xs font-bold text-white">1</span>
-              <span><strong className="text-slate-950">Documents</strong><br />Traiter les pièces qui bloquent le dossier.</span>
+              <span><strong className="text-slate-950">Réponses & dossiers</strong><br />Traiter d’abord les étudiants qui attendent une réponse.</span>
             </li>
             <li className="flex gap-3">
               <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-[var(--brand-soft)] text-xs font-bold text-[var(--brand)]">2</span>
-              <span><strong className="text-slate-950">Candidatures & orientation</strong><br />Mettre à jour statuts et prochaines actions.</span>
+              <span><strong className="text-slate-950">Documents & candidatures</strong><br />Lever les blocages et mettre à jour les statuts.</span>
             </li>
             <li className="flex gap-3">
               <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-slate-100 text-xs font-bold text-slate-600">3</span>
@@ -170,7 +195,14 @@ export default async function AdminEntry() {
         </div>
       </section>
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+          <AdminSummaryCard
+            href="/admin/intake"
+            title="Dossiers Campus"
+            value={intakeAttention}
+            detail={studentQuestions ? `${studentQuestions} réponse${studentQuestions > 1 ? "s" : ""} étudiant à traiter` : "Décisions et validations en attente"}
+            tone={studentQuestions ? "warning" : intakeAttention ? "info" : "neutral"}
+          />
           <AdminSummaryCard
             href="/admin/documents"
             title="Documents à traiter"
