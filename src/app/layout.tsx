@@ -18,6 +18,7 @@ import { getPublicOrigin } from "@/lib/public-origin";
 import "./globals.css";
 import "./design-system.css";
 import "./student-v3.css";
+import "./prospect-v3.css";
 import "./admin-v3.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
