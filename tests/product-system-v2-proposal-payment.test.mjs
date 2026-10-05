@@ -60,7 +60,7 @@ test("payment V2 is lifecycle-first and read-only", () => {
 });
 
 test("payment V2 never treats a browser return as Student activation", () => {
-  assert.ok(paymentCopy.includes("Aucun retour navigateur"));
+  assert.ok(paymentCopy.includes("Un retour navigateur"));
   assert.ok(paymentCopy.includes("Student access can be activated only after payment confirmation"));
   assert.ok(paymentCopy.includes("مساحة الطالب"));
   assert.ok(paymentCopy.includes("Studierendenbereich"));
