@@ -42,7 +42,7 @@ const studentItems: NavItem[] = [
   { label: "Mes programmes", href: "/student/orientation", icon: icons.orientation, helper: "Programmes à comparer" },
   { label: "Cours de langue", href: "/student/language-courses", icon: icons.programs, helper: "Cours à comparer" },
   { label: "Financement & assurance", href: "/student/finance-insurance", icon: icons.applications, helper: "Options vérifiées" },
-  { label: "Mes démarches", href: "/student/checklist", icon: icons.checklist, helper: "Étapes du dossier" },
+  { label: "Mes démarches", href: "/student/procedure", icon: icons.checklist, helper: "Étapes du dossier" },
   { label: "Mes candidatures", href: "/student/applications", icon: icons.applications, helper: "Suivi et échéances" },
 ];
 
