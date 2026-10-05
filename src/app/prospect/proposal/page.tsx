@@ -87,7 +87,7 @@ export default async function ProspectProposalPage() {
       <ProspectPageHero eyebrow={t.eyebrow} title={t.title} subtitle={t.subtitle} />
 
       {!state.intake && state.orientationConfirmed ? (
-        <section className="rounded-[1.35rem] border border-[#ead59a] bg-[#fff9e9] p-6 shadow-[0_22px_60px_-42px_rgba(139,98,0,.25)]">
+        <section className="rounded-[1.35rem] border border-[#ead59a] bg-[#fff9e9] p-4 shadow-[0_22px_60px_-42px_rgba(139,98,0,.25)]">
           <div className="flex items-start gap-3">
             <span className="mt-1 size-2.5 shrink-0 rounded-full bg-amber-400" aria-hidden="true" />
             <div>
@@ -99,7 +99,7 @@ export default async function ProspectProposalPage() {
       ) : null}
 
       {preBac && starterDocuments ? (
-        <section className="rounded-[1.4rem] border border-[var(--brand-border)]/70 bg-[linear-gradient(135deg,#fff0f2,#fffaf9)] p-5 shadow-[0_26px_70px_-44px_rgba(216,6,33,.34)] sm:p-6">
+        <section className="rounded-[1.4rem] border border-[var(--brand-border)]/70 bg-[linear-gradient(135deg,#fff0f2,#fffaf9)] p-4 shadow-[0_26px_70px_-44px_rgba(216,6,33,.34)] sm:p-5">
           <p className="text-[11px] font-extrabold uppercase tracking-[0.16em] text-[var(--brand)]">
             Projet avant le Bac
           </p>
@@ -109,7 +109,7 @@ export default async function ProspectProposalPage() {
             vous guider sur la langue, les programmes, le budget et les prochaines étapes. La proposition académique
             définitive viendra après vos résultats et la mise à jour du projet.
           </p>
-          <div className="mt-5 flex flex-wrap gap-3">
+          <div className="mt-4 flex flex-wrap gap-2.5">
             <Link
               href="/prospect/roadmap"
               className="inline-flex min-h-11 items-center rounded-xl bg-[var(--brand)] px-5 text-sm font-bold text-white shadow-[0_12px_28px_-16px_rgba(216,6,33,.85)] transition-all duration-200 hover:-translate-y-px hover:bg-[var(--brand-strong)] hover:shadow-md"
@@ -137,7 +137,7 @@ export default async function ProspectProposalPage() {
           </div>
         </section>
       ) : starterDocuments ? (
-        <section className="rounded-[1.4rem] border border-[var(--brand-border)]/70 bg-[linear-gradient(135deg,#fff0f2,#fffaf9)] p-5 shadow-[0_26px_70px_-44px_rgba(216,6,33,.34)] sm:p-6">
+        <section className="rounded-[1.4rem] border border-[var(--brand-border)]/70 bg-[linear-gradient(135deg,#fff0f2,#fffaf9)] p-4 shadow-[0_26px_70px_-44px_rgba(216,6,33,.34)] sm:p-5">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="max-w-3xl">
               <p className="text-[11px] font-extrabold uppercase tracking-[0.16em] text-[var(--brand)]">
@@ -194,7 +194,7 @@ export default async function ProspectProposalPage() {
       )}
 
       {!proposalAvailable && !preBac ? (
-        <section className="rounded-[1.35rem] border border-black/[.07] bg-white p-5 shadow-[0_22px_60px_-42px_rgba(0,0,0,.34)]">
+        <section className="rounded-[1.35rem] border border-black/[.07] bg-white p-4 shadow-[0_22px_60px_-42px_rgba(0,0,0,.34)]">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <h2 className="font-bold">{t.waitingTitle}</h2>
