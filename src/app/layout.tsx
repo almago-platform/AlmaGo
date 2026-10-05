@@ -17,6 +17,7 @@ import { isPublicIndexingEnabled } from "@/lib/public-indexing";
 import { getPublicOrigin } from "@/lib/public-origin";
 import "./globals.css";
 import "./design-system.css";
+import "./student-v3.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
 const notoSansArabic = Noto_Sans_Arabic({
