@@ -83,7 +83,7 @@ export default async function ProspectProposalPage() {
     : 0;
 
   return (
-    <main className="space-y-8">
+    <main className="space-y-6">
       <ProspectPageHero eyebrow={t.eyebrow} title={t.title} subtitle={t.subtitle} />
 
       {!state.intake && state.orientationConfirmed ? (
