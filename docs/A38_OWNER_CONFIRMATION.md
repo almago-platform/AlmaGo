@@ -21,7 +21,7 @@ Les éléments suivants ont été confirmés par le propriétaire pour la prépa
 - e-mail public : **contact@campus-allemagne.info** ;
 - orientation en ligne actuellement proposée gratuitement ;
 - avant immatriculation/licence, le propriétaire souhaite uniquement disposer d’un **site fonctionnel de pré-lancement/démonstration partenaire** ; le service réel au public ne doit pas démarrer avant la mise en conformité et l’établissement légal prévus en Tunisie ;
-- des services payants d’accompagnement/préparation de dossier sont envisagés, mais **aucune offre payante, aucun tarif et aucune condition commerciale ne sont encore activés ou finalisés** ;
+- des offres payantes d’accompagnement/préparation de dossier sont désormais **configurées pour le pré-lancement et les tests internes**, avec des versions TND publiées dans le catalogue technique ; cela ne constitue pas une ouverture de la vente au public ni une validation juridique des conditions commerciales ;
 - la politique de conservation et la procédure de suppression proposées dans `docs/A38_RETENTION_POLICY_PROPOSAL.md` sont **APPROUVÉES** par le propriétaire.
 
 Ces confirmations sont des faits/décisions propriétaire. Elles ne remplacent pas la détermination juridique de leur applicabilité par le relecteur final.
@@ -97,9 +97,9 @@ Le propriétaire approuve la proposition opérationnelle suivante, sous réserve
 Pour la Phase 1 :
 
 - l’orientation en ligne est **gratuite** ;
-- les futurs services payants d’accompagnement et de préparation de dossier ne sont **pas encore commercialisés** ;
+- des offres payantes d’accompagnement et de préparation de dossier sont configurées dans le produit pour les tests/pré-lancement, mais ne sont **pas encore ouvertes à la vente publique** ;
 - avant immatriculation/licence, le site doit pouvoir être testé et présenté à des partenaires avec des données synthétiques, sans démarrer le service réel au public ;
-- aucun pack Bronze/Silver/Gold, tarif, paiement ou condition commerciale ne doit être présenté comme actif tant qu’il n’a pas été formellement défini et relu ;
+- les offres et tarifs de test configurés dans le produit ne doivent pas être présentés comme une vente publique active tant que les conditions commerciales n’ont pas été formellement relues et que le gate de lancement n’est pas levé ;
 - avant toute activation commerciale, les conditions applicables devront être finalisées et publiées.
 
 ## Champs humains encore ouverts
