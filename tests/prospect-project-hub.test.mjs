@@ -32,14 +32,17 @@ test("prospect project hub has dedicated destinations instead of anchor-only nav
   }
 });
 
-test("first dashboard centres progress, next action and Campus responsibility", () => {
-  assert.match(dashboard, /ProspectJourneyProgress/);
+test("first dashboard centres lifecycle, next action and responsibility", () => {
+  assert.match(dashboard, /JourneyRail/);
+  assert.match(dashboard, /NextActionPanel/);
+  assert.match(dashboard, /ResponsibilityStrip/);
   assert.match(dashboard, /nextAction/);
   assert.match(dashboard, /campusWork/);
   assert.match(dashboard, /proposalStatus/);
   assert.match(dashboard, /documentsSummary/);
   assert.match(dashboard, /browseCatalogue/);
   assert.match(dashboard, /browseSolutions/);
+  assert.match(dashboard, /prospectWaitingState/);
 });
 
 test("orientation and proposal remain separate product concepts", () => {
