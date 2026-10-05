@@ -414,7 +414,7 @@ test("A3 publishes newly discovered candidates into the reusable public catalogu
   );
   assert.doesNotMatch(
     cataloguePromotionMigrationSource,
-    /grant execute on function public\.publish_orientation_research_catalogue\(\)[\s\S]*to anon/,
+    /grant execute on function public\.publish_orientation_research_catalogue\(\)\s+to (?:anon|authenticated)/,
   );
   assert.match(
     cataloguePromotionMigrationSource,
