@@ -60,6 +60,9 @@ test("Student procedure cockpit uses the Product System and server-owned procedu
   assert.ok(procedure.includes("template_snapshot"));
   assert.ok(procedure.includes("evaluateCampusApplicationDeadline"));
   assert.ok(procedure.includes("buildCampusInternalTargets"));
+  assert.ok(procedure.includes("routeLabels"));
+  assert.ok(procedure.includes("التحضير للدراسة"));
+  assert.ok(procedure.includes("Studienvorbereitung"));
 });
 
 test("primary Student navigation routes operational steps through the procedure cockpit", () => {
