@@ -168,20 +168,20 @@ export default async function ProspectCataloguePage({
   };
 
   return (
-    <main className="space-y-6">
+    <main className="space-y-8">
       <ProspectPageHero eyebrow={t.eyebrow} title={t.title} subtitle={t.subtitle} />
 
       {recommendations.length ? (
-        <section aria-labelledby="prospect-recommended-programmes">
-          <div className="mb-4 flex flex-wrap items-end justify-between gap-4">
+        <section aria-labelledby="prospect-recommended-programmes" className="rounded-[1.4rem] border border-black/[.05] bg-white/55 p-5 shadow-[0_20px_55px_-42px_rgba(0,0,0,.28)] backdrop-blur-sm sm:p-6">
+          <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
             <div>
-              <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">
+              <p className="inline-flex items-center gap-2 text-[11px] font-extrabold uppercase tracking-[0.15em] text-[var(--brand)]">
                 {t.projectMatch}
               </p>
-              <h2 id="prospect-recommended-programmes" className="mt-1 text-2xl font-bold">
+              <h2 id="prospect-recommended-programmes" className="mt-2 text-[clamp(1.55rem,2.5vw,2.15rem)] font-semibold tracking-[-0.035em] text-[#1b1e20]">
                 {t.recommendedTitle}
               </h2>
-              <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
+              <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)] sm:text-[0.95rem]">
                 {t.recommendedSubtitle}
               </p>
             </div>
@@ -198,30 +198,30 @@ export default async function ProspectCataloguePage({
         </section>
       ) : null}
 
-      <section className="overflow-hidden rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow-card)]">
-        <div className="border-b border-[var(--border)] bg-[var(--surface-subtle)] px-5 py-4">
-          <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--brand)]">
+      <section className="overflow-hidden rounded-[1.45rem] border border-black/[.07] bg-white shadow-[0_26px_70px_-44px_rgba(0,0,0,.38)]">
+        <div className="border-b border-white/10 bg-[#17191b] px-5 py-5 text-white sm:px-6 sm:py-6">
+          <p className="text-[11px] font-extrabold uppercase tracking-[0.15em] text-[var(--accent)]">
             {t.generalCatalogue}
           </p>
           <div className="mt-1 flex flex-wrap items-end justify-between gap-3">
             <div>
-              <h2 className="text-2xl font-bold">{t.browseAllTitle}</h2>
-              <p className="mt-1 max-w-3xl text-sm leading-6 text-[var(--muted)]">
+              <h2 className="text-[clamp(1.55rem,2.5vw,2.15rem)] font-semibold tracking-[-0.035em] text-white">{t.browseAllTitle}</h2>
+              <p className="mt-2 max-w-3xl text-sm leading-6 text-white/60">
                 {t.browseAllSubtitle}
               </p>
             </div>
-            <p className="rounded-full border border-[var(--border)] bg-[var(--surface)] px-3 py-1.5 text-xs font-semibold text-[var(--muted)]">
+            <p className="rounded-full border border-white/10 bg-white/10 px-3 py-1.5 text-xs font-semibold text-white/75">
               {t.results(catalogue.length)}
             </p>
           </div>
         </div>
 
-        <form action="/prospect/catalogue" className="p-5">
+        <form action="/prospect/catalogue" className="bg-white p-5 sm:p-6">
           <input type="hidden" name="view" value="all" />
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
             <label className="text-sm font-semibold">
               {t.degree}
-              <select name="degree" defaultValue={degree} className="field mt-2">
+              <select name="degree" defaultValue={degree} className="field mt-2 w-full rounded-xl border-black/10 bg-[#fbfaf7] shadow-none">
                 <option value="">{t.all}</option>
                 {degrees.map((value) => <option key={value} value={value}>{value}</option>)}
               </select>
@@ -229,7 +229,7 @@ export default async function ProspectCataloguePage({
 
             <label className="text-sm font-semibold">
               {t.field}
-              <select name="field" defaultValue={field} className="field mt-2">
+              <select name="field" defaultValue={field} className="field mt-2 w-full rounded-xl border-black/10 bg-[#fbfaf7] shadow-none">
                 <option value="">{t.all}</option>
                 {fields.map((value) => <option key={value} value={value}>{value}</option>)}
               </select>
@@ -237,7 +237,7 @@ export default async function ProspectCataloguePage({
 
             <label className="text-sm font-semibold">
               {t.city}
-              <select name="city" defaultValue={city} className="field mt-2">
+              <select name="city" defaultValue={city} className="field mt-2 w-full rounded-xl border-black/10 bg-[#fbfaf7] shadow-none">
                 <option value="">{t.all}</option>
                 {cities.map((value) => <option key={value} value={value}>{value}</option>)}
               </select>
@@ -245,7 +245,7 @@ export default async function ProspectCataloguePage({
 
             <label className="text-sm font-semibold">
               {t.university}
-              <select name="university" defaultValue={university} className="field mt-2">
+              <select name="university" defaultValue={university} className="field mt-2 w-full rounded-xl border-black/10 bg-[#fbfaf7] shadow-none">
                 <option value="">{t.all}</option>
                 {universities.map(({ id, name }) => (
                   <option key={id} value={name}>{name}</option>
@@ -254,17 +254,17 @@ export default async function ProspectCataloguePage({
             </label>
           </div>
 
-          <div className="mt-5 flex flex-col gap-4 border-t border-[var(--border)] pt-4 sm:flex-row sm:items-end sm:justify-between">
+          <div className="mt-6 flex flex-col gap-4 border-t border-black/[.06] pt-5 sm:flex-row sm:items-end sm:justify-between">
             <div className="flex flex-wrap gap-3">
               <button
                 type="submit"
-                className="inline-flex min-h-11 items-center rounded-[var(--radius-control)] bg-[var(--brand)] px-5 text-sm font-bold text-white transition hover:bg-[var(--brand-strong)]"
+                className="inline-flex min-h-11 items-center rounded-xl bg-[var(--brand)] px-5 text-sm font-bold text-white shadow-[0_12px_28px_-16px_rgba(216,6,33,.85)] transition-all duration-200 hover:-translate-y-px hover:bg-[var(--brand-strong)] hover:shadow-md"
               >
                 {t.apply}
               </button>
               <Link
                 href="/prospect/catalogue?view=all"
-                className="inline-flex min-h-11 items-center rounded-[var(--radius-control)] border border-[var(--border-strong)] bg-[var(--surface)] px-5 text-sm font-semibold transition hover:border-[var(--brand-border)] hover:bg-[var(--surface-subtle)]"
+                className="inline-flex min-h-11 items-center rounded-xl border border-black/10 bg-white px-5 text-sm font-semibold text-[#202326] shadow-sm transition-all duration-200 hover:-translate-y-px hover:border-black/20 hover:bg-[#faf8f3] hover:shadow-md"
               >
                 {t.reset}
               </Link>
@@ -272,7 +272,7 @@ export default async function ProspectCataloguePage({
 
             <label className="min-w-56 text-sm font-semibold">
               {t.sort}
-              <select name="sort" defaultValue={sort} className="field mt-2">
+              <select name="sort" defaultValue={sort} className="field mt-2 w-full rounded-xl border-black/10 bg-[#fbfaf7] shadow-none">
                 <option value="relevance">{t.sortRelevance}</option>
                 <option value="university">{t.sortUniversity}</option>
                 <option value="city">{t.sortCity}</option>
@@ -283,10 +283,10 @@ export default async function ProspectCataloguePage({
       </section>
 
       {showGeneralResults ? (
-        <section aria-labelledby="prospect-catalogue-results">
+        <section aria-labelledby="prospect-catalogue-results" className="pt-1">
           <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
             <div>
-              <h2 id="prospect-catalogue-results" className="text-2xl font-bold">
+              <h2 id="prospect-catalogue-results" className="text-[clamp(1.55rem,2.5vw,2.15rem)] font-semibold tracking-[-0.035em] text-white">
                 {t.browseAllTitle}
               </h2>
               <p className="mt-1 text-sm text-[var(--muted)]" aria-live="polite">
@@ -307,14 +307,14 @@ export default async function ProspectCataloguePage({
               ))}
             </div>
           ) : (
-            <div className="rounded-[var(--radius-panel)] border border-dashed border-[var(--border-strong)] bg-[var(--surface)] p-8 text-center text-sm text-[var(--muted)]">
+            <div className="rounded-[1.35rem] border border-dashed border-black/15 bg-white/70 p-10 text-center text-sm text-[var(--muted)] shadow-[0_18px_50px_-40px_rgba(0,0,0,.3)]">
               {t.noResults}
             </div>
           )}
         </section>
       ) : null}
 
-      <p className="rounded-[var(--radius-control)] border border-[var(--brand-border)] bg-[var(--brand-soft)] p-4 text-xs leading-5 text-[var(--foreground)]">
+      <p className="rounded-[1.15rem] border border-[#ead59a] bg-[#fff9e9] p-4 text-xs leading-5 text-[#4f4631] shadow-[0_16px_42px_-36px_rgba(139,98,0,.35)]">
         {t.boundary}
       </p>
     </main>

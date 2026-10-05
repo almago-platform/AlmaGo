@@ -355,7 +355,7 @@ export default async function ProspectDashboardPage() {
   };
 
   return (
-    <main className="space-y-5">
+    <main className="space-y-7">
       <DossierHeader
         eyebrow={v2.space}
         title={t.title}
@@ -368,7 +368,7 @@ export default async function ProspectDashboardPage() {
         }))}
       />
 
-      <section className="space-y-3">
+      <section className="space-y-4">
         <SectionHeader eyebrow={v2.lifecycle} title={t.progress} />
         <JourneyRail steps={lifecycleSteps} />
       </section>
@@ -393,7 +393,7 @@ export default async function ProspectDashboardPage() {
           waiting ? undefined : (
             <Link
               href={action.href}
-              className="inline-flex min-h-11 items-center justify-center rounded-[var(--radius-control)] bg-[var(--brand)] px-5 text-sm font-semibold text-white transition hover:bg-[var(--brand-strong)]"
+              className="inline-flex min-h-11 items-center justify-center rounded-xl bg-[var(--brand)] px-5 text-sm font-bold text-white shadow-[0_12px_28px_-16px_rgba(216,6,33,.85)] transition-all duration-200 hover:-translate-y-px hover:bg-[var(--brand-strong)] hover:shadow-md"
             >
               {action.label}
             </Link>
@@ -421,19 +421,19 @@ export default async function ProspectDashboardPage() {
         ]}
       />
 
-      <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 sm:p-6">
+      <section className="overflow-hidden rounded-[1.35rem] border border-black/[.07] bg-white p-5 shadow-[0_22px_60px_-42px_rgba(0,0,0,.34)] sm:p-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="min-w-0">
-            <p className="text-[0.68rem] font-bold uppercase tracking-[0.12em] text-[var(--brand)]">
+            <p className="text-[0.68rem] font-extrabold uppercase tracking-[0.15em] text-[var(--brand)]">
               {t.proposal}
             </p>
-            <h2 className="mt-2 text-xl font-semibold text-[var(--foreground)]">
+            <h2 className="mt-2 text-[1.35rem] font-semibold tracking-[-0.025em] text-[#202326]">
               {proposalStatus(state.intake, t)}
             </h2>
           </div>
           <Link
             href="/prospect/proposal"
-            className="inline-flex min-h-10 shrink-0 items-center justify-center rounded-[var(--radius-control)] border border-[var(--border-strong)] bg-[var(--surface)] px-4 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--brand-border)]"
+            className="inline-flex min-h-10 shrink-0 items-center justify-center rounded-xl border border-black/10 bg-white px-4 text-sm font-semibold text-[#202326] shadow-sm transition-all duration-200 hover:-translate-y-px hover:border-black/20 hover:shadow-md"
           >
             {t.viewProposal}
           </Link>
@@ -441,26 +441,26 @@ export default async function ProspectDashboardPage() {
       </section>
 
       {recommendations.length ? (
-        <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[var(--shadow-card)] sm:p-6">
+        <section className="rounded-[1.4rem] border border-black/[.06] bg-white/75 p-5 shadow-[0_24px_64px_-44px_rgba(0,0,0,.34)] backdrop-blur-sm sm:p-6">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
-              <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--brand)]">
+              <p className="text-[11px] font-extrabold uppercase tracking-[0.15em] text-[var(--brand)]">
                 {catalogueT.projectMatch}
               </p>
-              <h2 className="mt-1 text-2xl font-bold">{t.recommendedTitle}</h2>
-              <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
+              <h2 className="mt-2 text-[clamp(1.5rem,2.4vw,2rem)] font-semibold tracking-[-0.035em] text-[#1b1e20]">{t.recommendedTitle}</h2>
+              <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)] sm:text-[0.95rem]">
                 {t.recommendedText}
               </p>
             </div>
             <Link
               href="/prospect/catalogue"
-              className="inline-flex min-h-10 items-center rounded-[var(--radius-control)] border border-[var(--border-strong)] bg-[var(--surface)] px-4 text-sm font-semibold transition hover:border-[var(--brand-border)]"
+              className="inline-flex min-h-10 items-center rounded-xl border border-black/10 bg-white px-4 text-sm font-semibold text-[#202326] shadow-sm transition-all duration-200 hover:-translate-y-px hover:border-black/20 hover:shadow-md"
             >
               {t.recommendedViewAll}
             </Link>
           </div>
 
-          <div className="mt-5 grid gap-4 xl:grid-cols-3">
+          <div className="mt-6 grid gap-4 xl:grid-cols-3">
             {recommendations.map((recommendation) => (
               <ProspectProgrammeRecommendationCard
                 key={recommendation.programme.id}
@@ -482,33 +482,33 @@ export default async function ProspectDashboardPage() {
 
       <nav
         aria-label={t.browseTitle}
-        className="grid gap-2 rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-3 shadow-[var(--shadow-card)] sm:grid-cols-3"
+        className="grid gap-2 rounded-[1.25rem] border border-black/[.06] bg-[#17191b] p-2.5 text-white shadow-[0_24px_60px_-40px_rgba(0,0,0,.55)] sm:grid-cols-3"
       >
         <Link
           href="/prospect/catalogue"
-          className="rounded-[var(--radius-control)] px-4 py-3 text-sm font-semibold transition hover:bg-[var(--surface-subtle)]"
+          className="rounded-xl px-4 py-3.5 text-sm font-semibold text-white/82 transition-all duration-200 hover:bg-white/[.08] hover:text-white"
         >
           {t.browseCatalogue} →
         </Link>
         <Link
           href="/prospect/solutions"
-          className="rounded-[var(--radius-control)] px-4 py-3 text-sm font-semibold transition hover:bg-[var(--surface-subtle)]"
+          className="rounded-xl px-4 py-3.5 text-sm font-semibold text-white/82 transition-all duration-200 hover:bg-white/[.08] hover:text-white"
         >
           {t.browseSolutions} →
         </Link>
         <Link
           href="/prospect/orientation"
-          className="rounded-[var(--radius-control)] px-4 py-3 text-sm font-semibold transition hover:bg-[var(--surface-subtle)]"
+          className="rounded-xl px-4 py-3.5 text-sm font-semibold text-white/82 transition-all duration-200 hover:bg-white/[.08] hover:text-white"
         >
           {t.updateProject} →
         </Link>
       </nav>
 
       {state.current ? (
-        <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-4 shadow-[var(--shadow-card)] sm:p-5">
+        <section className="rounded-[1.3rem] border border-black/[.07] bg-white/80 p-5 shadow-[0_20px_55px_-42px_rgba(0,0,0,.3)] sm:p-6">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="min-w-0">
-              <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--brand)]">
+              <p className="text-[11px] font-extrabold uppercase tracking-[0.15em] text-[var(--brand)]">
                 {t.project}
               </p>
               <h2 className="mt-1 text-lg font-bold">
@@ -517,7 +517,7 @@ export default async function ProspectDashboardPage() {
             </div>
             <Link
               href="/prospect/orientation"
-              className="inline-flex min-h-10 shrink-0 items-center rounded-[var(--radius-control)] border border-[var(--border-strong)] px-4 text-sm font-semibold transition hover:border-[var(--brand-border)]"
+              className="inline-flex min-h-10 shrink-0 items-center rounded-xl border border-black/10 bg-white px-4 text-sm font-semibold text-[#202326] shadow-sm transition-all duration-200 hover:-translate-y-px hover:border-black/20 hover:shadow-md"
             >
               {t.updateProject}
             </Link>
@@ -553,11 +553,11 @@ export default async function ProspectDashboardPage() {
           ) : null}
         </section>
       ) : (
-        <section className="rounded-[var(--radius-panel)] border border-dashed border-[var(--border-strong)] bg-[var(--surface)] p-6 text-center">
+        <section className="rounded-[1.35rem] border border-dashed border-black/15 bg-white/70 p-8 text-center shadow-[0_18px_50px_-40px_rgba(0,0,0,.3)]">
           <h2 className="text-xl font-bold">{t.noOrientation}</h2>
           <Link
             href="/prospect/orientation"
-            className="mt-5 inline-flex min-h-11 items-center rounded-[var(--radius-control)] bg-[var(--brand)] px-5 text-sm font-bold text-white"
+            className="mt-5 inline-flex min-h-11 items-center rounded-xl bg-[var(--brand)] px-5 text-sm font-bold text-white shadow-[0_12px_28px_-16px_rgba(216,6,33,.85)] transition-all hover:-translate-y-px hover:bg-[var(--brand-strong)]"
           >
             {t.startOrientation}
           </Link>
