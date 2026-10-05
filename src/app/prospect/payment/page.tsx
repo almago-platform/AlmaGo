@@ -163,7 +163,7 @@ export default async function ProspectPaymentPage() {
     ];
 
     return (
-      <main className="space-y-6">
+      <main className="space-y-8">
         <DossierHeader
           eyebrow={copy.eyebrow}
           title={copy.title}
@@ -184,7 +184,7 @@ export default async function ProspectPaymentPage() {
           action={
             <Link
               href="/prospect/proposal"
-              className="inline-flex min-h-11 items-center justify-center rounded-[var(--radius-control)] bg-white px-5 text-sm font-semibold text-[var(--foreground)]"
+              className="inline-flex min-h-11 items-center justify-center rounded-xl bg-white px-5 text-sm font-bold text-[#17191b] shadow-md transition-all duration-200 hover:-translate-y-px hover:shadow-lg"
             >
               {copy.proposalCta}
             </Link>
@@ -341,7 +341,7 @@ export default async function ProspectPaymentPage() {
   ].sort((left, right) => right.sortKey - left.sortKey);
 
   return (
-    <main className="space-y-6">
+    <main className="space-y-8">
       <DossierHeader
         eyebrow={copy.eyebrow}
         title={copy.title}
@@ -375,8 +375,8 @@ export default async function ProspectPaymentPage() {
               href={next.href}
               className={
                 next.waiting
-                  ? "inline-flex min-h-11 items-center justify-center rounded-[var(--radius-control)] border border-[var(--border-strong)] bg-[var(--surface)] px-5 text-sm font-semibold text-[var(--foreground)]"
-                  : "inline-flex min-h-11 items-center justify-center rounded-[var(--radius-control)] bg-white px-5 text-sm font-semibold text-[var(--foreground)]"
+                  ? "inline-flex min-h-11 items-center justify-center rounded-xl border border-black/10 bg-white px-5 text-sm font-semibold text-[#202326] shadow-sm transition-all duration-200 hover:-translate-y-px hover:border-black/20 hover:shadow-md"
+                  : "inline-flex min-h-11 items-center justify-center rounded-xl bg-white px-5 text-sm font-bold text-[#17191b] shadow-md transition-all duration-200 hover:-translate-y-px hover:shadow-lg"
               }
             >
               {next.label}
@@ -409,7 +409,7 @@ export default async function ProspectPaymentPage() {
       />
 
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(18rem,0.55fr)]">
-        <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 sm:p-6">
+        <section className="rounded-[1.35rem] border border-black/[.07] bg-white p-5 shadow-[0_22px_60px_-42px_rgba(0,0,0,.34)] sm:p-6">
           <SectionHeader
             eyebrow={offerName(latest.offer_snapshot) || copy.eyebrow}
             title={copy.statuses[latest.status]}
@@ -432,7 +432,7 @@ export default async function ProspectPaymentPage() {
           />
         </section>
 
-        <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 sm:p-6">
+        <section className="rounded-[1.35rem] border border-black/[.07] bg-white p-5 shadow-[0_22px_60px_-42px_rgba(0,0,0,.34)] sm:p-6">
           <SectionHeader
             eyebrow={copy.history}
             title={copy.history}

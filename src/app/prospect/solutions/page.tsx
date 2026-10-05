@@ -140,7 +140,7 @@ export default async function ProspectSolutionsPage() {
 
       <section aria-labelledby="prospect-language-solutions">
         <div className="mb-4">
-          <h2 id="prospect-language-solutions" className="text-2xl font-bold">{t.language}</h2>
+          <h2 id="prospect-language-solutions" className="text-[clamp(1.55rem,2.5vw,2.1rem)] font-semibold tracking-[-0.035em] text-[#1c1f21]">{t.language}</h2>
           <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">{t.languageText}</p>
         </div>
 
@@ -158,10 +158,10 @@ export default async function ProspectSolutionsPage() {
               return (
                 <article
                   key={course.id}
-                  className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[var(--shadow-card)] transition hover:border-[var(--brand-border)]"
+                  className="rounded-[1.35rem] border border-black/[.07] bg-white p-5 shadow-[0_22px_60px_-42px_rgba(0,0,0,.34)] transition-all duration-300 hover:-translate-y-1 hover:border-[var(--brand-border)] hover:shadow-[0_30px_72px_-42px_rgba(0,0,0,.42)] sm:p-6"
                 >
                   <div className="flex flex-wrap items-center justify-between gap-2">
-                    <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--brand)]">
+                    <p className="text-[11px] font-extrabold uppercase tracking-[0.16em] text-[var(--brand)]">
                       <bdi dir="auto">{course.provider_name}</bdi>
                     </p>
                     {isPreferredCity ? (
@@ -170,15 +170,15 @@ export default async function ProspectSolutionsPage() {
                       </span>
                     ) : null}
                   </div>
-                  <h3 className="mt-2 text-xl font-bold"><bdi dir="auto">{course.title}</bdi></h3>
+                  <h3 className="mt-2 text-xl font-semibold tracking-[-0.025em] text-[#202326]"><bdi dir="auto">{course.title}</bdi></h3>
                   <div className="mt-3 flex flex-wrap gap-2 text-xs">
                     {course.city ? (
-                      <span className="rounded-full bg-[var(--surface-subtle)] px-2.5 py-1">
+                      <span className="rounded-full border border-black/[.05] bg-[#f3f0ea] px-2.5 py-1">
                         <bdi dir="auto">{course.city}</bdi>
                       </span>
                     ) : null}
-                    {level ? <span className="rounded-full bg-[var(--surface-subtle)] px-2.5 py-1">{level}</span> : null}
-                    {price ? <span className="rounded-full bg-[var(--surface-subtle)] px-2.5 py-1">{price}</span> : null}
+                    {level ? <span className="rounded-full border border-black/[.05] bg-[#f3f0ea] px-2.5 py-1">{level}</span> : null}
+                    {price ? <span className="rounded-full border border-black/[.05] bg-[#f3f0ea] px-2.5 py-1">{price}</span> : null}
                   </div>
                   <div className="mt-5 flex flex-wrap gap-3">
                     {course.source_url ? (
@@ -186,7 +186,7 @@ export default async function ProspectSolutionsPage() {
                         href={course.source_url}
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-flex min-h-10 items-center rounded-[var(--radius-control)] border border-[var(--border-strong)] px-4 text-sm font-semibold"
+                        className="inline-flex min-h-10 items-center rounded-xl border border-black/10 bg-white px-4 text-sm font-semibold text-[#202326] shadow-sm transition-all duration-200 hover:-translate-y-px hover:border-black/20 hover:shadow-md"
                       >
                         {t.official}
                       </a>
@@ -196,7 +196,7 @@ export default async function ProspectSolutionsPage() {
                         href={course.application_url}
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-flex min-h-10 items-center rounded-[var(--radius-control)] bg-[var(--brand)] px-4 text-sm font-bold text-white"
+                        className="inline-flex min-h-10 items-center rounded-xl bg-[var(--brand)] px-4 text-sm font-bold text-white shadow-[0_12px_28px_-16px_rgba(216,6,33,.85)] transition-all duration-200 hover:-translate-y-px hover:bg-[var(--brand-strong)] hover:shadow-md"
                       >
                         {t.provider}
                       </a>
@@ -207,7 +207,7 @@ export default async function ProspectSolutionsPage() {
             })}
           </div>
         ) : (
-          <div className="rounded-[var(--radius-panel)] border border-dashed border-[var(--border-strong)] bg-[var(--surface)] p-6 text-sm text-[var(--muted)]">
+          <div className="rounded-[1.25rem] border border-dashed border-black/15 bg-white/70 p-6 text-sm text-[var(--muted)] shadow-[0_18px_50px_-40px_rgba(0,0,0,.3)]">
             {t.empty}
           </div>
         )}
@@ -215,7 +215,7 @@ export default async function ProspectSolutionsPage() {
 
       <section aria-labelledby="prospect-finance-solutions">
         <div className="mb-4">
-          <h2 id="prospect-finance-solutions" className="text-2xl font-bold">{t.finance}</h2>
+          <h2 id="prospect-finance-solutions" className="text-[clamp(1.55rem,2.5vw,2.1rem)] font-semibold tracking-[-0.035em] text-[#1c1f21]">{t.finance}</h2>
           <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">{t.financeText}</p>
         </div>
 
@@ -234,24 +234,24 @@ export default async function ProspectSolutionsPage() {
                     {options.map((option) => (
                       <article
                         key={option.id}
-                        className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[var(--shadow-card)] transition hover:border-[var(--brand-border)]"
+                        className="rounded-[1.35rem] border border-black/[.07] bg-white p-5 shadow-[0_22px_60px_-42px_rgba(0,0,0,.34)] transition-all duration-300 hover:-translate-y-1 hover:border-[var(--brand-border)] hover:shadow-[0_30px_72px_-42px_rgba(0,0,0,.42)] sm:p-6"
                       >
-                        <p className="text-sm font-bold text-[var(--brand)]"><bdi dir="auto">{option.provider_name}</bdi></p>
+                        <p className="text-[11px] font-extrabold uppercase tracking-[0.14em] text-[var(--brand)]"><bdi dir="auto">{option.provider_name}</bdi></p>
                         {option.product_name ? (
-                          <h4 className="mt-1 text-lg font-bold"><bdi dir="auto">{option.product_name}</bdi></h4>
+                          <h4 className="mt-2 text-xl font-semibold tracking-[-0.025em] text-[#202326]"><bdi dir="auto">{option.product_name}</bdi></h4>
                         ) : null}
                         {option.description ? (
                           <p className="mt-3 text-sm leading-6 text-[var(--muted)]">{option.description}</p>
                         ) : null}
                         <dl className="mt-4 grid gap-2 text-sm">
                           {option.price_notes ? (
-                            <div className="rounded-[var(--radius-control)] bg-[var(--surface-subtle)] p-3">
+                            <div className="rounded-xl border border-black/[.05] bg-[#f6f3ed] p-3.5">
                               <dt className="font-semibold">{financeCopy.facts.price}</dt>
                               <dd className="mt-1 text-[var(--muted)]">{option.price_notes}</dd>
                             </div>
                           ) : null}
                           {option.eligibility_notes ? (
-                            <div className="rounded-[var(--radius-control)] bg-[var(--surface-subtle)] p-3">
+                            <div className="rounded-xl border border-black/[.05] bg-[#f6f3ed] p-3.5">
                               <dt className="font-semibold">{financeCopy.facts.eligibility}</dt>
                               <dd className="mt-1 text-[var(--muted)]">{option.eligibility_notes}</dd>
                             </div>
@@ -262,7 +262,7 @@ export default async function ProspectSolutionsPage() {
                             href={option.official_source_url}
                             target="_blank"
                             rel="noreferrer"
-                            className="inline-flex min-h-10 items-center rounded-[var(--radius-control)] border border-[var(--border-strong)] px-4 text-sm font-semibold"
+                            className="inline-flex min-h-10 items-center rounded-xl border border-black/10 bg-white px-4 text-sm font-semibold text-[#202326] shadow-sm transition-all duration-200 hover:-translate-y-px hover:border-black/20 hover:shadow-md"
                           >
                             {t.official}
                           </a>
@@ -271,7 +271,7 @@ export default async function ProspectSolutionsPage() {
                               href={option.application_url}
                               target="_blank"
                               rel="noreferrer"
-                              className="inline-flex min-h-10 items-center rounded-[var(--radius-control)] bg-[var(--brand)] px-4 text-sm font-bold text-white"
+                              className="inline-flex min-h-10 items-center rounded-xl bg-[var(--brand)] px-4 text-sm font-bold text-white shadow-[0_12px_28px_-16px_rgba(216,6,33,.85)] transition-all duration-200 hover:-translate-y-px hover:bg-[var(--brand-strong)] hover:shadow-md"
                             >
                               {t.provider}
                             </a>
@@ -281,7 +281,7 @@ export default async function ProspectSolutionsPage() {
                     ))}
                   </div>
                 ) : (
-                  <div className="mt-4 rounded-[var(--radius-control)] border border-dashed border-[var(--border-strong)] bg-[var(--surface)] p-5 text-sm text-[var(--muted)]">
+                  <div className="mt-4 rounded-[1.15rem] border border-dashed border-black/15 bg-white/70 p-5 text-sm text-[var(--muted)]">
                     {t.empty}
                   </div>
                 )}
@@ -291,7 +291,7 @@ export default async function ProspectSolutionsPage() {
         </div>
       </section>
 
-      <p className="rounded-[var(--radius-control)] border border-[var(--brand-border)] bg-[var(--brand-soft)] p-4 text-xs leading-5">
+      <p className="rounded-[1.15rem] border border-[#ead59a] bg-[#fff9e9] p-4 text-xs leading-5 text-[#504832] shadow-[0_16px_42px_-36px_rgba(139,98,0,.35)]">
         {t.boundary}
       </p>
     </main>

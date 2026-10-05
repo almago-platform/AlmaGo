@@ -180,22 +180,22 @@ export function ProspectJourneyProgress(props: {
 
   return (
     <div>
-      <div className="mb-2.5 flex items-center justify-between gap-3 text-sm">
-        <span className="font-semibold text-[var(--foreground)]">
+      <div className="mb-3 flex items-center justify-between gap-3 text-sm">
+        <span className="font-bold text-[#202326]">
           {currentStepNumber}/{steps.length} {copy.count}
         </span>
-        <span className="tabular-nums text-[var(--muted)]">{percent}%</span>
+        <span className="rounded-full bg-[#17191b] px-2.5 py-1 text-[11px] font-bold tabular-nums text-white">{percent}%</span>
       </div>
-      <div className="h-1.5 overflow-hidden rounded-full bg-[var(--surface-muted)]">
+      <div className="h-2 overflow-hidden rounded-full bg-[#e9e5de]">
         <div
-          className="h-full rounded-full bg-[var(--brand)] transition-[width]"
+          className="h-full rounded-full bg-[linear-gradient(90deg,var(--brand),#f03248)] shadow-[0_0_16px_rgba(216,6,33,.18)] transition-[width] duration-500"
           style={{ width: `${percent}%` }}
           aria-hidden="true"
         />
       </div>
 
       <ol
-        className={`mt-4 grid overflow-hidden rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--border)] gap-px sm:grid-cols-2 xl:grid-cols-5 ${props.compact ? "" : "shadow-[var(--shadow-card)]"}`}
+        className={`mt-5 grid overflow-hidden rounded-[1.2rem] border border-black/[.07] bg-black/[.05] gap-px sm:grid-cols-2 xl:grid-cols-5 ${props.compact ? "" : "shadow-[0_22px_60px_-42px_rgba(0,0,0,.34)]"}`}
       >
         {steps.map((step, index) => {
           const state = index < activeIndex
@@ -207,27 +207,27 @@ export function ProspectJourneyProgress(props: {
                 : "later";
 
           const surfaceClass = state === "current"
-            ? "bg-[var(--brand-soft)]"
+            ? "bg-[linear-gradient(180deg,#fff0f2,#fff8f8)]"
             : state === "done"
-              ? "bg-emerald-50/70"
+              ? "bg-[#f0f8f3]"
               : state === "next"
-                ? "bg-[var(--accent-light)]/45"
-                : "bg-[var(--surface)]";
+                ? "bg-[#fff9e9]"
+                : "bg-white";
 
           return (
             <li key={step.key} className="min-w-0">
               <Link
                 href={step.href}
                 aria-current={state === "current" ? "step" : undefined}
-                className={`flex min-h-full items-center gap-2.5 px-3 ${props.compact ? "py-2.5" : "py-3"} text-sm transition-colors hover:bg-[var(--surface-subtle)] ${surfaceClass}`}
+                className={`flex min-h-full items-center gap-2.5 px-3 ${props.compact ? "py-2.5" : "py-3"} text-sm transition-all duration-200 hover:bg-[#f6f3ed] ${surfaceClass}`}
               >
                 <span
                   aria-hidden="true"
                   className={`flex size-5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold ${state === "done"
-                    ? "bg-emerald-600 text-white"
+                    ? "bg-[#17191b] text-white"
                     : state === "current"
-                      ? "bg-[var(--brand)] text-white"
-                      : "bg-[var(--surface-muted)] text-[var(--muted)]"}`}
+                      ? "bg-[var(--brand)] text-white shadow-[0_0_0_4px_rgba(216,6,33,.08)]"
+                      : "bg-white text-[#73797d] ring-1 ring-inset ring-black/10"}`}
                 >
                   {state === "done" ? "✓" : index + 1}
                 </span>

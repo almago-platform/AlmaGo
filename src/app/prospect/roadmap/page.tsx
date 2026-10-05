@@ -166,14 +166,14 @@ export default async function ProspectRoadmapPage() {
   const futureSteps = journey.slice(current + 2);
 
   return (
-    <main className="space-y-6">
+    <main className="space-y-8">
       <ProspectPageHero
         eyebrow={t.eyebrow}
         title={t.title}
         subtitle={t.subtitle}
       />
 
-      <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 sm:p-6">
+      <section className="rounded-[1.35rem] border border-black/[.07] bg-white/80 p-5 shadow-[0_22px_60px_-42px_rgba(0,0,0,.34)] backdrop-blur-sm sm:p-6">
         <ProspectJourneyProgress
           hasOrientation={Boolean(state.current)}
           orientationConfirmed={state.orientationConfirmed}
@@ -185,30 +185,30 @@ export default async function ProspectRoadmapPage() {
       </section>
 
       <section className="grid gap-4 xl:grid-cols-[1.25fr_0.9fr]">
-        <article className="rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--brand-soft)] p-5 shadow-[var(--shadow-card)] sm:p-6">
-          <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--brand)]">
+        <article className="relative overflow-hidden rounded-[1.4rem] border border-[var(--brand-border)]/70 bg-[linear-gradient(135deg,#fff0f2,#fffaf9)] p-5 shadow-[0_26px_70px_-44px_rgba(216,6,33,.34)] sm:p-6">
+          <p className="text-[11px] font-extrabold uppercase tracking-[0.16em] text-[var(--brand)]">
             {String(current + 1).padStart(2, "0")} · {t.current}
           </p>
-          <h2 className="mt-2 text-2xl font-bold">{currentStep.title}</h2>
+          <h2 className="mt-2 text-[clamp(1.55rem,2.5vw,2.15rem)] font-semibold tracking-[-0.035em] text-[#1c1f21]">{currentStep.title}</h2>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--muted)]">{currentStep.body}</p>
           <Link
             href={currentStep.href}
-            className="mt-5 inline-flex min-h-11 items-center rounded-[var(--radius-control)] bg-[var(--brand)] px-5 text-sm font-bold text-white transition hover:bg-[var(--brand-strong)]"
+            className="mt-5 inline-flex min-h-11 items-center rounded-xl bg-[var(--brand)] px-5 text-sm font-bold text-white shadow-[0_12px_28px_-16px_rgba(216,6,33,.85)] transition-all duration-200 hover:-translate-y-px hover:bg-[var(--brand-strong)] hover:shadow-md"
           >
             {t.current}
           </Link>
         </article>
 
         {nextStep ? (
-          <article className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[var(--shadow-card)] sm:p-6">
-            <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--muted)]">
+          <article className="rounded-[1.35rem] border border-black/[.07] bg-white p-5 shadow-[0_22px_60px_-42px_rgba(0,0,0,.34)] sm:p-6">
+            <p className="text-[11px] font-extrabold uppercase tracking-[0.14em] text-[#74797d]">
               {String(current + 2).padStart(2, "0")} · {t.next}
             </p>
-            <h2 className="mt-2 text-xl font-bold">{nextStep.title}</h2>
+            <h2 className="mt-2 text-xl font-semibold tracking-[-0.025em] text-[#202326]">{nextStep.title}</h2>
             <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{nextStep.body}</p>
             <Link
               href={nextStep.href}
-              className="mt-5 inline-flex min-h-10 items-center rounded-[var(--radius-control)] border border-[var(--border-strong)] bg-[var(--surface)] px-4 text-sm font-semibold transition hover:border-[var(--brand-border)]"
+              className="mt-5 inline-flex min-h-10 items-center rounded-xl border border-black/10 bg-white px-4 text-sm font-semibold text-[#202326] shadow-sm transition-all duration-200 hover:-translate-y-px hover:border-black/20 hover:shadow-md"
             >
               {t.next}
             </Link>
@@ -219,11 +219,11 @@ export default async function ProspectRoadmapPage() {
       {(completedSteps.length || futureSteps.length) ? (
         <section className="grid gap-4 lg:grid-cols-2">
           {completedSteps.length ? (
-            <details className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-4 shadow-[var(--shadow-card)]">
+            <details className="rounded-[1.25rem] border border-black/[.07] bg-white p-4 shadow-[0_18px_52px_-42px_rgba(0,0,0,.3)]">
               <summary className="cursor-pointer font-bold">{t.completedGroup}</summary>
               <div className="mt-3 grid gap-2">
                 {completedSteps.map((step, index) => (
-                  <div key={step.title} className="flex items-center gap-3 rounded-[var(--radius-control)] bg-emerald-50/70 px-3 py-2.5">
+                  <div key={step.title} className="flex items-center gap-3 rounded-xl border border-[#b7dfcd] bg-[#edf8f3] px-3.5 py-3">
                     <span className="flex size-6 items-center justify-center rounded-full bg-emerald-600 text-[11px] font-bold text-white">✓</span>
                     <div>
                       <p className="text-sm font-semibold">{step.title}</p>
@@ -236,14 +236,14 @@ export default async function ProspectRoadmapPage() {
           ) : null}
 
           {futureSteps.length ? (
-            <details className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-4 shadow-[var(--shadow-card)]">
+            <details className="rounded-[1.25rem] border border-black/[.07] bg-white p-4 shadow-[0_18px_52px_-42px_rgba(0,0,0,.3)]">
               <summary className="cursor-pointer font-bold">{t.futureGroup}</summary>
               <div className="mt-3 grid gap-2">
                 {futureSteps.map((step, index) => (
                   <Link
                     key={step.title}
                     href={step.href}
-                    className="flex items-center justify-between gap-3 rounded-[var(--radius-control)] bg-[var(--surface-subtle)] px-3 py-2.5 text-sm font-semibold transition hover:bg-[var(--brand-soft)]"
+                    className="flex items-center justify-between gap-3 rounded-xl border border-black/[.05] bg-[#f6f3ed] px-3.5 py-3 text-sm font-semibold transition-all duration-200 hover:-translate-y-px hover:bg-[var(--brand-soft)]"
                   >
                     <span>{step.title}</span>
                     <span className="text-xs font-normal text-[var(--muted)]">
