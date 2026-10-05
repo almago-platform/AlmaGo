@@ -265,7 +265,13 @@ Sous `ALMAGO_PARTNER_PRELAUNCH_MODE`, la vraie capture prospect publique reste d
 
 Avant activation réelle, suivre le gate `docs/FREE_VALIDATION_PRIVACY_GATE.md` et l’Issue #717.
 
-## 13. Décisions encore nécessaires pour A38
+## 13. Configuration commerciale de pré-lancement observée
+
+Le code et la base contiennent désormais un catalogue d’offres versionné pour les tests/pré-lancement, avec des versions publiées en TND, ainsi qu’un flux administratif de validation manuelle du paiement. Ces mécanismes techniques ne démontrent pas qu’une vente publique est juridiquement ouverte ou autorisée.
+
+Avant toute ouverture commerciale réelle, les conditions applicables, prix publics définitifs, modalités de paiement, annulation/remboursement et obligations consommateur doivent être finalisés et relus.
+
+## 14. Décisions encore nécessaires pour A38
 
 Le propriétaire doit confirmer :
 - identité légale de l’éditeur/exploitant ;
@@ -280,7 +286,7 @@ Le propriétaire doit confirmer :
 - base/consentement applicable au futur analytics selon la décision juridique ;
 - personne responsable de la relecture juridique finale.
 
-## 14. Principe de publication
+## 15. Principe de publication
 
 Aucune page juridique ne doit être présentée comme « validée » tant que :
 1. les informations publiques ci-dessus ne sont pas confirmées ;
