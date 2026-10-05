@@ -166,12 +166,12 @@ export function AdminOrientationPanel({
                   <ProfileItem label="Langue" value={selected.study_language || "À confirmer"} />
                   <ProfileItem label="Moyenne" value={selected.general_average || "À confirmer"} />
                 </dl>
-                <p className="mt-3 text-xs leading-5 text-slate-500">
+                <p className="mt-3 text-xs leading-5 text-[var(--muted)]">
                   Villes préférées : {selected.preferred_cities?.join(", ") || "à confirmer"}
                 </p>
               </section>
             ) : (
-              <p className="text-sm leading-6 text-slate-500">
+              <p className="text-sm leading-6 text-[var(--muted)]">
                 Choisissez d’abord un étudiant pour afficher les éléments de profil disponibles.
               </p>
             )}
@@ -333,7 +333,7 @@ export function AdminOrientationPanel({
                   </div>
 
                   <div className="mt-4 flex flex-col gap-3 border-t border-[var(--border)] pt-4 sm:flex-row sm:items-center sm:justify-between">
-                    <p className="text-xs leading-5 text-slate-500">Archiver retire cette recommandation de la vue active sans la supprimer de l’historique.</p>
+                    <p className="text-xs leading-5 text-[var(--muted)]">Archiver retire cette recommandation de la vue active sans la supprimer de l’historique.</p>
                     <Button
                       type="button"
                       onClick={() => archiveRecommendation(recommendation.id)}
@@ -357,7 +357,7 @@ export function AdminOrientationPanel({
 function ProfileItem({ label, value }: { label: string; value: string | number }) {
   return (
     <div>
-      <dt className="text-xs text-slate-500">{label}</dt>
+      <dt className="text-xs text-[var(--muted)]">{label}</dt>
       <dd className="mt-0.5 font-medium text-slate-900 [overflow-wrap:anywhere]">{value}</dd>
     </div>
   );
