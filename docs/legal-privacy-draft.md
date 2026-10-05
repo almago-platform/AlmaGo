@@ -127,7 +127,7 @@ L’orientation en ligne est actuellement **gratuite**.
 
 Le propriétaire souhaite que le premier lancement réel soit un **Free Validation Launch** : orientation gratuite, e-mail facultatif, mesure d’un souhait explicite de continuer, puis éventuellement une cohorte pilote gratuite. Cette stratégie ne constitue pas à elle seule une autorisation juridique de collecter des données réelles : le gate #717 doit être clarifié avant activation.
 
-Des services payants d’accompagnement et de préparation de dossier sont envisagés mais ne sont **pas encore activés, tarifés ni proposés à la vente**.
+Des offres payantes d’accompagnement et de préparation de dossier sont configurées pour le pré-lancement et les tests internes, mais ne sont **pas encore ouvertes à la vente publique**. Leur activation publique reste soumise aux gates juridique et de lancement.
 
 Toute activation commerciale devra être accompagnée d’une mise à jour des conditions applicables et de la présente notice si nécessaire.
 
