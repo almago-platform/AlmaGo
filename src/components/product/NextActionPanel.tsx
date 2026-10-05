@@ -17,7 +17,6 @@ export function NextActionPanel({
 }) {
   return (
     <section
-      aria-labelledby="next-action-title"
       className={
         waiting
           ? "rounded-[var(--radius-lg)] border border-[var(--info-border)] bg-[var(--info-soft)] p-5 sm:p-6"
@@ -36,7 +35,6 @@ export function NextActionPanel({
             {eyebrow}
           </p>
           <h2
-            id="next-action-title"
             className={
               waiting
                 ? "mt-2 text-2xl font-semibold tracking-[-0.03em] text-[var(--foreground)]"
