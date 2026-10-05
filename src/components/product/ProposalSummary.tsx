@@ -51,7 +51,7 @@ export function ProposalSummary({
           ) : null}
           {included?.length ? (
             <div className="mt-5">
-              <h3 className="text-xs font-bold uppercase tracking-[0.1em] text-[var(--muted)]">Inclus</h3>
+              <h3 className="text-xs font-bold uppercase tracking-[0.1em] text-[var(--muted)]">{includedLabel}</h3>
               <ul className="mt-3 grid gap-2 text-sm leading-6 text-[var(--foreground-soft)] sm:grid-cols-2">
                 {included.map((item, index) => (
                   <li key={index} className="flex gap-2">
