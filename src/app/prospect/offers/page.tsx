@@ -46,14 +46,14 @@ export default async function ProspectOffersPage() {
     && access.customerStatus !== "payment_pending"
     && access.customerStatus !== "paid_pending_validation") {
     return (
-      <main className="space-y-6">
+      <main className="space-y-8">
         <ProspectPageHero eyebrow={copy.eyebrow} title={copy.title} subtitle={copy.intro} />
-        <section className="rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--brand-soft)] p-5 shadow-[var(--shadow-card)] sm:p-6">
-          <h2 className="text-xl font-bold text-[var(--foreground)]">{copy.lockedTitle}</h2>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-700">{copy.lockedBody}</p>
+        <section className="rounded-[1.35rem] border border-[#ead59a] bg-[#fff9e9] p-5 shadow-[0_22px_60px_-42px_rgba(139,98,0,.25)] sm:p-6">
+          <h2 className="text-xl font-semibold tracking-[-0.025em] text-[#202326]">{copy.lockedTitle}</h2>
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-[#555b5f]">{copy.lockedBody}</p>
           <Link
             href="/prospect"
-            className="mt-5 inline-flex min-h-11 items-center rounded-[var(--radius-control)] border border-[var(--brand-border)] bg-[var(--surface)] px-4 text-sm font-bold text-[var(--brand-strong)]"
+            className="mt-5 inline-flex min-h-11 items-center rounded-xl border border-black/10 bg-white px-4 text-sm font-bold text-[#202326] shadow-sm transition-all duration-200 hover:-translate-y-px hover:border-black/20 hover:shadow-md"
           >
             {copy.backToSpace}
           </Link>
@@ -101,12 +101,12 @@ export default async function ProspectOffersPage() {
   });
 
   return (
-    <main className="space-y-6">
+    <main className="space-y-8">
       <ProspectPageHero eyebrow={copy.eyebrow} title={copy.title} subtitle={copy.intro} />
 
       <ProspectOfferSelector offers={cards} copy={copy} />
 
-      <p className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface)] p-4 text-xs leading-5 text-[var(--muted)] shadow-[var(--shadow-card)]">{copy.disclaimer}</p>
+      <p className="rounded-[1.15rem] border border-[#ead59a] bg-[#fff9e9] p-4 text-xs leading-5 text-[#504832] shadow-[0_16px_42px_-36px_rgba(139,98,0,.35)]">{copy.disclaimer}</p>
     </main>
   );
 }
