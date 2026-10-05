@@ -46,7 +46,7 @@ export default async function ProspectOffersPage() {
     && access.customerStatus !== "payment_pending"
     && access.customerStatus !== "paid_pending_validation") {
     return (
-      <main className="space-y-8">
+      <main className="space-y-6">
         <ProspectPageHero eyebrow={copy.eyebrow} title={copy.title} subtitle={copy.intro} />
         <section className="rounded-[1.35rem] border border-[var(--brand-border)] bg-[var(--brand-soft)] p-5 shadow-[0_22px_60px_-42px_rgba(216,6,33,.22)] sm:p-6">
           <h2 className="text-xl font-semibold tracking-[-0.025em] text-[#202326]">{copy.lockedTitle}</h2>
@@ -101,7 +101,7 @@ export default async function ProspectOffersPage() {
   });
 
   return (
-    <main className="space-y-8">
+    <main className="space-y-6">
       <ProspectPageHero eyebrow={copy.eyebrow} title={copy.title} subtitle={copy.intro} />
 
       <ProspectOfferSelector offers={cards} copy={copy} />
