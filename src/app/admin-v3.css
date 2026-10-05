@@ -1,0 +1,268 @@
+/* AlmaGo Visual Experience V3 — Admin workspace
+   Operational UI keeps the same red / black / yellow brand while prioritising
+   scanability, density and decision-making over marketing presentation. */
+
+.admin-shell {
+  --brand: #d80621;
+  --brand-strong: #aa041b;
+  --brand-soft: #fff0f2;
+  --brand-border: #efa6b1;
+  --accent: #f4b400;
+  --accent-strong: #7d5a00;
+  --accent-light: #fff3c7;
+  --background: #f3f1eb;
+  --surface: #fffefa;
+  --surface-raised: #fff;
+  --surface-subtle: #efebe4;
+  --surface-muted: #e5dfd6;
+  --foreground: #17191b;
+  --foreground-soft: #3f4448;
+  --muted: #646a6e;
+  --border: #dbd5cc;
+  --border-strong: #bab1a5;
+  background:
+    radial-gradient(circle at 95% 0%, rgba(244,180,0,.07), transparent 24rem),
+    radial-gradient(circle at 1% 24%, rgba(216,6,33,.035), transparent 28rem),
+    var(--background);
+}
+
+.admin-shell .admin-shell-sidebar {
+  --surface: #151719;
+  --surface-subtle: #1e2124;
+  --surface-muted: #292c2f;
+  --foreground: #fff;
+  --foreground-soft: rgba(255,255,255,.78);
+  --muted: rgba(255,255,255,.5);
+  --border: rgba(255,255,255,.09);
+  --brand-soft: rgba(216,6,33,.16);
+  --brand-border: rgba(239,166,177,.26);
+  --brand-strong: #fff;
+  --accent-strong: #f4b400;
+  position: relative;
+  background:
+    radial-gradient(circle at 108% 4%, rgba(216,6,33,.2), transparent 12rem),
+    radial-gradient(circle at -10% 52%, rgba(244,180,0,.07), transparent 13rem),
+    #151719 !important;
+  border-color: rgba(255,255,255,.08) !important;
+  box-shadow: 20px 0 70px -48px rgba(0,0,0,.78);
+}
+
+.admin-shell .admin-shell-sidebar::before {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 3px;
+  z-index: 2;
+  background: linear-gradient(90deg,#151719 0 26%,#d80621 26% 72%,#f4b400 72%);
+}
+
+.admin-shell .admin-shell-sidebar > div:first-child {
+  margin: .75rem;
+  min-height: 4.35rem;
+  border: 0 !important;
+  border-radius: 1rem;
+  background: #fffefa;
+  padding-inline: .9rem;
+  box-shadow: 0 16px 38px -28px rgba(0,0,0,.78);
+}
+
+.admin-shell .admin-shell-sidebar > div:nth-child(2) {
+  margin-inline: 1rem !important;
+  padding-block: .95rem !important;
+  border-color: rgba(255,255,255,.1) !important;
+}
+
+.admin-shell .admin-shell-sidebar > div:nth-child(2) p:first-child {
+  color: #f4b400 !important;
+}
+
+.admin-shell .admin-shell-sidebar nav > p,
+.admin-shell .admin-shell-sidebar nav > div > div > p {
+  color: rgba(255,255,255,.42) !important;
+}
+
+.admin-shell .admin-shell-sidebar nav a {
+  min-height: 2.75rem;
+  border-radius: .82rem !important;
+  color: rgba(255,255,255,.7) !important;
+  transition:
+    background-color 160ms cubic-bezier(.2,.8,.2,1),
+    color 160ms cubic-bezier(.2,.8,.2,1),
+    transform 160ms cubic-bezier(.2,.8,.2,1);
+}
+
+.admin-shell .admin-shell-sidebar nav a:hover {
+  background: rgba(255,255,255,.065) !important;
+  color: #fff !important;
+  transform: translateX(1px);
+}
+
+.admin-shell .admin-shell-sidebar nav a[aria-current="page"] {
+  background: rgba(216,6,33,.96) !important;
+  color: #fff !important;
+  box-shadow: 0 14px 34px -20px rgba(216,6,33,.9);
+}
+
+.admin-shell .admin-shell-sidebar nav a[aria-current="page"] > span:first-child {
+  color: #fff !important;
+}
+
+.admin-shell .admin-shell-sidebar nav a[aria-current="page"] span span:last-child {
+  color: rgba(255,255,255,.7) !important;
+}
+
+.admin-shell .student-shell-active-edge {
+  inset-inline-start: auto !important;
+  inset-inline-end: .36rem !important;
+  width: .26rem !important;
+  border-radius: 999px !important;
+  background: #f4b400 !important;
+  box-shadow: 0 0 0 4px rgba(244,180,0,.1);
+}
+
+.admin-shell .admin-shell-sidebar > div:last-child {
+  border-color: rgba(255,255,255,.1) !important;
+  background: rgba(255,255,255,.025) !important;
+}
+
+.admin-shell .admin-shell-sidebar > div:last-child button {
+  border-color: rgba(255,255,255,.14) !important;
+  background: rgba(255,255,255,.07) !important;
+  color: #fff !important;
+  border-radius: .85rem !important;
+}
+
+.admin-shell .admin-shell-topbar {
+  min-height: 5rem !important;
+  border-color: rgba(23,25,27,.08) !important;
+  background: rgba(255,254,250,.9) !important;
+  box-shadow: 0 16px 40px -38px rgba(0,0,0,.48);
+  backdrop-filter: blur(18px);
+}
+
+.admin-shell .admin-shell-topbar > div:first-child > p:first-child {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  color: #aa041b !important;
+}
+
+.admin-shell .admin-shell-topbar > div:first-child > p:first-child::before {
+  content: "";
+  width: .45rem;
+  height: .45rem;
+  border-radius: 999px;
+  background: #f4b400;
+  box-shadow: 0 0 0 4px rgba(244,180,0,.1);
+}
+
+.admin-shell .admin-shell-topbar > div:last-child {
+  border: 1px solid rgba(23,25,27,.08);
+  border-radius: 999px;
+  background: #17191b;
+  padding: .5rem .85rem;
+  color: rgba(255,255,255,.76) !important;
+  font-size: .75rem;
+  font-weight: 700;
+}
+
+.admin-shell .student-shell-main {
+  background:
+    radial-gradient(circle at 94% 0%, rgba(244,180,0,.055), transparent 24rem),
+    transparent;
+}
+
+.admin-shell .student-shell-main .ds-card {
+  border-radius: 1.18rem;
+  border-color: rgba(23,25,27,.07);
+  box-shadow: 0 18px 52px -44px rgba(0,0,0,.28);
+}
+
+.admin-shell .student-shell-main .ds-card-interactive:hover,
+.admin-shell .professional-hover:hover {
+  transform: translateY(-2px);
+  border-color: rgba(216,6,33,.24);
+  box-shadow: 0 26px 62px -44px rgba(0,0,0,.38);
+}
+
+.admin-shell .student-shell-main :where(.field,.ds-input,.ds-select,.ds-textarea) {
+  border-radius: .82rem;
+  border-color: rgba(23,25,27,.12);
+  background: #fff;
+  box-shadow: none;
+}
+
+.admin-shell .student-shell-main :where(.field,.ds-input,.ds-select,.ds-textarea):focus {
+  border-color: #d80621;
+  box-shadow: 0 0 0 3px rgba(216,6,33,.1);
+}
+
+.admin-shell .admin-page-header {
+  border: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.admin-shell .admin-page-actions a,
+.admin-shell .admin-page-actions button {
+  border-radius: .82rem !important;
+}
+
+.admin-shell header.lg\:hidden {
+  border-color: rgba(23,25,27,.08) !important;
+  background: rgba(255,254,250,.94) !important;
+  box-shadow: 0 14px 34px -30px rgba(0,0,0,.55) !important;
+  backdrop-filter: blur(18px);
+}
+
+.admin-shell header.lg\:hidden::before {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 3px;
+  background: linear-gradient(90deg,#151719 0 26%,#d80621 26% 72%,#f4b400 72%);
+}
+
+.admin-shell #admin-mobile-menu {
+  --surface: #151719;
+  --surface-subtle: #151719;
+  --surface-muted: #292c2f;
+  --foreground: #fff;
+  --muted: rgba(255,255,255,.56);
+  --border: rgba(255,255,255,.1);
+  --brand-soft: rgba(216,6,33,.16);
+  --brand-border: rgba(239,166,177,.28);
+  background:
+    radial-gradient(circle at 100% 0%, rgba(216,6,33,.18), transparent 16rem),
+    #151719 !important;
+  color: #fff;
+}
+
+.admin-shell #admin-mobile-menu > div:first-child {
+  border-color: rgba(255,255,255,.1) !important;
+  background: rgba(255,255,255,.05) !important;
+  border-radius: 1rem !important;
+}
+
+.admin-shell #admin-mobile-menu nav a {
+  border-radius: 1rem !important;
+  border-color: rgba(255,255,255,.08) !important;
+  background: rgba(255,255,255,.045) !important;
+  color: rgba(255,255,255,.82) !important;
+}
+
+.admin-shell #admin-mobile-menu nav a[aria-current="page"] {
+  border-color: rgba(239,166,177,.36) !important;
+  background: #d80621 !important;
+  color: #fff !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-shell .admin-shell-sidebar nav a,
+  .admin-shell .student-shell-main .ds-card-interactive,
+  .admin-shell .professional-hover {
+    transform: none !important;
+    transition-duration: .01ms !important;
+  }
+}
