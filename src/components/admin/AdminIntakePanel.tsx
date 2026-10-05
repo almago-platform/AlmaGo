@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { campusRouteOptions, campusRouteLabel } from "@/lib/campus-intake";
 import { formatMinorCurrency } from "@/lib/money";
@@ -23,6 +23,7 @@ type IntakeCase = {
   proposedOfferVersionId: string | null;
   purchaseId: string | null;
   studentResponseNote: string | null;
+  studentRespondedAt: string | null;
 };
 
 type PublishedOffer = {
@@ -43,6 +44,18 @@ function labelForStatus(status: string) {
   if (status === "paid_pending_validation") return "Paiement reçu · validation Campus";
   if (status === "procedure_created") return "Client actif · phase suivante créée";
   return status;
+}
+
+
+function formatResponseTime(value: string | null) {
+  if (!value) return null;
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return null;
+
+  return new Intl.DateTimeFormat("fr-FR", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(date);
 }
 
 function docState(documents: IntakeCase["documents"], category: string) {
@@ -67,6 +80,16 @@ export function AdminIntakePanel({
   const [offerByStudent, setOfferByStudent] = useState<Record<string, string>>({});
   const [errorByStudent, setErrorByStudent] = useState<Record<string, string>>({});
 
+  useEffect(() => {
+    if (busyStudent) return;
+
+    const intervalId = window.setInterval(() => {
+      if (document.visibilityState === "visible") router.refresh();
+    }, 20_000);
+
+    return () => window.clearInterval(intervalId);
+  }, [busyStudent, router]);
+
   async function propose(item: IntakeCase) {
     const routeKey = routeByStudent[item.studentId] || item.proposedRouteKey || "";
     const reason = (reasonByStudent[item.studentId] ?? item.proposalReason ?? "").trim();
@@ -77,7 +100,7 @@ export function AdminIntakePanel({
     setErrorByStudent((current) => ({ ...current, [item.studentId]: "" }));
 
     try {
-      const response = await fetch(`/api/admin/intake/${item.studentId}/route`, {
+      const response = await fetch(`/api/admin/intake/${item.studentId}`, {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ routeKey, reason, offerVersionId }),
@@ -114,8 +137,40 @@ export function AdminIntakePanel({
     );
   }
 
+  const questionCount = cases.filter((item) => item.status === "student_question").length;
+  const readyForDecisionCount = cases.filter((item) => item.status === "campus_review").length;
+  const paymentValidationCount = cases.filter((item) => item.status === "paid_pending_validation").length;
+
   return (
     <div className="grid gap-5">
+      <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-4 sm:p-5">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <p className="text-[0.68rem] font-bold uppercase tracking-[0.15em] text-[var(--brand)]">
+              Coordination étudiant ↔ Campus
+            </p>
+            <h2 className="mt-1 text-lg font-bold">Les réponses étudiantes remontent dans cette file</h2>
+            <p className="mt-1 text-sm leading-6 text-[var(--muted)]">
+              Les demandes de discussion sont prioritaires. Cette vue s’actualise automatiquement toutes les 20 secondes quand l’onglet est visible.
+            </p>
+          </div>
+          <div className="grid grid-cols-3 gap-2 text-center">
+            <div className="rounded-[var(--radius-control)] bg-amber-50 px-3 py-2">
+              <p className="text-lg font-bold text-amber-900">{questionCount}</p>
+              <p className="text-[11px] font-semibold text-amber-800">À discuter</p>
+            </div>
+            <div className="rounded-[var(--radius-control)] bg-blue-50 px-3 py-2">
+              <p className="text-lg font-bold text-blue-900">{readyForDecisionCount}</p>
+              <p className="text-[11px] font-semibold text-blue-800">À décider</p>
+            </div>
+            <div className="rounded-[var(--radius-control)] bg-emerald-50 px-3 py-2">
+              <p className="text-lg font-bold text-emerald-900">{paymentValidationCount}</p>
+              <p className="text-[11px] font-semibold text-emerald-800">Paiements</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {cases.map((item) => {
         const preBac = item.orientation.bacStatus === "preparing";
         const academicReady = ["passport", "baccalaureate", "transcripts"].every(
@@ -244,10 +299,19 @@ export function AdminIntakePanel({
                   </p>
                 ) : null}
 
-                {item.status === "student_question" && item.studentResponseNote ? (
-                  <div className="mt-3 rounded-[var(--radius-control)] border border-amber-200 bg-amber-50 p-4 text-sm">
-                    <strong>Message de l’étudiant :</strong>
-                    <p className="mt-1 leading-6">{item.studentResponseNote}</p>
+                {item.status === "student_question" ? (
+                  <div className="mt-3 rounded-[var(--radius-control)] border border-amber-300 bg-amber-50 p-4 text-sm">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <strong className="text-amber-950">Réponse étudiant reçue · action requise</strong>
+                      {formatResponseTime(item.studentRespondedAt) ? (
+                        <span className="text-xs font-semibold text-amber-800">
+                          Reçu le {formatResponseTime(item.studentRespondedAt)}
+                        </span>
+                      ) : null}
+                    </div>
+                    <p className="mt-2 leading-6 text-amber-950">
+                      {item.studentResponseNote || "L’étudiant souhaite discuter de la proposition sans message complémentaire."}
+                    </p>
                   </div>
                 ) : null}
 
