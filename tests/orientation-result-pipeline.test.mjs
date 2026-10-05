@@ -108,9 +108,10 @@ test("E writer UI presents a premium progressive result with one CTA and verifie
   assert.match(writerCard, /Ce que nous retenons de votre dossier/);
   assert.match(writerCard, /Votre dossier est encourageant/);
   assert.match(writerCard, /Ce qui ressort/);
-  assert.match(writerCard, /Première estimation Campus Allemagne/);
-  assert.match(writerCard, /Fortes chances d’admission/);
-  assert.match(writerCard, /Bon potentiel d’admission/);
+  assert.match(writerCard, /Compatibilité avec les critères vérifiés/);
+  assert.match(writerCard, /Profil compatible avec les critères actuellement vérifiés/);
+  assert.match(writerCard, /Profil globalement compatible, avec des points à confirmer/);
+  assert.match(writerCard, /Seule l’université peut décider d’une admission/);
   assert.match(writerCard, /Nous avançons en parallèle/);
   assert.match(writerCard, /Vous avancez sur le B1\. Nous avançons sur le reste/);
   assert.match(writerCard, /La piste qui ressort le plus aujourd’hui/);
@@ -128,7 +129,7 @@ test("E writer UI presents a premium progressive result with one CTA and verifie
   assert.match(writerCard, /Puis, on décide ensemble/);
   assert.match(writerCard, /On reprend ce rapport avec vous/);
   assert.match(writerCard, /Parler de mon orientation avec Campus Allemagne/);
-  assert.match(writerCard, /Continuer ma procédure/);
+  assert.match(writerCard, /Continuer mon projet/);
   assert.match(writerCard, /continueAccount \? t\.continueCta : t\.humanCta/);
   assert.match(engineCard, /continueAccount=\{accountLinkingEnabled && prospectCaptureEnabled && isBachelorFirstContact\}/);
   assert.match(writerCard, /simpleLanguagePriority/);

@@ -10,6 +10,7 @@ import { orientationProspectCopy } from "@/content/orientation-prospect-copy";
 import { rebrandCopy } from "@/lib/brand";
 import { ProspectCaptureCard } from "@/components/orientation/ProspectCaptureCard";
 import { SmartOrientationResultCard } from "@/components/orientation/SmartOrientationResultCard";
+import { CandidateOrientationResultHeader } from "@/components/orientation/CandidateOrientationResultHeader";
 import { OrientationRouteCard } from "@/components/orientation/OrientationRouteCard";
 import { PersonalizedOrientationEngineCard } from "@/components/orientation/PersonalizedOrientationEngineCard";
 import { OrientationOnePagePrintReport } from "@/components/orientation/OrientationOnePagePrintReport";
@@ -241,6 +242,25 @@ export function PublicOrientationForm({
       required: "Fülle alle vier Felder aus, um fortzufahren.",
       invalidEmail: "Gib eine gültige E-Mail-Adresse ein.",
       invalidBirthDate: "Gib ein gültiges Geburtsdatum ein.",
+    },
+  }[locale];
+
+  const resultHeaderCopy = {
+    fr: {
+      completed: "Orientation gratuite terminée",
+      status: "Orientation non contractuelle",
+    },
+    ar: {
+      completed: "اكتمل التوجيه المجاني",
+      status: "توجيه غير ملزم",
+    },
+    en: {
+      completed: "Free orientation completed",
+      status: "Non-binding orientation",
+    },
+    de: {
+      completed: "Kostenlose Orientierung abgeschlossen",
+      status: "Unverbindliche Orientierung",
     },
   }[locale];
 
@@ -517,6 +537,27 @@ export function PublicOrientationForm({
         : "—",
     ],
   ] as const;
+
+  const resultFacts = [
+    {
+      label: copy.summary.labels.degree,
+      value: localizedValue(answers.targetDegree, degrees),
+    },
+    {
+      label: copy.summary.labels.field,
+      value: localizedValue(answers.targetField, fields),
+    },
+    {
+      label: copy.summary.labels.german,
+      value: localizedValue(answers.germanLevel, levels),
+    },
+    {
+      label: copy.summary.labels.cities,
+      value: answers.preferredCities.length
+        ? answers.preferredCities.map((city) => localizePreferredCity(locale, city)).join(", ")
+        : "—",
+    },
+  ];
 
   return (
     <div className={`orientation-print-page min-h-screen bg-[var(--background)] text-[var(--foreground)] ${step > 4 ? "orientation-color-theme" : ""}`} dir={direction}>
@@ -1098,33 +1139,23 @@ export function PublicOrientationForm({
                     <p>{prospectCopy.report.title}</p>
                   </div>
                 </div>
-                <div className="mb-6 border-b border-[var(--border)] pb-5">
-                  <p className="eyebrow">{prospectCopy.report.label}</p>
-                  <h2 className="mt-2 text-3xl font-semibold tracking-tight">{prospectCopy.report.title}</h2>
-                  {!isBachelorFirstContact ? (
-                    <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{prospectCopy.report.subtitle}</p>
-                  ) : null}
-                </div>
+                <CandidateOrientationResultHeader
+                  eyebrow={prospectCopy.report.label}
+                  title={prospectCopy.report.title}
+                  description={prospectCopy.report.subtitle}
+                  completionLabel={resultHeaderCopy.completed}
+                  statusLabel={resultHeaderCopy.status}
+                  facts={resultFacts}
+                  profileDetailsLabel={firstContactCopy.answers}
+                  profileDetailsHelp={firstContactCopy.answersHelp}
+                  allFacts={summaryRows}
+                />
+
                 {!isBachelorFirstContact ? (
-                  <>
-                    <p className="eyebrow">{copy.summary.eyebrow}</p>
-                    <h2 ref={headingRef} tabIndex={-1} className="section-title mt-2 mb-1">{copy.summary.title}</h2>
-                    <p className="mb-6 text-sm leading-6 text-[var(--muted)]">{copy.summary.text}</p>
-
-                    <dl className="grid gap-px overflow-hidden rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--border)] sm:grid-cols-2">
-                      {summaryRows.map(([label, value]) => (
-                        <div key={label} className="bg-[var(--surface)] p-4">
-                          <dt className="text-xs font-bold uppercase tracking-wide text-[var(--muted)]">{label}</dt>
-                          <dd className="mt-1 font-semibold"><bdi dir="auto">{value}</bdi></dd>
-                        </div>
-                      ))}
-                    </dl>
-
-                    <SmartOrientationResultCard
-                      result={smartPriority}
-                      prospectCaptureEnabled={prospectCaptureEnabled && !authenticatedUpdate}
-                    />
-                  </>
+                  <SmartOrientationResultCard
+                    result={smartPriority}
+                    prospectCaptureEnabled={prospectCaptureEnabled && !authenticatedUpdate}
+                  />
                 ) : null}
 
                 {authenticatedUpdate ? (
@@ -1147,22 +1178,9 @@ export function PublicOrientationForm({
 
                 {!authenticatedUpdate && orientationResultReady ? (
                   <>
-                {isBachelorFirstContact ? (
-                  <details className="orientation-print-hide mt-5 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4">
-                    <summary className="cursor-pointer text-sm font-bold">{firstContactCopy.answers}</summary>
-                    <p className="mt-2 text-xs leading-5 text-[var(--muted)]">{firstContactCopy.answersHelp}</p>
-                    <dl className="mt-4 grid gap-px overflow-hidden rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--border)] sm:grid-cols-2">
-                      {summaryRows.map(([label, value]) => (
-                        <div key={label} className="bg-[var(--surface)] p-3">
-                          <dt className="text-xs font-bold uppercase tracking-wide text-[var(--muted)]">{label}</dt>
-                          <dd className="mt-1 text-sm font-semibold"><bdi dir="auto">{value}</bdi></dd>
-                        </div>
-                      ))}
-                    </dl>
-                  </details>
-                ) : (
+                {!isBachelorFirstContact ? (
                   <OrientationRouteCard answers={answers} locale={locale} />
-                )}
+                ) : null}
 
 
                 {prospectCaptureEnabled ? (

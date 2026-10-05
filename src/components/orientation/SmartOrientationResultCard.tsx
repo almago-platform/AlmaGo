@@ -1,6 +1,7 @@
 "use client";
 
 import { useLocale } from "@/components/i18n/LocaleProvider";
+import { Badge } from "@/components/ui/Badge";
 import { smartOrientationCopy } from "@/content/smart-orientation-copy";
 import type { SmartOrientationPriorityResult } from "@/lib/phase2/smart-orientation";
 
@@ -19,48 +20,48 @@ export function SmartOrientationResultCard({
   );
 
   return (
-    <section
-      aria-labelledby="smart-orientation-title"
-      className="mt-8 rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--brand-soft)] p-5 sm:p-6"
-    >
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <p className="eyebrow">{copy.eyebrow}</p>
-          <h3 id="smart-orientation-title" className="mt-2 text-xl font-bold">
+    <section className="orientation-print-hide mt-8 border-y border-[var(--border)] py-6 sm:py-7">
+      <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-start">
+        <div className="min-w-0 max-w-3xl">
+          <p className="text-[0.68rem] font-bold uppercase tracking-[0.14em] text-[var(--brand)]">
+            {copy.eyebrow}
+          </p>
+          <h2 className="mt-2 text-2xl font-semibold tracking-[-0.03em] text-[var(--foreground)]">
             {stateCopy.title}
-          </h3>
+          </h2>
+          <p className="mt-3 text-sm leading-6 text-[var(--foreground-soft)]">
+            {stateCopy.body}
+          </p>
+
+          {languagePreparation ? (
+            <p className="mt-3 text-sm leading-6 text-[var(--foreground-soft)]">
+              {copy.languagePreparation}
+            </p>
+          ) : null}
         </div>
-        <span className="status-badge bg-[var(--surface)] text-[var(--foreground)]">
-          {stateCopy.label}
-        </span>
+
+        <div className="flex flex-col items-start gap-3 lg:items-end">
+          <Badge variant={result.requiresHumanReview ? "warning" : "success"}>
+            {stateCopy.label}
+          </Badge>
+          {prospectCaptureEnabled ? (
+            <a
+              href="#orientation-prospect-capture"
+              className="inline-flex min-h-11 items-center justify-center rounded-[var(--radius-control)] bg-[var(--brand)] px-5 text-sm font-semibold text-white transition-colors hover:bg-[var(--brand-strong)]"
+            >
+              {stateCopy.cta}
+            </a>
+          ) : null}
+        </div>
       </div>
 
-      <p className="mt-3 text-sm leading-6 text-[var(--foreground)]">
-        {stateCopy.body}
-      </p>
-
-      {languagePreparation ? (
-        <p className="mt-3 text-sm leading-6 text-[var(--foreground)]">
-          {copy.languagePreparation}
-        </p>
-      ) : null}
-
       {result.requiresHumanReview ? (
-        <div className="mt-4 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-sm leading-6">
+        <div className="mt-5 rounded-[var(--radius-control)] border border-[var(--warning-border)] bg-[var(--warning-soft)] px-4 py-3 text-sm leading-6 text-[var(--foreground-soft)]">
           {copy.humanReview}
         </div>
       ) : null}
 
-      {prospectCaptureEnabled ? (
-        <a
-          href="#orientation-prospect-capture"
-          className="orientation-print-hide mt-5 inline-flex rounded-[var(--radius-control)] bg-[var(--brand)] px-5 py-2.5 text-sm font-bold text-white hover:bg-[var(--brand-strong)]"
-        >
-          {stateCopy.cta}
-        </a>
-      ) : null}
-
-      <p className="mt-4 text-xs leading-5 text-[var(--foreground)]">
+      <p className="mt-5 border-t border-[var(--border)] pt-4 text-xs leading-5 text-[var(--foreground)]">
         {copy.disclaimer}
       </p>
     </section>

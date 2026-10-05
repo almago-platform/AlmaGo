@@ -168,11 +168,18 @@ export function ProspectCaptureCard({
     : copy.privacyLabel;
 
   return (
-    <section id="orientation-prospect-capture" className="orientation-print-hide mt-8 scroll-mt-6 rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface-subtle)] p-5 sm:p-6">
+    <section
+      id="orientation-prospect-capture"
+      className={`orientation-print-hide mt-8 scroll-mt-6 rounded-[var(--radius-lg)] border p-5 sm:p-6 ${
+        accountLinkingEnabled
+          ? "border-[var(--brand-border)] bg-[var(--surface)]"
+          : "border-[var(--border)] bg-[var(--surface-subtle)]"
+      }`}
+    >
       {accountLinkingEnabled ? (
-        <div className="mb-5 flex items-center gap-3 rounded-[var(--radius-control)] border border-[var(--brand-border)] bg-[var(--brand-soft)] px-4 py-3 text-sm">
+        <div className="mb-5 flex items-center gap-3 rounded-[var(--radius-control)] border border-[var(--success-border)] bg-[var(--success-soft)] px-4 py-3 text-sm">
           <span
-            className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--brand)] font-bold text-white"
+            className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--success)] font-bold text-white"
             aria-hidden="true"
           >
             ✓
@@ -182,7 +189,13 @@ export function ProspectCaptureCard({
       ) : null}
       <p className="eyebrow">{eyebrow}</p>
       <h3 className="mt-2 text-xl font-bold">{title}</h3>
-      <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{textCopy}</p>
+      <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">{textCopy}</p>
+
+      {accountLinkingEnabled ? (
+        <div className="mt-4 rounded-[var(--radius-control)] border border-[var(--warning-border)] bg-[var(--warning-soft)] px-4 py-3 text-xs leading-5 text-[var(--foreground-soft)]">
+          <strong className="text-[var(--foreground)]">{copy.continueBoundary}</strong>
+        </div>
+      ) : null}
 
       <form className="mt-5 space-y-4" onSubmit={submit} noValidate aria-busy={status === "saving"}>
         <label className="block text-sm font-semibold">
