@@ -13,7 +13,7 @@ const adminDashboard = read("src/app/admin/page.tsx");
 const adminRoute = read("src/app/api/admin/intake/[studentId]/route.ts");
 const studentDiscussRoute = read("src/app/api/intake/route/discuss/route.ts");
 const studentConfirmRoute = read("src/app/api/intake/route/confirm/route.ts");
-const receipts = read("supabase/migrations/20261005113000_admin_student_coordination_receipts.sql");
+const receipts = read("supabase/migrations/20261005113550_admin_student_coordination_receipts.sql");
 
 test("admin proposal form calls the actual App Router endpoint", () => {
   assert.ok(adminPanel.includes('fetch(`/api/admin/intake/${item.studentId}`, {'));
