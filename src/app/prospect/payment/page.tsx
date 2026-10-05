@@ -163,7 +163,7 @@ export default async function ProspectPaymentPage() {
     ];
 
     return (
-      <main className="space-y-8">
+      <main className="space-y-6">
         <DossierHeader
           eyebrow={copy.eyebrow}
           title={copy.title}
@@ -341,7 +341,7 @@ export default async function ProspectPaymentPage() {
   ].sort((left, right) => right.sortKey - left.sortKey);
 
   return (
-    <main className="space-y-8">
+    <main className="space-y-6">
       <DossierHeader
         eyebrow={copy.eyebrow}
         title={copy.title}
