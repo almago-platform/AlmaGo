@@ -218,7 +218,7 @@ export function AdminOrientationHumanReviewQueue({
                         ? <>Prospect lié : <bdi dir="auto">{review.prospect_email}</bdi></>
                         : "Revue anonyme non encore liée à un prospect sauvegardé"}
                     </p>
-                    <p className="mt-1 text-xs text-slate-500">
+                    <p className="mt-1 text-xs text-[var(--muted)]">
                       Créée {formatDate(review.created_at)} · ID interne <code>{review.id.slice(0, 8)}</code>
                     </p>
                   </div>
@@ -379,7 +379,7 @@ export function AdminOrientationHumanReviewQueue({
                       </p>
                     </div>
                     {review.reviewed_at ? (
-                      <p className="text-xs text-slate-500">Dernière décision : {formatDate(review.reviewed_at)}</p>
+                      <p className="text-xs text-[var(--muted)]">Dernière décision : {formatDate(review.reviewed_at)}</p>
                     ) : null}
                   </div>
 
