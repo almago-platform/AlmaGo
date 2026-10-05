@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { campusRouteOptions, campusRouteLabel } from "@/lib/campus-intake";
 import { formatMinorCurrency } from "@/lib/money";
@@ -209,9 +210,17 @@ export function AdminIntakePanel({
                 <h2 className="mt-2 text-xl font-bold">{item.name || "Étudiant"}</h2>
                 <p className="mt-1 text-sm text-[var(--muted)]">{item.email || item.studentId}</p>
               </div>
-              <span className="rounded-full bg-[var(--surface-subtle)] px-3 py-1.5 text-xs font-bold">
-                {labelForStatus(item.status)}
-              </span>
+              <div className="flex flex-wrap items-center gap-2">
+                <Link
+                  href={`/admin/dossiers/${item.studentId}`}
+                  className="inline-flex min-h-9 items-center rounded-[var(--radius-control)] border border-[var(--border-strong)] bg-[var(--surface)] px-3 text-xs font-bold text-[var(--foreground)] transition hover:border-[var(--brand-border)]"
+                >
+                  Ouvrir le dossier 360°
+                </Link>
+                <span className="rounded-full bg-[var(--surface-subtle)] px-3 py-1.5 text-xs font-bold">
+                  {labelForStatus(item.status)}
+                </span>
+              </div>
             </div>
 
             <div className="mt-5 grid gap-4 lg:grid-cols-2">
