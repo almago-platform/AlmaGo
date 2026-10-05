@@ -18,7 +18,7 @@ export default async function AdminEntry() {
 
   if (!staleCutoff) {
     return (
-      <main className="mx-auto w-full max-w-[92rem] px-4 py-5 sm:px-6 sm:py-6 xl:px-8">
+      <main className="mx-auto w-full max-w-[92rem] px-4 py-6 sm:px-6 sm:py-7 xl:px-8">
         <AdminPageHeader section="Pilotage" title="Vue d’ensemble" description="Priorités opérationnelles de l’équipe AlmaGo." />
         <AdminLoadError title="La vue d’ensemble est temporairement indisponible" description="Nous n’arrivons pas à calculer les indicateurs de l’équipe pour le moment." retryHref="/admin" />
       </main>
@@ -57,7 +57,7 @@ export default async function AdminEntry() {
     || staleLanguageError || dueLanguageError || staleFinanceError || dueFinanceError
   ) {
     return (
-      <main className="mx-auto w-full max-w-[92rem] px-4 py-5 sm:px-6 sm:py-6 xl:px-8">
+      <main className="mx-auto w-full max-w-[92rem] px-4 py-6 sm:px-6 sm:py-7 xl:px-8">
         <AdminPageHeader section="Pilotage" title="Vue d’ensemble" description="Priorités opérationnelles de l’équipe AlmaGo." />
         <AdminLoadError title="La vue d’ensemble est temporairement indisponible" description="Nous n’arrivons pas à charger les indicateurs de l’équipe pour le moment." retryHref="/admin" />
       </main>
@@ -128,7 +128,7 @@ export default async function AdminEntry() {
               };
 
   return (
-    <main className="mx-auto w-full max-w-[92rem] px-4 py-5 sm:px-6 sm:py-6 xl:px-8">
+    <main className="mx-auto w-full max-w-[92rem] px-4 py-6 sm:px-6 sm:py-7 xl:px-8">
       <AdminPageHeader
         section="Pilotage"
         title="Vue d’ensemble"
@@ -143,7 +143,7 @@ export default async function AdminEntry() {
       />
 
       <section aria-label="Priorité opérationnelle" className="grid gap-4 lg:grid-cols-[minmax(0,1.5fr)_minmax(17rem,0.7fr)]">
-        <Card className="relative overflow-hidden border-[var(--brand-border)] bg-white shadow-none">
+        <Card className="relative overflow-hidden rounded-[1.3rem] border-black/[.07] bg-white shadow-[0_24px_64px_-44px_rgba(0,0,0,.34)]">
           <div aria-hidden="true" className="absolute inset-y-0 left-0 w-1 bg-[var(--brand)]" />
           <div className="pl-2 sm:pl-3">
             <Badge variant={studentQuestions > 0 || documents > 0 ? "warning" : intakeAttention > 0 || applications > 0 ? "info" : staleCatalogue > 0 ? "warning" : "success"}>{priority.badge}</Badge>
@@ -158,7 +158,7 @@ export default async function AdminEntry() {
           </div>
         </Card>
 
-        <Card className="bg-[var(--surface-subtle)] shadow-none">
+        <Card className="rounded-[1.3rem] border-black/[.06] bg-[#f6f3ed] shadow-[0_18px_52px_-44px_rgba(0,0,0,.28)]">
           <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-700">Ordre de traitement</p>
           <ol className="mt-5 space-y-4 text-sm leading-6 text-slate-600">
             <li className="flex gap-3">
@@ -255,11 +255,11 @@ export default async function AdminEntry() {
         )}
       </section>
 
-      <Card className="mt-7 border-[var(--border)] bg-white shadow-none">
+      <Card className="mt-7 rounded-[1.25rem] border-black/[.07] bg-white shadow-[0_20px_56px_-44px_rgba(0,0,0,.3)]">
         <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--muted)]">Principe de travail</p>
-            <h2 className="mt-2 text-xl font-bold text-slate-950">Résoudre les blocages avant d’enrichir le catalogue.</h2>
+            <h2 className="mt-2 text-xl font-semibold tracking-[-0.025em] text-slate-950">Résoudre les blocages avant d’enrichir le catalogue.</h2>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
               Cette vue utilise uniquement les états réellement enregistrés dans AlmaGo. Elle ne calcule aucun score de performance ou de priorité artificiel.
             </p>
@@ -288,7 +288,7 @@ function AdminSummaryCard({
     <Link
       href={href}
       aria-label={`Ouvrir ${title}`}
-      className="professional-hover group rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-5 shadow-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] focus-visible:ring-offset-2"
+      className="professional-hover group rounded-[1.2rem] border border-black/[.07] bg-white p-5 shadow-[0_18px_52px_-44px_rgba(0,0,0,.28)] transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] focus-visible:ring-offset-2"
     >
       <div className="flex items-start justify-between gap-4">
         <div>
@@ -328,7 +328,7 @@ function CatalogHealthCard({
   return (
     <Link
       href={href}
-      className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-5 shadow-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] focus-visible:ring-offset-2"
+      className="rounded-[1.2rem] border border-black/[.07] bg-white p-5 shadow-[0_18px_52px_-44px_rgba(0,0,0,.28)] transition-all duration-200 hover:-translate-y-px hover:border-[var(--brand-border)] hover:shadow-[0_24px_60px_-42px_rgba(0,0,0,.36)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] focus-visible:ring-offset-2"
     >
       <div className="flex items-start justify-between gap-4">
         <div>
