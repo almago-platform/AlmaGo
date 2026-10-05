@@ -1,4 +1,5 @@
 import type { OrientationProgrammeEvaluation } from "@/lib/orientation-engine/types";
+import { ProspectUniversityCover } from "@/components/prospect/ProspectUniversityCover";
 import { recommendationMatchesPreferredCity } from "@/lib/prospect/programmes";
 
 export function ProspectProgrammeRecommendationCard({
@@ -24,13 +25,13 @@ export function ProspectProgrammeRecommendationCard({
   const preferredCity = recommendationMatchesPreferredCity(recommendation);
   const cardClass = compact
     ? "group rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-4 transition-colors hover:border-[var(--brand-border)]"
-    : "group rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[var(--shadow-card)] transition-colors hover:border-[var(--brand-border)] sm:p-5";
+    : "group overflow-hidden rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow-card)] transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-[var(--brand-border)] hover:shadow-[var(--shadow-soft)]";
   const headingClass = compact
     ? "mt-2.5 text-lg font-bold [overflow-wrap:anywhere]"
     : "mt-3 text-xl font-bold [overflow-wrap:anywhere]";
 
-  return (
-    <article className={cardClass}>
+  const body = (
+    <>
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
@@ -106,6 +107,22 @@ export function ProspectProgrammeRecommendationCard({
           </a>
         ) : null}
       </div>
+    </>
+  );
+
+  if (compact) {
+    return <article className={cardClass}>{body}</article>;
+  }
+
+  return (
+    <article className={cardClass}>
+      <ProspectUniversityCover
+        universityName={programme.university.name}
+        city={programme.university.city}
+        media={programme.university.media}
+        compact
+      />
+      <div className="p-5">{body}</div>
     </article>
   );
 }
