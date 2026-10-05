@@ -110,21 +110,27 @@ export default async function AdminIntakePage() {
   const emailByUserId = new Map((prospectsResult.data || []).map((prospect) => [prospect.user_id, prospect.email]));
   const orientationById = new Map((orientationsResult.data || []).map((orientation) => [orientation.id, orientation]));
 
-  const cases = rows.map((item) => {
+  const cases = rows.flatMap((item) => {
     const profile = profileById.get(item.student_id);
     const orientation = orientationById.get(item.orientation_id);
     const input = orientation?.input && typeof orientation.input === "object"
       ? orientation.input as Record<string, unknown>
       : {};
     const answers = restorePublicOrientationAnswers(input.answers);
+    const email = emailByUserId.get(item.student_id) || "";
+
+    if (email.startsWith("erased-") || email.endsWith("@invalid.local")) {
+      return [];
+    }
+
     const name = [profile?.first_name, profile?.last_name].filter(Boolean).join(" ")
       || profile?.full_name
       || "Étudiant";
 
-    return {
+    return [{
       studentId: item.student_id,
       name,
-      email: emailByUserId.get(item.student_id) || "",
+      email,
       status: item.status,
       orientation: {
         targetDegree: answers.targetDegree,
@@ -145,7 +151,7 @@ export default async function AdminIntakePage() {
       purchaseId: item.purchase_id,
       studentResponseNote: item.student_response_note,
       studentRespondedAt: item.student_responded_at,
-    };
+    }];
   });
 
   return (
