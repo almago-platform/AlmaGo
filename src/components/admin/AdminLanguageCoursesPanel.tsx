@@ -259,7 +259,7 @@ export function AdminLanguageCoursesPanel({ courses }: { courses: Course[] }) {
               </div>
               <p className="mt-3 text-sm font-semibold text-[var(--brand)]">{course.purpose === "study_preparation" ? "Préparation aux études" : "Cours de langue autonome"}</p>
               {course.verified_at && (
-                <p className="mt-2 text-xs text-slate-500">À revalider avant : {new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium" }).format(new Date(catalogVerificationExpiresAt(course.verified_at) as string))}</p>
+                <p className="mt-2 text-xs text-[var(--muted)]">À revalider avant : {new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium" }).format(new Date(catalogVerificationExpiresAt(course.verified_at) as string))}</p>
               )}
               <div className="mt-5 flex flex-wrap gap-3">
                 {course.source_url && (
