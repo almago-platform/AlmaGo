@@ -38,7 +38,7 @@ export function ResponsibilityStrip({
 }) {
   return (
     <section className="overflow-hidden rounded-[1.35rem] border border-black/[.07] bg-white shadow-[0_22px_60px_-42px_rgba(0,0,0,.34)]">
-      <div className="flex items-center gap-2 border-b border-black/[.06] px-5 py-4">
+      <div className="flex items-center gap-2 border-b border-black/[.06] px-4 py-3.5">
         <span className="h-2 w-2 rounded-full bg-[#17191b]" aria-hidden="true" />
         <h2 className="text-[11px] font-extrabold uppercase tracking-[0.15em] text-[#656a6e]">
           {title}
@@ -48,7 +48,7 @@ export function ResponsibilityStrip({
         {items.map((item, index) => {
           const tone = toneClass[item.tone ?? "neutral"];
           return (
-            <div key={index} className={`min-w-0 px-5 py-5 ${tone.shell}`}>
+            <div key={index} className={`min-w-0 px-4 py-4 ${tone.shell}`}>
               <div className="flex items-center gap-2">
                 <span className={`h-2 w-2 rounded-full ${tone.marker}`} aria-hidden="true" />
                 <p className={`text-xs font-extrabold ${tone.label}`}>
