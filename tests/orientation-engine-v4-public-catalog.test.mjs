@@ -8,6 +8,10 @@ const migration = readFileSync(
   "supabase/migrations/20261002153431_orientation_public_catalog_view.sql",
   "utf8",
 );
+const readerMigration = readFileSync(
+  "supabase/migrations/20261005094500_orientation_public_catalog_reader_rpc.sql",
+  "utf8",
+);
 
 test("public Orientation catalogue uses only the publishable Supabase key", () => {
   assert.match(client, /import "server-only"/);
@@ -30,17 +34,34 @@ test("public catalogue view exposes only a bounded verified projection", () => {
   assert.match(migration, /grant select on table public\.orientation_program_catalog to anon, authenticated/);
 });
 
-test("public catalogue view never grants anon access to the base tables or student data", () => {
-  assert.doesNotMatch(migration, /grant\s+select\s+on\s+(?:table\s+)?public\.(?:programs|universities)\s+to\s+anon/i);
-  assert.doesNotMatch(migration, /prospects|profiles|documents|applications|student_projects|orientations/i);
+test("public catalogue reader keeps direct anon base-table access closed", () => {
+  assert.doesNotMatch(migration + readerMigration, /grant\s+select\s+on\s+(?:table\s+)?public\.(?:programs|universities)\s+to\s+anon/i);
+  assert.match(readerMigration, /security definer/i);
+  assert.match(readerMigration, /set search_path = ''/i);
+  assert.match(readerMigration, /revoke all on function public\.read_orientation_program_catalog\(\)[\s\S]*from public, anon, authenticated/i);
+  assert.match(readerMigration, /grant execute on function public\.read_orientation_program_catalog\(\)[\s\S]*to anon, authenticated/i);
+  assert.doesNotMatch(readerMigration, /profiles|documents|applications|student_projects|orientations/i);
+});
+
+test("bounded reader reproduces verified public filters and projection", () => {
+  for (const pattern of [
+    /p\.is_active/,
+    /u\.is_active/,
+    /u\.registry_status = 'verified_catalogue'/,
+    /p\.verified_at is not null/,
+    /p\.source_url ~\*/,
+    /p\.application_url ~\*/,
+    /u\.verified_at is not null/,
+  ]) assert.match(readerMigration, pattern);
   assert.doesNotMatch(
-    migration,
-    /almago_notes|requirements|tuition_notes|application_fee_notes|description|logo_url/i,
+    readerMigration,
+    /almago_notes|tuition_notes|application_fee_notes|description|logo_url/i,
   );
 });
 
-test("Orientation Engine consumes only the bounded view", () => {
-  assert.match(catalog, /from\("orientation_program_catalog"\)/);
+test("Orientation Engine consumes only the bounded public RPC", () => {
+  assert.match(catalog, /rpc\("read_orientation_program_catalog"\)/);
+  assert.doesNotMatch(catalog, /from\("orientation_program_catalog"\)/);
   assert.doesNotMatch(catalog, /createPrivilegedSupabaseClient|SUPABASE_SECRET_KEY/);
   assert.match(catalog, /programme_source_url/);
   assert.match(catalog, /programme_verified_at/);

@@ -260,7 +260,7 @@ test("V4 refinement stays connected to the same deterministic engine and preserv
   assert.match(publicAnswers, /targetIntakeSeason/);
   assert.match(publicAnswers, /targetIntakeYear/);
   assert.match(validation, /hasIntakeSeason !== hasIntakeYear/);
-  assert.match(catalog, /"intake_terms"/);
+  assert.match(catalog, /intake_terms:\s*string\[\] \| null/);
   assert.match(rules, /evaluateOrientationDeadline/);
   assert.match(rules, /deadline_to_verify/);
   assert.match(service, /buildOrientationRefinementState/);

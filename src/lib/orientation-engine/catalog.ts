@@ -97,42 +97,13 @@ function mapProgramme(row: ProgrammeCatalogRow): OrientationProgrammeRecord {
 export async function loadVerifiedProgrammeCatalogue() {
   const supabase = createPublicCatalogSupabaseClient();
 
-  const { data, error } = await supabase
-    .from("orientation_program_catalog")
-    .select([
-      "id",
-      "name",
-      "degree_level",
-      "field",
-      "teaching_language",
-      "german_level_required",
-      "english_level_required",
-      "studienkolleg_required",
-      "uni_assist_required",
-      "intake_terms",
-      "winter_deadline",
-      "summer_deadline",
-      "application_url",
-      "programme_source_url",
-      "programme_verified_at",
-      "master_academic_prerequisites",
-      "university_id",
-      "university_name",
-      "university_city",
-      "university_bundesland",
-      "university_type",
-      "university_is_public",
-      "university_website_url",
-      "university_source_url",
-      "university_verified_at",
-      "university_cover_image_url",
-      "university_cover_image_source_url",
-      "university_cover_image_attribution",
-      "university_cover_image_license",
-    ].join(","))
-    .order("name");
+  const { data, error } = await supabase.rpc("read_orientation_program_catalog");
 
   if (error) throw error;
 
-  return (data || []).map((row) => mapProgramme(row as unknown as ProgrammeCatalogRow));
+  const rows = (data || []) as unknown as ProgrammeCatalogRow[];
+
+  return rows
+    .map(mapProgramme)
+    .sort((a, b) => a.name.localeCompare(b.name));
 }
