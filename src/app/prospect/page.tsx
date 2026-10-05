@@ -196,18 +196,18 @@ export default async function ProspectDashboardPage() {
   };
 
   return (
-    <main className="space-y-6">
-      <section className="relative overflow-hidden rounded-[var(--radius-panel)] border border-slate-800 bg-[var(--foreground)] p-5 text-white shadow-[var(--shadow-soft)] sm:p-7">
+    <main className="space-y-5">
+      <section className="overflow-hidden rounded-[var(--radius-panel)] border border-[var(--border)] border-t-[3px] border-t-[var(--brand)] bg-[var(--surface)] p-5 shadow-[var(--shadow-card)] sm:p-6">
         <div className="pointer-events-none absolute -right-16 -top-24 size-64 rounded-full bg-[var(--brand)]/12 blur-3xl" aria-hidden="true" />
         <div className="pointer-events-none absolute -bottom-28 left-1/3 size-64 rounded-full bg-amber-300/10 blur-3xl" aria-hidden="true" />
         <div className="relative">
-          <p className="text-[0.68rem] font-bold uppercase tracking-[0.16em] text-amber-300">
+          <p className="text-[0.68rem] font-bold uppercase tracking-[0.16em] text-[var(--brand)]">
             {t.eyebrow}
           </p>
-          <h1 className="mt-2 max-w-3xl text-3xl font-bold tracking-[-0.035em] text-white sm:text-4xl">
+          <h1 className="mt-2 max-w-3xl text-2xl font-bold tracking-[-0.03em] text-[var(--foreground)] sm:text-[2rem]">
             {t.title}
           </h1>
-          <p className="mt-3 max-w-3xl text-sm leading-6 text-white/70 sm:text-base">
+          <p className="mt-3 max-w-3xl text-sm leading-6 text-[var(--muted)] sm:text-[0.95rem]">
             {t.subtitle}
           </p>
 
@@ -216,7 +216,7 @@ export default async function ProspectDashboardPage() {
               {facts.map((fact) => (
                 <span
                   key={fact}
-                  className="rounded-full border border-white/15 bg-white/8 px-3 py-1.5 text-xs font-semibold text-white"
+                  className="rounded-full bg-[var(--surface-subtle)] px-3 py-1.5 text-xs font-semibold text-[var(--foreground)]"
                 >
                   <bdi dir="auto">{fact}</bdi>
                 </span>
@@ -226,7 +226,7 @@ export default async function ProspectDashboardPage() {
         </div>
       </section>
 
-      <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 sm:p-6">
+      <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-4 shadow-[var(--shadow-card)] sm:p-5">
         <div className="mb-4 flex items-center justify-between gap-3">
           <h2 className="text-xl font-bold">{t.progress}</h2>
           <Link
