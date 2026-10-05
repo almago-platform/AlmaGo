@@ -135,7 +135,7 @@ export default async function ProspectSolutionsPage() {
   const intlLocale = financeCopy.intlLocale;
 
   return (
-    <main className="space-y-8">
+    <main className="space-y-6">
       <ProspectPageHero eyebrow={t.eyebrow} title={t.title} subtitle={t.subtitle} />
 
       <section aria-labelledby="prospect-language-solutions">
@@ -219,7 +219,7 @@ export default async function ProspectSolutionsPage() {
           <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">{t.financeText}</p>
         </div>
 
-        <div className="space-y-7">
+        <div className="space-y-5">
           {financeInsuranceKinds.map((kind) => {
             const options = financeOptions.filter((option) => option.kind === kind);
             const sectionCopy = financeCopy.kinds[kind];
