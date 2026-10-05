@@ -20,7 +20,7 @@ export function NextActionPanel({
       className={
         waiting
           ? "relative overflow-hidden rounded-[1.35rem] border border-[#ead59a] bg-[#fff9e9] p-4 shadow-[0_20px_55px_-40px_rgba(139,98,0,.34)] sm:p-5"
-          : "relative overflow-hidden rounded-[1.35rem] border border-black/10 bg-[#17191b] p-4 text-white shadow-[0_28px_70px_-40px_rgba(0,0,0,.65)] sm:p-6"
+          : "relative overflow-hidden rounded-[1.35rem] border border-black/10 bg-[#17191b] p-4 text-white shadow-[0_28px_70px_-40px_rgba(0,0,0,.65)] sm:p-5"
       }
       style={waiting ? undefined : {
         backgroundImage:
@@ -43,7 +43,7 @@ export function NextActionPanel({
             className={
               waiting
                 ? "mt-1.5 text-[1.45rem] font-semibold tracking-[-0.035em] text-[#202326]"
-                : "mt-2 text-2xl font-semibold tracking-[-0.035em] text-white"
+                : "mt-1.5 text-[1.45rem] font-semibold tracking-[-0.035em] text-white"
             }
           >
             {title}
