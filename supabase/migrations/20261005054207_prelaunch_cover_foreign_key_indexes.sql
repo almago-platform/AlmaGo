@@ -1,0 +1,11 @@
+create index if not exists customer_access_events_payment_transaction_idx on public.customer_access_events (payment_transaction_id);
+create index if not exists customer_access_events_purchase_idx on public.customer_access_events (purchase_id);
+create index if not exists free_validation_pilot_access_events_performed_by_idx on public.free_validation_pilot_access_events (performed_by);
+create index if not exists student_intake_cases_orientation_idx on public.student_intake_cases (orientation_id);
+create index if not exists student_intake_cases_procedure_idx on public.student_intake_cases (procedure_id);
+create index if not exists student_intake_cases_proposed_by_idx on public.student_intake_cases (proposed_by);
+create index if not exists student_intake_cases_proposed_offer_version_idx on public.student_intake_cases (proposed_offer_version_id);
+create index if not exists student_procedures_created_by_idx on public.student_procedures (created_by);
+create index if not exists student_procedures_procedure_template_idx on public.student_procedures (procedure_template_id);
+create index if not exists student_procedures_project_idx on public.student_procedures (project_id);
+create index if not exists student_procedures_superseded_by_idx on public.student_procedures (superseded_by);
