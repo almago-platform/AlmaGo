@@ -6,6 +6,7 @@ import type { OrientationProgrammeRecord, OrientationUniversityMedia } from "@/l
 
 const MAX_MEDIA_LOOKUPS_PER_REQUEST = 40;
 const MEDIA_RETRY_DAYS = 30;
+const MEDIA_LOOKUP_CONCURRENCY = 3;
 
 type RegistryMediaRow = {
   id: string;
@@ -114,45 +115,53 @@ export async function enrichProspectCatalogueUniversityMedia(
 
   const checkedAt = new Date().toISOString();
 
-  await Promise.all(
-    lookupIds.map(async (id) => {
-      const meta = missingCounts.get(id);
-      if (!meta) return;
+  for (
+    let index = 0;
+    index < lookupIds.length;
+    index += MEDIA_LOOKUP_CONCURRENCY
+  ) {
+    const batch = lookupIds.slice(index, index + MEDIA_LOOKUP_CONCURRENCY);
 
-      const found = await findWikimediaUniversityMedia(meta.name, meta.city);
-      const update = found
-        ? {
-            cover_image_url: found.coverImageUrl,
-            cover_image_source_url: found.coverImageSourceUrl,
-            cover_image_attribution: found.coverImageAttribution,
-            cover_image_license: found.coverImageLicense,
-            media_verified_at: checkedAt,
-            updated_at: checkedAt,
-          }
-        : {
-            media_verified_at: checkedAt,
-            updated_at: checkedAt,
-          };
+    await Promise.all(
+      batch.map(async (id) => {
+        const meta = missingCounts.get(id);
+        if (!meta) return;
 
-      if (supabase) {
-        await supabase
-          .from("universities")
-          .update(update)
-          .eq("id", id);
-      }
+        const found = await findWikimediaUniversityMedia(meta.name, meta.city);
+        const update = found
+          ? {
+              cover_image_url: found.coverImageUrl,
+              cover_image_source_url: found.coverImageSourceUrl,
+              cover_image_attribution: found.coverImageAttribution,
+              cover_image_license: found.coverImageLicense,
+              media_verified_at: checkedAt,
+              updated_at: checkedAt,
+            }
+          : {
+              media_verified_at: checkedAt,
+              updated_at: checkedAt,
+            };
 
-      if (found) {
-        mediaById.set(id, {
-          universityId: id,
-          canonicalName: meta.name,
-          coverImageUrl: found.coverImageUrl,
-          coverImageSourceUrl: found.coverImageSourceUrl,
-          coverImageAttribution: found.coverImageAttribution,
-          coverImageLicense: found.coverImageLicense,
-        });
-      }
-    }),
-  );
+        if (supabase) {
+          await supabase
+            .from("universities")
+            .update(update)
+            .eq("id", id);
+        }
+
+        if (found) {
+          mediaById.set(id, {
+            universityId: id,
+            canonicalName: meta.name,
+            coverImageUrl: found.coverImageUrl,
+            coverImageSourceUrl: found.coverImageSourceUrl,
+            coverImageAttribution: found.coverImageAttribution,
+            coverImageLicense: found.coverImageLicense,
+          });
+        }
+      }),
+    );
+  }
 
   if (mediaById.size === 0) return catalogue;
 
