@@ -23,11 +23,11 @@ export function ProspectProgrammeRecommendationCard({
   const programme = recommendation.programme;
   const preferredCity = recommendationMatchesPreferredCity(recommendation);
   const cardClass = compact
-    ? "group rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-4 shadow-[var(--shadow-card)] transition hover:-translate-y-0.5 hover:border-[var(--brand-border)] hover:shadow-[var(--shadow-soft)]"
-    : "group rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[var(--shadow-card)] transition hover:-translate-y-0.5 hover:border-[var(--brand-border)] hover:shadow-[var(--shadow-soft)] sm:p-6";
+    ? "group rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-4 transition-colors hover:border-[var(--brand-border)]"
+    : "group rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[var(--shadow-card)] transition-colors hover:border-[var(--brand-border)] sm:p-5";
   const headingClass = compact
-    ? "mt-3 text-lg font-bold [overflow-wrap:anywhere]"
-    : "mt-4 text-xl font-bold [overflow-wrap:anywhere]";
+    ? "mt-2.5 text-lg font-bold [overflow-wrap:anywhere]"
+    : "mt-3 text-xl font-bold [overflow-wrap:anywhere]";
 
   return (
     <article className={cardClass}>
@@ -66,16 +66,16 @@ export function ProspectProgrammeRecommendationCard({
       </div>
 
       {!compact ? (
-        <dl className="mt-5 grid gap-3 sm:grid-cols-3">
-          <div className="rounded-[var(--radius-control)] bg-[var(--surface-subtle)] p-3">
+        <dl className="mt-4 grid gap-px overflow-hidden rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--border)] sm:grid-cols-3">
+          <div className="bg-[var(--surface-subtle)] p-3">
             <dt className="text-xs font-semibold text-[var(--muted)]">{labels.field}</dt>
             <dd className="mt-1 text-sm font-semibold"><bdi dir="auto">{programme.field || "—"}</bdi></dd>
           </div>
-          <div className="rounded-[var(--radius-control)] bg-[var(--surface-subtle)] p-3">
+          <div className="bg-[var(--surface-subtle)] p-3">
             <dt className="text-xs font-semibold text-[var(--muted)]">{labels.german}</dt>
             <dd className="mt-1 text-sm font-semibold">{programme.germanLevelRequired || labels.requirementCheck}</dd>
           </div>
-          <div className="rounded-[var(--radius-control)] bg-[var(--surface-subtle)] p-3">
+          <div className="bg-[var(--surface-subtle)] p-3">
             <dt className="text-xs font-semibold text-[var(--muted)]">{labels.uniAssist}</dt>
             <dd className="mt-1 text-sm font-semibold">
               {programme.uniAssistRequired ? labels.yes : labels.requirementCheck}
@@ -84,13 +84,13 @@ export function ProspectProgrammeRecommendationCard({
         </dl>
       ) : null}
 
-      <div className="mt-4 flex flex-wrap gap-3">
+      <div className="mt-4 flex flex-wrap gap-2.5">
         {programme.programmeSourceUrl ? (
           <a
             href={programme.programmeSourceUrl}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex min-h-10 items-center rounded-[var(--radius-control)] border border-[var(--border-strong)] bg-[var(--surface)] px-4 text-sm font-semibold transition hover:border-[var(--brand-border)]"
+            className="inline-flex min-h-10 items-center rounded-[var(--radius-control)] border border-[var(--border-strong)] bg-[var(--surface)] px-4 text-sm font-semibold transition hover:border-[var(--brand-border)] hover:bg-[var(--surface-subtle)]"
           >
             {labels.source}
           </a>
