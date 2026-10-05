@@ -144,7 +144,7 @@ export function ProspectShell({
 
       <header className="sticky top-0 z-40 border-b border-black/10 bg-[rgba(255,254,250,.94)] shadow-[0_1px_0_rgba(0,0,0,.03)] backdrop-blur-xl">
         <div className="h-[3px] bg-[linear-gradient(90deg,#17191b_0_33%,#d80621_33%_67%,#f4b400_67%)]" aria-hidden="true" />
-        <div className="mx-auto flex min-h-[72px] max-w-[96rem] items-center justify-between gap-2 px-3 min-[360px]:gap-3 min-[360px]:px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto flex min-h-[64px] max-w-[100rem] items-center justify-between gap-2 px-3 min-[360px]:gap-3 min-[360px]:px-4 sm:px-6 lg:px-8">
           <div className="flex min-w-0 items-center gap-3">
             <button
               type="button"
@@ -205,9 +205,9 @@ export function ProspectShell({
         </div>
       ) : null}
 
-      <div className="mx-auto grid max-w-[96rem] gap-6 px-4 py-5 sm:px-6 sm:py-7 lg:grid-cols-[15rem_minmax(0,1fr)] lg:gap-8 lg:px-8 lg:py-8 xl:grid-cols-[16rem_minmax(0,1fr)]">
-        <aside className="hidden h-fit overflow-hidden rounded-[1.35rem] bg-[#17191b] text-white shadow-[0_28px_70px_-38px_rgba(0,0,0,.65)] ring-1 ring-black/5 lg:sticky lg:top-[6.5rem] lg:block">
-          <div className="relative overflow-hidden border-b border-white/10 px-5 py-5">
+      <div className="mx-auto grid max-w-[96rem] gap-5 px-4 py-4 sm:px-6 sm:py-5 lg:grid-cols-[14rem_minmax(0,1fr)] lg:gap-6 lg:px-8 lg:py-6 xl:grid-cols-[14.5rem_minmax(0,1fr)]">
+        <aside className="hidden h-fit overflow-hidden rounded-[1.35rem] bg-[#17191b] text-white shadow-[0_28px_70px_-38px_rgba(0,0,0,.65)] ring-1 ring-black/5 lg:sticky lg:top-[5.4rem] lg:block">
+          <div className="relative overflow-hidden border-b border-white/10 px-4 py-4">
             <div className="absolute -end-9 -top-10 h-24 w-24 rounded-full bg-[var(--brand)]/20 blur-2xl" aria-hidden="true" />
             <div className="absolute end-7 top-5 h-8 w-8 rounded-full bg-[var(--accent)]/15 blur-lg" aria-hidden="true" />
             <p className="relative text-[10px] font-extrabold uppercase tracking-[0.18em] text-[var(--accent)]">{t.area}</p>
@@ -224,7 +224,7 @@ export function ProspectShell({
             ) : null}
           </div>
           {navBlock()}
-          <div className="mx-4 mb-4 rounded-xl border border-white/10 bg-white/[.045] px-3 py-3 text-[11px] leading-5 text-white/52">
+          <div className="mx-3 mb-3 rounded-xl border border-white/10 bg-white/[.045] px-3 py-3 text-[11px] leading-5 text-white/52">
             Campus Allemagne · Votre projet, étape par étape.
           </div>
         </aside>
