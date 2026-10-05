@@ -215,9 +215,10 @@ test("prospect payment summary is read-only, localized and owner-scoped", () => 
   for (const locale of ["fr", "ar", "en", "de"]) {
     assert.match(prospectCopy, new RegExp(`const ${locale}: ProspectPaymentCopy`));
   }
-  assert.match(prospectCopy, /retour navigateur ne peut jamais activer votre espace client/);
-  assert.match(prospectCopy, /الرجوع من صفحة الدفع لا يفتح مساحة العميل تلقائيًا/);
-  assert.match(prospectCopy, /Returning from a payment page can never unlock client access by itself/);
+  assert.match(prospectCopy, /espace Étudiant ne peut être activé qu’après confirmation du paiement/);
+  assert.match(prospectCopy, /لا يتم تفعيل مساحة الطالب إلا بعد تأكيد الدفع/);
+  assert.match(prospectCopy, /Student access can be activated only after payment confirmation/);
+  assert.match(prospectCopy, /Studierendenbereich wird erst nach Zahlungsbestätigung/);
 });
 
 test("payment surfaces are present in prospect/admin navigation and admin accessibility matrix", () => {

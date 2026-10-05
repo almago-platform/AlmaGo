@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { campusRouteLabel } from "@/lib/campus-intake";
+import { ProposalDecisionPanel } from "@/components/prospect/ProposalDecisionPanel";
 
 type Recovery = {
   createdAt: string;
@@ -37,6 +38,7 @@ export function IntakeFlowCard({
   starterSummary,
   bacStatus,
   offer,
+  paymentEnabled = false,
 }: {
   recovery: Recovery | null;
   orientationId: string | null;
@@ -50,10 +52,10 @@ export function IntakeFlowCard({
   };
   bacStatus?: string | null;
   offer?: ProposalOffer | null;
+  paymentEnabled?: boolean;
 }) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
-  const [note, setNote] = useState("");
   const [error, setError] = useState<string | null>(null);
 
   async function post(
@@ -237,77 +239,15 @@ export function IntakeFlowCard({
 
   if (intake.status === "route_proposed") {
     return (
-      <section className="mt-6 rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--brand-soft)] p-5 sm:p-6">
-        <p className="text-[0.68rem] font-bold uppercase tracking-[0.15em] text-[var(--brand)]">
-          Étape 4 · Parcours proposé
-        </p>
-        <h2 className="mt-2 text-2xl font-bold">
-          {campusRouteLabel(intake.proposed_route_key)}
-        </h2>
-        <p className="mt-3 max-w-3xl text-sm leading-6 text-[var(--muted)]">
-          {intake.proposal_reason}
-        </p>
-
-        {offer ? (
-          <div className="mt-5 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface)] p-4">
-            <div className="flex flex-wrap items-start justify-between gap-4">
-              <div className="max-w-2xl">
-                <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--brand)]">
-                  Accompagnement proposé
-                </p>
-                <h3 className="mt-1 text-lg font-bold">{offer.displayName}</h3>
-                <p className="mt-1 text-sm leading-6 text-[var(--muted)]">{offer.summary}</p>
-              </div>
-              <p className="text-xl font-bold"><bdi dir="auto">{offer.priceLabel}</bdi></p>
-            </div>
-            <ul className="mt-4 grid gap-2 text-sm sm:grid-cols-2">
-              {offer.services.map((service) => (
-                <li key={service} className="flex gap-2">
-                  <span aria-hidden="true" className="text-[var(--brand)]">✓</span>
-                  <span>{service}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ) : null}
-
-        {error ? <p role="alert" className="mt-4 text-sm font-semibold text-red-700">{error}</p> : null}
-
-        <div className="mt-5 flex flex-wrap gap-3">
-          <button
-            type="button"
-            disabled={busy}
-            onClick={() => post("/api/intake/route/confirm", undefined, "/prospect/payment")}
-            className="inline-flex min-h-11 items-center rounded-[var(--radius-control)] bg-[var(--brand)] px-5 text-sm font-bold text-white disabled:opacity-60"
-          >
-            {busy ? "Confirmation…" : "Accepter et passer au paiement"}
-          </button>
-        </div>
-
-        <div className="mt-5 border-t border-[var(--border)] pt-5">
-          <label className="block text-sm font-semibold">
-            Une question ou un désaccord ? <span className="font-normal text-[var(--muted)]">(facultatif)</span>
-            <textarea
-              value={note}
-              onChange={(event) => setNote(event.target.value)}
-              maxLength={1000}
-              rows={3}
-              className="field mt-2"
-              placeholder="Expliquez ce que vous souhaitez revoir avec Campus Allemagne."
-            />
-          </label>
-          <button
-            type="button"
-            disabled={busy}
-            onClick={() => post("/api/intake/route/discuss", { note })}
-            className="mt-3 inline-flex min-h-11 items-center rounded-[var(--radius-control)] border border-[var(--border-strong)] px-5 text-sm font-bold disabled:opacity-60"
-          >
-            Je souhaite en discuter
-          </button>
-        </div>
-      </section>
+      <ProposalDecisionPanel
+        routeKey={intake.proposed_route_key}
+        rationale={intake.proposal_reason}
+        offer={offer ?? null}
+        paymentEnabled={paymentEnabled}
+      />
     );
   }
+
 
   if (intake.status === "payment_pending") {
     return (
@@ -317,7 +257,7 @@ export function IntakeFlowCard({
         </p>
         <h2 className="mt-2 text-xl font-bold">Votre place dans la phase suivante est réservée après paiement</h2>
         <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
-          Vous avez accepté la proposition Campus Allemagne. Aucun accès client ni procédure n’est créé avant la confirmation du paiement.
+          Vous avez accepté la proposition Campus Allemagne. L’espace Étudiant reste verrouillé jusqu’à la confirmation du paiement puis à sa validation Campus.
         </p>
         <Link
           href="/prospect/payment"
