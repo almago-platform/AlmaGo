@@ -11,7 +11,6 @@ import { DataList } from "@/components/ui/DataList";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import {
   applicationStatusLabels,
-  isActiveApplication,
   type KnownApplicationStatus,
 } from "@/lib/application-workflow";
 import { campusRouteLabel } from "@/lib/campus-intake";
