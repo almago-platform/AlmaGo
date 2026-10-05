@@ -134,8 +134,9 @@ export function ProspectCaptureCard({
     }
   }
 
-  const persistentCaptureAllowed =
-    Boolean(identity) && isAdultPublicOrientationIdentity(identity as PublicOrientationIdentity);
+  const persistentCaptureAllowed = identity
+    ? isAdultPublicOrientationIdentity(identity)
+    : false;
 
   if (!persistentCaptureAllowed) {
     return (
