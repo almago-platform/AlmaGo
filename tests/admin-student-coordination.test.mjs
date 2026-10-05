@@ -16,8 +16,8 @@ const studentConfirmRoute = read("src/app/api/intake/route/confirm/route.ts");
 const receipts = read("supabase/migrations/20261005113000_admin_student_coordination_receipts.sql");
 
 test("admin proposal form calls the actual App Router endpoint", () => {
-  assert.ok(adminPanel.includes('fetch(\`/api/admin/intake/\${item.studentId}\`)'));
-  assert.ok(!adminPanel.includes('fetch(\`/api/admin/intake/\${item.studentId}/route\`)'));
+  assert.ok(adminPanel.includes('fetch(`/api/admin/intake/${item.studentId}`)'));
+  assert.ok(!adminPanel.includes('fetch(`/api/admin/intake/${item.studentId}/route`)'));
   assert.match(adminRoute, /service_admin_propose_student_route/);
 });
 
