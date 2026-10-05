@@ -4,9 +4,10 @@ import Link from "next/link";
 import { useState } from "react";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { orientationProspectCopy } from "@/content/orientation-prospect-copy";
-import type {
-  PublicOrientationAnswers,
-  PublicOrientationIdentity,
+import {
+  isAdultPublicOrientationIdentity,
+  type PublicOrientationAnswers,
+  type PublicOrientationIdentity,
 } from "@/lib/orientation/public";
 import type { AcquisitionContext } from "@/lib/phase2/acquisition";
 
@@ -131,6 +132,21 @@ export function ProspectCaptureCard({
     } catch {
       setInterestStatus("error");
     }
+  }
+
+  const persistentCaptureAllowed =
+    Boolean(identity) && isAdultPublicOrientationIdentity(identity as PublicOrientationIdentity);
+
+  if (!persistentCaptureAllowed) {
+    return (
+      <section id="orientation-prospect-capture" className="orientation-print-hide mt-8 scroll-mt-6 rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface-subtle)] p-5 sm:p-6">
+        <p className="eyebrow">{copy.ageRestrictionEyebrow}</p>
+        <h3 className="mt-2 text-xl font-bold">{copy.ageRestrictionTitle}</h3>
+        <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
+          {copy.ageRestrictionText}
+        </p>
+      </section>
+    );
   }
 
   const submitLabel = accountLinkingEnabled
