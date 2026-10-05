@@ -4,6 +4,7 @@ const COMMONS_API_URL = "https://commons.wikimedia.org/w/api.php";
 const MEDIA_TIMEOUT_MS = 3_000;
 const MAX_RESULTS = 8;
 const MEDIA_CACHE_SECONDS = 30 * 24 * 60 * 60;
+const WIKIMEDIA_USER_AGENT = "AlmaGoUniversityMedia/1.0 (https://github.com/almago-platform/AlmaGo)";
 
 type CommonsMetadataValue = {
   value?: string;
@@ -109,6 +110,8 @@ async function searchCommonsPhoto(query: string): Promise<UniversityMediaLookup 
       },
       headers: {
         Accept: "application/json",
+        "User-Agent": WIKIMEDIA_USER_AGENT,
+        "Api-User-Agent": WIKIMEDIA_USER_AGENT,
       },
     });
 
