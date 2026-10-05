@@ -96,11 +96,11 @@ export function IntakeFlowCard({
       .format(new Date(recovery.createdAt));
 
     return (
-      <section className="mt-6 rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--brand-soft)] p-5 sm:p-6">
-        <p className="text-[0.68rem] font-bold uppercase tracking-[0.15em] text-[var(--brand)]">
+      <section className="mt-6 relative overflow-hidden rounded-[1.35rem] border border-[var(--brand-border)] bg-[var(--brand-soft)] p-5 shadow-[0_22px_58px_-42px_rgba(216,6,33,.28)] sm:p-6">
+        <p className="text-[0.68rem] font-extrabold uppercase tracking-[0.16em] text-[var(--brand)]">
           Orientation retrouvée
         </p>
-        <h2 className="mt-2 text-xl font-bold">Nous avons retrouvé votre orientation</h2>
+        <h2 className="mt-2 text-[1.35rem] font-semibold tracking-[-0.025em] text-[#202326]">Nous avons retrouvé votre orientation</h2>
         <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
           Elle a été enregistrée le {savedDate}. Vous n’avez pas besoin de recommencer si ces informations sont toujours correctes.
         </p>
@@ -117,13 +117,13 @@ export function IntakeFlowCard({
             type="button"
             disabled={busy}
             onClick={() => post("/api/orientation/recover")}
-            className="inline-flex min-h-11 items-center rounded-[var(--radius-control)] bg-[var(--brand)] px-5 text-sm font-bold text-white disabled:opacity-60"
+            className="inline-flex min-h-11 items-center rounded-xl bg-[var(--brand)] px-5 text-sm font-bold text-white shadow-[0_12px_28px_-16px_rgba(216,6,33,.85)] transition-all duration-200 hover:-translate-y-px hover:bg-[var(--brand-strong)] hover:shadow-md disabled:opacity-60 disabled:hover:translate-y-0"
           >
             {busy ? "Récupération…" : "Oui, continuer avec cette orientation"}
           </button>
           <Link
             href="/orientation"
-            className="inline-flex min-h-11 items-center rounded-[var(--radius-control)] border border-[var(--border-strong)] px-5 text-sm font-bold"
+            className="inline-flex min-h-11 items-center rounded-xl border border-black/10 bg-white px-5 text-sm font-bold text-[#202326] shadow-sm transition-all duration-200 hover:-translate-y-px hover:border-black/20 hover:shadow-md"
           >
             Mettre mon orientation à jour
           </Link>
@@ -134,11 +134,11 @@ export function IntakeFlowCard({
 
   if (orientationId && !orientationConfirmed) {
     return (
-      <section className="mt-6 rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--brand-soft)] p-5 sm:p-6">
-        <p className="text-[0.68rem] font-bold uppercase tracking-[0.15em] text-[var(--brand)]">
+      <section className="mt-6 relative overflow-hidden rounded-[1.35rem] border border-[var(--brand-border)] bg-[var(--brand-soft)] p-5 shadow-[0_22px_58px_-42px_rgba(216,6,33,.28)] sm:p-6">
+        <p className="text-[0.68rem] font-extrabold uppercase tracking-[0.16em] text-[var(--brand)]">
           Étape 1 · Orientation
         </p>
-        <h2 className="mt-2 text-xl font-bold">Confirmez votre orientation actuelle</h2>
+        <h2 className="mt-2 text-[1.35rem] font-semibold tracking-[-0.025em] text-[#202326]">Confirmez votre orientation actuelle</h2>
         <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
           Nous allons utiliser ces réponses comme point de départ. Vous pourrez les mettre à jour avant de confirmer.
         </p>
@@ -150,13 +150,13 @@ export function IntakeFlowCard({
             type="button"
             disabled={busy}
             onClick={() => post("/api/intake/orientation/confirm", { orientationId })}
-            className="inline-flex min-h-11 items-center rounded-[var(--radius-control)] bg-[var(--brand)] px-5 text-sm font-bold text-white disabled:opacity-60"
+            className="inline-flex min-h-11 items-center rounded-xl bg-[var(--brand)] px-5 text-sm font-bold text-white shadow-[0_12px_28px_-16px_rgba(216,6,33,.85)] transition-all duration-200 hover:-translate-y-px hover:bg-[var(--brand-strong)] hover:shadow-md disabled:opacity-60 disabled:hover:translate-y-0"
           >
             {busy ? "Validation…" : "Ces informations sont correctes"}
           </button>
           <Link
             href="/orientation?mode=update"
-            className="inline-flex min-h-11 items-center rounded-[var(--radius-control)] border border-[var(--border-strong)] px-5 text-sm font-bold"
+            className="inline-flex min-h-11 items-center rounded-xl border border-black/10 bg-white px-5 text-sm font-bold text-[#202326] shadow-sm transition-all duration-200 hover:-translate-y-px hover:border-black/20 hover:shadow-md"
           >
             Modifier mon orientation
           </Link>
@@ -169,11 +169,11 @@ export function IntakeFlowCard({
 
   if (intake.status === "starter_documents" && bacStatus === "preparing") {
     return (
-      <section className="mt-6 rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--brand-soft)] p-5 sm:p-6">
-        <p className="text-[0.68rem] font-bold uppercase tracking-[0.15em] text-[var(--brand)]">
+      <section className="mt-6 relative overflow-hidden rounded-[1.35rem] border border-[var(--brand-border)] bg-[var(--brand-soft)] p-5 shadow-[0_22px_58px_-42px_rgba(216,6,33,.28)] sm:p-6">
+        <p className="text-[0.68rem] font-extrabold uppercase tracking-[0.16em] text-[var(--brand)]">
           Projet avant le Bac
         </p>
-        <h2 className="mt-2 text-xl font-bold">Continuez votre préparation sans attendre les résultats</h2>
+        <h2 className="mt-2 text-[1.35rem] font-semibold tracking-[-0.025em] text-[#202326]">Continuez votre préparation sans attendre les résultats</h2>
         <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
           Aucun document académique final n’est obligatoire maintenant. Vous pouvez améliorer votre allemand,
           explorer les programmes et ajouter seulement votre passeport ou votre certificat de langue s’ils sont disponibles.
@@ -181,13 +181,13 @@ export function IntakeFlowCard({
         <div className="mt-5 flex flex-wrap gap-3">
           <Link
             href="/prospect/roadmap"
-            className="inline-flex min-h-11 items-center rounded-[var(--radius-control)] bg-[var(--brand)] px-5 text-sm font-bold text-white"
+            className="inline-flex min-h-11 items-center rounded-xl bg-[var(--brand)] px-5 text-sm font-bold text-white shadow-[0_12px_28px_-16px_rgba(216,6,33,.85)] transition-all duration-200 hover:-translate-y-px hover:bg-[var(--brand-strong)] hover:shadow-md"
           >
             Continuer ma préparation
           </Link>
           <Link
             href="/prospect/documents"
-            className="inline-flex min-h-11 items-center rounded-[var(--radius-control)] border border-[var(--border-strong)] px-5 text-sm font-bold"
+            className="inline-flex min-h-11 items-center rounded-xl border border-black/10 bg-white px-5 text-sm font-bold text-[#202326] shadow-sm transition-all duration-200 hover:-translate-y-px hover:border-black/20 hover:shadow-md"
           >
             Ajouter un document facultatif
           </Link>
@@ -198,11 +198,11 @@ export function IntakeFlowCard({
 
   if (intake.status === "starter_documents") {
     return (
-      <section className="mt-6 rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 sm:p-6">
-        <p className="text-[0.68rem] font-bold uppercase tracking-[0.15em] text-[var(--brand)]">
+      <section className="mt-6 rounded-[1.35rem] border border-black/[.07] bg-white p-5 shadow-[0_22px_60px_-42px_rgba(0,0,0,.34)] sm:p-6">
+        <p className="text-[0.68rem] font-extrabold uppercase tracking-[0.16em] text-[var(--brand)]">
           Étape 2 · Pièces de départ
         </p>
-        <h2 className="mt-2 text-xl font-bold">Ajoutez les preuves nécessaires</h2>
+        <h2 className="mt-2 text-[1.35rem] font-semibold tracking-[-0.025em] text-[#202326]">Ajoutez les preuves nécessaires</h2>
         <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
           Passeport, Baccalauréat et relevé de notes sont nécessaires pour la première validation.
           Ajoutez votre certificat de langue uniquement si vous en avez déjà un.
@@ -224,15 +224,15 @@ export function IntakeFlowCard({
 
   if (intake.status === "campus_review") {
     return (
-      <section className="mt-6 rounded-[var(--radius-panel)] border border-blue-200 bg-blue-50/50 p-5 sm:p-6">
-        <p className="text-[0.68rem] font-bold uppercase tracking-[0.15em] text-blue-800">
+      <section className="mt-6 relative overflow-hidden rounded-[1.35rem] border border-[#c7d6df] bg-[#f2f6f8] p-5 shadow-[0_22px_58px_-42px_rgba(55,79,96,.28)] sm:p-6">
+        <p className="text-[0.68rem] font-extrabold uppercase tracking-[0.16em] text-[#3f5f74]">
           Étape 3 · Validation Campus Allemagne
         </p>
-        <h2 className="mt-2 text-xl font-bold">Nous examinons votre dossier</h2>
-        <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-700">
+        <h2 className="mt-2 text-[1.35rem] font-semibold tracking-[-0.025em] text-[#202326]">Nous examinons votre dossier</h2>
+        <p className="mt-2 max-w-3xl text-sm leading-6 text-[#586168]">
           Vos trois pièces obligatoires sont validées. Campus Allemagne analyse maintenant votre orientation et vos preuves pour proposer le parcours adapté.
         </p>
-        <p className="mt-4 text-sm font-bold text-blue-900">Aucune action requise de votre part pour le moment.</p>
+        <p className="mt-4 inline-flex rounded-full border border-[#c7d6df] bg-white/65 px-3 py-1.5 text-sm font-bold text-[#334b5d]">Aucune action requise de votre part pour le moment.</p>
       </section>
     );
   }
@@ -251,11 +251,11 @@ export function IntakeFlowCard({
 
   if (intake.status === "payment_pending") {
     return (
-      <section className="mt-6 rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--brand-soft)] p-5 sm:p-6">
-        <p className="text-[0.68rem] font-bold uppercase tracking-[0.15em] text-[var(--brand)]">
+      <section className="mt-6 relative overflow-hidden rounded-[1.35rem] border border-[var(--brand-border)] bg-[var(--brand-soft)] p-5 shadow-[0_22px_58px_-42px_rgba(216,6,33,.28)] sm:p-6">
+        <p className="text-[0.68rem] font-extrabold uppercase tracking-[0.16em] text-[var(--brand)]">
           Proposition acceptée · Paiement attendu
         </p>
-        <h2 className="mt-2 text-xl font-bold">Votre place dans la phase suivante est réservée après paiement</h2>
+        <h2 className="mt-2 text-[1.35rem] font-semibold tracking-[-0.025em] text-[#202326]">Votre place dans la phase suivante est réservée après paiement</h2>
         <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
           Vous avez accepté la proposition Campus Allemagne. L’espace Étudiant reste verrouillé jusqu’à la confirmation du paiement puis à sa validation Campus.
         </p>
@@ -271,27 +271,27 @@ export function IntakeFlowCard({
 
   if (intake.status === "paid_pending_validation") {
     return (
-      <section className="mt-6 rounded-[var(--radius-panel)] border border-blue-200 bg-blue-50/60 p-5 sm:p-6">
-        <p className="text-[0.68rem] font-bold uppercase tracking-[0.15em] text-blue-800">
+      <section className="mt-6 relative overflow-hidden rounded-[1.35rem] border border-[#c7d6df] bg-[#f2f6f8] p-5 shadow-[0_22px_58px_-42px_rgba(55,79,96,.28)] sm:p-6">
+        <p className="text-[0.68rem] font-extrabold uppercase tracking-[0.16em] text-[#3f5f74]">
           Paiement reçu · Validation Campus
         </p>
-        <h2 className="mt-2 text-xl font-bold">Nous validons votre paiement</h2>
-        <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-700">
+        <h2 className="mt-2 text-[1.35rem] font-semibold tracking-[-0.025em] text-[#202326]">Nous validons votre paiement</h2>
+        <p className="mt-2 max-w-3xl text-sm leading-6 text-[#586168]">
           Le paiement a été enregistré. La phase suivante reste verrouillée jusqu’à la validation interne de Campus Allemagne.
         </p>
-        <p className="mt-4 text-sm font-bold text-blue-900">Aucune autre action n’est requise pour le moment.</p>
+        <p className="mt-4 inline-flex rounded-full border border-[#c7d6df] bg-white/65 px-3 py-1.5 text-sm font-bold text-[#334b5d]">Aucune autre action n’est requise pour le moment.</p>
       </section>
     );
   }
 
   if (intake.status === "student_question") {
     return (
-      <section className="mt-6 rounded-[var(--radius-panel)] border border-amber-200 bg-amber-50/60 p-5 sm:p-6">
-        <p className="text-[0.68rem] font-bold uppercase tracking-[0.15em] text-amber-800">
+      <section className="mt-6 relative overflow-hidden rounded-[1.35rem] border border-[#ead59a] bg-[#fff9e9] p-5 shadow-[0_22px_58px_-42px_rgba(139,98,0,.26)] sm:p-6">
+        <p className="text-[0.68rem] font-extrabold uppercase tracking-[0.16em] text-[#7b5900]">
           Parcours à revoir
         </p>
-        <h2 className="mt-2 text-xl font-bold">Votre demande a été transmise</h2>
-        <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-700">
+        <h2 className="mt-2 text-[1.35rem] font-semibold tracking-[-0.025em] text-[#202326]">Votre demande a été transmise</h2>
+        <p className="mt-2 max-w-3xl text-sm leading-6 text-[#586168]">
           Campus Allemagne doit revoir avec vous le parcours proposé avant toute création de procédure.
         </p>
       </section>
@@ -300,14 +300,14 @@ export function IntakeFlowCard({
 
   if (intake.status === "procedure_created") {
     return (
-      <section className="mt-6 rounded-[var(--radius-panel)] border border-emerald-200 bg-emerald-50/60 p-5 sm:p-6">
-        <p className="text-[0.68rem] font-bold uppercase tracking-[0.15em] text-emerald-800">
+      <section className="mt-6 relative overflow-hidden rounded-[1.35rem] border border-[#b9dfc8] bg-[#eff9f3] p-5 shadow-[0_22px_58px_-42px_rgba(29,139,88,.28)] sm:p-6">
+        <p className="text-[0.68rem] font-extrabold uppercase tracking-[0.16em] text-[#17603c]">
           Étape 5 · Confirmé
         </p>
-        <h2 className="mt-2 text-xl font-bold">
+        <h2 className="mt-2 text-[1.35rem] font-semibold tracking-[-0.025em] text-[#202326]">
           Parcours confirmé : {campusRouteLabel(intake.proposed_route_key)}
         </h2>
-        <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-700">
+        <p className="mt-2 max-w-3xl text-sm leading-6 text-[#586168]">
           Votre procédure Campus Allemagne a été créée. Les étapes détaillées de la procédure seront traitées dans la phase suivante.
         </p>
       </section>
