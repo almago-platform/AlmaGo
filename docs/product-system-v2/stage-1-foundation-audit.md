@@ -754,16 +754,16 @@ Stage 1 is complete only when:
 - [x] Responsive contract drafted.
 - [x] Accessibility contract drafted.
 - [x] Content contract drafted.
-- [ ] Benchmark pattern study completed.
-- [ ] Current-screen keep/simplify/rebuild/merge matrix completed.
-- [ ] Figma Stage 1 structure created.
-- [ ] Figma foundations proposal created.
+- [x] Benchmark pattern study completed.
+- [x] Current-screen keep/simplify/rebuild/merge matrix completed.
+- [x] Figma Stage 1 structure created.
+- [x] Figma foundations proposal created.
 - [ ] Candidate Orientation pilot wire architecture approved.
 - [ ] Prospect/pre-account pilot wire architecture approved.
 - [ ] Admin 360° dossier pilot wire architecture approved.
 - [ ] Proposal/payment hinge wire architecture approved.
 - [ ] Active Student pilot wire architecture approved.
-- [ ] Open feature PR collision map reconciled with migration sequence.
+- [x] Open feature PR collision map reconciled with migration sequence.
 - [ ] Final Stage 1 review accepted.
 
 No broad production redesign begins before this gate closes.
