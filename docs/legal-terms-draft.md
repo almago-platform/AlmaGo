@@ -56,8 +56,10 @@ Statut actuel confirmé :
 
 - l’orientation en ligne est **gratuite** ;
 - avant immatriculation/licence, la version fonctionnelle est réservée au pré-lancement, aux tests et aux démonstrations partenaires avec des données synthétiques ;
-- des services payants d’accompagnement et de préparation de dossier sont envisagés ;
-- aucune offre payante, aucun pack, aucun tarif et aucune modalité de paiement ne sont encore activés, finalisés ni proposés à la vente.
+- des offres payantes d’accompagnement et de préparation de dossier sont configurées pour les tests/pré-lancement ;
+- le catalogue technique contient actuellement des versions TND de test ;
+- un flux de validation manuelle du paiement est implémenté côté administration ;
+- ces éléments ne constituent pas une ouverture de la vente au public : conditions commerciales, activation publique et conformité restent à finaliser.
 
 Avant toute activation d’un service payant, Campus Allemagne devra définir et publier les conditions commerciales/consommateur applicables, les prestations, le prix, les modalités de paiement, d’annulation et de remboursement si applicables.
 
