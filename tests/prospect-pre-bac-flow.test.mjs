@@ -57,7 +57,7 @@ test("documents page detects preparing Bac and renders optional-document mode", 
 test("pre-Bac students continue in preparation instead of a mandatory document gate", () => {
   assert.match(dashboard, /state\.answers\?\.bacStatus === "preparing"/);
   assert.match(dashboard, /Continuer ma préparation/);
-  assert.match(dashboard, /preBac=\{preBac\}/);
+  assert.match(dashboard, /const preBac = state\.answers\?\.bacStatus === "preparing"/);
 
   assert.match(journey, /Préparation avant le Bac/);
   assert.match(journey, /Résultats du Bac/);
