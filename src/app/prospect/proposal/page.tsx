@@ -83,15 +83,15 @@ export default async function ProspectProposalPage() {
     : 0;
 
   return (
-    <main className="space-y-6">
+    <main className="space-y-7">
       <ProspectPageHero eyebrow={t.eyebrow} title={t.title} subtitle={t.subtitle} />
 
       {!state.intake && state.orientationConfirmed ? (
-        <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[var(--shadow-card)]">
+        <section className="rounded-[1.35rem] border border-black/[.07] bg-white p-6 shadow-[0_22px_60px_-42px_rgba(0,0,0,.34)]">
           <div className="flex items-start gap-3">
             <span className="mt-1 size-2.5 shrink-0 rounded-full bg-amber-400" aria-hidden="true" />
             <div>
-              <h2 className="text-xl font-bold">{t.waitingTitle}</h2>
+              <h2 className="text-xl font-semibold tracking-[-0.025em] text-[#202326]">{t.waitingTitle}</h2>
               <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">{t.waitingBody}</p>
             </div>
           </div>
@@ -99,11 +99,11 @@ export default async function ProspectProposalPage() {
       ) : null}
 
       {preBac && starterDocuments ? (
-        <section className="rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--brand-soft)] p-5 shadow-[var(--shadow-card)] sm:p-6">
-          <p className="text-xs font-bold uppercase tracking-[0.13em] text-[var(--brand)]">
+        <section className="rounded-[1.35rem] border border-[var(--brand-border)] bg-[var(--brand-soft)] p-5 shadow-[0_22px_58px_-42px_rgba(216,6,33,.28)] sm:p-6">
+          <p className="text-[10px] font-extrabold uppercase tracking-[0.16em] text-[var(--brand-strong)]">
             Projet avant le Bac
           </p>
-          <h2 className="mt-2 text-2xl font-bold">Votre accompagnement de préparation est déjà actif</h2>
+          <h2 className="mt-2 text-[clamp(1.55rem,2.7vw,2.2rem)] font-semibold tracking-[-0.035em] text-[#202326]">Votre accompagnement de préparation est déjà actif</h2>
           <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
             Vous n’avez pas besoin de fournir le Bac ni le relevé final maintenant. Campus Allemagne peut déjà
             vous guider sur la langue, les programmes, le budget et les prochaines étapes. La proposition académique
@@ -112,41 +112,41 @@ export default async function ProspectProposalPage() {
           <div className="mt-5 flex flex-wrap gap-3">
             <Link
               href="/prospect/roadmap"
-              className="inline-flex min-h-11 items-center rounded-[var(--radius-control)] bg-[var(--brand)] px-5 text-sm font-bold text-white"
+              className="inline-flex min-h-11 items-center rounded-xl bg-[var(--brand)] px-5 text-sm font-bold text-white shadow-[0_12px_28px_-16px_rgba(216,6,33,.85)] transition-all duration-200 hover:-translate-y-px hover:bg-[var(--brand-strong)] hover:shadow-md"
             >
               Continuer ma préparation
             </Link>
             <Link
               href="/prospect/catalogue"
-              className="inline-flex min-h-11 items-center rounded-[var(--radius-control)] border border-[var(--border-strong)] bg-[var(--surface)] px-5 text-sm font-semibold"
+              className="inline-flex min-h-11 items-center rounded-xl border border-black/10 bg-white px-5 text-sm font-semibold text-[#202326] shadow-sm transition-all duration-200 hover:-translate-y-px hover:border-black/20 hover:shadow-md"
             >
               Explorer les programmes
             </Link>
             <Link
               href="/prospect/solutions"
-              className="inline-flex min-h-11 items-center rounded-[var(--radius-control)] border border-[var(--border-strong)] bg-[var(--surface)] px-5 text-sm font-semibold"
+              className="inline-flex min-h-11 items-center rounded-xl border border-black/10 bg-white px-5 text-sm font-semibold text-[#202326] shadow-sm transition-all duration-200 hover:-translate-y-px hover:border-black/20 hover:shadow-md"
             >
               Langue & solutions
             </Link>
             <Link
               href="/prospect/documents"
-              className="inline-flex min-h-11 items-center rounded-[var(--radius-control)] border border-[var(--border-strong)] bg-[var(--surface)] px-5 text-sm font-semibold"
+              className="inline-flex min-h-11 items-center rounded-xl border border-black/10 bg-white px-5 text-sm font-semibold text-[#202326] shadow-sm transition-all duration-200 hover:-translate-y-px hover:border-black/20 hover:shadow-md"
             >
               Documents facultatifs
             </Link>
           </div>
         </section>
       ) : starterDocuments ? (
-        <section className="rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--brand-soft)] p-5 shadow-[var(--shadow-card)] sm:p-6">
+        <section className="rounded-[1.35rem] border border-[var(--brand-border)] bg-[var(--brand-soft)] p-5 shadow-[0_22px_58px_-42px_rgba(216,6,33,.28)] sm:p-6">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="max-w-3xl">
-              <p className="text-xs font-bold uppercase tracking-[0.13em] text-[var(--brand)]">
+              <p className="text-[10px] font-extrabold uppercase tracking-[0.16em] text-[var(--brand-strong)]">
                 {dashboardCopy.proposalWaiting}
               </p>
-              <h2 className="mt-2 text-2xl font-bold">{t.documentsTitle}</h2>
+              <h2 className="mt-2 text-[clamp(1.55rem,2.7vw,2.2rem)] font-semibold tracking-[-0.035em] text-[#202326]">{t.documentsTitle}</h2>
               <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{t.documentsBody}</p>
             </div>
-            <span className="rounded-full bg-[var(--surface)] px-3 py-1.5 text-xs font-bold text-[var(--brand-strong)]">
+            <span className="rounded-full border border-[var(--brand-border)]/60 bg-white px-3 py-1.5 text-xs font-extrabold text-[var(--brand-strong)]">
               {dashboardCopy.documentsSummary(
                 state.starterSummary.approved,
                 state.starterSummary.required,
@@ -156,7 +156,7 @@ export default async function ProspectProposalPage() {
             </span>
           </div>
 
-          <div className="mt-5 h-2 overflow-hidden rounded-full bg-white/70">
+          <div className="mt-5 h-2 overflow-hidden rounded-full bg-white/80 ring-1 ring-inset ring-black/[.04]">
             <div
               className="h-full rounded-full bg-[var(--brand)]"
               style={{ width: String(documentPercent) + "%" }}
