@@ -56,6 +56,17 @@ Transactional delivery additionally requires:
 
 All Phase 2 gates remain false by default.
 
+## Initial 18+ persistence boundary
+
+Owner decision confirmed on 5 October 2026:
+
+- the public orientation itself may remain usable without persistence;
+- persistent Free Validation capture (email + saved orientation and linked account continuation) is limited to people aged 18 or over for the initial launch;
+- the existing birth date in the orientation identity is used for this eligibility check; no extra age field is added;
+- the browser hides the persistence form for an under-18 identity;
+- the server independently rejects under-18 persistence with HTTP 403;
+- this age gate does not authorize public collection: A38/#717 and the existing feature flags still remain mandatory.
+
 ## Privacy boundary
 
 The capture UI is shown only after the diagnostic. It is optional and explicitly says no account is created.
