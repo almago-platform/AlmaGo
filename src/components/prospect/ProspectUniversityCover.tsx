@@ -39,7 +39,6 @@ export function ProspectUniversityCover({
     <div
       className={`relative overflow-hidden bg-[linear-gradient(135deg,#192b3d_0%,#2a4054_48%,#c79a37_140%)] bg-cover bg-center ${heightClass}`}
       style={imageStyle}
-      aria-hidden="true"
     >
       {!imageUrl ? (
         <div className="absolute inset-0 flex items-center justify-center">
@@ -71,7 +70,6 @@ export function ProspectUniversityCover({
               media.coverImageAttribution,
               media.coverImageLicense,
             ].filter(Boolean).join(" · ") || "Wikimedia Commons"}
-            onClick={(event) => event.stopPropagation()}
           >
             Photo
           </a>
