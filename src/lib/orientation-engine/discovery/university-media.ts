@@ -2,7 +2,8 @@ import "server-only";
 
 const COMMONS_API_URL = "https://commons.wikimedia.org/w/api.php";
 const MEDIA_TIMEOUT_MS = 5_000;
-const MAX_RESULTS = 6;
+const MAX_RESULTS = 8;
+const MEDIA_CACHE_SECONDS = 30 * 24 * 60 * 60;
 
 type CommonsMetadataValue = {
   value?: string;
@@ -81,14 +82,7 @@ function usefulPhoto(page: CommonsPage) {
   return ratio >= 0.9;
 }
 
-export async function findWikimediaUniversityMedia(
-  universityName: string,
-  city: string | null,
-): Promise<UniversityMediaLookup | null> {
-  const query = [universityName, city, "campus"]
-    .filter((value): value is string => Boolean(value?.trim()))
-    .join(" ");
-
+async function searchCommonsPhoto(query: string): Promise<UniversityMediaLookup | null> {
   const params = new URLSearchParams({
     action: "query",
     format: "json",
@@ -110,7 +104,9 @@ export async function findWikimediaUniversityMedia(
   try {
     const response = await fetch(`${COMMONS_API_URL}?${params.toString()}`, {
       signal: controller.signal,
-      cache: "no-store",
+      next: {
+        revalidate: MEDIA_CACHE_SECONDS,
+      },
       headers: {
         Accept: "application/json",
       },
@@ -149,4 +145,28 @@ export async function findWikimediaUniversityMedia(
   } finally {
     clearTimeout(timeout);
   }
+}
+
+export async function findWikimediaUniversityMedia(
+  universityName: string,
+  city: string | null,
+): Promise<UniversityMediaLookup | null> {
+  const queries = [
+    [universityName, city, "campus"],
+    [universityName, city],
+    [universityName],
+  ]
+    .map((parts) =>
+      parts
+        .filter((value): value is string => Boolean(value?.trim()))
+        .join(" ")
+    )
+    .filter((query, index, all) => query && all.indexOf(query) === index);
+
+  for (const query of queries) {
+    const media = await searchCommonsPhoto(query);
+    if (media) return media;
+  }
+
+  return null;
 }
