@@ -4,7 +4,7 @@ import { createPrivilegedSupabaseClient } from "@/lib/supabase/privileged";
 import { findWikimediaUniversityMedia } from "@/lib/orientation-engine/discovery/university-media";
 import type { OrientationProgrammeRecord, OrientationUniversityMedia } from "@/lib/orientation-engine/types";
 
-const MAX_MEDIA_LOOKUPS_PER_REQUEST = 10;
+const MAX_MEDIA_LOOKUPS_PER_REQUEST = 40;
 const MEDIA_RETRY_DAYS = 30;
 
 type RegistryMediaRow = {
@@ -44,13 +44,12 @@ function asMedia(
 export async function enrichProspectCatalogueUniversityMedia(
   catalogue: OrientationProgrammeRecord[],
 ) {
-  if (
-    !process.env.NEXT_PUBLIC_SUPABASE_URL
-    || !process.env.SUPABASE_SECRET_KEY
-    || catalogue.length === 0
-  ) {
-    return catalogue;
-  }
+  if (catalogue.length === 0) return catalogue;
+
+  const canPersistMedia = Boolean(
+    process.env.NEXT_PUBLIC_SUPABASE_URL
+    && process.env.SUPABASE_SECRET_KEY,
+  );
 
   const missingCounts = new Map<string, {
     name: string;
@@ -72,22 +71,28 @@ export async function enrichProspectCatalogueUniversityMedia(
   const universityIds = [...missingCounts.keys()];
   if (universityIds.length === 0) return catalogue;
 
-  const supabase = createPrivilegedSupabaseClient();
-  const { data, error } = await supabase
-    .from("universities")
-    .select([
-      "id",
-      "cover_image_url",
-      "cover_image_source_url",
-      "cover_image_attribution",
-      "cover_image_license",
-      "media_verified_at",
-    ].join(","))
-    .in("id", universityIds);
+  const supabase = canPersistMedia
+    ? createPrivilegedSupabaseClient()
+    : null;
 
-  if (error || !data) return catalogue;
+  let rows: RegistryMediaRow[] = [];
+  if (supabase) {
+    const { data, error } = await supabase
+      .from("universities")
+      .select([
+        "id",
+        "cover_image_url",
+        "cover_image_source_url",
+        "cover_image_attribution",
+        "cover_image_license",
+        "media_verified_at",
+      ].join(","))
+      .in("id", universityIds);
 
-  const rows = data as unknown as RegistryMediaRow[];
+    if (!error && data) {
+      rows = data as unknown as RegistryMediaRow[];
+    }
+  }
   const rowById = new Map(rows.map((row) => [row.id, row]));
   const mediaById = new Map<string, OrientationUniversityMedia>();
 
@@ -101,7 +106,7 @@ export async function enrichProspectCatalogueUniversityMedia(
   const lookupIds = [...missingCounts.entries()]
     .filter(([id]) => {
       const row = rowById.get(id);
-      return row ? shouldRetryMedia(row) : false;
+      return row ? shouldRetryMedia(row) : true;
     })
     .sort((a, b) => b[1].count - a[1].count)
     .slice(0, MAX_MEDIA_LOOKUPS_PER_REQUEST)
@@ -129,12 +134,14 @@ export async function enrichProspectCatalogueUniversityMedia(
             updated_at: checkedAt,
           };
 
-      const { error: updateError } = await supabase
-        .from("universities")
-        .update(update)
-        .eq("id", id);
+      if (supabase) {
+        await supabase
+          .from("universities")
+          .update(update)
+          .eq("id", id);
+      }
 
-      if (!updateError && found) {
+      if (found) {
         mediaById.set(id, {
           universityId: id,
           canonicalName: meta.name,

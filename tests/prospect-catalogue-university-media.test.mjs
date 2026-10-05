@@ -45,14 +45,32 @@ test("university covers use stored media and retain a polished fallback", () => 
   assert.doesNotMatch(cover, /<img/);
 });
 
-test("catalogue media enrichment is bounded, cached and contains no student identity", () => {
-  assert.ok(media.includes("MAX_MEDIA_LOOKUPS_PER_REQUEST = 10"));
+test("catalogue media enrichment works without the privileged DB key and persists when available", () => {
+  assert.ok(media.includes("MAX_MEDIA_LOOKUPS_PER_REQUEST = 40"));
   assert.ok(media.includes("MEDIA_RETRY_DAYS = 30"));
+  assert.ok(media.includes("canPersistMedia"));
   assert.ok(media.includes("findWikimediaUniversityMedia"));
   assert.ok(media.includes("media_verified_at"));
+  assert.ok(media.includes('row ? shouldRetryMedia(row) : true'));
   assert.ok(media.includes('.from("universities")'));
   assert.ok(media.includes(".update(update)"));
+  assert.doesNotMatch(
+    media,
+    /!process\.env\.SUPABASE_SECRET_KEY[\s\S]{0,80}return catalogue/,
+  );
   assert.doesNotMatch(media, /userId|email|passport|phone|first_name|last_name|profile/);
+});
+
+test("Wikimedia lookups are cached and use a bounded fallback search", () => {
+  const wikimedia = readFileSync(
+    "src/lib/orientation-engine/discovery/university-media.ts",
+    "utf8",
+  );
+  assert.ok(wikimedia.includes("MEDIA_CACHE_SECONDS"));
+  assert.ok(wikimedia.includes("revalidate: MEDIA_CACHE_SECONDS"));
+  assert.ok(wikimedia.includes("MEDIA_TIMEOUT_MS = 3_000"));
+  assert.ok(wikimedia.includes('[universityName, city]'));
+  assert.ok(wikimedia.includes('[universityName, city, "campus"]'));
 });
 
 test("catalogue filter and sorting copy is available in all four locales", () => {
