@@ -205,7 +205,7 @@ export function ProspectShell({
         </div>
       ) : null}
 
-      <div className="mx-auto grid max-w-[96rem] gap-5 px-4 py-4 sm:px-6 sm:py-5 lg:grid-cols-[14rem_minmax(0,1fr)] lg:gap-6 lg:px-8 lg:py-6 xl:grid-cols-[14.5rem_minmax(0,1fr)]">
+      <div className="mx-auto grid max-w-[100rem] gap-5 px-4 py-4 sm:px-6 sm:py-5 lg:grid-cols-[14rem_minmax(0,1fr)] lg:gap-6 lg:px-8 lg:py-6 xl:grid-cols-[14.5rem_minmax(0,1fr)]">
         <aside className="hidden h-fit overflow-hidden rounded-[1.35rem] bg-[#17191b] text-white shadow-[0_28px_70px_-38px_rgba(0,0,0,.65)] ring-1 ring-black/5 lg:sticky lg:top-[5.4rem] lg:block">
           <div className="relative overflow-hidden border-b border-white/10 px-4 py-4">
             <div className="absolute -end-9 -top-10 h-24 w-24 rounded-full bg-[var(--brand)]/20 blur-2xl" aria-hidden="true" />
