@@ -181,7 +181,7 @@ export function DocumentsPanel({
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-7">
       <section aria-label={t.priority.aria} className="grid gap-5 lg:grid-cols-[minmax(0,1.45fr)_minmax(18rem,0.85fr)]">
         <Card className={`relative overflow-hidden shadow-none ${correctionCount ? "border-amber-300 bg-amber-50/25" : "border-[var(--brand-border)] bg-white"}`}>
           <div aria-hidden="true" className="student-accent-edge absolute inset-y-0 w-1 bg-[var(--brand)]" />
@@ -210,7 +210,7 @@ export function DocumentsPanel({
               <p className="mt-3 [overflow-wrap:anywhere] font-bold text-slate-950"><bdi dir="auto">{priorityDocument.original_filename}</bdi></p>
               <p className="mt-1 text-sm text-slate-600">{t.categories[priorityDocument.category] || t.categories.other}</p>
               {correctionCount > 0 && priorityDocument.admin_comment && (
-                <div className="mt-4 rounded-[var(--radius-control)] border border-amber-200 bg-amber-50 p-3.5">
+                <div className="mt-4 rounded-[1.05rem] border border-[#ead59a] bg-[#fff9e9] p-4">
                   <p className="text-xs font-bold uppercase tracking-[0.12em] text-amber-900">{t.priority.correctionWhy}</p>
                   <p dir="auto" className="mt-1.5 text-sm leading-6 text-amber-900">{priorityDocument.admin_comment}</p>
                 </div>
@@ -242,7 +242,7 @@ export function DocumentsPanel({
                 : "اعرف فورًا ما هو جاهز أو قيد المراجعة أو يحتاج إلى إجراء. تظهر المتطلبات الإضافية فقط عندما تصبح ضرورية لمسارك."}
             </p>
           </div>
-          <div className="rounded-[var(--radius-control)] border border-[var(--brand-border)] bg-[var(--brand-soft)] px-4 py-3 text-sm font-bold text-[var(--brand-strong)]">
+          <div className="rounded-full border border-[var(--brand-border)] bg-[var(--brand-soft)] px-4 py-2.5 text-sm font-bold text-[var(--brand-strong)] shadow-sm">
             {checklistReady} / {checklist.length} {locale === "fr" ? "catégories prêtes" : "فئات جاهزة"}
           </div>
         </div>
@@ -258,7 +258,7 @@ export function DocumentsPanel({
                   : (locale === "fr" ? "À préparer" : "للتحضير");
             const variant = group.needsAction ? "warning" : group.reviewing ? "info" : group.items.length && group.ready === group.items.length ? "success" : "neutral";
             return (
-              <Card as="article" key={group.id} className="h-full p-4 shadow-none">
+              <Card as="article" key={group.id} className="h-full rounded-[1.15rem] border-black/[.07] bg-white p-4 shadow-[0_18px_50px_-42px_rgba(0,0,0,.28)]">
                 <div className="flex items-start justify-between gap-2">
                   <h3 className="font-bold text-slate-950">{group.label}</h3>
                   <Badge variant={variant}>{status}</Badge>
@@ -276,7 +276,7 @@ export function DocumentsPanel({
           })}
         </div>
 
-        <Card className="mt-4 border-[var(--brand-border)] bg-[var(--brand-soft)]/45 p-4 shadow-none">
+        <Card className="mt-4 rounded-[1.15rem] border border-[#ead59a] bg-[#fff9e9] p-4 shadow-[0_16px_44px_-38px_rgba(139,98,0,.26)]">
           <p className="text-sm font-bold text-slate-950">
             {locale === "fr" ? "Prochaine action" : "الخطوة التالية"}
           </p>
@@ -305,7 +305,7 @@ export function DocumentsPanel({
           <Badge variant="neutral">{t.evidence.count(evidence.length)}</Badge>
         </div>
 
-        <Card className="mt-4 border-[var(--brand-border)] bg-[var(--brand-soft)]/55 shadow-none">
+        <Card className="mt-4 rounded-[1.15rem] border border-[var(--brand-border)] bg-[var(--brand-soft)]/60 shadow-[0_16px_44px_-38px_rgba(216,6,33,.22)]">
           <p className="text-sm leading-6 text-slate-700">
             {t.evidence.boundary}
           </p>
@@ -327,7 +327,7 @@ export function DocumentsPanel({
         ) : (
           <div className="mt-4 grid gap-4 lg:grid-cols-2">
             {evidence.map((item) => (
-              <Card as="article" key={item.id} aria-labelledby={`academic-evidence-title-${item.id}`} className="shadow-none">
+              <Card as="article" key={item.id} aria-labelledby={`academic-evidence-title-${item.id}`} className="rounded-[1.2rem] border-black/[.07] bg-white shadow-[0_18px_50px_-42px_rgba(0,0,0,.28)]">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <Badge variant={evidenceStatusVariant(item.verification_status)}>
                     {evidenceStatusLabel(item.verification_status, t)}
@@ -362,7 +362,7 @@ export function DocumentsPanel({
         )}
       </section>
 
-      <Card aria-labelledby="document-upload-title" className="overflow-hidden shadow-none">
+      <Card aria-labelledby="document-upload-title" className="overflow-hidden rounded-[1.35rem] border-black/[.07] bg-white shadow-[0_24px_64px_-44px_rgba(0,0,0,.36)]">
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
           <div>
             <Badge variant="neutral">{t.upload.badge}</Badge>
@@ -375,7 +375,7 @@ export function DocumentsPanel({
 
         <form onSubmit={upload} className="mt-6">
           <div className="grid gap-4 lg:grid-cols-[0.8fr_1fr_auto] lg:items-end">
-            <label className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)]/45 p-4 text-sm font-medium text-slate-700">
+            <label className="rounded-[1.05rem] border border-black/[.06] bg-[#f7f4ee] p-4 text-sm font-medium text-slate-700">
               <span className="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-[var(--brand)]">
                 <span className="grid h-6 w-6 place-items-center rounded-full bg-[var(--brand)] text-[10px] text-white">1</span>
                 {t.upload.stepType}
@@ -385,7 +385,7 @@ export function DocumentsPanel({
                 value={category}
                 onChange={(event) => setCategory(event.target.value)}
                 disabled={busy}
-                className="field"
+                className="field mt-2 w-full rounded-xl border-black/10 bg-white shadow-none"
               >
                 {documentCategories.map((item) => (
                   <option key={item.value} value={item.value}>{t.categories[item.value] || item.label}</option>
@@ -393,7 +393,7 @@ export function DocumentsPanel({
               </select>
             </label>
 
-            <label className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)]/45 p-4 text-sm font-medium text-slate-700">
+            <label className="rounded-[1.05rem] border border-black/[.06] bg-[#f7f4ee] p-4 text-sm font-medium text-slate-700">
               <span className="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-[var(--brand)]">
                 <span className="grid h-6 w-6 place-items-center rounded-full bg-[var(--brand)] text-[10px] text-white">2</span>
                 {t.upload.stepFile}
@@ -408,7 +408,7 @@ export function DocumentsPanel({
               />
             </label>
 
-            <div className="rounded-[var(--radius-control)] border border-[var(--brand-border)] bg-white p-4">
+            <div className="rounded-[1.05rem] border border-[var(--brand-border)] bg-white p-4 shadow-sm">
               <span className="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-[var(--brand)]">
                 <span className="grid h-6 w-6 place-items-center rounded-full bg-[var(--brand)] text-[10px] text-white">3</span>
                 {t.upload.stepSend}
@@ -455,7 +455,7 @@ export function DocumentsPanel({
             </Card>
           ) : (
             documents.map((document) => (
-              <Card as="article" key={document.id} aria-labelledby={`student-document-title-${document.id}`} className={`shadow-none ${["rejected", "replace_required"].includes(document.status) ? "border-amber-300 bg-amber-50/20" : ""}`}>
+              <Card as="article" key={document.id} aria-labelledby={`student-document-title-${document.id}`} className={`rounded-[1.2rem] shadow-[0_18px_50px_-42px_rgba(0,0,0,.28)] ${["rejected", "replace_required"].includes(document.status) ? "border-[#ead59a] bg-[#fff9e9]" : "border-black/[.07] bg-white"}`}>
                 <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-start">
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
@@ -470,7 +470,7 @@ export function DocumentsPanel({
                       </time>
                     </p>
                     {document.admin_comment && (
-                      <div className="mt-4 rounded-[var(--radius-control)] border border-amber-200 bg-amber-50 p-4">
+                      <div className="mt-4 rounded-[1.05rem] border border-[#ead59a] bg-[#fff9e9] p-4">
                         <h4 className="text-sm font-semibold text-amber-950">{t.list.commentTitle}</h4>
                         <p dir="auto" className="mt-1 text-sm leading-6 text-amber-900">{document.admin_comment}</p>
                         <p className="mt-2 text-xs leading-5 text-amber-800">
@@ -532,7 +532,7 @@ export function DocumentsPanel({
             </Card>
           ) : (
             history.map((event) => (
-              <Card as="article" key={event.id} aria-labelledby={`document-event-title-${event.id}`} className="p-4 shadow-none">
+              <Card as="article" key={event.id} aria-labelledby={`document-event-title-${event.id}`} className="rounded-[1.1rem] border-black/[.07] bg-white p-4 shadow-[0_16px_44px_-40px_rgba(0,0,0,.26)]">
                 <h3 id={`document-event-title-${event.id}`} dir="auto" className="text-sm font-medium text-slate-700">{event.message}</h3>
                 <time dateTime={event.created_at} className="mt-1 block text-xs text-slate-500">
                   {new Intl.DateTimeFormat(t.intlLocale, {
@@ -551,7 +551,7 @@ export function DocumentsPanel({
 
 function SummaryCard({ id, title, value, badge, tone }: { id: string; title: string; value: number; badge: string; tone: "success" | "info" | "warning" | "neutral" }) {
   return (
-    <Card aria-labelledby={id} className="shadow-none">
+    <Card aria-labelledby={id} className="rounded-[1.2rem] border-black/[.07] bg-white shadow-[0_18px_50px_-42px_rgba(0,0,0,.28)]">
       <h2 id={id} className="text-sm font-semibold text-slate-700">{title}</h2>
       <p className="mt-2 text-2xl font-semibold text-slate-950">{value}</p>
       <div className="mt-3"><Badge variant={tone}>{badge}</Badge></div>
