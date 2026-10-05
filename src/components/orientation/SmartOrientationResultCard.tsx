@@ -61,7 +61,7 @@ export function SmartOrientationResultCard({
         </div>
       ) : null}
 
-      <p className="mt-5 border-t border-[var(--border)] pt-4 text-xs leading-5 text-[var(--muted)]">
+      <p className="mt-5 border-t border-[var(--border)] pt-4 text-xs leading-5 text-[var(--foreground)]">
         {copy.disclaimer}
       </p>
     </section>
