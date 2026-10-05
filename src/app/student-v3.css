@@ -3,6 +3,7 @@
    The approved Campus Allemagne logo asset is intentionally unchanged. */
 
 .student-shell {
+  overflow-x: clip;
   --brand: #d80621;
   --brand-strong: #aa041b;
   --brand-soft: #fff0f2;
