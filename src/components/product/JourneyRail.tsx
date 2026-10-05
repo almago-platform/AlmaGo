@@ -50,7 +50,7 @@ export function JourneyRail({
         {steps.map((step, index) => {
           const style = statusStyle[step.status];
           const content = (
-            <div className={`relative flex min-h-24 items-start gap-3 border-b border-black/[.06] p-4 transition-colors sm:border-e sm:last:border-e-0 xl:border-b-0 ${style.shell}`}>
+            <div className={`relative flex min-h-20 items-start gap-3 border-b border-black/[.06] px-4 py-3.5 transition-colors sm:border-e sm:last:border-e-0 xl:border-b-0 ${style.shell}`}>
               {step.status === "active" ? <span className="absolute inset-x-0 top-0 h-[3px] bg-[var(--brand)]" aria-hidden="true" /> : null}
               <span
                 aria-hidden="true"
