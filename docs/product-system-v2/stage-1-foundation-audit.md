@@ -758,11 +758,12 @@ Stage 1 is complete only when:
 - [x] Current-screen keep/simplify/rebuild/merge matrix completed.
 - [x] Figma Stage 1 structure created.
 - [x] Figma foundations proposal created.
-- [ ] Candidate Orientation pilot wire architecture approved.
-- [ ] Prospect/pre-account pilot wire architecture approved.
-- [ ] Admin 360° dossier pilot wire architecture approved.
-- [ ] Proposal/payment hinge wire architecture approved.
-- [ ] Active Student pilot wire architecture approved.
+- [x] Candidate Orientation pilot interaction architecture defined; Figma desktop/mobile wire created, visual approval pending.
+- [x] Prospect/pre-account pilot interaction architecture defined; Figma visual pending due Starter MCP quota.
+- [x] Admin 360° dossier pilot interaction architecture defined; Figma visual pending due Starter MCP quota.
+- [x] Proposal/payment hinge interaction architecture defined; Figma visual pending due Starter MCP quota.
+- [x] Active Student pilot interaction architecture defined; Figma visual pending due Starter MCP quota.
+- [ ] Visual approval of all five lifecycle pilots.
 - [x] Open feature PR collision map reconciled with migration sequence.
 - [ ] Final Stage 1 review accepted.
 
