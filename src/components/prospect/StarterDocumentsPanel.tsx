@@ -137,7 +137,7 @@ export function StarterDocumentsPanel({
   return (
     <div className="grid gap-7">
       <section className="overflow-hidden rounded-[1.5rem] border border-black/[.07] bg-white shadow-[0_28px_76px_-46px_rgba(0,0,0,.42)]">
-        <div className="relative overflow-hidden border-b border-white/10 bg-[#17191b] p-5 text-white sm:p-7">
+        <div className="relative overflow-hidden border-b border-white/10 bg-[#17191b] p-5 text-white sm:p-6">
           <div className="absolute inset-x-0 top-0 h-[3px] bg-[linear-gradient(90deg,var(--brand)_0_62%,var(--accent)_62%_78%,transparent_78%)]" aria-hidden="true" />
           <div>
             <p className="text-[0.68rem] font-extrabold uppercase tracking-[0.17em] text-[var(--accent)]">
@@ -153,7 +153,7 @@ export function StarterDocumentsPanel({
             </p>
           </div>
         </div>
-        <div className="p-5 sm:p-7">
+        <div className="p-5 sm:p-6">
           {preBac ? (
             <div className="rounded-[1.1rem] border border-[#b7dfcd] bg-[#edf8f3] p-4 shadow-[0_16px_42px_-36px_rgba(24,121,78,.28)]">
               <p className="font-bold text-emerald-900">Aucun document obligatoire avant les résultats du Bac.</p>
@@ -179,7 +179,7 @@ export function StarterDocumentsPanel({
             </div>
           )}
 
-        <div className="mt-6 grid gap-4 sm:grid-cols-2">
+        <div className="mt-5 grid gap-3 sm:grid-cols-2">
           {documentRequirements.map((requirement) => {
             const document = latestByCategory.get(requirement.category);
             return (
@@ -272,10 +272,10 @@ export function StarterDocumentsPanel({
       {(preBac || !requiredReady) ? (
         <form
           onSubmit={upload}
-          className="rounded-[1.4rem] border border-black/[.07] bg-white p-5 shadow-[0_24px_64px_-44px_rgba(0,0,0,.36)] sm:p-6"
+          className="rounded-[1.4rem] border border-black/[.07] bg-white p-4 shadow-[0_24px_64px_-44px_rgba(0,0,0,.36)] sm:p-5"
         >
           <h2 className="text-xl font-bold">Ajouter un document</h2>
-          <div className="mt-4 grid gap-4 sm:grid-cols-2">
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
             <label className="text-sm font-semibold">
               Type de document
               <select
@@ -303,7 +303,7 @@ export function StarterDocumentsPanel({
               />
               <label
                 htmlFor="prospect-document-file"
-                className="mt-2 flex min-h-32 cursor-pointer flex-col items-center justify-center rounded-[1.1rem] border border-dashed border-black/20 bg-[#f8f5ef] px-4 py-5 text-center transition-all duration-200 hover:-translate-y-px hover:border-[var(--brand)] hover:bg-[var(--brand-soft)] hover:shadow-[0_18px_46px_-36px_rgba(216,6,33,.32)]"
+                className="mt-2 flex min-h-24 cursor-pointer flex-col items-center justify-center rounded-[1.1rem] border border-dashed border-black/20 bg-[#f8f5ef] px-4 py-4 text-center transition-all duration-200 hover:-translate-y-px hover:border-[var(--brand)] hover:bg-[var(--brand-soft)] hover:shadow-[0_18px_46px_-36px_rgba(216,6,33,.32)]"
               >
                 <span className="text-sm font-bold text-[var(--foreground)]">
                   {selectedFileName || "Choisir un fichier"}
