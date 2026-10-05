@@ -116,7 +116,7 @@ export default async function ProspectCataloguePage({
   };
 
   return (
-    <main className="space-y-8">
+    <main className="space-y-6">
       <ProspectPageHero eyebrow={t.eyebrow} title={t.title} subtitle={t.subtitle} />
 
       {recommendations.length ? (
@@ -146,7 +146,7 @@ export default async function ProspectCataloguePage({
         </section>
       ) : null}
 
-      <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[var(--shadow-card)] sm:p-6">
+      <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[var(--shadow-card)]">
         <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--muted)]">
           {t.generalCatalogue}
         </p>
@@ -242,16 +242,16 @@ export default async function ProspectCataloguePage({
                     </div>
                   </div>
 
-                  <dl className="mt-5 grid gap-3 sm:grid-cols-3">
-                    <div className="rounded-[var(--radius-control)] bg-[var(--surface-subtle)] p-3">
+                  <dl className="mt-4 grid gap-px overflow-hidden rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--border)] sm:grid-cols-3">
+                    <div className="bg-[var(--surface-subtle)] p-3">
                       <dt className="text-xs font-semibold text-[var(--muted)]">{t.field}</dt>
                       <dd className="mt-1 text-sm font-semibold"><bdi dir="auto">{programme.field || "—"}</bdi></dd>
                     </div>
-                    <div className="rounded-[var(--radius-control)] bg-[var(--surface-subtle)] p-3">
+                    <div className="bg-[var(--surface-subtle)] p-3">
                       <dt className="text-xs font-semibold text-[var(--muted)]">{t.german}</dt>
                       <dd className="mt-1 text-sm font-semibold">{programme.germanLevelRequired || t.requirementCheck}</dd>
                     </div>
-                    <div className="rounded-[var(--radius-control)] bg-[var(--surface-subtle)] p-3">
+                    <div className="bg-[var(--surface-subtle)] p-3">
                       <dt className="text-xs font-semibold text-[var(--muted)]">{t.uniAssist}</dt>
                       <dd className="mt-1 text-sm font-semibold">{programme.uniAssistRequired ? t.yes : t.requirementCheck}</dd>
                     </div>
