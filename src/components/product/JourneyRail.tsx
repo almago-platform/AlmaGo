@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 
 export type JourneyRailStep = {
   label: ReactNode;
@@ -36,7 +36,7 @@ export function JourneyRail({
 }) {
   return (
     <nav aria-label={ariaLabel} className="overflow-hidden rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)]">
-      <ol className="grid sm:grid-cols-2 xl:grid-cols-[repeat(var(--journey-count),minmax(0,1fr))]" style={{ "--journey-count": steps.length } as React.CSSProperties}>
+      <ol className="grid sm:grid-cols-2 xl:grid-cols-[repeat(var(--journey-count),minmax(0,1fr))]" style={{ "--journey-count": steps.length } as CSSProperties}>
         {steps.map((step, index) => {
           const style = statusStyle[step.status];
           const content = (
