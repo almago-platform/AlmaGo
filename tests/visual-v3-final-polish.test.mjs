@@ -11,11 +11,8 @@ const layout = readFileSync("src/app/layout.tsx", "utf8");
 const logo = readFileSync("src/components/brand/BrandLogo.tsx", "utf8");
 
 test("Visual V3 desktop Student shell uses logical RTL positioning", () => {
-  assert.match(shell, /lg:start-0/);
-  assert.match(shell, /lg:border-e/);
-  assert.match(shell, /lg:ps-\[15\.5rem\]/);
-  assert.doesNotMatch(shell, /lg:left-0/);
-  assert.doesNotMatch(shell, /lg:pl-\[15\.5rem\]/);
+  assert.match(shell, /role === "student" \? "lg:start-0 lg:border-e" : "lg:left-0 lg:border-r"/);
+  assert.match(shell, /role === "student" \? "lg:ps-\[15\.5rem\]" : "lg:pl-\[15\.5rem\]"/);
   assert.match(shell, /student-shell-active-edge absolute inset-y-2 start-0/);
 });
 
