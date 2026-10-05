@@ -135,12 +135,12 @@ export async function POST(request: Request) {
           personalized = null;
         }
       }
-    } else {
+    } else if (!hasStrongCatalogueMatch(baseEngineResult)) {
       try {
         personalized = await runOrientationResultPipeline(locale, profile);
       } catch {
-        // Existing no-city behaviour remains additive: provider/persistence
-        // failure cannot remove the deterministic catalogue orientation.
+        // Catalogue-first remains authoritative: provider/persistence failure
+        // cannot remove the deterministic catalogue orientation.
         personalized = null;
       }
     }

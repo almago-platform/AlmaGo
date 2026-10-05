@@ -84,6 +84,25 @@ function knowledgeClient() {
   return createPrivilegedSupabaseClient();
 }
 
+async function publishOrientationDiscoveryCatalogue(
+  supabase: NonNullable<ReturnType<typeof knowledgeClient>>,
+) {
+  const { data, error } = await supabase.rpc(
+    "publish_orientation_research_catalogue",
+  );
+
+  if (error) {
+    console.warn("orientation_catalogue_auto_publish_failed", JSON.stringify({
+      code: error.code || null,
+      message: error.message || null,
+    }));
+    return false;
+  }
+
+  console.info("orientation_catalogue_auto_publish", JSON.stringify(data || null));
+  return true;
+}
+
 function candidateFromRow(
   row: ResearchProgramRow,
   universityMedia: OrientationUniversityMedia | null = null,
@@ -637,6 +656,11 @@ export async function persistOrientationDiscoveryResearch(
     candidates: entries,
     usage: result.usage,
   });
+
+  // Every reusable discovery immediately enriches the public programme
+  // catalogue. Publication is best-effort: a catalogue sync failure must not
+  // block the student's current orientation result.
+  await publishOrientationDiscoveryCatalogue(supabase);
 
   return {
     available: true,

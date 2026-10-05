@@ -175,8 +175,6 @@ export function hasStrongCatalogueMatch(
       recommendation.status !== "not_eligible"
       && hasEligibleRule("degree_match")
       && hasEligibleRule("field_match")
-      && hasEligibleRule("teaching_language_match")
-      && hasEligibleRule("source_verified")
       && masterSpecializationMatches(result.profile, recommendation.programme)
     );
   });

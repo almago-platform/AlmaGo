@@ -123,17 +123,25 @@ test("Orientation V4 audit documents privacy, cost and incremental conversation 
 });
 
 
-test("Orientation V4 makes a strong verified catalogue match authoritative at each geographic tier", () => {
+test("Orientation V4 makes a strong published catalogue match authoritative before OpenAI", () => {
   assert.match(service, /export function hasStrongCatalogueMatch/);
   assert.match(service, /hasEligibleRule\("degree_match"\)/);
   assert.match(service, /hasEligibleRule\("field_match"\)/);
-  assert.match(service, /hasEligibleRule\("teaching_language_match"\)/);
-  assert.match(service, /hasEligibleRule\("source_verified"\)/);
+
+  const strongMatch = service.match(
+    /export function hasStrongCatalogueMatch[\s\S]*?\n}\n/,
+  )?.[0] || "";
+  assert.doesNotMatch(strongMatch, /source_verified|teaching_language_match/);
+
   assert.match(api, /buildOrientationEngineResultForGeographicScope/);
   assert.match(api, /hasStrongCatalogueMatch\(scopedEngineResult\)/);
   assert.match(
     api,
     /hasStrongCatalogueMatch\(scopedEngineResult\)[\s\S]*?runOrientationSelectionPipeline\(profile, scope\)/,
+  );
+  assert.match(
+    api,
+    /else if \(!hasStrongCatalogueMatch\(baseEngineResult\)\)[\s\S]*?runOrientationResultPipeline\(locale, profile\)/,
   );
   assert.match(intelligence, /hasPreferredCityCatalogueMatch\(engineResult\)/);
 });
