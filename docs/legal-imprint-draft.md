@@ -34,7 +34,7 @@ L’orientation en ligne est actuellement gratuite.
 
 Avant immatriculation/licence, le site est destiné au pré-lancement et aux démonstrations partenaires avec des données de test. L’ouverture réelle du service au public est prévue seulement après finalisation de l’établissement légal et des informations éditeur applicables.
 
-Des services payants d’accompagnement et de préparation de dossier sont envisagés, mais ils ne sont pas encore activés, tarifés ni proposés à la vente.
+Des offres payantes d’accompagnement et de préparation de dossier sont maintenant configurées pour le pré-lancement et les tests internes. Elles ne sont pas encore ouvertes à la vente publique et leurs conditions commerciales restent à finaliser et relire.
 
 Campus Allemagne ne doit pas présenter une recommandation, une progression de dossier ou un statut interne comme une décision d’admission d’une université.
 
