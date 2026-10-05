@@ -383,6 +383,45 @@ a, button, input, select, textarea { -webkit-tap-highlight-color: transparent; }
   border-inline-start-color: var(--brand);
 }
 
+/* Prospect Portal V2: denser institutional workspace with calmer surfaces. */
+.prospect-shell {
+  background:
+    radial-gradient(circle at 88% 0%, rgba(219, 4, 35, 0.025), transparent 30rem),
+    linear-gradient(180deg, #fbf9f4 0%, var(--background) 34rem);
+}
+
+.prospect-shell .prospect-sidebar {
+  box-shadow: 0 12px 30px -26px rgba(28, 33, 36, 0.34);
+}
+
+.prospect-shell .prospect-page-hero {
+  scroll-margin-top: 6.5rem;
+}
+
+.prospect-shell #main-content > main {
+  min-width: 0;
+}
+
+html[dir="rtl"] .prospect-shell {
+  text-align: right;
+}
+
+html[dir="rtl"] .prospect-shell :is(.uppercase, [class*="uppercase"]) {
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+html[dir="rtl"] .prospect-shell bdi[dir="ltr"],
+html[dir="rtl"] .prospect-shell [dir="ltr"] {
+  unicode-bidi: isolate;
+}
+
+@media (max-width: 1023px) {
+  .prospect-shell .prospect-sidebar {
+    position: static;
+  }
+}
+
 @layer components {
   .field {
     @apply mt-1 w-full border border-[var(--border-strong)] bg-[var(--surface)] px-3 py-2.5 text-[var(--foreground)] outline-none transition placeholder:text-[var(--muted)];
