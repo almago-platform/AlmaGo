@@ -135,18 +135,17 @@ export function StarterDocumentsPanel({
   }
 
   return (
-    <div className="grid gap-6">
+    <div className="grid gap-5">
       <section className="overflow-hidden rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow-card)]">
-        <div className="relative overflow-hidden bg-[var(--foreground)] p-5 text-white sm:p-6">
-          <div className="pointer-events-none absolute -right-10 -top-16 size-48 rounded-full bg-[var(--brand)]/14 blur-3xl" aria-hidden="true" />
-          <div className="relative">
-            <p className="text-[0.68rem] font-bold uppercase tracking-[0.15em] text-amber-300">
+        <div className="overflow-hidden border-b border-[var(--border)] border-t-[3px] border-t-[var(--brand)] bg-[var(--surface)] p-5 sm:p-6">
+          <div>
+            <p className="text-[0.68rem] font-bold uppercase tracking-[0.15em] text-[var(--brand)]">
               {preBac ? "Préparation avant le Bac" : "Pièces de départ"}
             </p>
-            <h1 className="mt-2 text-2xl font-bold text-white sm:text-3xl">
+            <h1 className="mt-2 text-2xl font-bold text-[var(--foreground)] sm:text-[1.9rem]">
               {preBac ? "Ajoutez seulement ce que vous avez déjà" : "Complétez votre dossier de vérification"}
             </h1>
-            <p className="mt-2 max-w-3xl text-sm leading-6 text-white/72">
+            <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
               {preBac
                 ? "Aucun document académique final n’est obligatoire maintenant. Vous pouvez ajouter votre passeport et votre certificat de langue s’ils sont déjà disponibles."
                 : "Nous demandons seulement les preuves nécessaires pour décider du parcours adapté. Le certificat de langue est facultatif si vous n’en avez pas encore."}
