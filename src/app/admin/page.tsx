@@ -226,7 +226,7 @@ export default async function AdminEntry() {
       <Card className="mt-7 border-[var(--border)] bg-white shadow-none">
         <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
           <div>
-            <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">Principe de travail</p>
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--muted)]">Principe de travail</p>
             <h2 className="mt-2 text-xl font-bold text-slate-950">Résoudre les blocages avant d’enrichir le catalogue.</h2>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
               Cette vue utilise uniquement les états réellement enregistrés dans AlmaGo. Elle ne calcule aucun score de performance ou de priorité artificiel.

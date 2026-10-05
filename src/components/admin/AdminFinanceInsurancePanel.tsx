@@ -253,9 +253,9 @@ export function AdminFinanceInsurancePanel({ options }: { options: Option[] }) {
                   {option.is_active && isCatalogVerificationCurrent(option.verified_at) ? "Publié" : option.is_active ? "À revalider" : "Brouillon"}
                 </Badge>
               </div>
-              <p className="mt-4 text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">{kindLabels[option.kind]}</p>
+              <p className="mt-4 text-xs font-semibold uppercase tracking-[0.12em] text-[var(--muted)]">{kindLabels[option.kind]}</p>
               {option.verified_at && (
-                <p className="mt-2 text-xs text-slate-500">À revalider avant : {new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium" }).format(new Date(catalogVerificationExpiresAt(option.verified_at) as string))}</p>
+                <p className="mt-2 text-xs text-[var(--muted)]">À revalider avant : {new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium" }).format(new Date(catalogVerificationExpiresAt(option.verified_at) as string))}</p>
               )}
               <div className="mt-5 flex flex-wrap gap-3">
                 <a

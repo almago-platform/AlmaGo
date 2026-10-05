@@ -206,7 +206,7 @@ export function AdminApplicationsPanel({ applications }: { applications: any[] }
             </select>
           </label>
         </div>
-        <p className="mt-3 text-sm text-slate-500">
+        <p className="mt-3 text-sm text-[var(--muted)]">
           {filtered.length} candidature{filtered.length > 1 ? "s" : ""} affichée{filtered.length > 1 ? "s" : ""}.
         </p>
       </Card>
@@ -269,11 +269,11 @@ export function AdminApplicationsPanel({ applications }: { applications: any[] }
                   <p className="mt-1 text-sm leading-6 text-slate-600 [overflow-wrap:anywhere]">
                     {university?.name || "Université"}{university?.city ? ` · ${university.city}` : ""}
                   </p>
-                  <p className="mt-2 text-xs font-semibold text-slate-500">
+                  <p className="mt-2 text-xs font-semibold text-[var(--muted)]">
                     Étape actuelle · {studentApplicationStageLabel(application.status)}
                   </p>
                   {application.deadline && (
-                    <p className="mt-1 text-xs font-semibold text-slate-500">
+                    <p className="mt-1 text-xs font-semibold text-[var(--muted)]">
                       Échéance {formatDeadline(application.deadline)}
                     </p>
                   )}
@@ -325,7 +325,7 @@ export function AdminApplicationsPanel({ applications }: { applications: any[] }
                 <summary className="cursor-pointer text-sm font-bold text-slate-900">
                   Historique enregistré · {events.length} événement{events.length > 1 ? "s" : ""}
                 </summary>
-                <p className="mt-2 text-xs leading-5 text-slate-500">
+                <p className="mt-2 text-xs leading-5 text-[var(--muted)]">
                   Cet historique est consultatif ici. Le badge indique si chaque événement est également visible dans l’espace étudiant.
                 </p>
                 {events.length === 0 ? (
@@ -343,7 +343,7 @@ export function AdminApplicationsPanel({ applications }: { applications: any[] }
                           </Badge>
                         </div>
                         {event.message && <p className="mt-1 text-sm leading-6 text-slate-700">{event.message}</p>}
-                        <time dateTime={event.created_at} className="mt-1 block text-xs text-slate-500">
+                        <time dateTime={event.created_at} className="mt-1 block text-xs text-[var(--muted)]">
                           {formatRecordedDate(event.created_at)}
                         </time>
                       </div>
@@ -423,7 +423,7 @@ export function AdminApplicationsPanel({ applications }: { applications: any[] }
               </div>
 
               <div className="mt-5 flex flex-col gap-3 border-t border-[var(--border)] pt-4 sm:flex-row sm:items-center sm:justify-between">
-                <p className={`text-sm font-medium ${isDirty ? "text-amber-800" : "text-slate-500"}`}>
+                <p className={`text-sm font-medium ${isDirty ? "text-amber-800" : "text-[var(--muted)]"}`}>
                   {isDirty ? "Modifications non enregistrées — pensez à enregistrer avant de quitter ce dossier." : "Toutes les modifications de ce dossier sont enregistrées."}
                 </p>
                 <Button
@@ -483,7 +483,7 @@ function SummaryCard({
         </div>
         <Badge variant={tone}>{value}</Badge>
       </div>
-      <p className="mt-3 text-sm leading-6 text-slate-500">{detail}</p>
+      <p className="mt-3 text-sm leading-6 text-[var(--muted)]">{detail}</p>
     </Card>
   );
 }
@@ -506,7 +506,7 @@ function transitionRequirementLabel(requirement: string) {
 function RecordedFact({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-muted)] p-3">
-      <p className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">{label}</p>
+      <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--muted)]">{label}</p>
       <p className="mt-1 text-sm font-medium leading-5 text-slate-900 [overflow-wrap:anywhere]">{value}</p>
     </div>
   );

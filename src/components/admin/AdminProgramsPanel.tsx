@@ -433,7 +433,7 @@ export function AdminProgramsPanel({
                   <input type="date" value={masterForm.review_due_at} onChange={(event) => changeMaster("review_due_at", event.target.value)} className="field" />
                 </label>
               </div>
-              <p className="mt-3 text-xs leading-5 text-slate-500">
+              <p className="mt-3 text-xs leading-5 text-[var(--muted)]">
                 Une exigence n’est enregistrée comme structurée que si sa source HTTPS et ses dates de vérification sont valides. Une valeur vide reste inconnue et n’est jamais transformée en zéro.
               </p>
             </FormSection>
@@ -445,14 +445,14 @@ export function AdminProgramsPanel({
                 <textarea value={form.almago_notes} onChange={(event) => change("almago_notes", event.target.value)} placeholder="Notes internes de maintenance du catalogue." className="field min-h-24 resize-y" />
               </label>
               <ToggleField label="Programme actif dans AlmaGo" checked={form.is_active} onChange={(checked) => change("is_active", checked)} />
-              <p className="text-xs leading-5 text-slate-500">
+              <p className="text-xs leading-5 text-[var(--muted)]">
                 Les notes AlmaGo restent internes à l’équipe. Elles ne sont pas présentées comme une information officielle de l’établissement. L’état actif contrôle l’utilisation du programme dans les parcours qui s’appuient sur le catalogue actif.
               </p>
             </FormSection>
           </div>
 
           <div className="mt-5 flex flex-col gap-3 border-t border-[var(--border)] pt-5 sm:flex-row sm:items-center sm:justify-between">
-            <p className="max-w-2xl text-sm leading-6 text-slate-500">
+            <p className="max-w-2xl text-sm leading-6 text-[var(--muted)]">
               Avant d’enregistrer, vérifiez les critères sensibles et les deadlines sur la source officielle lorsque celle-ci est disponible.
             </p>
             <Button type="submit" disabled={busy} className="w-full justify-center sm:w-auto">

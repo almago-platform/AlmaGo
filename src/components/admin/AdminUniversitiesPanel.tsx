@@ -320,7 +320,7 @@ export function AdminUniversitiesPanel({ universities }: { universities: Univers
           </div>
 
           <div className="mt-5 flex flex-col gap-3 border-t border-[var(--border)] pt-5 sm:flex-row sm:items-center sm:justify-between">
-            <p className="max-w-2xl text-sm leading-6 text-slate-500">
+            <p className="max-w-2xl text-sm leading-6 text-[var(--muted)]">
               L’état actif contrôle si cet établissement peut être utilisé dans les parcours AlmaGo qui s’appuient sur le catalogue actif.
             </p>
             <Button type="submit" disabled={busy} className="w-full justify-center sm:w-auto">

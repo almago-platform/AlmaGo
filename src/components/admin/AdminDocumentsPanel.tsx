@@ -325,7 +325,7 @@ export function AdminDocumentsPanel({
                       <Badge variant={isReplacement ? "warning" : isApproved ? "success" : "info"}>
                         {isReplacement ? "Remplacement demandé" : isApproved ? "Document approuvé" : "À vérifier"}
                       </Badge>
-                      <span className="text-xs font-semibold text-slate-500">File #{index + 1}</span>
+                      <span className="text-xs font-semibold text-[var(--muted)]">File #{index + 1}</span>
                     </div>
 
                     <p className="mt-4 text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">Étudiant</p>
@@ -519,7 +519,7 @@ export function AdminDocumentsPanel({
                   </div>
 
                   {!isApproved && (
-                    <p className="mt-3 text-xs leading-5 text-slate-500">
+                    <p className="mt-3 text-xs leading-5 text-[var(--muted)]">
                       Le fichier doit d’abord être approuvé dans la revue documentaire avant de pouvoir être accepté comme preuve de parcours.
                     </p>
                   )}
@@ -527,7 +527,7 @@ export function AdminDocumentsPanel({
 
                 <div className="mt-5 flex flex-col gap-4 border-t border-[var(--border)] pt-5 lg:flex-row lg:items-end lg:justify-between">
                   <div className="max-w-2xl">
-                    <p className="text-xs font-bold uppercase tracking-[0.14em] text-slate-500">Conséquence de la revue</p>
+                    <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--muted)]">Conséquence de la revue</p>
                     <p className="mt-1 text-sm leading-6 text-slate-600">
                       Approuver valide la pièce. Un remplacement ou un rejet conserve le dossier dans un état nécessitant une action ou un suivi.
                     </p>
@@ -595,7 +595,7 @@ function QueueSummary({
     <Card className={`shadow-none ${tone === "warning" && value ? "border-amber-200 bg-amber-50/35" : ""}`}>
       <p className="text-sm font-bold text-slate-700">{label}</p>
       <p className="mt-2 text-3xl font-semibold tracking-tight text-slate-950">{value}</p>
-      <p className="mt-2 text-sm leading-6 text-slate-500">{detail}</p>
+      <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{detail}</p>
     </Card>
   );
 }
