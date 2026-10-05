@@ -22,7 +22,8 @@ Les éléments suivants ont été confirmés par le propriétaire pour la prépa
 - orientation en ligne actuellement proposée gratuitement ;
 - avant immatriculation/licence, le propriétaire souhaite uniquement disposer d’un **site fonctionnel de pré-lancement/démonstration partenaire** ; le service réel au public ne doit pas démarrer avant la mise en conformité et l’établissement légal prévus en Tunisie ;
 - des offres payantes d’accompagnement/préparation de dossier sont désormais **configurées pour le pré-lancement et les tests internes**, avec des versions TND publiées dans le catalogue technique ; cela ne constitue pas une ouverture de la vente au public ni une validation juridique des conditions commerciales ;
-- la politique de conservation et la procédure de suppression proposées dans `docs/A38_RETENTION_POLICY_PROPOSAL.md` sont **APPROUVÉES** par le propriétaire.
+- la politique de conservation et la procédure de suppression proposées dans `docs/A38_RETENTION_POLICY_PROPOSAL.md` sont **APPROUVÉES** par le propriétaire ;
+- la collecte persistée du premier Free Validation Launch est **18+ uniquement**, décision propriétaire confirmée le 5 octobre 2026.
 
 Ces confirmations sont des faits/décisions propriétaire. Elles ne remplacent pas la détermination juridique de leur applicabilité par le relecteur final.
 
@@ -40,7 +41,7 @@ Le propriétaire a confirmé une évolution de séquencement :
 
 Cette décision **modifie l’ordre commercial souhaité**, mais **ne vaut pas autorisation juridique d’ouvrir la collecte réelle**. Le minimum confidentialité/INPDP et la question des transferts internationaux doivent être clarifiés dans #717 avant toute activation de la capture prospect. L’accès à de vrais documents exige un gate additionnel.
 
-Le public pouvant inclure des élèves mineurs, la stratégie initiale 18+ pour la **collecte persistée** est recommandée comme option de réduction de complexité, mais reste une **décision propriétaire ouverte** tant qu’elle n’est pas explicitement approuvée.
+Le propriétaire confirme le **5 octobre 2026** que, pour le premier Free Validation Launch, la **collecte persistée** (e-mail + orientation sauvegardée + création de compte liée) est réservée aux personnes de **18 ans ou plus**. L’orientation non persistée et le rapport local/PDF peuvent rester accessibles plus largement. Tout parcours persistant pour mineurs reste bloqué jusqu’à validation juridique spécifique.
 
 ## Ce qui est déjà établi techniquement
 
