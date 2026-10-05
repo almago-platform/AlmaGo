@@ -10,11 +10,19 @@ Figma source of truth: `AlmaGo Product System V2 — Professional Redesign`
 
 Stage 1 defines the product architecture, visual system and quality contract before broad UI implementation.
 
-The redesign covers three coordinated experiences:
+The redesign follows one canonical commercial and service lifecycle:
 
-1. **Candidate / Orientation** — public visitor or prospect discovering eligibility, programmes and next steps.
-2. **Student** — authenticated user managing documents, recommendations, proposal, payment and procedure.
-3. **Admin / Advisor** — staff handling dossiers, reviews, proposals, payments, catalogue and procedures.
+1. **Candidate / Orientation** — anonymous visitor completes the free orientation and receives an initial result.
+2. **Prospect / pre-account** — after account creation, the user can preserve the orientation, complete the project, browse the catalogue, upload starter documents and receive/discuss a Campus proposal, but does **not** yet have access to the Student space.
+3. **Proposal / acceptance / payment** — Campus sends the personalised route/service proposal. The prospect may discuss it, accept it and pay.
+4. **Active Student / Client** — only after the activation condition is satisfied does the user enter the full Student dashboard for procedures, applications, deadlines and ongoing support.
+5. **Admin / Advisor** — staff controls the entire lifecycle from free orientation through prospect analysis, proposal, payment validation and active Student follow-up.
+
+Canonical product lifecycle:
+
+> Candidate → Free Orientation → Account / Prospect → Campus Proposal → Acceptance → Payment / Validation → Active Student
+
+The Admin/Advisor experience sits across the whole lifecycle rather than being a separate downstream phase.
 
 The objective is not cosmetic similarity with another site. The objective is comparable product discipline: clear hierarchy, predictable service flows, institutional trust, excellent state handling, strong accessibility and consistent behaviour across desktop/mobile/RTL.
 
@@ -140,9 +148,11 @@ Cross-dossier queues still exist for operational work, but they become supportin
 
 The repository contains separate public orientation, prospect and student surfaces. This is technically useful, but the product must feel like one continuous service.
 
-The target experience must preserve context when a user moves:
+The target experience must preserve context while respecting the commercial access boundary:
 
-> Orientation result → account/prospect → authenticated student dossier
+> Free orientation result → account / Prospect space → Campus proposal → acceptance/payment → activated Student space
+
+Creating an account must **not** imply Student access. The Prospect stage is a deliberate product state with its own permissions, catalogue, documents, proposal and discussion experience.
 
 The visual language, terminology and progress state must communicate continuity instead of a platform change.
 
@@ -290,41 +300,61 @@ Rules:
 
 ---
 
-## 5. Target canonical journeys
+## 5. Target canonical lifecycle and journeys
 
-### 5.1 Candidate / Orientation
+### 5.1 Candidate / Free Orientation
 
-`Landing → Orientation → Analysis → Result → Recommended options → Next action → Continue/save → Authenticated space`
+`Landing → Free Orientation → Analysis → Result → Initial recommendations → Create/continue account`
 
-Primary candidate question on every screen:
+Primary candidate question:
 
-> What should I do next?
+> What does my profile mean, and what should I do next?
 
 The candidate must never need to understand the internal Orientation pipeline.
 
-### 5.2 Student
+### 5.2 Prospect / Pre-account
 
-`Dashboard → Required actions → Documents/profile → Campus review → Proposal → Discuss or accept → Payment → Procedure/applications → Status & notifications`
+`Account created → Preserve orientation → Complete project/profile → Browse catalogue → Starter documents → Campus review → Receive proposal → Discuss or accept`
 
-Primary student questions:
+Primary prospect questions:
+
+> What has Campus understood about my project?
+> What can I explore before buying?
+> What does the proposal include?
+> What must happen before I become an active Student?
+
+Prospect access is intentionally different from Student access.
+
+### 5.3 Proposal / Acceptance / Payment
+
+`Proposal received → Review scope and route → Ask questions if needed → Accept → Pay → Campus validates/activates`
+
+This is the commercial and trust hinge of AlmaGo. The UI must make the service scope, price, conditions, next step and activation consequence explicit.
+
+### 5.4 Active Student / Client
+
+`Activated Student Dashboard → Required actions → Documents → Procedure → Applications → Deadlines → Messages / ongoing support`
+
+Primary Student questions:
 
 > Where is my dossier now?
 > What do I need to do?
 > What is Campus Allemagne doing?
 > What happens next?
 
-### 5.3 Admin / Advisor
+### 5.5 Admin / Advisor across the lifecycle
 
-`Priority queue → Open dossier → Verify evidence → Analyse → Prepare proposal → Receive student response → Validate payment → Follow procedure/applications`
+`Orientation queue → Prospect dossier → Verify evidence → Analyse → Prepare proposal → Receive response → Validate payment/activation → Follow Student procedure/applications`
 
 Primary advisor questions:
 
 > Who needs attention?
-> Why?
-> What decision is required?
+> What lifecycle stage is this person in?
+> Why does the dossier need action?
 > What evidence supports the decision?
 > What happened previously?
 
+The same person should remain traceable through one dossier history as their lifecycle changes.
 ---
 
 ## 6. Target information architecture
@@ -332,55 +362,79 @@ Primary advisor questions:
 ### Candidate / public
 
 Global primary:
-- Study in Germany / Orientation
-- How it works
-- Programmes or resources when useful
-- Help
-- Sign in / Continue dossier
+- Orientation gratuite
+- Comment ça marche
+- Catalogue / study discovery when useful
+- Aide
+- Se connecter / Continuer
 
 Do not expose internal product modules.
 
-### Student
+### Prospect / pre-account
 
 Recommended primary navigation:
-- Home
-- My journey
+- Accueil / Mon projet
+- Orientation
+- Catalogue
+- Documents de départ
+- Proposition
+- Messages / Aide
+
+Commercial/service destinations such as Offers and Payment appear contextually when they become relevant rather than as permanent equal-weight navigation.
+
+### Active Student
+
+Recommended primary navigation:
+- Accueil
+- Mon parcours
 - Documents
-- Programmes / Recommendations
+- Candidatures / Programmes
 - Messages
 
 Secondary/account:
-- Profile
-- Settings
-- Help
-- Logout
+- Profil
+- Services complémentaires
+- Paramètres
+- Aide
+- Déconnexion
 
-Workflow-specific steps remain contextual rather than all being permanent top-level navigation.
+Student navigation appears only after activation.
 
-### Admin
+### Admin / Advisor
 
 Recommended primary navigation:
-- Overview
+- Vue d’ensemble
 - Dossiers
-- To review
+- À traiter
 - Catalogue
 - Finance
 - Administration
 
-Within a dossier:
+The dossier is lifecycle-aware:
+
+**Before activation**
+- Overview
+- Orientation
+- Prospect profile
+- Starter documents
+- Proposal
+- Messages
+- Payment / activation
+- History
+
+**After activation**
 - Overview
 - Profile
 - Documents
-- Orientation
-- Proposal
+- Orientation / recommendation history
+- Proposal / commercial history
 - Messages
 - Payment
 - Procedure
 - Applications
 - History
 
-Cross-dossier work queues remain available under "To review".
-
+Cross-dossier work queues remain available under "À traiter".
 ---
 
 ## 7. Visual system direction
@@ -532,41 +586,64 @@ Each screen should have:
 
 ---
 
-## 9. Pilot screens
+## 9. Pilot flow and screens
 
-The system will be proven first on three screens.
+The design system will be proven in the same order that a real user experiences AlmaGo.
 
-### Pilot 1 — Student Dashboard / Dossier Home
-
-Must prove:
-- authenticated shell;
-- journey/status hierarchy;
-- one primary next action;
-- documents/recommendation/proposal summary;
-- responsive behaviour;
-- RTL.
-
-### Pilot 2 — Admin Student Dossier / Advisor Cockpit
-
-Must prove:
-- professional data density;
-- dossier-centric architecture;
-- action prioritisation;
-- timeline/history;
-- evidence/document review;
-- proposal workflow;
-- technical-detail progressive disclosure.
-
-### Pilot 3 — Candidate Orientation Result / Next Action
+### Pilot 1 — Candidate Free Orientation Result / Next Action
 
 Must prove:
 - public trust;
 - simple explanation of complex analysis;
-- programme recommendations;
-- risk/unknown handling;
-- conversion into saved/authenticated journey;
+- programme/route recommendations;
+- uncertainty and disclaimer handling;
+- clear transition into account creation;
 - mobile readability.
 
+### Pilot 2 — Prospect / Pre-account Home
+
+Must prove:
+- clear distinction between Prospect and active Student;
+- preserved orientation context;
+- catalogue discovery;
+- starter document status;
+- Campus review state;
+- one dominant next action;
+- strong access-boundary communication.
+
+### Pilot 3 — Admin 360° Dossier
+
+Must prove:
+- lifecycle stage visibility;
+- professional data density;
+- Candidate/Prospect/Student continuity;
+- evidence/document review;
+- advisor analysis;
+- proposal composition;
+- student/prospect response timeline;
+- payment and activation controls;
+- technical-detail progressive disclosure.
+
+### Pilot 4 — Proposal / Acceptance / Payment Hinge
+
+Must prove:
+- service scope and route clarity;
+- human-readable pricing;
+- discuss/accept choices;
+- payment/validation states;
+- explicit consequence: activation of the Student space only when conditions are met.
+
+### Pilot 5 — Active Student Dashboard / Dossier Home
+
+Must prove:
+- post-activation authenticated shell;
+- journey/procedure hierarchy;
+- one primary next action;
+- deadlines/documents/applications/messages;
+- responsive behaviour;
+- RTL.
+
+The five pilots form one continuous lifecycle demonstration.
 ---
 
 ## 10. Responsive contract
@@ -646,17 +723,19 @@ This is mandatory before a workflow is considered production-ready.
 
 1. Figma foundations and tokens.
 2. Component library V2.
-3. Student pilot.
-4. Admin dossier pilot.
-5. Candidate Orientation pilot.
-6. Validate all three together.
-7. Migrate remaining Student surfaces.
-8. Migrate Admin.
-9. Migrate Candidate/Public.
-10. Standardise forms/documents/catalogue/offers/payment.
-11. Add Storybook / Playwright / axe / Lighthouse gates.
-12. Instrument analytics and observability.
-13. Full cross-browser, RTL, accessibility and launch QA.
+3. Candidate Free Orientation pilot.
+4. Prospect / pre-account pilot.
+5. Admin 360° dossier pilot.
+6. Proposal / acceptance / payment pilot.
+7. Active Student dashboard pilot.
+8. Validate the full Candidate → Prospect → Proposal → Payment → Student lifecycle.
+9. Migrate remaining Candidate/Public and Prospect surfaces.
+10. Migrate remaining Admin surfaces.
+11. Migrate remaining Student surfaces.
+12. Standardise documents/forms/catalogue/offers/payment.
+13. Add Storybook / Playwright / axe / Lighthouse gates.
+14. Instrument analytics and observability.
+15. Full cross-browser, RTL, accessibility and launch QA.
 
 ---
 
@@ -667,11 +746,11 @@ Stage 1 is complete only when:
 - [x] Current route inventory recorded.
 - [x] Current UI/component baseline recorded.
 - [x] Current CSS/token maturity assessed.
-- [x] Three canonical audience journeys defined.
+- [x] Canonical Candidate → Prospect → Proposal/Payment → Student lifecycle defined.
 - [x] Target information architecture drafted.
 - [x] Visual principles drafted.
 - [x] Component inventory drafted.
-- [x] Pilot screens locked.
+- [x] Five lifecycle pilot screens locked.
 - [x] Responsive contract drafted.
 - [x] Accessibility contract drafted.
 - [x] Content contract drafted.
@@ -679,9 +758,11 @@ Stage 1 is complete only when:
 - [ ] Current-screen keep/simplify/rebuild/merge matrix completed.
 - [ ] Figma Stage 1 structure created.
 - [ ] Figma foundations proposal created.
-- [ ] Candidate pilot wire architecture approved.
-- [ ] Student pilot wire architecture approved.
-- [ ] Admin pilot wire architecture approved.
+- [ ] Candidate Orientation pilot wire architecture approved.
+- [ ] Prospect/pre-account pilot wire architecture approved.
+- [ ] Admin 360° dossier pilot wire architecture approved.
+- [ ] Proposal/payment hinge wire architecture approved.
+- [ ] Active Student pilot wire architecture approved.
 - [ ] Open feature PR collision map reconciled with migration sequence.
 - [ ] Final Stage 1 review accepted.
 
