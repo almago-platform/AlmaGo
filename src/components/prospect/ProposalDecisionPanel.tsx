@@ -141,16 +141,16 @@ export function ProposalDecisionPanel({
   const [note, setNote] = useState("");
   const [error, setError] = useState<string | null>(null);
 
-  const route =
-    routeKey && routeKey in routeLabels[locale]
-      ? routeLabels[locale][routeKey as keyof typeof routeLabels.fr]
-      : locale === "fr"
-        ? "Parcours à confirmer"
-        : locale === "ar"
-          ? "المسار يحتاج إلى تأكيد"
-          : locale === "de"
-            ? "Weg noch zu bestätigen"
-            : "Path to be confirmed";
+  const fallbackRoute =
+    locale === "fr"
+      ? "Parcours à confirmer"
+      : locale === "ar"
+        ? "المسار يحتاج إلى تأكيد"
+        : locale === "de"
+          ? "Weg noch zu bestätigen"
+          : "Path to be confirmed";
+  const localizedRoutes = routeLabels[locale] as Record<string, string>;
+  const route = routeKey ? localizedRoutes[routeKey] ?? fallbackRoute : fallbackRoute;
 
   async function acceptProposal() {
     if (!paymentEnabled || busyAction) return;
