@@ -105,7 +105,8 @@ function humanAttemptStatus(locale: "fr" | "ar" | "en" | "de", status: string) {
     },
   } as const;
 
-  return labels[locale][status as keyof typeof labels.fr]
+  const localized = labels[locale] as Record<string, string>;
+  return localized[status]
     || (locale === "fr" ? "mise à jour" : locale === "ar" ? "تم التحديث" : locale === "de" ? "aktualisiert" : "updated");
 }
 
@@ -127,7 +128,8 @@ function humanTransaction(
   } as const;
 
   const kind = kindLabels[locale][transaction.kind];
-  const status = statusLabels[locale][transaction.status as keyof typeof statusLabels.fr]
+  const localizedStatuses = statusLabels[locale] as Record<string, string>;
+  const status = localizedStatuses[transaction.status]
     || (locale === "fr" ? "mis à jour" : locale === "ar" ? "تم التحديث" : locale === "de" ? "aktualisiert" : "updated");
   return `${kind} · ${status}`;
 }
