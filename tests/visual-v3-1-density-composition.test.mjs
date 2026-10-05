@@ -1,3 +1,4 @@
+// CI retrigger: V3.1 density/composition validation
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
