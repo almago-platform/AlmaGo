@@ -36,6 +36,7 @@ export type OrientationProspectCopy = {
     continueEyebrow: string;
     continueTitle: string;
     continueText: string;
+    continueBoundary: string;
     continueSubmit: string;
     continueSaving: string;
     ageRestrictionEyebrow: string;
@@ -80,6 +81,7 @@ const fr: OrientationProspectCopy = {
     continueEyebrow: "La suite de votre projet",
     continueTitle: "Créer mon espace Prospect gratuit",
     continueText: "Créez votre espace Prospect gratuit pour garder cette orientation, explorer le catalogue, compléter votre projet et recevoir une proposition Campus Allemagne. L’espace étudiant n’est pas encore activé.",
+    continueBoundary: "Votre compte ouvre l’espace Prospect. L’espace étudiant reste verrouillé jusqu’à la proposition, au paiement et à la validation Campus.",
     continueSubmit: "Créer mon espace Prospect gratuit",
     continueSaving: "Création de votre espace Prospect…",
     ageRestrictionEyebrow: "Premier lancement",
@@ -124,6 +126,7 @@ const ar: OrientationProspectCopy = {
     continueEyebrow: "الخطوة التالية في مشروعك",
     continueTitle: "إنشاء مساحة Prospect المجانية",
     continueText: "أنشئ مساحة Prospect المجانية للاحتفاظ بهذا التوجيه واستكشاف البرامج وإكمال مشروعك واستلام اقتراح من Campus Allemagne. مساحة الطالب ليست مفعّلة بعد.",
+    continueBoundary: "الحساب يفتح مساحة Prospect فقط. تبقى مساحة الطالب مقفلة حتى استلام الاقتراح والدفع ثم تأكيد Campus Allemagne.",
     continueSubmit: "إنشاء مساحة Prospect المجانية",
     continueSaving: "جارٍ إنشاء مساحة Prospect…",
     ageRestrictionEyebrow: "الإطلاق الأول",
@@ -168,6 +171,7 @@ const en: OrientationProspectCopy = {
     continueEyebrow: "The next step in your project",
     continueTitle: "Create my free Prospect space",
     continueText: "Create your free Prospect space to keep this orientation, explore the catalogue, complete your project and receive a Campus Allemagne proposal. Student access is not active yet.",
+    continueBoundary: "Your account opens the Prospect space. Student access stays locked until proposal, payment and Campus validation are complete.",
     continueSubmit: "Create my free Prospect space",
     continueSaving: "Creating your Prospect space…",
     ageRestrictionEyebrow: "Initial launch",
@@ -212,6 +216,7 @@ const de: OrientationProspectCopy = {
     continueEyebrow: "Der nächste Schritt deines Projekts",
     continueTitle: "Kostenlosen Prospect-Bereich erstellen",
     continueText: "Erstelle deinen kostenlosen Prospect-Bereich, um diese Orientierung zu behalten, den Katalog zu erkunden, dein Projekt zu vervollständigen und einen Vorschlag von Campus Allemagne zu erhalten. Der Studierendenbereich ist noch nicht aktiviert.",
+    continueBoundary: "Dein Konto öffnet den Prospect-Bereich. Der Studierendenbereich bleibt bis zum Vorschlag, zur Zahlung und zur Campus-Bestätigung gesperrt.",
     continueSubmit: "Kostenlosen Prospect-Bereich erstellen",
     continueSaving: "Prospect-Bereich wird erstellt…",
     ageRestrictionEyebrow: "Erster Start",
