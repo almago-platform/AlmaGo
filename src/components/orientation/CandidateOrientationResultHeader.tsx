@@ -22,7 +22,7 @@ export function CandidateOrientationResultHeader({
   facts: Array<{ label: ReactNode; value: ReactNode }>;
   profileDetailsLabel: ReactNode;
   profileDetailsHelp?: ReactNode;
-  allFacts: readonly (readonly [ReactNode, ReactNode])[];
+  allFacts: readonly (readonly ReactNode[])[];
 }) {
   return (
     <section className="orientation-print-hide">
@@ -73,11 +73,11 @@ export function CandidateOrientationResultHeader({
             <p className="mt-2 text-xs leading-5 text-[var(--muted)]">{profileDetailsHelp}</p>
           ) : null}
           <dl className="mt-4 grid gap-x-7 gap-y-0 sm:grid-cols-2">
-            {allFacts.map(([label, value], index) => (
+            {allFacts.map((fact, index) => (
               <div key={index} className="border-b border-[var(--border)] py-3">
-                <dt className="text-xs font-semibold leading-5 text-[var(--muted)]">{label}</dt>
+                <dt className="text-xs font-semibold leading-5 text-[var(--muted)]">{fact[0]}</dt>
                 <dd className="m-0 mt-1 text-sm font-semibold leading-6 text-[var(--foreground)] [overflow-wrap:anywhere]">
-                  <bdi dir="auto">{value}</bdi>
+                  <bdi dir="auto">{fact[1]}</bdi>
                 </dd>
               </div>
             ))}
