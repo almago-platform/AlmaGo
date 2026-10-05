@@ -8,6 +8,7 @@ import { buildOrientationEmailPdfAttachments } from "@/lib/orientation/pdf-attac
 import { validatePublicOrientationAnswers } from "@/lib/orientation/validate";
 import { createOrientationResumeToken } from "@/lib/orientation/resume-token";
 import {
+  isAdultPublicOrientationIdentity,
   isCompletePublicOrientationIdentity,
   restorePublicOrientationIdentity,
 } from "@/lib/orientation/public";
@@ -127,14 +128,18 @@ export async function POST(request: Request) {
   }
 
   if (
-    identityRecord
-    && (
-      !identity
-      || !isCompletePublicOrientationIdentity(identity)
-      || identity.email !== email
-    )
+    !identity
+    || !isCompletePublicOrientationIdentity(identity)
+    || identity.email !== email
   ) {
     return NextResponse.json({ error: "Invalid orientation identity." }, { status: 400 });
+  }
+
+  if (!isAdultPublicOrientationIdentity(identity)) {
+    return NextResponse.json(
+      { error: "Persistent orientation capture is limited to adults." },
+      { status: 403 },
+    );
   }
 
   const diagnostic = buildPublicOrientationDiagnostic(answers);

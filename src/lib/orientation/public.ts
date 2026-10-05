@@ -57,6 +57,31 @@ export function isCompletePublicOrientationIdentity(identity: PublicOrientationI
   return date <= todayUtc;
 }
 
+export function isAdultPublicOrientationIdentity(
+  identity: PublicOrientationIdentity,
+  now: Date = new Date(),
+) {
+  if (!isCompletePublicOrientationIdentity(identity)) return false;
+
+  const birthDate = new Date(`${identity.birthDate}T00:00:00Z`);
+  const referenceDate = new Date(Date.UTC(
+    now.getUTCFullYear(),
+    now.getUTCMonth(),
+    now.getUTCDate(),
+  ));
+
+  let age = referenceDate.getUTCFullYear() - birthDate.getUTCFullYear();
+  const birthdayHasPassed =
+    referenceDate.getUTCMonth() > birthDate.getUTCMonth()
+    || (
+      referenceDate.getUTCMonth() === birthDate.getUTCMonth()
+      && referenceDate.getUTCDate() >= birthDate.getUTCDate()
+    );
+
+  if (!birthdayHasPassed) age -= 1;
+  return age >= 18;
+}
+
 export type PublicOrientationBacStatus = "" | "obtained" | "preparing" | "no_bac";
 export type PublicOrientationAverageType = "" | "official" | "current_estimate";
 export type PublicOrientationIntakeSeason = "" | "winter" | "summer";

@@ -104,7 +104,7 @@ La loi 2004-63 contient un régime spécifique pour les données d’un enfant. 
 
 > **réserver la collecte persistée Free Validation aux personnes de 18 ans ou plus**, jusqu’à validation juridique d’un parcours mineur.
 
-Cette recommandation n’est pas encore une décision propriétaire.
+**Décision propriétaire confirmée le 5 octobre 2026 : APPROUVÉE.** La collecte persistée du premier Free Validation Launch est réservée aux personnes de 18 ans ou plus. L’orientation non persistée peut rester accessible sans ouvrir la sauvegarde e-mail, la création de compte liée ni le pilote documents.
 
 Si les mineurs doivent être inclus dans la collecte persistée, le flux ne doit être conçu qu’après confirmation du processus applicable au tuteur et à l’autorisation du juge de la famille.
 

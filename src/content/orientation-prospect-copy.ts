@@ -38,6 +38,9 @@ export type OrientationProspectCopy = {
     continueText: string;
     continueSubmit: string;
     continueSaving: string;
+    ageRestrictionEyebrow: string;
+    ageRestrictionTitle: string;
+    ageRestrictionText: string;
   };
 };
 
@@ -79,6 +82,9 @@ const fr: OrientationProspectCopy = {
     continueText: "Créez votre espace étudiant gratuit pour rattacher cette orientation à votre compte et reprendre votre parcours sans recommencer.",
     continueSubmit: "Continuer ma procédure et créer mon compte",
     continueSaving: "Préparation de votre espace…",
+    ageRestrictionEyebrow: "Premier lancement",
+    ageRestrictionTitle: "Sauvegarde réservée aux 18 ans et plus",
+    ageRestrictionText: "Vous pouvez utiliser votre orientation et enregistrer votre rapport en PDF. Pendant ce premier lancement, la sauvegarde avec e-mail et la création de compte sont réservées aux personnes de 18 ans ou plus.",
   },
 };
 
@@ -120,6 +126,9 @@ const ar: OrientationProspectCopy = {
     continueText: "أنشئ مساحتك الطلابية المجانية لربط هذا التوجيه بحسابك ومواصلة المسار من دون البدء من جديد.",
     continueSubmit: "متابعة إجراءاتي وإنشاء حسابي",
     continueSaving: "جارٍ تجهيز مساحتك…",
+    ageRestrictionEyebrow: "الإطلاق الأول",
+    ageRestrictionTitle: "الحفظ متاح لمن يبلغ 18 عامًا أو أكثر",
+    ageRestrictionText: "يمكنك استخدام نتيجة التوجيه وحفظ تقريرك بصيغة PDF. خلال هذا الإطلاق الأول، يقتصر الحفظ بالبريد الإلكتروني وإنشاء الحساب على من يبلغ 18 عامًا أو أكثر.",
   },
 };
 
@@ -161,6 +170,9 @@ const en: OrientationProspectCopy = {
     continueText: "Create your free student space to attach this orientation to your account and continue without starting again.",
     continueSubmit: "Continue my procedure and create my account",
     continueSaving: "Preparing your space…",
+    ageRestrictionEyebrow: "Initial launch",
+    ageRestrictionTitle: "Saving is limited to people aged 18 or over",
+    ageRestrictionText: "You can still use your orientation and save the report as a PDF. During this initial launch, email saving and account creation are limited to people aged 18 or over.",
   },
 };
 
@@ -202,6 +214,9 @@ const de: OrientationProspectCopy = {
     continueText: "Erstelle deinen kostenlosen Studierendenbereich, um diese Orientierung mit deinem Konto zu verknüpfen und ohne Neustart weiterzumachen.",
     continueSubmit: "Verfahren fortsetzen und Konto erstellen",
     continueSaving: "Dein Bereich wird vorbereitet…",
+    ageRestrictionEyebrow: "Erster Start",
+    ageRestrictionTitle: "Speichern ist nur ab 18 Jahren verfügbar",
+    ageRestrictionText: "Du kannst deine Orientierung weiterhin nutzen und den Bericht als PDF speichern. Während dieses ersten Starts sind das Speichern per E-Mail und die Kontoerstellung Personen ab 18 Jahren vorbehalten.",
   },
 };
 
