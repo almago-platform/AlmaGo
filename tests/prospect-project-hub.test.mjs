@@ -11,6 +11,7 @@ const orientation = read("src/app/prospect/orientation/page.tsx");
 const proposal = read("src/app/prospect/proposal/page.tsx");
 const roadmap = read("src/app/prospect/roadmap/page.tsx");
 const catalogue = read("src/app/prospect/catalogue/page.tsx");
+const catalogueCard = read("src/components/prospect/ProspectProgrammeCatalogueCard.tsx");
 const solutions = read("src/app/prospect/solutions/page.tsx");
 const documents = read("src/components/prospect/StarterDocumentsPanel.tsx");
 const journeyProgress = read("src/components/prospect/ProspectJourneyProgress.tsx");
@@ -70,8 +71,8 @@ test("prospect can browse the verified academic catalogue before the proposal", 
   assert.match(catalogue, /degree/);
   assert.match(catalogue, /field/);
   assert.match(catalogue, /city/);
-  assert.match(catalogue, /programmeSourceUrl/);
-  assert.match(catalogue, /applicationUrl/);
+  assert.match(catalogueCard, /programmeSourceUrl/);
+  assert.match(catalogueCard, /applicationUrl/);
   assert.match(catalogue, /matchesProject/);
   assert.doesNotMatch(catalogue, /admission probability|guaranteed admission/i);
 });
