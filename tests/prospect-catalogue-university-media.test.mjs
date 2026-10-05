@@ -48,6 +48,8 @@ test("university covers use stored media and retain a polished fallback", () => 
 test("catalogue media enrichment works without the privileged DB key and persists when available", () => {
   assert.ok(media.includes("MAX_MEDIA_LOOKUPS_PER_REQUEST = 40"));
   assert.ok(media.includes("MEDIA_RETRY_DAYS = 30"));
+  assert.ok(media.includes("MEDIA_LOOKUP_CONCURRENCY = 3"));
+  assert.ok(media.includes("index += MEDIA_LOOKUP_CONCURRENCY"));
   assert.ok(media.includes("canPersistMedia"));
   assert.ok(media.includes("findWikimediaUniversityMedia"));
   assert.ok(media.includes("media_verified_at"));
@@ -69,6 +71,9 @@ test("Wikimedia lookups are cached and use a bounded fallback search", () => {
   assert.ok(wikimedia.includes("MEDIA_CACHE_SECONDS"));
   assert.ok(wikimedia.includes("revalidate: MEDIA_CACHE_SECONDS"));
   assert.ok(wikimedia.includes("MEDIA_TIMEOUT_MS = 3_000"));
+  assert.ok(wikimedia.includes("WIKIMEDIA_USER_AGENT"));
+  assert.ok(wikimedia.includes('"User-Agent": WIKIMEDIA_USER_AGENT'));
+  assert.ok(wikimedia.includes('"Api-User-Agent": WIKIMEDIA_USER_AGENT'));
   assert.ok(wikimedia.includes('[universityName, city]'));
   assert.ok(wikimedia.includes('[universityName, city, "campus"]'));
 });
