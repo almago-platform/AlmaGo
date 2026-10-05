@@ -17,7 +17,7 @@ const paymentCopy = read("src/content/prospect-payment-copy.ts");
 test("proposal V2 uses the shared Product System summary and explicit Student boundary", () => {
   assert.ok(proposalDecision.includes("ProposalSummary"));
   assert.ok(proposalDecision.includes("Student access stays locked until payment"));
-  assert.ok(proposalDecision.includes("L’espace Étudiant reste verrouillé"));
+  assert.ok(proposalDecision.includes("Votre espace Étudiant reste verrouillé"));
   assert.ok(proposalSummary.includes("paymentNote"));
   assert.ok(proposalSummary.includes("includedLabel"));
   assert.ok(proposalSummary.includes("totalLabel"));
