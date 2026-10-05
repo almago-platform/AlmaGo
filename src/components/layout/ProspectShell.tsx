@@ -187,7 +187,7 @@ export function ProspectShell({
             onClick={() => setMobileOpen(false)}
             aria-label={copy.shell.closeMenu}
           />
-          <aside id="prospect-mobile-menu" aria-label={t.navigation} className="absolute inset-y-0 start-0 w-[min(88vw,22rem)] overflow-y-auto bg-[#17191b] text-white shadow-2xl">
+          <aside id="prospect-mobile-menu" role="dialog" aria-modal="true" aria-label={t.navigation} className="absolute inset-y-0 start-0 w-[min(88vw,22rem)] overflow-y-auto bg-[#17191b] pb-[env(safe-area-inset-bottom)] pt-[env(safe-area-inset-top)] text-white shadow-2xl">
             <div className="flex items-center justify-between border-b border-white/10 p-4">
               <BrandLogo className="h-9 w-auto max-w-[11rem] rounded-lg bg-white px-2 py-1" />
               <button
