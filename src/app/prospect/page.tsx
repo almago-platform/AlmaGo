@@ -198,9 +198,7 @@ export default async function ProspectDashboardPage() {
   return (
     <main className="space-y-5">
       <section className="overflow-hidden rounded-[var(--radius-panel)] border border-[var(--border)] border-t-[3px] border-t-[var(--brand)] bg-[var(--surface)] p-5 shadow-[var(--shadow-card)] sm:p-6">
-        <div className="pointer-events-none absolute -right-16 -top-24 size-64 rounded-full bg-[var(--brand)]/12 blur-3xl" aria-hidden="true" />
-        <div className="pointer-events-none absolute -bottom-28 left-1/3 size-64 rounded-full bg-amber-300/10 blur-3xl" aria-hidden="true" />
-        <div className="relative">
+        <div>
           <p className="text-[0.68rem] font-bold uppercase tracking-[0.16em] text-[var(--brand)]">
             {t.eyebrow}
           </p>
