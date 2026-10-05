@@ -20,6 +20,7 @@ const prospectHub = read("src/lib/prospect/hub.ts");
 const prospectProposalPage = read("src/app/prospect/proposal/page.tsx");
 const prospectIntake = read("src/lib/prospect/intake.ts");
 const intakeCard = read("src/components/prospect/IntakeFlowCard.tsx");
+const proposalDecision = read("src/components/prospect/ProposalDecisionPanel.tsx");
 const starterPanel = read("src/components/prospect/StarterDocumentsPanel.tsx");
 const prospectUpload = read("src/app/api/prospect/documents/upload/route.ts");
 const adminPage = read("src/app/admin/intake/page.tsx");
@@ -128,8 +129,8 @@ test("student acceptance starts payment and only admin payment validation create
   assert.match(activationFunction, /status = 'procedure_created'/);
   assert.match(activationFunction, /status = 'client_active'/);
 
-  assert.match(intakeCard, /Accepter et passer au paiement/);
-  assert.match(intakeCard, /Je souhaite en discuter/);
+  assert.match(proposalDecision, /Accepter et passer au paiement/);
+  assert.match(proposalDecision, /Demander une discussion/);
 });
 
 test("post-payment activation maps study preparation to the existing project path", () => {
