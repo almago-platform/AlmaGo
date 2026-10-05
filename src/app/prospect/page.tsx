@@ -355,7 +355,7 @@ export default async function ProspectDashboardPage() {
   };
 
   return (
-    <main className="space-y-7">
+    <main className="space-y-5">
       <DossierHeader
         eyebrow={v2.space}
         title={t.title}
@@ -368,7 +368,7 @@ export default async function ProspectDashboardPage() {
         }))}
       />
 
-      <section className="space-y-4">
+      <section className="space-y-3">
         <SectionHeader eyebrow={v2.lifecycle} title={t.progress} />
         <JourneyRail steps={lifecycleSteps} />
       </section>
@@ -421,7 +421,7 @@ export default async function ProspectDashboardPage() {
         ]}
       />
 
-      <section className="overflow-hidden rounded-[1.35rem] border border-black/[.07] bg-white p-5 shadow-[0_22px_60px_-42px_rgba(0,0,0,.34)] sm:p-6">
+      <section className="overflow-hidden rounded-[1.35rem] border border-black/[.07] bg-white p-4 shadow-[0_22px_60px_-42px_rgba(0,0,0,.34)] sm:p-5">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="min-w-0">
             <p className="text-[0.68rem] font-extrabold uppercase tracking-[0.15em] text-[var(--brand)]">
@@ -441,7 +441,7 @@ export default async function ProspectDashboardPage() {
       </section>
 
       {recommendations.length ? (
-        <section className="rounded-[1.4rem] border border-black/[.06] bg-white/75 p-5 shadow-[0_24px_64px_-44px_rgba(0,0,0,.34)] backdrop-blur-sm sm:p-6">
+        <section className="rounded-[1.4rem] border border-black/[.06] bg-white/75 p-4 shadow-[0_24px_64px_-44px_rgba(0,0,0,.34)] backdrop-blur-sm sm:p-5">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
               <p className="text-[11px] font-extrabold uppercase tracking-[0.15em] text-[var(--brand)]">
@@ -460,7 +460,7 @@ export default async function ProspectDashboardPage() {
             </Link>
           </div>
 
-          <div className="mt-6 grid gap-4 xl:grid-cols-3">
+          <div className="mt-4 grid items-start gap-3 xl:grid-cols-3">
             {recommendations.map((recommendation) => (
               <ProspectProgrammeRecommendationCard
                 key={recommendation.programme.id}
@@ -505,7 +505,7 @@ export default async function ProspectDashboardPage() {
       </nav>
 
       {state.current ? (
-        <section className="rounded-[1.3rem] border border-black/[.07] bg-white/80 p-5 shadow-[0_20px_55px_-42px_rgba(0,0,0,.3)] sm:p-6">
+        <section className="rounded-[1.3rem] border border-black/[.07] bg-white/80 p-4 shadow-[0_20px_55px_-42px_rgba(0,0,0,.3)] sm:p-5">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="min-w-0">
               <p className="text-[11px] font-extrabold uppercase tracking-[0.15em] text-[var(--brand)]">
