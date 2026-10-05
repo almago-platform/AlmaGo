@@ -32,6 +32,10 @@ Cette matrice sépare ce qu'AlmaGo peut préparer automatiquement de ce qui doit
 | Conditions d'utilisation | brouillon prêt | `docs/legal-terms-draft.md` | injecter décisions + relire |
 | Publication finale | bloquée intentionnellement | gate A38 | seulement après relecture |
 
+## Paquet de relecture
+
+Le paquet `docs/A38_TUNISIA_REVIEW_PACKET.md` rassemble les faits techniques, les sources officielles INPDP consultées et les questions exactes restant à faire valider.
+
 ## Sources de contrôle
 
 - DDG § 5 : informations générales du fournisseur, selon applicabilité.
