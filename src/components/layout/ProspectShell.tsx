@@ -56,11 +56,11 @@ export function ProspectShell({
   }
 
   return (
-    <div dir={direction} className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
+    <div dir={direction} className="prospect-shell min-h-screen bg-[var(--background)] text-[var(--foreground)]">
       <a href="#main-content" className="skip-link">{copy.shell.skip}</a>
 
-      <header className="sticky top-0 z-40 border-b border-[var(--border)] bg-[color:rgba(255,253,248,0.94)] backdrop-blur">
-        <div className="mx-auto flex min-h-16 max-w-7xl items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
+      <header className="sticky top-0 z-40 border-b border-[var(--border)] bg-[color:rgba(255,253,248,0.97)] backdrop-blur">
+        <div className="mx-auto flex min-h-16 max-w-[90rem] items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
           <Link href="/prospect" className="flex min-w-0 items-center gap-3" aria-label={t.homeAria}>
             <BrandLogo className="h-9 w-auto max-w-[11rem]" />
             <span className="hidden rounded-full border border-[var(--brand-border)] bg-[var(--brand-soft)] px-2.5 py-1 text-[11px] font-bold text-[var(--brand-strong)] sm:inline">
@@ -72,7 +72,7 @@ export function ProspectShell({
             <button
               type="button"
               onClick={signOut}
-              className="inline-flex min-h-10 items-center rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface)] px-3 text-sm font-semibold text-[var(--foreground)] hover:border-[var(--brand-border)]"
+              className="inline-flex min-h-10 items-center rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface)] px-3 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--brand-border)] hover:bg-[var(--surface-subtle)]"
             >
               {t.logout}
             </button>
@@ -80,19 +80,18 @@ export function ProspectShell({
         </div>
       </header>
 
-      <div className="mx-auto grid max-w-7xl gap-6 px-4 py-5 sm:px-6 sm:py-7 lg:grid-cols-[15rem_minmax(0,1fr)] lg:px-8 lg:py-9">
-        <aside className="h-fit overflow-hidden rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow-card)] lg:sticky lg:top-24">
-          <div className="border-b border-[var(--border)] bg-[linear-gradient(145deg,var(--surface),var(--surface-subtle))] p-4">
-            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--brand)]">{t.area}</p>
-            {name ? <p className="mt-2 text-sm font-bold"><bdi dir="auto">{name}</bdi></p> : null}
-            <p className="mt-2 text-xs leading-5 text-[var(--muted)]">{t.intro}</p>
+      <div className="mx-auto grid max-w-[90rem] gap-5 px-4 py-5 sm:px-6 sm:py-7 lg:grid-cols-[13.5rem_minmax(0,1fr)] lg:gap-8 lg:px-8 lg:py-8">
+        <aside className="prospect-sidebar h-fit overflow-hidden rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow-card)] lg:sticky lg:top-24">
+          <div className="border-b border-[var(--border)] bg-[var(--surface-subtle)] px-4 py-3.5">
+            <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-[var(--brand)]">{t.area}</p>
+            {name ? <p className="mt-1.5 truncate text-sm font-bold"><bdi dir="auto">{name}</bdi></p> : null}
           </div>
 
-          <nav className="p-3" aria-label={t.navigation}>
-            <p className="px-2 pb-2 text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--muted)]">
+          <nav className="p-2.5" aria-label={t.navigation}>
+            <p className="px-2 pb-1.5 pt-1 text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--muted)]">
               {t.journeyGroup}
             </p>
-            <div className="grid gap-1 sm:grid-cols-2 lg:grid-cols-1">
+            <div className="grid gap-0.5 sm:grid-cols-2 lg:grid-cols-1">
               {journeyLinks.map((item) => {
                 const active = activeFor(item.href);
                 return (
@@ -100,7 +99,7 @@ export function ProspectShell({
                     key={item.href}
                     href={item.href}
                     aria-current={active ? "page" : undefined}
-                    className={`relative rounded-[var(--radius-control)] border px-3 py-2.5 text-sm font-semibold transition-all ${active ? "prospect-nav-active border-[var(--brand-border)] bg-[var(--brand-soft)] text-[var(--brand-strong)]" : "border-transparent text-[var(--foreground)] hover:bg-[var(--surface-subtle)]"}`}
+                    className={`relative rounded-[var(--radius-control)] border px-3 py-2.5 text-sm font-semibold transition-colors ${active ? "prospect-nav-active border-[var(--brand-border)] bg-[var(--brand-soft)] text-[var(--brand-strong)]" : "border-transparent text-[var(--foreground)] hover:bg-[var(--surface-subtle)]"}`}
                   >
                     {item.label}
                   </Link>
@@ -108,11 +107,11 @@ export function ProspectShell({
               })}
             </div>
 
-            <div className="my-3 border-t border-[var(--border)]" />
-            <p className="px-2 pb-2 text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--muted)]">
+            <div className="my-2.5 border-t border-[var(--border)]" />
+            <p className="px-2 pb-1.5 pt-1 text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--muted)]">
               {t.servicesGroup}
             </p>
-            <div className="grid gap-1 sm:grid-cols-2 lg:grid-cols-1">
+            <div className="grid gap-0.5 sm:grid-cols-2 lg:grid-cols-1">
               {serviceLinks.map((item) => {
                 const active = activeFor(item.href);
                 return (
@@ -120,7 +119,7 @@ export function ProspectShell({
                     key={item.href}
                     href={item.href}
                     aria-current={active ? "page" : undefined}
-                    className={`relative rounded-[var(--radius-control)] border px-3 py-2.5 text-sm font-semibold transition-all ${active ? "prospect-nav-active border-[var(--brand-border)] bg-[var(--brand-soft)] text-[var(--brand-strong)]" : "border-transparent text-[var(--foreground)] hover:bg-[var(--surface-subtle)]"}`}
+                    className={`relative rounded-[var(--radius-control)] border px-3 py-2.5 text-sm font-semibold transition-colors ${active ? "prospect-nav-active border-[var(--brand-border)] bg-[var(--brand-soft)] text-[var(--brand-strong)]" : "border-transparent text-[var(--foreground)] hover:bg-[var(--surface-subtle)]"}`}
                   >
                     {item.label}
                   </Link>
@@ -130,7 +129,7 @@ export function ProspectShell({
           </nav>
         </aside>
 
-        <div id="main-content" tabIndex={-1} className="min-w-0">
+        <div id="main-content" tabIndex={-1} className="min-w-0 scroll-mt-24">
           {children}
         </div>
       </div>

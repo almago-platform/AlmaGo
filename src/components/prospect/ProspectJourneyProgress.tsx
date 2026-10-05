@@ -180,13 +180,13 @@ export function ProspectJourneyProgress(props: {
 
   return (
     <div>
-      <div className="mb-3 flex items-center justify-between gap-3 text-sm">
+      <div className="mb-2.5 flex items-center justify-between gap-3 text-sm">
         <span className="font-semibold text-[var(--foreground)]">
           {currentStepNumber}/{steps.length} {copy.count}
         </span>
-        <span className="text-[var(--muted)]">{percent}%</span>
+        <span className="tabular-nums text-[var(--muted)]">{percent}%</span>
       </div>
-      <div className="h-2 overflow-hidden rounded-full bg-[var(--surface-muted)]">
+      <div className="h-1.5 overflow-hidden rounded-full bg-[var(--surface-muted)]">
         <div
           className="h-full rounded-full bg-[var(--brand)] transition-[width]"
           style={{ width: `${percent}%` }}
@@ -195,11 +195,7 @@ export function ProspectJourneyProgress(props: {
       </div>
 
       <ol
-        className={
-          props.compact
-            ? "mt-4 grid gap-2 sm:grid-cols-2 xl:grid-cols-4"
-            : "mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4"
-        }
+        className={`mt-4 grid overflow-hidden rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--border)] gap-px sm:grid-cols-2 xl:grid-cols-5 ${props.compact ? "" : "shadow-[var(--shadow-card)]"}`}
       >
         {steps.map((step, index) => {
           const state = index < activeIndex
@@ -210,35 +206,34 @@ export function ProspectJourneyProgress(props: {
                 ? "next"
                 : "later";
 
+          const surfaceClass = state === "current"
+            ? "bg-[var(--brand-soft)]"
+            : state === "done"
+              ? "bg-emerald-50/70"
+              : state === "next"
+                ? "bg-[var(--accent-light)]/45"
+                : "bg-[var(--surface)]";
+
           return (
-            <li key={step.key}>
+            <li key={step.key} className="min-w-0">
               <Link
                 href={step.href}
-                className={`block rounded-[var(--radius-control)] border p-3 transition-colors ${
-                  state === "current"
-                    ? "border-[var(--brand-border)] bg-[var(--brand-soft)]"
-                    : state === "done"
-                      ? "border-emerald-200 bg-emerald-50/60"
-                      : "border-[var(--border)] bg-[var(--surface)] hover:border-[var(--brand-border)]"
-                }`}
+                aria-current={state === "current" ? "step" : undefined}
+                className={`flex min-h-full items-center gap-2.5 px-3 ${props.compact ? "py-2.5" : "py-3"} text-sm transition-colors hover:bg-[var(--surface-subtle)] ${surfaceClass}`}
               >
-                <div className="flex items-center gap-2">
-                  <span
-                    aria-hidden="true"
-                    className={`flex size-6 shrink-0 items-center justify-center rounded-full text-[11px] font-bold ${
-                      state === "done"
-                        ? "bg-emerald-600 text-white"
-                        : state === "current"
-                          ? "bg-[var(--brand)] text-white"
-                          : "bg-[var(--surface-muted)] text-[var(--muted)]"
-                    }`}
-                  >
-                    {state === "done" ? "✓" : index + 1}
-                  </span>
-                  <span className="text-sm font-semibold text-[var(--foreground)]">
-                    {step.label}
-                  </span>
-                </div>
+                <span
+                  aria-hidden="true"
+                  className={`flex size-5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold ${state === "done"
+                    ? "bg-emerald-600 text-white"
+                    : state === "current"
+                      ? "bg-[var(--brand)] text-white"
+                      : "bg-[var(--surface-muted)] text-[var(--muted)]"}`}
+                >
+                  {state === "done" ? "✓" : index + 1}
+                </span>
+                <span className="min-w-0 font-semibold leading-5 text-[var(--foreground)]">
+                  {step.label}
+                </span>
               </Link>
             </li>
           );
