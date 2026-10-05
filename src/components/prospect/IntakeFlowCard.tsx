@@ -257,7 +257,7 @@ export function IntakeFlowCard({
         </p>
         <h2 className="mt-2 text-xl font-bold">Votre place dans la phase suivante est réservée après paiement</h2>
         <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
-          Vous avez accepté la proposition Campus Allemagne. Aucun accès client ni procédure n’est créé avant la confirmation du paiement.
+          Vous avez accepté la proposition Campus Allemagne. L’espace Étudiant reste verrouillé jusqu’à la confirmation du paiement puis à sa validation Campus.
         </p>
         <Link
           href="/prospect/payment"
