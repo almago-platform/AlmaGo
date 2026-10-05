@@ -51,8 +51,8 @@ export function ProspectProgrammeRecommendationCard({
         ) : null}
       </div>
 
-      <div className="mt-4">
-        <h3 className={compact ? "text-lg font-bold leading-tight tracking-[-0.025em] [overflow-wrap:anywhere]" : "text-[1.32rem] font-bold leading-tight tracking-[-0.03em] [overflow-wrap:anywhere]"}>
+      <div className="mt-3.5">
+        <h3 className={compact ? "text-[1.02rem] font-bold leading-tight tracking-[-0.025em] [overflow-wrap:anywhere]" : "text-[1.32rem] font-bold leading-tight tracking-[-0.03em] [overflow-wrap:anywhere]"}>
           <bdi dir="auto">{programme.name}</bdi>
         </h3>
         <p className="mt-1.5 text-sm text-[var(--muted)]">
@@ -61,7 +61,7 @@ export function ProspectProgrammeRecommendationCard({
         </p>
       </div>
 
-      <div className="mt-4 flex flex-wrap gap-2">
+      <div className="mt-3 flex flex-wrap gap-2">
         <span className="rounded-full bg-[#f1eee8] px-3 py-1.5 text-xs font-semibold text-[#34383b]">
           {programme.degreeLevel}
         </span>
@@ -91,7 +91,7 @@ export function ProspectProgrammeRecommendationCard({
         </dl>
       ) : null}
 
-      <div className="mt-5 flex flex-wrap items-center gap-2.5">
+      <div className="mt-4 flex flex-wrap items-center gap-2.5">
         {programme.programmeSourceUrl ? (
           <a
             href={programme.programmeSourceUrl}
@@ -120,7 +120,7 @@ export function ProspectProgrammeRecommendationCard({
 
   if (compact) {
     return (
-      <article className="group rounded-[1.25rem] border border-black/[.07] bg-[rgba(255,254,250,.88)] p-5 shadow-[0_18px_50px_-36px_rgba(0,0,0,.32)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[var(--brand-border)] hover:bg-white hover:shadow-[0_26px_60px_-36px_rgba(0,0,0,.4)]">
+      <article className="group rounded-[1.25rem] border border-black/[.07] bg-[rgba(255,254,250,.88)] p-4 shadow-[0_18px_50px_-36px_rgba(0,0,0,.32)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[var(--brand-border)] hover:bg-white hover:shadow-[0_26px_60px_-36px_rgba(0,0,0,.4)]">
         {body}
       </article>
     );
