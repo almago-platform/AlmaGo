@@ -12,6 +12,10 @@ export function ProposalSummary({
   included,
   boundaries,
   actions,
+  eyebrow = "Proposition Campus Allemagne",
+  includedLabel = "Inclus",
+  totalLabel = "Total",
+  paymentNote = "Le paiement active l’accompagnement prévu dans cette proposition après validation. Il ne garantit pas une admission.",
 }: {
   route: ReactNode;
   service: ReactNode;
@@ -23,6 +27,10 @@ export function ProposalSummary({
   included?: ReactNode[];
   boundaries?: ReactNode;
   actions?: ReactNode;
+  eyebrow?: ReactNode;
+  includedLabel?: ReactNode;
+  totalLabel?: ReactNode;
+  paymentNote?: ReactNode;
 }) {
   return (
     <section className="overflow-hidden rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--surface)]">
@@ -30,7 +38,7 @@ export function ProposalSummary({
         <div className="p-5 sm:p-6">
           <div className="flex flex-wrap items-center gap-2">
             <p className="text-[0.68rem] font-bold uppercase tracking-[0.14em] text-[var(--brand)]">
-              Proposition Campus Allemagne
+              {eyebrow}
             </p>
             <Badge variant={statusVariant}>{status}</Badge>
           </div>
@@ -61,12 +69,12 @@ export function ProposalSummary({
           ) : null}
         </div>
         <aside className="border-t border-[var(--border)] bg-[var(--foreground)] p-5 text-white sm:p-6 lg:border-s lg:border-t-0">
-          <p className="text-[0.68rem] font-bold uppercase tracking-[0.14em] text-[var(--accent)]">Total</p>
+          <p className="text-[0.68rem] font-bold uppercase tracking-[0.14em] text-[var(--accent)]">{totalLabel}</p>
           <div className="mt-2 text-4xl font-semibold tracking-[-0.04em]">
             {price}{currency ? <span className="ms-2 text-base font-semibold text-white/70">{currency}</span> : null}
           </div>
           <p className="mt-3 text-xs leading-5 text-white/70">
-            Le paiement active l’accompagnement prévu dans cette proposition après validation. Il ne garantit pas une admission.
+            {paymentNote}
           </p>
           {actions ? <div className="mt-5 flex flex-col gap-2 [&_a]:w-full [&_button]:w-full">{actions}</div> : null}
         </aside>
