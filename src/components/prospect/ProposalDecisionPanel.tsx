@@ -197,7 +197,7 @@ export function ProposalDecisionPanel({
   }
 
   return (
-    <div className="mt-6 space-y-5">
+    <div className="mt-6 space-y-6">
       <ProposalSummary
         eyebrow={t.eyebrow}
         route={route}
@@ -217,12 +217,12 @@ export function ProposalDecisionPanel({
               type="button"
               disabled={busyAction !== null}
               onClick={acceptProposal}
-              className="inline-flex min-h-11 items-center justify-center rounded-[var(--radius-control)] bg-white px-5 text-sm font-semibold text-[var(--foreground)] disabled:opacity-60"
+              className="inline-flex min-h-11 items-center justify-center rounded-xl bg-white px-5 text-sm font-bold text-[#17191b] shadow-sm transition-all duration-200 hover:-translate-y-px hover:shadow-md disabled:opacity-60 disabled:hover:translate-y-0"
             >
               {busyAction === "accept" ? t.accepting : t.accept}
             </button>
           ) : (
-            <div className="rounded-[var(--radius-control)] border border-white/20 bg-white/10 px-4 py-3">
+            <div className="rounded-xl border border-white/15 bg-white/[.08] px-4 py-3 backdrop-blur-sm">
               <p className="text-sm font-semibold text-white">{t.paymentUnavailable}</p>
               <p className="mt-1 text-xs leading-5 text-white/70">{t.paymentUnavailableHelp}</p>
             </div>
@@ -231,13 +231,13 @@ export function ProposalDecisionPanel({
       />
 
       {error ? (
-        <p role="alert" className="rounded-[var(--radius-control)] border border-[var(--danger-border)] bg-[var(--danger-soft)] px-4 py-3 text-sm font-semibold text-[var(--danger)]">
+        <p role="alert" className="rounded-xl border border-[var(--danger-border)] bg-[var(--danger-soft)] px-4 py-3 text-sm font-semibold text-[var(--danger)] shadow-sm">
           {error}
         </p>
       ) : null}
 
-      <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 sm:p-6">
-        <h2 className="text-lg font-semibold text-[var(--foreground)]">{t.discussTitle}</h2>
+      <section className="rounded-[1.35rem] border border-black/[.07] bg-white p-5 shadow-[0_22px_60px_-42px_rgba(0,0,0,.34)] sm:p-6">
+        <h2 className="text-xl font-semibold tracking-[-0.025em] text-[#202326]">{t.discussTitle}</h2>
         <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">{t.discussHelp}</p>
         <label className="mt-4 block text-sm font-semibold text-[var(--foreground)]">
           <span className="sr-only">{t.discussTitle}</span>
@@ -246,7 +246,7 @@ export function ProposalDecisionPanel({
             onChange={(event) => setNote(event.target.value)}
             maxLength={1000}
             rows={3}
-            className="field"
+            className="field rounded-xl border-black/10 bg-[#fbfaf7] shadow-none"
             placeholder={t.notePlaceholder}
           />
         </label>
@@ -254,7 +254,7 @@ export function ProposalDecisionPanel({
           type="button"
           disabled={busyAction !== null}
           onClick={requestDiscussion}
-          className="mt-3 inline-flex min-h-11 items-center rounded-[var(--radius-control)] border border-[var(--border-strong)] bg-[var(--surface)] px-5 text-sm font-semibold text-[var(--foreground)] disabled:opacity-60"
+          className="mt-3 inline-flex min-h-11 items-center rounded-xl border border-black/10 bg-white px-5 text-sm font-semibold text-[#202326] shadow-sm transition-all duration-200 hover:-translate-y-px hover:border-black/20 hover:shadow-md disabled:opacity-60 disabled:hover:translate-y-0"
         >
           {busyAction === "discuss" ? t.sending : t.discuss}
         </button>
