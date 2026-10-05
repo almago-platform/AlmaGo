@@ -28,33 +28,36 @@ export function ProspectUniversityCover({
   compact?: boolean;
 }) {
   const imageUrl = media?.coverImageUrl || null;
-  const heightClass = compact ? "h-28" : "h-40";
+  const heightClass = compact ? "h-36" : "h-52";
   const imageStyle = imageUrl
     ? {
-        backgroundImage: `linear-gradient(180deg, rgba(19,33,49,0.04), rgba(19,33,49,0.52)), url(${JSON.stringify(imageUrl)})`,
+        backgroundImage: `linear-gradient(180deg, rgba(12,14,15,0.02) 0%, rgba(12,14,15,0.16) 42%, rgba(12,14,15,0.86) 100%), url(${JSON.stringify(imageUrl)})`,
       }
     : undefined;
 
   return (
     <div
-      className={`relative overflow-hidden bg-[linear-gradient(135deg,#192b3d_0%,#2a4054_48%,#c79a37_140%)] bg-cover bg-center ${heightClass}`}
+      className={`relative overflow-hidden bg-[linear-gradient(135deg,#111315_0%,#24272a_54%,#7b101f_112%,#d19b00_145%)] bg-cover bg-center transition-transform duration-500 ease-out group-hover:scale-[1.015] ${heightClass}`}
       style={imageStyle}
     >
+      <div className="absolute inset-0 bg-[linear-gradient(125deg,rgba(216,6,33,.12),transparent_40%,rgba(244,180,0,.08))]" aria-hidden="true" />
+
       {!imageUrl ? (
         <div className="absolute inset-0 flex items-center justify-center">
-          <div className="flex size-20 items-center justify-center rounded-full border border-white/15 bg-white/10 text-2xl font-extrabold tracking-[-0.04em] text-white shadow-sm backdrop-blur-sm">
+          <div className="grid size-20 place-items-center rounded-[1.4rem] border border-white/15 bg-white/[.08] text-2xl font-extrabold tracking-[-0.05em] text-white shadow-2xl backdrop-blur-md">
             {universityInitials(universityName)}
           </div>
         </div>
       ) : null}
 
-      <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 p-3">
+      <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 p-4 sm:p-5">
         <div className="min-w-0 text-white">
-          <p className="truncate text-xs font-bold drop-shadow-sm">
+          <p className="truncate text-sm font-bold tracking-[-0.015em] drop-shadow">
             <bdi dir="auto">{universityName}</bdi>
           </p>
           {city ? (
-            <p className="mt-0.5 truncate text-[11px] text-white/80">
+            <p className="mt-1 flex items-center gap-1.5 truncate text-[11px] font-medium text-white/72">
+              <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent)]" aria-hidden="true" />
               <bdi dir="auto">{city}</bdi>
             </p>
           ) : null}
@@ -65,7 +68,7 @@ export function ProspectUniversityCover({
             href={media.coverImageSourceUrl}
             target="_blank"
             rel="noreferrer"
-            className="shrink-0 rounded-full border border-white/20 bg-black/35 px-2 py-1 text-[9px] font-semibold text-white/90 backdrop-blur-sm hover:bg-black/50"
+            className="shrink-0 rounded-full border border-white/15 bg-black/35 px-2.5 py-1 text-[9px] font-semibold text-white/80 backdrop-blur-md transition hover:bg-black/55 hover:text-white"
             title={[
               media.coverImageAttribution,
               media.coverImageLicense,
