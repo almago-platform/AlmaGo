@@ -7,6 +7,11 @@ import { Card } from "@/components/ui/Card";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { AlmagoJourney } from "@/components/student/AlmagoJourney";
+import { DossierHeader } from "@/components/product/DossierHeader";
+import { JourneyRail, type JourneyRailStep } from "@/components/product/JourneyRail";
+import { NextActionPanel } from "@/components/product/NextActionPanel";
+import { ResponsibilityStrip } from "@/components/product/ResponsibilityStrip";
+import { SectionHeader } from "@/components/ui/SectionHeader";
 import { buildAlmagoJourney } from "@/lib/student/almago-journey";
 import { createClient } from "@/lib/supabase/server";
 import { getRequestCopy } from "@/lib/i18n-server";
@@ -14,6 +19,7 @@ import { studentDashboardCopy } from "@/content/student-dashboard-copy";
 import { studentDashboardCockpitCopy } from "@/content/student-dashboard-cockpit-copy";
 import { studentChecklistCopy } from "@/content/student-checklist-copy";
 import { studentApplicationsCopy } from "@/content/student-applications-copy";
+import { almagoJourneyCopy } from "@/content/almago-journey-copy";
 import { rebrandCopy } from "@/lib/brand";
 import { normalizeApplicationStatus } from "@/lib/application-workflow";
 import { formatDeadline, isActiveApplication, isPastDeadline } from "@/lib/phase4";
@@ -25,12 +31,74 @@ function firstRelation<T>(value: T | T[] | null | undefined): T | undefined {
   return Array.isArray(value) ? value[0] : value ?? undefined;
 }
 
+
+const studentV2Copy = {
+  fr: {
+    space: "Espace Étudiant",
+    active: "Étudiant actif",
+    overview: "Vue d’ensemble du dossier",
+    responsibility: "Qui fait quoi maintenant ?",
+    you: "Vous",
+    campus: "Campus Allemagne",
+    official: "Organismes officiels",
+    campusWorking: "Campus Allemagne poursuit les vérifications et la préparation des étapes qui ne nécessitent pas votre intervention.",
+    officialBoundary: "Les décisions d’admission, de visa et les confirmations officielles restent du ressort des organismes compétents.",
+    detailedJourney: "Voir le détail du parcours",
+    detailedJourneyHint: "Ouvrez cette vue seulement si vous souhaitez consulter les huit étapes historiques du dossier.",
+    procedure: "Ouvrir ma procédure",
+  },
+  ar: {
+    space: "مساحة الطالب",
+    active: "حساب الطالب مفعّل",
+    overview: "نظرة عامة على الملف",
+    responsibility: "من يقوم بماذا الآن؟",
+    you: "أنت",
+    campus: "Campus Allemagne",
+    official: "الجهات الرسمية",
+    campusWorking: "تواصل Campus Allemagne التحقق من الملف وتحضير الخطوات التي لا تتطلب تدخلك.",
+    officialBoundary: "تبقى قرارات القبول والتأشيرة والتأكيدات الرسمية من اختصاص الجهات المختصة.",
+    detailedJourney: "عرض تفاصيل المسار",
+    detailedJourneyHint: "افتح هذه النظرة فقط إذا أردت الاطلاع على المراحل التاريخية الثماني للملف.",
+    procedure: "فتح إجراءاتي",
+  },
+  en: {
+    space: "Student space",
+    active: "Student active",
+    overview: "Dossier overview",
+    responsibility: "Who is doing what now?",
+    you: "You",
+    campus: "Campus Allemagne",
+    official: "Official organisations",
+    campusWorking: "Campus Allemagne continues the checks and preparation that do not require your intervention.",
+    officialBoundary: "Admission, visa and other official decisions remain with the competent organisations.",
+    detailedJourney: "View detailed journey",
+    detailedJourneyHint: "Open this view only if you want to inspect the eight historical stages of the dossier.",
+    procedure: "Open my procedure",
+  },
+  de: {
+    space: "Studierendenbereich",
+    active: "Studierendenzugang aktiv",
+    overview: "Dossier-Übersicht",
+    responsibility: "Wer macht jetzt was?",
+    you: "Sie",
+    campus: "Campus Allemagne",
+    official: "Offizielle Stellen",
+    campusWorking: "Campus Allemagne führt die Prüfungen und Vorbereitungen fort, für die Ihre Mitwirkung nicht erforderlich ist.",
+    officialBoundary: "Zulassung, Visum und andere offizielle Entscheidungen liegen bei den zuständigen Stellen.",
+    detailedJourney: "Detaillierten Weg anzeigen",
+    detailedJourneyHint: "Öffnen Sie diese Ansicht nur, wenn Sie die acht historischen Dossier-Schritte sehen möchten.",
+    procedure: "Mein Verfahren öffnen",
+  },
+} as const;
+
 export default async function StudentEntry() {
   const { locale, copy } = await getRequestCopy();
   const t = rebrandCopy(studentDashboardCopy[locale]);
   const cockpit = rebrandCopy(studentDashboardCockpitCopy[locale]);
   const checklistCopy = rebrandCopy(studentChecklistCopy[locale]);
   const applicationsCopy = rebrandCopy(studentApplicationsCopy[locale].panel);
+  const journeyCopy = almagoJourneyCopy[locale];
+  const v2 = studentV2Copy[locale];
   const supabase = await createClient();
 
   const { data: { user } } = await supabase.auth.getUser();
@@ -138,6 +206,21 @@ export default async function StudentEntry() {
     applicationNextActions: actionableApplications.length,
     germanyPreparationStatus: checklistStatusByKey.get("germany_preparation") || null,
   });
+
+
+  const v2JourneySteps: JourneyRailStep[] = almagoJourney.steps.map((step) => ({
+    label: journeyCopy.steps[step.key],
+    detail: journeyCopy.statuses[step.status],
+    status:
+      step.status === "completed"
+        ? "done"
+        : step.status === "current"
+          ? "active"
+          : step.status === "blocked"
+            ? "locked"
+            : "upcoming",
+    href: step.status === "blocked" ? undefined : step.href,
+  }));
 
   const nextAction = documentsNeedingAction
     ? {
