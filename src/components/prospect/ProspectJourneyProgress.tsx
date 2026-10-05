@@ -180,22 +180,22 @@ export function ProspectJourneyProgress(props: {
 
   return (
     <div>
-      <div className="mb-2.5 flex items-center justify-between gap-3 text-sm">
-        <span className="font-semibold text-[var(--foreground)]">
+      <div className="mb-3 flex items-center justify-between gap-3 text-sm">
+        <span className="font-bold text-[#202326]">
           {currentStepNumber}/{steps.length} {copy.count}
         </span>
-        <span className="tabular-nums text-[var(--muted)]">{percent}%</span>
+        <span className="rounded-full bg-[#f1eee8] px-2.5 py-1 text-xs font-bold tabular-nums text-[#5f6468]">{percent}%</span>
       </div>
-      <div className="h-1.5 overflow-hidden rounded-full bg-[var(--surface-muted)]">
+      <div className="h-2 overflow-hidden rounded-full bg-black/[.08]">
         <div
-          className="h-full rounded-full bg-[var(--brand)] transition-[width]"
+          className="h-full rounded-full bg-[linear-gradient(90deg,var(--brand),#ef334d)] transition-[width]"
           style={{ width: `${percent}%` }}
           aria-hidden="true"
         />
       </div>
 
       <ol
-        className={`mt-4 grid overflow-hidden rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--border)] gap-px sm:grid-cols-2 xl:grid-cols-5 ${props.compact ? "" : "shadow-[var(--shadow-card)]"}`}
+        className={`mt-5 grid overflow-hidden rounded-[1.2rem] border border-black/[.07] bg-black/[.06] gap-px sm:grid-cols-2 xl:grid-cols-5 ${props.compact ? "" : "shadow-[0_22px_58px_-42px_rgba(0,0,0,.32)]"}`}
       >
         {steps.map((step, index) => {
           const state = index < activeIndex
@@ -212,26 +212,26 @@ export function ProspectJourneyProgress(props: {
               ? "bg-emerald-50/70"
               : state === "next"
                 ? "bg-[var(--accent-light)]/45"
-                : "bg-[var(--surface)]";
+                : "bg-white";
 
           return (
             <li key={step.key} className="min-w-0">
               <Link
                 href={step.href}
                 aria-current={state === "current" ? "step" : undefined}
-                className={`flex min-h-full items-center gap-2.5 px-3 ${props.compact ? "py-2.5" : "py-3"} text-sm transition-colors hover:bg-[var(--surface-subtle)] ${surfaceClass}`}
+                className={`flex min-h-full items-center gap-2.5 px-3 ${props.compact ? "py-2.5" : "py-3.5"} text-sm transition-all duration-200 hover:brightness-[.985] ${surfaceClass}`}
               >
                 <span
                   aria-hidden="true"
                   className={`flex size-5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold ${state === "done"
-                    ? "bg-emerald-600 text-white"
+                    ? "bg-[#17191b] text-white"
                     : state === "current"
                       ? "bg-[var(--brand)] text-white"
-                      : "bg-[var(--surface-muted)] text-[var(--muted)]"}`}
+                      : "bg-white text-[#73787c] ring-1 ring-inset ring-black/10"}`}
                 >
                   {state === "done" ? "✓" : index + 1}
                 </span>
-                <span className="min-w-0 font-semibold leading-5 text-[var(--foreground)]">
+                <span className="min-w-0 font-semibold leading-5 text-[#25292c]">
                   {step.label}
                 </span>
               </Link>
