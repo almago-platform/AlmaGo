@@ -12,6 +12,8 @@ const route = read("src/app/api/orientation/prospect/route.ts");
 const form = read("src/components/orientation/PublicOrientationForm.tsx");
 const capture = read("src/components/orientation/ProspectCaptureCard.tsx");
 const config = read("src/lib/phase2/config.ts");
+const publicOrientation = read("src/lib/orientation/public.ts");
+const prospectCopy = read("src/content/orientation-prospect-copy.ts");
 const env = read(".env.example");
 const css = read("src/app/globals.css");
 
@@ -28,6 +30,17 @@ test("prospect capture remains independently feature-gated", () => {
   assert.match(config, /ALMAGO_PHASE2_PROSPECT_CAPTURE_ENABLED/);
   assert.match(env, /ALMAGO_PHASE2_PROSPECT_CAPTURE_ENABLED=false/);
   assert.match(env, /SUPABASE_SECRET_KEY=sb_secret_/);
+});
+
+test("persistent Free Validation capture is restricted to adults", () => {
+  assert.match(publicOrientation, /isAdultPublicOrientationIdentity/);
+  assert.match(route, /isAdultPublicOrientationIdentity\(identity\)/);
+  assert.match(route, /Persistent orientation capture is limited to adults/);
+  assert.match(route, /status:\s*403/);
+  assert.match(capture, /isAdultPublicOrientationIdentity/);
+  assert.match(capture, /ageRestrictionTitle/);
+  assert.match(prospectCopy, /Sauvegarde réservée aux 18 ans et plus/);
+  assert.match(prospectCopy, /18 عامًا أو أكثر/);
 });
 
 test("public prospect API validates and recomputes the diagnostic server-side", () => {
