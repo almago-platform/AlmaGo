@@ -33,6 +33,10 @@ const semesterMigrationSource = readFileSync(
   "supabase/migrations/20261002200738_orientation_discovery_semester_refresh_calendar.sql",
   "utf8",
 );
+const cataloguePromotionMigrationSource = readFileSync(
+  "supabase/migrations/20261005104037_orientation_auto_publish_discovery_catalogue.sql",
+  "utf8",
+);
 
 function plan(overrides = {}) {
   const { profile: profileOverrides = {}, ...restOverrides } = overrides;
@@ -376,6 +380,46 @@ test("A3 persists every researched candidate into a reusable global knowledge po
   assert.match(knowledgeSource, /\.gt\("next_major_refresh_at", new Date\(\)\.toISOString\(\)\)/);
   assert.match(knowledgeSource, /refresh_cycle: refreshWindow\.cycle/);
   assert.match(knowledgeSource, /next_major_refresh_at: refreshWindow\.nextMajorRefreshAt/);
+});
+
+test("A3 publishes newly discovered candidates into the reusable public catalogue", () => {
+  const runIndex = knowledgeSource.indexOf("insertDiscoveryRun({");
+  const publishIndex = knowledgeSource.indexOf(
+    "publishOrientationDiscoveryCatalogue(supabase)",
+    runIndex,
+  );
+
+  assert.ok(runIndex >= 0);
+  assert.ok(publishIndex > runIndex);
+  assert.match(
+    knowledgeSource,
+    /rpc\(\s*"publish_orientation_research_catalogue"/,
+  );
+
+  assert.match(
+    cataloguePromotionMigrationSource,
+    /'discovered_catalogue'/,
+  );
+  assert.match(
+    cataloguePromotionMigrationSource,
+    /'catalogue_provenance', 'openai_discovery'/,
+  );
+  assert.match(
+    cataloguePromotionMigrationSource,
+    /research_status = 'promoted'/,
+  );
+  assert.match(
+    cataloguePromotionMigrationSource,
+    /grant execute on function public\.publish_orientation_research_catalogue\(\)[\s\S]*to service_role/,
+  );
+  assert.doesNotMatch(
+    cataloguePromotionMigrationSource,
+    /grant execute on function public\.publish_orientation_research_catalogue\(\)\s+to (?:anon|authenticated)/,
+  );
+  assert.match(
+    cataloguePromotionMigrationSource,
+    /u\.registry_status in \('verified_catalogue', 'discovered_catalogue'\)/,
+  );
 });
 
 test("A3 keeps knowledge storage server-only", () => {
