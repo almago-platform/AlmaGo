@@ -118,11 +118,14 @@ test("prospect hub copy keeps the project relationship visible instead of framin
   assert.match(prospectHubCopy, /Compte gratuit/);
 });
 
-test("prospect dashboard exposes progress, student action, Campus action and proposal status", () => {
-  assert.match(prospectPage, /ProspectJourneyProgress/);
+test("prospect dashboard exposes lifecycle, Prospect action, Campus action and proposal status", () => {
+  assert.match(prospectPage, /JourneyRail/);
+  assert.match(prospectPage, /NextActionPanel/);
+  assert.match(prospectPage, /ResponsibilityStrip/);
   assert.match(prospectPage, /nextAction/);
   assert.match(prospectPage, /campusWork/);
   assert.match(prospectPage, /proposalStatus/);
+  assert.match(prospectPage, /Espace étudiant non activé/);
   assert.match(prospectPage, /\/prospect\/catalogue/);
   assert.match(prospectPage, /\/prospect\/solutions/);
   assert.match(prospectPage, /<details/);
