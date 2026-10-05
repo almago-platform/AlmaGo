@@ -5,6 +5,7 @@ import { ProspectPageHero } from "@/components/prospect/ProspectPageHero";
 import { prospectHubCopy } from "@/content/prospect-hub-copy";
 import { getRequestLocale } from "@/lib/i18n-server";
 import { getPhase2StudentAccess } from "@/lib/phase2/access";
+import { isPhase2PaymentOrchestrationEnabled } from "@/lib/phase2/config";
 import { loadProspectHubState } from "@/lib/prospect/hub";
 import { formatMinorCurrency } from "@/lib/money";
 
@@ -68,6 +69,7 @@ export default async function ProspectProposalPage() {
   const t = prospectHubCopy[locale].proposal;
   const dashboardCopy = prospectHubCopy[locale].dashboard;
   const preBac = state.answers?.bacStatus === "preparing";
+  const paymentEnabled = isPhase2PaymentOrchestrationEnabled();
   const starterDocuments = state.intake?.status === "starter_documents";
   const proposalAvailable = [
     "route_proposed",
@@ -187,6 +189,7 @@ export default async function ProspectProposalPage() {
           starterSummary={state.starterSummary}
           bacStatus={state.answers?.bacStatus}
           offer={proposalOffer}
+          paymentEnabled={paymentEnabled}
         />
       )}
 
