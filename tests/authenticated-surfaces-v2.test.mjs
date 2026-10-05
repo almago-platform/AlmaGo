@@ -112,13 +112,16 @@ test("recorded checklist templates are localized by stable template key", () => 
 });
 
 
-test("Arabic dashboard cockpit prioritizes one concrete next action and one progress source", () => {
+test("Arabic dashboard cockpit prioritizes one concrete next action and one lifecycle source", () => {
   assert.ok(dashboard.includes('select("path,target_degree,target_field,target_intake")'));
   assert.ok(dashboard.includes("waitingAlmaGo.length"));
   assert.ok(dashboard.includes("label: nextItem.title"));
   assert.ok(dashboard.includes("cockpit.continue"));
-  assert.ok(dashboard.includes("ProgressBar value={progression}"));
+  assert.ok(dashboard.includes("JourneyRail"));
+  assert.ok(dashboard.includes("v2JourneySteps"));
+  assert.ok(dashboard.includes("NextActionPanel"));
   assert.ok(dashboard.includes('href="/student/pathway"'));
+  assert.ok(dashboard.includes('href="/student/procedure"'));
   assert.ok(journeyOverview.includes("showProgressSummary = true"));
   assert.ok(dashboardCopy.includes('statusTodo: "خطوات مطلوبة"'));
 });
