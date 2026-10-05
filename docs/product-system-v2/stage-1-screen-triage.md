@@ -25,21 +25,21 @@ This matrix decides what happens to each product surface before implementation. 
 
 | Surface | Decision | Reason | V2 direction |
 |---|---|---|---|
-| Prospect dashboard | MERGE CONCEPTUALLY | Prospect is a valid technical lifecycle, but the user should not feel they entered a different product. | Present as "Mon projet Allemagne" continuation, not a separate product tier. |
+| Prospect dashboard | REBUILD — PILOT 2 | Prospect is a deliberate pre-client stage: the user has an account but is not yet an active Student. | Present as "Mon projet Allemagne" continuation with orientation, catalogue, starter documents, Campus review and proposal status; clearly communicate that Student access is not yet active. |
 | Prospect navigation | SIMPLIFY | Current sidebar contains journey + services with many permanent destinations. | Reduce persistent top-level choices; prioritise current stage and next action. |
 | Prospect orientation | MERGE | Overlaps public orientation result/continuation and student recommendation concepts. | Reuse one recommendation/result language and components. |
 | Prospect catalogue | KEEP + ALIGN | Useful capability. | Same ProgrammeCard / filters / evidence freshness system as student. |
 | Prospect documents | KEEP + ALIGN | Correct workflow. | Migrate to universal document upload/review components. |
 | Prospect proposal | REBUILD | Central transaction between Campus and user. | Make proposal a high-trust decision screen with scope, price, included service, status and discuss/accept actions. |
 | Prospect offers | SIMPLIFY | Commercial data should be human-readable and not expose technical versions/minor units. | Clear offer comparison and TND display; internal details secondary. |
-| Prospect payment | DEFER until orchestration review | UI alone cannot establish a professional payment flow if server orchestration is disabled. | Design states now; enable only after provider/server workflow is reviewed. |
+| Prospect payment | REBUILD DESIGN — PILOT 4 / functional enablement deferred | Payment is the activation hinge between Prospect and Student, but UI alone cannot establish a professional flow while server orchestration is disabled. | Design all transaction/validation/activation states now; enable only after provider/server workflow review. |
 | Prospect roadmap | MERGE | Roadmap overlaps journey/procedure concepts. | Consolidate into the canonical "Mon parcours" model. |
 
 ## Student
 
 | Surface | Decision | Reason | V2 direction |
 |---|---|---|---|
-| Student dashboard | REBUILD — PILOT 1 | Current page already has useful next-action and progression logic, but it is visually assembled from many panels. | One dossier header, one dominant next action, compact progress, deadlines, current Campus state and recent activity. |
+| Student dashboard | REBUILD — PILOT 5 | This is a post-activation experience only. Current page already has useful next-action and progression logic, but it is visually assembled from many panels. | One active-Student dossier header, one dominant next action, compact progress, deadlines, current Campus state and recent activity. |
 | Student navigation | REBUILD | Current horizontal scrolling primary navigation exposes too many permanent modules. | Stable shell with Home / Journey / Documents / Recommendations / Messages; secondary account/service links elsewhere. |
 | Student onboarding/profile | KEEP + ALIGN | Functional forms are reusable. | New Field system, sectioning, validation and autosave feedback. |
 | Student project/pathway/checklist | MERGE CONCEPTUALLY | Multiple pages describe different slices of one journey. | Unify into "Mon parcours" with contextual detail views. |
@@ -57,7 +57,7 @@ This matrix decides what happens to each product surface before implementation. 
 | Admin navigation | REBUILD | Current nav is module-centric and incomplete relative to actual admin routes. | Overview / Dossiers / To review / Catalogue / Finance / Administration. |
 | Admin intake | MERGE INTO DOSSIER + QUEUE | State machine is central but should not be a standalone mental model. | Cross-dossier queue plus dossier-specific proposal/status panel. |
 | Admin documents | KEEP AS QUEUE + MERGE INTO DOSSIER | Operators need a global queue and dossier context. | Global "To review" queue; same review panel embedded in student dossier. |
-| Admin orientation | REBUILD — PILOT 2 SUBSYSTEM | Powerful engine, but technical audit material dominates. | Advisor summary first; recommended programmes, confidence/evidence, unresolved risks; technical audit collapsed. |
+| Admin orientation | REBUILD — PILOT 3 SUBSYSTEM | Powerful engine, but technical audit material dominates. | Embed advisor summary into the 360° dossier: recommended programmes, confidence/evidence, unresolved risks; technical audit collapsed. |
 | Admin prospects | MERGE INTO DOSSIERS | Prospect lifecycle is technically distinct but operationally part of the case pipeline. | One dossiers search/list with lifecycle/status filters; erased/archived technical identities excluded from ordinary queues. |
 | Admin applications | KEEP + ALIGN | Valid operational queue. | Shared table/filter/action model and dossier deep links. |
 | Admin payments | DEFER FUNCTIONAL ENABLEMENT | Current UI reports orchestration disabled. | Design transaction states and audit trail; only enable after payment architecture review. |
@@ -94,11 +94,15 @@ Priority 2:
 
 ## Pilot acceptance sequence
 
-1. **Student Dashboard / Dossier Home**
-2. **Admin Student Dossier / Advisor Cockpit**
-3. **Candidate Orientation Result / Next Action**
+The pilots follow the real AlmaGo lifecycle:
 
-No large-scale migration begins until all three pilots demonstrate:
+1. **Candidate Free Orientation Result / Next Action**
+2. **Prospect / Pre-account Home**
+3. **Admin 360° Dossier / Advisor Cockpit**
+4. **Proposal → Acceptance → Payment / Activation**
+5. **Active Student Dashboard / Dossier Home**
+
+No large-scale migration begins until the full five-screen lifecycle demonstrates:
 - coherent shared foundations;
 - audience-appropriate density;
 - 360–1440+ responsive quality;
@@ -106,4 +110,6 @@ No large-scale migration begins until all three pilots demonstrate:
 - keyboard/focus behaviour;
 - normal/loading/empty/error/success states;
 - plain-language copy;
-- no technical implementation leakage.
+- no technical implementation leakage;
+- explicit permission boundary between Prospect and active Student;
+- continuous dossier history from orientation through Student activation.
