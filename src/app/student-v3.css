@@ -1,0 +1,271 @@
+/* AlmaGo Visual Experience V3 — Student workspace
+   Scope: authenticated Student surfaces only.
+   The approved Campus Allemagne logo asset is intentionally unchanged. */
+
+.student-shell {
+  --brand: #d80621;
+  --brand-strong: #aa041b;
+  --brand-soft: #fff0f2;
+  --brand-border: #efa6b1;
+  --accent: #f4b400;
+  --accent-strong: #7d5a00;
+  --accent-light: #fff3c7;
+  --background: #f5f2ea;
+  --surface: #fffefa;
+  --surface-raised: #ffffff;
+  --surface-subtle: #f0ece5;
+  --surface-muted: #e7e1d8;
+  --foreground: #17191b;
+  --foreground-soft: #3f4448;
+  --muted: #676c70;
+  --border: #ded8cf;
+  --border-strong: #bdb4a8;
+  background:
+    radial-gradient(circle at 91% 2%, rgba(244, 180, 0, 0.095), transparent 25rem),
+    radial-gradient(circle at 8% 30%, rgba(216, 6, 33, 0.05), transparent 30rem),
+    var(--background);
+}
+
+.student-shell .student-shell-sidebar {
+  --surface: #17191b;
+  --surface-subtle: #202326;
+  --surface-muted: #2a2d30;
+  --foreground: #ffffff;
+  --foreground-soft: rgba(255, 255, 255, 0.8);
+  --muted: rgba(255, 255, 255, 0.52);
+  --border: rgba(255, 255, 255, 0.1);
+  --border-strong: rgba(255, 255, 255, 0.2);
+  --brand-soft: rgba(216, 6, 33, 0.16);
+  --brand-border: rgba(239, 166, 177, 0.28);
+  --brand-strong: #ffffff;
+  --accent-strong: #f4b400;
+  background:
+    radial-gradient(circle at 110% 4%, rgba(216, 6, 33, 0.2), transparent 12rem),
+    radial-gradient(circle at -15% 38%, rgba(244, 180, 0, 0.08), transparent 12rem),
+    #17191b !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 20px 0 70px -48px rgba(0, 0, 0, 0.75);
+}
+
+.student-shell .student-shell-sidebar::before {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 3px;
+  z-index: 2;
+  background: linear-gradient(90deg, #17191b 0 28%, #d80621 28% 72%, #f4b400 72% 100%);
+}
+
+.student-shell .student-shell-sidebar > div:first-child {
+  margin: 0.75rem;
+  min-height: 4.35rem;
+  border: 0 !important;
+  border-radius: 1rem;
+  background: #fffefa;
+  padding-inline: 0.9rem;
+  box-shadow: 0 16px 38px -28px rgba(0, 0, 0, 0.75);
+}
+
+.student-shell .student-shell-sidebar > div:nth-child(2) {
+  margin-inline: 1rem !important;
+  padding-block: 0.95rem !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.student-shell .student-shell-sidebar > div:nth-child(2) p:first-child {
+  color: #f4b400 !important;
+  letter-spacing: 0.17em;
+}
+
+.student-shell .student-shell-sidebar nav > p,
+.student-shell .student-shell-sidebar nav > div > div > p {
+  color: rgba(255, 255, 255, 0.42) !important;
+}
+
+.student-shell .student-shell-sidebar nav a {
+  border-radius: 0.85rem !important;
+  min-height: 2.8rem;
+  color: rgba(255, 255, 255, 0.72) !important;
+  transition:
+    transform 180ms cubic-bezier(.2,.8,.2,1),
+    background-color 180ms cubic-bezier(.2,.8,.2,1),
+    color 180ms cubic-bezier(.2,.8,.2,1),
+    box-shadow 180ms cubic-bezier(.2,.8,.2,1);
+}
+
+.student-shell .student-shell-sidebar nav a:hover {
+  background: rgba(255, 255, 255, 0.07) !important;
+  color: #fff !important;
+  transform: translateX(1px);
+}
+
+.student-shell .student-shell-sidebar nav a[aria-current="page"] {
+  background: #d80621 !important;
+  color: #fff !important;
+  box-shadow: 0 14px 34px -20px rgba(216, 6, 33, 0.95);
+  ring: 0 !important;
+}
+
+.student-shell .student-shell-sidebar nav a[aria-current="page"] > span:first-child {
+  color: #fff !important;
+}
+
+.student-shell .student-shell-sidebar nav a[aria-current="page"] span span:last-child {
+  color: rgba(255, 255, 255, 0.72) !important;
+}
+
+.student-shell .student-shell-active-edge {
+  inset-inline-start: auto !important;
+  inset-inline-end: 0.38rem !important;
+  width: 0.28rem !important;
+  border-radius: 999px !important;
+  background: #f4b400 !important;
+  box-shadow: 0 0 0 4px rgba(244, 180, 0, 0.11);
+}
+
+.student-shell .student-shell-sidebar > div:last-child {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  background: rgba(255, 255, 255, 0.025) !important;
+}
+
+.student-shell .student-shell-sidebar > div:last-child button {
+  border-color: rgba(255, 255, 255, 0.14) !important;
+  background: rgba(255, 255, 255, 0.07) !important;
+  color: #fff !important;
+  border-radius: 0.85rem !important;
+}
+
+.student-shell .student-shell-sidebar > div:last-child button:hover {
+  background: rgba(255, 255, 255, 0.12) !important;
+}
+
+.student-shell .student-shell-content {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 92% 0%, rgba(244, 180, 0, 0.08), transparent 24rem),
+    radial-gradient(circle at 3% 28%, rgba(216, 6, 33, 0.035), transparent 28rem),
+    transparent;
+}
+
+.student-shell .student-shell-desktop-header {
+  min-height: 5rem !important;
+  border-color: rgba(23, 25, 27, 0.08) !important;
+  background: rgba(255, 254, 250, 0.9) !important;
+  box-shadow: 0 16px 40px -38px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(18px);
+}
+
+.student-shell .student-shell-desktop-header > div:first-child > p:first-child {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #aa041b !important;
+}
+
+.student-shell .student-shell-desktop-header > div:first-child > p:first-child::before {
+  content: "";
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 999px;
+  background: #f4b400;
+  box-shadow: 0 0 0 4px rgba(244, 180, 0, 0.1);
+}
+
+.student-shell .student-shell-desktop-header > div:last-child > div:last-child {
+  border-color: rgba(23, 25, 27, 0.08) !important;
+  border-radius: 999px !important;
+  background: #17191b !important;
+  color: rgba(255, 255, 255, 0.76) !important;
+  padding-inline: 0.85rem !important;
+}
+
+.student-shell .student-shell-main {
+  position: relative;
+}
+
+.student-shell .student-shell-main > main {
+  margin-inline: auto;
+}
+
+.student-shell #student-mobile-menu {
+  --surface: #17191b;
+  --surface-subtle: #17191b;
+  --surface-muted: #2b2e31;
+  --foreground: #ffffff;
+  --muted: rgba(255,255,255,.58);
+  --border: rgba(255,255,255,.1);
+  --brand-soft: rgba(216,6,33,.16);
+  --brand-border: rgba(239,166,177,.3);
+  background:
+    radial-gradient(circle at 100% 0%, rgba(216, 6, 33, 0.18), transparent 16rem),
+    #17191b !important;
+  color: #fff;
+}
+
+.student-shell #student-mobile-menu > div:first-child {
+  border-color: rgba(255,255,255,.1) !important;
+  background: rgba(255,255,255,.05) !important;
+  border-radius: 1rem !important;
+}
+
+.student-shell #student-mobile-menu nav a {
+  border-radius: 1rem !important;
+  border-color: rgba(255,255,255,.08) !important;
+  background: rgba(255,255,255,.045) !important;
+  color: rgba(255,255,255,.82) !important;
+}
+
+.student-shell #student-mobile-menu nav a[aria-current="page"] {
+  border-color: rgba(239,166,177,.38) !important;
+  background: #d80621 !important;
+  color: #fff !important;
+}
+
+.student-shell #student-mobile-menu nav a[aria-current="page"] > span:first-child {
+  background: rgba(255,255,255,.12) !important;
+  color: #f4b400 !important;
+}
+
+.student-shell header.lg\:hidden {
+  border-color: rgba(23,25,27,.08) !important;
+  background: rgba(255,254,250,.94) !important;
+  box-shadow: 0 14px 34px -30px rgba(0,0,0,.55) !important;
+  backdrop-filter: blur(18px);
+}
+
+.student-shell header.lg\:hidden::before {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #17191b 0 28%, #d80621 28% 72%, #f4b400 72% 100%);
+}
+
+.student-shell .student-shell-main :where(.ds-card, [class*="rounded-[var(--radius-panel)]"]) {
+  transition:
+    border-color 180ms cubic-bezier(.2,.8,.2,1),
+    box-shadow 180ms cubic-bezier(.2,.8,.2,1);
+}
+
+@media (min-width: 1024px) {
+  html[dir="rtl"] .student-shell .student-shell-sidebar {
+    left: auto !important;
+    right: 0 !important;
+    border-right: 0 !important;
+    border-left: 1px solid rgba(255,255,255,.08) !important;
+  }
+
+  html[dir="rtl"] .student-shell .student-shell-content {
+    padding-left: 0 !important;
+    padding-right: 15.5rem !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .student-shell .student-shell-sidebar nav a {
+    transform: none !important;
+    transition-duration: 0.01ms !important;
+  }
+}
