@@ -74,6 +74,11 @@ type ProspectHubCopy = {
     degree: string;
     field: string;
     city: string;
+    university: string;
+    sort: string;
+    sortRelevance: string;
+    sortUniversity: string;
+    sortCity: string;
     german: string;
     uniAssist: string;
     yes: string;
@@ -209,6 +214,11 @@ const fr: ProspectHubCopy = {
     degree: "Diplôme",
     field: "Domaine",
     city: "Ville",
+    university: "Université",
+    sort: "Trier par",
+    sortRelevance: "Pertinence",
+    sortUniversity: "Université A → Z",
+    sortCity: "Ville A → Z",
     german: "Allemand",
     uniAssist: "uni-assist",
     yes: "Oui",
@@ -344,6 +354,11 @@ const en: ProspectHubCopy = {
     degree: "Degree",
     field: "Field",
     city: "City",
+    university: "University",
+    sort: "Sort by",
+    sortRelevance: "Relevance",
+    sortUniversity: "University A → Z",
+    sortCity: "City A → Z",
     german: "German",
     uniAssist: "uni-assist",
     yes: "Yes",
@@ -479,6 +494,11 @@ const de: ProspectHubCopy = {
     degree: "Abschluss",
     field: "Fach",
     city: "Stadt",
+    university: "Hochschule",
+    sort: "Sortieren nach",
+    sortRelevance: "Relevanz",
+    sortUniversity: "Hochschule A → Z",
+    sortCity: "Stadt A → Z",
     german: "Deutsch",
     uniAssist: "uni-assist",
     yes: "Ja",
@@ -614,6 +634,11 @@ const ar: ProspectHubCopy = {
     degree: "الدرجة",
     field: "المجال",
     city: "المدينة",
+    university: "الجامعة",
+    sort: "الترتيب حسب",
+    sortRelevance: "الأكثر صلة",
+    sortUniversity: "الجامعة أ → ي",
+    sortCity: "المدينة أ → ي",
     german: "الألمانية",
     uniAssist: "uni-assist",
     yes: "نعم",
