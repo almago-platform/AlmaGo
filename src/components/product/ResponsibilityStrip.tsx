@@ -21,9 +21,9 @@ export function ResponsibilityStrip({
   title?: ReactNode;
 }) {
   return (
-    <section aria-labelledby="responsibility-strip-title" className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)]">
+    <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)]">
       <div className="border-b border-[var(--border)] px-4 py-3 sm:px-5">
-        <h2 id="responsibility-strip-title" className="text-xs font-bold uppercase tracking-[0.13em] text-[var(--muted)]">
+        <h2 className="text-xs font-bold uppercase tracking-[0.13em] text-[var(--muted)]">
           {title}
         </h2>
       </div>
