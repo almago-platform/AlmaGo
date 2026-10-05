@@ -1,0 +1,33 @@
+.prospect-shell {
+  overflow-x: clip;
+}
+
+.prospect-shell :where(a, button, select, input, textarea, summary):focus-visible {
+  outline: 3px solid rgba(216, 6, 33, 0.28);
+  outline-offset: 3px;
+}
+
+.prospect-shell #prospect-mobile-menu {
+  overscroll-behavior: contain;
+}
+
+@media (max-width: 359px) {
+  .prospect-shell .prospect-page-hero {
+    border-radius: 1.15rem;
+  }
+
+  .prospect-shell #main-content {
+    scroll-margin-top: 5.25rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .prospect-shell *,
+  .prospect-shell *::before,
+  .prospect-shell *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
