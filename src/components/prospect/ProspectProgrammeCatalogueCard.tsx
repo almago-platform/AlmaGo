@@ -38,7 +38,7 @@ export function ProspectProgrammeCatalogueCard({
         />
       </div>
 
-      <div className="flex flex-1 flex-col p-5 sm:p-6">
+      <div className="flex flex-1 flex-col p-4 sm:p-5">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-[0.08em] ring-1 ring-inset ${projectMatch ? "bg-[var(--brand-soft)] text-[var(--brand-strong)] ring-[var(--brand-border)]/60" : "bg-[#f1eee8] text-[#555b60] ring-black/[.06]"}`}>
             <span className={`h-1.5 w-1.5 rounded-full ${projectMatch ? "bg-[var(--brand)]" : "bg-[#92979b]"}`} aria-hidden="true" />
@@ -57,7 +57,7 @@ export function ProspectProgrammeCatalogueCard({
           </div>
         </div>
 
-        <h3 className="mt-4 text-[1.32rem] font-bold leading-tight tracking-[-0.03em] text-[#1b1e20] [overflow-wrap:anywhere]">
+        <h3 className="mt-3.5 text-[1.18rem] font-bold leading-tight tracking-[-0.03em] text-[#1b1e20] [overflow-wrap:anywhere]">
           <bdi dir="auto">{programme.name}</bdi>
         </h3>
         <p className="mt-1.5 text-sm leading-5 text-[var(--muted)]">
@@ -67,7 +67,7 @@ export function ProspectProgrammeCatalogueCard({
           ) : null}
         </p>
 
-        <dl className="mt-5 grid overflow-hidden rounded-2xl border border-black/[.07] bg-[#f6f3ed] sm:grid-cols-3">
+        <dl className="mt-4 grid overflow-hidden rounded-2xl border border-black/[.07] bg-[#f6f3ed] sm:grid-cols-3">
           <div className="min-w-0 border-b border-black/[.06] px-4 py-3 sm:border-b-0 sm:border-e">
             <dt className="text-[10px] font-extrabold uppercase tracking-[0.08em] text-[var(--muted)]">{labels.field}</dt>
             <dd className="mt-1.5 truncate text-sm font-semibold text-[#202326]" title={programme.field || "—"}>
@@ -88,7 +88,7 @@ export function ProspectProgrammeCatalogueCard({
           </div>
         </dl>
 
-        <div className="mt-auto flex flex-wrap items-center gap-2.5 pt-5">
+        <div className="mt-auto flex flex-wrap items-center gap-2.5 pt-4">
           {programme.programmeSourceUrl ? (
             <a
               href={programme.programmeSourceUrl}
