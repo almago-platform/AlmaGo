@@ -144,7 +144,7 @@ export function ProspectShell({
 
       <header className="sticky top-0 z-40 border-b border-black/10 bg-[rgba(255,254,250,.94)] shadow-[0_1px_0_rgba(0,0,0,.03)] backdrop-blur-xl">
         <div className="h-[3px] bg-[linear-gradient(90deg,#17191b_0_33%,#d80621_33%_67%,#f4b400_67%)]" aria-hidden="true" />
-        <div className="mx-auto flex min-h-[72px] max-w-[96rem] items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto flex min-h-[72px] max-w-[96rem] items-center justify-between gap-2 px-3 min-[360px]:gap-3 min-[360px]:px-4 sm:px-6 lg:px-8">
           <div className="flex min-w-0 items-center gap-3">
             <button
               type="button"
@@ -152,11 +152,12 @@ export function ProspectShell({
               className="grid h-10 w-10 place-items-center rounded-xl border border-black/10 bg-white text-[#17191b] shadow-sm transition hover:bg-[#f7f4ee] lg:hidden"
               aria-label={t.navigation}
               aria-expanded={mobileOpen}
+              aria-controls="prospect-mobile-menu"
             >
               {icons.menu}
             </button>
             <Link href="/prospect" className="flex min-w-0 items-center gap-3" aria-label={t.homeAria}>
-              <BrandLogo className="h-9 w-auto max-w-[11rem] sm:h-10 sm:max-w-[12.5rem]" priority />
+              <BrandLogo className="h-8 w-auto max-w-[8rem] min-[360px]:h-9 min-[360px]:max-w-[10rem] sm:h-10 sm:max-w-[12.5rem]" priority />
               <span className="hidden items-center gap-2 rounded-full bg-[#17191b] px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-[0.08em] text-white md:inline-flex">
                 <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent)]" aria-hidden="true" />
                 {t.badge}
@@ -165,7 +166,7 @@ export function ProspectShell({
           </div>
 
           <div className="flex shrink-0 items-center gap-2">
-            <LanguageSwitcher compact />
+            <div className="hidden sm:block"><LanguageSwitcher compact /></div>
             <button
               type="button"
               onClick={signOut}
@@ -184,20 +185,21 @@ export function ProspectShell({
             type="button"
             className="absolute inset-0 bg-black/55 backdrop-blur-[2px]"
             onClick={() => setMobileOpen(false)}
-            aria-label={copy.shell.skip}
+            aria-label={copy.shell.closeMenu}
           />
-          <aside className="absolute inset-y-0 start-0 w-[min(88vw,22rem)] overflow-y-auto bg-[#17191b] text-white shadow-2xl">
+          <aside id="prospect-mobile-menu" role="dialog" aria-modal="true" aria-label={t.navigation} className="absolute inset-y-0 start-0 w-[min(88vw,22rem)] overflow-y-auto bg-[#17191b] pb-[env(safe-area-inset-bottom)] pt-[env(safe-area-inset-top)] text-white shadow-2xl">
             <div className="flex items-center justify-between border-b border-white/10 p-4">
               <BrandLogo className="h-9 w-auto max-w-[11rem] rounded-lg bg-white px-2 py-1" />
               <button
                 type="button"
                 onClick={() => setMobileOpen(false)}
                 className="grid h-10 w-10 place-items-center rounded-xl bg-white/10 text-white transition hover:bg-white/15"
-                aria-label="Close"
+                aria-label={copy.shell.closeMenu}
               >
                 {icons.close}
               </button>
             </div>
+            <div className="border-b border-white/10 px-4 py-3"><LanguageSwitcher compact /></div>
             {navBlock(true)}
           </aside>
         </div>

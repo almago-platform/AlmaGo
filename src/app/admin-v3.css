@@ -3,6 +3,7 @@
    scanability, density and decision-making over marketing presentation. */
 
 .admin-shell {
+  overflow-x: clip;
   --brand: #d80621;
   --brand-strong: #aa041b;
   --brand-soft: #fff0f2;
