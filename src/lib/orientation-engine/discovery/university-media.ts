@@ -1,7 +1,7 @@
 import "server-only";
 
 const COMMONS_API_URL = "https://commons.wikimedia.org/w/api.php";
-const MEDIA_TIMEOUT_MS = 5_000;
+const MEDIA_TIMEOUT_MS = 3_000;
 const MAX_RESULTS = 8;
 const MEDIA_CACHE_SECONDS = 30 * 24 * 60 * 60;
 
@@ -152,9 +152,8 @@ export async function findWikimediaUniversityMedia(
   city: string | null,
 ): Promise<UniversityMediaLookup | null> {
   const queries = [
-    [universityName, city, "campus"],
     [universityName, city],
-    [universityName],
+    [universityName, city, "campus"],
   ]
     .map((parts) =>
       parts
