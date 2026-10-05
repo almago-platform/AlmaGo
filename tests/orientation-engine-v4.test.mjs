@@ -61,7 +61,7 @@ test("Orientation V4 excludes deterministic non-matches before selecting up to t
 test("Orientation V4 reads the bounded public catalogue projection server-side", () => {
   assert.match(catalog, /import "server-only"/);
   assert.match(catalog, /createPublicCatalogSupabaseClient/);
-  assert.match(catalog, /from\("orientation_program_catalog"\)/);
+  assert.match(catalog, /rpc\("read_orientation_program_catalog"\)/);
   assert.doesNotMatch(catalog, /createPrivilegedSupabaseClient|SUPABASE_SECRET_KEY/);
   assert.doesNotMatch(catalog, /from\("programs"\)|from\("universities"\)/);
 });
