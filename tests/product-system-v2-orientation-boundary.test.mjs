@@ -10,6 +10,7 @@ const read = (path) => readFileSync(join(root, path), "utf8");
 const orientation = read("src/components/orientation/PublicOrientationForm.tsx");
 const capture = read("src/components/orientation/ProspectCaptureCard.tsx");
 const copy = read("src/content/orientation-prospect-copy.ts");
+const writer = read("src/components/orientation/OrientationPersonalizedWriterCard.tsx");
 
 test("orientation V2 presents a result-first hierarchy", () => {
   assert.ok(orientation.includes("CandidateOrientationResultHeader"));
@@ -31,4 +32,13 @@ test("Prospect continuation explains the Student activation boundary", () => {
   assert.ok(copy.includes("proposition, au paiement et à la validation Campus"));
   assert.ok(capture.includes("copy.continueBoundary"));
   assert.ok(capture.includes("warning-border"));
+});
+
+
+test("orientation avoids admission-probability language", () => {
+  assert.ok(!writer.includes("Fortes chances d’admission"));
+  assert.ok(!writer.includes("Strong admission chances"));
+  assert.ok(!writer.includes("Gute bis sehr gute Zulassungschancen"));
+  assert.ok(writer.includes("Profil compatible avec les critères actuellement vérifiés"));
+  assert.ok(writer.includes("Only the university can make an admission decision"));
 });
