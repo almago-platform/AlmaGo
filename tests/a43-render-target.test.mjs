@@ -9,7 +9,7 @@ test("A43 workflow exposes an explicit Render target for manual Partner-Ready re
   assert.match(workflow, /target:\s*\n\s*description: "Authenticated E2E target"/);
   assert.match(workflow, /default: render/);
   assert.match(workflow, /- render\s*\n\s*- local/);
-  assert.match(workflow, /ALMAGO_E2E_TARGET: \$\{\{ inputs\.target \|\| 'local' \}\}/);
+  assert.match(workflow, /ALMAGO_E2E_TARGET: \$\{\{ github\.event_name == 'issue_comment' && 'render' \|\| inputs\.target \|\| 'render' \}\}/);
   assert.doesNotMatch(workflow, /\n  push:/);
 });
 
@@ -20,7 +20,7 @@ test("Render mode uses the canonical almago-dev URL and waits for health", () =>
   assert.match(workflow, /Render did not serve exact workflow revision/);
 });
 
-test("local manual/probe mode still builds the application locally", () => {
+test("explicit local manual mode still builds the application locally", () => {
   assert.match(workflow, /Build and start AlmaGo locally/);
   assert.match(workflow, /if: env\.ALMAGO_E2E_TARGET != 'render'/);
   assert.match(workflow, /npm run build/);
