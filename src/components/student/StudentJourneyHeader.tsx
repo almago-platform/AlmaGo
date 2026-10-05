@@ -11,7 +11,7 @@ const journeySteps: Array<{ key: StudentJourneyStep; href: string }> = [
   { key: "project", href: "/student/project" },
   { key: "documents", href: "/student/documents" },
   { key: "orientation", href: "/student/orientation" },
-  { key: "checklist", href: "/student/checklist" },
+  { key: "checklist", href: "/student/procedure" },
   { key: "applications", href: "/student/applications" },
   { key: "pathway", href: "/student/pathway" },
 ];
