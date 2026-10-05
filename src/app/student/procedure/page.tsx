@@ -7,7 +7,6 @@ import { JourneyRail, type JourneyRailStep } from "@/components/product/JourneyR
 import { NextActionPanel } from "@/components/product/NextActionPanel";
 import { ResponsibilityStrip } from "@/components/product/ResponsibilityStrip";
 import { SectionHeader } from "@/components/ui/SectionHeader";
-import { campusRouteLabel } from "@/lib/campus-intake";
 import { getRequestLocale } from "@/lib/i18n-server";
 import { formatDeadline, isActiveApplication } from "@/lib/phase4";
 import {
@@ -40,6 +39,65 @@ type RequirementRow = {
   document_id: string | null;
   updated_at: string;
 };
+
+const routeLabels = {
+  fr: {
+    study_preparation: "Préparation aux études",
+    studies_bachelor: "Études — Bachelor",
+    studies_master: "Études — Master",
+    study_place_search: "Recherche d’une place d’études",
+    standalone_language: "Cours de langue autonome",
+    ausbildung: "Formation professionnelle / Ausbildung",
+    ausbildung_search: "Recherche d’une place d’Ausbildung",
+    research_doctorate: "Doctorat / recherche",
+    study_internship: "Stage lié aux études",
+  },
+  ar: {
+    study_preparation: "التحضير للدراسة",
+    studies_bachelor: "دراسة البكالوريوس",
+    studies_master: "دراسة الماجستير",
+    study_place_search: "البحث عن مقعد دراسي",
+    standalone_language: "دورة لغة مستقلة",
+    ausbildung: "التكوين المهني Ausbildung",
+    ausbildung_search: "البحث عن مكان Ausbildung",
+    research_doctorate: "الدكتوراه / البحث",
+    study_internship: "تدريب مرتبط بالدراسة",
+  },
+  en: {
+    study_preparation: "Study preparation",
+    studies_bachelor: "Bachelor studies",
+    studies_master: "Master studies",
+    study_place_search: "Study-place search",
+    standalone_language: "Standalone language course",
+    ausbildung: "Vocational training / Ausbildung",
+    ausbildung_search: "Ausbildung-place search",
+    research_doctorate: "Doctorate / research",
+    study_internship: "Study-related internship",
+  },
+  de: {
+    study_preparation: "Studienvorbereitung",
+    studies_bachelor: "Bachelorstudium",
+    studies_master: "Masterstudium",
+    study_place_search: "Studienplatzsuche",
+    standalone_language: "Eigenständiger Sprachkurs",
+    ausbildung: "Berufsausbildung",
+    ausbildung_search: "Ausbildungsplatzsuche",
+    research_doctorate: "Promotion / Forschung",
+    study_internship: "Studienbezogenes Praktikum",
+  },
+} as const;
+
+function routeLabel(locale: "fr" | "ar" | "en" | "de", routeKey: string | null | undefined) {
+  const labels = routeLabels[locale] as Record<string, string>;
+  if (routeKey && labels[routeKey]) return labels[routeKey];
+  return locale === "fr"
+    ? "Parcours à confirmer"
+    : locale === "ar"
+      ? "المسار يحتاج إلى تأكيد"
+      : locale === "de"
+        ? "Weg noch zu bestätigen"
+        : "Path to be confirmed";
+}
 
 const copy = {
   fr: {
@@ -358,7 +416,7 @@ export default async function StudentProcedurePage() {
         status={t.active}
         statusVariant="success"
         facts={[
-          { label: t.currentJourney, value: <bdi dir="auto">{campusRouteLabel(procedure.route_key)}</bdi> },
+          { label: t.currentJourney, value: <bdi dir="auto">{routeLabel(locale, procedure.route_key)}</bdi> },
           { label: "Intake", value: <bdi dir="auto">{procedure.target_intake || t.verify}</bdi> },
           { label: t.documents, value: requirements.length },
           { label: t.activity, value: formatTimestamp(procedure.updated_at, locale) || t.verify },
