@@ -22,7 +22,7 @@ export function CandidateOrientationResultHeader({
   facts: Array<{ label: ReactNode; value: ReactNode }>;
   profileDetailsLabel: ReactNode;
   profileDetailsHelp?: ReactNode;
-  allFacts: Array<readonly [ReactNode, ReactNode]>;
+  allFacts: readonly (readonly [ReactNode, ReactNode])[];
 }) {
   return (
     <section className="orientation-print-hide">
