@@ -135,40 +135,40 @@ export function StarterDocumentsPanel({
   }
 
   return (
-    <div className="grid gap-5">
-      <section className="overflow-hidden rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow-card)]">
-        <div className="overflow-hidden border-b border-[var(--border)] border-t-[3px] border-t-[var(--brand)] bg-[var(--surface)] p-5 sm:p-6">
+    <div className="grid gap-6">
+      <section className="overflow-hidden rounded-[1.45rem] border border-black/[.07] bg-white shadow-[0_28px_72px_-46px_rgba(0,0,0,.4)]">
+        <div className="relative overflow-hidden border-b border-white/10 bg-[#17191b] p-5 text-white sm:p-7">
           <div>
-            <p className="text-[0.68rem] font-bold uppercase tracking-[0.15em] text-[var(--brand)]">
+            <p className="text-[0.68rem] font-extrabold uppercase tracking-[0.16em] text-[var(--accent)]">
               {preBac ? "Préparation avant le Bac" : "Pièces de départ"}
             </p>
-            <h1 className="mt-2 text-2xl font-bold text-[var(--foreground)] sm:text-[1.9rem]">
+            <h1 className="mt-2 text-[clamp(1.8rem,3vw,2.45rem)] font-semibold leading-[1.05] tracking-[-0.04em] text-white">
               {preBac ? "Ajoutez seulement ce que vous avez déjà" : "Complétez votre dossier de vérification"}
             </h1>
-            <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
+            <p className="mt-3 max-w-3xl text-sm leading-6 text-white/64 sm:text-[0.95rem]">
               {preBac
                 ? "Aucun document académique final n’est obligatoire maintenant. Vous pouvez ajouter votre passeport et votre certificat de langue s’ils sont déjà disponibles."
                 : "Nous demandons seulement les preuves nécessaires pour décider du parcours adapté. Le certificat de langue est facultatif si vous n’en avez pas encore."}
             </p>
           </div>
         </div>
-        <div className="p-5 sm:p-6">
+        <div className="p-5 sm:p-6 lg:p-7">
           {preBac ? (
-            <div className="rounded-[var(--radius-control)] border border-emerald-200 bg-emerald-50/70 p-4">
+            <div className="rounded-2xl border border-[#b9dfc8] bg-[#eff9f3] p-4 shadow-[0_16px_42px_-34px_rgba(29,139,88,.35)]">
               <p className="font-bold text-emerald-900">Aucun document obligatoire avant les résultats du Bac.</p>
               <p className="mt-1 text-sm leading-6 text-emerald-900">
                 Vous pouvez continuer votre préparation même avec 0 document envoyé. Le Bac et le relevé final seront demandés après vos résultats.
               </p>
             </div>
           ) : (
-            <div className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4">
+            <div className="rounded-2xl border border-black/[.07] bg-[#f6f3ed] p-4">
               <div className="flex items-center justify-between gap-3 text-sm">
                 <span className="font-semibold">
                   Pièces obligatoires validées : {approvedRequired}/{requiredCategories.length}
                 </span>
                 <span className="text-[var(--muted)]">{requiredProgress}%</span>
               </div>
-              <div className="mt-3 h-2 overflow-hidden rounded-full bg-[var(--surface-muted)]">
+              <div className="mt-3 h-2 overflow-hidden rounded-full bg-black/[.08]">
                 <div
                   className="h-full rounded-full bg-[var(--brand)]"
                   style={{ width: `${requiredProgress}%` }}
@@ -178,13 +178,13 @@ export function StarterDocumentsPanel({
             </div>
           )}
 
-        <div className="mt-5 grid gap-3 sm:grid-cols-2">
+        <div className="mt-6 grid gap-4 sm:grid-cols-2">
           {documentRequirements.map((requirement) => {
             const document = latestByCategory.get(requirement.category);
             return (
               <article
                 key={requirement.category}
-                className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4"
+                className="rounded-2xl border border-black/[.07] bg-[#f6f3ed] p-4"
               >
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
@@ -242,7 +242,7 @@ export function StarterDocumentsPanel({
         </div>
 
           {requiredReady ? (
-            <div className="mt-5 rounded-[var(--radius-control)] border border-emerald-200 bg-emerald-50 p-4">
+            <div className="mt-5 rounded-2xl border border-[#b9dfc8] bg-[#eff9f3] p-4">
               <p className="font-bold text-emerald-900">Les pièces obligatoires sont validées.</p>
               <p className="mt-1 text-sm leading-6 text-emerald-900">
                 Vous n’avez rien d’autre à faire maintenant. Campus Allemagne peut examiner votre parcours.
@@ -250,7 +250,7 @@ export function StarterDocumentsPanel({
             </div>
           ) : null}
           {preBac ? (
-            <div className="mt-5 flex flex-wrap gap-3 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4">
+            <div className="mt-5 flex flex-wrap gap-3 rounded-2xl border border-black/[.07] bg-[#f6f3ed] p-4">
               <div className="min-w-0 flex-1">
                 <p className="font-bold">Votre projet peut avancer sans dossier académique final.</p>
                 <p className="mt-1 text-sm leading-6 text-[var(--muted)]">
@@ -259,7 +259,7 @@ export function StarterDocumentsPanel({
               </div>
               <Link
                 href="/prospect/roadmap"
-                className="inline-flex min-h-10 items-center rounded-[var(--radius-control)] border border-[var(--border-strong)] bg-[var(--surface)] px-4 text-sm font-semibold"
+                className="inline-flex min-h-10 items-center rounded-xl border border-black/10 bg-white px-4 text-sm font-semibold text-[#202326] shadow-sm transition-all hover:-translate-y-px hover:border-black/20 hover:shadow-md"
               >
                 Continuer ma préparation
               </Link>
@@ -271,14 +271,14 @@ export function StarterDocumentsPanel({
       {(preBac || !requiredReady) ? (
         <form
           onSubmit={upload}
-          className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[var(--shadow-card)] sm:p-6"
+          className="rounded-[1.35rem] border border-black/[.07] bg-white p-5 shadow-[0_22px_60px_-42px_rgba(0,0,0,.34)] sm:p-6"
         >
-          <h2 className="text-xl font-bold">Ajouter un document</h2>
+          <h2 className="text-xl font-semibold tracking-[-0.025em] text-[#202326]">Ajouter un document</h2>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             <label className="text-sm font-semibold">
               Type de document
               <select
-                className="field mt-2"
+                className="field mt-2 w-full rounded-xl border-black/10 bg-[#fbfaf7] shadow-none"
                 value={category}
                 onChange={(event) => setCategory(event.target.value)}
               >
@@ -302,7 +302,7 @@ export function StarterDocumentsPanel({
               />
               <label
                 htmlFor="prospect-document-file"
-                className="mt-2 flex min-h-24 cursor-pointer flex-col items-center justify-center rounded-[var(--radius-control)] border border-dashed border-[var(--border-strong)] bg-[var(--surface-subtle)] px-4 py-4 text-center hover:border-[var(--brand-border)] hover:bg-[var(--brand-soft)]"
+                className="mt-2 flex min-h-28 cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed border-black/20 bg-[#fbfaf7] px-4 py-4 text-center transition-all duration-200 hover:border-[var(--brand-border)] hover:bg-[var(--brand-soft)]"
               >
                 <span className="text-sm font-bold text-[var(--foreground)]">
                   {selectedFileName || "Choisir un fichier"}
@@ -320,7 +320,7 @@ export function StarterDocumentsPanel({
           <button
             type="submit"
             disabled={busy || !selectedFileName}
-            className="mt-5 inline-flex min-h-11 items-center rounded-[var(--radius-control)] bg-[var(--brand)] px-5 text-sm font-bold text-white disabled:cursor-not-allowed disabled:opacity-50"
+            className="mt-5 inline-flex min-h-11 items-center rounded-xl bg-[var(--brand)] px-5 text-sm font-bold text-white shadow-[0_12px_28px_-16px_rgba(216,6,33,.85)] transition-all duration-200 hover:-translate-y-px hover:bg-[var(--brand-strong)] hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0"
           >
             {busy ? "Envoi…" : "Envoyer le document"}
           </button>
@@ -329,7 +329,7 @@ export function StarterDocumentsPanel({
 
       <Link
         href="/prospect"
-        className="inline-flex min-h-11 w-fit items-center text-sm font-bold text-[var(--brand-strong)] underline underline-offset-4"
+        className="inline-flex min-h-11 w-fit items-center gap-2 rounded-xl px-1 text-sm font-bold text-[var(--brand-strong)] transition hover:text-[var(--brand)]"
       >
         Retour à mon espace
       </Link>
