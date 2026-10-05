@@ -101,7 +101,9 @@ export async function loadVerifiedProgrammeCatalogue() {
 
   if (error) throw error;
 
-  return (data || [])
-    .map((row) => mapProgramme(row as unknown as ProgrammeCatalogRow))
+  const rows = (data || []) as unknown as ProgrammeCatalogRow[];
+
+  return rows
+    .map(mapProgramme)
     .sort((a, b) => a.name.localeCompare(b.name));
 }
