@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>AlmaGo Product System V2 — Lifecycle Prototype</title>
+<link rel="stylesheet" href="./prototype-v2.css"/>
+</head>
+<body>
+<div class="prototype-shell">
+  <nav class="prototype-nav" aria-label="Prototype navigation">
+    <a href="#orientation">1 · Orientation</a>
+    <a href="#prospect">2 · Prospect</a>
+    <a href="#admin">3 · Admin 360°</a>
+    <a href="#proposal">4 · Proposition & paiement</a>
+    <a href="#student">5 · Étudiant actif</a>
+  </nav>
+
+  <section id="orientation" class="screen">
+    <div class="topbar"><div class="logo">AlmaGo</div><div class="meta">Orientation gratuite · FR / AR / DE</div></div>
+    <div class="screen-label">Pilot 1 · Candidate</div>
+    <h1>Votre profil ouvre plusieurs pistes cohérentes en Allemagne.</h1>
+    <p class="lead">Un résultat utile avant création de compte : recommandations lisibles, incertitudes visibles et une seule prochaine étape.</p>
+    <div class="panel brand section">
+      <span class="badge red">Orientation non contractuelle</span>
+      <h2 style="margin-top:12px">Bachelor · Informatique</h2>
+      <p class="body muted" style="margin-top:8px">Votre niveau d’études, votre domaine et votre projet actuel correspondent à plusieurs programmes à examiner. Certaines conditions doivent encore être vérifiées avant candidature.</p>
+      <div class="facts">
+        <div class="fact"><b>Objectif</b><span>Bachelor · Informatique</span></div>
+        <div class="fact"><b>Allemand</b><span>B1</span></div>
+        <div class="fact"><b>Rentrée</b><span>Hiver 2027</span></div>
+        <div class="fact"><b>Zone</b><span>NRW + villes proches</span></div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="eyebrow">Pistes recommandées</div>
+      <h2 style="margin-top:6px">3 programmes à regarder en priorité</h2>
+      <div class="grid-3" style="margin-top:14px">
+        <article class="programme"><span class="badge green">Profil compatible</span><h3>Informatik B.Sc.</h3><p>FH Aachen · Aachen · Allemand · Hiver</p><a>Pourquoi cette piste →</a></article>
+        <article class="programme"><span class="badge gold">À vérifier</span><h3>Computer Science B.Sc.</h3><p>Universität Siegen · Siegen · Allemand</p><a>Pourquoi cette piste →</a></article>
+        <article class="programme"><span class="badge green">Profil compatible</span><h3>Informatik B.Sc.</h3><p>H-BRS · Sankt Augustin · Allemand</p><a>Pourquoi cette piste →</a></article>
+      </div>
+    </div>
+    <div class="grid-2 section">
+      <div class="panel warning"><div class="eyebrow" style="color:#8b6200">À vérifier</div><h3 style="margin-top:8px">Trois points peuvent encore changer la recommandation</h3><div class="checks"><div>• Certificat de langue accepté</div><div>• Deadline exacte</div><div>• Voie directe ou uni-assist</div></div></div>
+      <div class="panel dark"><div class="eyebrow">Continuer gratuitement</div><h2 style="margin-top:8px">Gardez cette orientation dans votre espace Prospect.</h2><p class="small" style="margin:9px 0 16px;color:#d9d3c7">Le compte Prospect ne donne pas encore accès à l’espace étudiant.</p><a class="btn primary">Créer mon espace gratuit</a></div>
+    </div>
+  </section>
+
+  <section id="prospect" class="screen">
+    <div class="topbar"><div class="logo">AlmaGo</div><div class="row"><span class="badge red">ESPACE PROSPECT</span><span class="meta">Profil</span></div></div>
+    <div class="sidebar-layout">
+      <aside class="side">
+        <div class="screen-label" style="padding:8px 10px">Mon projet</div>
+        <a class="active">Accueil</a><a>Orientation</a><a>Catalogue</a><a>Documents</a><a>Proposition</a><a>Messages</a>
+        <div class="panel warning" style="margin-top:16px;padding:13px"><b class="small">Accès étudiant</b><p class="small muted" style="margin-top:6px">Pas encore activé.</p></div>
+      </aside>
+      <main>
+        <div class="screen-label">Pilot 2 · Prospect</div>
+        <h1>Votre dossier avance avant l’activation de l’espace étudiant.</h1>
+        <p class="lead">Une seule vue pour comprendre ce que vous devez faire, ce que Campus fait et ce qui débloque la prochaine étape.</p>
+        <div class="timeline section">
+          <div class="step done"><b>1 · Orientation</b><span>Terminé</span></div>
+          <div class="step active"><b>2 · Documents</b><span>À compléter</span></div>
+          <div class="step"><b>3 · Analyse Campus</b><span>À venir</span></div>
+          <div class="step"><b>4 · Proposition</b><span>À venir</span></div>
+          <div class="step"><b>5 · Paiement</b><span>À venir</span></div>
+          <div class="step"><b>6 · Étudiant</b><span>Verrouillé</span></div>
+        </div>
+        <div class="next section">
+          <div><div class="eyebrow">Prochaine étape</div><h2>Envoyez vos documents de départ</h2><p class="small" style="margin-top:7px;color:#d9d3c7">Campus les vérifiera avant de préparer votre proposition.</p></div>
+          <a class="btn primary">Ouvrir mes documents</a>
+        </div>
+        <div class="status-columns section">
+          <div class="panel"><div class="eyebrow">À vous</div><h3 style="margin-top:8px">2 éléments à compléter</h3><p class="small muted" style="margin-top:8px">Passeport · à envoyer<br/>Relevé · à envoyer</p></div>
+          <div class="panel subtle"><div class="eyebrow" style="color:var(--green)">Campus Allemagne</div><h3 style="margin-top:8px">En attente de vos pièces</h3><p class="small muted" style="margin-top:8px">L’analyse commencera dès que les documents requis seront disponibles.</p></div>
+          <div class="panel"><div class="eyebrow" style="color:#8b6200">Proposition</div><h3 style="margin-top:8px">Pas encore disponible</h3><p class="small muted" style="margin-top:8px">Elle apparaîtra ici après l’analyse Campus.</p></div>
+        </div>
+      </main>
+    </div>
+  </section>
+
+  <section id="admin" class="screen">
+    <div class="topbar"><div class="logo">AlmaGo</div><div class="meta">Administration · Dossier 360°</div></div>
+    <div class="screen-label">Pilot 3 · Admin / Advisor</div>
+    <h1>Un dossier continu, de l’orientation au suivi étudiant.</h1>
+    <p class="lead">Les files disent qui a besoin d’aide. Le dossier 360° explique pourquoi, qui agit ensuite et toute l’histoire du cas.</p>
+    <div class="panel section">
+      <div class="row" style="justify-content:space-between;align-items:flex-start">
+        <div><span class="badge gold">Prospect · Discussion</span><h2 style="margin-top:10px">Ilef M. · Dossier Allemagne</h2><p class="small muted" style="margin-top:5px">Dernière activité : réponse Prospect il y a 18 min</p></div>
+        <div class="button-row"><a class="btn primary">Répondre / modifier</a><a class="btn secondary">Plus</a></div>
+      </div>
+      <div class="facts">
+        <div class="fact"><b>Responsable</b><span>Campus Allemagne</span></div>
+        <div class="fact"><b>Route</b><span>Études · Bachelor</span></div>
+        <div class="fact"><b>Documents</b><span>3/3 validés</span></div>
+        <div class="fact"><b>Proposition</b><span>À revoir</span></div>
+      </div>
+    </div>
+    <div class="grid-2 section">
+      <div class="stack">
+        <div class="panel brand"><div class="eyebrow">Décision requise</div><h2 style="margin-top:8px">Le Prospect demande une modification de la proposition.</h2><p class="body muted" style="margin-top:8px">« Je voudrais confirmer si la préparation linguistique est comprise avant d’accepter. »</p></div>
+        <div class="panel"><div class="eyebrow">Profil décisionnel</div><dl class="data-list" style="margin-top:10px"><dt>Situation</dt><dd>Bac obtenu</dd><dt>Projet</dt><dd>Bachelor · Informatique</dd><dt>Allemand</dt><dd>B1</dd><dt>Rentrée</dt><dd>Hiver 2027</dd><dt>Zone</dt><dd>NRW</dd></dl></div>
+        <div class="panel"><div class="eyebrow">Analyse conseiller</div><h3 style="margin-top:8px">Profil compatible avec les critères actuellement vérifiés</h3><p class="body muted" style="margin-top:8px">3 programmes prioritaires · 1 condition de langue à revérifier.</p><a class="small" style="display:inline-block;margin-top:12px;color:var(--brand-strong);font-weight:800">Voir l’audit technique ↓</a></div>
+      </div>
+      <aside class="stack">
+        <div class="panel"><div class="eyebrow">Documents</div><div class="activity" style="margin-top:8px"><div>Passeport <span class="badge green" style="float:right">Validé</span></div><div>Baccalauréat <span class="badge green" style="float:right">Validé</span></div><div>Relevés <span class="badge green" style="float:right">Validé</span></div></div></div>
+        <div class="panel"><div class="eyebrow">Historique</div><div class="activity" style="margin-top:8px"><div><b>11:08</b> · Prospect a demandé une discussion</div><div><b>Hier</b> · Proposition envoyée</div><div><b>03 Oct.</b> · Documents validés</div><div><b>02 Oct.</b> · Orientation confirmée</div></div></div>
+      </aside>
+    </div>
+  </section>
+
+  <section id="proposal" class="screen">
+    <div class="topbar"><div class="logo">AlmaGo</div><div class="meta">Espace Prospect · Proposition prête</div></div>
+    <div class="screen-label">Pilot 4 · Proposition / Paiement</div>
+    <h1>Votre parcours et votre accompagnement proposés.</h1>
+    <p class="lead">La recommandation, les services, le prix et la conséquence du paiement sont visibles avant toute décision.</p>
+    <div class="grid-2 section">
+      <div class="stack">
+        <div class="panel"><div class="eyebrow">Parcours recommandé</div><h2 style="margin-top:8px">Études — Bachelor</h2><p class="body muted" style="margin-top:8px">Ce parcours correspond à votre projet actuel et aux documents vérifiés. Il ne constitue pas une admission universitaire.</p></div>
+        <div class="panel"><div class="eyebrow">Accompagnement proposé</div><h2 style="margin-top:8px">Accompagnement · Études</h2><div class="checks"><div>✓ Sélection et vérification de programmes</div><div>✓ Revue documentaire</div><div>✓ Préparation des candidatures</div><div>✓ Suivi des échéances</div></div></div>
+        <div class="panel warning"><div class="eyebrow" style="color:#8b6200">Limites</div><p class="body" style="margin-top:8px">Les admissions et décisions de visa restent prises par les établissements et autorités compétents.</p></div>
+      </div>
+      <aside class="stack">
+        <div class="panel dark"><div class="eyebrow">Total de la proposition</div><div class="price">1 490 TND</div><p class="small" style="color:#d9d3c7">Le paiement active l’accompagnement AlmaGo après validation. Il n’achète pas une admission.</p></div>
+        <div class="panel"><div class="eyebrow" style="color:var(--green)">Votre décision</div><p class="body" style="margin-top:8px">Vous acceptez le parcours, les services inclus et le prix affiché.</p><div class="button-row" style="margin-top:14px"><a class="btn primary">Accepter la proposition</a><a class="btn secondary">Poser une question</a></div></div>
+        <div class="panel warning"><div class="eyebrow" style="color:#8b6200">Espace étudiant</div><h3 style="margin-top:8px">Pas encore activé</h3><p class="small muted" style="margin-top:6px">Acceptation → paiement → validation Campus.</p></div>
+      </aside>
+    </div>
+    <div class="timeline section">
+      <div class="step done"><b>1 · Proposition</b><span>Prête</span></div>
+      <div class="step active"><b>2 · Acceptation</b><span>Votre décision</span></div>
+      <div class="step"><b>3 · Paiement</b><span>À venir</span></div>
+      <div class="step"><b>4 · Validation</b><span>Campus</span></div>
+      <div class="step"><b>5 · Activation</b><span>Étudiant</span></div>
+      <div class="step"><b>6 · Procédure</b><span>Après activation</span></div>
+    </div>
+  </section>
+
+  <section id="student" class="screen">
+    <div class="topbar"><div class="logo">AlmaGo</div><div class="row"><span class="badge green">ESPACE ÉTUDIANT ACTIF</span><span class="meta">FR · Profil</span></div></div>
+    <div class="screen-label">Pilot 5 · Active Student</div>
+    <h1>Votre dossier Allemagne, aujourd’hui.</h1>
+    <p class="lead">Une vue opérationnelle après activation : prochaine action, responsabilités, échéances et dossiers actifs.</p>
+    <div class="panel success section">
+      <div class="row" style="justify-content:space-between;align-items:center">
+        <div><div class="eyebrow" style="color:var(--green)">Activation terminée</div><h2 style="margin-top:8px">Votre espace étudiant est actif.</h2><p class="small muted" style="margin-top:6px">Votre proposition et votre paiement restent disponibles dans l’historique du dossier.</p></div>
+        <span class="badge green">Accompagnement · Études</span>
+      </div>
+    </div>
+    <div class="grid-2 section">
+      <div class="stack">
+        <div class="next">
+          <div><div class="eyebrow">Prochaine action</div><h2>Remplacez votre relevé de notes</h2><p class="small" style="margin-top:7px;color:#d9d3c7">Campus ne peut pas finaliser la candidature FH Aachen avant réception du nouveau document.</p></div>
+          <a class="btn primary">Remplacer le document</a>
+        </div>
+        <div class="panel"><div class="eyebrow">Échéances</div><table class="table" style="margin-top:10px"><thead><tr><th>Date</th><th>Objet</th><th>Responsable</th><th>État</th></tr></thead><tbody><tr><td>12 Oct.</td><td>Relevé de notes</td><td>Vous</td><td><span class="badge gold">Urgent</span></td></tr><tr><td>19 Oct.</td><td>FH Aachen</td><td>Campus</td><td><span class="badge">Préparation</span></td></tr><tr><td>31 Oct.</td><td>Décision université</td><td>Externe</td><td><span class="badge">Attente</span></td></tr></tbody></table></div>
+        <div class="panel"><div class="eyebrow">Candidatures & programmes</div><div class="activity" style="margin-top:8px"><div><b>FH Aachen · Informatik</b><br/><span class="muted">Documents à compléter</span></div><div><b>Universität Siegen · Computer Science</b><br/><span class="muted">Prête à préparer</span></div></div></div>
+      </div>
+      <aside class="stack">
+        <div class="panel subtle"><div class="eyebrow">Responsabilité actuelle</div><div class="activity" style="margin-top:8px"><div><b>À vous</b><br/><span class="muted">Remplacer le relevé</span></div><div><b>Campus Allemagne</b><br/><span class="muted">Préparer la candidature FH Aachen</span></div><div><b>Université</b><br/><span class="muted">Aucune action pour le moment</span></div></div></div>
+        <div class="panel"><div class="eyebrow">Mon parcours</div><div class="activity" style="margin-top:8px"><div>✓ Projet confirmé</div><div>✓ Dossier préparé</div><div>● Programmes sélectionnés</div><div class="muted">○ Candidatures envoyées</div><div class="muted">○ Décisions</div></div></div>
+        <div class="panel"><div class="eyebrow">Activité récente</div><div class="activity" style="margin-top:8px"><div>Campus a approuvé votre passeport</div><div>Candidature FH Aachen créée</div><div>Espace étudiant activé</div></div></div>
+      </aside>
+    </div>
+  </section>
+</div>
+</body></html>
