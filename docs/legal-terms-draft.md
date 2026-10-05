@@ -38,6 +38,8 @@ Les recommandations Campus Allemagne sont des pistes de travail.
 
 Ne jamais demander à l’utilisateur d’envoyer son mot de passe par e-mail.
 
+Décision propriétaire du **5 octobre 2026** pour le premier Free Validation Launch : la sauvegarde persistée d’une orientation par e-mail et la poursuite vers un compte lié sont réservées aux personnes de **18 ans ou plus**. Une orientation non persistée et son rapport/PDF peuvent rester accessibles plus largement. Tout parcours persistant destiné à un mineur devra faire l’objet d’une validation juridique spécifique avant activation.
+
 ## 4. Documents transmis
 
 À finaliser après relecture :

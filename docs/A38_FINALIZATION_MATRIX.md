@@ -11,17 +11,18 @@ Cette matrice sépare ce qu'AlmaGo peut préparer automatiquement de ce qui doit
 | Supabase Auth/Postgres/Storage | établi | code/migrations | aucune |
 | Render hébergement/déploiement | établi | `render.yaml` + configuration/runtime vérifiés | aucune |
 | Analytics actif | aucun actuellement | code + A44 séparé | aucune pour A38 |
-| Exploitant légal | inconnu | information business | propriétaire |
-| Forme juridique | inconnue | information business | propriétaire |
+| Exploitant légal | confirmé | `docs/A38_OWNER_CONFIRMATION.md` | aucune tant que le statut ne change pas |
+| Forme juridique | confirmée actuellement : personne physique | `docs/A38_OWNER_CONFIRMATION.md` | mettre à jour si le statut change avant l’ouverture |
 | Adresse publique | inconnue | information business | propriétaire |
-| E-mail public | inconnu | information business | propriétaire |
+| E-mail public | confirmé : `contact@campus-allemagne.info` | `docs/A38_OWNER_CONFIRMATION.md` | aucune |
 | Registre / numéro | inconnu/applicabilité | business + relecture | propriétaire/relecteur |
 | TVA / W-IdNr | inconnu/applicabilité | business + relecture | propriétaire/relecteur |
 | DPO | applicabilité non décidée | relecture juridique | relecteur |
 | Activité réglementée | inconnue/applicabilité | business + relecture | propriétaire/relecteur |
-| Gratuit/payant | inconnu | décision business actuelle | propriétaire |
-| Politique de rétention | proposition prête | `docs/A38_RETENTION_POLICY_PROPOSAL.md` | accepter/modifier |
-| Suppression Storage | séquence technique établie | Supabase docs | intégrer dans procédure finale |
+| Gratuit/payant | confirmé : orientation gratuite ; offres payantes seulement en test/pré-lancement, vente publique OFF | `docs/A38_OWNER_CONFIRMATION.md` + code | finaliser les conditions avant toute vente publique |
+| Politique de rétention | approuvée par le propriétaire | `docs/A38_OWNER_CONFIRMATION.md` + `docs/A38_RETENTION_POLICY_PROPOSAL.md` | validation juridique finale |
+| Suppression Storage | séquence technique établie et approuvée par le propriétaire | `docs/A38_OWNER_CONFIRMATION.md` | validation juridique finale |
+| Collecte persistée mineurs | décision propriétaire : **18+ uniquement** pour le premier Free Validation Launch | #897 + `docs/A38_OWNER_CONFIRMATION.md` | aucune côté produit ; parcours mineur futur = revue juridique séparée |
 | Base juridique des traitements | non décidée | RGPD + contexte réel | relecteur |
 | Transferts internationaux | à confirmer | contrats/config fournisseurs | relecteur |
 | Autorité de contrôle | dépend de l'établissement | contexte réel | relecteur |

@@ -24,7 +24,7 @@ Inventaire technique détaillé : `docs/data-processing-inventory.md`.
 
 Grandes catégories observées :
 
-- prospect Free Validation : e-mail, réponses d’orientation, consentement contact facultatif, signal explicite de souhait de continuer et historique Smart Orientation ;
+- prospect Free Validation : prénom, nom, date de naissance, e-mail, réponses d’orientation, consentement contact facultatif, signal explicite de souhait de continuer et historique Smart Orientation ;
 - compte et authentification via Supabase Auth ;
 - profil et coordonnées étudiant ;
 - parcours académique et langues ;
@@ -42,7 +42,7 @@ Grandes catégories observées :
 Finalités correspondant au produit actuel :
 
 - permettre une orientation gratuite sans compte ;
-- sauvegarder une orientation lorsqu’un visiteur choisit volontairement de laisser son e-mail ;
+- sauvegarder une orientation lorsqu’un visiteur âgé de 18 ans ou plus choisit volontairement de laisser son e-mail, conformément à la décision propriétaire du premier lancement ;
 - délivrer ultérieurement un rapport/e-mail transactionnel lorsque ce canal sera légalement activé ;
 - enregistrer séparément un consentement facultatif à être recontacté ;
 - enregistrer séparément le signal explicite « Je veux continuer avec Campus Allemagne » afin de mesurer la demande Free Validation ;
@@ -126,6 +126,8 @@ Avant toute activation A44 :
 L’orientation en ligne est actuellement **gratuite**.
 
 Le propriétaire souhaite que le premier lancement réel soit un **Free Validation Launch** : orientation gratuite, e-mail facultatif, mesure d’un souhait explicite de continuer, puis éventuellement une cohorte pilote gratuite. Cette stratégie ne constitue pas à elle seule une autorisation juridique de collecter des données réelles : le gate #717 doit être clarifié avant activation.
+
+Décision propriétaire du **5 octobre 2026** : pour ce premier lancement, la collecte persistée Free Validation (e-mail + orientation sauvegardée + poursuite vers un compte lié) est réservée aux personnes de **18 ans ou plus**. L’orientation non persistée et l’enregistrement local/PDF peuvent rester accessibles aux personnes plus jeunes. Tout parcours persistant pour mineurs reste bloqué jusqu’à validation juridique spécifique.
 
 Des offres payantes d’accompagnement et de préparation de dossier sont configurées pour le pré-lancement et les tests internes, mais ne sont **pas encore ouvertes à la vente publique**. Leur activation publique reste soumise aux gates juridique et de lancement.
 

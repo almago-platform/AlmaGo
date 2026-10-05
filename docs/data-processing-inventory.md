@@ -227,6 +227,7 @@ Table `public.prospects` :
 ### Orientation publique sauvegardée
 
 Table `public.orientations` :
+- identité minimale transmise avec la sauvegarde : prénom, nom, date de naissance et e-mail ;
 - réponses d’orientation (Bac, année/filière, moyenne officielle ou estimée, niveau/domaine visés, langues, budget et villes préférées) ;
 - résultat déterministe/version du moteur ;
 - contexte Smart Orientation ;
@@ -262,6 +263,8 @@ Le signal n’est créé qu’après une action explicite « Je veux continuer �
 ### État d’activation
 
 Sous `ALMAGO_PARTNER_PRELAUNCH_MODE`, la vraie capture prospect publique reste désactivée. Les structures ci-dessus sont prêtes techniquement mais ne constituent pas une autorisation de collecter de vraies données.
+
+Depuis la décision propriétaire du **5 octobre 2026**, le code impose aussi que toute capture persistée initiale soit **18+** : le navigateur ne propose pas la sauvegarde persistée à une identité mineure et l’API serveur refuse indépendamment la persistance. L’orientation non persistée et le rapport/PDF ne sont pas bloqués par cette règle.
 
 Avant activation réelle, suivre le gate `docs/FREE_VALIDATION_PRIVACY_GATE.md` et l’Issue #717.
 
