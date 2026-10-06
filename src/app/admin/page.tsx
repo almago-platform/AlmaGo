@@ -5,6 +5,7 @@ import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Card } from "@/components/ui/Card";
 import { AdminLoadError } from "@/components/admin/AdminLoadError";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
+import { PremiumSectionHeader } from "@/components/product/PremiumSectionHeader";
 import { catalogVerificationCutoff } from "@/lib/catalog-freshness";
 
 export const dynamic = "force-dynamic";
@@ -143,7 +144,7 @@ export default async function AdminEntry() {
       />
 
       <section aria-label="Priorité opérationnelle" className="grid gap-4 lg:grid-cols-[minmax(0,1.5fr)_minmax(17rem,0.7fr)]">
-        <Card className="relative overflow-hidden rounded-[1.3rem] border-black/[.07] bg-white shadow-[0_24px_64px_-44px_rgba(0,0,0,.34)]">
+        <Card className="pc-card relative overflow-hidden">
           <div aria-hidden="true" className="absolute inset-y-0 left-0 w-1 bg-[var(--brand)]" />
           <div className="pl-2 sm:pl-3">
             <Badge variant={studentQuestions > 0 || documents > 0 ? "warning" : intakeAttention > 0 || applications > 0 ? "info" : staleCatalogue > 0 ? "warning" : "success"}>{priority.badge}</Badge>
@@ -158,7 +159,7 @@ export default async function AdminEntry() {
           </div>
         </Card>
 
-        <Card className="rounded-[1.3rem] border-black/[.06] bg-[#f6f3ed] shadow-[0_18px_52px_-44px_rgba(0,0,0,.28)]">
+        <Card className="pc-soft-strip bg-[var(--premium-cream)] shadow-none">
           <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-700">Ordre de traitement</p>
           <ol className="mt-5 space-y-4 text-sm leading-6 text-slate-600">
             <li className="flex gap-3">
@@ -178,22 +179,18 @@ export default async function AdminEntry() {
       </section>
 
       <section className="mt-7" aria-labelledby="admin-overview-title">
-        <div className="mb-5">
-          <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Files de travail</p>
-          <h2 id="admin-overview-title" className="mt-2 text-2xl font-semibold tracking-[-0.03em] text-slate-950">
-            État opérationnel AlmaGo
-          </h2>
-        </div>
+        <PremiumSectionHeader
+          eyebrow="Files de travail"
+          title={<span id="admin-overview-title">État opérationnel AlmaGo</span>}
+          description="Traiter les blocages avant l’enrichissement du catalogue."
+        />
 
-        <section aria-labelledby="admin-load-title" className="mb-5">
-        <div className="mb-3 flex items-end justify-between gap-3">
-          <div>
-            <p className="text-[0.68rem] font-bold uppercase tracking-[0.14em] text-[var(--brand)]">Charge opérationnelle</p>
-            <h2 id="admin-load-title" className="mt-1 text-xl font-semibold tracking-[-0.025em] text-[var(--foreground)]">Ce qui demande l’attention de l’équipe</h2>
-          </div>
-          <p className="hidden text-xs text-[var(--muted)] sm:block">Traiter les blocages avant l’enrichissement du catalogue.</p>
-        </div>
-      </section>
+        <section aria-labelledby="admin-load-title" className="mb-5 mt-4">
+          <PremiumSectionHeader
+            eyebrow="Charge opérationnelle"
+            title={<span id="admin-load-title">Ce qui demande l’attention de l’équipe</span>}
+          />
+        </section>
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
           <AdminSummaryCard
@@ -235,15 +232,11 @@ export default async function AdminEntry() {
       </section>
 
       <section className="mt-7" aria-labelledby="catalogue-health-title">
-        <div className="mb-5">
-          <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Fraîcheur des sources</p>
-          <h2 id="catalogue-health-title" className="mt-2 text-2xl font-semibold tracking-[-0.03em] text-slate-950">
-            Révalidations du catalogue Allemagne
-          </h2>
-          <p className="mt-2 text-sm leading-6 text-slate-600">
-            Une vérification catalogue expire automatiquement après 30 jours. Les fiches expirées restent visibles ici pour l’équipe, mais disparaissent de l’espace étudiant.
-          </p>
-        </div>
+        <PremiumSectionHeader
+          eyebrow="Fraîcheur des sources"
+          title={<span id="catalogue-health-title">Révalidations du catalogue Allemagne</span>}
+          description="Une vérification catalogue expire automatiquement après 30 jours. Les fiches expirées restent visibles ici pour l’équipe, mais disparaissent de l’espace étudiant."
+        />
 
         <div className="grid gap-4 md:grid-cols-2">
           <CatalogHealthCard href="/admin/language-courses" title="Cours de langue" stale={staleLanguage} dueSoon={dueLanguage} />
@@ -255,7 +248,7 @@ export default async function AdminEntry() {
         )}
       </section>
 
-      <Card className="mt-7 rounded-[1.25rem] border-black/[.07] bg-white shadow-[0_20px_56px_-44px_rgba(0,0,0,.3)]">
+      <Card className="pc-card mt-7">
         <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--muted)]">Principe de travail</p>
@@ -288,7 +281,7 @@ function AdminSummaryCard({
     <Link
       href={href}
       aria-label={`Ouvrir ${title}`}
-      className="professional-hover group rounded-[1.2rem] border border-black/[.07] bg-white p-5 shadow-[0_18px_52px_-44px_rgba(0,0,0,.28)] transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] focus-visible:ring-offset-2"
+      className="pc-card-interactive professional-hover group p-5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] focus-visible:ring-offset-2"
     >
       <div className="flex items-start justify-between gap-4">
         <div>
@@ -328,7 +321,7 @@ function CatalogHealthCard({
   return (
     <Link
       href={href}
-      className="rounded-[1.2rem] border border-black/[.07] bg-white p-5 shadow-[0_18px_52px_-44px_rgba(0,0,0,.28)] transition-all duration-200 hover:-translate-y-px hover:border-[var(--brand-border)] hover:shadow-[0_24px_60px_-42px_rgba(0,0,0,.36)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] focus-visible:ring-offset-2"
+      className="pc-card-interactive p-5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] focus-visible:ring-offset-2"
     >
       <div className="flex items-start justify-between gap-4">
         <div>

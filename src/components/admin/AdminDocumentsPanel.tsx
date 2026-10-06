@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/Badge";
 import { Button, buttonClassName } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { PremiumEmptyState } from "@/components/product/PremiumEmptyState";
 import { categoryLabel, reviewStatuses, statusLabel } from "@/lib/documents";
 
 type AdminDocument = {
@@ -289,13 +290,12 @@ export function AdminDocumentsPanel({
       )}
 
       {documents.length === 0 ? (
-        <Card className="border-dashed bg-white/70 py-9 text-center shadow-none">
-          <span aria-hidden="true" className="mx-auto grid h-11 w-11 place-items-center rounded-full bg-emerald-50 text-emerald-700">✓</span>
-          <h2 className="mt-4 text-lg font-bold text-slate-950">Aucun document n’est disponible actuellement.</h2>
-          <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-slate-600">
-            Les nouvelles pièces à vérifier ou déjà approuvées apparaîtront ici automatiquement.
-          </p>
-        </Card>
+        <PremiumEmptyState
+          eyebrow="File documentaire"
+          title="Aucun document n’est disponible actuellement."
+          description="Les nouvelles pièces à vérifier ou déjà approuvées apparaîtront ici automatiquement."
+          compact
+        />
       ) : (
         <section className="space-y-5" aria-label="Documents et preuves académiques">
           {documents.map((document, index) => {
@@ -317,7 +317,7 @@ export function AdminDocumentsPanel({
                 as="article"
                 key={document.id}
                 aria-labelledby={`admin-document-title-${document.id}`}
-                className={`min-w-0 overflow-hidden shadow-none ${isReplacement ? "border-amber-300 bg-amber-50/20" : "border-[var(--border)] bg-white"}`}
+                className={`pc-card min-w-0 overflow-hidden ${isReplacement ? "border-[var(--warning-border)] bg-[var(--premium-gold-wash)]" : "bg-white"}`}
               >
                 <div className="flex flex-col justify-between gap-5 lg:flex-row lg:items-start">
                   <div className="min-w-0">
@@ -339,9 +339,9 @@ export function AdminDocumentsPanel({
                     </h2>
 
                     <div className="mt-3 flex flex-wrap gap-2 text-xs font-semibold text-slate-600">
-                      <span className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-2.5 py-1.5">{categoryLabel(document.category)}</span>
-                      <span className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-2.5 py-1.5">{statusLabel(document.status)}</span>
-                      <span className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-2.5 py-1.5">Envoyé le {formatCreatedAt(document.created_at)}</span>
+                      <span className="rounded-[var(--premium-radius-control)] border border-[var(--premium-border)] bg-[var(--premium-cream)] px-2.5 py-1.5">{categoryLabel(document.category)}</span>
+                      <span className="rounded-[var(--premium-radius-control)] border border-[var(--premium-border)] bg-[var(--premium-cream)] px-2.5 py-1.5">{statusLabel(document.status)}</span>
+                      <span className="rounded-[var(--premium-radius-control)] border border-[var(--premium-border)] bg-[var(--premium-cream)] px-2.5 py-1.5">Envoyé le {formatCreatedAt(document.created_at)}</span>
                     </div>
                   </div>
 
@@ -357,7 +357,7 @@ export function AdminDocumentsPanel({
                 </div>
 
                 {document.admin_comment && (
-                  <div className="mt-5 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4">
+                  <div className="mt-5 rounded-[var(--premium-radius-control)] border border-[var(--premium-border)] bg-[var(--premium-cream)] p-4">
                     <p className="text-xs font-bold uppercase tracking-[0.14em] text-slate-700">Message actuellement enregistré</p>
                     <p className="mt-2 text-sm leading-6 text-slate-700 [overflow-wrap:anywhere]">{document.admin_comment}</p>
                   </div>
@@ -592,7 +592,7 @@ function QueueSummary({
   tone?: "warning" | "neutral";
 }) {
   return (
-    <Card className={`shadow-none ${tone === "warning" && value ? "border-amber-200 bg-amber-50/35" : ""}`}>
+    <Card className={`pc-card ${tone === "warning" && value ? "border-[var(--warning-border)] bg-[var(--premium-gold-wash)]" : ""}`}>
       <p className="text-sm font-bold text-slate-700">{label}</p>
       <p className="mt-2 text-3xl font-semibold tracking-tight text-slate-950">{value}</p>
       <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{detail}</p>

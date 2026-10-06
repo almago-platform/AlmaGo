@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { campusRouteOptions, campusRouteLabel } from "@/lib/campus-intake";
 import { formatMinorCurrency } from "@/lib/money";
+import { PremiumEmptyState } from "@/components/product/PremiumEmptyState";
+import { buttonClassName } from "@/components/ui/Button";
 
 type IntakeCase = {
   studentId: string;
@@ -129,12 +131,12 @@ export function AdminIntakePanel({
 
   if (!cases.length) {
     return (
-      <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-6">
-        <h2 className="text-xl font-bold">Aucun pré-dossier à traiter</h2>
-        <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
-          Les étudiants apparaîtront ici après avoir confirmé leur orientation.
-        </p>
-      </section>
+      <PremiumEmptyState
+        eyebrow="Dossiers Campus"
+        title="Aucun pré-dossier à traiter"
+        description="Les étudiants apparaîtront ici après avoir confirmé leur orientation."
+        compact
+      />
     );
   }
 
@@ -144,7 +146,7 @@ export function AdminIntakePanel({
 
   return (
     <div className="grid gap-5">
-      <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-4 sm:p-5">
+      <section className="pc-panel p-4 sm:p-5">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <p className="text-[0.68rem] font-bold uppercase tracking-[0.15em] text-[var(--brand)]">
@@ -200,7 +202,7 @@ export function AdminIntakePanel({
         return (
           <article
             key={item.studentId}
-            className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 sm:p-6"
+            className="pc-panel p-5 sm:p-6"
           >
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
@@ -213,7 +215,7 @@ export function AdminIntakePanel({
               <div className="flex flex-wrap items-center gap-2">
                 <Link
                   href={`/admin/dossiers/${item.studentId}`}
-                  className="inline-flex min-h-9 items-center rounded-[var(--radius-control)] border border-[var(--border-strong)] bg-[var(--surface)] px-3 text-xs font-bold text-[var(--foreground)] transition hover:border-[var(--brand-border)]"
+                  className={buttonClassName("secondary", "min-h-9 px-3 py-1.5 text-xs")}
                 >
                   Ouvrir le dossier 360°
                 </Link>
@@ -224,7 +226,7 @@ export function AdminIntakePanel({
             </div>
 
             <div className="mt-5 grid gap-4 lg:grid-cols-2">
-              <section className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4">
+              <section className="pc-soft-strip p-4">
                 <h3 className="font-bold">Orientation confirmée</h3>
                 <dl className="mt-3 grid gap-2 text-sm sm:grid-cols-2">
                   <div><dt className="text-[var(--muted)]">Diplôme visé</dt><dd className="font-semibold">{item.orientation.targetDegree || "—"}</dd></div>
@@ -234,7 +236,7 @@ export function AdminIntakePanel({
                 </dl>
               </section>
 
-              <section className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4">
+              <section className="pc-soft-strip p-4">
                 <div className="flex items-center justify-between gap-3">
                   <h3 className="font-bold">Pièces de départ</h3>
                   <a href="/admin/documents" className="text-xs font-bold text-[var(--brand-strong)] underline underline-offset-4">
@@ -375,7 +377,7 @@ export function AdminIntakePanel({
                 </div>
 
                 {selectedOffer ? (
-                  <div className="mt-4 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4">
+                  <div className="pc-soft-strip mt-4 p-4">
                     <div className="flex flex-wrap items-start justify-between gap-3">
                       <div>
                         <p className="font-bold">{selectedOffer.displayName}</p>
@@ -425,7 +427,7 @@ export function AdminIntakePanel({
                     || reason.trim().length < 3
                   }
                   onClick={() => propose(item)}
-                  className="mt-4 inline-flex min-h-11 items-center rounded-[var(--radius-control)] bg-[var(--brand)] px-5 text-sm font-bold text-white disabled:cursor-not-allowed disabled:opacity-50"
+                  className={buttonClassName("primary", "mt-4 min-h-11 px-5 disabled:cursor-not-allowed disabled:opacity-50")}
                 >
                   {busyStudent === item.studentId
                     ? "Enregistrement…"

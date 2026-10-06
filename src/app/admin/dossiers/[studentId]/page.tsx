@@ -8,7 +8,9 @@ import { NextActionPanel } from "@/components/product/NextActionPanel";
 import { AdminLoadError } from "@/components/admin/AdminLoadError";
 import { Badge } from "@/components/ui/Badge";
 import { DataList } from "@/components/ui/DataList";
-import { SectionHeader } from "@/components/ui/SectionHeader";
+import { PremiumEmptyState } from "@/components/product/PremiumEmptyState";
+import { PremiumSectionHeader } from "@/components/product/PremiumSectionHeader";
+import { buttonClassName } from "@/components/ui/Button";
 import {
   applicationStatusLabels,
   type KnownApplicationStatus,
@@ -220,7 +222,7 @@ export default async function AdminStudentDossierPage({
           actions={
             <Link
               href="/admin/intake"
-              className="inline-flex min-h-10 items-center rounded-[var(--radius-control)] border border-[var(--border-strong)] px-4 text-sm font-semibold"
+              className={buttonClassName("secondary", "min-h-10 px-4 py-2")}
             >
               Retour aux dossiers
             </Link>
@@ -370,7 +372,7 @@ export default async function AdminStudentDossierPage({
         actions={
           <Link
             href="/admin/intake"
-            className="inline-flex min-h-10 items-center justify-center rounded-[var(--radius-control)] border border-[var(--border-strong)] bg-[var(--surface)] px-4 text-sm font-semibold transition hover:border-[var(--brand-border)]"
+            className={buttonClassName("secondary", "min-h-10 px-4 py-2")}
           >
             Retour à la file
           </Link>
@@ -378,7 +380,7 @@ export default async function AdminStudentDossierPage({
       />
 
       <section className="space-y-3">
-        <SectionHeader
+        <PremiumSectionHeader
           eyebrow="Cycle du dossier"
           title="Où en est cette personne ?"
           description="Les étapes techniques restent en arrière-plan ; l’équipe voit seulement l’avancement opérationnel utile."
@@ -409,8 +411,8 @@ export default async function AdminStudentDossierPage({
 
       <div className="grid gap-7 xl:grid-cols-[minmax(0,1.35fr)_minmax(19rem,0.65fr)]">
         <div className="space-y-7">
-          <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 sm:p-6">
-            <SectionHeader
+          <section className="pc-panel p-5 sm:p-6">
+            <PremiumSectionHeader
               eyebrow="Projet"
               title="Orientation retenue"
               description="Les informations ci-dessous proviennent de l’orientation actuellement rattachée au dossier."
@@ -434,8 +436,8 @@ export default async function AdminStudentDossierPage({
             />
           </section>
 
-          <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 sm:p-6">
-            <SectionHeader
+          <section className="pc-panel p-5 sm:p-6">
+            <PremiumSectionHeader
               eyebrow="Pièces"
               title="Documents du dossier"
               description="Cette vue résume les derniers états enregistrés. Les décisions documentaires restent dans la file Documents."
@@ -464,8 +466,8 @@ export default async function AdminStudentDossierPage({
             </div>
           </section>
 
-          <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 sm:p-6">
-            <SectionHeader
+          <section className="pc-panel p-5 sm:p-6">
+            <PremiumSectionHeader
               eyebrow="Proposition & paiement"
               title="Cadre commercial du dossier"
               description="Le montant affiché est lisible pour l’équipe ; les unités monétaires internes restent masquées."
@@ -489,14 +491,14 @@ export default async function AdminStudentDossierPage({
             ) : null}
           </section>
 
-          <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 sm:p-6">
-            <SectionHeader
+          <section className="pc-panel p-5 sm:p-6">
+            <PremiumSectionHeader
               eyebrow="Candidatures"
               title={applications.length ? `${applications.length} candidature${applications.length > 1 ? "s" : ""} rattachée${applications.length > 1 ? "s" : ""}` : "Aucune candidature enregistrée"}
               description="Le détail opérationnel et les changements de statut restent dans la file Candidatures."
               actions={
                 applications.length ? (
-                  <Link href="/admin/applications" className="text-sm font-semibold text-[var(--brand-strong)] hover:underline">
+                  <Link href="/admin/applications" className={buttonClassName("ghost", "min-h-8 px-2.5 py-1 text-xs")}>
                     Ouvrir Candidatures →
                   </Link>
                 ) : undefined
@@ -540,16 +542,21 @@ export default async function AdminStudentDossierPage({
                 })}
               </div>
             ) : (
-              <p className="mt-5 text-sm leading-6 text-[var(--muted)]">
-                Les candidatures apparaîtront ici lorsque la phase étudiante aura commencé.
-              </p>
+              <div className="mt-5">
+                <PremiumEmptyState
+                  eyebrow="Candidatures"
+                  title="Aucune candidature enregistrée"
+                  description="Les candidatures apparaîtront ici lorsque la phase étudiante aura commencé."
+                  compact
+                />
+              </div>
             )}
           </section>
         </div>
 
         <aside className="space-y-7">
-          <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5">
-            <SectionHeader eyebrow="Synthèse" title="Repères du dossier" />
+          <section className="pc-card p-5">
+            <PremiumSectionHeader eyebrow="Synthèse" title="Repères du dossier" />
             <div className="mt-4 flex flex-wrap gap-2">
               {projectFacts.length ? projectFacts.map((fact) => (
                 <Badge key={fact} variant="neutral">{fact}</Badge>
@@ -560,8 +567,8 @@ export default async function AdminStudentDossierPage({
             </div>
           </section>
 
-          <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5">
-            <SectionHeader
+          <section className="pc-card p-5">
+            <PremiumSectionHeader
               eyebrow="Historique"
               title="Activité récente"
               description="Événements utiles à la continuité du suivi."
@@ -574,7 +581,7 @@ export default async function AdminStudentDossierPage({
             </div>
           </section>
 
-          <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface-subtle)] p-5">
+          <section className="pc-soft-strip p-5">
             <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Principe Dossier 360°</p>
             <p className="mt-2 text-sm leading-6 text-[var(--foreground-soft)]">
               Cette page rassemble le contexte. Les mutations sensibles restent dans leurs écrans métier dédiés : documents, proposition, paiement et candidatures.
