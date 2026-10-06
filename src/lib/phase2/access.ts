@@ -12,6 +12,20 @@ export const customerLifecycleStatuses = [
 
 export type CustomerLifecycleStatus = (typeof customerLifecycleStatuses)[number];
 
+const customerLifecycleStatusLabels: Record<CustomerLifecycleStatus, string> = {
+  prospect_account: "Compte prospect",
+  qualified_prospect: "Prospect qualifié",
+  payment_pending: "Paiement en attente",
+  paid_pending_validation: "Paiement reçu · validation en attente",
+  client_active: "Client actif",
+  client_completed: "Accompagnement terminé",
+};
+
+export function customerLifecycleStatusLabel(status: string | null | undefined) {
+  if (!status) return "Sans compte lié";
+  return customerLifecycleStatusLabels[status as CustomerLifecycleStatus] || status;
+}
+
 const clientStatuses = new Set<CustomerLifecycleStatus>([
   "client_active",
   "client_completed",
