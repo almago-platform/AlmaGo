@@ -44,6 +44,8 @@ export function StarterDocumentsPanel({
   const [category, setCategory] = useState("passport");
   const [busy, setBusy] = useState(false);
   const [selectedFileName, setSelectedFileName] = useState("");
+  const [selectedFileType, setSelectedFileType] = useState("");
+  const [selectedFileSize, setSelectedFileSize] = useState<number | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -101,6 +103,8 @@ export function StarterDocumentsPanel({
 
       if (inputRef.current) inputRef.current.value = "";
       setSelectedFileName("");
+      setSelectedFileType("");
+      setSelectedFileSize(null);
       setMessage("Document envoyé. Campus Allemagne va le vérifier.");
       router.refresh();
     } catch {
@@ -108,6 +112,20 @@ export function StarterDocumentsPanel({
     } finally {
       setBusy(false);
     }
+  }
+
+  function clearSelectedFile() {
+    if (inputRef.current) inputRef.current.value = "";
+    setSelectedFileName("");
+    setSelectedFileType("");
+    setSelectedFileSize(null);
+    setError(null);
+  }
+
+  function formattedFileSize(bytes: number | null) {
+    if (bytes === null) return "";
+    if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))} KiB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MiB`;
   }
 
   async function remove(documentId: string) {
@@ -320,21 +338,60 @@ export function StarterDocumentsPanel({
                     type="file"
                     accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"
                     onChange={(event) => {
-                      setSelectedFileName(event.target.files?.[0]?.name || "");
+                      const file = event.target.files?.[0] ?? null;
+                      setSelectedFileName(file?.name || "");
+                      setSelectedFileType(file?.type || "");
+                      setSelectedFileSize(file?.size ?? null);
                       setError(null);
                     }}
                   />
-                  <label
-                    htmlFor="prospect-document-file"
-                    className="pc-glass mt-2 flex min-h-24 cursor-pointer flex-col items-center justify-center rounded-[1.1rem] border-dashed px-4 py-4 text-center transition-all duration-200 hover:-translate-y-0.5 hover:border-[var(--brand)] hover:shadow-[0_18px_46px_-34px_rgba(216,6,33,.32)]"
-                  >
-                    <span className="text-sm font-bold text-[var(--foreground)]">
-                      {selectedFileName || "Choisir un fichier"}
-                    </span>
-                    <span className="mt-1 text-xs leading-5 text-[var(--muted)]">
-                      PDF, JPG ou PNG · 10 MiB maximum
-                    </span>
-                  </label>
+                  {selectedFileName ? (
+                    <div className="pc-glass mt-2 rounded-[1.1rem] p-4">
+                      <div className="flex items-start gap-3">
+                        <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-[var(--premium-ink)] text-sm font-black text-white" aria-hidden="true">
+                          ✓
+                        </span>
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate text-sm font-bold text-[var(--foreground)]" title={selectedFileName}>
+                            {selectedFileName}
+                          </p>
+                          <p className="mt-1 text-xs leading-5 text-[var(--muted)]">
+                            {[selectedFileType || "Fichier", formattedFileSize(selectedFileSize)].filter(Boolean).join(" · ")}
+                          </p>
+                          <p className="mt-1 text-xs font-semibold text-emerald-800">Prêt à être envoyé</p>
+                        </div>
+                      </div>
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        <button
+                          type="button"
+                          onClick={() => inputRef.current?.click()}
+                          className={buttonClassName("secondary", "min-h-9 px-3 py-1.5 text-xs")}
+                        >
+                          Remplacer
+                        </button>
+                        <button
+                          type="button"
+                          onClick={clearSelectedFile}
+                          className={buttonClassName("ghost", "min-h-9 px-3 py-1.5 text-xs")}
+                        >
+                          Retirer
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <label
+                      htmlFor="prospect-document-file"
+                      className="pc-glass mt-2 flex min-h-28 cursor-pointer flex-col items-center justify-center rounded-[1.1rem] border-dashed px-4 py-4 text-center transition-all duration-200 hover:-translate-y-0.5 hover:border-[var(--brand)] hover:shadow-[0_18px_46px_-34px_rgba(216,6,33,.32)]"
+                    >
+                      <span className="grid size-9 place-items-center rounded-full bg-[var(--premium-ink)] text-lg text-white" aria-hidden="true">＋</span>
+                      <span className="mt-2 text-sm font-bold text-[var(--foreground)]">
+                        Déposez un fichier ici ou cliquez pour choisir
+                      </span>
+                      <span className="mt-1 text-xs leading-5 text-[var(--muted)]">
+                        PDF, JPG ou PNG · 10 MiB maximum
+                      </span>
+                    </label>
+                  )}
                 </div>
               </div>
 
