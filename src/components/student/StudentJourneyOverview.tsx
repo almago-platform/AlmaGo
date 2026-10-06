@@ -27,7 +27,7 @@ export function StudentJourneyOverview({
   const openArrow = direction === "rtl" ? "←" : "→";
 
   return (
-    <section aria-labelledby="student-journey-title" className="pc-panel mt-6 overflow-hidden">
+    <section aria-labelledby="student-journey-title" className="pc-panel mt-6 overflow-hidden rounded-[1rem]">
       <div className={`grid gap-5 border-b border-[var(--premium-border)] bg-[var(--premium-cream-soft)] px-5 py-5 sm:px-6 ${showProgressSummary ? "lg:grid-cols-[minmax(0,1fr)_17rem] lg:items-end" : ""}`}>
         <div>
           <p className="text-[0.68rem] font-bold uppercase tracking-[0.15em] text-[var(--brand-strong)]">{copy.eyebrow}</p>
