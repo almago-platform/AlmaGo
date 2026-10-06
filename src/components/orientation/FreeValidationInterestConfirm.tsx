@@ -38,7 +38,7 @@ export function FreeValidationInterestConfirm({
 
   if (status === "success") {
     return (
-      <div role="status" className="rounded-[var(--radius-control)] border border-[var(--brand-border)] bg-[var(--brand-soft)] p-4">
+      <div role="status" className="rounded-[var(--radius-control)] border border-[var(--success-border)] bg-[var(--success-soft)] p-4">
         <h2 className="text-lg font-bold">{copy.successTitle}</h2>
         <p className="mt-2 text-sm leading-6 text-[var(--foreground)]">
           {copy.successText}
