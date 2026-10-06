@@ -1,4 +1,5 @@
 import { ButtonLink } from "@/components/ui/ButtonLink";
+import { StudentPageFrame } from "@/components/student/StudentPageFrame";
 import { Card } from "@/components/ui/Card";
 import Link from "next/link";
 import { DossierHeader } from "@/components/product/DossierHeader";
@@ -39,7 +40,7 @@ export default async function StudentApplicationsPage() {
   }).length;
 
   return (
-    <main className="mx-auto w-full max-w-[92rem] space-y-7 px-4 py-5 sm:px-6 sm:py-6 xl:px-8">
+    <StudentPageFrame className="space-y-7">
       <DossierHeader
         eyebrow={t.page.eyebrow}
         title={t.page.title}
@@ -70,7 +71,7 @@ export default async function StudentApplicationsPage() {
       />
 
       <StudentApplicationsPanel applications={applications} />
-    </main>
+    </StudentPageFrame>
   );
 }
 
@@ -90,6 +91,6 @@ function ApplicationsUnavailable({ copy }: { copy: (typeof studentApplicationsCo
           <ButtonLink href="/student/orientation" variant="secondary">{copy.page.recommendations}</ButtonLink>
         </div>
       </Card>
-    </main>
+    </StudentPageFrame>
   );
 }
