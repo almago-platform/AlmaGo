@@ -257,7 +257,7 @@ export function ProspectJourneyProgress(props: {
                 <Link
                   href={step.href}
                   aria-current={state === "current" ? "step" : undefined}
-                  className="group flex min-w-[6.4rem] flex-col items-center text-center focus-visible:outline-none"
+                  className="group flex min-w-[6.4rem] flex-col items-center rounded-xl text-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--brand)]"
                 >
                   <span className="flex w-full items-center" aria-hidden="true">
                     <span className={`h-px flex-1 transition-colors duration-200 ${leftLineClass}`} />
