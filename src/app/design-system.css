@@ -636,3 +636,33 @@ html[dir="rtl"] .pc-kicker {
     transform: none;
   }
 }
+
+
+.pc-button {
+  border-radius: var(--premium-radius-control);
+  transition:
+    transform var(--premium-duration-fast) var(--premium-ease-out),
+    background-color var(--premium-duration-base) var(--premium-ease-standard),
+    border-color var(--premium-duration-base) var(--premium-ease-standard),
+    color var(--premium-duration-base) var(--premium-ease-standard),
+    box-shadow var(--premium-duration-base) var(--premium-ease-standard);
+}
+
+.pc-button:not(:disabled):hover {
+  transform: translateY(-1px);
+}
+
+.pc-button:not(:disabled):active {
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pc-button {
+    transition-duration: 0.01ms;
+  }
+
+  .pc-button:not(:disabled):hover,
+  .pc-button:not(:disabled):active {
+    transform: none;
+  }
+}
