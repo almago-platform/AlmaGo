@@ -139,7 +139,47 @@ export default async function ProspectSolutionsPage() {
 
   return (
     <main className="space-y-6">
-      <ProspectPageHero eyebrow={t.eyebrow} title={t.title} subtitle={t.subtitle} />
+      <ProspectPageHero
+        eyebrow={t.eyebrow}
+        title={t.title}
+        subtitle={t.subtitle}
+        variant="compact"
+      >
+        <div className="flex flex-wrap gap-2">
+          <span className="rounded-full border border-white/10 bg-white/[.07] px-3 py-1.5 text-xs font-semibold text-white/75">
+            {languageCourses.length} · {t.language}
+          </span>
+          <span className="rounded-full border border-white/10 bg-white/[.07] px-3 py-1.5 text-xs font-semibold text-white/75">
+            {financeOptions.length} · {t.finance}
+          </span>
+        </div>
+      </ProspectPageHero>
+
+      <nav aria-label={t.title} className="grid gap-3 md:grid-cols-2">
+        <a
+          href="#prospect-language-solutions"
+          className="pc-card pc-card-interactive group flex min-w-0 items-center gap-4 p-4 sm:p-5"
+        >
+          <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-[var(--brand-soft)] text-lg font-black text-[var(--brand)]">A</span>
+          <span className="min-w-0">
+            <span className="block font-semibold text-[var(--premium-ink)]">{t.language}</span>
+            <span className="mt-1 block text-sm leading-5 text-[var(--foreground-soft)]">{t.languageText}</span>
+          </span>
+          <span className="ms-auto text-lg text-[var(--muted)] transition-transform duration-200 group-hover:translate-x-1" aria-hidden="true">→</span>
+        </a>
+
+        <a
+          href="#prospect-finance-solutions"
+          className="pc-card pc-card-interactive group flex min-w-0 items-center gap-4 p-4 sm:p-5"
+        >
+          <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-[var(--premium-ink)] text-lg font-black text-white">€</span>
+          <span className="min-w-0">
+            <span className="block font-semibold text-[var(--premium-ink)]">{t.finance}</span>
+            <span className="mt-1 block text-sm leading-5 text-[var(--foreground-soft)]">{t.financeText}</span>
+          </span>
+          <span className="ms-auto text-lg text-[var(--muted)] transition-transform duration-200 group-hover:translate-x-1" aria-hidden="true">→</span>
+        </a>
+      </nav>
 
       <section aria-labelledby="prospect-language-solutions">
         <div className="mb-4">
