@@ -15,6 +15,8 @@ export function ProspectProgrammeCatalogueCard({
   projectMatch,
   labels,
   wide = false,
+  showUniversityPhoto = true,
+  visualIndex = 1,
 }: {
   programme: OrientationProgrammeRecord;
   projectMatch: boolean;
@@ -30,6 +32,8 @@ export function ProspectProgrammeCatalogueCard({
     applyLink: string;
   };
   wide?: boolean;
+  showUniversityPhoto?: boolean;
+  visualIndex?: number;
 }) {
   return (
     <article
@@ -47,6 +51,8 @@ export function ProspectProgrammeCatalogueCard({
           media={programme.university.media}
           compact={!wide && !projectMatch}
           wide={wide}
+          usePhoto={showUniversityPhoto}
+          editorialIndex={visualIndex}
         />
       </div>
 

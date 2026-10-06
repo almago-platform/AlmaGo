@@ -173,7 +173,17 @@ export default async function ProspectRoadmapPage() {
         eyebrow={t.eyebrow}
         title={t.title}
         subtitle={t.subtitle}
-      />
+        variant="compact"
+      >
+        <div className="flex flex-wrap items-center gap-2.5">
+          <span className="rounded-full border border-white/10 bg-white/[.07] px-3 py-1.5 text-xs font-semibold text-white/75">
+            {current + 1}/{journey.length}
+          </span>
+          <span className="rounded-full border border-[var(--accent)]/25 bg-[var(--accent)]/10 px-3 py-1.5 text-xs font-semibold text-[var(--accent)]">
+            {String(current + 1).padStart(2, "0")} · {currentStep.title}
+          </span>
+        </div>
+      </ProspectPageHero>
 
       <section className="pc-panel bg-white/80 p-5 backdrop-blur-sm sm:p-6">
         <ProspectJourneyProgress

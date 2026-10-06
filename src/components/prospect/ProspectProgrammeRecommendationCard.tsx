@@ -15,6 +15,8 @@ export function ProspectProgrammeRecommendationCard({
   recommendation,
   labels,
   compact = false,
+  showUniversityPhoto = true,
+  visualIndex = 1,
 }: {
   recommendation: OrientationProgrammeEvaluation;
   labels: {
@@ -29,6 +31,8 @@ export function ProspectProgrammeRecommendationCard({
     applyLink: string;
   };
   compact?: boolean;
+  showUniversityPhoto?: boolean;
+  visualIndex?: number;
 }) {
   const programme = recommendation.programme;
   const preferredCity = recommendationMatchesPreferredCity(recommendation);
@@ -74,21 +78,22 @@ export function ProspectProgrammeRecommendationCard({
       </div>
 
       {!compact ? (
-        <dl className="mt-5 grid overflow-hidden rounded-2xl border border-[var(--premium-border)] bg-[var(--premium-cream)] sm:grid-cols-3">
-          <div className="min-w-0 border-b border-[var(--premium-border)] px-4 py-3 sm:border-b-0 sm:border-e">
-            <dt className="text-[10px] font-extrabold uppercase tracking-[0.08em] text-[var(--muted)]">{labels.field}</dt>
-            <dd className="mt-1.5 text-sm font-semibold text-[var(--foreground)]"><bdi dir="auto">{programme.field || "—"}</bdi></dd>
-          </div>
-          <div className="min-w-0 border-b border-[var(--premium-border)] px-4 py-3 sm:border-b-0 sm:border-e">
-            <dt className="text-[10px] font-extrabold uppercase tracking-[0.08em] text-[var(--muted)]">{labels.german}</dt>
-            <dd className="mt-1.5 text-sm font-semibold text-[var(--foreground)]">{programme.germanLevelRequired || labels.requirementCheck}</dd>
-          </div>
-          <div className="min-w-0 px-4 py-3">
-            <dt className="text-[10px] font-extrabold uppercase tracking-[0.08em] text-[var(--muted)]">{labels.uniAssist}</dt>
-            <dd className="mt-1.5 text-sm font-semibold text-[var(--foreground)]">
-              {programme.uniAssistRequired ? labels.yes : labels.requirementCheck}
-            </dd>
-          </div>
+        <dl className="mt-5 grid gap-2 rounded-2xl border border-[var(--premium-border)] bg-[var(--premium-cream)] p-2.5">
+          {[
+            [labels.field, programme.field || "—"],
+            [labels.german, programme.germanLevelRequired || labels.requirementCheck],
+            [labels.uniAssist, programme.uniAssistRequired ? labels.yes : labels.requirementCheck],
+          ].map(([label, value]) => (
+            <div
+              key={String(label)}
+              className="grid min-w-0 grid-cols-[minmax(6.5rem,0.7fr)_minmax(0,1.3fr)] items-start gap-3 rounded-xl bg-white/55 px-3 py-2.5"
+            >
+              <dt className="text-[10px] font-extrabold uppercase tracking-[0.08em] text-[var(--muted)]">{label}</dt>
+              <dd className="min-w-0 text-sm font-semibold leading-5 text-[var(--foreground)] [overflow-wrap:normal]">
+                <bdi dir="auto">{value}</bdi>
+              </dd>
+            </div>
+          ))}
         </dl>
       ) : null}
 
@@ -135,6 +140,8 @@ export function ProspectProgrammeRecommendationCard({
           city={programme.university.city}
           media={programme.university.media}
           compact
+          usePhoto={showUniversityPhoto}
+          editorialIndex={visualIndex}
         />
       </div>
       <div className="p-5 sm:p-6">{body}</div>

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ProspectEditorialPanel } from "@/components/prospect/ProspectEditorialPanel";
 import { ProspectOfferSelector, type PublishedOfferCard } from "@/components/prospect/ProspectOfferSelector";
 import { ProspectPageHero } from "@/components/prospect/ProspectPageHero";
+import { PremiumSectionHeader } from "@/components/product/PremiumSectionHeader";
 import { buttonClassName } from "@/components/ui/Button";
 import { prospectOffersCopy } from "@/content/prospect-offers-copy";
 import { rebrandCopy } from "@/lib/brand";
@@ -67,6 +68,26 @@ export default async function ProspectOffersPage() {
             </Link>
           }
         />
+
+        <section className="pc-panel p-5 sm:p-6">
+          <PremiumSectionHeader title={copy.lockedJourneyTitle} />
+          <ol className="mt-5 grid gap-3 lg:grid-cols-3">
+            {copy.lockedJourneySteps.map((step, index) => (
+              <li
+                key={step}
+                className="relative min-w-0 overflow-hidden rounded-[1.15rem] border border-[var(--premium-border)] bg-[var(--premium-cream)] p-4"
+              >
+                <span className="flex size-8 items-center justify-center rounded-full bg-[var(--premium-ink)] text-xs font-extrabold text-white">
+                  {index + 1}
+                </span>
+                <p className="mt-3 text-sm font-semibold leading-6 text-[var(--premium-ink)]">{step}</p>
+              </li>
+            ))}
+          </ol>
+          <p className="mt-4 rounded-[1rem] border border-[var(--premium-border)] bg-white px-4 py-3 text-xs leading-5 text-[var(--foreground-soft)]">
+            {copy.lockedJourneyNote}
+          </p>
+        </section>
       </main>
     );
   }
