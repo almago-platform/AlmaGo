@@ -4,8 +4,7 @@ import type { ReactNode } from "react";
 import { redirect } from "next/navigation";
 import { Badge } from "@/components/ui/Badge";
 import { ButtonLink } from "@/components/ui/ButtonLink";
-import { Card } from "@/components/ui/Card";
-import { PageHeader } from "@/components/ui/PageHeader";
+import { StudentPageState } from "@/components/student/StudentPageState";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { AlmagoJourney } from "@/components/student/AlmagoJourney";
 import { DossierHeader } from "@/components/product/DossierHeader";
@@ -30,6 +29,20 @@ export const dynamic = "force-dynamic";
 
 function firstRelation<T>(value: T | T[] | null | undefined): T | undefined {
   return Array.isArray(value) ? value[0] : value ?? undefined;
+}
+
+function daysUntilDeadline(value: string) {
+  const target = new Date(`${value}T12:00:00Z`).getTime();
+  return Math.ceil((target - Date.now()) / 86400000);
+}
+
+function compareDeadlineUrgency(a: string, b: string) {
+  const aDays = daysUntilDeadline(a);
+  const bDays = daysUntilDeadline(b);
+  const aBucket = aDays < 0 ? 0 : 1;
+  const bBucket = bDays < 0 ? 0 : 1;
+  if (aBucket !== bBucket) return aBucket - bBucket;
+  return Math.abs(aDays) - Math.abs(bDays);
 }
 
 
@@ -190,6 +203,16 @@ export default async function StudentEntry() {
   const activeApplications = studentApplications.filter((application) => isActiveApplication(application.status));
   const actionableApplications = activeApplications.filter((application) => Boolean(application.next_action));
   const actionableApplication = actionableApplications[0];
+  const urgentApplication = actionableApplications
+    .filter((application) => application.deadline && daysUntilDeadline(application.deadline) <= 14)
+    .sort((a, b) => compareDeadlineUrgency(a.deadline as string, b.deadline as string))[0];
+  const urgentChecklistItem = actionableChecklist
+    .filter((item) => item.due_date && daysUntilDeadline(item.due_date) <= 14)
+    .sort((a, b) => compareDeadlineUrgency(a.due_date as string, b.due_date as string))[0];
+
+  const applicationsMissingDocuments = activeApplications.filter(
+    (application) => normalizeApplicationStatus(application.status) === "documents_missing",
+  ).length;
 
   const studentActionCount = actionableChecklist.length + documentsNeedingAction + actionableApplications.length;
   const hasActionRequired = studentActionCount > 0;
@@ -201,9 +224,7 @@ export default async function StudentEntry() {
     documentChecklistOpen,
     savedProgrammes: studentRecommendations.length,
     applicationStatuses: studentApplications.map((application) => application.status),
-    applicationsMissingDocuments: studentApplications.filter(
-      (application) => normalizeApplicationStatus(application.status) === "documents_missing",
-    ).length,
+    applicationsMissingDocuments,
     applicationNextActions: actionableApplications.length,
     germanyPreparationStatus: checklistStatusByKey.get("germany_preparation") || null,
   });
@@ -223,39 +244,57 @@ export default async function StudentEntry() {
     href: step.status === "blocked" ? undefined : step.href,
   }));
 
-  const nextAction = documentsNeedingAction
+  const nextAction = urgentApplication?.next_action
     ? {
-        label: t.documentsAction,
-        detail: t.documentsActionDetail(documentsNeedingAction),
-        reason: cockpit.documentsReason(documentsNeedingAction),
-        duration: cockpit.durationDocuments,
-        href: "/student/documents",
+        label: t.applicationAction,
+        detail: localizeApplicationStoredText(locale, urgentApplication.next_action),
+        reason: cockpit.urgentDeadlineReason,
+        duration: cockpit.durationApplication,
+        href: "/student/applications",
       }
-    : actionableApplication?.next_action
+    : urgentChecklistItem
       ? {
-          label: t.applicationAction,
-          detail: localizeApplicationStoredText(locale, actionableApplication.next_action),
-          reason: cockpit.applicationReason,
-          duration: cockpit.durationApplication,
-          href: "/student/applications",
+          label: urgentChecklistItem.title,
+          detail: t.checklistAction,
+          reason: cockpit.urgentDeadlineReason,
+          duration: cockpit.durationChecklist,
+          href: ["passport", "translation"].includes(urgentChecklistItem.templateKey || "")
+            ? "/student/documents"
+            : "/student/checklist",
         }
-      : nextItem
+      : documentsNeedingAction
         ? {
-            label: nextItem.title,
-            detail: t.checklistAction,
-            reason: cockpit.checklistReason,
-            duration: cockpit.durationChecklist,
-            href: ["passport", "translation"].includes(nextItem.templateKey || "")
-              ? "/student/documents"
-              : "/student/checklist",
+            label: t.documentsAction,
+            detail: t.documentsActionDetail(documentsNeedingAction),
+            reason: cockpit.documentsReason(documentsNeedingAction),
+            duration: cockpit.durationDocuments,
+            href: "/student/documents",
           }
-        : {
-            label: t.fileUpToDate,
-            detail: t.noPriorityDetail,
-            reason: cockpit.noActionReason,
-            duration: cockpit.durationReview,
-            href: "/student/checklist",
-          };
+        : actionableApplication?.next_action
+          ? {
+              label: t.applicationAction,
+              detail: localizeApplicationStoredText(locale, actionableApplication.next_action),
+              reason: cockpit.applicationReason,
+              duration: cockpit.durationApplication,
+              href: "/student/applications",
+            }
+          : nextItem
+            ? {
+                label: nextItem.title,
+                detail: t.checklistAction,
+                reason: cockpit.checklistReason,
+                duration: cockpit.durationChecklist,
+                href: ["passport", "translation"].includes(nextItem.templateKey || "")
+                  ? "/student/documents"
+                  : "/student/checklist",
+              }
+            : {
+                label: t.fileUpToDate,
+                detail: t.noPriorityDetail,
+                reason: cockpit.noActionReason,
+                duration: cockpit.durationReview,
+                href: "/student/checklist",
+              };
 
   const projectMain = [project?.target_degree, project?.target_field].filter(Boolean).join(" · ");
   const projectSummary = [
@@ -281,11 +320,16 @@ export default async function StudentEntry() {
         type: cockpit.stepDeadline,
         href: "/student/checklist",
       })),
-  ].sort((a, b) => a.date.localeCompare(b.date));
+  ].sort((a, b) => compareDeadlineUrgency(a.date, b.date));
 
   const importantDeadlines = allImportantDeadlines.slice(0, 3);
+  const overdueDeadlineCount = allImportantDeadlines.filter((deadline) => isPastDeadline(deadline.date)).length;
+  const dueSoonDeadlineCount = allImportantDeadlines.filter((deadline) => {
+    const days = daysUntilDeadline(deadline.date);
+    return days >= 0 && days <= 14;
+  }).length;
 
-  const missingRequiredDocuments = [...new Set(
+  const allMissingRequiredDocuments = [...new Set(
     activeApplications
       .filter((application) => normalizeApplicationStatus(application.status) === "documents_missing")
       .flatMap((application) =>
@@ -293,13 +337,29 @@ export default async function StudentEntry() {
           ? application.required_documents.filter((item): item is string => typeof item === "string" && Boolean(item.trim()))
           : [],
       ),
-  )].slice(0, 4);
+  )];
 
-  const documentsToFix = studentDocuments
-    .filter((document) => ["rejected", "replace_required"].includes(document.status))
-    .slice(0, 4);
+  const allDocumentsToFix = studentDocuments
+    .filter((document) => ["rejected", "replace_required"].includes(document.status));
 
-  const documentAttentionCount = missingRequiredDocuments.length + documentsToFix.length;
+  const missingRequiredDocuments = allMissingRequiredDocuments.slice(0, 4);
+  const documentsToFix = allDocumentsToFix.slice(0, 4);
+  const documentAttentionCount = allMissingRequiredDocuments.length + allDocumentsToFix.length;
+
+  const attentionItems = [
+    overdueDeadlineCount
+      ? { label: cockpit.overdueDeadlines, value: overdueDeadlineCount, href: "/student/calendar", tone: "error" as const }
+      : null,
+    dueSoonDeadlineCount
+      ? { label: cockpit.dueSoonDeadlines, value: dueSoonDeadlineCount, href: "/student/calendar", tone: "warning" as const }
+      : null,
+    documentAttentionCount
+      ? { label: cockpit.documentsAttention, value: documentAttentionCount, href: "/student/documents", tone: "warning" as const }
+      : null,
+    applicationsMissingDocuments
+      ? { label: cockpit.blockedApplications, value: applicationsMissingDocuments, href: "/student/applications", tone: "error" as const }
+      : null,
+  ].filter((item): item is NonNullable<typeof item> => Boolean(item));
 
   const recentActivities = [
     ...studentApplications.flatMap((application) => {
@@ -388,6 +448,38 @@ export default async function StudentEntry() {
         }
       />
 
+      {attentionItems.length ? (
+        <section
+          className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-4 sm:p-5"
+          aria-labelledby="dashboard-attention-title"
+          data-dashboard-attention
+        >
+          <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
+            <div>
+              <p className="text-[0.68rem] font-extrabold uppercase tracking-[0.15em] text-[var(--brand)]">
+                {cockpit.attentionEyebrow}
+              </p>
+              <h2 id="dashboard-attention-title" className="mt-1 text-lg font-semibold tracking-[-0.025em] text-[var(--foreground)]">
+                {cockpit.attentionTitle}
+              </h2>
+            </div>
+            <p className="max-w-xl text-xs leading-5 text-[var(--muted)]">{cockpit.attentionDescription}</p>
+          </div>
+          <div className="mt-4 grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
+            {attentionItems.map((item) => (
+              <Link
+                key={item.label}
+                href={item.href}
+                className="flex min-h-16 items-center justify-between gap-3 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-3.5 py-3 transition hover:border-[var(--brand-border)]"
+              >
+                <span className="text-sm font-semibold leading-5 text-[var(--foreground-soft)]">{item.label}</span>
+                <Badge variant={item.tone}>{item.value}</Badge>
+              </Link>
+            ))}
+          </div>
+        </section>
+      ) : null}
+
       <section className="space-y-3">
         <SectionHeader
           eyebrow={cockpit.progressEyebrow}
@@ -433,15 +525,22 @@ export default async function StudentEntry() {
           <div className="divide-y divide-[var(--border)] border-y border-[var(--border)]">
             {importantDeadlines.map((deadline) => {
               const overdue = isPastDeadline(deadline.date);
+              const days = daysUntilDeadline(deadline.date);
+              const dueSoon = !overdue && days <= 14;
               return (
                 <Link key={`${deadline.type}-${deadline.date}-${deadline.label}`} href={deadline.href} className="grid gap-2 py-5 transition-colors hover:bg-[var(--surface-subtle)] sm:grid-cols-[9rem_minmax(0,1fr)_auto] sm:items-center sm:px-2">
-                  <time className={`text-sm font-bold ${overdue ? "text-[var(--danger)]" : "text-[var(--foreground)]"}`}>
+                  <time className={`text-sm font-bold ${overdue ? "text-[var(--danger)]" : dueSoon ? "text-[var(--warning-strong)]" : "text-[var(--foreground)]"}`}>
                     {formatDeadline(deadline.date, locale)}
                   </time>
                   <span className="min-w-0 truncate text-sm font-semibold text-[var(--foreground-soft)]" dir="auto">
                     {deadline.label}
                   </span>
-                  <Badge variant={overdue ? "error" : "neutral"}>{deadline.type}</Badge>
+                  <div className="flex items-center gap-2 sm:justify-end">
+                    <span className="text-[11px] font-semibold text-[var(--muted)]">{deadline.type}</span>
+                    <Badge variant={overdue ? "error" : dueSoon ? "warning" : "neutral"}>
+                      {overdue ? cockpit.overdue : dueSoon ? cockpit.dueSoon : cockpit.upcoming}
+                    </Badge>
+                  </div>
                 </Link>
               );
             })}
@@ -662,17 +761,20 @@ function EmptyState({ children }: { children: ReactNode }) {
 function DashboardUnavailable({ copy }: { copy: (typeof studentDashboardCopy)["fr"] }) {
   return (
     <StudentPageFrame>
-      <PageHeader badge={copy.unavailableBadge} title={copy.dossierEyebrow} />
-      <Card>
-        <div role="alert">
-          <h2 className="text-xl font-semibold text-[var(--foreground)]">{copy.unavailableTitle}</h2>
-          <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{copy.unavailableText}</p>
-        </div>
-        <div className="mt-5">
-          <ButtonLink href="/student">{copy.retry}</ButtonLink>
-        </div>
-      </Card>
-
+      <DossierHeader
+        eyebrow={copy.unavailableBadge}
+        title={copy.dossierEyebrow}
+        status={copy.unavailableTitle}
+        statusVariant="warning"
+      />
+      <div className="mt-7">
+        <StudentPageState
+          variant="warning"
+          title={copy.unavailableTitle}
+          description={copy.unavailableText}
+          actions={<ButtonLink href="/student">{copy.retry}</ButtonLink>}
+        />
+      </div>
     </StudentPageFrame>
   );
 }

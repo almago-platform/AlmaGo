@@ -17,7 +17,10 @@ test("student dashboard keeps the existing Supabase data contract", () => {
   assert.ok(page.includes('if (!profile?.onboarding_completed) redirect("/student/onboarding")'));
 });
 
-test("student dashboard preserves next-action priority logic", () => {
+test("student dashboard preserves next-action logic and promotes deadline urgency", () => {
+  assert.ok(page.includes("urgentApplication?.next_action"));
+  assert.ok(page.includes("urgentChecklistItem"));
+  assert.ok(page.includes("cockpit.urgentDeadlineReason"));
   assert.ok(page.includes("documentsNeedingAction"));
   assert.ok(page.includes("t.documentsAction"));
   assert.ok(dashboardCopy.includes('documentsAction: "Corriger mes documents"'));
@@ -25,6 +28,7 @@ test("student dashboard preserves next-action priority logic", () => {
   assert.ok(page.includes("t.applicationAction"));
   assert.ok(page.includes("nextItem"));
   assert.ok(page.includes("t.checklistAction"));
+  assert.ok(page.indexOf("urgentApplication?.next_action") < page.indexOf("documentsNeedingAction\n        ?"));
 });
 
 test("student dashboard cockpit centers the first view on the next action", () => {
@@ -40,7 +44,8 @@ test("student dashboard cockpit centers the first view on the next action", () =
   assert.ok(page.includes("DashboardMetric"));
   assert.ok(page.includes("allImportantDeadlines.length"));
   assert.ok(page.includes("documentAttentionCount"));
-  assert.doesNotMatch(page, /sm:grid-cols-2 xl:grid-cols-4/);
+  assert.ok(page.includes("data-dashboard-attention"));
+  assert.ok(page.includes('className="grid border-y border-[var(--border)] bg-[var(--surface)] sm:grid-cols-3"'));
 });
 
 test("journey overview uses localized visual cards and remains responsive", () => {
@@ -81,6 +86,9 @@ test("student dashboard rebrands checklist labels through the same canonical lay
 test("cockpit exposes project summary, deadlines, saved programmes, missing documents, applications and recent activity", () => {
   assert.match(page, /target_degree,target_field,target_intake/);
   assert.match(page, /const importantDeadlines/);
+  assert.match(page, /overdueDeadlineCount/);
+  assert.match(page, /dueSoonDeadlineCount/);
+  assert.match(page, /allMissingRequiredDocuments/);
   assert.match(page, /missingRequiredDocuments/);
   assert.match(page, /const recentActivities/);
   assert.match(page, /cockpit\.programmesTitle/);
