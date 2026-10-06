@@ -1,4 +1,6 @@
 import { StudentJourneyHeader } from "@/components/student/StudentJourneyHeader";
+import { StudentPageFrame } from "@/components/student/StudentPageFrame";
+import { StudentPageState } from "@/components/student/StudentPageState";
 import { AlmagoJourney } from "@/components/student/AlmagoJourney";
 import { redirect } from "next/navigation";
 import { Badge } from "@/components/ui/Badge";
@@ -247,7 +249,7 @@ export default async function ChecklistPage() {
   }
 
   return (
-    <main className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 sm:py-7 lg:px-8 lg:py-9">
+    <StudentPageFrame>
       <StudentJourneyHeader
         current="checklist"
         eyebrow={t.page.eyebrow}
@@ -407,7 +409,7 @@ export default async function ChecklistPage() {
           })}
         </div>
       )}
-    </main>
+    </StudentPageFrame>
   );
 }
 
@@ -425,17 +427,18 @@ function ChecklistUnavailable({ copy }: { copy: (typeof studentChecklistCopy)["f
   return (
     <main className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 sm:py-7 lg:px-8 lg:py-9">
       <StudentJourneyHeader current="checklist" eyebrow={copy.page.eyebrow} title={copy.page.title} />
-      <Card>
-        <div role="alert">
-          <h2 className="text-xl font-semibold text-slate-950">{copy.page.unavailableTitle}</h2>
-          <p className="mt-2 text-sm leading-6 text-slate-600">{copy.page.unavailableText}</p>
-        </div>
-        <div className="mt-5 flex flex-wrap gap-3">
-          <ButtonLink href="/student/checklist">{copy.page.retry}</ButtonLink>
-          <ButtonLink href="/student" variant="secondary">{copy.page.back}</ButtonLink>
-        </div>
-      </Card>
-    </main>
+      <StudentPageState
+        variant="warning"
+        title={copy.page.unavailableTitle}
+        description={copy.page.unavailableText}
+        actions={
+          <>
+            <ButtonLink href="/student/checklist">{copy.page.retry}</ButtonLink>
+            <ButtonLink href="/student" variant="secondary">{copy.page.back}</ButtonLink>
+          </>
+        }
+      />
+    </StudentPageFrame>
   );
 }
 
