@@ -171,6 +171,22 @@ export default async function ProspectCataloguePage({
     applyLink: t.applyLink,
   };
 
+  const recommendationPhotoUniversities = new Set<string>();
+  const recommendationPresentation = recommendations.map((recommendation, index) => {
+    const universityId = recommendation.programme.university.id;
+    const showUniversityPhoto = !recommendationPhotoUniversities.has(universityId);
+    recommendationPhotoUniversities.add(universityId);
+    return { recommendation, showUniversityPhoto, visualIndex: index + 1 };
+  });
+
+  const resultPhotoUniversities = new Set<string>();
+  const filteredPresentation = filtered.map((programme, index) => {
+    const universityId = programme.university.id;
+    const showUniversityPhoto = !resultPhotoUniversities.has(universityId);
+    resultPhotoUniversities.add(universityId);
+    return { programme, showUniversityPhoto, visualIndex: index + 1 };
+  });
+
   return (
     <main className="space-y-6">
       <ProspectPageHero
@@ -189,11 +205,13 @@ export default async function ProspectCataloguePage({
             description={t.recommendedSubtitle}
           />
           <div className="prospect-programme-grid mt-4">
-            {recommendations.map((recommendation) => (
+            {recommendationPresentation.map(({ recommendation, showUniversityPhoto, visualIndex }) => (
               <ProspectProgrammeRecommendationCard
                 key={recommendation.programme.id}
                 recommendation={recommendation}
                 labels={recommendationLabels}
+                showUniversityPhoto={showUniversityPhoto}
+                visualIndex={visualIndex}
               />
             ))}
           </div>
@@ -295,13 +313,15 @@ export default async function ProspectCataloguePage({
 
           {filtered.length ? (
             <div className="prospect-programme-grid">
-              {filtered.map((programme) => (
+              {filteredPresentation.map(({ programme, showUniversityPhoto, visualIndex }) => (
                 <ProspectProgrammeCatalogueCard
                   key={programme.id}
                   programme={programme}
                   projectMatch={matchesProject(programme, state.answers)}
                   labels={catalogueCardLabels}
                   wide={filtered.length === 1}
+                  showUniversityPhoto={showUniversityPhoto}
+                  visualIndex={visualIndex}
                 />
               ))}
             </div>
