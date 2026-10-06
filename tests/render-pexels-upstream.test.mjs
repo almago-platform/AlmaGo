@@ -8,6 +8,7 @@ const sources = [
   "src/components/public/HomeJourneySection.tsx",
   "src/components/auth/AuthStoryPanel.tsx",
   "src/components/student/OnboardingForm.tsx",
+  "src/lib/prospect/media.ts",
 ].map((path) => readFileSync(path, "utf8"));
 
 const config = readFileSync("next.config.ts", "utf8");
@@ -16,7 +17,7 @@ const pexelsUrls = sources.flatMap((source) =>
 );
 
 test("all application Pexels sources are bounded before Next image optimization", () => {
-  assert.equal(pexelsUrls.length, 13);
+  assert.equal(pexelsUrls.length, 16);
   for (const url of pexelsUrls) {
     assert.match(url, /\?auto=compress&cs=tinysrgb&w=(1200|1920)$/);
   }
@@ -24,7 +25,7 @@ test("all application Pexels sources are bounded before Next image optimization"
 
 test("hero keeps a larger bounded source while cards and auth stay at 1200px", () => {
   assert.equal(pexelsUrls.filter((url) => /w=1920$/.test(url)).length, 1);
-  assert.equal(pexelsUrls.filter((url) => /w=1200$/.test(url)).length, 12);
+  assert.equal(pexelsUrls.filter((url) => /w=1200$/.test(url)).length, 15);
 });
 
 test("AlmaGo keeps Next image proxying instead of sending browsers directly to Pexels", () => {
