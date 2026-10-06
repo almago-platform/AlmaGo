@@ -492,7 +492,7 @@ export default async function StudentEntry() {
       </section>
 
       <section
-        className="pc-panel grid overflow-hidden sm:grid-cols-3"
+        className="grid border-y border-[var(--border)] bg-[var(--surface)] sm:grid-cols-3"
         aria-label={t.overviewAria}
         data-dashboard-metrics
       >
