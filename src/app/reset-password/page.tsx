@@ -40,7 +40,7 @@ export default async function ResetPasswordPage({
   return (
     <main className="min-h-screen bg-[linear-gradient(180deg,#fffdf8_0%,#f7f4ec_48%,#f1ece4_100%)] px-4 py-5 text-[var(--foreground)] sm:px-6 sm:py-8 lg:px-8 lg:py-10">
       <div className="mx-auto grid min-h-[calc(100vh-2.5rem)] w-full max-w-7xl items-center gap-7 lg:grid-cols-[1.02fr_0.98fr] lg:gap-10">
-        <section className="hidden min-h-[620px] overflow-hidden rounded-[1rem] border border-[var(--border)] bg-[var(--surface)] shadow-[0_28px_70px_-52px_rgba(28,33,36,0.55)] lg:flex lg:flex-col">
+        <section className="pc-panel hidden min-h-[620px] overflow-hidden rounded-[1rem] lg:flex lg:flex-col">
           <div className="flex items-center justify-between gap-3 border-b border-[var(--border)] bg-[var(--surface)] p-7">
             <Link href="/" className="inline-flex items-center" aria-label={t.homeAria}>
               <BrandLogo className="h-auto w-56" />
