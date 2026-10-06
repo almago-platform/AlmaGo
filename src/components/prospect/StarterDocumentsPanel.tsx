@@ -43,6 +43,7 @@ export function StarterDocumentsPanel({
   const inputRef = useRef<HTMLInputElement>(null);
   const [category, setCategory] = useState("passport");
   const [busy, setBusy] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [selectedFileName, setSelectedFileName] = useState("");
   const [selectedFileType, setSelectedFileType] = useState("");
   const [selectedFileSize, setSelectedFileSize] = useState<number | null>(null);
@@ -75,7 +76,7 @@ export function StarterDocumentsPanel({
 
   async function upload(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const file = inputRef.current?.files?.[0];
+    const file = selectedFile ?? inputRef.current?.files?.[0] ?? null;
     if (!file) {
       setError("Choisissez un fichier.");
       return;
@@ -102,6 +103,7 @@ export function StarterDocumentsPanel({
       }
 
       if (inputRef.current) inputRef.current.value = "";
+      setSelectedFile(null);
       setSelectedFileName("");
       setSelectedFileType("");
       setSelectedFileSize(null);
@@ -116,6 +118,7 @@ export function StarterDocumentsPanel({
 
   function clearSelectedFile() {
     if (inputRef.current) inputRef.current.value = "";
+    setSelectedFile(null);
     setSelectedFileName("");
     setSelectedFileType("");
     setSelectedFileSize(null);
@@ -339,6 +342,7 @@ export function StarterDocumentsPanel({
                     accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"
                     onChange={(event) => {
                       const file = event.target.files?.[0] ?? null;
+                      setSelectedFile(file);
                       setSelectedFileName(file?.name || "");
                       setSelectedFileType(file?.type || "");
                       setSelectedFileSize(file?.size ?? null);
@@ -381,6 +385,17 @@ export function StarterDocumentsPanel({
                   ) : (
                     <label
                       htmlFor="prospect-document-file"
+                      onDragOver={(event) => event.preventDefault()}
+                      onDrop={(event) => {
+                        event.preventDefault();
+                        const file = event.dataTransfer.files?.[0] ?? null;
+                        if (!file) return;
+                        setSelectedFile(file);
+                        setSelectedFileName(file.name);
+                        setSelectedFileType(file.type || "");
+                        setSelectedFileSize(file.size);
+                        setError(null);
+                      }}
                       className="pc-glass mt-2 flex min-h-28 cursor-pointer flex-col items-center justify-center rounded-[1.1rem] border-dashed px-4 py-4 text-center transition-all duration-200 hover:-translate-y-0.5 hover:border-[var(--brand)] hover:shadow-[0_18px_46px_-34px_rgba(216,6,33,.32)]"
                     >
                       <span className="grid size-9 place-items-center rounded-full bg-[var(--premium-ink)] text-lg text-white" aria-hidden="true">＋</span>
