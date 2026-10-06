@@ -6,12 +6,14 @@ export function PremiumSectionHeader({
   description,
   actions,
   align = "end",
+  eyebrowTone = "brand",
 }: {
   eyebrow?: ReactNode;
   title: ReactNode;
   description?: ReactNode;
   actions?: ReactNode;
   align?: "start" | "center" | "end";
+  eyebrowTone?: "brand" | "success";
 }) {
   const alignment =
     align === "center"
@@ -23,7 +25,7 @@ export function PremiumSectionHeader({
   return (
     <div className={"flex flex-col gap-3 sm:flex-row sm:justify-between " + alignment}>
       <div className={align === "center" ? "max-w-3xl" : "min-w-0 max-w-4xl"}>
-        {eyebrow ? <div className="pc-kicker">{eyebrow}</div> : null}
+        {eyebrow ? <div className={eyebrowTone === "success" ? "pc-kicker pc-kicker-success" : "pc-kicker"}>{eyebrow}</div> : null}
         <h2 className="mt-2 text-[clamp(1.45rem,2.6vw,2.05rem)] font-semibold leading-[1.12] tracking-[-0.04em] text-[var(--foreground)]">
           {title}
         </h2>
