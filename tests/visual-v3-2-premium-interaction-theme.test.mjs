@@ -18,6 +18,7 @@ test("premium polish exposes a restrained semantic theme system", () => {
   for (const theme of [
     ".pc-theme-red",
     ".pc-theme-gold",
+    ".pc-theme-amber",
     ".pc-theme-green",
     ".pc-theme-blue",
     ".pc-theme-ink",
@@ -48,7 +49,7 @@ test("motion effects are neutralized for reduced-motion users", () => {
 test("qualification meaning controls its visual theme", () => {
   for (const pair of [
     ["needs_information", "pc-theme-red"],
-    ["needs_verification", "pc-theme-gold"],
+    ["needs_verification", "pc-theme-amber"],
     ["ready_for_review", "pc-theme-green"],
     ["qualified_prospect", "pc-theme-green"],
   ]) {
