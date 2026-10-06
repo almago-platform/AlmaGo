@@ -33,7 +33,7 @@ const fr = {
       title3: "organisé de A à Z.",
       lead: "Trouve les programmes adaptés à ton profil, prépare tes documents et suis tes candidatures depuis un seul espace.",
       primary: "Commencer mon projet",
-      orientationPrimary: "Commencer mon orientation",
+      orientationPrimary: "Faire mon orientation gratuite",
       secondary: "Découvrir comment ça marche",
       proof: ["6 étapes simples", "Documents au même endroit", "Sources officielles à vérifier"],
       exampleAria: "Exemple de dossier AlmaGo",
