@@ -77,12 +77,13 @@ Utiliser **un seul formulaire** : `docs/A38_OWNER_CONFIRMATION.md`.
 
 Le dépôt fournit déjà les catégories de données, les sous-traitants techniques visibles et le fait qu’aucun analytics n’est actif. Le fournisseur analytics futur appartient à A44 et n’est **plus une condition préalable A38**.
 
-A38 attend uniquement :
-- les informations publiques de l’éditeur réellement applicables ;
-- le statut gratuit/payant actuel ;
-- les règles de conservation/suppression ;
-- les éventuelles informations DPO/activité réglementée ;
-- la relecture humaine/juridique finale.
+Le statut pré-lancement/gratuit, la configuration d’offres TND de test, la politique de conservation et la procédure de suppression sont déjà confirmés dans le formulaire propriétaire.
+
+A38 attend encore uniquement :
+- l’adresse publique finale et les informations d’immatriculation/fiscales réellement applicables ;
+- la détermination DPO / activité réglementée / autorisation éventuelle ;
+- les bases juridiques, transferts internationaux, droit applicable et autorité compétente ;
+- la relecture humaine/juridique finale, avec version et date d’entrée en vigueur.
 
 ## 6. Condition de clôture A38
 
