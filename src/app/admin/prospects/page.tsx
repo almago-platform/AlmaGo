@@ -3,6 +3,7 @@ import { ProspectQualificationReviewForm } from "@/components/admin/ProspectQual
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { restorePublicOrientationAnswers } from "@/lib/orientation/public";
 import { acquisitionContextFromStoredInput } from "@/lib/phase2/acquisition";
+import { customerLifecycleStatusLabel } from "@/lib/phase2/access";
 import {
   evaluateSmartOrientationPriority,
   type SmartOrientationPriorityResult,
@@ -77,14 +78,6 @@ const qualificationLabels: Record<string, string> = {
   qualified_prospect: "Qualifié",
 };
 
-const accessStatusLabels: Record<string, string> = {
-  prospect_account: "Compte prospect",
-  qualified_prospect: "Prospect qualifié",
-  payment_pending: "Paiement en attente",
-  paid_pending_validation: "Paiement reçu · validation en attente",
-  client_active: "Client actif",
-  client_completed: "Accompagnement terminé",
-};
 
 const priorityLabels: Record<SmartOrientationPriorityState, string> = {
   priority_ready: "Priorité haute",
@@ -570,7 +563,7 @@ export default async function AdminProspectsPage({
                   </div>
                   <div className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-3">
                     <p className="font-semibold text-slate-900">Compte / accès</p>
-                    <p className="mt-1 text-slate-700">{accessStatus ? accessStatusLabels[accessStatus] || accessStatus : "Sans compte lié"}</p>
+                    <p className="mt-1 text-slate-700">{customerLifecycleStatusLabel(accessStatus)}</p>
                   </div>
                 </div>
 
