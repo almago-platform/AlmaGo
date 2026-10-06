@@ -290,6 +290,35 @@ export function StudentApplicationsPanel({
         </section>
       </section>
 
+      {!loadError && applications.length ? (
+        <section
+          aria-labelledby="applications-pipeline-title"
+          className="rounded-[1.3rem] border border-[var(--border)] bg-white p-4 shadow-[0_20px_55px_-44px_rgba(0,0,0,.28)] sm:p-5"
+          data-applications-pipeline
+        >
+          <p className="text-[0.68rem] font-extrabold uppercase tracking-[0.15em] text-[var(--brand)]">{workspace.pipelineEyebrow}</p>
+          <h2 id="applications-pipeline-title" className="mt-1 text-xl font-semibold tracking-[-0.025em] text-slate-950">{workspace.pipelineTitle}</h2>
+          <p className="mt-1 max-w-3xl text-sm leading-6 text-slate-600">{workspace.pipelineDescription}</p>
+
+          <div className="mt-4 grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
+            {([
+              ["preparing", workspace.stages.preparing, pipelineCounts.preparing],
+              ["ready", workspace.stages.ready, pipelineCounts.ready],
+              ["submitted", workspace.stages.submitted, pipelineCounts.submitted],
+              ["decision", workspace.stages.decision, pipelineCounts.decision],
+            ] as const).map(([key, label, count], index) => (
+              <div key={key} className="relative rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-4 py-4">
+                <div className="flex items-center justify-between gap-3">
+                  <span className="grid h-7 w-7 place-items-center rounded-full bg-white text-xs font-extrabold text-[var(--brand)] shadow-sm">{index + 1}</span>
+                  <strong className="text-2xl font-semibold tracking-[-0.04em] text-slate-950">{count}</strong>
+                </div>
+                <p className="mt-3 text-xs font-bold uppercase tracking-[0.09em] text-slate-600">{label}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      ) : null}
+
       <Card aria-labelledby="applications-deadline-title" className="rounded-[1.3rem] border-black/[.07] bg-white shadow-[0_20px_55px_-42px_rgba(0,0,0,.32)]">
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
           <div>
@@ -326,12 +355,71 @@ export function StudentApplicationsPanel({
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">{t.listEyebrow}</p>
               <h2 id="applications-list-title" className="mt-1 text-2xl font-semibold tracking-[-0.03em] text-slate-950">{t.listTitle}</h2>
-              <p className="mt-1 text-sm leading-6 text-slate-600">{t.count(applications.length)}</p>
+              <p className="mt-1 text-sm leading-6 text-slate-600">{workspace.visibleCount(visibleApplications.length, applications.length)}</p>
             </div>
           </div>
 
+          <div
+            aria-label={workspace.filtersAria}
+            className="mb-4 flex flex-col gap-3 rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface-subtle)] p-3 sm:p-4 lg:flex-row lg:items-center lg:justify-between"
+            data-application-filters
+          >
+            <div className="flex flex-wrap gap-2" role="group" aria-label={workspace.filterLabel}>
+              {([
+                ["all", workspace.all, applications.length],
+                ["action", workspace.action, actionable.length],
+                ["urgent", workspace.urgent, urgentApplications.length],
+                ["submitted", workspace.submitted, pipelineCounts.submitted],
+                ["decision", workspace.decision, pipelineCounts.decision],
+              ] as const).map(([value, label, count]) => (
+                <button
+                  key={value}
+                  type="button"
+                  aria-pressed={applicationFilter === value}
+                  onClick={() => setApplicationFilter(value)}
+                  className={
+                    "inline-flex min-h-10 items-center gap-2 rounded-xl border px-3 py-2 text-xs font-bold transition " +
+                    (applicationFilter === value
+                      ? "border-[var(--brand)] bg-[var(--brand)] text-white"
+                      : "border-[var(--border)] bg-white text-slate-700 hover:border-[var(--brand-border)]")
+                  }
+                >
+                  <span>{label}</span>
+                  <span className={applicationFilter === value ? "text-white/75" : "text-slate-400"}>{count}</span>
+                </button>
+              ))}
+            </div>
+
+            <label className="text-xs font-bold uppercase tracking-[0.1em] text-slate-500">
+              <span className="sr-only">{workspace.universityFilter}</span>
+              <select
+                aria-label={workspace.universityFilter}
+                value={universityFilter}
+                onChange={(event) => setUniversityFilter(event.target.value)}
+                className="field mt-0 min-w-52 bg-white normal-case tracking-normal text-slate-800"
+              >
+                <option value="all">{workspace.all}</option>
+                {universities.map((university) => (
+                  <option key={university} value={university}>{university}</option>
+                ))}
+              </select>
+            </label>
+          </div>
+
           <div className="space-y-4">
-            {applications.map((application) => {
+            {visibleApplications.length === 0 ? (
+              <Card className="border-dashed bg-white/75 py-8 text-center shadow-none">
+                <h3 className="font-bold text-slate-950">{workspace.filteredEmptyTitle}</h3>
+                <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-slate-600">{workspace.filteredEmptyText}</p>
+                <button
+                  type="button"
+                  className="mt-4 text-sm font-bold text-[var(--brand)] hover:underline"
+                  onClick={() => { setApplicationFilter("all"); setUniversityFilter("all"); }}
+                >
+                  {workspace.reset}
+                </button>
+              </Card>
+            ) : visibleApplications.map((application) => {
               const program = firstProgram(application);
               const university = firstUniversity(program);
               const events = [...(application.application_events || [])].sort(
@@ -340,6 +428,8 @@ export function StudentApplicationsPanel({
               const active = isActiveApplication(application.status);
               const deadlineEvaluation = evaluateCampusApplicationDeadline(application);
               const applicationOverdue = deadlineEvaluation.status === "closed";
+              const applicationUrgent = isUrgentApplication(application);
+              const applicationDays = deadlineDays(application);
               const nextAction = active
                 ? localizeApplicationStoredText(locale, application.next_action) ||
                   (applicationOverdue
@@ -352,7 +442,7 @@ export function StudentApplicationsPanel({
                   as="article"
                   key={application.id}
                   aria-labelledby={`student-application-title-${application.id}`}
-                  className={active && application.next_action ? "rounded-[1.3rem] border-[#ead59a] bg-[#fff9e9] shadow-[0_22px_60px_-42px_rgba(139,98,0,.24)]" : "rounded-[1.3rem] border-black/[.07] bg-white shadow-[0_22px_60px_-42px_rgba(0,0,0,.3)]"}
+                  className={applicationUrgent ? "rounded-[1.3rem] border-amber-300 bg-amber-50/30 shadow-[0_22px_60px_-42px_rgba(139,98,0,.3)]" : active && application.next_action ? "rounded-[1.3rem] border-[#ead59a] bg-[#fff9e9] shadow-[0_22px_60px_-42px_rgba(139,98,0,.24)]" : "rounded-[1.3rem] border-black/[.07] bg-white shadow-[0_22px_60px_-42px_rgba(0,0,0,.3)]"}
                 >
                   <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
                     <div className="min-w-0">
@@ -364,7 +454,7 @@ export function StudentApplicationsPanel({
                       <div className="mt-2 flex flex-wrap gap-2 text-xs font-semibold text-slate-600">
                         {program?.degree_level && <span className="rounded-full border border-black/[.06] bg-[#f3f0ea] px-2.5 py-1.5"><bdi dir="auto">{localizeCatalogueLabel(locale, program.degree_level)}</bdi></span>}
                         <span className="rounded-full border border-black/[.06] bg-[#f3f0ea] px-2.5 py-1.5"><bdi dir="auto">{localizeCatalogueLabel(locale, application.intake_term) || t.intakeUnknown}</bdi></span>
-                        <span className={`rounded-full px-3 py-1.5 ${applicationOverdue ? "bg-amber-100 text-amber-900" : "bg-slate-100"}`}>
+                        <span className={`rounded-full px-3 py-1.5 ${applicationOverdue || (applicationDays !== null && applicationDays <= 14) ? "bg-amber-100 text-amber-900" : "bg-slate-100"}`}>
                           {t.deadlineWord}{" "}
                           <bdi dir="auto">
                             {["open", "closed"].includes(deadlineEvaluation.status)
@@ -375,9 +465,16 @@ export function StudentApplicationsPanel({
                       </div>
                     </div>
                     <div className="flex flex-col items-start text-start">
-                      <Badge variant={applicationVariant(application.status)}>
-                        {localizedApplicationStatus(application.status, t)}
-                      </Badge>
+                      <div className="flex flex-wrap gap-2">
+                        <Badge variant={applicationVariant(application.status)}>
+                          {localizedApplicationStatus(application.status, t)}
+                        </Badge>
+                        {applicationUrgent ? (
+                          <Badge variant="warning">
+                            {applicationOverdue ? workspace.overdueBadge : workspace.urgentBadge}
+                          </Badge>
+                        ) : null}
+                      </div>
                       <p className="mt-2 text-xs text-slate-500">
                         {t.trackingStep}: {localizedApplicationStage(application.status, t)}
                       </p>
