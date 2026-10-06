@@ -8,15 +8,12 @@ import { PremiumEmptyState } from "@/components/product/PremiumEmptyState";
 import { PremiumSectionHeader } from "@/components/product/PremiumSectionHeader";
 import { buttonClassName } from "@/components/ui/Button";
 import { ProspectProgrammeRecommendationCard } from "@/components/prospect/ProspectProgrammeRecommendationCard";
-import { ProspectQualificationSummary } from "@/components/prospect/ProspectQualificationSummary";
 import { prospectHubCopy } from "@/content/prospect-hub-copy";
-import { prospectQualificationCopy } from "@/content/prospect-qualification-copy";
-import { orientationDiagnosticCopy } from "@/content/orientation-diagnostic-copy";
 import { getRequestLocale } from "@/lib/i18n-server";
 import { getPhase2StudentAccess } from "@/lib/phase2/access";
 import { loadVerifiedProgrammeCatalogue } from "@/lib/orientation-engine/catalog";
 import { loadProspectHubState } from "@/lib/prospect/hub";
-import { orientationProjectFacts, orientationVersionSummary } from "@/lib/prospect/orientation-presentation";
+import { orientationProjectFacts } from "@/lib/prospect/orientation-presentation";
 import { prospectCatalogueRecommendations } from "@/lib/prospect/programmes";
 import { prospectMedia } from "@/lib/prospect/media";
 
@@ -328,8 +325,6 @@ export default async function ProspectDashboardPage() {
   const t = prospectHubCopy[locale].dashboard;
   const catalogueT = prospectHubCopy[locale].catalogue;
   const recommendations = prospectCatalogueRecommendations(state.answers, catalogue);
-  const diagnosticCopy = orientationDiagnosticCopy[locale];
-  const qualificationCopy = prospectQualificationCopy[locale];
   const preBac = state.answers?.bacStatus === "preparing";
   const action = nextAction(state, t, locale);
   const v2 = prospectV2Labels(locale);
@@ -340,11 +335,6 @@ export default async function ProspectDashboardPage() {
       ? v2.waitingValidation
       : v2.waitingReview;
   const facts = state.answers ? orientationProjectFacts(state.answers, locale) : [];
-  const dateFormatter = new Intl.DateTimeFormat(locale, {
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-  });
   const recommendationLabels = {
     projectMatch: catalogueT.projectMatch,
     preferredCity: catalogueT.preferredCity,
@@ -469,86 +459,7 @@ export default async function ProspectDashboardPage() {
         </section>
       ) : null}
 
-      {state.qualification ? (
-        <ProspectQualificationSummary
-          qualification={state.qualification}
-          copy={qualificationCopy}
-        />
-      ) : null}
-
-      <nav
-        aria-label={t.browseTitle}
-        className="pc-theme-ink grid gap-2 rounded-[var(--premium-radius-card)] p-2.5 text-white sm:grid-cols-3"
-      >
-        <Link
-          href="/prospect/catalogue"
-          className="rounded-xl px-4 py-3.5 text-sm font-semibold text-white/82 transition-all duration-200 hover:bg-white/[.08] hover:text-white"
-        >
-          {t.browseCatalogue} →
-        </Link>
-        <Link
-          href="/prospect/solutions"
-          className="rounded-xl px-4 py-3.5 text-sm font-semibold text-white/82 transition-all duration-200 hover:bg-white/[.08] hover:text-white"
-        >
-          {t.browseSolutions} →
-        </Link>
-        <Link
-          href="/prospect/orientation"
-          className="rounded-xl px-4 py-3.5 text-sm font-semibold text-white/82 transition-all duration-200 hover:bg-white/[.08] hover:text-white"
-        >
-          {t.updateProject} →
-        </Link>
-      </nav>
-
-      {state.current ? (
-        <section className="pc-panel pc-premium-card pc-theme-blue p-4 sm:p-5">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div className="min-w-0">
-              <p className="text-[11px] font-extrabold uppercase tracking-[0.15em] text-[var(--brand)]">
-                {t.project}
-              </p>
-              <h2 className="mt-1 text-lg font-bold">
-                {diagnosticCopy.headlines[state.current.diagnostic.headlineCode].title}
-              </h2>
-            </div>
-            <Link
-              href="/prospect/orientation"
-              className={buttonClassName("secondary", "min-h-10 shrink-0 px-4 py-2")}
-            >
-              {t.updateProject}
-            </Link>
-          </div>
-
-          {state.orientations.length > 1 ? (
-            <details className="mt-5 border-t border-[var(--border)] pt-4">
-              <summary className="cursor-pointer text-sm font-bold">
-                {t.history}
-              </summary>
-              <p className="mt-2 text-xs leading-5 text-[var(--muted)]">
-                {t.historyHint}
-              </p>
-              <div className="mt-3 grid gap-2">
-                {state.orientations.slice(0, 5).map((orientation, index) => (
-                  <div
-                    key={orientation.id}
-                    className="flex flex-wrap items-center justify-between gap-3 rounded-[var(--radius-control)] bg-[var(--surface-subtle)] px-3 py-2.5"
-                  >
-                    <span className="text-sm font-semibold">
-                      {orientationVersionSummary(orientation.answers, locale)}
-                    </span>
-                    <span className="text-xs text-[var(--muted)]">
-                      {index === 0 ? `${t.currentVersion} · ` : ""}
-                      <bdi dir="auto">
-                        {dateFormatter.format(new Date(orientation.created_at))}
-                      </bdi>
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </details>
-          ) : null}
-        </section>
-      ) : (
+      {!state.current ? (
         <PremiumEmptyState
           eyebrow={v2.space}
           title={t.noOrientation}
@@ -558,7 +469,7 @@ export default async function ProspectDashboardPage() {
             </Link>
           }
         />
-      )}
+      ) : null}
     </main>
   );
 }
