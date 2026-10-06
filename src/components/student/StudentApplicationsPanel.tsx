@@ -254,7 +254,7 @@ export function StudentApplicationsPanel({
             </div>
           </div>
 
-          <div className="space-y-5">
+          <div className="space-y-4">
             {applications.map((application) => {
               const program = firstProgram(application);
               const university = firstUniversity(program);
@@ -321,49 +321,66 @@ export function StudentApplicationsPanel({
                     <p dir="auto" className="mt-2 text-sm font-semibold leading-6 text-slate-950 [overflow-wrap:anywhere]">{nextAction}</p>
                   </section>
 
-                  <div className="mt-4 grid gap-4 sm:grid-cols-2">
-                    <InfoCard title={t.requiredDocuments} value={application.required_documents?.length ? application.required_documents.join(", ") : t.unknown} />
-                    <InfoCard title={t.result} value={application.result || t.noResult} />
-                  </div>
+                  <details className="group mt-4 rounded-[1.1rem] border border-black/[.06] bg-white/75">
+                    <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-sm font-bold text-slate-900 marker:content-none">
+                      <span>
+                        {locale === "fr"
+                          ? "Voir les détails de la candidature"
+                          : locale === "ar"
+                            ? "عرض تفاصيل الطلب"
+                            : locale === "de"
+                              ? "Bewerbungsdetails anzeigen"
+                              : "View application details"}
+                      </span>
+                      <span aria-hidden="true" className="text-lg text-[var(--brand)] transition-transform group-open:rotate-45">＋</span>
+                    </summary>
 
-                  {application.student_notes && (
-                    <div className="mt-5 rounded-[1.1rem] border border-black/[.06] bg-[#f6f3ed] p-4">
-                      <h4 className="text-sm font-semibold text-slate-900">{t.messageForYou}</h4>
-                      <p dir="auto" className="mt-1 text-sm leading-6 text-slate-700 [overflow-wrap:anywhere]">{application.student_notes}</p>
-                      <p className="mt-2 text-xs leading-5 text-slate-500">
-                        {t.messageBoundary}
-                      </p>
-                    </div>
-                  )}
-
-                  <section aria-labelledby={`application-history-title-${application.id}`} className="mt-6">
-                    <div className="mb-3 flex items-center justify-between gap-3">
-                      <h4 id={`application-history-title-${application.id}`} className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">
-                        {t.historyTitle}
-                        <span className="sr-only"> · {program?.name || t.programFallback}</span>
-                      </h4>
-                      <span className="text-xs text-slate-500">{t.eventCount(events.length)}</span>
-                    </div>
-                    {events.length === 0 ? (
-                      <p className="rounded-[1.05rem] border border-black/[.05] bg-[#f6f3ed] p-4 text-sm text-slate-600">
-                        {t.noEvents}
-                      </p>
-                    ) : (
-                      <div className={direction === "rtl" ? "space-y-3 border-r-2 border-[var(--brand-border)] pr-4" : "space-y-3 border-l-2 border-[var(--brand-border)] pl-4"}>
-                        {events.map((event: any) => (
-                          <div key={event.id} className="relative">
-                            <p className="text-sm font-medium text-slate-900">
-                              {studentEventLabel(event.event_type, t)}
-                            </p>
-                            {event.message && <p dir="auto" className="mt-1 text-sm leading-6 text-slate-700 [overflow-wrap:anywhere]">{localizeApplicationStoredText(locale, event.message)}</p>}
-                            <time dateTime={event.created_at} className="mt-1 block text-xs text-slate-500">
-                              {new Intl.DateTimeFormat(t.intlLocale, { dateStyle: "medium" }).format(new Date(event.created_at))}
-                            </time>
-                          </div>
-                        ))}
+                    <div className="border-t border-black/[.06] p-4">
+                      <div className="grid gap-4 sm:grid-cols-2">
+                        <InfoCard title={t.requiredDocuments} value={application.required_documents?.length ? application.required_documents.join(", ") : t.unknown} />
+                        <InfoCard title={t.result} value={application.result || t.noResult} />
                       </div>
-                    )}
-                  </section>
+
+                      {application.student_notes && (
+                        <div className="mt-4 rounded-[1.1rem] border border-black/[.06] bg-[#f6f3ed] p-4">
+                          <h4 className="text-sm font-semibold text-slate-900">{t.messageForYou}</h4>
+                          <p dir="auto" className="mt-1 text-sm leading-6 text-slate-700 [overflow-wrap:anywhere]">{application.student_notes}</p>
+                          <p className="mt-2 text-xs leading-5 text-slate-500">
+                            {t.messageBoundary}
+                          </p>
+                        </div>
+                      )}
+
+                      <section aria-labelledby={`application-history-title-${application.id}`} className="mt-5">
+                        <div className="mb-3 flex items-center justify-between gap-3">
+                          <h4 id={`application-history-title-${application.id}`} className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">
+                            {t.historyTitle}
+                            <span className="sr-only"> · {program?.name || t.programFallback}</span>
+                          </h4>
+                          <span className="text-xs text-slate-500">{t.eventCount(events.length)}</span>
+                        </div>
+                        {events.length === 0 ? (
+                          <p className="rounded-[1.05rem] border border-black/[.05] bg-[#f6f3ed] p-4 text-sm text-slate-600">
+                            {t.noEvents}
+                          </p>
+                        ) : (
+                          <div className={direction === "rtl" ? "space-y-3 border-r-2 border-[var(--brand-border)] pr-4" : "space-y-3 border-l-2 border-[var(--brand-border)] pl-4"}>
+                            {events.map((event: any) => (
+                              <div key={event.id} className="relative">
+                                <p className="text-sm font-medium text-slate-900">
+                                  {studentEventLabel(event.event_type, t)}
+                                </p>
+                                {event.message && <p dir="auto" className="mt-1 text-sm leading-6 text-slate-700 [overflow-wrap:anywhere]">{localizeApplicationStoredText(locale, event.message)}</p>}
+                                <time dateTime={event.created_at} className="mt-1 block text-xs text-slate-500">
+                                  {new Intl.DateTimeFormat(t.intlLocale, { dateStyle: "medium" }).format(new Date(event.created_at))}
+                                </time>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </section>
+                    </div>
+                  </details>
 
                 </Card>
               );
