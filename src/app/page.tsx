@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { HomeHeader } from "@/components/public/HomeHeader";
 import { HomeHero } from "@/components/public/HomeHero";
 import { HomeQuickAccess } from "@/components/public/HomeQuickAccess";
+import { HomeProductPreview } from "@/components/public/HomeProductPreview";
 import { HomeJourneySection } from "@/components/public/HomeJourneySection";
 import { HomePhotoBand } from "@/components/public/HomePhotoBand";
 import { HomeTrustSection } from "@/components/public/HomeTrustSection";
@@ -32,6 +33,7 @@ export default async function Home() {
           primaryLabel={phase2Enabled ? copy.home.hero.orientationPrimary : copy.home.hero.primary}
         />
         <HomeQuickAccess quick={copy.home.quick} />
+        <HomeProductPreview />
         <HomePhotoBand photo={copy.home.photo} />
         <HomeJourneySection
           journey={copy.home.journey}
