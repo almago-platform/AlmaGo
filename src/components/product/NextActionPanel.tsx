@@ -19,12 +19,12 @@ export function NextActionPanel({
     <section
       className={
         waiting
-          ? "relative overflow-hidden rounded-[1.35rem] border border-[#ead59a] bg-[#fff9e9] p-4 shadow-[0_20px_55px_-40px_rgba(139,98,0,.34)] sm:p-5"
-          : "relative overflow-hidden rounded-[1.35rem] border border-black/10 bg-[#17191b] p-4 text-white shadow-[0_28px_70px_-40px_rgba(0,0,0,.65)] sm:p-5"
+          ? "relative overflow-hidden rounded-[var(--premium-radius-panel)] border border-[var(--warning-border)] bg-[var(--premium-gold-wash)] p-4 shadow-[var(--premium-shadow-card)] sm:p-5"
+          : "relative overflow-hidden rounded-[var(--premium-radius-panel)] border border-black/10 bg-[var(--premium-ink)] p-4 text-white shadow-[var(--premium-shadow-action)] sm:p-5"
       }
       style={waiting ? undefined : {
         backgroundImage:
-          "radial-gradient(circle at 88% 15%, rgba(244,180,0,.15), transparent 17rem), radial-gradient(circle at 5% 120%, rgba(216,6,33,.18), transparent 20rem)",
+          "radial-gradient(circle at 88% 15%, rgba(252,181,10,.15), transparent 17rem), radial-gradient(circle at 5% 120%, rgba(219,4,35,.18), transparent 20rem)",
       }}
     >
       <div className={waiting ? "absolute inset-y-0 start-0 w-1 bg-[var(--accent)]" : "absolute inset-y-0 start-0 w-1 bg-[var(--brand)]"} aria-hidden="true" />
@@ -33,7 +33,7 @@ export function NextActionPanel({
           <p
             className={
               waiting
-                ? "text-[0.68rem] font-extrabold uppercase tracking-[0.15em] text-[#7c5900]"
+                ? "text-[0.68rem] font-extrabold uppercase tracking-[0.15em] text-[var(--warning-strong)]"
                 : "text-[0.68rem] font-extrabold uppercase tracking-[0.15em] text-[var(--accent)]"
             }
           >
@@ -42,7 +42,7 @@ export function NextActionPanel({
           <h2
             className={
               waiting
-                ? "mt-1.5 text-[1.45rem] font-semibold tracking-[-0.035em] text-[#202326]"
+                ? "mt-1.5 text-[1.45rem] font-semibold tracking-[-0.035em] text-[var(--foreground)]"
                 : "mt-1.5 text-[1.45rem] font-semibold tracking-[-0.035em] text-white"
             }
           >
@@ -52,7 +52,7 @@ export function NextActionPanel({
             <p
               className={
                 waiting
-                  ? "mt-2 text-sm leading-6 text-[#5f615f]"
+                  ? "mt-2 text-sm leading-6 text-[var(--muted-strong)]"
                   : "mt-2 text-sm leading-6 text-white/68"
               }
             >
@@ -63,7 +63,7 @@ export function NextActionPanel({
             <div
               className={
                 waiting
-                  ? "mt-4 text-xs leading-5 text-[#6d6f6d]"
+                  ? "mt-4 text-xs leading-5 text-[var(--muted)]"
                   : "mt-4 text-xs leading-5 text-white/52"
               }
             >
