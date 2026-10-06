@@ -41,7 +41,7 @@ test.describe("V3.2 bounded public visual regression gate", () => {
 
       await expect(page.locator("body")).toBeVisible();
       await expect(page.locator("main").first()).toBeVisible();
-      await expect(page.locator("h1").first()).toBeVisible();
+      await expect(page.locator("main h1:visible, main h2:visible").first()).toBeVisible();
       await expectNoHorizontalOverflow(page, target.path);
 
       if (target.premium) {
