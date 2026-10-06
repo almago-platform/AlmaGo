@@ -185,7 +185,7 @@ export default async function AdminEntry() {
           description="Les volumes ci-dessous ouvrent directement la file concernée."
         />
 
-        <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+        <div className="mt-4 grid gap-4 md:grid-cols-2 2xl:grid-cols-3">
           <AdminSummaryCard
             href="/admin/intake"
             title="Dossiers Campus"
@@ -231,28 +231,29 @@ export default async function AdminEntry() {
           description="Une vérification catalogue expire automatiquement après 30 jours. Les fiches expirées restent visibles ici pour l’équipe, mais disparaissent de l’espace étudiant."
         />
 
-        <div className="grid gap-4 md:grid-cols-2">
-          <CatalogHealthCard href="/admin/language-courses" title="Cours de langue" stale={staleLanguage} dueSoon={dueLanguage} />
-          <CatalogHealthCard href="/admin/finance-insurance" title="Finance & assurance" stale={staleFinance} dueSoon={dueFinance} />
-        </div>
-
-        {staleCatalogue === 0 && dueCatalogue === 0 && (
-          <p className="mt-4 text-sm font-semibold text-emerald-700">Aucune revalidation n’est requise dans les 7 prochains jours.</p>
-        )}
-      </section>
-
-      <Card className="pc-card mt-6">
-        <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
-          <div>
-            <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--muted)]">Principe de travail</p>
-            <h2 className="mt-2 text-xl font-semibold tracking-[-0.025em] text-slate-950">Résoudre les blocages avant d’enrichir le catalogue.</h2>
-            <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
-              Cette vue utilise uniquement les états réellement enregistrés dans AlmaGo. Elle ne calcule aucun score de performance ou de priorité artificiel.
-            </p>
+        <Card className="pc-card mt-4 overflow-hidden p-0 shadow-none">
+          <div className="flex flex-col gap-3 border-b border-[var(--border)] px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+            <div>
+              <p className="text-sm font-bold text-slate-950">État des sources utilisées dans les services</p>
+              <p className="mt-1 text-xs leading-5 text-slate-600">
+                Les éléments à jour restent publiables. Une source expirée exige une nouvelle vérification officielle.
+              </p>
+            </div>
+            <Badge variant={staleCatalogue ? "warning" : dueCatalogue ? "info" : "success"}>
+              {staleCatalogue
+                ? `${staleCatalogue} à revalider`
+                : dueCatalogue
+                  ? `${dueCatalogue} à planifier`
+                  : "Catalogue à jour"}
+            </Badge>
           </div>
-          <ButtonLink href="/admin/orientation" variant="secondary">Préparer une orientation</ButtonLink>
-        </div>
-      </Card>
+
+          <div className="divide-y divide-[var(--border)]">
+            <CatalogHealthRow href="/admin/language-courses" title="Cours de langue" stale={staleLanguage} dueSoon={dueLanguage} />
+            <CatalogHealthRow href="/admin/finance-insurance" title="Finance & assurance" stale={staleFinance} dueSoon={dueFinance} />
+          </div>
+        </Card>
+      </section>
     </main>
   );
 }
@@ -270,37 +271,41 @@ function AdminSummaryCard({
   detail: string;
   tone: "warning" | "info" | "neutral";
 }) {
+  const status =
+    value > 0
+      ? tone === "warning"
+        ? "Action requise"
+        : "En cours"
+      : "À jour";
+
   return (
     <Link
       href={href}
       aria-label={`Ouvrir ${title}`}
-      className="pc-card-interactive professional-hover group p-5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] focus-visible:ring-offset-2"
+      className="pc-card-interactive professional-hover group min-h-[10rem] p-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] focus-visible:ring-offset-2 sm:p-5"
     >
       <div className="flex items-start justify-between gap-4">
-        <div>
-          <p className="text-sm font-bold text-slate-800">{title}</p>
-          <p className="mt-3 text-3xl font-semibold tracking-tight text-slate-950">{value}</p>
-        </div>
+        <Badge variant={value > 0 ? (tone === "warning" ? "warning" : "info") : "success"}>
+          {status}
+        </Badge>
         <span
           aria-hidden="true"
-          className={`grid h-8 w-8 place-items-center rounded-[var(--radius-control)] text-sm ${
-            tone === "warning"
-              ? "bg-amber-50 text-amber-800"
-              : tone === "info"
-                ? "bg-blue-50 text-blue-800"
-                : "bg-[var(--brand-soft)] text-[var(--brand)]"
-          }`}
+          className="grid h-8 w-8 place-items-center rounded-[var(--radius-control)] bg-[var(--brand-soft)] text-sm font-bold text-[var(--brand)]"
         >
           →
         </span>
       </div>
-      <p className="mt-3 text-sm leading-6 text-slate-600">{detail}</p>
+
+      <div className="mt-4 flex items-end gap-3">
+        <p className="text-3xl font-semibold tracking-tight text-slate-950">{value}</p>
+        <h3 className="pb-1 text-sm font-bold leading-5 text-slate-800">{title}</h3>
+      </div>
+      <p className="mt-2 text-sm leading-6 text-slate-600">{detail}</p>
     </Link>
   );
 }
 
-
-function CatalogHealthCard({
+function CatalogHealthRow({
   href,
   title,
   stale,
@@ -314,21 +319,19 @@ function CatalogHealthCard({
   return (
     <Link
       href={href}
-      className="pc-card-interactive p-5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] focus-visible:ring-offset-2"
+      className="flex flex-col gap-3 px-4 py-4 transition-colors hover:bg-[var(--surface-subtle)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--brand)] sm:flex-row sm:items-center sm:justify-between sm:px-5"
     >
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <h3 className="text-lg font-bold text-slate-950">{title}</h3>
-          <p className="mt-2 text-sm leading-6 text-slate-600">
-            {stale ? `${stale} fiche${stale > 1 ? "s" : ""} expirée${stale > 1 ? "s" : ""}` : "Aucune fiche expirée"}
-            {" · "}
-            {dueSoon ? `${dueSoon} à revoir sous 7 jours` : "aucune échéance sous 7 jours"}
-          </p>
-        </div>
-        <Badge variant={stale ? "warning" : dueSoon ? "info" : "success"}>
-          {stale ? "Action requise" : dueSoon ? "À planifier" : "À jour"}
-        </Badge>
+      <div>
+        <h3 className="text-sm font-bold text-slate-950">{title}</h3>
+        <p className="mt-1 text-sm leading-5 text-slate-600">
+          {stale ? `${stale} fiche${stale > 1 ? "s" : ""} expirée${stale > 1 ? "s" : ""}` : "Aucune fiche expirée"}
+          {" · "}
+          {dueSoon ? `${dueSoon} à revoir sous 7 jours` : "aucune échéance sous 7 jours"}
+        </p>
       </div>
+      <Badge variant={stale ? "warning" : dueSoon ? "info" : "success"}>
+        {stale ? "Action requise" : dueSoon ? "À planifier" : "À jour"}
+      </Badge>
     </Link>
   );
 }
