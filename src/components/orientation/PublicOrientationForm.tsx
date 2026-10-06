@@ -658,7 +658,7 @@ export function PublicOrientationForm({
                   </label>
                 </div>
 
-                <div className="mt-5 rounded-[var(--radius-control)] border border-[var(--brand-border)] bg-[var(--brand-soft)] px-4 py-3 text-sm leading-6">
+                <div className="mt-5 rounded-[var(--radius-control)] border border-[var(--info-border)] bg-[var(--info-soft)] px-4 py-3 text-sm leading-6">
                   {authenticatedEntry ? identityCopy.authenticatedPrivacy : identityCopy.privacy}{" "}
                   <Link
                     href="/legal/privacy"
@@ -702,7 +702,7 @@ export function PublicOrientationForm({
             <p className="page-subtitle">
               {authenticatedUpdate ? updateCopy.introLead : copy.intro.lead}
             </p>
-            <div className="mt-5 rounded-[var(--premium-radius-card)] border border-[var(--brand-border)] bg-[var(--brand-soft)] px-4 py-3 text-sm leading-6 shadow-[var(--premium-shadow-card)]">
+            <div className="mt-5 rounded-[var(--premium-radius-card)] border border-[var(--info-border)] bg-[var(--info-soft)] px-4 py-3 text-sm leading-6 shadow-[var(--premium-shadow-card)]">
               {authenticatedUpdate ? updateCopy.introNotice : copy.intro.privacy}
             </div>
             {!authenticatedUpdate ? (
@@ -831,7 +831,7 @@ export function PublicOrientationForm({
                         </label>
                       </>
                     ) : (
-                      <div className="rounded-[var(--radius-control)] border border-[var(--brand-border)] bg-[var(--brand-soft)] px-4 py-3 text-sm leading-6">
+                      <div className="rounded-[var(--radius-control)] border border-[var(--info-border)] bg-[var(--info-soft)] px-4 py-3 text-sm leading-6">
                         {locale === "fr"
                           ? "Pas de problème : l’étape suivante nous permettra d’indiquer votre dernier diplôme ou vos études actuelles. Campus Allemagne vérifiera ensuite la voie académique possible sans inventer d’accès automatique."
                           : locale === "ar"
