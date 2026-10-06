@@ -1,11 +1,13 @@
 "use client";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { useState } from "react";
 import { Badge } from "@/components/ui/Badge";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Card } from "@/components/ui/Card";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { studentApplicationsCopy } from "@/content/student-applications-copy";
+import { studentApplicationsWorkspaceCopy } from "@/content/student-applications-workspace-copy";
 import {
   isSubmittedApplicationStatus,
   normalizeApplicationStatus,
@@ -27,6 +29,38 @@ function firstProgram(application: any) {
 
 function firstUniversity(program: any) {
   return Array.isArray(program?.universities) ? program.universities[0] : program?.universities;
+}
+
+function deadlineDays(application: any) {
+  if (!application?.deadline) return null;
+  const target = new Date(`${application.deadline}T12:00:00Z`).getTime();
+  if (Number.isNaN(target)) return null;
+  return Math.ceil((target - Date.now()) / 86400000);
+}
+
+function isUrgentApplication(application: any) {
+  if (!isActiveApplication(application.status)) return false;
+  const evaluation = evaluateCampusApplicationDeadline(application);
+  const days = deadlineDays(application);
+  return evaluation.status === "closed" || (evaluation.status === "open" && days !== null && days <= 14);
+}
+
+function applicationPriority(application: any) {
+  const evaluation = evaluateCampusApplicationDeadline(application);
+  const days = deadlineDays(application);
+  if (isActiveApplication(application.status) && evaluation.status === "closed") return 0;
+  if (isActiveApplication(application.status) && evaluation.status === "open" && days !== null && days <= 14) return 1;
+  if (isActiveApplication(application.status) && application.next_action) return 2;
+  if (isActiveApplication(application.status)) return 3;
+  return 4;
+}
+
+function applicationPipelineBucket(status: string): "preparing" | "ready" | "submitted" | "decision" {
+  const normalized = normalizeApplicationStatus(status);
+  if (normalized === "ready_to_submit") return "ready";
+  if (["submitted", "waiting_university"].includes(normalized || "")) return "submitted";
+  if (["admission", "rejection", "withdrawn"].includes(normalized || "")) return "decision";
+  return "preparing";
 }
 
 function localizedApplicationStatus(
@@ -135,11 +169,18 @@ export function StudentApplicationsPanel({
 }) {
   const { locale, direction } = useLocale();
   const t = studentApplicationsCopy[locale].panel;
+  const workspace = studentApplicationsWorkspaceCopy[locale];
+  const [applicationFilter, setApplicationFilter] = useState<"all" | "action" | "urgent" | "submitted" | "decision">("all");
+  const [universityFilter, setUniversityFilter] = useState("all");
+
   const actionable = applications.filter((application) => isActiveApplication(application.status) && Boolean(application.next_action));
   const submitted = applications.filter(
     (application) => Boolean(application.submitted_at) || isSubmittedApplicationStatus(application.status),
   );
   const activeApplications = applications.filter((application) => isActiveApplication(application.status));
+  const urgentApplications = activeApplications
+    .filter(isUrgentApplication)
+    .sort((a, b) => applicationPriority(a) - applicationPriority(b));
   const verifiedDeadlineApplications = activeApplications
     .filter((application) => {
       const status = evaluateCampusApplicationDeadline(application).status;
@@ -150,8 +191,43 @@ export function StudentApplicationsPanel({
   const overdue = nextDeadlineApplication
     ? evaluateCampusApplicationDeadline(nextDeadlineApplication).status === "closed"
     : false;
-  const priorityApplication = actionable[0] || nextDeadlineApplication || activeApplications[0];
+  const priorityApplication = urgentApplications[0] || actionable[0] || nextDeadlineApplication || activeApplications[0];
   const priorityProgram = firstProgram(priorityApplication);
+
+  const pipelineCounts = applications.reduce(
+    (counts, application) => {
+      counts[applicationPipelineBucket(application.status)] += 1;
+      return counts;
+    },
+    { preparing: 0, ready: 0, submitted: 0, decision: 0 },
+  );
+
+  const universities = [...new Set(
+    applications
+      .map((application) => firstUniversity(firstProgram(application))?.name)
+      .filter((name): name is string => Boolean(name)),
+  )].sort((a, b) => a.localeCompare(b));
+
+  const visibleApplications = [...applications]
+    .filter((application) => {
+      const bucket = applicationPipelineBucket(application.status);
+      const matchesFilter =
+        applicationFilter === "all"
+        || (applicationFilter === "action" && isActiveApplication(application.status) && Boolean(application.next_action))
+        || (applicationFilter === "urgent" && isUrgentApplication(application))
+        || (applicationFilter === "submitted" && bucket === "submitted")
+        || (applicationFilter === "decision" && bucket === "decision");
+      const university = firstUniversity(firstProgram(application))?.name;
+      const matchesUniversity = universityFilter === "all" || university === universityFilter;
+      return matchesFilter && matchesUniversity;
+    })
+    .sort((a, b) => {
+      const priorityDelta = applicationPriority(a) - applicationPriority(b);
+      if (priorityDelta !== 0) return priorityDelta;
+      const aDeadline = a.deadline || "9999-12-31";
+      const bDeadline = b.deadline || "9999-12-31";
+      return String(aDeadline).localeCompare(String(bDeadline));
+    });
 
   return (
     <div className="space-y-7">
