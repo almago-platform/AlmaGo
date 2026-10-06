@@ -5,6 +5,7 @@ import { useMemo, useRef, useState } from "react";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { PremiumEmptyState } from "@/components/product/PremiumEmptyState";
 import {
   allowedApplicationTransitions,
   studentApplicationStageLabel,
@@ -179,7 +180,7 @@ export function AdminApplicationsPanel({ applications }: { applications: any[] }
         />
       </section>
 
-      <Card className="shadow-none">
+      <Card className="pc-soft-strip shadow-none">
         <div className="mb-4">
           <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">Trouver un dossier</p>
           <p className="mt-1 text-sm leading-6 text-slate-600">Recherchez par étudiant, programme, établissement ou prochaine action.</p>
@@ -252,7 +253,7 @@ export function AdminApplicationsPanel({ applications }: { applications: any[] }
               key={application.id}
               aria-busy={isSaving}
               aria-labelledby={`admin-application-title-${application.id}`}
-              className={`min-w-0 overflow-hidden break-words ${isOverdue ? "border-amber-300 bg-amber-50/20" : hasRecordedAction ? "border-[var(--brand-border)]" : ""}`}
+              className={`pc-card min-w-0 overflow-hidden break-words ${isOverdue ? "border-[var(--warning-border)] bg-[var(--premium-gold-wash)]" : hasRecordedAction ? "border-[var(--brand-border)]" : ""}`}
             >
               <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
                 <div className="min-w-0">
@@ -300,7 +301,7 @@ export function AdminApplicationsPanel({ applications }: { applications: any[] }
                   </p>
                 </section>
               ) : isActiveApplication(application.status) ? (
-                <p className="mt-5 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-muted)] p-3 text-sm text-slate-600">
+                <p className="pc-soft-strip mt-5 p-3 text-sm text-slate-600">
                   Aucune prochaine action n’est enregistrée pour ce dossier actif.
                 </p>
               ) : null}
@@ -319,7 +320,7 @@ export function AdminApplicationsPanel({ applications }: { applications: any[] }
               </section>
 
               <details
-                className="mt-4 rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-4"
+                className="pc-card mt-4 p-4"
                 aria-label={`Historique de ${program?.name || "la candidature"}`}
               >
                 <summary className="cursor-pointer text-sm font-bold text-slate-900">
@@ -333,7 +334,7 @@ export function AdminApplicationsPanel({ applications }: { applications: any[] }
                 ) : (
                   <div className="mt-4 space-y-3">
                     {events.map((event: any) => (
-                      <div key={event.id} className="rounded-[var(--radius-control)] bg-[var(--surface-muted)] p-3">
+                      <div key={event.id} className="pc-soft-strip p-3">
                         <div className="flex flex-wrap items-center justify-between gap-2">
                           <p className="text-sm font-semibold text-slate-900">
                             {event.event_type === "application_status_changed" ? "Changement de statut" : "Mise à jour du dossier"}
@@ -352,7 +353,7 @@ export function AdminApplicationsPanel({ applications }: { applications: any[] }
                 )}
               </details>
 
-              <div className="mt-5 rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--brand-soft)]/30 p-4">
+              <div className="mt-5 rounded-[var(--premium-radius-panel)] border border-[var(--brand-border)] bg-[var(--brand-soft)]/30 p-4 shadow-[var(--premium-shadow-card)]">
                 <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                   <div>
                     <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">Mise à jour du dossier</p>
@@ -451,12 +452,12 @@ export function AdminApplicationsPanel({ applications }: { applications: any[] }
         })}
 
         {filtered.length === 0 && (
-          <Card className="border-dashed bg-white/70 py-9 text-center shadow-none">
-            <h2 className="font-bold text-slate-950">Aucune candidature ne correspond à cette vue.</h2>
-            <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-slate-600">
-              Modifiez la recherche ou le filtre de statut. Aucun dossier n’a été supprimé ou modifié.
-            </p>
-          </Card>
+          <PremiumEmptyState
+            eyebrow="File candidatures"
+            title="Aucune candidature ne correspond à cette vue."
+            description="Modifiez la recherche ou le filtre de statut. Aucun dossier n’a été supprimé ou modifié."
+            compact
+          />
         )}
       </section>
     </div>
@@ -475,7 +476,7 @@ function SummaryCard({
   tone: "success" | "warning" | "info" | "neutral";
 }) {
   return (
-    <Card as="article" className="shadow-none">
+    <Card as="article" className="pc-card">
       <div className="flex items-start justify-between gap-3">
         <div>
           <h2 className="text-sm font-bold text-slate-700">{title}</h2>
