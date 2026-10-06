@@ -1,4 +1,5 @@
 import { StudentResourceHeader } from "@/components/student/StudentResourceHeader";
+import { StudentPageFrame } from "@/components/student/StudentPageFrame";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { StudentLanguageCoursesPanel } from "@/components/student/StudentLanguageCoursesPanel";
 import { StudentGuidancePanel } from "@/components/student/StudentGuidancePanel";
@@ -13,7 +14,7 @@ export default async function StudentLanguageCoursesPage() {
   const t = rebrandCopy(studentLanguageCoursesCopy[locale]);
 
   return (
-    <main className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 sm:py-7 lg:px-8 lg:py-9">
+    <StudentPageFrame>
       <StudentResourceHeader
         current="language"
         title={t.page.title}
@@ -29,6 +30,6 @@ export default async function StudentLanguageCoursesPage() {
       />
 
       <StudentLanguageCoursesPanel />
-    </main>
+    </StudentPageFrame>
   );
 }
