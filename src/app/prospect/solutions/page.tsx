@@ -1,5 +1,8 @@
 import { redirect } from "next/navigation";
 import { ProspectPageHero } from "@/components/prospect/ProspectPageHero";
+import { PremiumEmptyState } from "@/components/product/PremiumEmptyState";
+import { PremiumSectionHeader } from "@/components/product/PremiumSectionHeader";
+import { buttonClassName } from "@/components/ui/Button";
 import { prospectHubCopy } from "@/content/prospect-hub-copy";
 import { studentFinanceCopy } from "@/content/student-finance-copy";
 import { catalogVerificationCutoff } from "@/lib/catalog-freshness";
@@ -140,8 +143,10 @@ export default async function ProspectSolutionsPage() {
 
       <section aria-labelledby="prospect-language-solutions">
         <div className="mb-4">
-          <h2 id="prospect-language-solutions" className="text-[clamp(1.55rem,2.5vw,2.1rem)] font-semibold tracking-[-0.035em] text-[#1c1f21]">{t.language}</h2>
-          <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">{t.languageText}</p>
+          <PremiumSectionHeader
+            title={<span id="prospect-language-solutions">{t.language}</span>}
+            description={t.languageText}
+          />
         </div>
 
         {languageCourses.length ? (
@@ -158,7 +163,7 @@ export default async function ProspectSolutionsPage() {
               return (
                 <article
                   key={course.id}
-                  className="rounded-[1.35rem] border border-black/[.07] bg-white p-4 shadow-[0_22px_60px_-42px_rgba(0,0,0,.34)] transition-all duration-300 hover:-translate-y-1 hover:border-[var(--brand-border)] hover:shadow-[0_30px_72px_-42px_rgba(0,0,0,.42)] sm:p-5"
+                  className="pc-card pc-card-interactive p-4 sm:p-5"
                 >
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <p className="text-[11px] font-extrabold uppercase tracking-[0.16em] text-[var(--brand)]">
@@ -186,7 +191,7 @@ export default async function ProspectSolutionsPage() {
                         href={course.source_url}
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-flex min-h-10 items-center rounded-xl border border-black/10 bg-white px-4 text-sm font-semibold text-[#202326] shadow-sm transition-all duration-200 hover:-translate-y-px hover:border-black/20 hover:shadow-md"
+                        className={buttonClassName("secondary", "min-h-10 px-4 py-2")}
                       >
                         {t.official}
                       </a>
@@ -196,7 +201,7 @@ export default async function ProspectSolutionsPage() {
                         href={course.application_url}
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-flex min-h-10 items-center rounded-xl bg-[var(--brand)] px-4 text-sm font-bold text-white shadow-[0_12px_28px_-16px_rgba(216,6,33,.85)] transition-all duration-200 hover:-translate-y-px hover:bg-[var(--brand-strong)] hover:shadow-md"
+                        className={buttonClassName("primary", "min-h-10 px-4 py-2")}
                       >
                         {t.provider}
                       </a>
@@ -207,16 +212,16 @@ export default async function ProspectSolutionsPage() {
             })}
           </div>
         ) : (
-          <div className="rounded-[1.25rem] border border-dashed border-black/15 bg-white/70 p-6 text-sm text-[var(--muted)] shadow-[0_18px_50px_-40px_rgba(0,0,0,.3)]">
-            {t.empty}
-          </div>
+          <PremiumEmptyState title={t.empty} compact />
         )}
       </section>
 
       <section aria-labelledby="prospect-finance-solutions">
         <div className="mb-4">
-          <h2 id="prospect-finance-solutions" className="text-[clamp(1.55rem,2.5vw,2.1rem)] font-semibold tracking-[-0.035em] text-[#1c1f21]">{t.finance}</h2>
-          <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">{t.financeText}</p>
+          <PremiumSectionHeader
+            title={<span id="prospect-finance-solutions">{t.finance}</span>}
+            description={t.financeText}
+          />
         </div>
 
         <div className="space-y-5">
@@ -234,7 +239,7 @@ export default async function ProspectSolutionsPage() {
                     {options.map((option) => (
                       <article
                         key={option.id}
-                        className="rounded-[1.35rem] border border-black/[.07] bg-white p-4 shadow-[0_22px_60px_-42px_rgba(0,0,0,.34)] transition-all duration-300 hover:-translate-y-1 hover:border-[var(--brand-border)] hover:shadow-[0_30px_72px_-42px_rgba(0,0,0,.42)] sm:p-5"
+                        className="pc-card pc-card-interactive p-4 sm:p-5"
                       >
                         <p className="text-[11px] font-extrabold uppercase tracking-[0.14em] text-[var(--brand)]"><bdi dir="auto">{option.provider_name}</bdi></p>
                         {option.product_name ? (
@@ -245,13 +250,13 @@ export default async function ProspectSolutionsPage() {
                         ) : null}
                         <dl className="mt-4 grid gap-2 text-sm">
                           {option.price_notes ? (
-                            <div className="rounded-xl border border-black/[.05] bg-[#f6f3ed] p-3.5">
+                            <div className="pc-soft-strip p-3.5">
                               <dt className="font-semibold">{financeCopy.facts.price}</dt>
                               <dd className="mt-1 text-[var(--muted)]">{option.price_notes}</dd>
                             </div>
                           ) : null}
                           {option.eligibility_notes ? (
-                            <div className="rounded-xl border border-black/[.05] bg-[#f6f3ed] p-3.5">
+                            <div className="pc-soft-strip p-3.5">
                               <dt className="font-semibold">{financeCopy.facts.eligibility}</dt>
                               <dd className="mt-1 text-[var(--muted)]">{option.eligibility_notes}</dd>
                             </div>
@@ -262,7 +267,7 @@ export default async function ProspectSolutionsPage() {
                             href={option.official_source_url}
                             target="_blank"
                             rel="noreferrer"
-                            className="inline-flex min-h-10 items-center rounded-xl border border-black/10 bg-white px-4 text-sm font-semibold text-[#202326] shadow-sm transition-all duration-200 hover:-translate-y-px hover:border-black/20 hover:shadow-md"
+                            className={buttonClassName("secondary", "min-h-10 px-4 py-2")}
                           >
                             {t.official}
                           </a>
@@ -271,7 +276,7 @@ export default async function ProspectSolutionsPage() {
                               href={option.application_url}
                               target="_blank"
                               rel="noreferrer"
-                              className="inline-flex min-h-10 items-center rounded-xl bg-[var(--brand)] px-4 text-sm font-bold text-white shadow-[0_12px_28px_-16px_rgba(216,6,33,.85)] transition-all duration-200 hover:-translate-y-px hover:bg-[var(--brand-strong)] hover:shadow-md"
+                              className={buttonClassName("primary", "min-h-10 px-4 py-2")}
                             >
                               {t.provider}
                             </a>
@@ -281,8 +286,8 @@ export default async function ProspectSolutionsPage() {
                     ))}
                   </div>
                 ) : (
-                  <div className="mt-4 rounded-[1.15rem] border border-dashed border-black/15 bg-white/70 p-5 text-sm text-[var(--muted)]">
-                    {t.empty}
+                  <div className="mt-4">
+                    <PremiumEmptyState title={t.empty} compact />
                   </div>
                 )}
               </section>
@@ -291,7 +296,7 @@ export default async function ProspectSolutionsPage() {
         </div>
       </section>
 
-      <p className="rounded-[1.15rem] border border-[#ead59a] bg-[#fff9e9] p-4 text-xs leading-5 text-[#504832] shadow-[0_16px_42px_-36px_rgba(139,98,0,.35)]">
+      <p className="pc-waiting-strip p-4 text-xs leading-5 text-[var(--foreground-soft)]">
         {t.boundary}
       </p>
     </main>
