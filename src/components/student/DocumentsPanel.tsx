@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/Badge";
 import { Button, buttonClassName } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { PremiumEmptyState } from "@/components/product/PremiumEmptyState";
+import { PremiumSectionHeader } from "@/components/product/PremiumSectionHeader";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { studentDocumentsCopy } from "@/content/student-documents-copy";
 import { rebrandCopy } from "@/lib/brand";
@@ -183,7 +185,7 @@ export function DocumentsPanel({
   return (
     <div className="space-y-7">
       <section aria-label={t.priority.aria} className="grid gap-5 lg:grid-cols-[minmax(0,1.45fr)_minmax(18rem,0.85fr)]">
-        <Card className={`relative overflow-hidden shadow-none ${correctionCount ? "border-amber-300 bg-amber-50/25" : "border-[var(--brand-border)] bg-white"}`}>
+        <Card className={`pc-card relative overflow-hidden ${correctionCount ? "border-[var(--warning-border)] bg-[var(--premium-gold-wash)]" : "bg-white"}`}>
           <div aria-hidden="true" className="student-accent-edge absolute inset-y-0 w-1 bg-[var(--brand)]" />
           <div className="student-accent-content">
           <Badge variant={correctionCount ? "warning" : reviewCount ? "info" : "neutral"}>
@@ -202,7 +204,7 @@ export function DocumentsPanel({
                   : t.priority.emptyText}
           </p>
           {priorityDocument && (
-            <div className="mt-6 rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4 shadow-none">
+            <div className="pc-soft-strip mt-6 p-4">
               <div className="flex flex-wrap items-center gap-2">
                 <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">{t.priority.tracked}</p>
                 <Badge variant={statusVariant(priorityDocument.status)}>{t.statuses[priorityDocument.status] || priorityDocument.status}</Badge>
@@ -210,7 +212,7 @@ export function DocumentsPanel({
               <p className="mt-3 [overflow-wrap:anywhere] font-bold text-slate-950"><bdi dir="auto">{priorityDocument.original_filename}</bdi></p>
               <p className="mt-1 text-sm text-slate-600">{t.categories[priorityDocument.category] || t.categories.other}</p>
               {correctionCount > 0 && priorityDocument.admin_comment && (
-                <div className="mt-4 rounded-[1.05rem] border border-[#ead59a] bg-[#fff9e9] p-4">
+                <div className="pc-waiting-strip mt-4 p-4">
                   <p className="text-xs font-bold uppercase tracking-[0.12em] text-amber-900">{t.priority.correctionWhy}</p>
                   <p dir="auto" className="mt-1.5 text-sm leading-6 text-amber-900">{priorityDocument.admin_comment}</p>
                 </div>
@@ -228,24 +230,20 @@ export function DocumentsPanel({
       </section>
 
       <section aria-labelledby="documents-checklist-title">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">
-              {locale === "fr" ? "Checklist intelligente" : "قائمة الوثائق الذكية"}
-            </p>
-            <h2 id="documents-checklist-title" className="mt-1 text-2xl font-semibold tracking-tight text-slate-950">
-              {locale === "fr" ? "Ton dossier, catégorie par catégorie" : "ملفك حسب الفئة"}
-            </h2>
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
-              {locale === "fr"
-                ? "Vois immédiatement ce qui est prêt, en vérification ou demande une action. Les exigences supplémentaires apparaissent seulement lorsqu’elles deviennent pertinentes pour ton parcours."
-                : "اعرف فورًا ما هو جاهز أو قيد المراجعة أو يحتاج إلى إجراء. تظهر المتطلبات الإضافية فقط عندما تصبح ضرورية لمسارك."}
-            </p>
-          </div>
-          <div className="rounded-full border border-[var(--brand-border)] bg-[var(--brand-soft)] px-4 py-2.5 text-sm font-bold text-[var(--brand-strong)] shadow-sm">
-            {checklistReady} / {checklist.length} {locale === "fr" ? "catégories prêtes" : "فئات جاهزة"}
-          </div>
-        </div>
+        <PremiumSectionHeader
+          eyebrow={locale === "fr" ? "Checklist intelligente" : "قائمة الوثائق الذكية"}
+          title={<span id="documents-checklist-title">{locale === "fr" ? "Ton dossier, catégorie par catégorie" : "ملفك حسب الفئة"}</span>}
+          description={
+            locale === "fr"
+              ? "Vois immédiatement ce qui est prêt, en vérification ou demande une action. Les exigences supplémentaires apparaissent seulement lorsqu’elles deviennent pertinentes pour ton parcours."
+              : "اعرف فورًا ما هو جاهز أو قيد المراجعة أو يحتاج إلى إجراء. تظهر المتطلبات الإضافية فقط عندما تصبح ضرورية لمسارك."
+          }
+          actions={
+            <div className="rounded-full border border-[var(--brand-border)] bg-[var(--brand-soft)] px-4 py-2.5 text-sm font-bold text-[var(--brand-strong)] shadow-sm">
+              {checklistReady} / {checklist.length} {locale === "fr" ? "catégories prêtes" : "فئات جاهزة"}
+            </div>
+          }
+        />
 
         <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-5">
           {checklist.map((group) => {
@@ -258,7 +256,7 @@ export function DocumentsPanel({
                   : (locale === "fr" ? "À préparer" : "للتحضير");
             const variant = group.needsAction ? "warning" : group.reviewing ? "info" : group.items.length && group.ready === group.items.length ? "success" : "neutral";
             return (
-              <Card as="article" key={group.id} className="h-full rounded-[1.15rem] border-black/[.07] bg-white p-4 shadow-[0_18px_50px_-42px_rgba(0,0,0,.28)]">
+              <Card as="article" key={group.id} className="pc-card h-full p-4">
                 <div className="flex items-start justify-between gap-2">
                   <h3 className="font-bold text-slate-950">{group.label}</h3>
                   <Badge variant={variant}>{status}</Badge>
@@ -276,7 +274,7 @@ export function DocumentsPanel({
           })}
         </div>
 
-        <Card className="mt-4 rounded-[1.15rem] border border-[#ead59a] bg-[#fff9e9] p-4 shadow-[0_16px_44px_-38px_rgba(139,98,0,.26)]">
+        <Card className="pc-waiting-strip mt-4 p-4 shadow-none">
           <p className="text-sm font-bold text-slate-950">
             {locale === "fr" ? "Prochaine action" : "الخطوة التالية"}
           </p>
@@ -293,19 +291,13 @@ export function DocumentsPanel({
       </section>
 
       <section aria-labelledby="academic-evidence-title">
-        <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
-          <div>
-            <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">
-              {t.evidence.eyebrow}
-            </p>
-            <h2 id="academic-evidence-title" className="mt-1 text-2xl font-semibold tracking-tight text-slate-950">
-              {t.evidence.title}
-            </h2>
-          </div>
-          <Badge variant="neutral">{t.evidence.count(evidence.length)}</Badge>
-        </div>
+        <PremiumSectionHeader
+          eyebrow={t.evidence.eyebrow}
+          title={<span id="academic-evidence-title">{t.evidence.title}</span>}
+          actions={<Badge variant="neutral">{t.evidence.count(evidence.length)}</Badge>}
+        />
 
-        <Card className="mt-4 rounded-[1.15rem] border border-[var(--brand-border)] bg-[var(--brand-soft)]/60 shadow-[0_16px_44px_-38px_rgba(216,6,33,.22)]">
+        <Card className="mt-4 rounded-[var(--premium-radius-card)] border-[var(--brand-border)] bg-[var(--brand-soft)]/60 shadow-[var(--premium-shadow-card)]">
           <p className="text-sm leading-6 text-slate-700">
             {t.evidence.boundary}
           </p>
@@ -318,16 +310,18 @@ export function DocumentsPanel({
             </p>
           </Card>
         ) : evidence.length === 0 ? (
-          <Card className="mt-4 border-dashed shadow-none">
-            <h3 className="font-bold text-slate-950">{t.evidence.emptyTitle}</h3>
-            <p className="mt-2 text-sm leading-6 text-slate-600">
-              {t.evidence.emptyText}
-            </p>
-          </Card>
+          <div className="mt-4">
+            <PremiumEmptyState
+              eyebrow={t.evidence.eyebrow}
+              title={t.evidence.emptyTitle}
+              description={t.evidence.emptyText}
+              compact
+            />
+          </div>
         ) : (
           <div className="mt-4 grid gap-4 lg:grid-cols-2">
             {evidence.map((item) => (
-              <Card as="article" key={item.id} aria-labelledby={`academic-evidence-title-${item.id}`} className="rounded-[1.2rem] border-black/[.07] bg-white shadow-[0_18px_50px_-42px_rgba(0,0,0,.28)]">
+              <Card as="article" key={item.id} aria-labelledby={`academic-evidence-title-${item.id}`} className="pc-card">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <Badge variant={evidenceStatusVariant(item.verification_status)}>
                     {evidenceStatusLabel(item.verification_status, t)}
@@ -353,7 +347,7 @@ export function DocumentsPanel({
                   </div>
                 </dl>
 
-                <div className="mt-4 rounded-[var(--radius-control)] bg-[var(--surface-subtle)] p-3">
+                <div className="pc-soft-strip mt-4 p-3">
                   <p className="text-sm leading-6 text-slate-700">{item.assessment.reason}</p>
                 </div>
               </Card>
@@ -362,7 +356,7 @@ export function DocumentsPanel({
         )}
       </section>
 
-      <Card aria-labelledby="document-upload-title" className="overflow-hidden rounded-[1.35rem] border-black/[.07] bg-white shadow-[0_24px_64px_-44px_rgba(0,0,0,.36)]">
+      <Card aria-labelledby="document-upload-title" className="pc-panel overflow-hidden">
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
           <div>
             <Badge variant="neutral">{t.upload.badge}</Badge>
@@ -375,7 +369,7 @@ export function DocumentsPanel({
 
         <form onSubmit={upload} className="mt-6">
           <div className="grid gap-4 lg:grid-cols-[0.8fr_1fr_auto] lg:items-end">
-            <label className="rounded-[1.05rem] border border-black/[.06] bg-[#f7f4ee] p-4 text-sm font-medium text-slate-700">
+            <label className="rounded-[var(--premium-radius-control)] border border-[var(--premium-border)] bg-[var(--premium-cream)] p-4 text-sm font-medium text-slate-700">
               <span className="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-[var(--brand)]">
                 <span className="grid h-6 w-6 place-items-center rounded-full bg-[var(--brand)] text-[10px] text-white">1</span>
                 {t.upload.stepType}
@@ -393,7 +387,7 @@ export function DocumentsPanel({
               </select>
             </label>
 
-            <label className="rounded-[1.05rem] border border-black/[.06] bg-[#f7f4ee] p-4 text-sm font-medium text-slate-700">
+            <label className="rounded-[var(--premium-radius-control)] border border-[var(--premium-border)] bg-[var(--premium-cream)] p-4 text-sm font-medium text-slate-700">
               <span className="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-[var(--brand)]">
                 <span className="grid h-6 w-6 place-items-center rounded-full bg-[var(--brand)] text-[10px] text-white">2</span>
                 {t.upload.stepFile}
@@ -551,7 +545,7 @@ export function DocumentsPanel({
 
 function SummaryCard({ id, title, value, badge, tone }: { id: string; title: string; value: number; badge: string; tone: "success" | "info" | "warning" | "neutral" }) {
   return (
-    <Card aria-labelledby={id} className="rounded-[1.2rem] border-black/[.07] bg-white shadow-[0_18px_50px_-42px_rgba(0,0,0,.28)]">
+    <Card aria-labelledby={id} className="pc-card">
       <h2 id={id} className="text-sm font-semibold text-slate-700">{title}</h2>
       <p className="mt-2 text-2xl font-semibold text-slate-950">{value}</p>
       <div className="mt-3"><Badge variant={tone}>{badge}</Badge></div>
