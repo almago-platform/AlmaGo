@@ -55,7 +55,7 @@ test("V3.2 shared premium primitives remain the canonical visual layer", () => {
     ".pc-button",
   ]) {
     assert.ok(designSystem.includes(primitive), primitive);
-    assert.ok(freeze.includes(`\\`${primitive}\\``), primitive);
+    assert.ok(freeze.includes("`" + primitive + "`"), primitive);
   }
   for (const token of [
     "--premium-ink",
