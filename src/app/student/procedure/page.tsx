@@ -7,7 +7,9 @@ import { DocumentRow } from "@/components/product/DocumentRow";
 import { JourneyRail, type JourneyRailStep } from "@/components/product/JourneyRail";
 import { NextActionPanel } from "@/components/product/NextActionPanel";
 import { ResponsibilityStrip } from "@/components/product/ResponsibilityStrip";
-import { SectionHeader } from "@/components/ui/SectionHeader";
+import { PremiumEmptyState } from "@/components/product/PremiumEmptyState";
+import { PremiumSectionHeader } from "@/components/product/PremiumSectionHeader";
+import { buttonClassName } from "@/components/ui/Button";
 import { getRequestLocale } from "@/lib/i18n-server";
 import { formatDeadline, isActiveApplication } from "@/lib/phase4";
 import {
@@ -424,10 +426,10 @@ export default async function StudentProcedurePage() {
         ]}
         actions={
           <>
-            <Link href="/student/documents" className="inline-flex min-h-10 items-center rounded-[var(--radius-control)] border border-[var(--border-strong)] bg-[var(--surface)] px-4 text-sm font-semibold">
+            <Link href="/student/documents" className={buttonClassName("secondary", "min-h-10 px-4 py-2")}>
               {t.openDocs}
             </Link>
-            <Link href="/student/applications" className="inline-flex min-h-10 items-center rounded-[var(--radius-control)] border border-[var(--border-strong)] bg-[var(--surface)] px-4 text-sm font-semibold">
+            <Link href="/student/applications" className={buttonClassName("secondary", "min-h-10 px-4 py-2")}>
               {t.openApplications}
             </Link>
           </>
@@ -436,7 +438,7 @@ export default async function StudentProcedurePage() {
 
       {journey.length ? (
         <section className="space-y-3">
-          <SectionHeader eyebrow={t.currentJourney} title={t.currentJourney} />
+          <PremiumSectionHeader eyebrow={t.currentJourney} title={t.currentJourney} />
           <JourneyRail steps={journey} ariaLabel={t.currentJourney} />
         </section>
       ) : null}
@@ -455,7 +457,7 @@ export default async function StudentProcedurePage() {
           primaryAction ? (
             <Link
               href="/student/documents"
-              className="inline-flex min-h-11 items-center justify-center rounded-[var(--radius-control)] bg-white px-5 text-sm font-semibold text-[var(--foreground)]"
+              className={buttonClassName("secondary")}
             >
               {t.openDocs}
             </Link>
@@ -484,8 +486,8 @@ export default async function StudentProcedurePage() {
       />
 
       <div className="grid gap-7 xl:grid-cols-[minmax(0,1.25fr)_minmax(18rem,0.75fr)]">
-        <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 sm:p-6">
-          <SectionHeader eyebrow={t.documents} title={t.documents} description={t.documentsHelp} />
+        <section className="pc-panel p-5 sm:p-6">
+          <PremiumSectionHeader eyebrow={t.documents} title={t.documents} description={t.documentsHelp} />
           <div className="mt-4">
             {requirements.length ? requirements.map((row) => (
               <DocumentRow
@@ -501,14 +503,14 @@ export default async function StudentProcedurePage() {
                 ) : undefined}
               />
             )) : (
-              <p className="text-sm leading-6 text-[var(--muted)]">{t.noActionBody}</p>
+              <PremiumEmptyState title={t.noActionBody} compact />
             )}
           </div>
         </section>
 
         <aside className="space-y-7">
-          <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5">
-            <SectionHeader eyebrow={t.deadlines} title={t.deadlines} />
+          <section className="pc-card p-5">
+            <PremiumSectionHeader eyebrow={t.deadlines} title={t.deadlines} />
             <div className="mt-5 space-y-5">
               <div>
                 <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--muted)]">{t.official}</p>
@@ -521,7 +523,7 @@ export default async function StudentProcedurePage() {
                   </p>
                 ) : null}
               </div>
-              <div className="border-t border-[var(--border)] pt-4">
+              <div className="border-t border-[var(--premium-border)] pt-4">
                 <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--muted)]">{t.internal}</p>
                 <p className="mt-2 text-xl font-semibold text-[var(--foreground)]">
                   {nextInternal ? formatDeadline(nextInternal.date, locale) : t.verify}
@@ -530,8 +532,8 @@ export default async function StudentProcedurePage() {
             </div>
           </section>
 
-          <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5">
-            <SectionHeader eyebrow={t.activity} title={t.activity} />
+          <section className="pc-card p-5">
+            <PremiumSectionHeader eyebrow={t.activity} title={t.activity} />
             <div className="mt-5">
               <ActivityTimeline items={activity} empty={t.activityEmpty} />
             </div>
