@@ -91,7 +91,8 @@ test("prospect solutions expose factual language and finance catalogues before p
 test("qualification upload replaces the raw browser file-control copy with a guided picker", () => {
   assert.match(documents, /id="prospect-document-file"/);
   assert.match(documents, /className="sr-only"/);
-  assert.match(documents, /Choisir un fichier/);
+  assert.match(documents, /Déposez un fichier ici ou cliquez pour choisir/);
+  assert.match(documents, /onDrop/);
   assert.match(documents, /10 MiB maximum/);
   assert.match(documents, /requiredProgress/);
   assert.match(documents, /Pas encore envoyé/);
