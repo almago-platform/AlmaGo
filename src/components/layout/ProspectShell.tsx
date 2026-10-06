@@ -118,12 +118,13 @@ export function ProspectShell({
               href={item.href}
               aria-current={active ? "page" : undefined}
               onClick={() => mobile && setMobileOpen(false)}
-              className={`group relative flex min-h-11 items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-all duration-200 ${active ? "bg-white text-[#17191b] shadow-lg" : "text-white/72 hover:bg-white/[.07] hover:text-white"}`}
+              className={`group relative flex min-h-11 items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-all duration-200 ${active ? "bg-[linear-gradient(135deg,#fff_0%,#fff8df_100%)] text-[#17191b] shadow-lg ring-1 ring-inset ring-[var(--accent)]/25" : "text-white/72 hover:bg-white/[.07] hover:text-white"}`}
             >
               <span className={active ? "text-[var(--brand)]" : "text-white/45 transition-colors group-hover:text-[var(--accent)]"}>
                 {item.icon}
               </span>
               <span className="min-w-0 flex-1">{item.label}</span>
+              {active ? <span className="h-1.5 w-1.5 rounded-full bg-[var(--brand)] shadow-[0_0_0_3px_rgba(216,6,33,.10)]" aria-hidden="true" /> : null}
             </Link>
           );
         })}
