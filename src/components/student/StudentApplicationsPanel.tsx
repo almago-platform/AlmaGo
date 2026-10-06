@@ -91,11 +91,9 @@ function studentEventLabel(
 function ApplicationStepper({
   status,
   copy,
-  direction,
 }: {
   status: string;
   copy: (typeof studentApplicationsCopy)["fr"]["panel"];
-  direction: "ltr" | "rtl";
 }) {
   const normalizedStatus = normalizeApplicationStatus(status);
   
@@ -130,7 +128,7 @@ function ApplicationStepper({
         <div className="absolute left-0 right-0 top-1/2 h-0.5 -translate-y-1/2 bg-slate-100" />
         {/* Active line */}
         <div 
-          className={`absolute top-1/2 h-0.5 -translate-y-1/2 bg-[var(--brand)] transition-all duration-300 ${direction === "rtl" ? "right-0" : "left-0"}`}
+          className="absolute start-0 top-1/2 h-0.5 -translate-y-1/2 bg-[var(--brand)] transition-all duration-300"
           style={{ width: `${(currentIndex / 4) * 100}%` }}
         />
         {stages.map((stage, idx) => {
@@ -481,7 +479,7 @@ export function StudentApplicationsPanel({
                     </div>
                   </div>
 
-                  <ApplicationStepper status={application.status} copy={t} direction={direction} />
+                  <ApplicationStepper status={application.status} copy={t} />
 
                   <section
                     aria-label={t.nextAction}
