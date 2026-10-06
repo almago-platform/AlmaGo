@@ -7,6 +7,7 @@ import { Button, buttonClassName } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { studentDocumentsCopy } from "@/content/student-documents-copy";
+import { studentDocumentsWorkspaceCopy } from "@/content/student-documents-workspace-copy";
 import { rebrandCopy } from "@/lib/brand";
 import {
   documentCategories,
@@ -95,10 +96,13 @@ export function DocumentsPanel({
   const router = useRouter();
   const { locale } = useLocale();
   const t = rebrandCopy(studentDocumentsCopy[locale]);
+  const workspace = studentDocumentsWorkspaceCopy[locale];
   const fileInput = useRef<HTMLInputElement>(null);
   const [category, setCategory] = useState("passport");
   const [feedback, setFeedback] = useState<Feedback>(null);
   const [busy, setBusy] = useState(false);
+  const [statusFilter, setStatusFilter] = useState<"all" | "action" | "review" | "approved">("all");
+  const [categoryFilter, setCategoryFilter] = useState("all");
 
   const approvedCount = documents.filter((document) => document.status === "approved").length;
   const reviewCount = documents.filter((document) => ["pending", "reviewed"].includes(document.status)).length;
@@ -106,20 +110,31 @@ export function DocumentsPanel({
   const correctionCount = correctionDocuments.length;
   const latestDocument = documents[0];
   const priorityDocument = correctionDocuments[0] || documents.find((document) => document.status === "pending") || latestDocument;
-  const checklist = [
-    { id: "identity", label: locale === "fr" ? "Identité" : "الهوية", categories: ["passport"] },
-    { id: "academic", label: locale === "fr" ? "Académique" : "أكاديمي", categories: ["baccalaureate", "transcripts", "university_attestation"] },
-    { id: "languages", label: locale === "fr" ? "Langues" : "اللغات", categories: ["language_certificate"] },
-    { id: "application", label: locale === "fr" ? "Candidature" : "الترشح", categories: ["cv", "motivation_letter", "translation"] },
-    { id: "visa", label: locale === "fr" ? "Visa & préparation" : "التأشيرة والتحضير", categories: ["admission"] },
-  ].map((group) => {
+  const checklistDefinitions = [
+    { id: "identity", label: workspace.groups.identity, categories: ["passport"] },
+    { id: "academic", label: workspace.groups.academic, categories: ["baccalaureate", "transcripts", "university_attestation"] },
+    { id: "languages", label: workspace.groups.languages, categories: ["language_certificate"] },
+    { id: "application", label: workspace.groups.application, categories: ["cv", "motivation_letter", "translation"] },
+    { id: "visa", label: workspace.groups.visa, categories: ["admission"] },
+  ];
+  const checklist = checklistDefinitions.map((group) => {
     const items = documents.filter((document) => group.categories.includes(document.category));
     const ready = items.filter((document) => document.status === "approved").length;
     const needsAction = items.some((document) => ["rejected", "replace_required"].includes(document.status));
     const reviewing = items.some((document) => ["pending", "reviewed"].includes(document.status));
     return { ...group, items, ready, needsAction, reviewing };
   });
-  const checklistReady = checklist.filter((group) => group.items.length > 0 && group.ready === group.items.length).length;
+
+  const visibleDocuments = documents.filter((document) => {
+    const matchesStatus =
+      statusFilter === "all"
+      || (statusFilter === "action" && ["rejected", "replace_required"].includes(document.status))
+      || (statusFilter === "review" && ["pending", "reviewed"].includes(document.status))
+      || (statusFilter === "approved" && document.status === "approved");
+    const group = checklistDefinitions.find((item) => item.id === categoryFilter);
+    const matchesCategory = categoryFilter === "all" || Boolean(group?.categories.includes(document.category));
+    return matchesStatus && matchesCategory;
+  });
 
   async function upload(event: React.FormEvent) {
     event.preventDefault();
@@ -231,31 +246,29 @@ export function DocumentsPanel({
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">
-              {locale === "fr" ? "Checklist intelligente" : "قائمة الوثائق الذكية"}
+              {workspace.checklistEyebrow}
             </p>
             <h2 id="documents-checklist-title" className="mt-1 text-2xl font-semibold tracking-tight text-slate-950">
-              {locale === "fr" ? "Ton dossier, catégorie par catégorie" : "ملفك حسب الفئة"}
+              {workspace.checklistTitle}
             </h2>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
-              {locale === "fr"
-                ? "Vois immédiatement ce qui est prêt, en vérification ou demande une action. Les exigences supplémentaires apparaissent seulement lorsqu’elles deviennent pertinentes pour ton parcours."
-                : "اعرف فورًا ما هو جاهز أو قيد المراجعة أو يحتاج إلى إجراء. تظهر المتطلبات الإضافية فقط عندما تصبح ضرورية لمسارك."}
+              {workspace.checklistDescription}
             </p>
           </div>
           <div className="rounded-full border border-[var(--brand-border)] bg-[var(--brand-soft)] px-4 py-2.5 text-sm font-bold text-[var(--brand-strong)] shadow-sm">
-            {checklistReady} / {checklist.length} {locale === "fr" ? "catégories prêtes" : "فئات جاهزة"}
+            {workspace.validatedCount(approvedCount, documents.length)}
           </div>
         </div>
 
         <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-5">
           {checklist.map((group) => {
             const status = group.needsAction
-              ? (locale === "fr" ? "Action requise" : "إجراء مطلوب")
+              ? workspace.groupAction
               : group.reviewing
-                ? (locale === "fr" ? "À vérifier" : "قيد المراجعة")
+                ? workspace.groupReview
                 : group.items.length && group.ready === group.items.length
-                  ? (locale === "fr" ? "Prêt" : "جاهز")
-                  : (locale === "fr" ? "À préparer" : "للتحضير");
+                  ? workspace.groupReady
+                  : workspace.groupPrepare;
             const variant = group.needsAction ? "warning" : group.reviewing ? "info" : group.items.length && group.ready === group.items.length ? "success" : "neutral";
             return (
               <Card as="article" key={group.id} className="h-full rounded-[1.15rem] border-black/[.07] bg-white p-4 shadow-[0_18px_50px_-42px_rgba(0,0,0,.28)]">
@@ -267,9 +280,7 @@ export function DocumentsPanel({
                   {group.ready} / {group.items.length || group.categories.length}
                 </p>
                 <p className="mt-1 text-xs leading-5 text-slate-500">
-                  {group.items.length
-                    ? (locale === "fr" ? "documents de cette catégorie" : "وثائق في هذه الفئة")
-                    : (locale === "fr" ? "aucun document envoyé pour l’instant" : "لم يتم إرسال أي وثيقة بعد")}
+                  {group.items.length ? workspace.groupDocuments : workspace.groupEmpty}
                 </p>
               </Card>
             );
@@ -277,17 +288,15 @@ export function DocumentsPanel({
         </div>
 
         <Card className="mt-4 rounded-[1.15rem] border border-[#ead59a] bg-[#fff9e9] p-4 shadow-[0_16px_44px_-38px_rgba(139,98,0,.26)]">
-          <p className="text-sm font-bold text-slate-950">
-            {locale === "fr" ? "Prochaine action" : "الخطوة التالية"}
-          </p>
+          <p className="text-sm font-bold text-slate-950">{workspace.nextAction}</p>
           <p className="mt-1 text-sm leading-6 text-slate-700">
             {correctionCount
-              ? (locale === "fr" ? "Corrige d’abord le document signalé par l’équipe AlmaGo." : "صحّح أولاً الوثيقة التي أشار إليها فريق AlmaGo.")
+              ? workspace.nextCorrection
               : reviewCount
-                ? (locale === "fr" ? "Tes documents envoyés sont en vérification. Tu peux continuer les autres étapes de ton projet." : "وثائقك المرسلة قيد المراجعة. يمكنك متابعة بقية خطوات مشروعك.")
+                ? workspace.nextReview
                 : documents.length
-                  ? (locale === "fr" ? "Ajoute uniquement le prochain document demandé par ton parcours ou une candidature." : "أضف فقط الوثيقة التالية المطلوبة لمسارك أو لترشحك.")
-                  : (locale === "fr" ? "Commence par les documents essentiels indiqués dans ton parcours." : "ابدأ بالوثائق الأساسية الموضحة في مسارك.")}
+                  ? workspace.nextUpload
+                  : workspace.nextStart}
           </p>
         </Card>
       </section>
@@ -442,9 +451,57 @@ export function DocumentsPanel({
         <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
           <div>
             <h2 id="documents-list-title" className="text-2xl font-semibold tracking-tight text-slate-950">{t.list.title}</h2>
-            <p className="mt-1 text-sm text-slate-600">{t.list.count(documents.length)}</p>
+            <p className="mt-1 text-sm text-slate-600">{workspace.filteredCount(visibleDocuments.length, documents.length)}</p>
           </div>
         </div>
+
+        {documents.length ? (
+          <div
+            aria-label={workspace.filtersAria}
+            className="mt-4 flex flex-col gap-3 rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface-subtle)] p-3 sm:p-4 lg:flex-row lg:items-center lg:justify-between"
+            data-document-filters
+          >
+            <div className="flex flex-wrap gap-2" role="group" aria-label={workspace.statusFilter}>
+              {([
+                ["all", workspace.all, documents.length],
+                ["action", workspace.action, correctionCount],
+                ["review", workspace.review, reviewCount],
+                ["approved", workspace.approved, approvedCount],
+              ] as const).map(([value, label, count]) => (
+                <button
+                  key={value}
+                  type="button"
+                  aria-pressed={statusFilter === value}
+                  onClick={() => setStatusFilter(value)}
+                  className={
+                    "inline-flex min-h-10 items-center gap-2 rounded-xl border px-3 py-2 text-xs font-bold transition " +
+                    (statusFilter === value
+                      ? "border-[var(--brand)] bg-[var(--brand)] text-white"
+                      : "border-[var(--border)] bg-white text-slate-700 hover:border-[var(--brand-border)]")
+                  }
+                >
+                  <span>{label}</span>
+                  <span className={statusFilter === value ? "text-white/75" : "text-slate-400"}>{count}</span>
+                </button>
+              ))}
+            </div>
+
+            <label className="text-xs font-bold uppercase tracking-[0.1em] text-slate-500">
+              <span className="sr-only">{workspace.categoryFilter}</span>
+              <select
+                aria-label={workspace.categoryFilter}
+                value={categoryFilter}
+                onChange={(event) => setCategoryFilter(event.target.value)}
+                className="field mt-0 min-w-48 bg-white normal-case tracking-normal text-slate-800"
+              >
+                <option value="all">{workspace.all}</option>
+                {checklistDefinitions.map((group) => (
+                  <option key={group.id} value={group.id}>{group.label}</option>
+                ))}
+              </select>
+            </label>
+          </div>
+        ) : null}
 
         <div className="mt-4 space-y-3">
           {documents.length === 0 ? (
@@ -453,8 +510,20 @@ export function DocumentsPanel({
               <h3 id="documents-empty-title" className="mt-4 font-bold text-slate-950">{t.list.emptyTitle}</h3>
               <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-slate-600">{t.list.emptyText}</p>
             </Card>
+          ) : visibleDocuments.length === 0 ? (
+            <Card aria-labelledby="documents-filtered-empty-title" className="border-dashed bg-white/70 py-8 text-center">
+              <h3 id="documents-filtered-empty-title" className="font-bold text-slate-950">{workspace.filteredEmptyTitle}</h3>
+              <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-slate-600">{workspace.filteredEmptyText}</p>
+              <button
+                type="button"
+                className="mt-4 text-sm font-bold text-[var(--brand)] hover:underline"
+                onClick={() => { setStatusFilter("all"); setCategoryFilter("all"); }}
+              >
+                {workspace.all}
+              </button>
+            </Card>
           ) : (
-            documents.map((document) => (
+            visibleDocuments.map((document) => (
               <Card as="article" key={document.id} aria-labelledby={`student-document-title-${document.id}`} className={`rounded-[1.2rem] shadow-[0_18px_50px_-42px_rgba(0,0,0,.28)] ${["rejected", "replace_required"].includes(document.status) ? "border-[#ead59a] bg-[#fff9e9]" : "border-black/[.07] bg-white"}`}>
                 <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-start">
                   <div className="min-w-0">
@@ -473,9 +542,7 @@ export function DocumentsPanel({
                       <div className="mt-4 rounded-[1.05rem] border border-[#ead59a] bg-[#fff9e9] p-4">
                         <h4 className="text-sm font-semibold text-amber-950">{t.list.commentTitle}</h4>
                         <p dir="auto" className="mt-1 text-sm leading-6 text-amber-900">{document.admin_comment}</p>
-                        <p className="mt-2 text-xs leading-5 text-amber-800">
-                          {t.list.commentBoundary}
-                        </p>
+                        <p className="mt-2 text-xs leading-5 text-amber-800">{t.list.commentBoundary}</p>
                       </div>
                     )}
                   </div>
