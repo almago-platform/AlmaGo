@@ -23,7 +23,6 @@ export function ProspectUniversityCover({
   compact = false,
   wide = false,
   usePhoto = true,
-  editorialIndex,
 }: {
   universityName: string;
   city: string | null;
@@ -31,7 +30,6 @@ export function ProspectUniversityCover({
   compact?: boolean;
   wide?: boolean;
   usePhoto?: boolean;
-  editorialIndex?: number;
 }) {
   const imageUrl = usePhoto ? media?.coverImageUrl || null : null;
   const heightClass = wide
@@ -54,12 +52,7 @@ export function ProspectUniversityCover({
 
       {!imageUrl ? (
         <div className="absolute inset-0 flex items-center justify-center">
-          <div className="relative grid size-24 place-items-center rounded-[1.65rem] border border-white/15 bg-white/[.08] text-2xl font-extrabold tracking-[-0.05em] text-white shadow-2xl backdrop-blur-md">
-            {editorialIndex ? (
-              <span className="absolute -end-3 -top-3 text-[3.5rem] font-black leading-none tracking-[-0.08em] text-white/[.08]" aria-hidden="true">
-                {String(editorialIndex).padStart(2, "0")}
-              </span>
-            ) : null}
+          <div className="grid min-w-24 place-items-center rounded-[1.65rem] border border-white/15 bg-white/[.08] px-5 py-6 text-2xl font-extrabold tracking-[-0.05em] text-white shadow-2xl backdrop-blur-md">
             {universityInitials(universityName)}
           </div>
         </div>
