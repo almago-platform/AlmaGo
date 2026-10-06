@@ -31,10 +31,12 @@ test("V3.1 reduces vertical whitespace on major Prospect pages", () => {
 });
 
 test("V3.1 avoids stretched sparse grids on wide screens", () => {
-  assert.match(orientation, /grid items-start gap-4 xl:grid-cols-3/);
+  assert.match(orientation, /recommendations\.length/);
+  assert.match(orientation, /sm:grid-cols-\[auto_minmax\(0,1fr\)_auto\]/);
+  assert.doesNotMatch(orientation, /grid items-start gap-4 xl:grid-cols-3/);
   assert.match(catalogue, /prospect-programme-grid/);
   assert.match(catalogue, /wide=\{filtered\.length === 1\}/);
-  assert.match(roadmap, /grid items-start gap-4 lg:grid-cols-2/);
+  assert.match(roadmap, /lg:grid-cols-\[minmax\(14rem,0\.65fr\)_minmax\(0,1\.35fr\)\]/);
 });
 
 test("V3.1 keeps the exact approved Campus Allemagne logo assets", () => {

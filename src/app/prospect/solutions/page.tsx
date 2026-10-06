@@ -46,6 +46,14 @@ function formatPrice(value: number | null, currency: string | null, locale: stri
   }
 }
 
+function solutionGridClass(count: number) {
+  if (count <= 1) return "grid items-start gap-4";
+  if (count === 2) return "grid items-start gap-4 lg:grid-cols-2";
+  if (count === 3) return "grid items-start gap-4 lg:grid-cols-2 xl:grid-cols-3";
+  if (count === 4) return "grid items-start gap-4 lg:grid-cols-2";
+  return "grid items-start gap-4 md:grid-cols-2 xl:grid-cols-3";
+}
+
 function languageLevel(course: LanguageCourse) {
   if (course.level_from && course.level_to) {
     return course.level_from === course.level_to
@@ -190,7 +198,7 @@ export default async function ProspectSolutionsPage() {
         </div>
 
         {languageCourses.length ? (
-          <div className="grid items-start gap-4 lg:grid-cols-2 xl:grid-cols-3">
+          <div className={solutionGridClass(languageCourses.length)}>
             {languageCourses.map((course) => {
               const level = languageLevel(course);
               const price = formatPrice(course.price_cents, course.currency, intlLocale);
@@ -275,7 +283,7 @@ export default async function ProspectSolutionsPage() {
                 <p className="mt-1 max-w-3xl text-sm leading-6 text-[var(--muted)]">{sectionCopy.description}</p>
 
                 {options.length ? (
-                  <div className="mt-4 grid items-start gap-4 lg:grid-cols-2 xl:grid-cols-3">
+                  <div className={`mt-4 ${solutionGridClass(options.length)}`}>
                     {options.map((option) => (
                       <article
                         key={option.id}

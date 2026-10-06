@@ -2,6 +2,33 @@ import type { OrientationProgrammeRecord } from "@/lib/orientation-engine/types"
 import { ProspectUniversityCover } from "@/components/prospect/ProspectUniversityCover";
 import { buttonClassName } from "@/components/ui/Button";
 
+type ProspectLocale = "fr" | "ar" | "en" | "de";
+
+function localizedTeachingLanguage(value: string, locale: ProspectLocale) {
+  const normalized = value.trim().toLocaleLowerCase("de").replace(/\s+/g, " ");
+  const labels = {
+    fr: { german: "Allemand", english: "Anglais", both: "Allemand / anglais" },
+    ar: { german: "الألمانية", english: "الإنجليزية", both: "الألمانية / الإنجليزية" },
+    en: { german: "German", english: "English", both: "German / English" },
+    de: { german: "Deutsch", english: "Englisch", both: "Deutsch / Englisch" },
+  } as const;
+  const isGerman = ["german", "deutsch", "allemand", "الألمانية"].includes(normalized);
+  const isEnglish = ["english", "englisch", "anglais", "الإنجليزية"].includes(normalized);
+  const isBoth = [
+    "german / english",
+    "german & english",
+    "deutsch / englisch",
+    "deutsch & englisch",
+    "allemand / anglais",
+    "allemand et anglais",
+    "الألمانية / الإنجليزية",
+  ].includes(normalized);
+  if (isBoth) return labels[locale].both;
+  if (isGerman) return labels[locale].german;
+  if (isEnglish) return labels[locale].english;
+  return value;
+}
+
 function ArrowIcon() {
   return (
     <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-4 w-4" aria-hidden="true">
@@ -14,9 +41,9 @@ export function ProspectProgrammeCatalogueCard({
   programme,
   projectMatch,
   labels,
+  locale,
   wide = false,
   showUniversityPhoto = true,
-  visualIndex = 1,
 }: {
   programme: OrientationProgrammeRecord;
   projectMatch: boolean;
@@ -31,10 +58,19 @@ export function ProspectProgrammeCatalogueCard({
     source: string;
     applyLink: string;
   };
+  locale: ProspectLocale;
   wide?: boolean;
   showUniversityPhoto?: boolean;
-  visualIndex?: number;
 }) {
+  const teachingLanguage = programme.teachingLanguage
+    ? localizedTeachingLanguage(programme.teachingLanguage, locale)
+    : null;
+  const verificationRows = [
+    [labels.german, programme.germanLevelRequired || labels.requirementCheck],
+    [labels.uniAssist, programme.uniAssistRequired ? labels.yes : labels.requirementCheck],
+  ] as const;
+  const verificationCount = verificationRows.filter(([, value]) => value === labels.requirementCheck).length;
+
   return (
     <article
       className={
@@ -52,7 +88,6 @@ export function ProspectProgrammeCatalogueCard({
           compact={!wide && !projectMatch}
           wide={wide}
           usePhoto={showUniversityPhoto}
-          editorialIndex={visualIndex}
         />
       </div>
 
@@ -67,9 +102,9 @@ export function ProspectProgrammeCatalogueCard({
             <span className="rounded-full bg-[var(--premium-cream)] px-2.5 py-1 text-[11px] font-semibold text-[var(--premium-ink-muted)]">
               {programme.degreeLevel}
             </span>
-            {programme.teachingLanguage ? (
+            {teachingLanguage ? (
               <span className="rounded-full bg-[var(--premium-cream)] px-2.5 py-1 text-[11px] font-semibold text-[var(--premium-ink-muted)]">
-                <bdi dir="auto">{programme.teachingLanguage}</bdi>
+                <bdi dir="auto">{teachingLanguage}</bdi>
               </span>
             ) : null}
           </div>
@@ -85,26 +120,30 @@ export function ProspectProgrammeCatalogueCard({
           ) : null}
         </p>
 
-        <dl className="mt-4 grid overflow-hidden rounded-2xl border border-[var(--premium-border)] bg-[var(--premium-cream)] sm:grid-cols-3">
-          <div className="min-w-0 border-b border-[var(--premium-border)] px-4 py-3 sm:border-b-0 sm:border-e">
-            <dt className="text-[10px] font-extrabold uppercase tracking-[0.08em] text-[var(--muted)]">{labels.field}</dt>
-            <dd className="mt-1.5 truncate text-sm font-semibold text-[var(--foreground)]" title={programme.field || "—"}>
+        <div className="mt-4 grid gap-2 sm:grid-cols-[minmax(0,1fr)_minmax(13rem,0.78fr)]">
+          <div className="rounded-2xl border border-[var(--premium-border)] bg-[var(--premium-cream)] px-4 py-3.5">
+            <p className="text-[10px] font-extrabold uppercase tracking-[0.08em] text-[var(--muted)]">{labels.field}</p>
+            <p className="mt-1.5 text-sm font-semibold leading-5 text-[var(--foreground)] [overflow-wrap:normal]">
               <bdi dir="auto">{programme.field || "—"}</bdi>
-            </dd>
+            </p>
           </div>
-          <div className="min-w-0 border-b border-[var(--premium-border)] px-4 py-3 sm:border-b-0 sm:border-e">
-            <dt className="text-[10px] font-extrabold uppercase tracking-[0.08em] text-[var(--muted)]">{labels.german}</dt>
-            <dd className="mt-1.5 text-sm font-semibold text-[var(--foreground)]">
-              {programme.germanLevelRequired || labels.requirementCheck}
-            </dd>
-          </div>
-          <div className="min-w-0 px-4 py-3">
-            <dt className="text-[10px] font-extrabold uppercase tracking-[0.08em] text-[var(--muted)]">{labels.uniAssist}</dt>
-            <dd className="mt-1.5 text-sm font-semibold text-[var(--foreground)]">
-              {programme.uniAssistRequired ? labels.yes : labels.requirementCheck}
-            </dd>
-          </div>
-        </dl>
+          <details className="rounded-2xl border border-[var(--premium-border)] bg-white/70 px-4 py-3.5">
+            <summary className="cursor-pointer list-none text-sm font-bold text-[var(--foreground)] marker:content-none">
+              <span className="flex items-center justify-between gap-3">
+                <span>{verificationCount ? `${verificationCount} · ${labels.requirementCheck}` : labels.requirementCheck}</span>
+                <span className="text-[var(--brand)]" aria-hidden="true">＋</span>
+              </span>
+            </summary>
+            <dl className="mt-3 grid gap-2 border-t border-[var(--premium-border)] pt-3">
+              {verificationRows.map(([label, value]) => (
+                <div key={label} className="flex items-start justify-between gap-4 text-sm">
+                  <dt className="font-semibold text-[var(--muted)]">{label}</dt>
+                  <dd className="text-end font-semibold text-[var(--foreground)]"><bdi dir="auto">{value}</bdi></dd>
+                </div>
+              ))}
+            </dl>
+          </details>
+        </div>
 
         <div className="mt-auto flex flex-wrap items-center gap-2.5 pt-4">
           {programme.programmeSourceUrl ? (

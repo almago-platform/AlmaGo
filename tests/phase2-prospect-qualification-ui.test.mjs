@@ -2,7 +2,8 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
 
-const page = readFileSync("src/app/prospect/page.tsx", "utf8");
+const page = readFileSync("src/app/prospect/orientation/page.tsx", "utf8");
+const dashboard = readFileSync("src/app/prospect/page.tsx", "utf8");
 const hub = readFileSync("src/lib/prospect/hub.ts", "utf8");
 const summary = readFileSync("src/components/prospect/ProspectQualificationSummary.tsx", "utf8");
 const copy = readFileSync("src/content/prospect-qualification-copy.ts", "utf8");
@@ -60,8 +61,8 @@ test("qualification copy exists in all supported locales and keeps admission/vis
 test("P2.7D qualification summary does not itself unlock client access or implement offers", () => {
   assert.doesNotMatch(summary + copy, /client_active|payment_pending|paid_pending_validation/);
   assert.doesNotMatch(summary + copy, /Bronze|Silver|Gold|checkout|payment/i);
-  assert.match(page, /payment_pending/);
-  assert.match(page, /paid_pending_validation/);
+  assert.match(dashboard, /payment_pending/);
+  assert.match(dashboard, /paid_pending_validation/);
 });
 
 test("qualification copy uses student-facing language instead of internal workflow jargon", () => {

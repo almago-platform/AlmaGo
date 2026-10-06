@@ -40,8 +40,8 @@ test("first dashboard centres lifecycle, next action and responsibility", () => 
   assert.match(dashboard, /campusWork/);
   assert.match(dashboard, /proposalStatus/);
   assert.match(dashboard, /documentsSummary/);
-  assert.match(dashboard, /browseCatalogue/);
-  assert.match(dashboard, /browseSolutions/);
+  assert.match(dashboard, /recommendedViewAll/);
+  assert.match(dashboard, /ProspectProgrammeRecommendationCard/);
   assert.match(dashboard, /prospectWaitingState/);
 });
 
@@ -91,7 +91,8 @@ test("prospect solutions expose factual language and finance catalogues before p
 test("qualification upload replaces the raw browser file-control copy with a guided picker", () => {
   assert.match(documents, /id="prospect-document-file"/);
   assert.match(documents, /className="sr-only"/);
-  assert.match(documents, /Choisir un fichier/);
+  assert.match(documents, /Déposez un fichier ici ou cliquez pour choisir/);
+  assert.match(documents, /onDrop/);
   assert.match(documents, /10 MiB maximum/);
   assert.match(documents, /requiredProgress/);
   assert.match(documents, /Pas encore envoyé/);
@@ -139,6 +140,7 @@ test("proposal does not duplicate the full starter-document workflow while waiti
   assert.match(proposal, /documentPercent/);
   assert.match(proposal, /href="\/prospect\/documents"/);
   assert.match(proposal, /starterDocuments \? \(/);
+  assert.match(proposal, /!starterDocuments/);
 });
 
 test("prospect shell separates journey navigation from services", () => {
@@ -166,11 +168,12 @@ test("catalogue opens from the saved profile instead of a neutral national list"
   assert.match(catalogue, /name="view" value="all"/);
 });
 
-test("orientation replaces generic advice with verified programmes when catalogue matches exist", () => {
+test("orientation keeps verified programme discovery compact and links to the catalogue", () => {
   assert.match(orientation, /loadVerifiedProgrammeCatalogue/);
   assert.match(orientation, /prospectCatalogueRecommendations/);
-  assert.match(orientation, /ProspectProgrammeRecommendationCard/);
   assert.match(orientation, /recommendations\.length \? \(/);
+  assert.match(orientation, /href="\/prospect\/catalogue"/);
+  assert.doesNotMatch(orientation, /ProspectProgrammeRecommendationCard/);
 });
 
 test("payment navigation is progressive and appears only after a purchase exists", () => {
