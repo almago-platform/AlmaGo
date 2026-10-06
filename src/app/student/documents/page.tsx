@@ -4,7 +4,6 @@ import { NextActionPanel } from "@/components/product/NextActionPanel";
 import { redirect } from "next/navigation";
 import { DocumentsPanel } from "@/components/student/DocumentsPanel";
 import { ButtonLink } from "@/components/ui/ButtonLink";
-import { Card } from "@/components/ui/Card";
 import { PremiumEmptyState } from "@/components/product/PremiumEmptyState";
 import { buttonClassName } from "@/components/ui/Button";
 import { createClient } from "@/lib/supabase/server";
