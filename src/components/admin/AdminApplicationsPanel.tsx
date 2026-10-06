@@ -5,6 +5,7 @@ import { useMemo, useRef, useState } from "react";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { AdminWorkflowSection } from "@/components/admin/AdminWorkflowSection";
 import { PremiumEmptyState } from "@/components/product/PremiumEmptyState";
 import {
   allowedApplicationTransitions,
@@ -164,21 +165,27 @@ export function AdminApplicationsPanel({ applications }: { applications: any[] }
         </p>
       )}
 
-      <section aria-label="Résumé de la file de candidatures" className="grid gap-4 sm:grid-cols-3">
-        <SummaryCard title="Actives" value={activeCount} detail="Candidatures encore en suivi" tone="info" />
-        <SummaryCard
-          title="Actions enregistrées"
-          value={actionCount}
-          detail="Avec prochaine action explicite"
-          tone={actionCount ? "warning" : "neutral"}
-        />
-        <SummaryCard
-          title="Échéances dépassées"
-          value={overdueCount}
-          detail="Candidatures actives à vérifier"
-          tone={overdueCount ? "warning" : "success"}
-        />
-      </section>
+      <Card className="pc-card shadow-none">
+        <div className="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
+          <div className="max-w-2xl">
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">File candidatures</p>
+            <h2 className="mt-2 text-xl font-semibold tracking-[-0.025em] text-slate-950 sm:text-2xl">
+              {activeCount
+                ? `${activeCount} candidature${activeCount > 1 ? "s" : ""} en suivi`
+                : "Aucune candidature active"}
+            </h2>
+            <p className="mt-2 text-sm leading-6 text-slate-600">
+              Ouvrez un dossier, contrôlez les faits enregistrés et l’historique, puis mettez à jour le statut et la prochaine action.
+            </p>
+          </div>
+
+          <div className="grid overflow-hidden rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--border)] grid-cols-3 xl:min-w-[34rem]">
+            <QueueMetric label="Actives" value={activeCount} />
+            <QueueMetric label="Avec action" value={actionCount} tone={actionCount ? "info" : "neutral"} />
+            <QueueMetric label="En retard" value={overdueCount} tone={overdueCount ? "warning" : "neutral"} />
+          </div>
+        </div>
+      </Card>
 
       <Card className="pc-soft-strip shadow-none">
         <div className="mb-4">
@@ -288,164 +295,198 @@ export function AdminApplicationsPanel({ applications }: { applications: any[] }
                 </div>
               </div>
 
-              {application.next_action ? (
-                <section
-                  aria-label="Prochaine action enregistrée"
-                  className="mt-5 rounded-[var(--radius-control)] border border-[var(--brand-border)] bg-[var(--brand-soft)]/25 p-4"
+              <div className="mt-5 space-y-3">
+                <AdminWorkflowSection
+                  step="A"
+                  title="Candidature enregistrée"
+                  description="Programme, étape, rentrée, échéance et pièces attendues."
+                  badge={
+                    <span className={`status-badge shrink-0 ${statusTone(application.status)}`}>
+                      {applicationStatusLabels[application.status] || application.status}
+                    </span>
+                  }
+                  defaultOpen
                 >
-                  <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--brand)]">
-                    Prochaine action enregistrée
-                  </p>
-                  <p className="mt-2 text-sm leading-6 text-slate-800 [overflow-wrap:anywhere]">
-                    {application.next_action}
-                  </p>
-                </section>
-              ) : isActiveApplication(application.status) ? (
-                <p className="pc-soft-strip mt-5 p-3 text-sm text-slate-600">
-                  Aucune prochaine action n’est enregistrée pour ce dossier actif.
-                </p>
-              ) : null}
+                  <dl className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+                    <RecordedFact label="Étape actuelle" value={studentApplicationStageLabel(application.status)} />
+                    <RecordedFact label="Rentrée" value={application.intake || "À confirmer"} />
+                    <RecordedFact label="Envoyée le" value={formatRecordedDate(application.submitted_at)} />
+                    <RecordedFact
+                      label="Documents attendus"
+                      value={application.required_documents?.length
+                        ? application.required_documents.join(", ")
+                        : "À confirmer"}
+                    />
+                    <RecordedFact label="Résultat enregistré" value={application.result || "Aucun résultat enregistré"} />
+                  </dl>
 
-              <section aria-label="Informations enregistrées" className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
-                <RecordedFact label="Étape actuelle" value={studentApplicationStageLabel(application.status)} />
-                <RecordedFact label="Rentrée" value={application.intake || "À confirmer"} />
-                <RecordedFact label="Envoyée le" value={formatRecordedDate(application.submitted_at)} />
-                <RecordedFact
-                  label="Documents attendus"
-                  value={application.required_documents?.length
-                    ? application.required_documents.join(", ")
-                    : "À confirmer"}
-                />
-                <RecordedFact label="Résultat enregistré" value={application.result || "Aucun résultat enregistré"} />
-              </section>
+                  {isOverdue ? (
+                    <p className="mt-4 rounded-[var(--radius-control)] border border-amber-200 bg-amber-50 p-3 text-sm font-semibold text-amber-950">
+                      L’échéance enregistrée est dépassée. Vérifiez le statut réel avant toute modification.
+                    </p>
+                  ) : null}
+                </AdminWorkflowSection>
 
-              <details
-                className="pc-card mt-4 p-4"
-                aria-label={`Historique de ${program?.name || "la candidature"}`}
-              >
-                <summary className="cursor-pointer text-sm font-bold text-slate-900">
-                  Historique enregistré · {events.length} événement{events.length > 1 ? "s" : ""}
-                </summary>
-                <p className="mt-2 text-xs leading-5 text-[var(--muted)]">
-                  Cet historique est consultatif ici. Le badge indique si chaque événement est également visible dans l’espace étudiant.
-                </p>
-                {events.length === 0 ? (
-                  <p className="mt-3 text-sm text-slate-600">Aucun événement n’est enregistré pour cette candidature.</p>
-                ) : (
-                  <div className="mt-4 space-y-3">
-                    {events.map((event: any) => (
-                      <div key={event.id} className="pc-soft-strip p-3">
-                        <div className="flex flex-wrap items-center justify-between gap-2">
-                          <p className="text-sm font-semibold text-slate-900">
-                            {event.event_type === "application_status_changed" ? "Changement de statut" : "Mise à jour du dossier"}
-                          </p>
-                          <Badge variant={event.visible_to_student ? "info" : "neutral"}>
-                            {event.visible_to_student ? "Visible étudiant" : "Interne"}
-                          </Badge>
-                        </div>
-                        {event.message && <p className="mt-1 text-sm leading-6 text-slate-700">{event.message}</p>}
-                        <time dateTime={event.created_at} className="mt-1 block text-xs text-[var(--muted)]">
-                          {formatRecordedDate(event.created_at)}
-                        </time>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </details>
+                <AdminWorkflowSection
+                  step="B"
+                  title="Suivi et historique"
+                  description="Consultez la prochaine action et les événements déjà enregistrés."
+                  badge={hasRecordedAction ? <Badge variant="info">Action enregistrée</Badge> : undefined}
+                  defaultOpen={hasRecordedAction || events.length > 0}
+                >
+                  {application.next_action ? (
+                    <div className="rounded-[var(--radius-control)] border border-[var(--brand-border)] bg-white p-3">
+                      <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--brand)]">Prochaine action enregistrée</p>
+                      <p className="mt-2 text-sm leading-6 text-slate-800 [overflow-wrap:anywhere]">
+                        {application.next_action}
+                      </p>
+                    </div>
+                  ) : isActiveApplication(application.status) ? (
+                    <p className="pc-soft-strip p-3 text-sm text-slate-600">
+                      Aucune prochaine action n’est enregistrée pour ce dossier actif.
+                    </p>
+                  ) : null}
 
-              <div className="mt-5 rounded-[var(--premium-radius-panel)] border border-[var(--brand-border)] bg-[var(--brand-soft)]/30 p-4 shadow-[var(--premium-shadow-card)]">
-                <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                  <div>
-                    <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">Mise à jour du dossier</p>
-                    <p className="mt-1 text-sm leading-6 text-slate-600">Le statut, la prochaine action et la note ci-dessous peuvent être affichés dans l’espace étudiant. Vérifiez leur formulation avant d’enregistrer.</p>
-                  </div>
-                  <Badge variant="info">Visible par l’étudiant</Badge>
-                </div>
-
-                <div className="grid gap-4 lg:grid-cols-2">
-                <label className="block text-sm font-medium text-slate-700">
-                  Statut
-                  <select
-                    disabled={isSaving}
-                    value={edit.status}
-                    onChange={(event) => changeEdit(application.id, {
-                      ...edit,
-                      status: event.target.value,
-                      transitionConfirmed: false,
-                    })}
-                    className="field"
+                  <div
+                    aria-label={`Historique de ${program?.name || "la candidature"}`}
+                    className={application.next_action || isActiveApplication(application.status) ? "mt-4" : ""}
                   >
-                    {statusOptions.map((item) => (
-                      <option key={item} value={item}>
-                        {applicationStatusLabels[item] || item}
-                      </option>
-                    ))}
-                  </select>
-                </label>
+                    <p className="text-sm font-bold text-slate-900">
+                      Historique enregistré · {events.length} événement{events.length > 1 ? "s" : ""}
+                    </p>
+                    <p className="mt-1 text-xs leading-5 text-[var(--muted)]">
+                      Le badge indique si chaque événement est également visible dans l’espace étudiant.
+                    </p>
+                    {events.length === 0 ? (
+                      <p className="mt-3 text-sm text-slate-600">Aucun événement n’est enregistré pour cette candidature.</p>
+                    ) : (
+                      <div className="mt-3 space-y-2">
+                        {events.map((event: any) => (
+                          <div key={event.id} className="rounded-[var(--radius-control)] border border-[var(--border)] bg-white p-3">
+                            <div className="flex flex-wrap items-center justify-between gap-2">
+                              <p className="text-sm font-semibold text-slate-900">
+                                {event.event_type === "application_status_changed" ? "Changement de statut" : "Mise à jour du dossier"}
+                              </p>
+                              <Badge variant={event.visible_to_student ? "info" : "neutral"}>
+                                {event.visible_to_student ? "Visible étudiant" : "Interne"}
+                              </Badge>
+                            </div>
+                            {event.message ? <p className="mt-1 text-sm leading-6 text-slate-700">{event.message}</p> : null}
+                            <time dateTime={event.created_at} className="mt-1 block text-xs text-[var(--muted)]">
+                              {formatRecordedDate(event.created_at)}
+                            </time>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </AdminWorkflowSection>
 
-                <label className="block text-sm font-medium text-slate-700">
-                  Prochaine action
-                  <input
-                    disabled={isSaving}
-                    value={edit.nextAction}
-                    onChange={(event) => changeEdit(application.id, { ...edit, nextAction: event.target.value })}
-                    placeholder="Ex. fournir le relevé traduit"
-                    className="field"
-                  />
-                </label>
-                </div>
-
-              {needsTransitionConfirmation && (
-                <label className="mt-4 flex items-start gap-3 rounded-[var(--radius-control)] border border-amber-200 bg-amber-50/70 p-3 text-sm text-amber-950">
-                  <input
-                    type="checkbox"
-                    checked={edit.transitionConfirmed}
-                    onChange={(event) => changeEdit(application.id, { ...edit, transitionConfirmed: event.target.checked })}
-                    disabled={isSaving}
-                    className="mt-1"
-                  />
-                  <span>
-                    <strong>Confirmation requise.</strong>{" "}
-                    {transitionRequirementLabel(pendingRequirements[0])}
-                  </span>
-                </label>
-              )}
-
-              <label className="mt-4 block text-sm font-medium text-slate-700">
-                Note visible par l’étudiant
-                <textarea
-                  disabled={isSaving}
-                  value={edit.note}
-                  onChange={(event) => changeEdit(application.id, { ...edit, note: event.target.value })}
-                  placeholder="Ajoutez uniquement une information destinée à l’étudiant."
-                  className="field min-h-24 resize-y"
-                />
-              </label>
-              </div>
-
-              <div className="mt-5 flex flex-col gap-3 border-t border-[var(--border)] pt-4 sm:flex-row sm:items-center sm:justify-between">
-                <p className={`text-sm font-medium ${isDirty ? "text-amber-800" : "text-[var(--muted)]"}`}>
-                  {isDirty ? "Modifications non enregistrées — pensez à enregistrer avant de quitter ce dossier." : "Toutes les modifications de ce dossier sont enregistrées."}
-                </p>
-                <Button
-                  type="button"
-                  disabled={isSaving || !isDirty || (needsTransitionConfirmation && !edit.transitionConfirmed) || needsDecisionNote}
-                  onClick={() => update(
-                    application.id,
-                    edit.status,
-                    edit.nextAction,
-                    edit.note,
-                    edit.transitionConfirmed,
-                  )}
-                  className="w-full sm:w-auto"
+                <AdminWorkflowSection
+                  step="C"
+                  title="Mise à jour étudiant"
+                  description="Le statut, la prochaine action et la note peuvent apparaître dans l’espace étudiant."
+                  badge={<Badge variant="info">Visible étudiant</Badge>}
+                  defaultOpen={isDirty}
+                  tone="brand"
                 >
-                  {isSaving ? "Enregistrement…" : "Enregistrer"}
-                </Button>
-                {needsDecisionNote && (
-                  <p className="text-xs leading-5 text-amber-800 sm:text-right">
-                    Une admission ou un refus doit être accompagné d’une note visible précisant la décision communiquée par l’université.
-                  </p>
-                )}
+                  <div className="grid gap-4 lg:grid-cols-2">
+                    <label className="block text-sm font-medium text-slate-700">
+                      Statut
+                      <select
+                        disabled={isSaving}
+                        value={edit.status}
+                        onChange={(event) => changeEdit(application.id, {
+                          ...edit,
+                          status: event.target.value,
+                          transitionConfirmed: false,
+                        })}
+                        className="field mt-2 bg-white"
+                      >
+                        {statusOptions.map((item) => (
+                          <option key={item} value={item}>
+                            {applicationStatusLabels[item] || item}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+
+                    <label className="block text-sm font-medium text-slate-700">
+                      Prochaine action
+                      <input
+                        disabled={isSaving}
+                        value={edit.nextAction}
+                        onChange={(event) => changeEdit(application.id, { ...edit, nextAction: event.target.value })}
+                        placeholder="Ex. fournir le relevé traduit"
+                        className="field mt-2 bg-white"
+                      />
+                    </label>
+                  </div>
+
+                  <label className="mt-4 block text-sm font-medium text-slate-700">
+                    Note visible par l’étudiant
+                    <textarea
+                      disabled={isSaving}
+                      value={edit.note}
+                      onChange={(event) => changeEdit(application.id, { ...edit, note: event.target.value })}
+                      placeholder="Ajoutez uniquement une information destinée à l’étudiant."
+                      className="field mt-2 min-h-24 resize-y bg-white"
+                    />
+                  </label>
+                </AdminWorkflowSection>
+
+                <AdminWorkflowSection
+                  step="D"
+                  title="Décision et enregistrement"
+                  description="Vérifiez les conditions métier avant de rendre la mise à jour effective."
+                  badge={isDirty ? <Badge variant="warning">Non enregistré</Badge> : <Badge variant="success">Enregistré</Badge>}
+                  defaultOpen
+                  tone={needsTransitionConfirmation || needsDecisionNote ? "warning" : "neutral"}
+                >
+                  {needsTransitionConfirmation ? (
+                    <label className="flex items-start gap-3 rounded-[var(--radius-control)] border border-amber-200 bg-amber-50/70 p-3 text-sm text-amber-950">
+                      <input
+                        type="checkbox"
+                        checked={edit.transitionConfirmed}
+                        onChange={(event) => changeEdit(application.id, { ...edit, transitionConfirmed: event.target.checked })}
+                        disabled={isSaving}
+                        className="mt-1"
+                      />
+                      <span>
+                        <strong>Confirmation requise.</strong>{" "}
+                        {transitionRequirementLabel(pendingRequirements[0])}
+                      </span>
+                    </label>
+                  ) : null}
+
+                  {needsDecisionNote ? (
+                    <p className={`${needsTransitionConfirmation ? "mt-3 " : ""}rounded-[var(--radius-control)] border border-amber-200 bg-amber-50/70 p-3 text-sm leading-6 text-amber-950`}>
+                      Une admission ou un refus doit être accompagné d’une note visible précisant la décision communiquée par l’université.
+                    </p>
+                  ) : null}
+
+                  <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <p className={`text-sm font-medium ${isDirty ? "text-amber-800" : "text-[var(--muted)]"}`}>
+                      {isDirty
+                        ? "Modifications non enregistrées — contrôlez les informations avant de valider."
+                        : "Toutes les modifications de ce dossier sont enregistrées."}
+                    </p>
+                    <Button
+                      type="button"
+                      disabled={isSaving || !isDirty || (needsTransitionConfirmation && !edit.transitionConfirmed) || needsDecisionNote}
+                      onClick={() => update(
+                        application.id,
+                        edit.status,
+                        edit.nextAction,
+                        edit.note,
+                        edit.transitionConfirmed,
+                      )}
+                      className="w-full sm:w-auto"
+                    >
+                      {isSaving ? "Enregistrement…" : "Enregistrer la décision"}
+                    </Button>
+                  </div>
+                </AdminWorkflowSection>
               </div>
             </Card>
           );
@@ -464,31 +505,22 @@ export function AdminApplicationsPanel({ applications }: { applications: any[] }
   );
 }
 
-function SummaryCard({
-  title,
+function QueueMetric({
+  label,
   value,
-  detail,
-  tone,
+  tone = "neutral",
 }: {
-  title: string;
+  label: string;
   value: number;
-  detail: string;
-  tone: "success" | "warning" | "info" | "neutral";
+  tone?: "warning" | "info" | "neutral";
 }) {
   return (
-    <Card as="article" className="pc-card">
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <h2 className="text-sm font-bold text-slate-700">{title}</h2>
-          <p className="mt-1 text-3xl font-bold tracking-tight text-slate-950">{value}</p>
-        </div>
-        <Badge variant={tone}>{value}</Badge>
-      </div>
-      <p className="mt-3 text-sm leading-6 text-[var(--muted)]">{detail}</p>
-    </Card>
+    <div className={`bg-white p-3 sm:p-4 ${tone === "warning" && value ? "bg-amber-50/70" : tone === "info" && value ? "bg-blue-50/45" : ""}`}>
+      <p className="text-[0.68rem] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">{label}</p>
+      <p className="mt-1 text-2xl font-semibold tracking-tight text-slate-950">{value}</p>
+    </div>
   );
 }
-
 
 function transitionRequirementLabel(requirement: string) {
   if (requirement === "documents_complete") {
