@@ -178,21 +178,14 @@ export default async function AdminEntry() {
         </Card>
       </section>
 
-      <section className="mt-7" aria-labelledby="admin-overview-title">
+      <section className="mt-6" aria-labelledby="admin-overview-title">
         <PremiumSectionHeader
           eyebrow="Files de travail"
-          title={<span id="admin-overview-title">État opérationnel AlmaGo</span>}
-          description="Traiter les blocages avant l’enrichissement du catalogue."
+          title={<span id="admin-overview-title">À traiter par l’équipe</span>}
+          description="Les volumes ci-dessous ouvrent directement la file concernée."
         />
 
-        <section aria-labelledby="admin-load-title" className="mb-5 mt-4">
-          <PremiumSectionHeader
-            eyebrow="Charge opérationnelle"
-            title={<span id="admin-load-title">Ce qui demande l’attention de l’équipe</span>}
-          />
-        </section>
-
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+        <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
           <AdminSummaryCard
             href="/admin/intake"
             title="Dossiers Campus"
@@ -231,7 +224,7 @@ export default async function AdminEntry() {
         </div>
       </section>
 
-      <section className="mt-7" aria-labelledby="catalogue-health-title">
+      <section className="mt-6" aria-labelledby="catalogue-health-title">
         <PremiumSectionHeader
           eyebrow="Fraîcheur des sources"
           title={<span id="catalogue-health-title">Révalidations du catalogue Allemagne</span>}
@@ -248,7 +241,7 @@ export default async function AdminEntry() {
         )}
       </section>
 
-      <Card className="pc-card mt-7">
+      <Card className="pc-card mt-6">
         <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--muted)]">Principe de travail</p>
