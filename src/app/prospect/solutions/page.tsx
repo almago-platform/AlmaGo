@@ -275,7 +275,7 @@ export default async function ProspectSolutionsPage() {
                 <p className="mt-1 max-w-3xl text-sm leading-6 text-[var(--muted)]">{sectionCopy.description}</p>
 
                 {options.length ? (
-                  <div className="mt-4 grid items-start gap-4 lg:grid-cols-2 2xl:grid-cols-3">
+                  <div className="mt-4 grid items-start gap-4 lg:grid-cols-2 xl:grid-cols-3">
                     {options.map((option) => (
                       <article
                         key={option.id}
