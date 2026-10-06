@@ -36,10 +36,13 @@ test("programme cards expose save compare and programme actions", () => {
   assert.match(panel, /program\.application_url/);
 });
 
-test("programme cards use real semester and application status data already in AlmaGo", () => {
+test("programme cards use real semester, fee and application status data already in AlmaGo", () => {
   assert.match(page, /intake_terms/);
+  assert.match(page, /application_fee_notes/);
+  assert.match(page, /tuition_notes/);
   assert.match(page, /select\("program_id,status"\)/);
   assert.match(page, /applicationStatuses=/);
+  assert.match(panel, /programmeFees/);
   assert.doesNotMatch(page, /logo|brandLogo/i);
 });
 
