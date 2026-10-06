@@ -1,4 +1,5 @@
 import { ButtonLink } from "@/components/ui/ButtonLink";
+import { StudentPageFrame } from "@/components/student/StudentPageFrame";
 import { Card } from "@/components/ui/Card";
 import { StudentJourneyHeader } from "@/components/student/StudentJourneyHeader";
 import { StudentOrientationPanel } from "@/components/student/StudentOrientationPanel";
@@ -56,7 +57,7 @@ export default async function StudentOrientationPage() {
   });
 
   return (
-    <main className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 sm:py-7 lg:px-8 lg:py-9">
+    <StudentPageFrame>
       <StudentJourneyHeader
         current="orientation"
         eyebrow={t.page.eyebrow}
@@ -86,13 +87,13 @@ export default async function StudentOrientationPage() {
         applicationStateError={applicationsError ? t.page.applicationsStateError : undefined}
         criteriaStateError={projectError ? t.page.criteriaStateError : undefined}
       />
-    </main>
+    </StudentPageFrame>
   );
 }
 
 function OrientationUnavailable({ copy }: { copy: (typeof studentOrientationCopy)["fr"] }) {
   return (
-    <main className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 sm:py-7 lg:px-8 lg:py-9">
+    <StudentPageFrame>
       <StudentJourneyHeader current="orientation" eyebrow={copy.page.eyebrow} title={copy.page.title} />
       <Card>
         <div role="alert">
@@ -106,6 +107,6 @@ function OrientationUnavailable({ copy }: { copy: (typeof studentOrientationCopy
           <ButtonLink href="/student" variant="secondary">{copy.page.back}</ButtonLink>
         </div>
       </Card>
-    </main>
+    </StudentPageFrame>
   );
 }
