@@ -347,7 +347,10 @@ export function AdminApplicationsPanel({ applications }: { applications: any[] }
                     </p>
                   ) : null}
 
-                  <div className={application.next_action || isActiveApplication(application.status) ? "mt-4" : ""}>
+                  <div
+                    aria-label={`Historique de ${program?.name || "la candidature"}`}
+                    className={application.next_action || isActiveApplication(application.status) ? "mt-4" : ""}
+                  >
                     <p className="text-sm font-bold text-slate-900">
                       Historique enregistré · {events.length} événement{events.length > 1 ? "s" : ""}
                     </p>
