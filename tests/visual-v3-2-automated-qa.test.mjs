@@ -15,14 +15,14 @@ test("V3.2 browser quality automatically gates UI pull requests", () => {
   assert.match(browserWorkflow, /pull_request:/);
   assert.match(browserWorkflow, /branches: \[main\]/);
   for (const path of [
-    '"src\/app\/\*\*"',
-    '"src\/components\/\*\*"',
-    '"src\/content\/\*\*"',
-    '"public\/\*\*"',
-    '"tests\/e2e\/\*\*"',
-    '"playwright\.config\.mjs"',
+    '"src/app/**"',
+    '"src/components/**"',
+    '"src/content/**"',
+    '"public/**"',
+    '"tests/e2e/**"',
+    '"playwright.config.mjs"',
   ]) {
-    assert.match(browserWorkflow, new RegExp(path));
+    assert.ok(browserWorkflow.includes(path), path);
   }
   assert.match(browserWorkflow, /V3\.2 bounded PR visual regression gate/);
   assert.match(browserWorkflow, /tests\/e2e\/visual-v3-2-gate\.spec\.mjs/);
