@@ -154,37 +154,66 @@ export default async function ProspectProposalPage() {
           </div>
         </section>
       ) : starterDocuments ? (
-        <section className="pc-panel pc-premium-card pc-theme-red p-4 sm:p-5">
-          <PremiumSectionHeader
-            eyebrow={dashboardCopy.proposalWaiting}
-            title={t.documentsTitle}
-            description={t.documentsBody}
-            actions={
-              <span className="rounded-full border border-[var(--brand-border)]/60 bg-white px-3 py-1.5 text-xs font-bold text-[var(--brand-strong)] shadow-sm">
-                {dashboardCopy.documentsSummary(
-                  state.starterSummary.approved,
-                  state.starterSummary.required,
-                  state.starterSummary.pending,
-                  state.starterSummary.needsReplacement,
-                )}
-              </span>
-            }
-          />
-
-          <div className="mt-5 h-2 overflow-hidden rounded-full bg-white/80 ring-1 ring-inset ring-black/[.04]">
-            <div
-              className="h-full rounded-full bg-[linear-gradient(90deg,var(--brand),#f03248)] shadow-[0_0_14px_rgba(216,6,33,.18)]"
-              style={{ width: String(documentPercent) + "%" }}
-              aria-hidden="true"
+        <section className="pc-panel pc-premium-card pc-theme-red overflow-hidden">
+          <div className="p-4 sm:p-5">
+            <PremiumSectionHeader
+              eyebrow={dashboardCopy.proposalWaiting}
+              title={t.documentsTitle}
+              description={t.documentsBody}
+              actions={
+                <span className="rounded-full border border-[var(--brand-border)]/60 bg-white px-3 py-1.5 text-xs font-bold text-[var(--brand-strong)] shadow-sm">
+                  {dashboardCopy.documentsSummary(
+                    state.starterSummary.approved,
+                    state.starterSummary.required,
+                    state.starterSummary.pending,
+                    state.starterSummary.needsReplacement,
+                  )}
+                </span>
+              }
             />
-          </div>
 
-          <Link
-            href="/prospect/documents"
-            className={buttonClassName("primary", "mt-5")}
-          >
-            {dashboardCopy.browseDocuments}
-          </Link>
+            <div className="mt-5 h-2 overflow-hidden rounded-full bg-white/80 ring-1 ring-inset ring-black/[.04]">
+              <div
+                className="h-full rounded-full bg-[linear-gradient(90deg,var(--brand),#f03248)] shadow-[0_0_14px_rgba(216,6,33,.18)]"
+                style={{ width: String(documentPercent) + "%" }}
+                aria-hidden="true"
+              />
+            </div>
+
+            <ol className="mt-5 grid gap-2 sm:grid-cols-3">
+              {[
+                dashboardCopy.documents,
+                t.reviewTitle,
+                t.readyTitle,
+              ].map((label, index) => (
+                <li key={label} className="pc-glass flex min-w-0 items-center gap-3 rounded-[var(--premium-radius-control)] p-3">
+                  <span className="pc-theme-number">{index + 1}</span>
+                  <span className="text-sm font-semibold leading-5 text-[var(--foreground)]">{label}</span>
+                </li>
+              ))}
+            </ol>
+
+            <div className="mt-5 flex flex-wrap gap-2.5">
+              <Link
+                href="/prospect/documents"
+                className={buttonClassName("primary")}
+              >
+                {dashboardCopy.browseDocuments}
+              </Link>
+              <Link
+                href="/prospect/catalogue"
+                className={buttonClassName("secondary")}
+              >
+                {dashboardCopy.browseCatalogue}
+              </Link>
+              <Link
+                href="/prospect/solutions"
+                className={buttonClassName("ghost")}
+              >
+                {dashboardCopy.browseSolutions}
+              </Link>
+            </div>
+          </div>
         </section>
       ) : (
         <IntakeFlowCard
@@ -208,7 +237,7 @@ export default async function ProspectProposalPage() {
         />
       )}
 
-      {!proposalAvailable && !preBac && !(!state.intake && state.orientationConfirmed) ? (
+      {!proposalAvailable && !preBac && !starterDocuments && !(!state.intake && state.orientationConfirmed) ? (
         <PremiumEmptyState
           eyebrow={t.eyebrow}
           title={t.waitingTitle}
