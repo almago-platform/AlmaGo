@@ -50,8 +50,8 @@ export function ProspectProgrammeRecommendationCard({
   const verificationCount = verificationRows.filter(([, value]) => value === labels.requirementCheck).length;
 
   const badge = (
-    <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--brand-soft)] px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-[0.08em] text-[var(--brand-strong)] ring-1 ring-inset ring-[var(--brand-border)]/60">
-      <span className="h-1.5 w-1.5 rounded-full bg-[var(--brand)]" aria-hidden="true" />
+    <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--premium-green-wash)] px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-[0.08em] text-[var(--success-strong)] ring-1 ring-inset ring-[var(--success-border)]">
+      <span className="h-1.5 w-1.5 rounded-full bg-[var(--success)]" aria-hidden="true" />
       {labels.projectMatch}
     </span>
   );
@@ -101,7 +101,7 @@ export function ProspectProgrammeRecommendationCard({
             <summary className="cursor-pointer list-none text-sm font-bold text-[var(--foreground)] marker:content-none">
               <span className="flex items-center justify-between gap-3">
                 <span>{verificationCount ? `${verificationCount} · ${labels.requirementCheck}` : labels.requirementCheck}</span>
-                <span className="text-[var(--brand)]" aria-hidden="true">＋</span>
+                <span className="text-[var(--warning-strong)]" aria-hidden="true">＋</span>
               </span>
             </summary>
             <dl className="mt-3 grid gap-2 border-t border-[var(--premium-border)] pt-3">

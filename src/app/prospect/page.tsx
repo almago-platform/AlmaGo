@@ -430,7 +430,8 @@ export default async function ProspectDashboardPage() {
         <section className="pc-panel pc-premium-card pc-theme-gold p-4 sm:p-5">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
-              <p className="text-[11px] font-extrabold uppercase tracking-[0.15em] text-[var(--brand)]">
+              <p className="inline-flex items-center gap-2 text-[11px] font-extrabold uppercase tracking-[0.15em] text-[var(--success-strong)]">
+                <span className="size-1.5 rounded-full bg-[var(--success)]" aria-hidden="true" />
                 {catalogueT.projectMatch}
               </p>
               <h2 className="mt-2 text-[clamp(1.5rem,2.4vw,2rem)] font-semibold tracking-[-0.035em] text-[#1b1e20]">{t.recommendedTitle}</h2>

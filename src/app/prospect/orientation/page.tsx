@@ -158,6 +158,7 @@ export default async function ProspectOrientationPage() {
                 </span>
                 <PremiumSectionHeader
                   eyebrow={catalogueCopy.projectMatch}
+                  eyebrowTone="success"
                   title={catalogueCopy.recommendedTitle}
                   description={catalogueCopy.recommendedSubtitle}
                 />

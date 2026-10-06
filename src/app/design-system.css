@@ -562,6 +562,15 @@ html[dir="rtl"] .ds-h6 { text-transform: none; }
   box-shadow: 0 0 0 4px rgba(252, 181, 10, 0.1);
 }
 
+.pc-kicker-success {
+  color: var(--success-strong);
+}
+
+.pc-kicker-success::before {
+  background: var(--success);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--success) 12%, transparent);
+}
+
 .pc-kicker-inverse {
   color: rgba(255, 255, 255, 0.66);
 }
