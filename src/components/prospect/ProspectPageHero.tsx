@@ -9,6 +9,7 @@ export function ProspectPageHero({
   variant = "default",
   imageSrc,
   imageAlt = "",
+  imagePriority = false,
 }: {
   eyebrow: string;
   title: string;
@@ -17,6 +18,7 @@ export function ProspectPageHero({
   variant?: "default" | "split" | "compact";
   imageSrc?: string;
   imageAlt?: string;
+  imagePriority?: boolean;
 }) {
   const text = (
     <>
@@ -61,7 +63,7 @@ export function ProspectPageHero({
               src={imageSrc}
               alt={imageAlt}
               fill
-              priority={false}
+              priority={imagePriority}
               sizes="(min-width: 1280px) 28vw, (min-width: 1024px) 34vw, 100vw"
               quality={75}
               className="object-cover"
