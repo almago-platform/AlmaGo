@@ -385,9 +385,7 @@ export function AdminDocumentsPanel({
 
                     {document.admin_comment ? (
                       <div className="mt-4 rounded-[var(--radius-control)] border border-[var(--border)] bg-white p-3">
-                        <p className="text-xs font-bold uppercase tracking-[0.12em] text-slate-700">
-                          Message actuellement enregistré
-                        </p>
+                        <p className="text-xs font-bold uppercase tracking-[0.12em] text-slate-700">Message actuellement enregistré</p>
                         <p className="mt-2 text-sm leading-6 text-slate-700 [overflow-wrap:anywhere]">
                           {document.admin_comment}
                         </p>
