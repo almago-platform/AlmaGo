@@ -44,7 +44,7 @@ export function ResetPasswordForm({ orientationToken }: { orientationToken?: str
   }
 
   return (
-    <section className="w-full rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] shadow-none">
+    <section className="pc-panel w-full shadow-none">
       <div className="border-b border-[var(--border)] px-6 py-6 sm:px-8">
         <BrandLogo className="h-auto w-36" />
         <h1 className="editorial-accent mt-3 text-3xl text-[var(--foreground)]">{t.formTitle}</h1>
@@ -78,7 +78,7 @@ export function ResetPasswordForm({ orientationToken }: { orientationToken?: str
           </span>
         </label>
 
-        <p id="reset-password-hint" className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-3 py-2 text-sm leading-6 text-[var(--muted)]">
+        <p id="reset-password-hint" className="pc-soft-strip px-3 py-2 text-sm leading-6 text-[var(--muted)]">
           {t.hint}
         </p>
 
