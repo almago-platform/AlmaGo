@@ -16,6 +16,7 @@ const catalogue = readFileSync("src/app/prospect/catalogue/page.tsx", "utf8");
 
 test("premium polish exposes a restrained semantic theme system", () => {
   for (const theme of [
+    ".pc-theme-neutral",
     ".pc-theme-red",
     ".pc-theme-gold",
     ".pc-theme-amber",
@@ -48,7 +49,7 @@ test("motion effects are neutralized for reduced-motion users", () => {
 
 test("qualification meaning controls its visual theme", () => {
   for (const pair of [
-    ["needs_information", "pc-theme-red"],
+    ["needs_information", "pc-theme-amber"],
     ["needs_verification", "pc-theme-amber"],
     ["ready_for_review", "pc-theme-green"],
     ["qualified_prospect", "pc-theme-green"],
@@ -56,6 +57,10 @@ test("qualification meaning controls its visual theme", () => {
     assert.match(qualification, new RegExp(`${pair[0]}: "${pair[1]}"`));
   }
   assert.match(qualification, /pc-glass mt-5/);
+  assert.match(qualification, /stateBadgeTheme/);
+  assert.match(qualification, /warning-soft/);
+  assert.match(qualification, /success-soft/);
+  assert.match(qualification, /info-soft/);
 });
 
 test("documents uses its previous blank area for a guided upload workspace", () => {
@@ -70,16 +75,19 @@ test("documents uses its previous blank area for a guided upload workspace", () 
 test("prospect surfaces use semantic themes rather than page-wide random colors", () => {
   assert.match(dashboard, /pc-theme-gold/);
   assert.match(dashboard, /pc-theme-blue/);
-  assert.match(orientation, /pc-theme-red/);
+  assert.match(orientation, /pc-theme-neutral/);
   assert.match(orientation, /pc-theme-gold/);
-  assert.match(roadmap, /pc-theme-red/);
+  assert.doesNotMatch(orientation, /pc-theme-red/);
+  assert.match(roadmap, /pc-theme-neutral/);
   assert.match(roadmap, /pc-theme-gold/);
   assert.match(roadmap, /pc-theme-green/);
   assert.match(roadmap, /buttonClassName\("premium"/);
-  assert.match(solutions, /pc-theme-red/);
+  assert.match(solutions, /pc-theme-neutral/);
   assert.match(solutions, /pc-theme-blue/);
+  assert.doesNotMatch(solutions, /pc-theme-red/);
   assert.match(proposal, /pc-theme-green/);
-  assert.match(proposal, /pc-theme-red/);
+  assert.match(proposal, /pc-theme-neutral/);
+  assert.doesNotMatch(proposal, /pc-theme-red/);
   assert.match(offers, /pc-theme-gold/);
   assert.match(catalogue, /pc-theme-gold/);
 });
