@@ -19,21 +19,21 @@ export function StudentPageState({
 }) {
   return (
     <Card
-      className={`shadow-none ${centered ? "border-dashed py-10 text-center" : ""}`}
+      className={`pc-card shadow-none ${centered ? "border-dashed py-8 text-center" : ""}`}
     >
       <div role={variant === "error" || variant === "warning" ? "alert" : undefined}>
         {eyebrow ? <Badge variant={variant}>{eyebrow}</Badge> : null}
-        <h2 className={`${eyebrow ? "mt-3 " : ""}text-xl font-semibold tracking-[-0.02em] text-slate-950`}>
+        <h2 className={`${eyebrow ? "mt-3 " : ""}text-xl font-semibold tracking-[-0.02em] text-[var(--foreground)]`}>
           {title}
         </h2>
         {description ? (
-          <p className={`${centered ? "mx-auto " : ""}mt-2 max-w-2xl text-sm leading-6 text-slate-600`}>
+          <p className={`${centered ? "mx-auto " : ""}mt-2 max-w-2xl text-sm leading-6 text-[var(--muted)]`}>
             {description}
           </p>
         ) : null}
       </div>
       {actions ? (
-        <div className={`mt-5 flex flex-wrap gap-3 ${centered ? "justify-center" : ""}`}>
+        <div className={`mt-5 flex flex-wrap gap-2.5 ${centered ? "justify-center" : ""}`}>
           {actions}
         </div>
       ) : null}
