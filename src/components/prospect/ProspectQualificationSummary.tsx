@@ -4,7 +4,7 @@ import type { ProspectStoredQualification } from "@/lib/prospect/hub";
 const stateTheme = {
   not_evaluated: "pc-theme-blue",
   too_early: "pc-theme-blue",
-  needs_information: "pc-theme-red",
+  needs_information: "pc-theme-amber",
   needs_verification: "pc-theme-amber",
   ready_for_review: "pc-theme-green",
   qualified_prospect: "pc-theme-green",
