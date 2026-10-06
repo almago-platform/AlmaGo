@@ -201,6 +201,7 @@ export default async function ProspectCataloguePage({
         <section aria-labelledby="prospect-recommended-programmes" className="pc-panel pc-premium-card pc-theme-gold p-5 sm:p-6">
           <PremiumSectionHeader
             eyebrow={t.projectMatch}
+            eyebrowTone="success"
             title={<span id="prospect-recommended-programmes">{t.recommendedTitle}</span>}
             description={t.recommendedSubtitle}
           />
