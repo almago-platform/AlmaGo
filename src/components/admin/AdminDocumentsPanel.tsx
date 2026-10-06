@@ -262,7 +262,8 @@ export function AdminDocumentsPanel({
   }
 
   return (
-    <div className="space-y-5">
+    <div>
+      <div className="space-y-5">
       <Card className="pc-card shadow-none">
         <div className="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
           <div className="max-w-2xl">
