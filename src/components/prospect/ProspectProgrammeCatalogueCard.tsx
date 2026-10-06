@@ -1,5 +1,6 @@
 import type { OrientationProgrammeRecord } from "@/lib/orientation-engine/types";
 import { ProspectUniversityCover } from "@/components/prospect/ProspectUniversityCover";
+import { buttonClassName } from "@/components/ui/Button";
 
 function ArrowIcon() {
   return (
@@ -29,7 +30,7 @@ export function ProspectProgrammeCatalogueCard({
   };
 }) {
   return (
-    <article className="group flex min-w-0 flex-col overflow-hidden rounded-[1.4rem] border border-black/[.07] bg-[var(--surface)] shadow-[0_22px_60px_-38px_rgba(0,0,0,.42)] transition-all duration-300 hover:-translate-y-1 hover:border-[var(--brand-border)] hover:shadow-[0_32px_76px_-40px_rgba(0,0,0,.5)]">
+    <article className="pc-card pc-card-interactive group flex min-w-0 flex-col overflow-hidden bg-[var(--surface)]">
       <div className="overflow-hidden">
         <ProspectUniversityCover
           universityName={programme.university.name}
@@ -40,17 +41,17 @@ export function ProspectProgrammeCatalogueCard({
 
       <div className="flex flex-1 flex-col p-4 sm:p-5">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-[0.08em] ring-1 ring-inset ${projectMatch ? "bg-[var(--brand-soft)] text-[var(--brand-strong)] ring-[var(--brand-border)]/60" : "bg-[#f1eee8] text-[#555b60] ring-black/[.06]"}`}>
+          <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-[0.08em] ring-1 ring-inset ${projectMatch ? "bg-[var(--brand-soft)] text-[var(--brand-strong)] ring-[var(--brand-border)]/60" : "bg-[var(--premium-cream)] text-[#555b60] ring-black/[.06]"}`}>
             <span className={`h-1.5 w-1.5 rounded-full ${projectMatch ? "bg-[var(--brand)]" : "bg-[#92979b]"}`} aria-hidden="true" />
             {projectMatch ? labels.projectMatch : labels.generalCatalogue}
           </span>
 
           <div className="flex flex-wrap gap-1.5">
-            <span className="rounded-full bg-[#f1eee8] px-2.5 py-1 text-[11px] font-semibold text-[#34383b]">
+            <span className="rounded-full bg-[var(--premium-cream)] px-2.5 py-1 text-[11px] font-semibold text-[var(--premium-ink-muted)]">
               {programme.degreeLevel}
             </span>
             {programme.teachingLanguage ? (
-              <span className="rounded-full bg-[#f1eee8] px-2.5 py-1 text-[11px] font-semibold text-[#34383b]">
+              <span className="rounded-full bg-[var(--premium-cream)] px-2.5 py-1 text-[11px] font-semibold text-[var(--premium-ink-muted)]">
                 <bdi dir="auto">{programme.teachingLanguage}</bdi>
               </span>
             ) : null}
@@ -67,22 +68,22 @@ export function ProspectProgrammeCatalogueCard({
           ) : null}
         </p>
 
-        <dl className="mt-4 grid overflow-hidden rounded-2xl border border-black/[.07] bg-[#f6f3ed] sm:grid-cols-3">
-          <div className="min-w-0 border-b border-black/[.06] px-4 py-3 sm:border-b-0 sm:border-e">
+        <dl className="mt-4 grid overflow-hidden rounded-2xl border border-[var(--premium-border)] bg-[var(--premium-cream)] sm:grid-cols-3">
+          <div className="min-w-0 border-b border-[var(--premium-border)] px-4 py-3 sm:border-b-0 sm:border-e">
             <dt className="text-[10px] font-extrabold uppercase tracking-[0.08em] text-[var(--muted)]">{labels.field}</dt>
-            <dd className="mt-1.5 truncate text-sm font-semibold text-[#202326]" title={programme.field || "—"}>
+            <dd className="mt-1.5 truncate text-sm font-semibold text-[var(--foreground)]" title={programme.field || "—"}>
               <bdi dir="auto">{programme.field || "—"}</bdi>
             </dd>
           </div>
-          <div className="min-w-0 border-b border-black/[.06] px-4 py-3 sm:border-b-0 sm:border-e">
+          <div className="min-w-0 border-b border-[var(--premium-border)] px-4 py-3 sm:border-b-0 sm:border-e">
             <dt className="text-[10px] font-extrabold uppercase tracking-[0.08em] text-[var(--muted)]">{labels.german}</dt>
-            <dd className="mt-1.5 text-sm font-semibold text-[#202326]">
+            <dd className="mt-1.5 text-sm font-semibold text-[var(--foreground)]">
               {programme.germanLevelRequired || labels.requirementCheck}
             </dd>
           </div>
           <div className="min-w-0 px-4 py-3">
             <dt className="text-[10px] font-extrabold uppercase tracking-[0.08em] text-[var(--muted)]">{labels.uniAssist}</dt>
-            <dd className="mt-1.5 text-sm font-semibold text-[#202326]">
+            <dd className="mt-1.5 text-sm font-semibold text-[var(--foreground)]">
               {programme.uniAssistRequired ? labels.yes : labels.requirementCheck}
             </dd>
           </div>
@@ -94,7 +95,7 @@ export function ProspectProgrammeCatalogueCard({
               href={programme.programmeSourceUrl}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-black/10 bg-white px-4 text-sm font-semibold text-[#202326] shadow-sm transition-all duration-200 hover:-translate-y-px hover:border-black/20 hover:shadow-md"
+              className={buttonClassName("secondary", "min-h-10 gap-2 px-4 py-2")}
             >
               {labels.source}
               <ArrowIcon />
@@ -105,7 +106,7 @@ export function ProspectProgrammeCatalogueCard({
               href={programme.applicationUrl}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex min-h-10 items-center gap-2 rounded-xl bg-[var(--brand)] px-4 text-sm font-bold text-white shadow-[0_12px_28px_-16px_rgba(216,6,33,.85)] transition-all duration-200 hover:-translate-y-px hover:bg-[var(--brand-strong)] hover:shadow-[0_16px_34px_-18px_rgba(216,6,33,.95)]"
+              className={buttonClassName("primary", "min-h-10 gap-2 px-4 py-2")}
             >
               {labels.applyLink}
               <ArrowIcon />
