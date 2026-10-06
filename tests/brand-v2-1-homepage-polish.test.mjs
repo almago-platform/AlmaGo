@@ -18,12 +18,12 @@ test("Brand V2.1 keeps contextual Pexels photography with transparent attributio
   assert.ok(config.includes('hostname: "images.pexels.com"'));
 });
 
-test("Brand V2.1 keeps the immersive hero and removes the obsolete product block from the live page", () => {
+test("Brand V2.1 keeps the immersive hero while the current homepage surfaces the product preview", () => {
   assert.ok(css.includes(".hero {"));
   assert.ok(css.includes("min-height: 610px"));
   assert.ok(css.includes(".heroBackdrop {"));
   assert.ok(css.includes("position: absolute"));
   assert.ok(css.includes(".heroImmersiveInner {"));
+  assert.ok(page.includes("HomeProductPreview"));
   assert.ok(page.includes("HomePhotoBand"));
-  assert.ok(!page.includes("HomeProduct"));
 });
