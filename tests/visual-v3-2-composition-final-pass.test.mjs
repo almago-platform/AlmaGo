@@ -20,11 +20,12 @@ test("final polish avoids repeating the same university photo across sibling car
   assert.match(catalogueCard, /showUniversityPhoto = true/);
   assert.match(catalogueCard, /usePhoto=\{showUniversityPhoto\}/);
   assert.match(cover, /usePhoto \? media\?\.coverImageUrl/);
-  assert.match(cover, /editorialIndex/);
+  assert.doesNotMatch(cover, /editorialIndex|padStart\(2/);
 });
 
-test("final polish fixes narrow recommendation metadata without arbitrary word splitting", () => {
-  assert.match(recommendation, /grid-cols-\[minmax\(6\.5rem,0\.7fr\)_minmax\(0,1\.3fr\)\]/);
+test("final polish keeps programme metadata readable and verification details collapsible", () => {
+  assert.match(recommendation, /verificationRows/);
+  assert.match(recommendation, /<details/);
   assert.match(recommendation, /\[overflow-wrap:normal\]/);
   assert.doesNotMatch(recommendation, /sm:grid-cols-3[\s\S]{0,900}programme\.field/);
 });
@@ -46,6 +47,7 @@ test("solutions and roadmap use distinct compact composition modes", () => {
   assert.match(solutions, /languageCourses\.length/);
   assert.match(solutions, /financeOptions\.length/);
   assert.match(roadmap, /variant="compact"/);
-  assert.match(roadmap, /\{current \+ 1\}\/\{journey\.length\}/);
+  assert.match(roadmap, /positionLabel/);
+  assert.match(roadmap, /Étape \$\{current \+ 1\} sur \$\{journey\.length\}/);
   assert.match(roadmap, /currentStep\.title/);
 });
