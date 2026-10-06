@@ -35,6 +35,11 @@ test("student dashboard cockpit centers the first view on the next action", () =
   assert.ok(page.includes("cockpit.progressEyebrow"));
   assert.ok(cockpitCopy.includes('continue: "Continuer"'));
   assert.ok(cockpitCopy.includes('projectLabel: "Ton projet"'));
+  assert.ok(page.indexOf("<NextActionPanel") < page.indexOf("<JourneyRail"));
+  assert.ok(page.includes("data-dashboard-metrics"));
+  assert.ok(page.includes("DashboardMetric"));
+  assert.ok(page.includes("allImportantDeadlines.length"));
+  assert.ok(page.includes("documentAttentionCount"));
   assert.doesNotMatch(page, /sm:grid-cols-2 xl:grid-cols-4/);
 });
 
