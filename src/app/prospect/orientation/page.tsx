@@ -64,10 +64,10 @@ export default async function ProspectOrientationPage() {
   };
 
   return (
-    <main className="space-y-8">
+    <main className="space-y-6">
       <ProspectPageHero eyebrow={t.eyebrow} title={t.title} subtitle={t.subtitle}>
         {state.orientationConfirmed ? (
-          <div className="mt-5 inline-flex items-center gap-2 rounded-full border border-emerald-300/20 bg-emerald-300/10 px-3 py-1.5 text-xs font-bold text-emerald-100">
+          <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-emerald-300/20 bg-emerald-300/10 px-3 py-1.5 text-xs font-bold text-emerald-100">
             <span className="size-2 rounded-full bg-emerald-300" aria-hidden="true" />
             {preBac ? "Projet avant le Bac enregistré" : t.confirmed}
           </div>
@@ -117,8 +117,8 @@ export default async function ProspectOrientationPage() {
       {state.current ? (
         <>
           <section className="overflow-hidden rounded-[1.4rem] border border-black/[.07] bg-white shadow-[0_26px_70px_-44px_rgba(0,0,0,.38)]">
-            <div className="grid lg:grid-cols-[minmax(0,1fr)_14rem]">
-              <div className="p-5 sm:p-6">
+            <div className="grid lg:grid-cols-[minmax(0,1fr)_12.5rem]">
+              <div className="p-5 sm:p-5">
                 <p className="text-[11px] font-extrabold uppercase tracking-[0.16em] text-[var(--brand)]">{t.current}</p>
                 <h2 className="mt-2 max-w-3xl text-[clamp(1.55rem,2.5vw,2.15rem)] font-semibold tracking-[-0.035em] text-[#1c1f21]">
                   {diagnosticCopy.headlines[state.current.diagnostic.headlineCode].title}
@@ -135,14 +135,14 @@ export default async function ProspectOrientationPage() {
                 </div>
               </div>
 
-              <div className="border-t border-black/[.06] bg-[#f5f1ea] p-5 lg:border-s lg:border-t-0">
+              <div className="border-t border-black/[.06] bg-[#f5f1ea] p-4 lg:border-s lg:border-t-0">
                 <p className="text-xs font-semibold text-[var(--muted)]">{t.savedOn}</p>
                 <p className="mt-1 text-sm font-bold">
                   <bdi dir="auto">{dateFormatter.format(new Date(state.current.created_at))}</bdi>
                 </p>
                 <Link
                   href="/orientation?mode=update"
-                  className="mt-5 inline-flex min-h-10 w-full items-center justify-center rounded-xl border border-[var(--brand-border)] bg-white px-4 text-sm font-bold text-[var(--brand-strong)] shadow-sm transition-all duration-200 hover:-translate-y-px hover:bg-[var(--brand-soft)] hover:shadow-md"
+                  className="mt-4 inline-flex min-h-10 w-full items-center justify-center rounded-xl border border-[var(--brand-border)] bg-white px-4 text-sm font-bold text-[var(--brand-strong)] shadow-sm transition-all duration-200 hover:-translate-y-px hover:bg-[var(--brand-soft)] hover:shadow-md"
                 >
                   {t.update}
                 </Link>
@@ -176,7 +176,7 @@ export default async function ProspectOrientationPage() {
                   {dashboardCopy.recommendedViewAll}
                 </Link>
               </div>
-              <div className="mt-4 grid gap-4 xl:grid-cols-2">
+              <div className="mt-4 grid items-start gap-4 xl:grid-cols-3">
                 {recommendations.map((recommendation) => (
                   <ProspectProgrammeRecommendationCard
                     key={recommendation.programme.id}

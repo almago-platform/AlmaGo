@@ -166,7 +166,7 @@ export default async function ProspectRoadmapPage() {
   const futureSteps = journey.slice(current + 2);
 
   return (
-    <main className="space-y-8">
+    <main className="space-y-6">
       <ProspectPageHero
         eyebrow={t.eyebrow}
         title={t.title}
@@ -184,7 +184,7 @@ export default async function ProspectRoadmapPage() {
         />
       </section>
 
-      <section className="grid gap-4 xl:grid-cols-[1.25fr_0.9fr]">
+      <section className="grid items-start gap-4 xl:grid-cols-[1.2fr_0.8fr]">
         <article className="relative overflow-hidden rounded-[1.4rem] border border-[var(--brand-border)]/70 bg-[linear-gradient(135deg,#fff0f2,#fffaf9)] p-5 shadow-[0_26px_70px_-44px_rgba(216,6,33,.34)] sm:p-6">
           <p className="text-[11px] font-extrabold uppercase tracking-[0.16em] text-[var(--brand)]">
             {String(current + 1).padStart(2, "0")} · {t.current}
@@ -217,7 +217,7 @@ export default async function ProspectRoadmapPage() {
       </section>
 
       {(completedSteps.length || futureSteps.length) ? (
-        <section className="grid gap-4 lg:grid-cols-2">
+        <section className="grid items-start gap-4 lg:grid-cols-2">
           {completedSteps.length ? (
             <details className="rounded-[1.25rem] border border-black/[.07] bg-white p-4 shadow-[0_18px_52px_-42px_rgba(0,0,0,.3)]">
               <summary className="cursor-pointer font-bold">{t.completedGroup}</summary>

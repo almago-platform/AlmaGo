@@ -135,7 +135,7 @@ export default async function ProspectSolutionsPage() {
   const intlLocale = financeCopy.intlLocale;
 
   return (
-    <main className="space-y-8">
+    <main className="space-y-6">
       <ProspectPageHero eyebrow={t.eyebrow} title={t.title} subtitle={t.subtitle} />
 
       <section aria-labelledby="prospect-language-solutions">
@@ -145,7 +145,7 @@ export default async function ProspectSolutionsPage() {
         </div>
 
         {languageCourses.length ? (
-          <div className="grid gap-4 lg:grid-cols-2">
+          <div className="grid items-start gap-4 lg:grid-cols-2 2xl:grid-cols-3">
             {languageCourses.map((course) => {
               const level = languageLevel(course);
               const price = formatPrice(course.price_cents, course.currency, intlLocale);
@@ -158,7 +158,7 @@ export default async function ProspectSolutionsPage() {
               return (
                 <article
                   key={course.id}
-                  className="rounded-[1.35rem] border border-black/[.07] bg-white p-5 shadow-[0_22px_60px_-42px_rgba(0,0,0,.34)] transition-all duration-300 hover:-translate-y-1 hover:border-[var(--brand-border)] hover:shadow-[0_30px_72px_-42px_rgba(0,0,0,.42)] sm:p-6"
+                  className="rounded-[1.35rem] border border-black/[.07] bg-white p-4 shadow-[0_22px_60px_-42px_rgba(0,0,0,.34)] transition-all duration-300 hover:-translate-y-1 hover:border-[var(--brand-border)] hover:shadow-[0_30px_72px_-42px_rgba(0,0,0,.42)] sm:p-5"
                 >
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <p className="text-[11px] font-extrabold uppercase tracking-[0.16em] text-[var(--brand)]">
@@ -219,7 +219,7 @@ export default async function ProspectSolutionsPage() {
           <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">{t.financeText}</p>
         </div>
 
-        <div className="space-y-7">
+        <div className="space-y-5">
           {financeInsuranceKinds.map((kind) => {
             const options = financeOptions.filter((option) => option.kind === kind);
             const sectionCopy = financeCopy.kinds[kind];
@@ -230,11 +230,11 @@ export default async function ProspectSolutionsPage() {
                 <p className="mt-1 max-w-3xl text-sm leading-6 text-[var(--muted)]">{sectionCopy.description}</p>
 
                 {options.length ? (
-                  <div className="mt-4 grid gap-4 lg:grid-cols-2">
+                  <div className="mt-4 grid items-start gap-4 lg:grid-cols-2 2xl:grid-cols-3">
                     {options.map((option) => (
                       <article
                         key={option.id}
-                        className="rounded-[1.35rem] border border-black/[.07] bg-white p-5 shadow-[0_22px_60px_-42px_rgba(0,0,0,.34)] transition-all duration-300 hover:-translate-y-1 hover:border-[var(--brand-border)] hover:shadow-[0_30px_72px_-42px_rgba(0,0,0,.42)] sm:p-6"
+                        className="rounded-[1.35rem] border border-black/[.07] bg-white p-4 shadow-[0_22px_60px_-42px_rgba(0,0,0,.34)] transition-all duration-300 hover:-translate-y-1 hover:border-[var(--brand-border)] hover:shadow-[0_30px_72px_-42px_rgba(0,0,0,.42)] sm:p-5"
                       >
                         <p className="text-[11px] font-extrabold uppercase tracking-[0.14em] text-[var(--brand)]"><bdi dir="auto">{option.provider_name}</bdi></p>
                         {option.product_name ? (

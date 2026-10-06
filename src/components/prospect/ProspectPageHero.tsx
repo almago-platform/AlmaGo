@@ -13,7 +13,7 @@ export function ProspectPageHero({
 }) {
   return (
     <header
-      className="prospect-page-hero relative overflow-hidden rounded-[1.5rem] border border-black/10 bg-[#17191b] px-5 py-6 text-white shadow-[0_32px_80px_-46px_rgba(0,0,0,.72)] sm:px-7 sm:py-8 lg:px-8"
+      className="prospect-page-hero relative overflow-hidden rounded-[1.5rem] border border-black/10 bg-[#17191b] px-5 py-5 text-white shadow-[0_28px_70px_-44px_rgba(0,0,0,.68)] sm:px-7 sm:py-6 lg:px-8 lg:py-7"
       style={{
         backgroundImage:
           "radial-gradient(circle at 86% 12%, rgba(244,180,0,.16), transparent 18rem), radial-gradient(circle at 8% 100%, rgba(216,6,33,.18), transparent 20rem)",
@@ -31,17 +31,17 @@ export function ProspectPageHero({
           </p>
         </div>
 
-        <h1 className="mt-3 max-w-4xl text-[clamp(2rem,4vw,3.35rem)] font-semibold leading-[1.02] tracking-[-0.045em] text-white">
+        <h1 className="mt-2.5 max-w-4xl text-[clamp(1.85rem,3.35vw,3rem)] font-semibold leading-[1.02] tracking-[-0.045em] text-white">
           {title}
         </h1>
 
         {subtitle ? (
-          <p className="mt-4 max-w-3xl text-sm leading-6 text-white/66 sm:text-base sm:leading-7">
+          <p className="mt-3 max-w-3xl text-sm leading-6 text-white/66 sm:text-[0.95rem] sm:leading-6">
             {subtitle}
           </p>
         ) : null}
 
-        {children ? <div className="mt-5">{children}</div> : null}
+        {children ? <div className="mt-4">{children}</div> : null}
       </div>
     </header>
   );

@@ -168,7 +168,7 @@ export default async function ProspectCataloguePage({
   };
 
   return (
-    <main className="space-y-8">
+    <main className="space-y-6">
       <ProspectPageHero eyebrow={t.eyebrow} title={t.title} subtitle={t.subtitle} />
 
       {recommendations.length ? (
@@ -186,7 +186,7 @@ export default async function ProspectCataloguePage({
               </p>
             </div>
           </div>
-          <div className="grid gap-5 xl:grid-cols-2">
+          <div className="grid items-start gap-4 xl:grid-cols-2 2xl:grid-cols-3">
             {recommendations.map((recommendation) => (
               <ProspectProgrammeRecommendationCard
                 key={recommendation.programme.id}
@@ -296,7 +296,7 @@ export default async function ProspectCataloguePage({
           </div>
 
           {filtered.length ? (
-            <div className="grid gap-5 xl:grid-cols-2">
+            <div className="grid items-start gap-4 xl:grid-cols-2 2xl:grid-cols-3">
               {filtered.map((programme) => (
                 <ProspectProgrammeCatalogueCard
                   key={programme.id}
