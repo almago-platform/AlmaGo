@@ -172,19 +172,19 @@ export default async function ProspectCataloguePage({
   };
 
   const recommendationPhotoUniversities = new Set<string>();
-  const recommendationPresentation = recommendations.map((recommendation, index) => {
+  const recommendationPresentation = recommendations.map((recommendation) => {
     const universityId = recommendation.programme.university.id;
     const showUniversityPhoto = !recommendationPhotoUniversities.has(universityId);
     recommendationPhotoUniversities.add(universityId);
-    return { recommendation, showUniversityPhoto, visualIndex: index + 1 };
+    return { recommendation, showUniversityPhoto };
   });
 
   const resultPhotoUniversities = new Set<string>();
-  const filteredPresentation = filtered.map((programme, index) => {
+  const filteredPresentation = filtered.map((programme) => {
     const universityId = programme.university.id;
     const showUniversityPhoto = !resultPhotoUniversities.has(universityId);
     resultPhotoUniversities.add(universityId);
-    return { programme, showUniversityPhoto, visualIndex: index + 1 };
+    return { programme, showUniversityPhoto };
   });
 
   return (
@@ -205,13 +205,13 @@ export default async function ProspectCataloguePage({
             description={t.recommendedSubtitle}
           />
           <div className="prospect-programme-grid mt-4">
-            {recommendationPresentation.map(({ recommendation, showUniversityPhoto, visualIndex }) => (
+            {recommendationPresentation.map(({ recommendation, showUniversityPhoto }) => (
               <ProspectProgrammeRecommendationCard
                 key={recommendation.programme.id}
                 recommendation={recommendation}
                 labels={recommendationLabels}
+                locale={locale}
                 showUniversityPhoto={showUniversityPhoto}
-                visualIndex={visualIndex}
               />
             ))}
           </div>
@@ -313,15 +313,15 @@ export default async function ProspectCataloguePage({
 
           {filtered.length ? (
             <div className="prospect-programme-grid">
-              {filteredPresentation.map(({ programme, showUniversityPhoto, visualIndex }) => (
+              {filteredPresentation.map(({ programme, showUniversityPhoto }) => (
                 <ProspectProgrammeCatalogueCard
                   key={programme.id}
                   programme={programme}
                   projectMatch={matchesProject(programme, state.answers)}
                   labels={catalogueCardLabels}
+                  locale={locale}
                   wide={filtered.length === 1}
                   showUniversityPhoto={showUniversityPhoto}
-                  visualIndex={visualIndex}
                 />
               ))}
             </div>
