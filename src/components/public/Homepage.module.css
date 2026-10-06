@@ -5809,6 +5809,31 @@
   .headerCta { min-width: max-content; }
 }
 
+/* Keep the language switcher visible at xl without widening the page.
+   1280px is the first width where the compact switcher joins the desktop header. */
+@media (min-width: 1200px) and (max-width: 1359px) {
+  .headerInner {
+    gap: 14px;
+  }
+
+  .logoImage {
+    width: 200px;
+  }
+
+  .desktopNav {
+    gap: 12px;
+    font-size: 12px;
+  }
+
+  .headerActions {
+    gap: 10px;
+  }
+
+  .headerCta {
+    padding-inline: 12px;
+  }
+}
+
 
 /* Homepage hero — full-bleed immersive treatment.
    Keeps the current content and product proof while restoring the
