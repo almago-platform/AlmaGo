@@ -24,11 +24,15 @@ test("Partner-Ready Calm Mode keeps heavy/autonomous workflows manual", () => {
   }
 });
 
-test("Browser Quality is explicit and milestone-driven during Calm Mode", () => {
+test("Browser Quality allows only the bounded V3.2 UI PR gate during Calm Mode", () => {
   const workflow = readFileSync(".github/workflows/almago-browser-quality.yml", "utf8");
   assert.match(workflow, /workflow_dispatch:/);
-  assert.doesNotMatch(workflow, /\n  pull_request:/);
+  assert.match(workflow, /\n  pull_request:/);
+  assert.match(workflow, /branches: \[main\]/);
+  assert.match(workflow, /V3\.2 bounded PR visual regression gate/);
+  assert.match(workflow, /tests\/e2e\/visual-v3-2-gate\.spec\.mjs/);
   assert.doesNotMatch(workflow, /\n  push:/);
+  assert.doesNotMatch(workflow, /\n  schedule:/);
 });
 
 test("Authenticated E2E stays owner/manual driven", () => {
@@ -43,7 +47,7 @@ test("Vercel automatic Git deployments are disabled during Calm Mode", () => {
   assert.equal(config.git?.deploymentEnabled, false);
 });
 
-test("Canonical PR CI is the only automatic PR quality gate", () => {
+test("Canonical PR CI remains the authoritative build gate beside bounded Browser Quality", () => {
   const workflow = readFileSync(".github/workflows/almago-pr-ci.yml", "utf8");
   assert.match(workflow, /pull_request:/);
   assert.match(workflow, /Tests/);
