@@ -282,7 +282,7 @@ export function OrientationRefinementQuestionCard({
   }
 
   return (
-    <div className="mt-5 rounded-[var(--radius-control)] border border-[var(--brand-border)] bg-[var(--brand-soft)] p-4 sm:p-5">
+    <div className="mt-5 rounded-[var(--radius-control)] border border-[var(--warning-border)] bg-[var(--premium-gold-wash)] p-4 sm:p-5">
       <p className="eyebrow">{t.eyebrow}</p>
       <h4 className="mt-1 text-base font-bold">{t.title}</h4>
       <p className="mt-3 text-sm font-semibold">{t.questions[question.field]}</p>
