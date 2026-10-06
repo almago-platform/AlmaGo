@@ -203,7 +203,7 @@ export default async function ProspectRoadmapPage() {
       </section>
 
       <section className="grid items-start gap-4 xl:grid-cols-[1.2fr_0.8fr]">
-        <article className="pc-panel pc-premium-card pc-theme-red p-5 sm:p-6">
+        <article className="pc-panel pc-premium-card pc-theme-neutral p-5 sm:p-6">
           <PremiumSectionHeader
             eyebrow={String(current + 1).padStart(2, "0") + " · " + t.current}
             title={currentStep.title}
