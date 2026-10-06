@@ -71,8 +71,8 @@ export function ProspectProgrammeCatalogueCard({
 
       <div className="flex min-w-0 flex-1 flex-col p-4 sm:p-5">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-[0.08em] ring-1 ring-inset ${projectMatch ? "bg-[var(--brand-soft)] text-[var(--brand-strong)] ring-[var(--brand-border)]/60" : "bg-[var(--premium-cream)] text-[#555b60] ring-black/[.06]"}`}>
-            <span className={`h-1.5 w-1.5 rounded-full ${projectMatch ? "bg-[var(--brand)]" : "bg-[#92979b]"}`} aria-hidden="true" />
+          <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-[0.08em] ring-1 ring-inset ${projectMatch ? "bg-[var(--premium-green-wash)] text-[var(--success-strong)] ring-[var(--success-border)]" : "bg-[var(--premium-cream)] text-[#555b60] ring-black/[.06]"}`}>
+            <span className={`h-1.5 w-1.5 rounded-full ${projectMatch ? "bg-[var(--success)]" : "bg-[#92979b]"}`} aria-hidden="true" />
             {projectMatch ? labels.projectMatch : labels.generalCatalogue}
           </span>
 
