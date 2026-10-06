@@ -50,16 +50,18 @@ export default async function ProspectOffersPage() {
     return (
       <main className="space-y-6">
         <ProspectPageHero eyebrow={copy.eyebrow} title={copy.title} subtitle={copy.intro} />
-        <PremiumEmptyState
-          eyebrow={copy.eyebrow}
-          title={copy.lockedTitle}
-          description={copy.lockedBody}
-          action={
-            <Link href="/prospect" className={buttonClassName("secondary")}>
-              {copy.backToSpace}
-            </Link>
-          }
-        />
+        <div className="rounded-[var(--premium-radius-panel)] bg-[var(--brand-soft)] p-1 text-slate-700">
+          <PremiumEmptyState
+            eyebrow={copy.eyebrow}
+            title={copy.lockedTitle}
+            description={copy.lockedBody}
+            action={
+              <Link href="/prospect" className={buttonClassName("secondary")}>
+                {copy.backToSpace}
+              </Link>
+            }
+          />
+        </div>
       </main>
     );
   }
