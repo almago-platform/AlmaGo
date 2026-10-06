@@ -53,7 +53,7 @@ export default function OrientationLoading() {
             </div>
           </div>
 
-          <div className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 sm:p-7">
+          <div className="pc-panel p-5 sm:p-7">
             <div className="h-7 w-2/3 animate-pulse rounded-[var(--radius-control)] bg-[var(--surface-muted)]" />
             <div className="mt-3 h-4 w-full animate-pulse rounded bg-[var(--surface-muted)]" />
             <div className="mt-2 h-4 w-4/5 animate-pulse rounded bg-[var(--surface-muted)]" />
@@ -62,7 +62,7 @@ export default function OrientationLoading() {
               {Array.from({ length: 4 }).map((_, index) => (
                 <div
                   key={index}
-                  className="h-14 animate-pulse rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)]"
+                  className="h-14 animate-pulse rounded-[var(--radius-control)] border border-[var(--premium-border)] bg-[var(--premium-cream-soft)]"
                 />
               ))}
             </div>

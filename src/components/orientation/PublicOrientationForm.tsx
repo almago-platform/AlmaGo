@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { BrandLogo } from "@/components/brand/BrandLogo";
 import { LanguageSwitcher } from "@/components/i18n/LanguageSwitcher";
+import { buttonClassName } from "@/components/ui/Button";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { orientationCopy } from "@/content/orientation-copy";
 import { orientationProspectCopy } from "@/content/orientation-prospect-copy";
@@ -587,7 +588,7 @@ export function PublicOrientationForm({
             <h1 className="page-title max-w-3xl">{identityCopy.title}</h1>
             <p className="page-subtitle">{identityCopy.text}</p>
 
-            <div className="professional-panel mt-8 rounded-[var(--radius-panel)] p-5 sm:p-7">
+            <div className="professional-panel pc-panel mt-8 rounded-[var(--radius-panel)] p-5 sm:p-7">
               <form
                 onSubmit={(event) => {
                   event.preventDefault();
@@ -701,7 +702,7 @@ export function PublicOrientationForm({
             <p className="page-subtitle">
               {authenticatedUpdate ? updateCopy.introLead : copy.intro.lead}
             </p>
-            <div className="mt-5 rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--brand-soft)] px-4 py-3 text-sm leading-6">
+            <div className="mt-5 rounded-[var(--premium-radius-card)] border border-[var(--brand-border)] bg-[var(--brand-soft)] px-4 py-3 text-sm leading-6 shadow-[var(--premium-shadow-card)]">
               {authenticatedUpdate ? updateCopy.introNotice : copy.intro.privacy}
             </div>
             {!authenticatedUpdate ? (
@@ -743,7 +744,7 @@ export function PublicOrientationForm({
           ) : null}
 
           <div className={step <= 4
-            ? "professional-panel rounded-[var(--radius-panel)] p-5 sm:p-7"
+            ? "professional-panel pc-panel rounded-[var(--radius-panel)] p-5 sm:p-7"
             : "orientation-result-shell"
           }>
             {step <= 4 ? (
@@ -1122,7 +1123,7 @@ export function PublicOrientationForm({
                   </button>
                   <button
                     type="submit"
-                    className="rounded-[var(--radius-control)] bg-[var(--brand)] px-5 py-2.5 text-sm font-bold text-white hover:bg-[var(--brand-strong)]"
+                    className={buttonClassName("primary", "min-h-10 px-5 py-2.5 text-sm")}
                   >
                     {step === 4 ? copy.controls.summary : copy.controls.next}
                   </button>
@@ -1195,7 +1196,7 @@ export function PublicOrientationForm({
                   />
                 ) : null}
 
-                <section className="orientation-print-hide orientation-tone-actions mt-7 rounded-[var(--radius-panel)] border border-[var(--border)] px-4 py-4 sm:flex sm:items-center sm:justify-between sm:gap-6 sm:px-5" aria-label={resultActionsCopy.title}>
+                <section className="orientation-print-hide orientation-tone-actions pc-panel mt-7 px-4 py-4 sm:flex sm:items-center sm:justify-between sm:gap-6 sm:px-5" aria-label={resultActionsCopy.title}>
                   <p className="text-sm font-semibold">{resultActionsCopy.title}</p>
                   <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-3 sm:mt-0 sm:justify-end">
                     <button
