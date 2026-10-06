@@ -50,7 +50,7 @@ export default async function ProspectOffersPage() {
     && access.customerStatus !== "payment_pending"
     && access.customerStatus !== "paid_pending_validation") {
     return (
-      <main className="space-y-6">
+      <main className="space-y-5">
         <ProspectPageHero
           eyebrow={copy.eyebrow}
           title={copy.title}
@@ -69,13 +69,13 @@ export default async function ProspectOffersPage() {
           }
         />
 
-        <section className="pc-panel pc-premium-card pc-theme-gold p-5 sm:p-6">
+        <section className="pc-panel pc-premium-card pc-theme-gold p-4 sm:p-5">
           <PremiumSectionHeader title={copy.lockedJourneyTitle} />
-          <ol className="mt-5 grid gap-3 lg:grid-cols-3">
+          <ol className="mt-4 grid gap-2.5 lg:grid-cols-3">
             {copy.lockedJourneySteps.map((step, index) => (
               <li
                 key={step}
-                className="pc-glass relative min-w-0 overflow-hidden rounded-[1.15rem] p-4"
+                className="pc-glass relative min-w-0 overflow-hidden rounded-[1rem] p-3.5"
               >
                 <span className="pc-theme-number">
                   {index + 1}
@@ -84,7 +84,7 @@ export default async function ProspectOffersPage() {
               </li>
             ))}
           </ol>
-          <p className="mt-4 rounded-[1rem] border border-[var(--premium-border)] bg-white px-4 py-3 text-xs leading-5 text-[var(--foreground-soft)]">
+          <p className="mt-3 rounded-[.9rem] border border-[var(--premium-border)] bg-white/80 px-3.5 py-2.5 text-xs leading-5 text-[var(--foreground-soft)]">
             {copy.lockedJourneyNote}
           </p>
         </section>
