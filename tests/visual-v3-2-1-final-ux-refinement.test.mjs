@@ -10,6 +10,9 @@ const proposal = read("src/app/prospect/proposal/page.tsx");
 const catalogue = read("src/app/prospect/catalogue/page.tsx");
 const recommendation = read("src/components/prospect/ProspectProgrammeRecommendationCard.tsx");
 const catalogueCard = read("src/components/prospect/ProspectProgrammeCatalogueCard.tsx");
+const cataloguePresentation = read("src/lib/prospect/catalogue-presentation.ts");
+const journeyProgress = read("src/components/prospect/ProspectJourneyProgress.tsx");
+const hubCopy = read("src/content/prospect-hub-copy.ts");
 const cover = read("src/components/prospect/ProspectUniversityCover.tsx");
 const documents = read("src/components/prospect/StarterDocumentsPanel.tsx");
 const roadmap = read("src/app/prospect/roadmap/page.tsx");
@@ -46,8 +49,12 @@ test("V3.2.1 catalogue removes ranking-like fallback numbers and localizes UI la
   assert.doesNotMatch(catalogue, /visualIndex/);
   assert.match(recommendation, /localizedTeachingLanguage/);
   assert.match(catalogueCard, /localizedTeachingLanguage/);
-  assert.match(recommendation, /Allemand \/ anglais/);
-  assert.match(catalogueCard, /Deutsch \/ Englisch/);
+  assert.match(recommendation, /localizedProgrammeField/);
+  assert.match(catalogueCard, /localizedProgrammeField/);
+  assert.match(cataloguePresentation, /Allemand \/ anglais/);
+  assert.match(cataloguePresentation, /Deutsch \/ Englisch/);
+  assert.match(cataloguePresentation, /Génie civil/);
+  assert.match(cataloguePresentation, /Luft- und Raumfahrttechnik/);
   assert.match(recommendation, /<details/);
   assert.match(catalogueCard, /<details/);
 });
@@ -63,6 +70,8 @@ test("V3.2.1 document picker exposes selected file metadata and reversible actio
 
 test("V3.2.1 roadmap and solutions adapt to real state density", () => {
   assert.match(roadmap, /positionLabel/);
+  assert.match(journeyProgress, /Étape \$\{currentStepNumber\} sur \$\{steps\.length\}/);
+  assert.doesNotMatch(journeyProgress, /\{currentStepNumber\}\/\{steps\.length\}/);
   assert.match(roadmap, /lg:grid-cols-\[minmax\(14rem,0\.65fr\)_minmax\(0,1\.35fr\)\]/);
   assert.match(solutions, /solutionGridClass/);
   assert.match(solutions, /count === 4/);
@@ -73,4 +82,14 @@ test("V3.2.1 keeps service navigation intentional and static premium surfaces st
   assert.match(shell, /bg-\[var\(--brand\)\]/);
   assert.match(designSystem, /\.pc-premium-card\.pc-card-interactive:hover/);
   assert.doesNotMatch(designSystem, /\n\.pc-premium-card:hover \{/);
+});
+
+
+test("V3.2.1 screenshot polish keeps starter-document wording student-facing", () => {
+  assert.match(hubCopy, /documents: "Pièces de départ"/);
+  assert.match(hubCopy, /documents: "Starter documents"/);
+  assert.match(hubCopy, /documents: "Startdokumente"/);
+  assert.match(hubCopy, /documents: "الوثائق الأساسية"/);
+  assert.match(cover, /programmeLabel/);
+  assert.match(cover, /initials\(programmeLabel \|\| universityName\)/);
 });
