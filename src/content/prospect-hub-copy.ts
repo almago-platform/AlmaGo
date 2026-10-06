@@ -173,7 +173,7 @@ const fr: ProspectHubCopy = {
     proposalWaiting: "En préparation",
     proposalReady: "Prête à consulter",
     proposalConfirmed: "Parcours confirmé",
-    documents: "Documents de qualification",
+    documents: "Pièces de départ",
     documentsSummary: (approved, required, pending, replacement) =>
       `${approved}/${required} validés${pending ? ` · ${pending} en vérification` : ""}${replacement ? ` · ${replacement} à corriger` : ""}`,
     browseTitle: "Vous pouvez déjà explorer votre projet",
@@ -313,7 +313,7 @@ const en: ProspectHubCopy = {
     proposalWaiting: "In preparation",
     proposalReady: "Ready to review",
     proposalConfirmed: "Route confirmed",
-    documents: "Qualification documents",
+    documents: "Starter documents",
     documentsSummary: (approved, required, pending, replacement) =>
       `${approved}/${required} approved${pending ? ` · ${pending} under review` : ""}${replacement ? ` · ${replacement} to fix` : ""}`,
     browseTitle: "You can already explore your project",
@@ -453,7 +453,7 @@ const de: ProspectHubCopy = {
     proposalWaiting: "In Vorbereitung",
     proposalReady: "Bereit zur Prüfung",
     proposalConfirmed: "Weg bestätigt",
-    documents: "Qualifikationsdokumente",
+    documents: "Startdokumente",
     documentsSummary: (approved, required, pending, replacement) =>
       `${approved}/${required} bestätigt${pending ? ` · ${pending} in Prüfung` : ""}${replacement ? ` · ${replacement} zu korrigieren` : ""}`,
     browseTitle: "Du kannst dein Projekt schon jetzt erkunden",
@@ -593,7 +593,7 @@ const ar: ProspectHubCopy = {
     proposalWaiting: "قيد الإعداد",
     proposalReady: "جاهز للمراجعة",
     proposalConfirmed: "تم تأكيد المسار",
-    documents: "وثائق التأهيل",
+    documents: "الوثائق الأساسية",
     documentsSummary: (approved, required, pending, replacement) =>
       `${approved}/${required} مصادق عليها${pending ? ` · ${pending} قيد المراجعة` : ""}${replacement ? ` · ${replacement} تحتاج إلى تصحيح` : ""}`,
     browseTitle: "يمكنك استكشاف مشروعك من الآن",

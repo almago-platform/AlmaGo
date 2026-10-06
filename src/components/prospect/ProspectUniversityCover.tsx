@@ -1,6 +1,6 @@
 import type { OrientationUniversityMedia } from "@/lib/orientation-engine/types";
 
-function universityInitials(name: string) {
+function initials(name: string) {
   const words = name
     .replace(/[()–—-]/g, " ")
     .split(/\s+/)
@@ -8,12 +8,12 @@ function universityInitials(name: string) {
     .filter(Boolean)
     .filter((word) => !["university", "universität", "hochschule", "of", "der", "die", "the"].includes(word.toLocaleLowerCase("de")));
 
-  const initials = words
+  const value = words
     .slice(0, 3)
     .map((word) => word[0]?.toLocaleUpperCase("de"))
     .join("");
 
-  return initials || name.slice(0, 2).toLocaleUpperCase("de");
+  return value || name.slice(0, 2).toLocaleUpperCase("de");
 }
 
 export function ProspectUniversityCover({
@@ -23,6 +23,7 @@ export function ProspectUniversityCover({
   compact = false,
   wide = false,
   usePhoto = true,
+  programmeLabel,
 }: {
   universityName: string;
   city: string | null;
@@ -30,6 +31,7 @@ export function ProspectUniversityCover({
   compact?: boolean;
   wide?: boolean;
   usePhoto?: boolean;
+  programmeLabel?: string | null;
 }) {
   const imageUrl = usePhoto ? media?.coverImageUrl || null : null;
   const heightClass = wide
@@ -51,9 +53,16 @@ export function ProspectUniversityCover({
       <div className="absolute inset-0 bg-[linear-gradient(125deg,rgba(216,6,33,.12),transparent_40%,rgba(244,180,0,.08))]" aria-hidden="true" />
 
       {!imageUrl ? (
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="grid min-w-24 place-items-center rounded-[1.65rem] border border-white/15 bg-white/[.08] px-5 py-6 text-2xl font-extrabold tracking-[-0.05em] text-white shadow-2xl backdrop-blur-md">
-            {universityInitials(universityName)}
+        <div className="absolute inset-0 flex items-center justify-center px-6">
+          <div className="flex max-w-[15rem] flex-col items-center rounded-[1.65rem] border border-white/15 bg-white/[.08] px-5 py-5 text-center text-white shadow-2xl backdrop-blur-md">
+            <span className="text-2xl font-extrabold tracking-[-0.05em]">
+              {initials(programmeLabel || universityName)}
+            </span>
+            {programmeLabel ? (
+              <span className="mt-2 text-[10px] font-bold uppercase tracking-[0.12em] text-white/64">
+                <bdi dir="auto">{programmeLabel}</bdi>
+              </span>
+            ) : null}
           </div>
         </div>
       ) : null}

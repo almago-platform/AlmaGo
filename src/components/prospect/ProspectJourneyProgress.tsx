@@ -177,12 +177,18 @@ export function ProspectJourneyProgress(props: {
   const activeIndex = currentIndex(props);
   const currentStepNumber = Math.min(steps.length, activeIndex + 1);
   const percent = Math.round((currentStepNumber / steps.length) * 100);
+  const positionLabel = {
+    fr: `Étape ${currentStepNumber} sur ${steps.length}`,
+    ar: `الخطوة ${currentStepNumber} من ${steps.length}`,
+    en: `Step ${currentStepNumber} of ${steps.length}`,
+    de: `Schritt ${currentStepNumber} von ${steps.length}`,
+  }[props.locale];
 
   return (
     <div>
       <div className="mb-3 flex items-center justify-between gap-3 text-sm">
         <span className="font-bold text-[var(--foreground)]">
-          {currentStepNumber}/{steps.length} {copy.count}
+          {positionLabel}
         </span>
         <span className="rounded-full bg-[var(--premium-ink)] px-2.5 py-1 text-[11px] font-bold tabular-nums text-white">{percent}%</span>
       </div>
