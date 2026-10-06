@@ -8,12 +8,12 @@ function initials(name: string) {
     .filter(Boolean)
     .filter((word) => !["university", "universität", "hochschule", "of", "der", "die", "the"].includes(word.toLocaleLowerCase("de")));
 
-  const initials = words
+  const value = words
     .slice(0, 3)
     .map((word) => word[0]?.toLocaleUpperCase("de"))
     .join("");
 
-  return initials || name.slice(0, 2).toLocaleUpperCase("de");
+  return value || name.slice(0, 2).toLocaleUpperCase("de");
 }
 
 export function ProspectUniversityCover({
