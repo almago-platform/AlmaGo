@@ -59,7 +59,7 @@ export function OrientationRouteCard({
         </article>
       </div>
 
-      <article className="mt-5 rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--brand-soft)] p-5 sm:p-6">
+      <article className="mt-5 rounded-[var(--radius-panel)] border border-[var(--warning-border)] bg-[var(--premium-gold-wash)] p-5 sm:p-6">
         <p className="eyebrow">
           {{ fr: "En parallèle", ar: "بالتوازي", en: "In parallel", de: "Parallel" }[locale]}
         </p>
