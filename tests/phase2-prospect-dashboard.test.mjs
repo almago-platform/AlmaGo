@@ -127,6 +127,6 @@ test("prospect dashboard exposes lifecycle, Prospect action, Campus action and p
   assert.match(prospectPage, /proposalStatus/);
   assert.match(prospectPage, /Espace étudiant non activé/);
   assert.match(prospectPage, /\/prospect\/catalogue/);
-  assert.match(prospectPage, /\/prospect\/solutions/);
-  assert.match(prospectPage, /<details/);
+  assert.match(prospectPage, /ProspectProgrammeRecommendationCard/);
+  assert.doesNotMatch(prospectPage, /orientationVersionSummary/);
 });
