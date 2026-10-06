@@ -65,7 +65,7 @@ A38 OWNER CONFIRMATION
 6. Registre + numéro, si applicable : À CONFIRMER SELON IMMATRICULATION / STATUT FINAL EN TUNISIE
 7. TVA / identifiant fiscal, si applicable : À CONFIRMER SELON STATUT FINAL EN TUNISIE
 8. Pré-lancement / démonstration partenaire : développé et testé depuis l’Allemagne ; ouverture réelle du service prévue après établissement légal en Tunisie
-9. Statut commercial actuel : pré-lancement uniquement ; site destiné aux tests et présentations partenaires ; aucune ouverture réelle au public avant immatriculation/licence ; services payants envisagés mais non activés, tarifés ni proposés à la vente
+9. Statut commercial actuel : pré-lancement uniquement ; site destiné aux tests et présentations partenaires ; aucune ouverture réelle au public avant immatriculation/licence ; des offres payantes de test sont configurées et tarifées en TND dans le catalogue technique, mais ne sont ni activées ni proposées à la vente publique
 10. DPO : À CONFIRMER PAR LE RELECTEUR SELON APPLICABILITÉ
 11. Activité soumise à autorisation ou profession réglementée : À CONFIRMER PAR LE RELECTEUR
 12. Politique de conservation proposée : APPROUVÉE
