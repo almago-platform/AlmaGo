@@ -65,7 +65,7 @@ test("next actions remain bounded to existing student surfaces", () => {
 });
 
 test("the real student shell and dashboard expose the pathway page", () => {
-  assert.ok(nativeCopy.includes('"Mon parcours"'));
+  assert.ok(nativeCopy.includes('"Parcours Allemagne"'));
   assert.ok(shell.includes("/student/pathway"));
   assert.ok(nativeCopy.includes('"Financement & assurance"'));
   assert.ok(shell.includes("/student/finance-insurance"));
