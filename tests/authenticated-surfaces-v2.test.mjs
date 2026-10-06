@@ -25,15 +25,15 @@ const projectCopy = readFileSync("src/content/student-project-copy.ts", "utf8");
 const projectForm = readFileSync("src/components/student/StudentProjectForm.tsx", "utf8");
 const journeyOverview = readFileSync("src/components/student/StudentJourneyOverview.tsx", "utf8");
 
-test("student shell groups navigation by dossier, parcours and resources", () => {
+test("student shell groups navigation around the student journey and next decisions", () => {
   assert.ok(shell.includes("const studentGroupIndexes"));
   assert.ok(shell.includes("studentGroups = studentGroupIndexes.map"));
   assert.ok(shell.includes("studentGroups.map"));
   assert.ok(shell.includes("shell.studentMobileNavigation"));
-  assert.ok(nativeCopy.includes('groups: ["Dossier", "Parcours", "Ressources"]'));
-  assert.ok(nativeCopy.includes('groups: ["ملفي", "خطواتي", "الموارد"]'));
-  assert.ok(nativeCopy.includes('groups: ["My workspace", "My journey", "Resources"]'));
-  assert.ok(nativeCopy.includes('groups: ["Mein Bereich", "Mein Weg", "Ressourcen"]'));
+  assert.ok(nativeCopy.includes('groups: ["Aujourd’hui", "Préparer mon dossier", "Candidatures & démarches", "Préparer mon départ"]'));
+  assert.ok(nativeCopy.includes('groups: ["اليوم", "تحضير ملفي", "طلبات التقديم والإجراءات", "الاستعداد للسفر"]'));
+  assert.ok(nativeCopy.includes('groups: ["Today", "Prepare my file", "Applications & procedure", "Prepare to leave"]'));
+  assert.ok(nativeCopy.includes('groups: ["Heute", "Dossier vorbereiten", "Bewerbungen & Verfahren", "Abreise vorbereiten"]'));
 });
 
 test("language and finance surfaces share localized resource context", () => {
