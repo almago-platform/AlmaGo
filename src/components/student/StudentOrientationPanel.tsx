@@ -549,9 +549,12 @@ export function StudentOrientationPanel({
 
 const programCardCopy = {
   fr: {
-    scanHint: "Scannez rapidement l’essentiel avant d’ouvrir le détail.",
+    scanHint: "Scanne rapidement l’essentiel avant d’ouvrir le détail.",
     fees: "Frais / tuition",
     deadline: "Deadline",
+    degree: "Diplôme",
+    language: "Langue",
+    semester: "Semestre",
     verify: "À vérifier",
     save: "Enregistrer",
     saved: "Enregistré",
@@ -559,12 +562,27 @@ const programCardCopy = {
     comparing: "Comparé",
     viewProgramme: "Voir le programme",
     detailsToVerify: "Compatibilité détaillée à vérifier",
-    compareCount: (count: number) => count ? `${count}/3 à comparer` : "Sélectionnez jusqu’à 3",
+    compareCount: (count: number) => count ? `${count}/3 à comparer` : "Sélectionne jusqu’à 3",
+    searchLabel: "Rechercher un programme",
+    searchPlaceholder: "Programme, université ou ville…",
+    degreeFilter: "Filtrer par niveau",
+    allDegrees: "Tous les niveaux",
+    languageFilter: "Filtrer par langue",
+    allLanguages: "Toutes les langues",
+    reset: "Réinitialiser",
+    results: (count: number) => `${count} résultat${count > 1 ? "s" : ""}`,
+    quickCompareEyebrow: "Comparaison rapide",
+    quickCompareTitle: "Compare tes programmes côte à côte",
+    quickCompareDescription: "Langue, semestre, frais, deadline et compatibilité sont réunis ici.",
+    removeComparison: "Retirer",
   },
   ar: {
     scanHint: "راجع المعلومات الأساسية بسرعة قبل فتح التفاصيل.",
     fees: "الرسوم",
     deadline: "آخر موعد",
+    degree: "الدرجة",
+    language: "اللغة",
+    semester: "الفصل",
     verify: "يجب التحقق",
     save: "حفظ",
     saved: "محفوظ",
@@ -573,11 +591,26 @@ const programCardCopy = {
     viewProgramme: "عرض البرنامج",
     detailsToVerify: "يجب التحقق من تفاصيل التوافق",
     compareCount: (count: number) => count ? `${count}/3 للمقارنة` : "اختر حتى 3",
+    searchLabel: "البحث عن برنامج",
+    searchPlaceholder: "برنامج، جامعة أو مدينة…",
+    degreeFilter: "التصفية حسب المستوى",
+    allDegrees: "كل المستويات",
+    languageFilter: "التصفية حسب اللغة",
+    allLanguages: "كل اللغات",
+    reset: "إعادة الضبط",
+    results: (count: number) => `${count} نتيجة`,
+    quickCompareEyebrow: "مقارنة سريعة",
+    quickCompareTitle: "قارن البرامج جنبًا إلى جنب",
+    quickCompareDescription: "اللغة والفصل والرسوم والموعد والتوافق في مكان واحد.",
+    removeComparison: "إزالة",
   },
   en: {
     scanHint: "Scan the essentials quickly before opening the full programme.",
     fees: "Tuition / fees",
     deadline: "Deadline",
+    degree: "Degree",
+    language: "Language",
+    semester: "Semester",
     verify: "To verify",
     save: "Save",
     saved: "Saved",
@@ -586,11 +619,26 @@ const programCardCopy = {
     viewProgramme: "View programme",
     detailsToVerify: "Detailed compatibility needs checking",
     compareCount: (count: number) => count ? `${count}/3 to compare` : "Select up to 3",
+    searchLabel: "Search programmes",
+    searchPlaceholder: "Programme, university or city…",
+    degreeFilter: "Filter by degree",
+    allDegrees: "All degrees",
+    languageFilter: "Filter by language",
+    allLanguages: "All languages",
+    reset: "Reset",
+    results: (count: number) => `${count} result${count === 1 ? "" : "s"}`,
+    quickCompareEyebrow: "Quick comparison",
+    quickCompareTitle: "Compare programmes side by side",
+    quickCompareDescription: "Language, semester, fees, deadline and compatibility in one view.",
+    removeComparison: "Remove",
   },
   de: {
-    scanHint: "Die wichtigsten Angaben schnell prüfen, bevor du das Programm öffnest.",
+    scanHint: "Prüfe die wichtigsten Angaben schnell, bevor du den Studiengang öffnest.",
     fees: "Gebühren",
     deadline: "Frist",
+    degree: "Abschluss",
+    language: "Sprache",
+    semester: "Semester",
     verify: "Zu prüfen",
     save: "Speichern",
     saved: "Gespeichert",
@@ -599,6 +647,18 @@ const programCardCopy = {
     viewProgramme: "Studiengang ansehen",
     detailsToVerify: "Detaillierte Passung muss geprüft werden",
     compareCount: (count: number) => count ? `${count}/3 zum Vergleich` : "Bis zu 3 auswählen",
+    searchLabel: "Studiengang suchen",
+    searchPlaceholder: "Studiengang, Hochschule oder Stadt…",
+    degreeFilter: "Nach Abschluss filtern",
+    allDegrees: "Alle Abschlüsse",
+    languageFilter: "Nach Sprache filtern",
+    allLanguages: "Alle Sprachen",
+    reset: "Zurücksetzen",
+    results: (count: number) => `${count} Ergebnis${count === 1 ? "" : "se"}`,
+    quickCompareEyebrow: "Schnellvergleich",
+    quickCompareTitle: "Studiengänge direkt vergleichen",
+    quickCompareDescription: "Sprache, Semester, Gebühren, Frist und Passung in einer Ansicht.",
+    removeComparison: "Entfernen",
   },
 } as const;
 
@@ -725,6 +785,22 @@ function programmeDeadline(program: Program, locale: keyof typeof programCardCop
   const future = candidates.filter((value) => value >= today).sort()[0];
   const selected = future || [...candidates].sort().at(-1) || null;
   return formatDeadline(selected, locale);
+}
+
+function programmeFees(program: Program, university: University | undefined, fallback: string) {
+  const values = [university?.tuition_notes, program.application_fee_notes]
+    .filter((value): value is string => Boolean(value?.trim()))
+    .map((value) => value.trim());
+  return values.length ? values.join(" · ") : fallback;
+}
+
+function CompareFact({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="min-w-0">
+      <dt className="text-[10px] font-bold uppercase tracking-[0.08em] text-slate-500">{label}</dt>
+      <dd dir="auto" className="mt-1 break-words font-semibold leading-5 text-slate-900">{value}</dd>
+    </div>
+  );
 }
 
 function SummaryCard({ title, value, badge, tone }: { title: string; value: number | string; badge: string; tone: "success" | "info" | "warning" | "neutral" }) {
