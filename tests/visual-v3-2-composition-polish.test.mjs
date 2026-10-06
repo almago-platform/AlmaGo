@@ -10,6 +10,7 @@ const selector = readFileSync("src/components/prospect/ProspectOfferSelector.tsx
 const proposal = readFileSync("src/app/prospect/proposal/page.tsx", "utf8");
 const payment = readFileSync("src/app/prospect/payment/page.tsx", "utf8");
 const catalogue = readFileSync("src/app/prospect/catalogue/page.tsx", "utf8");
+const dashboard = readFileSync("src/app/prospect/page.tsx", "utf8");
 const catalogueCard = readFileSync("src/components/prospect/ProspectProgrammeCatalogueCard.tsx", "utf8");
 const universityCover = readFileSync("src/components/prospect/ProspectUniversityCover.tsx", "utf8");
 const css = readFileSync("src/app/prospect-v3.css", "utf8");
@@ -64,4 +65,13 @@ test("catalogue adapts sparse results and reduces repeated-cover dominance", () 
   assert.match(catalogueCard, /wide=\{wide\}/);
   assert.match(universityCover, /wide \?\s*"h-48 lg:h-full lg:min-h-\[22rem\]"/);
   assert.match(css, /\.prospect-programme-grid/);
+});
+
+test("dashboard groups decision surfaces without changing lifecycle semantics", () => {
+  assert.match(dashboard, /prospect-dashboard-decision-grid/);
+  assert.match(dashboard, /NextActionPanel/);
+  assert.match(dashboard, /ResponsibilityStrip/);
+  assert.match(dashboard, /JourneyRail/);
+  assert.match(dashboard, /proposalStatus\(state\.intake, t\)/);
+  assert.match(css, /\.prospect-dashboard-decision-grid/);
 });
