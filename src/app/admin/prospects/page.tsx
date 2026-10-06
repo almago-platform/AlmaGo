@@ -347,7 +347,7 @@ export default async function AdminProspectsPage({
           </div>
 
           <div className="grid overflow-hidden rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--border)] grid-cols-2 sm:grid-cols-5 xl:min-w-[44rem]">
-            <ProspectMetric label="Prospects sauvegardés" value={queue.length} />
+            <ProspectMetric label="prospects sauvegardés" value={queue.length} />
             <ProspectMetric label="Contact autorisé" value={contactableCount} />
             <ProspectMetric label="Veulent continuer" value={interestedCount} tone="brand" />
             <ProspectMetric label="Comptes gratuits liés" value={linkedAccountCount} />
