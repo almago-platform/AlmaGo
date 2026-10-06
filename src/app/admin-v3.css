@@ -39,7 +39,6 @@
   --brand-border: rgba(239,166,177,.26);
   --brand-strong: #fff;
   --accent-strong: #f4b400;
-  position: relative;
   background:
     radial-gradient(circle at 108% 4%, rgba(216,6,33,.2), transparent 12rem),
     radial-gradient(circle at -10% 52%, rgba(244,180,0,.07), transparent 13rem),
