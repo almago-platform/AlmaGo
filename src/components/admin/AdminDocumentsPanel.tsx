@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/Badge";
 import { Button, buttonClassName } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { AdminWorkflowSection } from "@/components/admin/AdminWorkflowSection";
 import { PremiumEmptyState } from "@/components/product/PremiumEmptyState";
 import { categoryLabel, reviewStatuses, statusLabel } from "@/lib/documents";
 
@@ -261,16 +262,34 @@ export function AdminDocumentsPanel({
   }
 
   return (
-    <div>
-      <section className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4" aria-label="Résumé de la file documentaire">
-        <QueueSummary label="Documents visibles" value={documents.length} detail="Pièces disponibles pour la revue" />
-        <QueueSummary label="En attente" value={pendingCount} detail="Première vérification à effectuer" />
-        <QueueSummary label="Approuvés" value={approvedCount} detail="Pièces pouvant ensuite servir de preuve si elles sont classées" />
-        <QueueSummary label="Remplacement demandé" value={replacementCount} detail="Dossiers qui restent à suivre" tone="warning" />
-      </section>
+    <div className="space-y-5">
+      <Card className="pc-card shadow-none">
+        <div className="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
+          <div className="max-w-2xl">
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">
+              File documentaire
+            </p>
+            <h2 className="mt-2 text-xl font-semibold tracking-[-0.025em] text-slate-950 sm:text-2xl">
+              {pendingCount + replacementCount
+                ? `${pendingCount + replacementCount} document${pendingCount + replacementCount > 1 ? "s" : ""} à traiter`
+                : "La file documentaire est à jour"}
+            </h2>
+            <p className="mt-2 text-sm leading-6 text-slate-600">
+              Ouvrez un dossier, vérifiez la pièce, classez sa valeur académique si nécessaire, puis enregistrez une décision explicite.
+            </p>
+          </div>
+
+          <div className="grid overflow-hidden rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--border)] grid-cols-2 sm:grid-cols-4 xl:min-w-[36rem]">
+            <QueueSummary label="Visibles" value={documents.length} />
+            <QueueSummary label="En attente" value={pendingCount} />
+            <QueueSummary label="Approuvés" value={approvedCount} />
+            <QueueSummary label="À remplacer" value={replacementCount} tone="warning" />
+          </div>
+        </div>
+      </Card>
 
       {evidenceLoadError && (
-        <p role="alert" className="mb-5 rounded-[var(--radius-control)] border border-red-200 bg-red-50 p-3.5 text-sm text-red-800">
+        <p role="alert" className="rounded-[var(--radius-control)] border border-red-200 bg-red-50 p-3.5 text-sm text-red-800">
           Les classifications académiques sont temporairement indisponibles. La revue des fichiers reste accessible.
         </p>
       )}
@@ -279,7 +298,7 @@ export function AdminDocumentsPanel({
         <p
           role={notice.tone === "error" ? "alert" : "status"}
           className={
-            "mb-5 rounded-[var(--radius-control)] border p-3.5 text-sm " +
+            "rounded-[var(--radius-control)] border p-3.5 text-sm " +
             (notice.tone === "error"
               ? "border-red-200 bg-red-50 text-red-800"
               : "border-emerald-200 bg-emerald-50 text-emerald-800")
@@ -317,9 +336,9 @@ export function AdminDocumentsPanel({
                 as="article"
                 key={document.id}
                 aria-labelledby={`admin-document-title-${document.id}`}
-                className={`pc-card min-w-0 overflow-hidden ${isReplacement ? "border-[var(--warning-border)] bg-[var(--premium-gold-wash)]" : "bg-white"}`}
+                className={`min-w-0 overflow-hidden ${isReplacement ? "border-[var(--warning-border)] bg-[var(--premium-gold-wash)]/35" : "bg-white"}`}
               >
-                <div className="flex flex-col justify-between gap-5 lg:flex-row lg:items-start">
+                <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-start">
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
                       <Badge variant={isReplacement ? "warning" : isApproved ? "success" : "info"}>
@@ -328,21 +347,15 @@ export function AdminDocumentsPanel({
                       <span className="text-xs font-semibold text-[var(--muted)]">File #{index + 1}</span>
                     </div>
 
-                    <p className="mt-4 text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">Étudiant</p>
-                    <p className="mt-1 text-sm font-bold text-slate-950 [overflow-wrap:anywhere]">{studentName}</p>
-
+                    <p className="mt-3 text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">
+                      {studentName}
+                    </p>
                     <h2
                       id={`admin-document-title-${document.id}`}
-                      className="mt-4 text-xl font-bold tracking-[-0.02em] text-slate-950 [overflow-wrap:anywhere]"
+                      className="mt-1 text-xl font-bold tracking-[-0.02em] text-slate-950 [overflow-wrap:anywhere]"
                     >
                       {document.original_filename}
                     </h2>
-
-                    <div className="mt-3 flex flex-wrap gap-2 text-xs font-semibold text-slate-600">
-                      <span className="rounded-[var(--premium-radius-control)] border border-[var(--premium-border)] bg-[var(--premium-cream)] px-2.5 py-1.5">{categoryLabel(document.category)}</span>
-                      <span className="rounded-[var(--premium-radius-control)] border border-[var(--premium-border)] bg-[var(--premium-cream)] px-2.5 py-1.5">{statusLabel(document.status)}</span>
-                      <span className="rounded-[var(--premium-radius-control)] border border-[var(--premium-border)] bg-[var(--premium-cream)] px-2.5 py-1.5">Envoyé le {formatCreatedAt(document.created_at)}</span>
-                    </div>
                   </div>
 
                   <a
@@ -356,220 +369,242 @@ export function AdminDocumentsPanel({
                   </a>
                 </div>
 
-                {document.admin_comment && (
-                  <div className="mt-5 rounded-[var(--premium-radius-control)] border border-[var(--premium-border)] bg-[var(--premium-cream)] p-4">
-                    <p className="text-xs font-bold uppercase tracking-[0.14em] text-slate-700">Message actuellement enregistré</p>
-                    <p className="mt-2 text-sm leading-6 text-slate-700 [overflow-wrap:anywhere]">{document.admin_comment}</p>
-                  </div>
-                )}
+                <div className="mt-5 space-y-3">
+                  <AdminWorkflowSection
+                    step="A"
+                    title="Fichier soumis"
+                    description="Identité de la pièce et dernier état enregistré."
+                    defaultOpen
+                  >
+                    <dl className="grid gap-3 sm:grid-cols-3">
+                      <DocumentFact label="Type" value={categoryLabel(document.category)} />
+                      <DocumentFact label="Statut" value={statusLabel(document.status)} />
+                      <DocumentFact label="Envoyé le" value={formatCreatedAt(document.created_at)} />
+                    </dl>
 
-                <div className="mt-5 rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--brand-soft)]/55 p-4">
-                  <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                      <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">Visible par l’étudiant</p>
-                      <p className="mt-1 text-sm leading-6 text-slate-600">
-                        Le commentaire envoyé avec cette revue peut apparaître dans l’espace étudiant.
-                      </p>
-                    </div>
-                    <Badge variant="info">Message étudiant</Badge>
-                  </div>
+                    {document.admin_comment ? (
+                      <div className="mt-4 rounded-[var(--radius-control)] border border-[var(--border)] bg-white p-3">
+                        <p className="text-xs font-bold uppercase tracking-[0.12em] text-slate-700">
+                          Dernier message enregistré
+                        </p>
+                        <p className="mt-2 text-sm leading-6 text-slate-700 [overflow-wrap:anywhere]">
+                          {document.admin_comment}
+                        </p>
+                      </div>
+                    ) : null}
+                  </AdminWorkflowSection>
 
-                  <label className="mt-4 block text-sm font-semibold text-slate-700">
-                    Commentaire de revue
-                    <textarea
-                      value={comments[document.id] || ""}
-                      onChange={(event) =>
-                        setComments((current) => ({ ...current, [document.id]: event.target.value }))
-                      }
-                      maxLength={2000}
-                      disabled={isBusy}
-                      className="field min-h-28 resize-y"
-                      placeholder="Expliquez clairement la correction demandée. Le commentaire est obligatoire pour un rejet ou un remplacement."
-                    />
-                  </label>
-                </div>
-
-                <section
-                  aria-labelledby={`academic-evidence-admin-${document.id}`}
-                  className="mt-5 rounded-[var(--radius-panel)] border border-slate-200 bg-[var(--surface-subtle)] p-4"
-                >
-                  <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                    <div>
-                      <p className="text-xs font-bold uppercase tracking-[0.14em] text-slate-700">
-                        Classification académique
-                      </p>
-                      <h3 id={`academic-evidence-admin-${document.id}`} className="mt-1 text-lg font-bold text-slate-950">
-                        Preuve de parcours
-                      </h3>
-                      <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
-                        L’approbation du fichier et son acceptation comme preuve de parcours sont deux décisions distinctes. Accepter une preuve ici n’est ni une admission ni une décision de visa.
-                      </p>
-                    </div>
-                    {currentEvidence && (
-                      <Badge variant={evidenceStatusVariant(currentEvidence.verification_status)}>
-                        {evidenceStatusLabel(currentEvidence.verification_status)}
-                      </Badge>
-                    )}
-                  </div>
-
-                  {linkedEvidence.length > 1 && (
-                    <p className="mt-3 text-xs leading-5 text-amber-800">
-                      Plusieurs classifications sont liées à ce fichier. Le formulaire ci-dessous modifie la classification la plus récemment chargée.
-                    </p>
-                  )}
-
-                  {currentEvidence && (
-                    <div className="mt-4 rounded-[var(--radius-control)] border border-[var(--border)] bg-white p-3">
-                      <p className="text-sm font-semibold text-slate-900">
-                        {evidenceTypeLabel(currentEvidence.type)}
-                      </p>
-                      <p className="mt-1 text-sm leading-6 text-slate-600">
-                        {currentEvidence.assessment.reason}
-                      </p>
-                    </div>
-                  )}
-
-                  <div className="mt-4 grid gap-4 lg:grid-cols-3">
+                  <AdminWorkflowSection
+                    step="B"
+                    title="Message étudiant"
+                    description="Rédigez uniquement ce que l’étudiant peut lire dans son espace."
+                    badge={<Badge variant="info">Visible étudiant</Badge>}
+                    defaultOpen={!isApproved}
+                    tone="brand"
+                  >
                     <label className="block text-sm font-semibold text-slate-700">
-                      Type de preuve
-                      <select
-                        className="field"
-                        value={evidenceEdit.evidenceType}
-                        disabled={isBusy || evidenceLoadError}
+                      Commentaire de revue
+                      <textarea
+                        value={comments[document.id] || ""}
                         onChange={(event) =>
-                          setEvidenceEdits((current) => ({
-                            ...current,
-                            [document.id]: { ...evidenceEdit, evidenceType: event.target.value },
-                          }))
+                          setComments((current) => ({ ...current, [document.id]: event.target.value }))
                         }
+                        maxLength={2000}
+                        disabled={isBusy}
+                        className="field mt-2 min-h-24 resize-y bg-white"
+                        placeholder="Expliquez clairement la correction demandée. Le commentaire est obligatoire pour un rejet ou un remplacement."
+                      />
+                    </label>
+                  </AdminWorkflowSection>
+
+                  <AdminWorkflowSection
+                    step="C"
+                    title="Preuve de parcours"
+                    description="Classez la pièce si elle doit servir de preuve académique. Cette classification est distincte de la revue du fichier."
+                    badge={
+                      currentEvidence ? (
+                        <Badge variant={evidenceStatusVariant(currentEvidence.verification_status)}>
+                          {evidenceStatusLabel(currentEvidence.verification_status)}
+                        </Badge>
+                      ) : undefined
+                    }
+                    defaultOpen={Boolean(currentEvidence)}
+                  >
+                    {linkedEvidence.length > 1 ? (
+                      <p className="mb-3 text-xs leading-5 text-amber-800">
+                        Plusieurs classifications sont liées à ce fichier. Le formulaire ci-dessous modifie la classification la plus récemment chargée.
+                      </p>
+                    ) : null}
+
+                    {currentEvidence ? (
+                      <div className="mb-4 rounded-[var(--radius-control)] border border-[var(--border)] bg-white p-3">
+                        <p className="text-sm font-semibold text-slate-900">
+                          {evidenceTypeLabel(currentEvidence.type)}
+                        </p>
+                        <p className="mt-1 text-sm leading-6 text-slate-600">
+                          {currentEvidence.assessment.reason}
+                        </p>
+                      </div>
+                    ) : null}
+
+                    <div className="grid gap-4 lg:grid-cols-3">
+                      <label className="block text-sm font-semibold text-slate-700">
+                        Type de preuve
+                        <select
+                          className="field mt-2 bg-white"
+                          value={evidenceEdit.evidenceType}
+                          disabled={isBusy || evidenceLoadError}
+                          onChange={(event) =>
+                            setEvidenceEdits((current) => ({
+                              ...current,
+                              [document.id]: { ...evidenceEdit, evidenceType: event.target.value },
+                            }))
+                          }
+                        >
+                          <option value="">Choisir le type</option>
+                          <option value="definitive_admission">Admission définitive</option>
+                          <option value="conditional_admission">Admission conditionnelle</option>
+                          <option value="bewerberbestaetigung">Bewerberbestätigung</option>
+                          <option value="admissible_university_correspondence">Correspondance universitaire admissible</option>
+                        </select>
+                      </label>
+
+                      <label className="block text-sm font-semibold text-slate-700">
+                        Établissement
+                        <input
+                          className="field mt-2 bg-white"
+                          value={evidenceEdit.institution}
+                          disabled={isBusy || evidenceLoadError}
+                          maxLength={180}
+                          onChange={(event) =>
+                            setEvidenceEdits((current) => ({
+                              ...current,
+                              [document.id]: { ...evidenceEdit, institution: event.target.value },
+                            }))
+                          }
+                          placeholder="Nom de l’établissement"
+                        />
+                      </label>
+
+                      <label className="block text-sm font-semibold text-slate-700">
+                        Date de la preuve
+                        <input
+                          type="date"
+                          className="field mt-2 bg-white"
+                          value={evidenceEdit.evidenceDate}
+                          disabled={isBusy || evidenceLoadError}
+                          onChange={(event) =>
+                            setEvidenceEdits((current) => ({
+                              ...current,
+                              [document.id]: { ...evidenceEdit, evidenceDate: event.target.value },
+                            }))
+                          }
+                        />
+                      </label>
+                    </div>
+
+                    <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        disabled={isBusy || evidenceLoadError || !evidenceEdit.evidenceType}
+                        onClick={() => saveEvidence(document, currentEvidence, evidenceEdit, "needs_review")}
                       >
-                        <option value="">Choisir le type</option>
-                        <option value="definitive_admission">Admission définitive</option>
-                        <option value="conditional_admission">Admission conditionnelle</option>
-                        <option value="bewerberbestaetigung">Bewerberbestätigung</option>
-                        <option value="admissible_university_correspondence">Correspondance universitaire admissible</option>
-                      </select>
-                    </label>
-
-                    <label className="block text-sm font-semibold text-slate-700">
-                      Établissement
-                      <input
-                        className="field"
-                        value={evidenceEdit.institution}
-                        disabled={isBusy || evidenceLoadError}
-                        maxLength={180}
-                        onChange={(event) =>
-                          setEvidenceEdits((current) => ({
-                            ...current,
-                            [document.id]: { ...evidenceEdit, institution: event.target.value },
-                          }))
+                        Enregistrer à vérifier
+                      </Button>
+                      <Button
+                        type="button"
+                        disabled={
+                          isBusy
+                          || evidenceLoadError
+                          || !evidenceEdit.evidenceType
+                          || !isApproved
+                          || !evidenceEdit.institution.trim()
+                          || !evidenceEdit.evidenceDate
                         }
-                        placeholder="Nom de l’établissement"
-                      />
-                    </label>
+                        onClick={() => saveEvidence(document, currentEvidence, evidenceEdit, "accepted_for_pathway")}
+                      >
+                        Accepter comme preuve de parcours
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        disabled={isBusy || evidenceLoadError || !evidenceEdit.evidenceType}
+                        onClick={() => saveEvidence(document, currentEvidence, evidenceEdit, "replace_required")}
+                      >
+                        Marquer la preuve à remplacer
+                      </Button>
+                    </div>
 
-                    <label className="block text-sm font-semibold text-slate-700">
-                      Date de la preuve
-                      <input
-                        type="date"
-                        className="field"
-                        value={evidenceEdit.evidenceDate}
-                        disabled={isBusy || evidenceLoadError}
-                        onChange={(event) =>
-                          setEvidenceEdits((current) => ({
-                            ...current,
-                            [document.id]: { ...evidenceEdit, evidenceDate: event.target.value },
-                          }))
-                        }
-                      />
-                    </label>
-                  </div>
+                    {!isApproved ? (
+                      <p className="mt-3 text-xs leading-5 text-[var(--muted)]">
+                        Le fichier doit d’abord être approuvé dans la revue documentaire avant de pouvoir être accepté comme preuve de parcours.
+                      </p>
+                    ) : null}
+                  </AdminWorkflowSection>
 
-                  <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      disabled={isBusy || evidenceLoadError || !evidenceEdit.evidenceType}
-                      onClick={() => saveEvidence(document, currentEvidence, evidenceEdit, "needs_review")}
-                    >
-                      Enregistrer à vérifier
-                    </Button>
-                    <Button
-                      type="button"
-                      disabled={
-                        isBusy
-                        || evidenceLoadError
-                        || !evidenceEdit.evidenceType
-                        || !isApproved
-                        || !evidenceEdit.institution.trim()
-                        || !evidenceEdit.evidenceDate
-                      }
-                      onClick={() => saveEvidence(document, currentEvidence, evidenceEdit, "accepted_for_pathway")}
-                    >
-                      Accepter comme preuve de parcours
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      disabled={isBusy || evidenceLoadError || !evidenceEdit.evidenceType}
-                      onClick={() => saveEvidence(document, currentEvidence, evidenceEdit, "replace_required")}
-                    >
-                      Marquer la preuve à remplacer
-                    </Button>
-                  </div>
+                  <AdminWorkflowSection
+                    step="D"
+                    title="Décision documentaire"
+                    description="Validez la pièce ou laissez le dossier dans un état qui exige une action."
+                    defaultOpen
+                    tone="brand"
+                  >
+                    <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+                      <div className="max-w-2xl">
+                        <p className="text-sm leading-6 text-slate-600">
+                          Approuver valide la pièce. Un remplacement ou un rejet conserve le dossier dans un état nécessitant une action ou un suivi.
+                        </p>
+                      </div>
 
-                  {!isApproved && (
-                    <p className="mt-3 text-xs leading-5 text-[var(--muted)]">
-                      Le fichier doit d’abord être approuvé dans la revue documentaire avant de pouvoir être accepté comme preuve de parcours.
-                    </p>
-                  )}
-                </section>
+                      <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap lg:justify-end">
+                        <Button
+                          type="button"
+                          disabled={isBusy}
+                          onClick={() => review(document.id, "approved")}
+                          className="w-full justify-center sm:w-auto"
+                        >
+                          {isBusy ? "Enregistrement…" : "Approuver"}
+                        </Button>
+                        <Button
+                          type="button"
+                          disabled={isBusy}
+                          onClick={() => review(document.id, "replace_required")}
+                          variant="secondary"
+                          className="w-full justify-center sm:w-auto"
+                        >
+                          Demander un remplacement
+                        </Button>
+                        <Button
+                          type="button"
+                          disabled={isBusy}
+                          onClick={() => review(document.id, "rejected")}
+                          variant="secondary"
+                          className="w-full justify-center sm:w-auto"
+                        >
+                          Rejeter
+                        </Button>
+                      </div>
+                    </div>
 
-                <div className="mt-5 flex flex-col gap-4 border-t border-[var(--border)] pt-5 lg:flex-row lg:items-end lg:justify-between">
-                  <div className="max-w-2xl">
-                    <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--muted)]">Conséquence de la revue</p>
-                    <p className="mt-1 text-sm leading-6 text-slate-600">
-                      Approuver valide la pièce. Un remplacement ou un rejet conserve le dossier dans un état nécessitant une action ou un suivi.
-                    </p>
-                  </div>
-
-                  <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap lg:justify-end">
-                    <Button
-                      type="button"
-                      disabled={isBusy}
-                      onClick={() => review(document.id, "approved")}
-                      className="w-full justify-center sm:w-auto"
-                    >
-                      {isBusy ? "Enregistrement…" : "Approuver"}
-                    </Button>
-                    <Button
-                      type="button"
-                      disabled={isBusy}
-                      onClick={() => review(document.id, "replace_required")}
-                      variant="secondary"
-                      className="w-full justify-center sm:w-auto"
-                    >
-                      Demander un remplacement
-                    </Button>
-                    <Button
-                      type="button"
-                      disabled={isBusy}
-                      onClick={() => review(document.id, "rejected")}
-                      variant="secondary"
-                      className="w-full justify-center sm:w-auto"
-                    >
-                      Rejeter
-                    </Button>
-                    <Button
-                      type="button"
-                      disabled={isBusy}
-                      onClick={() => deleteDocument(document)}
-                      variant="secondary"
-                      className="w-full justify-center border-red-200 text-red-700 hover:border-red-300 hover:bg-red-50 sm:w-auto"
-                    >
-                      Supprimer définitivement
-                    </Button>
-                  </div>
+                    <details className="mt-4 border-t border-red-100 pt-4">
+                      <summary className="cursor-pointer text-xs font-bold uppercase tracking-[0.12em] text-red-700">
+                        Action sensible
+                      </summary>
+                      <p className="mt-2 max-w-2xl text-xs leading-5 text-slate-600">
+                        La suppression définitive est séparée de la décision de revue afin d’éviter une action destructive accidentelle.
+                      </p>
+                      <Button
+                        type="button"
+                        disabled={isBusy}
+                        onClick={() => deleteDocument(document)}
+                        variant="secondary"
+                        className="mt-3 border-red-200 text-red-700 hover:border-red-300 hover:bg-red-50"
+                      >
+                        Supprimer définitivement
+                      </Button>
+                    </details>
+                  </AdminWorkflowSection>
                 </div>
               </Card>
             );
@@ -583,19 +618,25 @@ export function AdminDocumentsPanel({
 function QueueSummary({
   label,
   value,
-  detail,
   tone = "neutral",
 }: {
   label: string;
   value: number;
-  detail: string;
   tone?: "warning" | "neutral";
 }) {
   return (
-    <Card className={`pc-card ${tone === "warning" && value ? "border-[var(--warning-border)] bg-[var(--premium-gold-wash)]" : ""}`}>
-      <p className="text-sm font-bold text-slate-700">{label}</p>
-      <p className="mt-2 text-3xl font-semibold tracking-tight text-slate-950">{value}</p>
-      <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{detail}</p>
-    </Card>
+    <div className={`bg-white p-3 sm:p-4 ${tone === "warning" && value ? "bg-amber-50/70" : ""}`}>
+      <p className="text-[0.68rem] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">{label}</p>
+      <p className="mt-1 text-2xl font-semibold tracking-tight text-slate-950">{value}</p>
+    </div>
+  );
+}
+
+function DocumentFact({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-[var(--radius-control)] border border-[var(--border)] bg-white p-3">
+      <dt className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--muted)]">{label}</dt>
+      <dd className="mt-1 text-sm font-semibold text-slate-900 [overflow-wrap:anywhere]">{value}</dd>
+    </div>
   );
 }
