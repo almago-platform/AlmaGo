@@ -1,33 +1,9 @@
 import type { OrientationProgrammeRecord } from "@/lib/orientation-engine/types";
 import { ProspectUniversityCover } from "@/components/prospect/ProspectUniversityCover";
 import { buttonClassName } from "@/components/ui/Button";
+import { localizedProgrammeField, localizedTeachingLanguage } from "@/lib/prospect/catalogue-presentation";
 
 type ProspectLocale = "fr" | "ar" | "en" | "de";
-
-function localizedTeachingLanguage(value: string, locale: ProspectLocale) {
-  const normalized = value.trim().toLocaleLowerCase("de").replace(/\s+/g, " ");
-  const labels = {
-    fr: { german: "Allemand", english: "Anglais", both: "Allemand / anglais" },
-    ar: { german: "الألمانية", english: "الإنجليزية", both: "الألمانية / الإنجليزية" },
-    en: { german: "German", english: "English", both: "German / English" },
-    de: { german: "Deutsch", english: "Englisch", both: "Deutsch / Englisch" },
-  } as const;
-  const isGerman = ["german", "deutsch", "allemand", "الألمانية"].includes(normalized);
-  const isEnglish = ["english", "englisch", "anglais", "الإنجليزية"].includes(normalized);
-  const isBoth = [
-    "german / english",
-    "german & english",
-    "deutsch / englisch",
-    "deutsch & englisch",
-    "allemand / anglais",
-    "allemand et anglais",
-    "الألمانية / الإنجليزية",
-  ].includes(normalized);
-  if (isBoth) return labels[locale].both;
-  if (isGerman) return labels[locale].german;
-  if (isEnglish) return labels[locale].english;
-  return value;
-}
 
 function ArrowIcon() {
   return (
@@ -65,6 +41,7 @@ export function ProspectProgrammeCatalogueCard({
   const teachingLanguage = programme.teachingLanguage
     ? localizedTeachingLanguage(programme.teachingLanguage, locale)
     : null;
+  const programmeField = localizedProgrammeField(programme.field, locale);
   const verificationRows = [
     [labels.german, programme.germanLevelRequired || labels.requirementCheck],
     [labels.uniAssist, programme.uniAssistRequired ? labels.yes : labels.requirementCheck],
@@ -88,6 +65,7 @@ export function ProspectProgrammeCatalogueCard({
           compact={!wide && !projectMatch}
           wide={wide}
           usePhoto={showUniversityPhoto}
+          programmeLabel={programmeField}
         />
       </div>
 
@@ -124,7 +102,7 @@ export function ProspectProgrammeCatalogueCard({
           <div className="rounded-2xl border border-[var(--premium-border)] bg-[var(--premium-cream)] px-4 py-3.5">
             <p className="text-[10px] font-extrabold uppercase tracking-[0.08em] text-[var(--muted)]">{labels.field}</p>
             <p className="mt-1.5 text-sm font-semibold leading-5 text-[var(--foreground)] [overflow-wrap:normal]">
-              <bdi dir="auto">{programme.field || "—"}</bdi>
+              <bdi dir="auto">{programmeField || "—"}</bdi>
             </p>
           </div>
           <details className="rounded-2xl border border-[var(--premium-border)] bg-white/70 px-4 py-3.5">
