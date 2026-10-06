@@ -1,5 +1,7 @@
 # AlmaGo final release checklist
 
+V3.2 design freeze is a visual/product-system baseline only. It does **not** mean public launch, payment activation, legal approval, or A45 completion. See `docs/product-system-v3-2-freeze.md`.
+
 A45 is the last publication gate. It must not be completed before A38, A43 and A44.
 
 ## Human prerequisites
