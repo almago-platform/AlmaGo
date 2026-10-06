@@ -263,7 +263,7 @@ export default async function StudentEntry() {
     project?.target_intake ? localizeCatalogueLabel(locale, project.target_intake) : null,
   ].filter(Boolean).join(" · ");
 
-  const importantDeadlines = [
+  const allImportantDeadlines = [
     ...activeApplications
       .filter((application) => Boolean(application.deadline))
       .map((application) => ({
@@ -280,9 +280,9 @@ export default async function StudentEntry() {
         type: cockpit.stepDeadline,
         href: "/student/checklist",
       })),
-  ]
-    .sort((a, b) => a.date.localeCompare(b.date))
-    .slice(0, 3);
+  ].sort((a, b) => a.date.localeCompare(b.date));
+
+  const importantDeadlines = allImportantDeadlines.slice(0, 3);
 
   const missingRequiredDocuments = [...new Set(
     activeApplications
@@ -297,6 +297,8 @@ export default async function StudentEntry() {
   const documentsToFix = studentDocuments
     .filter((document) => ["rejected", "replace_required"].includes(document.status))
     .slice(0, 4);
+
+  const documentAttentionCount = missingRequiredDocuments.length + documentsToFix.length;
 
   const recentActivities = [
     ...studentApplications.flatMap((application) => {
@@ -334,10 +336,25 @@ export default async function StudentEntry() {
         status={hasActionRequired ? t.now : waitingAlmaGo.length ? t.tracking : v2.active}
         statusVariant={hasActionRequired ? "warning" : waitingAlmaGo.length ? "info" : "success"}
         facts={[
-          { label: v2.overview, value: <bdi dir="auto">{projectSummary}</bdi> },
-          { label: cockpit.progressTitle, value: checklist.length ? `${progression}%` : "—" },
-          { label: cockpit.documentsTitle, value: `${approvedDocuments}/${studentDocuments.length || 0}` },
-          { label: cockpit.applicationsTitle, value: activeApplications.length },
+          {
+            label: cockpit.progressEyebrow,
+            value: checklist.length ? (
+              <div className="min-w-[11rem]">
+                <div className="flex items-baseline justify-between gap-3">
+                  <strong className="text-xl font-semibold text-white">{progression}%</strong>
+                  <span className="text-[10px] font-medium leading-4 text-white/55">
+                    {cockpit.progressMeta(completed, checklist.length)}
+                  </span>
+                </div>
+                <div className="mt-2 [&>div]:h-1.5 [&>div]:bg-white/15">
+                  <ProgressBar value={progression} label={t.progressLabel} />
+                </div>
+              </div>
+            ) : "—",
+          },
+          { label: cockpit.programmesTitle, value: studentRecommendations.length },
+          { label: cockpit.deadlinesTitle, value: allImportantDeadlines.length },
+          { label: cockpit.documentsTitle, value: documentAttentionCount },
         ]}
         actions={
           <>
@@ -349,22 +366,13 @@ export default async function StudentEntry() {
             </Link>
             <Link
               href="/student/pathway"
-              className="inline-flex min-h-10 items-center rounded-[var(--radius-control)] border border-[var(--border-strong)] bg-[var(--surface)] px-4 text-sm font-semibold text-[var(--foreground)]"
+              className="inline-flex min-h-10 items-center rounded-[var(--radius-control)] border border-white/20 bg-white/[.06] px-4 text-sm font-semibold text-white transition hover:bg-white/[.1]"
             >
               {t.pathwayCta}
             </Link>
           </>
         }
       />
-
-      <section className="space-y-3">
-        <SectionHeader
-          eyebrow={cockpit.progressEyebrow}
-          title={journeyCopy.title}
-          description={t.progressBoundary}
-        />
-        <JourneyRail steps={v2JourneySteps} ariaLabel={journeyCopy.title} />
-      </section>
 
       <NextActionPanel
         eyebrow={t.nextActionEyebrow}
@@ -379,41 +387,38 @@ export default async function StudentEntry() {
         }
       />
 
-      <ResponsibilityStrip
-        title={v2.responsibility}
-        items={[
-          {
-            label: v2.you,
-            detail: hasActionRequired ? nextAction.label : t.upToDate,
-            tone: "user",
-          },
-          {
-            label: v2.campus,
-            detail: waitingAlmaGo.length ? v2.campusWorking : cockpit.noActionReason,
-            tone: "campus",
-          },
-          {
-            label: v2.official,
-            detail: v2.officialBoundary,
-            tone: "external",
-          },
-        ]}
-      />
+      <section className="space-y-3">
+        <SectionHeader
+          eyebrow={cockpit.progressEyebrow}
+          title={journeyCopy.title}
+          description={t.progressBoundary}
+        />
+        <JourneyRail steps={v2JourneySteps} ariaLabel={journeyCopy.title} />
+      </section>
 
-      <details className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)]">
-        <summary className="cursor-pointer list-none px-5 py-4 text-sm font-semibold text-[var(--foreground)]">
-          {v2.detailedJourney}
-          <span className="mt-1 block text-xs font-normal leading-5 text-[var(--muted)]">{v2.detailedJourneyHint}</span>
-        </summary>
-        <div className="border-t border-[var(--border)] p-4 sm:p-5">
-          <AlmagoJourney
-            model={almagoJourney}
-            nextAction={{ label: nextAction.label, detail: nextAction.detail, href: nextAction.href }}
-          />
-        </div>
-      </details>
+      <section
+        className="grid border-y border-[var(--border)] bg-[var(--surface)] sm:grid-cols-3"
+        aria-label={t.overviewAria}
+        data-dashboard-metrics
+      >
+        <DashboardMetric
+          value={studentRecommendations.length}
+          label={cockpit.programmesTitle}
+          href="/student/orientation"
+        />
+        <DashboardMetric
+          value={allImportantDeadlines.length}
+          label={cockpit.deadlinesTitle}
+          href="/student/applications"
+        />
+        <DashboardMetric
+          value={documentAttentionCount}
+          label={cockpit.documentsTitle}
+          href="/student/documents"
+        />
+      </section>
 
-      <section className="mt-7" aria-labelledby="deadlines-title">
+      <section className="mt-10" aria-labelledby="deadlines-title">
         <div className="mb-3 flex items-end justify-between gap-4">
           <h2 id="deadlines-title" className="text-xl font-semibold tracking-[-0.025em] text-[var(--foreground)]">
             {cockpit.deadlinesTitle}
@@ -424,11 +429,11 @@ export default async function StudentEntry() {
         </div>
 
         {importantDeadlines.length ? (
-          <div className="divide-y divide-[var(--border)] rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface-raised)]">
+          <div className="divide-y divide-[var(--border)] border-y border-[var(--border)]">
             {importantDeadlines.map((deadline) => {
               const overdue = isPastDeadline(deadline.date);
               return (
-                <Link key={`${deadline.type}-${deadline.date}-${deadline.label}`} href={deadline.href} className="grid gap-2 px-4 py-4 transition-colors hover:bg-[var(--surface-subtle)] sm:grid-cols-[8rem_minmax(0,1fr)_auto] sm:items-center sm:px-5">
+                <Link key={`${deadline.type}-${deadline.date}-${deadline.label}`} href={deadline.href} className="grid gap-2 py-5 transition-colors hover:bg-[var(--surface-subtle)] sm:grid-cols-[9rem_minmax(0,1fr)_auto] sm:items-center sm:px-2">
                   <time className={`text-sm font-bold ${overdue ? "text-[var(--danger)]" : "text-[var(--foreground)]"}`}>
                     {formatDeadline(deadline.date, locale)}
                   </time>
@@ -447,7 +452,7 @@ export default async function StudentEntry() {
         )}
       </section>
 
-      <section className="mt-8 grid gap-5 xl:grid-cols-3" aria-label={t.overviewAria}>
+      <section className="mt-10 grid gap-x-8 gap-y-10 xl:grid-cols-[1.25fr_1fr_1fr]" aria-label={t.overviewAria}>
         <CockpitPanel title={cockpit.programmesTitle} href="/student/orientation" cta={cockpit.programmesCta}>
           {studentRecommendations.length ? (
             <div className="divide-y divide-[var(--border)]">
@@ -557,6 +562,35 @@ export default async function StudentEntry() {
   );
 }
 
+function DashboardMetric({
+  value,
+  label,
+  href,
+}: {
+  value: number;
+  label: string;
+  href: string;
+}) {
+  return (
+    <Link
+      href={href}
+      className="group flex min-h-28 items-end justify-between gap-4 border-b border-[var(--border)] px-1 py-5 transition-colors hover:bg-[var(--surface-subtle)] sm:border-b-0 sm:border-e sm:px-5 sm:last:border-e-0"
+    >
+      <span>
+        <strong className="block text-[clamp(2rem,4vw,3rem)] font-semibold leading-none tracking-[-0.05em] text-[var(--foreground)]">
+          {value}
+        </strong>
+        <span className="mt-2 block text-xs font-bold uppercase tracking-[0.11em] text-[var(--muted)]">
+          {label}
+        </span>
+      </span>
+      <span className="pb-1 text-lg font-semibold text-[var(--brand)] transition-transform group-hover:translate-x-1" aria-hidden="true">
+        →
+      </span>
+    </Link>
+  );
+}
+
 function CockpitPanel({
   title,
   href,
@@ -569,7 +603,7 @@ function CockpitPanel({
   children: ReactNode;
 }) {
   return (
-    <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface-raised)] p-5 shadow-[var(--shadow-xs)]">
+    <section className="min-w-0 border-t-2 border-[var(--foreground)] pt-5">
       <div className="mb-4 flex items-center justify-between gap-3">
         <h2 className="text-base font-semibold text-[var(--foreground)]">{title}</h2>
         <Link href={href} className="text-xs font-bold text-[var(--brand)] hover:underline">{cta}</Link>
@@ -600,6 +634,43 @@ function DashboardUnavailable({ copy }: { copy: (typeof studentDashboardCopy)["f
           <ButtonLink href="/student">{copy.retry}</ButtonLink>
         </div>
       </Card>
+
+      <section className="mt-10 space-y-4 border-t border-[var(--border)] pt-8">
+        <ResponsibilityStrip
+          title={v2.responsibility}
+          items={[
+            {
+              label: v2.you,
+              detail: hasActionRequired ? nextAction.label : t.upToDate,
+              tone: "user",
+            },
+            {
+              label: v2.campus,
+              detail: waitingAlmaGo.length ? v2.campusWorking : cockpit.noActionReason,
+              tone: "campus",
+            },
+            {
+              label: v2.official,
+              detail: v2.officialBoundary,
+              tone: "external",
+            },
+          ]}
+        />
+
+        <details className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)]">
+          <summary className="cursor-pointer list-none px-5 py-4 text-sm font-semibold text-[var(--foreground)]">
+            {v2.detailedJourney}
+            <span className="mt-1 block text-xs font-normal leading-5 text-[var(--muted)]">{v2.detailedJourneyHint}</span>
+          </summary>
+          <div className="border-t border-[var(--border)] p-4 sm:p-5">
+            <AlmagoJourney
+              model={almagoJourney}
+              nextAction={{ label: nextAction.label, detail: nextAction.detail, href: nextAction.href }}
+            />
+          </div>
+        </details>
+      </section>
+
     </main>
   );
 }
