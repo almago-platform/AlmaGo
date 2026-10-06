@@ -11,7 +11,9 @@ import { DossierHeader } from "@/components/product/DossierHeader";
 import { JourneyRail, type JourneyRailStep } from "@/components/product/JourneyRail";
 import { NextActionPanel } from "@/components/product/NextActionPanel";
 import { ResponsibilityStrip } from "@/components/product/ResponsibilityStrip";
-import { SectionHeader } from "@/components/ui/SectionHeader";
+import { PremiumEmptyState } from "@/components/product/PremiumEmptyState";
+import { PremiumSectionHeader } from "@/components/product/PremiumSectionHeader";
+import { buttonClassName } from "@/components/ui/Button";
 import { buildAlmagoJourney } from "@/lib/student/almago-journey";
 import { createClient } from "@/lib/supabase/server";
 import { getRequestCopy } from "@/lib/i18n-server";
@@ -360,13 +362,13 @@ export default async function StudentEntry() {
           <>
             <Link
               href="/student/procedure"
-              className="inline-flex min-h-10 items-center rounded-[var(--radius-control)] bg-[var(--brand)] px-4 text-sm font-semibold text-white transition hover:bg-[var(--brand-strong)]"
+              className={buttonClassName("primary", "min-h-10 px-4 py-2")}
             >
               {v2.procedure}
             </Link>
             <Link
               href="/student/pathway"
-              className="inline-flex min-h-10 items-center rounded-[var(--radius-control)] border border-white/20 bg-white/[.06] px-4 text-sm font-semibold text-white transition hover:bg-white/[.1]"
+              className="pc-button inline-flex min-h-10 items-center rounded-[var(--premium-radius-control)] border border-white/20 bg-white/[.06] px-4 py-2 text-sm font-semibold text-white hover:bg-white/[.1]"
             >
               {t.pathwayCta}
             </Link>
@@ -388,7 +390,7 @@ export default async function StudentEntry() {
       />
 
       <section className="space-y-3">
-        <SectionHeader
+        <PremiumSectionHeader
           eyebrow={cockpit.progressEyebrow}
           title={journeyCopy.title}
           description={t.progressBoundary}
@@ -397,7 +399,7 @@ export default async function StudentEntry() {
       </section>
 
       <section
-        className="grid border-y border-[var(--border)] bg-[var(--surface)] sm:grid-cols-3"
+        className="pc-panel grid overflow-hidden sm:grid-cols-3"
         aria-label={t.overviewAria}
         data-dashboard-metrics
       >
@@ -418,15 +420,15 @@ export default async function StudentEntry() {
         />
       </section>
 
-      <section className="mt-10" aria-labelledby="deadlines-title">
-        <div className="mb-3 flex items-end justify-between gap-4">
-          <h2 id="deadlines-title" className="text-xl font-semibold tracking-[-0.025em] text-[var(--foreground)]">
-            {cockpit.deadlinesTitle}
-          </h2>
-          <Link href="/student/applications" className="text-xs font-bold text-[var(--brand)] hover:underline">
-            {cockpit.viewAll}
-          </Link>
-        </div>
+      <section className="mt-8" aria-labelledby="deadlines-title">
+        <PremiumSectionHeader
+          title={<span id="deadlines-title">{cockpit.deadlinesTitle}</span>}
+          actions={
+            <Link href="/student/applications" className={buttonClassName("ghost", "min-h-9 px-3 py-1.5 text-xs")}>
+              {cockpit.viewAll}
+            </Link>
+          }
+        />
 
         {importantDeadlines.length ? (
           <div className="divide-y divide-[var(--border)] border-y border-[var(--border)]">
@@ -446,13 +448,13 @@ export default async function StudentEntry() {
             })}
           </div>
         ) : (
-          <p className="rounded-[var(--radius-panel)] border border-dashed border-[var(--border)] bg-[var(--surface)] px-4 py-6 text-sm text-[var(--muted)]">
-            {cockpit.deadlinesEmpty}
-          </p>
+          <div className="mt-4">
+            <PremiumEmptyState title={cockpit.deadlinesEmpty} compact />
+          </div>
         )}
       </section>
 
-      <section className="mt-10 grid gap-x-8 gap-y-10 xl:grid-cols-[1.25fr_1fr_1fr]" aria-label={t.overviewAria}>
+      <section className="mt-8 grid items-start gap-4 xl:grid-cols-[1.2fr_1fr_1fr]" aria-label={t.overviewAria}>
         <CockpitPanel title={cockpit.programmesTitle} href="/student/orientation" cta={cockpit.programmesCta}>
           {studentRecommendations.length ? (
             <div className="divide-y divide-[var(--border)]">
@@ -526,15 +528,17 @@ export default async function StudentEntry() {
         </CockpitPanel>
       </section>
 
-      <section className="mt-8 border-t border-[var(--border)] pt-7" aria-labelledby="activity-title">
-        <div className="mb-4 flex items-end justify-between gap-4">
-          <h2 id="activity-title" className="text-xl font-semibold tracking-[-0.025em] text-[var(--foreground)]">
-            {cockpit.activityTitle}
-          </h2>
-          <span className="text-xs text-[var(--muted)]">
-            {approvedDocuments ? t.documentsApproved(approvedDocuments) : ""}
-          </span>
-        </div>
+      <section className="mt-8 border-t border-[var(--premium-border)] pt-7" aria-labelledby="activity-title">
+        <PremiumSectionHeader
+          title={<span id="activity-title">{cockpit.activityTitle}</span>}
+          actions={
+            approvedDocuments ? (
+              <span className="rounded-full bg-[var(--premium-cream)] px-3 py-1.5 text-xs font-semibold text-[var(--muted)]">
+                {t.documentsApproved(approvedDocuments)}
+              </span>
+            ) : undefined
+          }
+        />
 
         {recentActivities.length ? (
           <ol className="space-y-0">
@@ -555,11 +559,11 @@ export default async function StudentEntry() {
             ))}
           </ol>
         ) : (
-          <EmptyState>{cockpit.activityEmpty}</EmptyState>
+          <div className="mt-4"><PremiumEmptyState title={cockpit.activityEmpty} compact /></div>
         )}
       </section>
 
-      <section className="mt-10 space-y-4 border-t border-[var(--border)] pt-8">
+      <section className="mt-8 space-y-4 border-t border-[var(--premium-border)] pt-7">
         <ResponsibilityStrip
           title={v2.responsibility}
           items={[
@@ -581,12 +585,12 @@ export default async function StudentEntry() {
           ]}
         />
 
-        <details className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)]">
+        <details className="pc-panel">
           <summary className="cursor-pointer list-none px-5 py-4 text-sm font-semibold text-[var(--foreground)]">
             {v2.detailedJourney}
             <span className="mt-1 block text-xs font-normal leading-5 text-[var(--muted)]">{v2.detailedJourneyHint}</span>
           </summary>
-          <div className="border-t border-[var(--border)] p-4 sm:p-5">
+          <div className="border-t border-[var(--premium-border)] p-4 sm:p-5">
             <AlmagoJourney
               model={almagoJourney}
               nextAction={{ label: nextAction.label, detail: nextAction.detail, href: nextAction.href }}
@@ -611,7 +615,7 @@ function DashboardMetric({
   return (
     <Link
       href={href}
-      className="group flex min-h-28 items-end justify-between gap-4 border-b border-[var(--border)] px-1 py-5 transition-colors hover:bg-[var(--surface-subtle)] sm:border-b-0 sm:border-e sm:px-5 sm:last:border-e-0"
+      className="group flex min-h-24 items-end justify-between gap-4 border-b border-[var(--premium-border)] px-4 py-4 transition-colors hover:bg-[var(--premium-cream-soft)] sm:border-b-0 sm:border-e sm:px-5 sm:last:border-e-0"
     >
       <span>
         <strong className="block text-[clamp(2rem,4vw,3rem)] font-semibold leading-none tracking-[-0.05em] text-[var(--foreground)]">
@@ -640,10 +644,10 @@ function CockpitPanel({
   children: ReactNode;
 }) {
   return (
-    <section className="min-w-0 border-t-2 border-[var(--foreground)] pt-5">
+    <section className="pc-card min-w-0 p-4 sm:p-5">
       <div className="mb-4 flex items-center justify-between gap-3">
         <h2 className="text-base font-semibold text-[var(--foreground)]">{title}</h2>
-        <Link href={href} className="text-xs font-bold text-[var(--brand)] hover:underline">{cta}</Link>
+        <Link href={href} className={buttonClassName("ghost", "min-h-8 px-2.5 py-1 text-xs")}>{cta}</Link>
       </div>
       {children}
     </section>
@@ -652,7 +656,7 @@ function CockpitPanel({
 
 function EmptyState({ children }: { children: ReactNode }) {
   return (
-    <p className="rounded-[var(--radius-control)] border border-dashed border-[var(--border)] bg-[var(--surface-subtle)] px-3 py-5 text-sm leading-6 text-[var(--muted)]">
+    <p className="pc-soft-strip border-dashed px-3 py-5 text-sm leading-6 text-[var(--muted)]">
       {children}
     </p>
   );
