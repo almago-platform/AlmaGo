@@ -41,9 +41,9 @@ test("telemetry event names and properties are bounded and non-sensitive", () =>
 
 test("observability documentation lists every canonical telemetry event", () => {
   for (const event of contract.events) {
-    assert.match(
-      observabilityDoc,
-      new RegExp(`\\`${event.name}\\``),
+    assert.equal(
+      observabilityDoc.includes("`" + event.name + "`"),
+      true,
       "missing telemetry event in observability docs: " + event.name,
     );
   }
