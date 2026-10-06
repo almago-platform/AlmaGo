@@ -27,8 +27,8 @@ export function StudentJourneyOverview({
   const openArrow = direction === "rtl" ? "←" : "→";
 
   return (
-    <section aria-labelledby="student-journey-title" className="mt-7 overflow-hidden rounded-[1rem] border border-[var(--border)] bg-[var(--surface)] shadow-[0_24px_64px_-54px_rgba(28,33,36,0.45)]">
-      <div className={`grid gap-5 border-b border-[var(--border)] bg-[var(--surface-subtle)] px-5 py-5 sm:px-6 ${showProgressSummary ? "lg:grid-cols-[minmax(0,1fr)_17rem] lg:items-end" : ""}`}>
+    <section aria-labelledby="student-journey-title" className="pc-panel mt-6 overflow-hidden">
+      <div className={`grid gap-5 border-b border-[var(--premium-border)] bg-[var(--premium-cream-soft)] px-5 py-5 sm:px-6 ${showProgressSummary ? "lg:grid-cols-[minmax(0,1fr)_17rem] lg:items-end" : ""}`}>
         <div>
           <p className="text-[0.68rem] font-bold uppercase tracking-[0.15em] text-[var(--brand-strong)]">{copy.eyebrow}</p>
           <h2 id="student-journey-title" className="editorial-accent mt-2 text-[1.7rem] leading-[1.08] text-[var(--foreground)] sm:text-[2rem]">
@@ -43,7 +43,7 @@ export function StudentJourneyOverview({
               <span>{completedStages.length} / {totalStages} {copy.completed}</span>
               <span className="font-bold text-[var(--brand)]">{progressPercent}%</span>
             </div>
-            <div className="mt-2 h-2 overflow-hidden rounded-full bg-[var(--surface-muted)]">
+            <div className="mt-2 h-2 overflow-hidden rounded-full bg-[var(--premium-cream-strong)]">
               <div className="h-full rounded-full bg-[var(--brand)] transition-[width]" style={{ width: `${progressPercent}%` }} />
             </div>
             {activeStage && (
@@ -59,13 +59,13 @@ export function StudentJourneyOverview({
         {stages.map((stage, index) => {
           const status =
             stage.tone === "done"
-              ? { label: copy.done, className: "border-emerald-200 bg-emerald-50 text-emerald-800", marker: "✓" }
+              ? { label: copy.done, className: "border-[var(--success-border)] bg-[var(--premium-green-wash)] text-[var(--success-strong)]", marker: "✓" }
               : stage.tone === "active"
                 ? { label: copy.inProgress, className: "border-[var(--brand-border)] bg-[var(--brand-soft)] text-[var(--brand)]", marker: String(index + 1) }
-                : { label: copy.upcoming, className: "border-[var(--border)] bg-[var(--surface-subtle)] text-[var(--muted)]", marker: String(index + 1) };
+                : { label: copy.upcoming, className: "border-[var(--premium-border)] bg-[var(--premium-cream)] text-[var(--muted)]", marker: String(index + 1) };
 
           const content = (
-            <div className="flex min-h-40 flex-col p-5">
+            <div className="flex min-h-36 flex-col p-5">
               <div className="flex items-center justify-between gap-3">
                 <span className={`grid h-9 w-9 place-items-center rounded-full border text-xs font-bold ${status.className}`}>
                   {status.marker}
@@ -79,11 +79,11 @@ export function StudentJourneyOverview({
           );
 
           return (
-            <li key={stage.label} className="student-journey-cell border-b border-[var(--border)]">
+            <li key={stage.label} className="student-journey-cell border-b border-[var(--premium-border)]">
               {stage.href ? (
                 <Link
                   href={stage.href}
-                  className="block h-full transition-colors hover:bg-[var(--surface-subtle)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--brand)]"
+                  className="block h-full transition-colors hover:bg-[var(--premium-cream-soft)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--brand)]"
                 >
                   {content}
                 </Link>
