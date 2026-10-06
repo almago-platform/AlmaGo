@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { StudentPageFrame } from "@/components/student/StudentPageFrame";
 import { DossierHeader } from "@/components/product/DossierHeader";
 import { NextActionPanel } from "@/components/product/NextActionPanel";
 import { redirect } from "next/navigation";
@@ -81,7 +82,7 @@ export default async function StudentDocumentsPage() {
   const correctionCount = (documentsResult.data || []).filter((item) => ["rejected", "replace_required"].includes(item.status)).length;
 
   return (
-    <main className="mx-auto w-full max-w-[92rem] space-y-7 px-4 py-5 sm:px-6 sm:py-6 xl:px-8">
+    <StudentPageFrame className="space-y-7">
       <DossierHeader
         eyebrow={t.page.eyebrow}
         title={t.page.title}
@@ -118,7 +119,7 @@ export default async function StudentDocumentsPage() {
         evidence={evidence}
         evidenceLoadError={Boolean(evidenceResult.error)}
       />
-    </main>
+    </StudentPageFrame>
   );
 }
 
@@ -136,6 +137,6 @@ function DocumentsUnavailable({ copy }: { copy: (typeof studentDocumentsCopy)["f
           <ButtonLink href="/student" variant="secondary">{copy.page.back}</ButtonLink>
         </div>
       </Card>
-    </main>
+    </StudentPageFrame>
   );
 }
