@@ -33,7 +33,7 @@ test("orientation history identifies versions by their actual project choices", 
     presentation,
     /orientationVersionSummary[\s\S]*degree[\s\S]*specialty[\s\S]*field[\s\S]*cities/,
   );
-  assert.match(
+  assert.doesNotMatch(
     dashboard,
     /orientationVersionSummary\(orientation\.answers, locale\)/,
   );
