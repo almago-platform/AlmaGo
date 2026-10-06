@@ -1,4 +1,6 @@
 import { Badge } from "@/components/ui/Badge";
+import { StudentPageFrame } from "@/components/student/StudentPageFrame";
+import { StudentPageState } from "@/components/student/StudentPageState";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Card } from "@/components/ui/Card";
 import { StudentResourceHeader } from "@/components/student/StudentResourceHeader";
@@ -41,7 +43,7 @@ export default async function StudentFinanceInsurancePage() {
   ) as FinanceInsuranceOption[];
 
   return (
-    <main className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 sm:py-7 lg:px-8 lg:py-9">
+    <StudentPageFrame>
       <StudentResourceHeader
         current="finance"
         title={t.title}
@@ -88,7 +90,7 @@ export default async function StudentFinanceInsurancePage() {
       </div>
 
       <p className="mt-8 text-xs leading-5 text-slate-500">{t.boundary}</p>
-    </main>
+    </StudentPageFrame>
   );
 }
 
@@ -163,18 +165,19 @@ function formatVerifiedAt(value: string | null, copy: (typeof studentFinanceCopy
 
 function CatalogueUnavailable({ copy }: { copy: (typeof studentFinanceCopy)["fr"] }) {
   return (
-    <main className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 sm:py-7 lg:px-8 lg:py-9">
+    <StudentPageFrame>
       <StudentResourceHeader current="finance" title={copy.title} description={copy.unavailableDescription} />
-      <Card>
-        <div role="alert">
-          <h2 className="text-xl font-semibold text-slate-950">{copy.unavailableTitle}</h2>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">{copy.unavailableText}</p>
-        </div>
-        <div className="mt-5 flex flex-wrap gap-3">
-          <ButtonLink href="/student/finance-insurance">{copy.retry}</ButtonLink>
-          <ButtonLink href="/student/pathway" variant="secondary">{copy.back}</ButtonLink>
-        </div>
-      </Card>
-    </main>
+      <StudentPageState
+        variant="warning"
+        title={copy.unavailableTitle}
+        description={copy.unavailableText}
+        actions={
+          <>
+            <ButtonLink href="/student/finance-insurance">{copy.retry}</ButtonLink>
+            <ButtonLink href="/student/pathway" variant="secondary">{copy.back}</ButtonLink>
+          </>
+        }
+      />
+    </StudentPageFrame>
   );
 }

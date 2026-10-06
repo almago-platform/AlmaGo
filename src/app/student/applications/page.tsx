@@ -1,5 +1,6 @@
 import { ButtonLink } from "@/components/ui/ButtonLink";
-import { Card } from "@/components/ui/Card";
+import { StudentPageFrame } from "@/components/student/StudentPageFrame";
+import { StudentPageState } from "@/components/student/StudentPageState";
 import Link from "next/link";
 import { DossierHeader } from "@/components/product/DossierHeader";
 import { StudentApplicationsPanel } from "@/components/student/StudentApplicationsPanel";
@@ -39,7 +40,7 @@ export default async function StudentApplicationsPage() {
   }).length;
 
   return (
-    <main className="mx-auto w-full max-w-[92rem] space-y-7 px-4 py-5 sm:px-6 sm:py-6 xl:px-8">
+    <StudentPageFrame className="space-y-7">
       <DossierHeader
         eyebrow={t.page.eyebrow}
         title={t.page.title}
@@ -70,26 +71,30 @@ export default async function StudentApplicationsPage() {
       />
 
       <StudentApplicationsPanel applications={applications} />
-    </main>
+    </StudentPageFrame>
   );
 }
 
 function ApplicationsUnavailable({ copy }: { copy: (typeof studentApplicationsCopy)["fr"] }) {
   return (
-    <main className="mx-auto w-full max-w-[92rem] px-4 py-5 sm:px-6 sm:py-6 xl:px-8">
-      <DossierHeader eyebrow={copy.page.eyebrow} title={copy.page.title} status={copy.page.unavailableTitle} statusVariant="warning" />
-      <Card>
-        <div role="alert">
-          <h2 className="text-xl font-semibold text-slate-950">{copy.page.unavailableTitle}</h2>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
-            {copy.page.unavailableText}
-          </p>
-        </div>
-        <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-          <ButtonLink href="/student/applications">{copy.page.retry}</ButtonLink>
-          <ButtonLink href="/student/orientation" variant="secondary">{copy.page.recommendations}</ButtonLink>
-        </div>
-      </Card>
-    </main>
+    <StudentPageFrame className="space-y-7">
+      <DossierHeader
+        eyebrow={copy.page.eyebrow}
+        title={copy.page.title}
+        status={copy.page.unavailableTitle}
+        statusVariant="warning"
+      />
+      <StudentPageState
+        variant="warning"
+        title={copy.page.unavailableTitle}
+        description={copy.page.unavailableText}
+        actions={
+          <>
+            <ButtonLink href="/student/applications">{copy.page.retry}</ButtonLink>
+            <ButtonLink href="/student/orientation" variant="secondary">{copy.page.recommendations}</ButtonLink>
+          </>
+        }
+      />
+    </StudentPageFrame>
   );
 }

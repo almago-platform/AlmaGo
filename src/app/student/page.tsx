@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { StudentPageFrame } from "@/components/student/StudentPageFrame";
 import type { ReactNode } from "react";
 import { redirect } from "next/navigation";
 import { Badge } from "@/components/ui/Badge";
@@ -328,7 +329,7 @@ export default async function StudentEntry() {
     .slice(0, 5);
 
   return (
-    <main className="mx-auto w-full max-w-[92rem] space-y-7 px-4 py-5 sm:px-6 sm:py-6 xl:px-8">
+    <StudentPageFrame className="space-y-7">
       <DossierHeader
         eyebrow={v2.space}
         title={<>{cockpit.greeting} <bdi dir="auto">{profile.first_name || t.studentFallback}</bdi></>}
@@ -595,7 +596,7 @@ export default async function StudentEntry() {
         </details>
       </section>
 
-    </main>
+    </StudentPageFrame>
   );
 }
 
@@ -660,7 +661,7 @@ function EmptyState({ children }: { children: ReactNode }) {
 
 function DashboardUnavailable({ copy }: { copy: (typeof studentDashboardCopy)["fr"] }) {
   return (
-    <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
+    <StudentPageFrame>
       <PageHeader badge={copy.unavailableBadge} title={copy.dossierEyebrow} />
       <Card>
         <div role="alert">
@@ -672,6 +673,6 @@ function DashboardUnavailable({ copy }: { copy: (typeof studentDashboardCopy)["f
         </div>
       </Card>
 
-    </main>
+    </StudentPageFrame>
   );
 }

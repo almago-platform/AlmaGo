@@ -1,4 +1,6 @@
 import { redirect } from "next/navigation";
+import { StudentPageFrame } from "@/components/student/StudentPageFrame";
+import { StudentPageState } from "@/components/student/StudentPageState";
 import { Badge } from "@/components/ui/Badge";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Card } from "@/components/ui/Card";
@@ -171,7 +173,7 @@ export default async function StudentPathwayPage() {
   const nextAction = nextActionFor(decision, t);
 
   return (
-    <main className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 sm:py-7 lg:px-8 lg:py-9">
+    <StudentPageFrame>
       <StudentJourneyHeader
         current="pathway"
         eyebrow={t.page.eyebrow}
@@ -362,7 +364,7 @@ export default async function StudentPathwayPage() {
       <p className="mt-7 text-xs leading-5 text-slate-500">
         {t.page.legalBoundary}
       </p>
-    </main>
+    </StudentPageFrame>
   );
 }
 
@@ -536,18 +538,19 @@ function FactRow({ label, value }: { label: string; value: string }) {
 
 function PathwayUnavailable({ copy }: { copy: (typeof studentPathwayCopy)["fr"] }) {
   return (
-    <main className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 sm:py-7 lg:px-8 lg:py-9">
+    <StudentPageFrame>
       <StudentJourneyHeader current="pathway" eyebrow={copy.page.eyebrow} title={copy.unavailable.title} />
-      <Card>
-        <div role="alert">
-          <h2 className="text-xl font-semibold text-slate-950">{copy.unavailable.heading}</h2>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">{copy.unavailable.text}</p>
-        </div>
-        <div className="mt-5 flex flex-wrap gap-3">
-          <ButtonLink href="/student/pathway">{copy.unavailable.retry}</ButtonLink>
-          <ButtonLink href="/student" variant="secondary">{copy.unavailable.back}</ButtonLink>
-        </div>
-      </Card>
-    </main>
+      <StudentPageState
+        variant="warning"
+        title={copy.unavailable.heading}
+        description={copy.unavailable.text}
+        actions={
+          <>
+            <ButtonLink href="/student/pathway">{copy.unavailable.retry}</ButtonLink>
+            <ButtonLink href="/student" variant="secondary">{copy.unavailable.back}</ButtonLink>
+          </>
+        }
+      />
+    </StudentPageFrame>
   );
 }

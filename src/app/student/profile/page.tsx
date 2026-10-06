@@ -4,8 +4,10 @@ import { ProfileForm } from "@/components/student/ProfileForm";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
-import { PageHeader } from "@/components/ui/PageHeader";
 import { ProgressBar } from "@/components/ui/ProgressBar";
+import { DossierHeader } from "@/components/product/DossierHeader";
+import { StudentPageFrame } from "@/components/student/StudentPageFrame";
+import { StudentPageState } from "@/components/student/StudentPageState";
 import { StudentEntryProgress } from "@/components/student/StudentEntryProgress";
 import { getRequestLocale } from "@/lib/i18n-server";
 import { studentProfileCopy } from "@/content/student-profile-copy";
@@ -24,23 +26,28 @@ export default async function ProfilePage() {
     .maybeSingle();
   if (error) {
     return (
-      <main className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 sm:py-7 lg:px-8 lg:py-9">
-        <PageHeader
-          badge={t.page.badge}
-          title={t.page.title}
-          actions={<ButtonLink href="/student" variant="secondary">{t.page.back}</ButtonLink>}
+      <StudentPageFrame>
+        <div className="mb-7 sm:mb-8">
+          <DossierHeader
+            eyebrow={t.page.badge}
+            title={t.page.title}
+            status={t.page.unavailableTitle}
+            statusVariant="warning"
+            actions={<ButtonLink href="/student" variant="secondary">{t.page.back}</ButtonLink>}
+          />
+        </div>
+        <StudentPageState
+          variant="warning"
+          title={t.page.unavailableTitle}
+          description={t.page.unavailableText}
+          actions={
+            <>
+              <ButtonLink href="/student/profile">{t.page.retry}</ButtonLink>
+              <ButtonLink href="/student" variant="secondary">{t.page.back}</ButtonLink>
+            </>
+          }
         />
-        <Card>
-          <div role="alert">
-            <h2 className="text-xl font-semibold text-slate-950">{t.page.unavailableTitle}</h2>
-            <p className="mt-2 text-sm leading-6 text-slate-600">{t.page.unavailableText}</p>
-          </div>
-          <div className="mt-5 flex flex-wrap gap-3">
-            <ButtonLink href="/student/profile">{t.page.retry}</ButtonLink>
-            <ButtonLink href="/student" variant="secondary">{t.page.back}</ButtonLink>
-          </div>
-        </Card>
-      </main>
+      </StudentPageFrame>
     );
   }
   if (!profile?.onboarding_completed) redirect("/student/onboarding");
@@ -61,13 +68,15 @@ export default async function ProfilePage() {
   const profileCompletion = Math.round((completedRequiredFields / requiredProfileKeys.length) * 100);
 
   return (
-    <main className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 sm:py-7 lg:px-8 lg:py-9">
-      <PageHeader
-        badge={t.page.badge}
-        title={t.page.title}
-        description={t.page.description}
-        actions={<ButtonLink href="/student" variant="secondary">{t.page.back}</ButtonLink>}
-      />
+    <StudentPageFrame>
+      <div className="mb-7 sm:mb-8">
+        <DossierHeader
+          eyebrow={t.page.badge}
+          title={t.page.title}
+          description={t.page.description}
+          actions={<ButtonLink href="/student" variant="secondary">{t.page.back}</ButtonLink>}
+        />
+      </div>
 
       <div className="grid gap-5 lg:grid-cols-[minmax(15rem,0.35fr)_minmax(0,1fr)] lg:gap-6">
         <aside className="space-y-4 lg:sticky lg:top-6 lg:self-start" aria-label={t.page.landmarks}>
@@ -112,6 +121,6 @@ export default async function ProfilePage() {
           <ProfileForm profile={profile} />
         </Card>
       </div>
-    </main>
+    </StudentPageFrame>
   );
 }

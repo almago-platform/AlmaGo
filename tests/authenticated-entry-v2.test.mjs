@@ -54,7 +54,8 @@ test("profile remains editable through the same API and returns directly to the 
   assert.ok(profileForm.includes('fetch("/api/student/profile"'));
   assert.ok(profileCopy.includes('back: "Retour à mon dossier"'));
   assert.ok(profile.includes("profileCompletion"));
-  assert.ok(profile.includes("max-w-7xl px-4 py-5"));
+  assert.ok(profile.includes("StudentPageFrame"));
+  assert.ok(profile.includes("DossierHeader"));
 });
 
 
