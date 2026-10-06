@@ -166,7 +166,7 @@ export default async function ProspectSolutionsPage() {
       <nav aria-label={t.title} className="grid gap-3 md:grid-cols-2">
         <a
           href="#prospect-language-solutions"
-          className="pc-card pc-card-interactive pc-premium-card pc-theme-red group flex min-w-0 items-center gap-4 p-4 sm:p-5"
+          className="pc-card pc-card-interactive pc-premium-card pc-theme-neutral group flex min-w-0 items-center gap-4 p-4 sm:p-5"
         >
           <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-[var(--brand-soft)] text-lg font-black text-[var(--brand)]">A</span>
           <span className="min-w-0">
