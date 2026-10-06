@@ -1,13 +1,14 @@
 import Link from "next/link";
+import { ProspectEditorialPanel } from "@/components/prospect/ProspectEditorialPanel";
 import { ProspectOfferSelector, type PublishedOfferCard } from "@/components/prospect/ProspectOfferSelector";
 import { ProspectPageHero } from "@/components/prospect/ProspectPageHero";
-import { PremiumEmptyState } from "@/components/product/PremiumEmptyState";
 import { buttonClassName } from "@/components/ui/Button";
 import { prospectOffersCopy } from "@/content/prospect-offers-copy";
 import { rebrandCopy } from "@/lib/brand";
 import { getRequestLocale } from "@/lib/i18n-server";
 import { getPhase2StudentAccess } from "@/lib/phase2/access";
 import { formatMinorCurrency } from "@/lib/money";
+import { prospectMedia } from "@/lib/prospect/media";
 
 type OfferRow = {
   id: string;
@@ -49,19 +50,23 @@ export default async function ProspectOffersPage() {
     && access.customerStatus !== "paid_pending_validation") {
     return (
       <main className="space-y-6">
-        <ProspectPageHero eyebrow={copy.eyebrow} title={copy.title} subtitle={copy.intro} />
-        <div className="rounded-[var(--premium-radius-panel)] bg-[var(--brand-soft)] p-1 text-slate-700">
-          <PremiumEmptyState
-            eyebrow={copy.eyebrow}
-            title={copy.lockedTitle}
-            description={copy.lockedBody}
-            action={
-              <Link href="/prospect" className={buttonClassName("secondary")}>
-                {copy.backToSpace}
-              </Link>
-            }
-          />
-        </div>
+        <ProspectPageHero
+          eyebrow={copy.eyebrow}
+          title={copy.title}
+          subtitle={copy.intro}
+          variant="compact"
+        />
+        <ProspectEditorialPanel
+          eyebrow={copy.eyebrow}
+          title={copy.lockedTitle}
+          description={copy.lockedBody}
+          imageSrc={prospectMedia.offersHero}
+          actions={
+            <Link href="/prospect" className={buttonClassName("secondary")}>
+              {copy.backToSpace}
+            </Link>
+          }
+        />
       </main>
     );
   }
@@ -106,7 +111,13 @@ export default async function ProspectOffersPage() {
 
   return (
     <main className="space-y-6">
-      <ProspectPageHero eyebrow={copy.eyebrow} title={copy.title} subtitle={copy.intro} />
+      <ProspectPageHero
+        eyebrow={copy.eyebrow}
+        title={copy.title}
+        subtitle={copy.intro}
+        variant="split"
+        imageSrc={prospectMedia.offersHero}
+      />
 
       <ProspectOfferSelector offers={cards} copy={copy} />
 
