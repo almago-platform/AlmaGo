@@ -1135,7 +1135,7 @@ export function OrientationPersonalizedWriterCard({
         <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">{t.outlookSectionNote}</p>
 
         {showCityFallback ? (
-          <div className="mt-4 rounded-[var(--radius-control)] border border-[var(--brand-border)] bg-[var(--brand-soft)] px-4 py-3.5">
+          <div className="mt-4 rounded-[var(--radius-control)] border border-[var(--warning-border)] bg-[var(--premium-gold-wash)] px-4 py-3.5">
             <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-[var(--accent-strong)]">
               {t.cityFallbackEyebrow}
             </p>
