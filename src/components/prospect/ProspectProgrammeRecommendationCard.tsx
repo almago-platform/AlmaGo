@@ -1,6 +1,7 @@
 import type { OrientationProgrammeEvaluation } from "@/lib/orientation-engine/types";
 import { ProspectUniversityCover } from "@/components/prospect/ProspectUniversityCover";
 import { recommendationMatchesPreferredCity } from "@/lib/prospect/programmes";
+import { buttonClassName } from "@/components/ui/Button";
 
 function ArrowIcon() {
   return (
@@ -44,7 +45,7 @@ export function ProspectProgrammeRecommendationCard({
       <div className="flex flex-wrap items-center gap-2">
         {badge}
         {preferredCity ? (
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-[#eff9f3] px-2.5 py-1 text-[10px] font-bold text-[#17603c] ring-1 ring-inset ring-[#c7ead6]">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--premium-green-wash)] px-2.5 py-1 text-[10px] font-bold text-[#17603c] ring-1 ring-inset ring-[#c7ead6]">
             <span className="h-1.5 w-1.5 rounded-full bg-[#1d8b58]" aria-hidden="true" />
             {labels.preferredCity}
           </span>
@@ -62,29 +63,29 @@ export function ProspectProgrammeRecommendationCard({
       </div>
 
       <div className="mt-3 flex flex-wrap gap-2">
-        <span className="rounded-full bg-[#f1eee8] px-3 py-1.5 text-xs font-semibold text-[#34383b]">
+        <span className="rounded-full bg-[var(--premium-cream)] px-3 py-1.5 text-xs font-semibold text-[var(--premium-ink-muted)]">
           {programme.degreeLevel}
         </span>
         {programme.teachingLanguage ? (
-          <span className="rounded-full bg-[#f1eee8] px-3 py-1.5 text-xs font-semibold text-[#34383b]">
+          <span className="rounded-full bg-[var(--premium-cream)] px-3 py-1.5 text-xs font-semibold text-[var(--premium-ink-muted)]">
             <bdi dir="auto">{programme.teachingLanguage}</bdi>
           </span>
         ) : null}
       </div>
 
       {!compact ? (
-        <dl className="mt-5 grid overflow-hidden rounded-2xl border border-black/[.07] bg-[#f6f3ed] sm:grid-cols-3">
-          <div className="min-w-0 border-b border-black/[.06] px-4 py-3 sm:border-b-0 sm:border-e">
+        <dl className="mt-5 grid overflow-hidden rounded-2xl border border-[var(--premium-border)] bg-[var(--premium-cream)] sm:grid-cols-3">
+          <div className="min-w-0 border-b border-[var(--premium-border)] px-4 py-3 sm:border-b-0 sm:border-e">
             <dt className="text-[10px] font-extrabold uppercase tracking-[0.08em] text-[var(--muted)]">{labels.field}</dt>
-            <dd className="mt-1.5 text-sm font-semibold text-[#202326]"><bdi dir="auto">{programme.field || "—"}</bdi></dd>
+            <dd className="mt-1.5 text-sm font-semibold text-[var(--foreground)]"><bdi dir="auto">{programme.field || "—"}</bdi></dd>
           </div>
-          <div className="min-w-0 border-b border-black/[.06] px-4 py-3 sm:border-b-0 sm:border-e">
+          <div className="min-w-0 border-b border-[var(--premium-border)] px-4 py-3 sm:border-b-0 sm:border-e">
             <dt className="text-[10px] font-extrabold uppercase tracking-[0.08em] text-[var(--muted)]">{labels.german}</dt>
-            <dd className="mt-1.5 text-sm font-semibold text-[#202326]">{programme.germanLevelRequired || labels.requirementCheck}</dd>
+            <dd className="mt-1.5 text-sm font-semibold text-[var(--foreground)]">{programme.germanLevelRequired || labels.requirementCheck}</dd>
           </div>
           <div className="min-w-0 px-4 py-3">
             <dt className="text-[10px] font-extrabold uppercase tracking-[0.08em] text-[var(--muted)]">{labels.uniAssist}</dt>
-            <dd className="mt-1.5 text-sm font-semibold text-[#202326]">
+            <dd className="mt-1.5 text-sm font-semibold text-[var(--foreground)]">
               {programme.uniAssistRequired ? labels.yes : labels.requirementCheck}
             </dd>
           </div>
@@ -97,7 +98,7 @@ export function ProspectProgrammeRecommendationCard({
             href={programme.programmeSourceUrl}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-black/10 bg-white px-4 text-sm font-semibold text-[#202326] shadow-sm transition-all duration-200 hover:-translate-y-px hover:border-black/20 hover:shadow-md"
+            className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-black/10 bg-white px-4 text-sm font-semibold text-[var(--foreground)] shadow-sm transition-all duration-200 hover:-translate-y-px hover:border-black/20 hover:shadow-md"
           >
             {labels.source}
             <ArrowIcon />
@@ -108,7 +109,7 @@ export function ProspectProgrammeRecommendationCard({
             href={programme.applicationUrl}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex min-h-10 items-center gap-2 rounded-xl bg-[var(--brand)] px-4 text-sm font-bold text-white shadow-[0_12px_28px_-16px_rgba(216,6,33,.85)] transition-all duration-200 hover:-translate-y-px hover:bg-[var(--brand-strong)] hover:shadow-[0_16px_34px_-18px_rgba(216,6,33,.95)]"
+            className={buttonClassName("primary", "min-h-10 gap-2 px-4 py-2")}
           >
             {labels.applyLink}
             <ArrowIcon />
@@ -120,14 +121,14 @@ export function ProspectProgrammeRecommendationCard({
 
   if (compact) {
     return (
-      <article className="group rounded-[1.25rem] border border-black/[.07] bg-[rgba(255,254,250,.88)] p-4 shadow-[0_18px_50px_-36px_rgba(0,0,0,.32)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[var(--brand-border)] hover:bg-white hover:shadow-[0_26px_60px_-36px_rgba(0,0,0,.4)]">
+      <article className="pc-card pc-card-interactive group bg-[rgba(255,254,250,.88)] p-4">
         {body}
       </article>
     );
   }
 
   return (
-    <article className="group overflow-hidden rounded-[1.4rem] border border-black/[.07] bg-[var(--surface)] shadow-[0_22px_60px_-38px_rgba(0,0,0,.42)] transition-all duration-300 hover:-translate-y-1 hover:border-[var(--brand-border)] hover:shadow-[0_32px_76px_-40px_rgba(0,0,0,.5)]">
+    <article className="pc-card pc-card-interactive group overflow-hidden bg-[var(--surface)]">
       <div className="overflow-hidden">
         <ProspectUniversityCover
           universityName={programme.university.name}
