@@ -26,6 +26,7 @@ const icons = {
   documents: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={iconClass} aria-hidden="true"><path d="M6 3h8l4 4v14H6z" /><path d="M14 3v5h5M9 13h6M9 17h6" /></svg>,
   orientation: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={iconClass} aria-hidden="true"><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z" /><path d="m15.5 8.5-2.2 4.8-4.8 2.2 2.2-4.8 4.8-2.2Z" /></svg>,
   checklist: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={iconClass} aria-hidden="true"><path d="M8 6h12M8 12h12M8 18h12M3.5 6l1 1 2-2M3.5 12l1 1 2-2M3.5 18l1 1 2-2" /></svg>,
+  calendar: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={iconClass} aria-hidden="true"><path d="M5 4h14v16H5zM8 2v4M16 2v4M5 9h14" /><path d="M8.5 13h3M13.5 13h2M8.5 17h3" /></svg>,
   applications: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={iconClass} aria-hidden="true"><path d="M5 5h14v16H5z" /><path d="M9 3h6v4H9zM8 11h8M8 15h8" /></svg>,
   universities: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={iconClass} aria-hidden="true"><path d="m3 9 9-5 9 5-9 5-9-5Z" /><path d="M6 12v5c3 2 9 2 12 0v-5M21 10v6" /></svg>,
   programs: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={iconClass} aria-hidden="true"><path d="M4 5h16v14H4z" /><path d="M8 9h8M8 13h5" /></svg>,
@@ -34,22 +35,24 @@ const icons = {
 };
 
 const studentItems: NavItem[] = [
-  { label: "Mon dossier", href: "/student", icon: icons.dashboard, helper: "Vue d’ensemble" },
-  { label: "Mon projet", href: "/student/project", icon: icons.universities, helper: "Point de départ" },
-  { label: "Mon parcours", href: "/student/pathway", icon: icons.checklist, helper: "Mes étapes en Allemagne" },
+  { label: "Tableau de bord", href: "/student", icon: icons.dashboard, helper: "Ma prochaine action" },
+  { label: "Mon projet", href: "/student/project", icon: icons.universities, helper: "Objectif, rentrée et budget" },
   { label: "Mon profil", href: "/student/profile", icon: icons.profile, helper: "Mes informations" },
-  { label: "Mes documents", href: "/student/documents", icon: icons.documents, helper: "Pièces et statuts" },
-  { label: "Mes programmes", href: "/student/orientation", icon: icons.orientation, helper: "Programmes à comparer" },
-  { label: "Cours de langue", href: "/student/language-courses", icon: icons.programs, helper: "Cours à comparer" },
-  { label: "Financement & assurance", href: "/student/finance-insurance", icon: icons.applications, helper: "Options vérifiées" },
-  { label: "Mes démarches", href: "/student/procedure", icon: icons.checklist, helper: "Étapes du dossier" },
-  { label: "Mes candidatures", href: "/student/applications", icon: icons.applications, helper: "Suivi et échéances" },
+  { label: "Parcours Allemagne", href: "/student/pathway", icon: icons.checklist, helper: "Toutes mes étapes" },
+  { label: "Mes programmes", href: "/student/orientation", icon: icons.orientation, helper: "Comparer et enregistrer" },
+  { label: "Mes documents", href: "/student/documents", icon: icons.documents, helper: "Pièces, statuts et corrections" },
+  { label: "Mes candidatures", href: "/student/applications", icon: icons.applications, helper: "Statuts et prochaines actions" },
+  { label: "Calendrier", href: "/student/calendar", icon: icons.calendar, helper: "Deadlines importantes" },
+  { label: "Ma procédure", href: "/student/procedure", icon: icons.checklist, helper: "Démarches liées à mon dossier" },
+  { label: "Cours de langue", href: "/student/language-courses", icon: icons.programs, helper: "Préparation linguistique" },
+  { label: "Financement & assurance", href: "/student/finance-insurance", icon: icons.applications, helper: "Préparer mon départ" },
 ];
 
 const studentGroupIndexes = [
-  [0, 1, 3],
-  [2, 4, 5, 8, 9],
-  [6, 7],
+  [0],
+  [1, 2, 3, 4, 5],
+  [6, 7, 8],
+  [9, 10],
 ] as const;
 
 const adminItems: NavItem[] = [
