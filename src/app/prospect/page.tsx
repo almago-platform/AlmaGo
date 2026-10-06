@@ -452,6 +452,7 @@ export default async function ProspectDashboardPage() {
                 key={recommendation.programme.id}
                 recommendation={recommendation}
                 labels={recommendationLabels}
+                locale={locale}
                 compact
               />
             ))}
