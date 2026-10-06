@@ -321,7 +321,7 @@ export default async function StudentProcedurePage() {
 
   if (!procedure) {
     return (
-      <main className="mx-auto w-full max-w-[92rem] space-y-6 px-4 py-5 sm:px-6 sm:py-6 xl:px-8">
+      <StudentPageFrame className="space-y-6">
         <DossierHeader
           eyebrow={t.eyebrow}
           title={t.title}
