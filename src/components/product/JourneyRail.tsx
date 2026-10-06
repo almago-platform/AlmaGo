@@ -10,9 +10,9 @@ export type JourneyRailStep = {
 
 const statusStyle = {
   done: {
-    marker: "bg-[#17191b] text-white border-[#17191b]",
-    label: "text-[#17191b]",
-    shell: "bg-[#f7f4ee]",
+    marker: "bg-[var(--premium-ink)] text-white border-[var(--premium-ink)]",
+    label: "text-[var(--premium-ink)]",
+    shell: "bg-[var(--premium-cream)]",
   },
   active: {
     marker: "bg-[var(--brand)] text-white border-[var(--brand)] shadow-[0_0_0_5px_rgba(216,6,33,.08)]",
@@ -25,9 +25,9 @@ const statusStyle = {
     shell: "bg-white",
   },
   locked: {
-    marker: "bg-[#efede8] text-[#8a8f93] border-black/[.06]",
-    label: "text-[#777d81]",
-    shell: "bg-[#faf8f4]",
+    marker: "bg-[var(--premium-cream-strong)] text-[#8a8f93] border-[var(--premium-border)]",
+    label: "text-[var(--muted)]",
+    shell: "bg-[var(--premium-cream-soft)]",
   },
 } as const;
 
@@ -41,7 +41,7 @@ export function JourneyRail({
   return (
     <nav
       aria-label={ariaLabel}
-      className="overflow-hidden rounded-[1.35rem] border border-black/[.07] bg-white shadow-[0_22px_60px_-42px_rgba(0,0,0,.34)]"
+      className="pc-panel overflow-hidden"
     >
       <ol
         className="grid sm:grid-cols-2 xl:grid-cols-[repeat(var(--journey-count),minmax(0,1fr))]"
@@ -50,7 +50,7 @@ export function JourneyRail({
         {steps.map((step, index) => {
           const style = statusStyle[step.status];
           const content = (
-            <div className={`relative flex min-h-20 items-start gap-3 border-b border-black/[.06] px-4 py-3.5 transition-colors sm:border-e sm:last:border-e-0 xl:border-b-0 ${style.shell}`}>
+            <div className={`relative flex min-h-20 items-start gap-3 border-b border-[var(--premium-border)] px-4 py-3.5 transition-colors sm:border-e sm:last:border-e-0 xl:border-b-0 ${style.shell}`}>
               {step.status === "active" ? <span className="absolute inset-x-0 top-0 h-[3px] bg-[var(--brand)]" aria-hidden="true" /> : null}
               <span
                 aria-hidden="true"
