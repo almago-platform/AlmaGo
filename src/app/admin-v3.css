@@ -11,19 +11,19 @@
   --accent: #f4b400;
   --accent-strong: #7d5a00;
   --accent-light: #fff3c7;
-  --background: #f3f1eb;
-  --surface: #fffefa;
+  --background: #f7f6f2;
+  --surface: #ffffff;
   --surface-raised: #fff;
-  --surface-subtle: #efebe4;
-  --surface-muted: #e5dfd6;
+  --surface-subtle: #f4f1eb;
+  --surface-muted: #ebe7e0;
   --foreground: #17191b;
   --foreground-soft: #3f4448;
   --muted: #646a6e;
-  --border: #dbd5cc;
-  --border-strong: #bab1a5;
+  --border: #e1ddd5;
+  --border-strong: #c8c1b7;
   background:
-    radial-gradient(circle at 95% 0%, rgba(244,180,0,.07), transparent 24rem),
-    radial-gradient(circle at 1% 24%, rgba(216,6,33,.035), transparent 28rem),
+    radial-gradient(circle at 95% 0%, rgba(244,180,0,.045), transparent 22rem),
+    radial-gradient(circle at 1% 24%, rgba(216,6,33,.025), transparent 26rem),
     var(--background);
 }
 
@@ -58,12 +58,12 @@
 }
 
 .admin-shell .admin-shell-sidebar > div:first-child {
-  margin: .75rem;
-  min-height: 4.35rem;
+  margin: .6rem;
+  min-height: 3.9rem;
   border: 0 !important;
-  border-radius: 1rem;
-  background: #fffefa;
-  padding-inline: .9rem;
+  border-radius: .85rem;
+  background: #fff;
+  padding-inline: .75rem;
   box-shadow: 0 16px 38px -28px rgba(0,0,0,.78);
 }
 
@@ -83,8 +83,8 @@
 }
 
 .admin-shell .admin-shell-sidebar nav a {
-  min-height: 2.75rem;
-  border-radius: .82rem !important;
+  min-height: 2.55rem;
+  border-radius: .72rem !important;
   color: rgba(255,255,255,.7) !important;
   transition:
     background-color 160ms cubic-bezier(.2,.8,.2,1),
@@ -134,10 +134,10 @@
 }
 
 .admin-shell .admin-shell-topbar {
-  min-height: 5rem !important;
+  min-height: 4.5rem !important;
   border-color: rgba(23,25,27,.08) !important;
   background: rgba(255,254,250,.9) !important;
-  box-shadow: 0 16px 40px -38px rgba(0,0,0,.48);
+  box-shadow: 0 10px 28px -28px rgba(0,0,0,.42);
   backdrop-filter: blur(18px);
 }
 
@@ -174,16 +174,16 @@
 }
 
 .admin-shell .student-shell-main .ds-card {
-  border-radius: 1.18rem;
+  border-radius: 1rem;
   border-color: rgba(23,25,27,.07);
-  box-shadow: 0 18px 52px -44px rgba(0,0,0,.28);
+  box-shadow: 0 12px 36px -32px rgba(0,0,0,.24);
 }
 
 .admin-shell .student-shell-main .ds-card-interactive:hover,
 .admin-shell .professional-hover:hover {
-  transform: translateY(-2px);
+  transform: translateY(-1px);
   border-color: rgba(216,6,33,.24);
-  box-shadow: 0 26px 62px -44px rgba(0,0,0,.38);
+  box-shadow: 0 18px 44px -34px rgba(0,0,0,.32);
 }
 
 .admin-shell .student-shell-main :where(.field,.ds-input,.ds-select,.ds-textarea) {
@@ -264,5 +264,82 @@
   .admin-shell .professional-hover {
     transform: none !important;
     transition-duration: .01ms !important;
+  }
+}
+
+
+/* Admin coherence pass — denser workspace, quieter chrome, clearer empty states. */
+.admin-shell .admin-shell-sidebar nav {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,.18) transparent;
+  overscroll-behavior: contain;
+}
+
+.admin-shell .admin-shell-sidebar nav::-webkit-scrollbar {
+  width: 6px;
+}
+
+.admin-shell .admin-shell-sidebar nav::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.admin-shell .admin-shell-sidebar nav::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(255,255,255,.16);
+}
+
+.admin-shell .admin-shell-sidebar > div:last-child {
+  padding: .75rem 1rem !important;
+}
+
+.admin-shell .admin-shell-sidebar > div:last-child p {
+  margin-bottom: .65rem !important;
+  line-height: 1.35rem;
+}
+
+.admin-shell .student-shell-main {
+  background:
+    radial-gradient(circle at 96% 0%, rgba(244,180,0,.035), transparent 22rem),
+    transparent;
+}
+
+.admin-shell .student-shell-main .pc-soft-strip {
+  border-color: rgba(23,25,27,.07);
+  background: rgba(255,255,255,.72);
+}
+
+.admin-shell .pc-empty-state {
+  grid-template-columns: minmax(0,1fr) !important;
+  border-color: rgba(23,25,27,.08);
+  background: rgba(255,255,255,.82);
+}
+
+.admin-shell .pc-empty-state-visual {
+  display: none !important;
+}
+
+.admin-shell .student-shell-main details {
+  align-self: start;
+}
+
+.admin-shell .student-shell-main details > summary {
+  border-radius: .55rem;
+  outline: none;
+}
+
+.admin-shell .student-shell-main details > summary:focus-visible {
+  box-shadow: 0 0 0 3px rgba(216,6,33,.1);
+}
+
+.admin-shell .student-shell-main code {
+  border-radius: .35rem;
+  background: rgba(23,25,27,.055);
+  padding: .08rem .3rem;
+  font-size: .92em;
+}
+
+@media (max-width: 1279px) {
+  .admin-shell .admin-shell-topbar {
+    min-height: 4.25rem !important;
   }
 }
