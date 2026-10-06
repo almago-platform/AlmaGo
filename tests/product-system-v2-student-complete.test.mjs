@@ -66,7 +66,7 @@ test("Student procedure cockpit uses the Product System and server-owned procedu
 });
 
 test("primary Student navigation routes operational steps through the procedure cockpit", () => {
-  assert.ok(shell.includes('{ label: "Mes démarches", href: "/student/procedure"'));
+  assert.ok(shell.includes('{ label: "Ma procédure", href: "/student/procedure"'));
   assert.ok(journeyHeader.includes('{ key: "checklist", href: "/student/procedure" }'));
 });
 
