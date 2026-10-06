@@ -16,6 +16,7 @@ import { loadVerifiedProgrammeCatalogue } from "@/lib/orientation-engine/catalog
 import { loadProspectHubState } from "@/lib/prospect/hub";
 import { orientationProjectFacts, orientationVersionSummary } from "@/lib/prospect/orientation-presentation";
 import { prospectCatalogueRecommendations } from "@/lib/prospect/programmes";
+import { prospectMedia } from "@/lib/prospect/media";
 
 export const dynamic = "force-dynamic";
 
@@ -68,7 +69,14 @@ export default async function ProspectOrientationPage() {
 
   return (
     <main className="space-y-6">
-      <ProspectPageHero eyebrow={t.eyebrow} title={t.title} subtitle={t.subtitle}>
+      <ProspectPageHero
+        eyebrow={t.eyebrow}
+        title={t.title}
+        subtitle={t.subtitle}
+        variant="split"
+        imageSrc={prospectMedia.orientationHero}
+        imagePriority
+      >
         {state.orientationConfirmed ? (
           <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-emerald-300/20 bg-emerald-300/10 px-3 py-1.5 text-xs font-bold text-emerald-100">
             <span className="size-2 rounded-full bg-emerald-300" aria-hidden="true" />

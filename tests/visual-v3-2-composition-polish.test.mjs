@@ -11,6 +11,10 @@ const proposal = readFileSync("src/app/prospect/proposal/page.tsx", "utf8");
 const payment = readFileSync("src/app/prospect/payment/page.tsx", "utf8");
 const catalogue = readFileSync("src/app/prospect/catalogue/page.tsx", "utf8");
 const dashboard = readFileSync("src/app/prospect/page.tsx", "utf8");
+const orientation = readFileSync("src/app/prospect/orientation/page.tsx", "utf8");
+const documents = readFileSync("src/components/prospect/StarterDocumentsPanel.tsx", "utf8");
+const dossierHeader = readFileSync("src/components/product/DossierHeader.tsx", "utf8");
+const shell = readFileSync("src/components/layout/ProspectShell.tsx", "utf8");
 const catalogueCard = readFileSync("src/components/prospect/ProspectProgrammeCatalogueCard.tsx", "utf8");
 const universityCover = readFileSync("src/components/prospect/ProspectUniversityCover.tsx", "utf8");
 const css = readFileSync("src/app/prospect-v3.css", "utf8");
@@ -26,8 +30,8 @@ test("prospect editorial photography stays responsive and decorative by default"
   assert.match(editorial, /sizes="\(min-width: 1280px\) 28vw/);
   assert.match(editorial, /quality=\{75\}/);
   assert.match(editorial, /imageAlt = ""/);
-  assert.equal((media.match(/https:\/\/images\.pexels\.com\/photos\//g) ?? []).length, 4);
-  assert.equal((media.match(/w=1200/g) ?? []).length, 4);
+  assert.equal((media.match(/https:\/\/images\.pexels\.com\/photos\//g) ?? []).length, 7);
+  assert.equal((media.match(/w=1200/g) ?? []).length, 7);
 });
 
 test("offers uses a split hero, a richer locked state and an adaptive grid", () => {
@@ -74,4 +78,24 @@ test("dashboard groups decision surfaces without changing lifecycle semantics", 
   assert.match(dashboard, /JourneyRail/);
   assert.match(dashboard, /proposalStatus\(state\.intake, t\)/);
   assert.match(css, /\.prospect-dashboard-decision-grid/);
+});
+
+test("pass two makes dashboard orientation and documents visibly photographic", () => {
+  assert.match(dashboard, /prospectMedia\.dashboardHero/);
+  assert.match(dashboard, /imagePriority/);
+  assert.match(orientation, /variant="split"/);
+  assert.match(orientation, /prospectMedia\.orientationHero/);
+  assert.match(orientation, /imagePriority/);
+  assert.match(documents, /prospectMedia\.documentsHero/);
+  assert.match(documents, /prospect-documents-hero-media/);
+  assert.match(documents, /from "next\/image"/);
+  assert.match(dossierHeader, /imageSrc\?: string/);
+  assert.match(dossierHeader, /prospect-dossier-hero-media/);
+});
+
+test("pass two gives wide screens more content room without changing mobile navigation", () => {
+  assert.match(shell, /lg:grid-cols-\[13rem_minmax\(0,1fr\)\]/);
+  assert.match(shell, /xl:grid-cols-\[13\.25rem_minmax\(0,1fr\)\]/);
+  assert.match(shell, /2xl:grid-cols-\[13\.5rem_minmax\(0,1fr\)\]/);
+  assert.match(shell, /w-\[min\(88vw,22rem\)\]/);
 });

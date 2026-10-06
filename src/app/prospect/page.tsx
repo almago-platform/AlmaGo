@@ -18,6 +18,7 @@ import { loadVerifiedProgrammeCatalogue } from "@/lib/orientation-engine/catalog
 import { loadProspectHubState } from "@/lib/prospect/hub";
 import { orientationProjectFacts, orientationVersionSummary } from "@/lib/prospect/orientation-presentation";
 import { prospectCatalogueRecommendations } from "@/lib/prospect/programmes";
+import { prospectMedia } from "@/lib/prospect/media";
 
 function proposalStatus(
   intake: Awaited<ReturnType<typeof loadProspectHubState>>["intake"],
@@ -368,6 +369,8 @@ export default async function ProspectDashboardPage() {
           label: index === 0 ? t.project : v2.historyLabel,
           value: <bdi dir="auto">{fact}</bdi>,
         }))}
+        imageSrc={prospectMedia.dashboardHero}
+        imagePriority
       />
 
       <section className="space-y-3">

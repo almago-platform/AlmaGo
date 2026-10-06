@@ -1,11 +1,13 @@
 "use client";
 
+import Image from "next/image";
 import { useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { starterDocumentCategoriesForBacStatus } from "@/lib/campus-intake";
 import { removableDocumentStatuses } from "@/lib/documents";
 import { buttonClassName } from "@/components/ui/Button";
+import { prospectMedia } from "@/lib/prospect/media";
 
 type StarterDocument = {
   id: string;
@@ -138,20 +140,36 @@ export function StarterDocumentsPanel({
   return (
     <div className="grid gap-7">
       <section className="pc-panel overflow-hidden">
-        <div className="relative overflow-hidden border-b border-white/10 bg-[var(--premium-ink)] p-5 text-white sm:p-6">
-          <div className="absolute inset-x-0 top-0 h-[3px] bg-[linear-gradient(90deg,var(--brand)_0_62%,var(--accent)_62%_78%,transparent_78%)]" aria-hidden="true" />
-          <div>
-            <p className="text-[0.68rem] font-extrabold uppercase tracking-[0.17em] text-[var(--accent)]">
-              {preBac ? "Préparation avant le Bac" : "Pièces de départ"}
-            </p>
-            <h1 className="mt-3 text-[clamp(1.75rem,3vw,2.45rem)] font-semibold leading-tight tracking-[-0.04em] text-white">
-              {preBac ? "Ajoutez seulement ce que vous avez déjà" : "Complétez votre dossier de vérification"}
-            </h1>
-            <p className="mt-3 max-w-3xl text-sm leading-6 text-white/65 sm:text-[0.95rem]">
-              {preBac
-                ? "Aucun document académique final n’est obligatoire maintenant. Vous pouvez ajouter votre passeport et votre certificat de langue s’ils sont déjà disponibles."
-                : "Nous demandons seulement les preuves nécessaires pour décider du parcours adapté. Le certificat de langue est facultatif si vous n’en avez pas encore."}
-            </p>
+        <div className="relative overflow-hidden border-b border-white/10 bg-[var(--premium-ink)] text-white">
+          <div className="absolute inset-x-0 top-0 z-10 h-[3px] bg-[linear-gradient(90deg,var(--brand)_0_62%,var(--accent)_62%_78%,transparent_78%)]" aria-hidden="true" />
+          <div className="grid min-w-0 lg:grid-cols-[minmax(0,1.28fr)_minmax(18rem,0.72fr)]">
+            <div className="min-w-0 p-5 sm:p-6">
+              <p className="text-[0.68rem] font-extrabold uppercase tracking-[0.17em] text-[var(--accent)]">
+                {preBac ? "Préparation avant le Bac" : "Pièces de départ"}
+              </p>
+              <h1 className="mt-3 text-[clamp(1.75rem,3vw,2.45rem)] font-semibold leading-tight tracking-[-0.04em] text-white">
+                {preBac ? "Ajoutez seulement ce que vous avez déjà" : "Complétez votre dossier de vérification"}
+              </h1>
+              <p className="mt-3 max-w-3xl text-sm leading-6 text-white/65 sm:text-[0.95rem]">
+                {preBac
+                  ? "Aucun document académique final n’est obligatoire maintenant. Vous pouvez ajouter votre passeport et votre certificat de langue s’ils sont déjà disponibles."
+                  : "Nous demandons seulement les preuves nécessaires pour décider du parcours adapté. Le certificat de langue est facultatif si vous n’en avez pas encore."}
+              </p>
+            </div>
+
+            <div className="prospect-documents-hero-media relative min-h-52 overflow-hidden sm:min-h-60 lg:min-h-full" aria-hidden="true">
+              <Image
+                src={prospectMedia.documentsHero}
+                alt=""
+                fill
+                priority
+                sizes="(min-width: 1280px) 28vw, (min-width: 1024px) 34vw, 100vw"
+                quality={75}
+                className="object-cover"
+              />
+              <div className="absolute inset-0 bg-[linear-gradient(100deg,rgba(19,33,49,.42),rgba(19,33,49,.04)_58%)]" aria-hidden="true" />
+              <div className="absolute inset-x-0 bottom-0 h-24 bg-[linear-gradient(180deg,transparent,rgba(19,33,49,.24))]" aria-hidden="true" />
+            </div>
           </div>
         </div>
         <div className="p-5 sm:p-6">

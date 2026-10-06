@@ -14,7 +14,7 @@ const logo = readFileSync("src/components/brand/BrandLogo.tsx", "utf8");
 test("V3.1 compacts the Prospect shell without changing the white header pattern", () => {
   assert.match(shell, /min-h-\[64px\]/);
   assert.match(shell, /max-w-\[100rem\]/);
-  assert.match(shell, /lg:grid-cols-\[14rem_minmax\(0,1fr\)\]/);
+  assert.match(shell, /lg:grid-cols-\[13rem_minmax\(0,1fr\)\]/);
   assert.match(shell, /bg-\[rgba\(255,254,250,\.94\)\]/);
 });
 
