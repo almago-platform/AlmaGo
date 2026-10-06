@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { StudentPageFrame } from "@/components/student/StudentPageFrame";
 import { StudentProjectForm } from "@/components/student/StudentProjectForm";
 import { StudentJourneyHeader } from "@/components/student/StudentJourneyHeader";
 import { createClient } from "@/lib/supabase/server";
@@ -20,7 +21,7 @@ export default async function StudentProjectPage() {
     .eq("student_id", user.id)
     .maybeSingle();
 
-  return <main className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 sm:py-7 lg:px-8 lg:py-9">
+  return <StudentPageFrame>
     <StudentJourneyHeader
       current="project"
       eyebrow={t.header.eyebrow}
@@ -28,5 +29,5 @@ export default async function StudentProjectPage() {
       description={t.header.description}
     />
     <StudentProjectForm project={project as Parameters<typeof StudentProjectForm>[0]["project"]} />
-  </main>;
+  </StudentPageFrame>;
 }
