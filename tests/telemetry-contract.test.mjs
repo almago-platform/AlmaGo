@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import test from "node:test";
 
 const contract = JSON.parse(readFileSync("config/telemetry-events.json", "utf8"));
+const observabilityDoc = readFileSync("docs/observability.md", "utf8");
 
 test("telemetry stays disabled by default and allow-list only", () => {
   assert.equal(contract.schemaVersion, 1);
@@ -34,5 +35,16 @@ test("telemetry event names and properties are bounded and non-sensitive", () =>
         "sensitive telemetry property is forbidden: " + property,
       );
     }
+  }
+});
+
+
+test("observability documentation lists every canonical telemetry event", () => {
+  for (const event of contract.events) {
+    assert.match(
+      observabilityDoc,
+      new RegExp(`\\`${event.name}\\``),
+      "missing telemetry event in observability docs: " + event.name,
+    );
   }
 });
