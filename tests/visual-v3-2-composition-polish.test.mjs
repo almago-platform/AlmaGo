@@ -63,7 +63,7 @@ test("catalogue adapts sparse results and reduces repeated-cover dominance", () 
   assert.match(catalogue, /wide=\{filtered\.length === 1\}/);
   assert.match(catalogueCard, /compact=\{!wide && !projectMatch\}/);
   assert.match(catalogueCard, /wide=\{wide\}/);
-  assert.match(universityCover, /wide \?\s*"h-48 lg:h-full lg:min-h-\[22rem\]"/);
+  assert.match(universityCover, /wide\s*\?\s*"h-48 lg:h-full lg:min-h-\[22rem\]"/);
   assert.match(css, /\.prospect-programme-grid/);
 });
 
