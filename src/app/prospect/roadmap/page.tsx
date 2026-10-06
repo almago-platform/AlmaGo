@@ -166,6 +166,12 @@ export default async function ProspectRoadmapPage() {
   const nextStep = journey[current + 1] ?? null;
   const completedSteps = journey.slice(0, current);
   const futureSteps = journey.slice(current + 2);
+  const positionLabel = {
+    fr: `Étape ${current + 1} sur ${journey.length}`,
+    ar: `الخطوة ${current + 1} من ${journey.length}`,
+    en: `Step ${current + 1} of ${journey.length}`,
+    de: `Schritt ${current + 1} von ${journey.length}`,
+  }[locale];
 
   return (
     <main className="space-y-6">
@@ -177,7 +183,7 @@ export default async function ProspectRoadmapPage() {
       >
         <div className="flex flex-wrap items-center gap-2.5">
           <span className="rounded-full border border-white/10 bg-white/[.07] px-3 py-1.5 text-xs font-semibold text-white/75">
-            {current + 1}/{journey.length}
+            {positionLabel}
           </span>
           <span className="rounded-full border border-[var(--accent)]/25 bg-[var(--accent)]/10 px-3 py-1.5 text-xs font-semibold text-[var(--accent)]">
             {String(current + 1).padStart(2, "0")} · {currentStep.title}
@@ -229,7 +235,14 @@ export default async function ProspectRoadmapPage() {
       </section>
 
       {(completedSteps.length || futureSteps.length) ? (
-        <section className="grid items-start gap-4 lg:grid-cols-2">
+        <section
+          className={
+            "grid items-start gap-4 " +
+            (completedSteps.length && futureSteps.length
+              ? "lg:grid-cols-[minmax(14rem,0.65fr)_minmax(0,1.35fr)]"
+              : "")
+          }
+        >
           {completedSteps.length ? (
             <details className="pc-card pc-premium-card pc-theme-green p-4">
               <summary className="cursor-pointer font-bold">{t.completedGroup}</summary>
