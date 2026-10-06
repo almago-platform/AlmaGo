@@ -77,6 +77,15 @@ const qualificationLabels: Record<string, string> = {
   qualified_prospect: "Qualifié",
 };
 
+const accessStatusLabels: Record<string, string> = {
+  prospect_account: "Compte prospect",
+  qualified_prospect: "Prospect qualifié",
+  payment_pending: "Paiement en attente",
+  paid_pending_validation: "Paiement reçu · validation en attente",
+  client_active: "Client actif",
+  client_completed: "Accompagnement terminé",
+};
+
 const priorityLabels: Record<SmartOrientationPriorityState, string> = {
   priority_ready: "Priorité haute",
   priority_prepare_now: "Préparer maintenant",
@@ -561,7 +570,7 @@ export default async function AdminProspectsPage({
                   </div>
                   <div className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-3">
                     <p className="font-semibold text-slate-900">Compte / accès</p>
-                    <p className="mt-1 text-slate-700">{accessStatus ?? "Sans compte lié"}</p>
+                    <p className="mt-1 text-slate-700">{accessStatus ? accessStatusLabels[accessStatus] || accessStatus : "Sans compte lié"}</p>
                   </div>
                 </div>
 
