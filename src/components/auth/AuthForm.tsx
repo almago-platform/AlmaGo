@@ -121,7 +121,7 @@ export function AuthForm({
   const passwordButtonSide = "right-2";
 
   return (
-    <section className="auth-form-card w-full overflow-hidden rounded-[1rem] border border-[var(--border)] bg-[var(--surface)] shadow-[0_24px_70px_-54px_rgba(28,33,36,0.5)]">
+    <section className="auth-form-card pc-panel w-full overflow-hidden rounded-[1rem]">
       <div className="border-b border-[var(--border)] px-5 py-5 sm:px-7 sm:py-6">
         <div className="flex items-center justify-between gap-4">
           <BrandLogo className="hidden h-auto w-44 lg:block" />
@@ -218,7 +218,7 @@ export function AuthForm({
         )}
 
         {mode === "signup" && (
-          <div id="signup-password-hint" className="grid gap-2 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-3 py-3 text-xs text-slate-600 sm:grid-cols-2">
+          <div id="signup-password-hint" className="pc-soft-strip grid gap-2 px-3 py-3 text-xs text-slate-600 sm:grid-cols-2">
             <span>• {auth.labels.minPassword}</span>
             <span>• {auth.labels.emailConfirmation}</span>
           </div>
@@ -246,7 +246,7 @@ export function AuthForm({
         </button>
       </form>
 
-      <div className="flex flex-col gap-2 border-t border-[var(--border)] bg-[var(--surface-subtle)] px-5 py-4 text-sm font-semibold text-[var(--brand-strong)] sm:flex-row sm:items-center sm:justify-between sm:px-7">
+      <div className="flex flex-col gap-2 border-t border-[var(--premium-border)] bg-[var(--premium-cream-soft)] px-5 py-4 text-sm font-semibold text-[var(--brand-strong)] sm:flex-row sm:items-center sm:justify-between sm:px-7">
         {mode === "signup" ? (
           <p className="text-slate-600">
             {auth.labels.alreadyAccount}{" "}
