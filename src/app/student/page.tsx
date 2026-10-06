@@ -421,13 +421,13 @@ export default async function StudentEntry() {
           <>
             <Link
               href="/student/procedure"
-              className="inline-flex min-h-10 items-center rounded-[var(--radius-control)] bg-[var(--brand)] px-4 text-sm font-semibold text-white transition hover:bg-[var(--brand-strong)]"
+              className="inline-flex min-h-11 items-center rounded-[var(--radius-control)] bg-[var(--brand)] px-4 text-sm font-semibold text-white transition hover:bg-[var(--brand-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#17191b]"
             >
               {v2.procedure}
             </Link>
             <Link
               href="/student/pathway"
-              className="inline-flex min-h-10 items-center rounded-[var(--radius-control)] border border-white/20 bg-white/[.06] px-4 text-sm font-semibold text-white transition hover:bg-white/[.1]"
+              className="inline-flex min-h-11 items-center rounded-[var(--radius-control)] border border-white/20 bg-white/[.06] px-4 text-sm font-semibold text-white transition hover:bg-white/[.1] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#17191b]"
             >
               {t.pathwayCta}
             </Link>
@@ -470,7 +470,7 @@ export default async function StudentEntry() {
               <Link
                 key={item.label}
                 href={item.href}
-                className="flex min-h-16 items-center justify-between gap-3 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-3.5 py-3 transition hover:border-[var(--brand-border)]"
+                className="flex min-h-16 items-center justify-between gap-3 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-3.5 py-3 transition hover:border-[var(--brand-border)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] focus-visible:ring-offset-2"
               >
                 <span className="text-sm font-semibold leading-5 text-[var(--foreground-soft)]">{item.label}</span>
                 <Badge variant={item.tone}>{item.value}</Badge>
@@ -682,7 +682,7 @@ export default async function StudentEntry() {
         />
 
         <details className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)]">
-          <summary className="cursor-pointer list-none px-5 py-4 text-sm font-semibold text-[var(--foreground)]">
+          <summary className="cursor-pointer list-none rounded-[var(--radius-control)] px-5 py-4 text-sm font-semibold text-[var(--foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--brand)]">
             {v2.detailedJourney}
             <span className="mt-1 block text-xs font-normal leading-5 text-[var(--muted)]">{v2.detailedJourneyHint}</span>
           </summary>
@@ -711,7 +711,7 @@ function DashboardMetric({
   return (
     <Link
       href={href}
-      className="group flex min-h-28 items-end justify-between gap-4 border-b border-[var(--border)] px-1 py-5 transition-colors hover:bg-[var(--surface-subtle)] sm:border-b-0 sm:border-e sm:px-5 sm:last:border-e-0"
+      className="group flex min-h-28 items-end justify-between gap-4 border-b border-[var(--border)] px-1 py-5 transition-colors hover:bg-[var(--surface-subtle)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--brand)] sm:border-b-0 sm:border-e sm:px-5 sm:last:border-e-0"
     >
       <span>
         <strong className="block text-[clamp(2rem,4vw,3rem)] font-semibold leading-none tracking-[-0.05em] text-[var(--foreground)]">
@@ -721,7 +721,7 @@ function DashboardMetric({
           {label}
         </span>
       </span>
-      <span className="pb-1 text-lg font-semibold text-[var(--brand)] transition-transform group-hover:translate-x-1" aria-hidden="true">
+      <span className="pb-1 text-lg font-semibold text-[var(--brand)] transition-transform rtl:rotate-180" aria-hidden="true">
         →
       </span>
     </Link>
@@ -743,7 +743,7 @@ function CockpitPanel({
     <section className="min-w-0 border-t-2 border-[var(--foreground)] pt-5">
       <div className="mb-4 flex items-center justify-between gap-3">
         <h2 className="text-base font-semibold text-[var(--foreground)]">{title}</h2>
-        <Link href={href} className="text-xs font-bold text-[var(--brand)] hover:underline">{cta}</Link>
+        <Link href={href} className="-my-2 inline-flex min-h-11 items-center rounded-lg px-1 text-xs font-bold text-[var(--brand)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] focus-visible:ring-offset-2">{cta}</Link>
       </div>
       {children}
     </section>
