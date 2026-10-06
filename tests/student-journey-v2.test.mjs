@@ -21,19 +21,19 @@ test("student journey header exposes the six localized core dossier steps", () =
   assert.ok(header.includes("aria-current="));
 });
 
-test("core student journey pages keep a shared hierarchy while dossier pages use Product System V2", () => {
+test("core student journey pages share the canonical student page frame and hierarchy", () => {
   for (const [key, path] of pages) {
     const source = readFileSync(path, "utf8");
+    assert.ok(source.includes("StudentPageFrame"));
     if (key === "documents" || key === "applications") {
       assert.ok(source.includes("DossierHeader"));
       assert.ok(source.includes('href="/student/procedure"'));
-      assert.ok(source.includes("max-w-[92rem]"));
     } else {
       assert.ok(source.includes("StudentJourneyHeader"));
       assert.ok(source.includes(`current="${key}"`));
-      assert.ok(source.includes("max-w-7xl px-4 py-5"));
     }
   }
+  assert.ok(header.includes("DossierHeader"));
 });
 
 test("student journey redesign does not alter data sources", () => {
