@@ -5,6 +5,8 @@ import { useState } from "react";
 import { Badge } from "@/components/ui/Badge";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Card } from "@/components/ui/Card";
+import { PremiumEmptyState } from "@/components/product/PremiumEmptyState";
+import { PremiumSectionHeader } from "@/components/product/PremiumSectionHeader";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { studentApplicationsCopy } from "@/content/student-applications-copy";
 import { studentApplicationsWorkspaceCopy } from "@/content/student-applications-workspace-copy";
@@ -245,7 +247,7 @@ export function StudentApplicationsPanel({
       )}
 
       <section aria-label={t.priorityAria} className="grid gap-5 lg:grid-cols-[1.08fr_0.92fr]">
-        <Card className="relative overflow-hidden rounded-[1.35rem] border-black/[.07] bg-white shadow-[0_24px_64px_-44px_rgba(0,0,0,.36)]">
+        <Card className="pc-card relative overflow-hidden">
           <div aria-hidden="true" className="student-accent-edge absolute inset-y-0 w-1 bg-[var(--brand)]" />
           <div className="student-accent-content student-accent-content-wide">
             <Badge variant={loadError ? "neutral" : actionable.length ? "warning" : "info"}>
@@ -264,7 +266,7 @@ export function StudentApplicationsPanel({
                     : t.noApplicationsText}
             </p>
             {priorityApplication && (
-              <div className="mt-5 rounded-[1.1rem] border border-black/[.06] bg-[#f6f3ed] p-4">
+              <div className="pc-soft-strip mt-5 p-4">
                 <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">{t.trackedApplication}</p>
                 <p className="mt-2 font-bold text-slate-950"><bdi dir="auto">{priorityProgram?.name || t.programFallback}</bdi></p>
                 <p className="mt-1 text-sm text-slate-600">
@@ -277,7 +279,7 @@ export function StudentApplicationsPanel({
                 </p>
               </div>
             )}
-            <div className="mt-5 rounded-[1.1rem] border border-[#c9d9e8] bg-[#f1f7fb] p-4 text-xs leading-5 text-[#294d69]">
+            <div className="mt-5 rounded-[var(--premium-radius-control)] border border-[#c9d9e8] bg-[var(--premium-blue-wash)] p-4 text-xs leading-5 text-[#294d69]">
               {t.statusBoundary}
             </div>
           </div>
@@ -293,12 +295,14 @@ export function StudentApplicationsPanel({
       {!loadError && applications.length ? (
         <section
           aria-labelledby="applications-pipeline-title"
-          className="rounded-[1.3rem] border border-[var(--border)] bg-white p-4 shadow-[0_20px_55px_-44px_rgba(0,0,0,.28)] sm:p-5"
+          className="pc-panel p-4 sm:p-5"
           data-applications-pipeline
         >
-          <p className="text-[0.68rem] font-extrabold uppercase tracking-[0.15em] text-[var(--brand)]">{workspace.pipelineEyebrow}</p>
-          <h2 id="applications-pipeline-title" className="mt-1 text-xl font-semibold tracking-[-0.025em] text-slate-950">{workspace.pipelineTitle}</h2>
-          <p className="mt-1 max-w-3xl text-sm leading-6 text-slate-600">{workspace.pipelineDescription}</p>
+          <PremiumSectionHeader
+            eyebrow={workspace.pipelineEyebrow}
+            title={<span id="applications-pipeline-title">{workspace.pipelineTitle}</span>}
+            description={workspace.pipelineDescription}
+          />
 
           <div className="mt-4 grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
             {([
@@ -307,7 +311,7 @@ export function StudentApplicationsPanel({
               ["submitted", workspace.stages.submitted, pipelineCounts.submitted],
               ["decision", workspace.stages.decision, pipelineCounts.decision],
             ] as const).map(([key, label, count], index) => (
-              <div key={key} className="relative rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-4 py-4">
+              <div key={key} className="pc-soft-strip relative px-4 py-4">
                 <div className="flex items-center justify-between gap-3">
                   <span className="grid h-7 w-7 place-items-center rounded-full bg-white text-xs font-extrabold text-[var(--brand)] shadow-sm">{index + 1}</span>
                   <strong className="text-2xl font-semibold tracking-[-0.04em] text-slate-950">{count}</strong>
@@ -319,7 +323,7 @@ export function StudentApplicationsPanel({
         </section>
       ) : null}
 
-      <Card aria-labelledby="applications-deadline-title" className="rounded-[1.3rem] border-black/[.07] bg-white shadow-[0_20px_55px_-42px_rgba(0,0,0,.32)]">
+      <Card aria-labelledby="applications-deadline-title" className="pc-card">
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
           <div>
             <Badge variant={nextDeadlineApplication ? "warning" : "neutral"}>{overdue ? t.deadlinePassed : t.nextDeadline}</Badge>
@@ -339,29 +343,25 @@ export function StudentApplicationsPanel({
       </Card>
 
       {!loadError && applications.length === 0 ? (
-        <Card aria-labelledby="applications-empty-title" className="rounded-[1.3rem] border-dashed border-black/15 bg-white/75 py-10 text-center shadow-[0_18px_50px_-40px_rgba(0,0,0,.28)]">
-          <span aria-hidden="true" className="mx-auto grid h-11 w-11 place-items-center rounded-full bg-[var(--brand-soft)] text-[var(--brand)]">＋</span>
-          <h2 id="applications-empty-title" className="mt-4 text-lg font-bold text-slate-950">{t.emptyTitle}</h2>
-          <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-slate-600">
-            {t.emptyText}
-          </p>
-          <div className="mt-5">
-            <ButtonLink href="/student/orientation">{t.programmesCta}</ButtonLink>
-          </div>
-        </Card>
+        <PremiumEmptyState
+          eyebrow={t.listEyebrow}
+          title={<span id="applications-empty-title">{t.emptyTitle}</span>}
+          description={t.emptyText}
+          action={<ButtonLink href="/student/orientation">{t.programmesCta}</ButtonLink>}
+        />
       ) : (
         <section aria-labelledby="applications-list-title">
-          <div className="mb-4 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
-            <div>
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">{t.listEyebrow}</p>
-              <h2 id="applications-list-title" className="mt-1 text-2xl font-semibold tracking-[-0.03em] text-slate-950">{t.listTitle}</h2>
-              <p className="mt-1 text-sm leading-6 text-slate-600">{workspace.visibleCount(visibleApplications.length, applications.length)}</p>
-            </div>
+          <div className="mb-4">
+            <PremiumSectionHeader
+              eyebrow={t.listEyebrow}
+              title={<span id="applications-list-title">{t.listTitle}</span>}
+              description={workspace.visibleCount(visibleApplications.length, applications.length)}
+            />
           </div>
 
           <div
             aria-label={workspace.filtersAria}
-            className="mb-4 flex flex-col gap-3 rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface-subtle)] p-3 sm:p-4 lg:flex-row lg:items-center lg:justify-between"
+            className="pc-soft-strip mb-4 flex flex-col gap-3 p-3 sm:p-4 lg:flex-row lg:items-center lg:justify-between"
             data-application-filters
           >
             <div className="flex flex-wrap gap-2" role="group" aria-label={workspace.filterLabel}>
@@ -408,7 +408,7 @@ export function StudentApplicationsPanel({
 
           <div className="space-y-4">
             {visibleApplications.length === 0 ? (
-              <Card className="border-dashed bg-white/75 py-8 text-center shadow-none">
+              <Card className="pc-card border-dashed bg-white/80 py-8 text-center shadow-none">
                 <h3 className="font-bold text-slate-950">{workspace.filteredEmptyTitle}</h3>
                 <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-slate-600">{workspace.filteredEmptyText}</p>
                 <button
@@ -442,7 +442,7 @@ export function StudentApplicationsPanel({
                   as="article"
                   key={application.id}
                   aria-labelledby={`student-application-title-${application.id}`}
-                  className={applicationUrgent ? "rounded-[1.3rem] border-amber-300 bg-amber-50/30 shadow-[0_22px_60px_-42px_rgba(139,98,0,.3)]" : active && application.next_action ? "rounded-[1.3rem] border-[#ead59a] bg-[#fff9e9] shadow-[0_22px_60px_-42px_rgba(139,98,0,.24)]" : "rounded-[1.3rem] border-black/[.07] bg-white shadow-[0_22px_60px_-42px_rgba(0,0,0,.3)]"}
+                  className={applicationUrgent ? "pc-card border-[var(--warning-border)] bg-[var(--premium-gold-wash)]" : active && application.next_action ? "pc-card border-[var(--warning-border)] bg-[var(--premium-gold-wash)]" : "pc-card"}
                 >
                   <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
                     <div className="min-w-0">
@@ -452,8 +452,8 @@ export function StudentApplicationsPanel({
                       </p>
                       <h3 id={`student-application-title-${application.id}`} className="mt-3 text-xl font-bold tracking-[-0.02em] text-slate-950 [overflow-wrap:anywhere]"><bdi dir="auto">{program?.name || t.programFallback}</bdi></h3>
                       <div className="mt-2 flex flex-wrap gap-2 text-xs font-semibold text-slate-600">
-                        {program?.degree_level && <span className="rounded-full border border-black/[.06] bg-[#f3f0ea] px-2.5 py-1.5"><bdi dir="auto">{localizeCatalogueLabel(locale, program.degree_level)}</bdi></span>}
-                        <span className="rounded-full border border-black/[.06] bg-[#f3f0ea] px-2.5 py-1.5"><bdi dir="auto">{localizeCatalogueLabel(locale, application.intake_term) || t.intakeUnknown}</bdi></span>
+                        {program?.degree_level && <span className="rounded-full border border-[var(--premium-border)] bg-[var(--premium-cream)] px-2.5 py-1.5"><bdi dir="auto">{localizeCatalogueLabel(locale, program.degree_level)}</bdi></span>}
+                        <span className="rounded-full border border-[var(--premium-border)] bg-[var(--premium-cream)] px-2.5 py-1.5"><bdi dir="auto">{localizeCatalogueLabel(locale, application.intake_term) || t.intakeUnknown}</bdi></span>
                         <span className={`rounded-full px-3 py-1.5 ${applicationOverdue || (applicationDays !== null && applicationDays <= 14) ? "bg-amber-100 text-amber-900" : "bg-slate-100"}`}>
                           {t.deadlineWord}{" "}
                           <bdi dir="auto">
@@ -485,7 +485,7 @@ export function StudentApplicationsPanel({
 
                   <section
                     aria-label={t.nextAction}
-                    className={`mt-6 rounded-[1.15rem] border p-4 sm:p-5 ${active ? "border-[#ead59a] bg-[#fff9e9]" : "border-black/[.06] bg-[#f6f3ed]"}`}
+                    className={`mt-6 rounded-[var(--premium-radius-card)] border p-4 sm:p-5 ${active ? "border-[var(--warning-border)] bg-[var(--premium-gold-wash)]" : "border-[var(--premium-border)] bg-[var(--premium-cream)]"}`}
                   >
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <h4 className="text-xs font-bold uppercase tracking-[0.16em] text-slate-600">{t.whatNext}</h4>
@@ -494,7 +494,7 @@ export function StudentApplicationsPanel({
                     <p dir="auto" className="mt-2 text-sm font-semibold leading-6 text-slate-950 [overflow-wrap:anywhere]">{nextAction}</p>
                   </section>
 
-                  <details className="group mt-4 rounded-[1.1rem] border border-black/[.06] bg-white/75">
+                  <details className="group mt-4 rounded-[var(--premium-radius-control)] border border-[var(--premium-border)] bg-white/80">
                     <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-sm font-bold text-slate-900 marker:content-none">
                       <span>
                         {locale === "fr"
@@ -508,14 +508,14 @@ export function StudentApplicationsPanel({
                       <span aria-hidden="true" className="text-lg text-[var(--brand)] transition-transform group-open:rotate-45">＋</span>
                     </summary>
 
-                    <div className="border-t border-black/[.06] p-4">
+                    <div className="border-t border-[var(--premium-border)] p-4">
                       <div className="grid gap-4 sm:grid-cols-2">
                         <InfoCard title={t.requiredDocuments} value={application.required_documents?.length ? application.required_documents.join(", ") : t.unknown} />
                         <InfoCard title={t.result} value={application.result || t.noResult} />
                       </div>
 
                       {application.student_notes && (
-                        <div className="mt-4 rounded-[1.1rem] border border-black/[.06] bg-[#f6f3ed] p-4">
+                        <div className="pc-soft-strip mt-4 p-4">
                           <h4 className="text-sm font-semibold text-slate-900">{t.messageForYou}</h4>
                           <p dir="auto" className="mt-1 text-sm leading-6 text-slate-700 [overflow-wrap:anywhere]">{application.student_notes}</p>
                           <p className="mt-2 text-xs leading-5 text-slate-500">
@@ -533,7 +533,7 @@ export function StudentApplicationsPanel({
                           <span className="text-xs text-slate-500">{t.eventCount(events.length)}</span>
                         </div>
                         {events.length === 0 ? (
-                          <p className="rounded-[1.05rem] border border-black/[.05] bg-[#f6f3ed] p-4 text-sm text-slate-600">
+                          <p className="pc-soft-strip p-4 text-sm text-slate-600">
                             {t.noEvents}
                           </p>
                         ) : (
@@ -567,7 +567,7 @@ export function StudentApplicationsPanel({
 
 function SummaryCard({ title, value, badge, tone }: { title: string; value: number | string; badge: string; tone: "success" | "info" | "warning" | "neutral" }) {
   return (
-    <Card as="article" className="rounded-[1.2rem] border-black/[.07] bg-white shadow-[0_18px_50px_-42px_rgba(0,0,0,.28)]">
+    <Card as="article" className="pc-card">
       <h2 className="text-sm font-semibold text-slate-700">{title}</h2>
       <p className="mt-1 text-3xl font-semibold text-slate-950">{value}</p>
       <div className="mt-3"><Badge variant={tone}>{badge}</Badge></div>
@@ -577,7 +577,7 @@ function SummaryCard({ title, value, badge, tone }: { title: string; value: numb
 
 function InfoCard({ title, value }: { title: string; value: string }) {
   return (
-    <div className="rounded-[1.05rem] border border-black/[.06] bg-[#f6f3ed] p-4">
+    <div className="pc-soft-strip p-4">
       <h4 className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">{title}</h4>
       <p dir="auto" className="mt-2 text-sm font-medium leading-6 text-slate-900">{value}</p>
     </div>
