@@ -246,31 +246,29 @@ export function DocumentsPanel({
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">
-              {locale === "fr" ? "Checklist intelligente" : "قائمة الوثائق الذكية"}
+              {workspace.checklistEyebrow}
             </p>
             <h2 id="documents-checklist-title" className="mt-1 text-2xl font-semibold tracking-tight text-slate-950">
-              {locale === "fr" ? "Ton dossier, catégorie par catégorie" : "ملفك حسب الفئة"}
+              {workspace.checklistTitle}
             </h2>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
-              {locale === "fr"
-                ? "Vois immédiatement ce qui est prêt, en vérification ou demande une action. Les exigences supplémentaires apparaissent seulement lorsqu’elles deviennent pertinentes pour ton parcours."
-                : "اعرف فورًا ما هو جاهز أو قيد المراجعة أو يحتاج إلى إجراء. تظهر المتطلبات الإضافية فقط عندما تصبح ضرورية لمسارك."}
+              {workspace.checklistDescription}
             </p>
           </div>
           <div className="rounded-full border border-[var(--brand-border)] bg-[var(--brand-soft)] px-4 py-2.5 text-sm font-bold text-[var(--brand-strong)] shadow-sm">
-            {checklistReady} / {checklist.length} {locale === "fr" ? "catégories prêtes" : "فئات جاهزة"}
+            {workspace.validatedCount(approvedCount, documents.length)}
           </div>
         </div>
 
         <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-5">
           {checklist.map((group) => {
             const status = group.needsAction
-              ? (locale === "fr" ? "Action requise" : "إجراء مطلوب")
+              ? workspace.groupAction
               : group.reviewing
-                ? (locale === "fr" ? "À vérifier" : "قيد المراجعة")
+                ? workspace.groupReview
                 : group.items.length && group.ready === group.items.length
-                  ? (locale === "fr" ? "Prêt" : "جاهز")
-                  : (locale === "fr" ? "À préparer" : "للتحضير");
+                  ? workspace.groupReady
+                  : workspace.groupPrepare;
             const variant = group.needsAction ? "warning" : group.reviewing ? "info" : group.items.length && group.ready === group.items.length ? "success" : "neutral";
             return (
               <Card as="article" key={group.id} className="h-full rounded-[1.15rem] border-black/[.07] bg-white p-4 shadow-[0_18px_50px_-42px_rgba(0,0,0,.28)]">
@@ -282,9 +280,7 @@ export function DocumentsPanel({
                   {group.ready} / {group.items.length || group.categories.length}
                 </p>
                 <p className="mt-1 text-xs leading-5 text-slate-500">
-                  {group.items.length
-                    ? (locale === "fr" ? "documents de cette catégorie" : "وثائق في هذه الفئة")
-                    : (locale === "fr" ? "aucun document envoyé pour l’instant" : "لم يتم إرسال أي وثيقة بعد")}
+                  {group.items.length ? workspace.groupDocuments : workspace.groupEmpty}
                 </p>
               </Card>
             );
@@ -292,17 +288,15 @@ export function DocumentsPanel({
         </div>
 
         <Card className="mt-4 rounded-[1.15rem] border border-[#ead59a] bg-[#fff9e9] p-4 shadow-[0_16px_44px_-38px_rgba(139,98,0,.26)]">
-          <p className="text-sm font-bold text-slate-950">
-            {locale === "fr" ? "Prochaine action" : "الخطوة التالية"}
-          </p>
+          <p className="text-sm font-bold text-slate-950">{workspace.nextAction}</p>
           <p className="mt-1 text-sm leading-6 text-slate-700">
             {correctionCount
-              ? (locale === "fr" ? "Corrige d’abord le document signalé par l’équipe AlmaGo." : "صحّح أولاً الوثيقة التي أشار إليها فريق AlmaGo.")
+              ? workspace.nextCorrection
               : reviewCount
-                ? (locale === "fr" ? "Tes documents envoyés sont en vérification. Tu peux continuer les autres étapes de ton projet." : "وثائقك المرسلة قيد المراجعة. يمكنك متابعة بقية خطوات مشروعك.")
+                ? workspace.nextReview
                 : documents.length
-                  ? (locale === "fr" ? "Ajoute uniquement le prochain document demandé par ton parcours ou une candidature." : "أضف فقط الوثيقة التالية المطلوبة لمسارك أو لترشحك.")
-                  : (locale === "fr" ? "Commence par les documents essentiels indiqués dans ton parcours." : "ابدأ بالوثائق الأساسية الموضحة في مسارك.")}
+                  ? workspace.nextUpload
+                  : workspace.nextStart}
           </p>
         </Card>
       </section>
