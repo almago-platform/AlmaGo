@@ -50,8 +50,8 @@ export function ProspectProgrammeRecommendationCard({
   const verificationCount = verificationRows.filter(([, value]) => value === labels.requirementCheck).length;
 
   const badge = (
-    <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--brand-soft)] px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-[0.08em] text-[var(--brand-strong)] ring-1 ring-inset ring-[var(--brand-border)]/60">
-      <span className="h-1.5 w-1.5 rounded-full bg-[var(--brand)]" aria-hidden="true" />
+    <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--premium-green-wash)] px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-[0.08em] text-[var(--success-strong)] ring-1 ring-inset ring-[var(--success-border)]">
+      <span className="h-1.5 w-1.5 rounded-full bg-[var(--success)]" aria-hidden="true" />
       {labels.projectMatch}
     </span>
   );
