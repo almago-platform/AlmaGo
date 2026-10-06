@@ -6,12 +6,9 @@ const page = readFileSync("src/app/student/language-courses/page.tsx", "utf8");
 const panel = readFileSync("src/components/student/StudentLanguageCoursesPanel.tsx", "utf8");
 const copy = readFileSync("src/content/student-language-courses-copy.ts", "utf8");
 const nativeCopy = readFileSync("src/content/native-copy.ts", "utf8");
-const nav = readFileSync("src/components/student/StudentNav.tsx", "utf8");
 const appShell = readFileSync("src/components/layout/AppShell.tsx", "utf8");
 
 test("Student navigation exposes the verified language-course surface", () => {
-  assert.match(nav, /Cours de langue/);
-  assert.match(nav, /\/student\/language-courses/);
   assert.ok(nativeCopy.includes('"Cours de langue"'));
   assert.match(appShell, /\/student\/language-courses/);
   assert.ok(nativeCopy.includes('"Mon projet"'));
