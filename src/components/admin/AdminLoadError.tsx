@@ -11,7 +11,7 @@ export function AdminLoadError({
   retryHref: string;
 }) {
   return (
-    <Card className="border-[var(--border)] bg-[var(--surface)] shadow-none">
+    <Card className="pc-card shadow-none">
       <div role="alert" className="grid gap-5 md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
         <div>
           <p className="text-[0.68rem] font-bold uppercase tracking-[0.14em] text-[var(--brand)]">Chargement interrompu</p>
