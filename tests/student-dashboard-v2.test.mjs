@@ -45,7 +45,7 @@ test("student dashboard cockpit centers the first view on the next action", () =
   assert.ok(page.includes("allImportantDeadlines.length"));
   assert.ok(page.includes("documentAttentionCount"));
   assert.ok(page.includes("data-dashboard-attention"));
-  assert.doesNotMatch(page, /sm:grid-cols-2 xl:grid-cols-4/);
+  assert.ok(page.includes('className="grid border-y border-[var(--border)] bg-[var(--surface)] sm:grid-cols-3"'));
 });
 
 test("journey overview uses localized visual cards and remains responsive", () => {
