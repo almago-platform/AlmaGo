@@ -101,7 +101,7 @@ export function ProspectProgrammeRecommendationCard({
             <summary className="cursor-pointer list-none text-sm font-bold text-[var(--foreground)] marker:content-none">
               <span className="flex items-center justify-between gap-3">
                 <span>{verificationCount ? `${verificationCount} · ${labels.requirementCheck}` : labels.requirementCheck}</span>
-                <span className="text-[var(--brand)]" aria-hidden="true">＋</span>
+                <span className="text-[var(--warning-strong)]" aria-hidden="true">＋</span>
               </span>
             </summary>
             <dl className="mt-3 grid gap-2 border-t border-[var(--premium-border)] pt-3">
