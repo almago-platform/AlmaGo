@@ -25,7 +25,7 @@ test("Prospect V3.2 uses the premium composition primitives on core surfaces", (
   assert.match(catalogue, /PremiumEmptyState/);
   assert.match(solutions, /PremiumSectionHeader/);
   assert.match(solutions, /PremiumEmptyState/);
-  assert.match(offers, /PremiumEmptyState/);
+  assert.match(offers, /ProspectEditorialPanel/);
   assert.match(proposal, /PremiumSectionHeader/);
   assert.match(proposal, /PremiumEmptyState/);
   assert.match(roadmap, /PremiumSectionHeader/);
@@ -36,6 +36,7 @@ test("Prospect V3.2 makes sparse offer states intentional", () => {
   assert.match(offerSelector, /PremiumEmptyState/);
   assert.match(offerSelector, /pc-card pc-card-interactive/);
   assert.match(offers, /pc-waiting-strip/);
+  assert.match(offers, /ProspectEditorialPanel/);
 });
 
 test("Prospect V3.2 standardizes programme and solution card interaction", () => {
