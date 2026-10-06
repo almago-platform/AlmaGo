@@ -14,6 +14,7 @@ export function ProspectProgrammeCatalogueCard({
   programme,
   projectMatch,
   labels,
+  wide = false,
 }: {
   programme: OrientationProgrammeRecord;
   projectMatch: boolean;
@@ -28,18 +29,28 @@ export function ProspectProgrammeCatalogueCard({
     source: string;
     applyLink: string;
   };
+  wide?: boolean;
 }) {
   return (
-    <article className="pc-card pc-card-interactive group flex min-w-0 flex-col overflow-hidden bg-[var(--surface)]">
-      <div className="overflow-hidden">
+    <article
+      className={
+        "pc-card pc-card-interactive group min-w-0 overflow-hidden bg-[var(--surface)] " +
+        (wide
+          ? "lg:grid lg:grid-cols-[minmax(16rem,0.72fr)_minmax(0,1.28fr)]"
+          : "flex flex-col")
+      }
+    >
+      <div className="min-w-0 overflow-hidden">
         <ProspectUniversityCover
           universityName={programme.university.name}
           city={programme.university.city}
           media={programme.university.media}
+          compact={!wide && !projectMatch}
+          wide={wide}
         />
       </div>
 
-      <div className="flex flex-1 flex-col p-4 sm:p-5">
+      <div className="flex min-w-0 flex-1 flex-col p-4 sm:p-5">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-[0.08em] ring-1 ring-inset ${projectMatch ? "bg-[var(--brand-soft)] text-[var(--brand-strong)] ring-[var(--brand-border)]/60" : "bg-[var(--premium-cream)] text-[#555b60] ring-black/[.06]"}`}>
             <span className={`h-1.5 w-1.5 rounded-full ${projectMatch ? "bg-[var(--brand)]" : "bg-[#92979b]"}`} aria-hidden="true" />
