@@ -255,37 +255,97 @@ export function StudentOrientationPanel({
 
           <div className="mb-4 grid gap-3 rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-4 lg:grid-cols-[minmax(0,1fr)_auto_auto_auto]">
             <label className="text-sm font-semibold text-slate-700">
-              <span className="sr-only">{locale === "fr" ? "Rechercher un programme" : "البحث عن برنامج"}</span>
+              <span className="sr-only">{ui.searchLabel}</span>
               <input
                 type="search"
                 value={searchQuery}
                 onChange={(event) => setSearchQuery(event.target.value)}
-                placeholder={locale === "fr" ? "Programme, université ou ville…" : "برنامج، جامعة أو مدينة…"}
+                placeholder={ui.searchPlaceholder}
                 className="field mt-0"
               />
             </label>
-            <select aria-label={locale === "fr" ? "Filtrer par niveau" : "التصفية حسب المستوى"} value={degreeFilter} onChange={(event) => setDegreeFilter(event.target.value)} className="field mt-0 min-w-40">
-              <option value="all">{locale === "fr" ? "Tous les niveaux" : "كل المستويات"}</option>
-              {[...new Set(items.map((item) => firstProgram(item)?.degree_level).filter(Boolean))].map((value) => <option key={value} value={value}>{value}</option>)}
+            <select aria-label={ui.degreeFilter} value={degreeFilter} onChange={(event) => setDegreeFilter(event.target.value)} className="field mt-0 min-w-40">
+              <option value="all">{ui.allDegrees}</option>
+              {[...new Set(items.map((item) => firstProgram(item)?.degree_level).filter(Boolean))].map((value) => <option key={value} value={value}>{localizeCatalogueLabel(locale, value)}</option>)}
             </select>
-            <select aria-label={locale === "fr" ? "Filtrer par langue" : "التصفية حسب اللغة"} value={languageFilter} onChange={(event) => setLanguageFilter(event.target.value)} className="field mt-0 min-w-40">
-              <option value="all">{locale === "fr" ? "Toutes les langues" : "كل اللغات"}</option>
+            <select aria-label={ui.languageFilter} value={languageFilter} onChange={(event) => setLanguageFilter(event.target.value)} className="field mt-0 min-w-40">
+              <option value="all">{ui.allLanguages}</option>
               {[...new Set(items.map((item) => firstProgram(item)?.teaching_language).filter((value): value is string => Boolean(value)))].map((value) => <option key={value} value={value}>{localizeCatalogueLabel(locale, value)}</option>)}
             </select>
             <Button type="button" variant="secondary" onClick={() => { setSearchQuery(""); setDegreeFilter("all"); setLanguageFilter("all"); }}>
-              {locale === "fr" ? "Réinitialiser" : "إعادة الضبط"}
+              {ui.reset}
             </Button>
             <p className="text-xs text-slate-500 lg:col-span-4">
-              {locale === "fr" ? `${visibleItems.length} résultat${visibleItems.length > 1 ? "s" : ""}` : `${visibleItems.length} نتيجة`}
+              {ui.results(visibleItems.length)}
             </p>
           </div>
 
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-4 py-3">
-            <p className="text-sm text-slate-600">{programCardCopy[locale].scanHint}</p>
+            <p className="text-sm text-slate-600">{ui.scanHint}</p>
             <Badge variant={compareIds.length > 1 ? "info" : "neutral"}>
-              {programCardCopy[locale].compareCount(compareIds.length)}
+              {ui.compareCount(compareIds.length)}
             </Badge>
           </div>
+
+          {compareItems.length >= 2 ? (
+            <section
+              aria-labelledby="program-comparison-title"
+              className="mb-5 rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--brand-soft)]/25 p-4 sm:p-5"
+              data-program-comparison
+            >
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
+                <div>
+                  <p className="text-[0.68rem] font-extrabold uppercase tracking-[0.15em] text-[var(--brand)]">{ui.quickCompareEyebrow}</p>
+                  <h3 id="program-comparison-title" className="mt-1 text-xl font-semibold tracking-[-0.025em] text-slate-950">{ui.quickCompareTitle}</h3>
+                  <p className="mt-1 max-w-2xl text-sm leading-6 text-slate-600">{ui.quickCompareDescription}</p>
+                </div>
+                <Badge variant="info">{ui.compareCount(compareItems.length)}</Badge>
+              </div>
+
+              <div className={`mt-4 grid gap-3 ${compareItems.length === 3 ? "lg:grid-cols-3" : "md:grid-cols-2"}`}>
+                {compareItems.map((recommendation) => {
+                  const program = firstProgram(recommendation);
+                  if (!program) return null;
+                  const university = firstUniversity(program);
+                  const compatibility = compatibilityPresentation(recommendation.requirement_match, locale);
+                  const semester = semesterSummary(program.intake_terms, locale);
+                  const deadline = programmeDeadline(program, locale);
+                  const fees = programmeFees(program, university, ui.verify);
+
+                  return (
+                    <article key={`compare-${recommendation.id}`} className="rounded-[var(--radius-control)] border border-[var(--border)] bg-white p-4 shadow-[var(--shadow-xs)]">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-slate-500"><bdi dir="auto">{university?.name || t.universityUnknown}</bdi></p>
+                          <h4 className="mt-1 text-base font-bold leading-6 text-slate-950"><bdi dir="auto">{program.name}</bdi></h4>
+                        </div>
+                        <Button type="button" variant="secondary" className="shrink-0" onClick={() => toggleCompare(recommendation.id)}>
+                          {ui.removeComparison}
+                        </Button>
+                      </div>
+
+                      <dl className="mt-4 grid grid-cols-2 gap-x-3 gap-y-4 border-t border-[var(--border)] pt-4 text-sm">
+                        <CompareFact label={ui.degree} value={localizeCatalogueLabel(locale, program.degree_level)} />
+                        <CompareFact label={ui.language} value={localizeCatalogueLabel(locale, program.teaching_language) || t.routeUnknown} />
+                        <CompareFact label={ui.semester} value={semester} />
+                        <CompareFact label={ui.deadline} value={deadline} />
+                        <div className="col-span-2">
+                          <CompareFact label={ui.fees} value={fees} />
+                        </div>
+                      </dl>
+
+                      <div className={`mt-4 rounded-xl border px-3 py-2.5 ${compatibility.containerClass}`}>
+                        <p className="text-sm font-bold text-slate-950">
+                          <span aria-hidden="true" className={compatibility.iconClass}>{compatibility.icon} </span>
+                          {compatibility.label}
+                        </p>
+                      </div>
+                    </article>
+                  );
+                })}
+              </div>
+            </section>
+          ) : null}
 
           <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
             {visibleItems.map((recommendation) => {
@@ -305,6 +365,7 @@ export function StudentOrientationPanel({
               const compatibilityRows = compactCompatibilityCriteria(recommendation.requirement_match);
               const semester = semesterSummary(program.intake_terms, locale);
               const deadline = programmeDeadline(program, locale);
+              const fees = programmeFees(program, university, ui.verify);
               const isCompared = compareIds.includes(recommendation.id);
 
               return (
@@ -354,7 +415,7 @@ export function StudentOrientationPanel({
                     <dl className="grid grid-cols-2 gap-3 border-b border-[var(--border)] pb-5">
                       <div>
                         <dt className="text-[11px] font-bold uppercase tracking-[0.08em] text-slate-500">{ui.fees}</dt>
-                        <dd className="mt-1 text-sm font-semibold text-slate-900">{ui.verify}</dd>
+                        <dd className="mt-1 text-sm font-semibold leading-5 text-slate-900 [overflow-wrap:anywhere]">{fees}</dd>
                       </div>
                       <div>
                         <dt className="text-[11px] font-bold uppercase tracking-[0.08em] text-slate-500">{ui.deadline}</dt>
