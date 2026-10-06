@@ -787,7 +787,7 @@ function programmeDeadline(program: Program, locale: keyof typeof programCardCop
   return formatDeadline(selected, locale);
 }
 
-function programmeFees(program: Program, university: University | undefined, fallback: string) {
+function programmeFees(program: Program, university: University | null | undefined, fallback: string) {
   const values = [university?.tuition_notes, program.application_fee_notes]
     .filter((value): value is string => Boolean(value?.trim()))
     .map((value) => value.trim());
