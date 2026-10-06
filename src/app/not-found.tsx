@@ -13,7 +13,7 @@ export default async function NotFoundPage() {
   return (
     <main className="min-h-screen bg-[linear-gradient(180deg,#fffdf8_0%,#f7f4ec_55%,#f1ece4_100%)] px-4 py-8 text-[var(--foreground)] sm:px-6 lg:px-8">
       <div className="mx-auto flex min-h-[calc(100vh-4rem)] w-full max-w-3xl items-center justify-center">
-        <section className="w-full rounded-[1rem] border border-[var(--border)] bg-[var(--surface)] p-7 text-center shadow-[0_24px_70px_-54px_rgba(28,33,36,0.45)] sm:p-10">
+        <section className="pc-panel w-full rounded-[1rem] p-7 text-center sm:p-10">
           <div className="flex items-center justify-between gap-3">
             <Link href="/" className="inline-flex min-h-11 items-center" aria-label={t.homeAria}>
               <BrandLogo className="h-auto w-40 sm:w-56" />
