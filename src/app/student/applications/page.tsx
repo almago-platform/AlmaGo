@@ -1,4 +1,5 @@
 import { ButtonLink } from "@/components/ui/ButtonLink";
+import { buttonClassName } from "@/components/ui/Button";
 import { StudentPageFrame } from "@/components/student/StudentPageFrame";
 import { StudentPageState } from "@/components/student/StudentPageState";
 import Link from "next/link";
@@ -55,7 +56,7 @@ export default async function StudentApplicationsPage() {
         ]}
         actions={
           <>
-            <Link href="/student/procedure" className="inline-flex min-h-10 items-center rounded-[var(--radius-control)] border border-[var(--border-strong)] bg-[var(--surface)] px-4 text-sm font-semibold">
+            <Link href="/student/procedure" className={buttonClassName("secondary", "min-h-10 px-4 py-2")}>
               {locale === "fr" ? "Voir ma procédure" : locale === "ar" ? "عرض إجراءاتي" : locale === "de" ? "Mein Verfahren" : "View procedure"}
             </Link>
             <ButtonLink href="/student/orientation" variant="secondary">{t.page.programmes}</ButtonLink>
