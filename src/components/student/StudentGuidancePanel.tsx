@@ -21,7 +21,7 @@ export function StudentGuidancePanel({
 }) {
   return (
     <section
-      className={`student-guidance-panel mb-8 overflow-hidden rounded-[var(--radius-panel)] border border-[#ded7cd] bg-[#f7f4ef] ${
+      className={`student-guidance-panel pc-panel mb-7 overflow-hidden bg-[var(--premium-cream-soft)] ${
         image ? "grid lg:grid-cols-[minmax(19rem,0.72fr)_minmax(0,1.28fr)]" : ""
       }`}
       aria-label={title}
@@ -43,18 +43,18 @@ export function StudentGuidancePanel({
         </figure>
       )}
 
-      <div className="student-guidance-content p-5 sm:p-6 lg:p-7">
-        <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--accent-strong)]">{eyebrow}</p>
-        <h2 className="mt-2 max-w-3xl text-2xl font-bold tracking-[-0.03em] text-slate-950">{title}</h2>
-        <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-600">{description}</p>
+      <div className="student-guidance-content p-5 sm:p-6">
+        <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--warning-strong)]">{eyebrow}</p>
+        <h2 className="mt-2 max-w-3xl text-2xl font-bold tracking-[-0.03em] text-[var(--foreground)]">{title}</h2>
+        <p className="mt-3 max-w-3xl text-sm leading-6 text-[var(--muted)]">{description}</p>
 
         <div className="mt-5 grid gap-3 sm:grid-cols-3">
           {points.map((point, index) => (
-            <div key={point} className="rounded-[var(--radius-control)] border border-[#ded7cd] bg-white/80 p-3.5">
+            <div key={point} className="pc-card p-3.5">
               <span className="grid h-7 w-7 place-items-center rounded-full bg-[var(--brand)] text-[11px] font-bold text-white">
                 {index + 1}
               </span>
-              <p className="mt-3 text-sm font-semibold leading-6 text-slate-700">{point}</p>
+              <p className="mt-3 text-sm font-semibold leading-6 text-[var(--foreground-soft)]">{point}</p>
             </div>
           ))}
         </div>
