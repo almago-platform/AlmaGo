@@ -198,7 +198,7 @@ export default async function ProspectCataloguePage({
       />
 
       {recommendations.length ? (
-        <section aria-labelledby="prospect-recommended-programmes" className="pc-panel bg-white/70 p-5 backdrop-blur-sm sm:p-6">
+        <section aria-labelledby="prospect-recommended-programmes" className="pc-panel pc-premium-card pc-theme-gold p-5 sm:p-6">
           <PremiumSectionHeader
             eyebrow={t.projectMatch}
             title={<span id="prospect-recommended-programmes">{t.recommendedTitle}</span>}
@@ -236,7 +236,7 @@ export default async function ProspectCataloguePage({
           </div>
         </div>
 
-        <form action="/prospect/catalogue" className="bg-white p-5 sm:p-6">
+        <form action="/prospect/catalogue" className="bg-[linear-gradient(145deg,rgba(242,246,248,.68),rgba(255,255,255,.96))] p-5 sm:p-6">
           <input type="hidden" name="view" value="all" />
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
             <label className="text-sm font-semibold">
