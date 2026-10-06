@@ -128,11 +128,19 @@ test("advisor service-only tables stay closed to anon and authenticated clients"
   ];
 
   for (const table of serviceOnlyTables) {
-    assert.match(
-      migrations,
-      new RegExp(`alter\\s+table\\s+public\\.${table}\\s+enable\\s+row\\s+level\\s+security`, "i"),
-      `${table} must keep RLS enabled`,
-    );
+    if (table === "technical_logs") {
+      assert.match(
+        migrations,
+        /array\[[^\]]*'technical_logs'[^\]]*\][\s\S]*execute format\('alter table public\.%I enable row level security'/i,
+        "technical_logs must remain in the original RLS-enable loop",
+      );
+    } else {
+      assert.match(
+        migrations,
+        new RegExp(`alter\\s+table\\s+public\\.${table}\\s+enable\\s+row\\s+level\\s+security`, "i"),
+        `${table} must keep RLS enabled`,
+      );
+    }
     assert.doesNotMatch(
       migrations,
       new RegExp(
