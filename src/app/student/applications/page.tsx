@@ -1,5 +1,7 @@
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Card } from "@/components/ui/Card";
+import { PremiumEmptyState } from "@/components/product/PremiumEmptyState";
+import { buttonClassName } from "@/components/ui/Button";
 import Link from "next/link";
 import { DossierHeader } from "@/components/product/DossierHeader";
 import { StudentApplicationsPanel } from "@/components/student/StudentApplicationsPanel";
@@ -54,7 +56,7 @@ export default async function StudentApplicationsPage() {
         ]}
         actions={
           <>
-            <Link href="/student/procedure" className="inline-flex min-h-10 items-center rounded-[var(--radius-control)] border border-[var(--border-strong)] bg-[var(--surface)] px-4 text-sm font-semibold">
+            <Link href="/student/procedure" className={buttonClassName("secondary", "min-h-10 px-4 py-2")}>
               {locale === "fr" ? "Voir ma procédure" : locale === "ar" ? "عرض إجراءاتي" : locale === "de" ? "Mein Verfahren" : "View procedure"}
             </Link>
             <ButtonLink href="/student/orientation" variant="secondary">{t.page.programmes}</ButtonLink>
@@ -78,18 +80,13 @@ function ApplicationsUnavailable({ copy }: { copy: (typeof studentApplicationsCo
   return (
     <main className="mx-auto w-full max-w-[92rem] px-4 py-5 sm:px-6 sm:py-6 xl:px-8">
       <DossierHeader eyebrow={copy.page.eyebrow} title={copy.page.title} status={copy.page.unavailableTitle} statusVariant="warning" />
-      <Card>
-        <div role="alert">
-          <h2 className="text-xl font-semibold text-slate-950">{copy.page.unavailableTitle}</h2>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
-            {copy.page.unavailableText}
-          </p>
-        </div>
-        <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-          <ButtonLink href="/student/applications">{copy.page.retry}</ButtonLink>
-          <ButtonLink href="/student/orientation" variant="secondary">{copy.page.recommendations}</ButtonLink>
-        </div>
-      </Card>
+      <PremiumEmptyState
+        eyebrow={copy.page.eyebrow}
+        title={copy.page.unavailableTitle}
+        description={copy.page.unavailableText}
+        action={<ButtonLink href="/student/applications">{copy.page.retry}</ButtonLink>}
+        secondaryAction={<ButtonLink href="/student/orientation" variant="secondary">{copy.page.recommendations}</ButtonLink>}
+      />
     </main>
   );
 }
