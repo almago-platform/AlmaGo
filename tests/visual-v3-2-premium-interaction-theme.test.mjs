@@ -52,7 +52,7 @@ test("qualification meaning controls its visual theme", () => {
     ["ready_for_review", "pc-theme-green"],
     ["qualified_prospect", "pc-theme-green"],
   ]) {
-    assert.match(qualification, new RegExp(`${pair[0]}: "\${pair[1]}"`));
+    assert.match(qualification, new RegExp(`${pair[0]}: "${pair[1]}"`));
   }
   assert.match(qualification, /pc-glass mt-5/);
 });
