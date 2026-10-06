@@ -162,7 +162,7 @@ export function OrientationLetterCard({
   const pistes = [...verifiedPistes, ...researchPistes].slice(0, 3);
 
   return (
-    <article className="rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--brand-soft)] p-5 sm:p-7">
+    <article className="rounded-[var(--radius-panel)] border border-[var(--premium-border)] bg-[var(--premium-cream-soft)] p-5 sm:p-7">
       <p className="text-xs font-bold uppercase tracking-wide text-[var(--brand-strong)]">
         {t.label}
       </p>

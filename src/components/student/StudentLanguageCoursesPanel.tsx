@@ -246,7 +246,7 @@ export function StudentLanguageCoursesPanel() {
 
   return (
     <div className="mt-8 space-y-6">
-      <Card className="border-[var(--brand-border)] bg-[var(--brand-soft)]/55 shadow-none">
+      <Card className="border-[var(--premium-border)] bg-[var(--premium-cream-soft)] shadow-none">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <h2 className="text-lg font-bold text-slate-950">{t.currentTitle}</h2>
@@ -272,7 +272,7 @@ export function StudentLanguageCoursesPanel() {
         {selectionError && <p className="mt-3 text-sm font-semibold text-red-700" role="alert">{selectionError}</p>}
       </Card>
 
-      <Card className="border-[var(--brand-border)] bg-[var(--brand-soft)]/55 shadow-none">
+      <Card className="border-[var(--premium-border)] bg-[var(--premium-cream-soft)] shadow-none">
         <h2 className="text-lg font-bold text-slate-950">{t.catalogueTitle}</h2>
         <p className="mt-2 max-w-4xl text-sm leading-6 text-slate-700">
           {t.catalogueDescription}

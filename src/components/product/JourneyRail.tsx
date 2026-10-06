@@ -17,7 +17,7 @@ const statusStyle = {
   active: {
     marker: "bg-[var(--brand)] text-white border-[var(--brand)] shadow-[0_0_0_5px_rgba(216,6,33,.08)]",
     label: "text-[var(--brand-strong)]",
-    shell: "bg-[var(--brand-soft)]",
+    shell: "bg-[var(--premium-cream-soft)]",
   },
   upcoming: {
     marker: "bg-white text-[var(--muted)] border-black/10",

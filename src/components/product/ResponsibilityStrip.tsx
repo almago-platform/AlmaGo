@@ -10,7 +10,7 @@ const toneClass = {
   user: {
     label: "text-[var(--brand-strong)]",
     marker: "bg-[var(--brand)]",
-    shell: "bg-[var(--brand-soft)]/55",
+    shell: "bg-[var(--premium-cream-soft)]",
   },
   campus: {
     label: "text-[var(--warning-strong)]",

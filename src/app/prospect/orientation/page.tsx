@@ -93,7 +93,7 @@ export default async function ProspectOrientationPage() {
       ) : null}
 
       {waitingForDocuments ? (
-        <section className="pc-panel pc-premium-card pc-theme-red p-5 sm:p-6">
+        <section className="pc-panel pc-premium-card pc-theme-neutral p-5 sm:p-6">
           <PremiumSectionHeader
             eyebrow={t.confirmed}
             title={t.nextDocuments}
