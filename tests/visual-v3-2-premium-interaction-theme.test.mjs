@@ -43,7 +43,7 @@ test("motion effects are neutralized for reduced-motion users", () => {
     designSystem,
     /@media \(prefers-reduced-motion: reduce\)[\s\S]*\.pc-premium-card[\s\S]*\.pc-button-primary::after/,
   );
-  assert.match(designSystem, /\.pc-premium-card:hover,[\s\S]*transform: none/);
+  assert.match(designSystem, /\.pc-premium-card\.pc-card-interactive:hover,[\s\S]*transform: none/);
 });
 
 test("qualification meaning controls its visual theme", () => {
