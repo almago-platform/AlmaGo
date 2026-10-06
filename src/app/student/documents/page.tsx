@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { StudentPageFrame } from "@/components/student/StudentPageFrame";
+import { StudentPageState } from "@/components/student/StudentPageState";
 import { DossierHeader } from "@/components/product/DossierHeader";
 import { NextActionPanel } from "@/components/product/NextActionPanel";
 import { redirect } from "next/navigation";
 import { DocumentsPanel } from "@/components/student/DocumentsPanel";
 import { ButtonLink } from "@/components/ui/ButtonLink";
-import { Card } from "@/components/ui/Card";
 import { createClient } from "@/lib/supabase/server";
 import { getRequestLocale } from "@/lib/i18n-server";
 import { studentDocumentsCopy } from "@/content/student-documents-copy";
@@ -125,18 +125,24 @@ export default async function StudentDocumentsPage() {
 
 function DocumentsUnavailable({ copy }: { copy: (typeof studentDocumentsCopy)["fr"] }) {
   return (
-    <main className="mx-auto w-full max-w-[92rem] px-4 py-5 sm:px-6 sm:py-6 xl:px-8">
-      <DossierHeader eyebrow={copy.page.eyebrow} title={copy.page.title} status={copy.page.unavailableTitle} statusVariant="warning" />
-      <Card>
-        <div role="alert">
-          <h2 className="text-xl font-semibold text-slate-950">{copy.page.unavailableTitle}</h2>
-          <p className="mt-2 text-sm leading-6 text-slate-600">{copy.page.unavailableText}</p>
-        </div>
-        <div className="mt-5 flex flex-wrap gap-3">
-          <ButtonLink href="/student/documents">{copy.page.retry}</ButtonLink>
-          <ButtonLink href="/student" variant="secondary">{copy.page.back}</ButtonLink>
-        </div>
-      </Card>
+    <StudentPageFrame className="space-y-7">
+      <DossierHeader
+        eyebrow={copy.page.eyebrow}
+        title={copy.page.title}
+        status={copy.page.unavailableTitle}
+        statusVariant="warning"
+      />
+      <StudentPageState
+        variant="warning"
+        title={copy.page.unavailableTitle}
+        description={copy.page.unavailableText}
+        actions={
+          <>
+            <ButtonLink href="/student/documents">{copy.page.retry}</ButtonLink>
+            <ButtonLink href="/student" variant="secondary">{copy.page.back}</ButtonLink>
+          </>
+        }
+      />
     </StudentPageFrame>
   );
 }
