@@ -7,6 +7,8 @@ const read = (path) => readFileSync(path, "utf8");
 const dashboard = read("src/app/admin/page.tsx");
 const documents = read("src/components/admin/AdminDocumentsPanel.tsx");
 const workflow = read("src/components/admin/AdminWorkflowSection.tsx");
+const applications = read("src/components/admin/AdminApplicationsPanel.tsx");
+const prospects = read("src/app/admin/prospects/page.tsx");
 
 test("Admin V4 introduces a shared orientation-style workflow primitive", () => {
   assert.match(workflow, /export function AdminWorkflowSection/);
@@ -39,4 +41,25 @@ test("Admin V4 document refactor preserves existing mutation boundaries", () => 
   assert.match(documents, /saveEvidence/);
   assert.match(documents, /deleteDocument/);
   assert.match(documents, /reviewStatuses/);
+});
+
+
+test("Admin V4 applications follow the shared A-D operational workflow", () => {
+  assert.match(applications, /AdminWorkflowSection/);
+  assert.match(applications, /step="A"[\s\S]*title="Candidature enregistrée"/);
+  assert.match(applications, /step="B"[\s\S]*title="Suivi et historique"/);
+  assert.match(applications, /step="C"[\s\S]*title="Mise à jour étudiant"/);
+  assert.match(applications, /step="D"[\s\S]*title="Décision et enregistrement"/);
+  assert.match(applications, /allowedApplicationTransitions/);
+  assert.match(applications, /transitionRequirements/);
+});
+
+test("Admin V4 prospects use the same A-D reading order without automating qualification", () => {
+  assert.match(prospects, /AdminWorkflowSection/);
+  assert.match(prospects, /step="A"[\s\S]*title="Projet étudiant"/);
+  assert.match(prospects, /step="B"[\s\S]*title="Demande et contact"/);
+  assert.match(prospects, /step="C"[\s\S]*title="Orientation et qualification"/);
+  assert.match(prospects, /step="D"[\s\S]*title="Décision de qualification"/);
+  assert.match(prospects, /ProspectQualificationReviewForm/);
+  assert.doesNotMatch(prospects, /\.update\(|\.insert\(/);
 });
