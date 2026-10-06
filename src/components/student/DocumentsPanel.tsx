@@ -474,7 +474,7 @@ export function DocumentsPanel({
                   aria-pressed={statusFilter === value}
                   onClick={() => setStatusFilter(value)}
                   className={
-                    "inline-flex min-h-10 items-center gap-2 rounded-xl border px-3 py-2 text-xs font-bold transition " +
+                    "inline-flex min-h-11 items-center gap-2 rounded-xl border px-3 py-2 text-xs font-bold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] focus-visible:ring-offset-2 " +
                     (statusFilter === value
                       ? "border-[var(--brand)] bg-[var(--brand)] text-white"
                       : "border-[var(--border)] bg-white text-slate-700 hover:border-[var(--brand-border)]")
@@ -516,7 +516,7 @@ export function DocumentsPanel({
               <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-slate-600">{workspace.filteredEmptyText}</p>
               <button
                 type="button"
-                className="mt-4 text-sm font-bold text-[var(--brand)] hover:underline"
+                className="mt-4 inline-flex min-h-11 items-center rounded-lg px-2 text-sm font-bold text-[var(--brand)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] focus-visible:ring-offset-2"
                 onClick={() => { setStatusFilter("all"); setCategoryFilter("all"); }}
               >
                 {workspace.all}
