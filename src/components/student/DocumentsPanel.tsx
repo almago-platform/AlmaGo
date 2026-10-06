@@ -451,9 +451,57 @@ export function DocumentsPanel({
         <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
           <div>
             <h2 id="documents-list-title" className="text-2xl font-semibold tracking-tight text-slate-950">{t.list.title}</h2>
-            <p className="mt-1 text-sm text-slate-600">{t.list.count(documents.length)}</p>
+            <p className="mt-1 text-sm text-slate-600">{workspace.filteredCount(visibleDocuments.length, documents.length)}</p>
           </div>
         </div>
+
+        {documents.length ? (
+          <div
+            aria-label={workspace.filtersAria}
+            className="mt-4 flex flex-col gap-3 rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface-subtle)] p-3 sm:p-4 lg:flex-row lg:items-center lg:justify-between"
+            data-document-filters
+          >
+            <div className="flex flex-wrap gap-2" role="group" aria-label={workspace.statusFilter}>
+              {([
+                ["all", workspace.all, documents.length],
+                ["action", workspace.action, correctionCount],
+                ["review", workspace.review, reviewCount],
+                ["approved", workspace.approved, approvedCount],
+              ] as const).map(([value, label, count]) => (
+                <button
+                  key={value}
+                  type="button"
+                  aria-pressed={statusFilter === value}
+                  onClick={() => setStatusFilter(value)}
+                  className={
+                    "inline-flex min-h-10 items-center gap-2 rounded-xl border px-3 py-2 text-xs font-bold transition " +
+                    (statusFilter === value
+                      ? "border-[var(--brand)] bg-[var(--brand)] text-white"
+                      : "border-[var(--border)] bg-white text-slate-700 hover:border-[var(--brand-border)]")
+                  }
+                >
+                  <span>{label}</span>
+                  <span className={statusFilter === value ? "text-white/75" : "text-slate-400"}>{count}</span>
+                </button>
+              ))}
+            </div>
+
+            <label className="text-xs font-bold uppercase tracking-[0.1em] text-slate-500">
+              <span className="sr-only">{workspace.categoryFilter}</span>
+              <select
+                aria-label={workspace.categoryFilter}
+                value={categoryFilter}
+                onChange={(event) => setCategoryFilter(event.target.value)}
+                className="field mt-0 min-w-48 bg-white normal-case tracking-normal text-slate-800"
+              >
+                <option value="all">{workspace.all}</option>
+                {checklistDefinitions.map((group) => (
+                  <option key={group.id} value={group.id}>{group.label}</option>
+                ))}
+              </select>
+            </label>
+          </div>
+        ) : null}
 
         <div className="mt-4 space-y-3">
           {documents.length === 0 ? (
@@ -462,8 +510,20 @@ export function DocumentsPanel({
               <h3 id="documents-empty-title" className="mt-4 font-bold text-slate-950">{t.list.emptyTitle}</h3>
               <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-slate-600">{t.list.emptyText}</p>
             </Card>
+          ) : visibleDocuments.length === 0 ? (
+            <Card aria-labelledby="documents-filtered-empty-title" className="border-dashed bg-white/70 py-8 text-center">
+              <h3 id="documents-filtered-empty-title" className="font-bold text-slate-950">{workspace.filteredEmptyTitle}</h3>
+              <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-slate-600">{workspace.filteredEmptyText}</p>
+              <button
+                type="button"
+                className="mt-4 text-sm font-bold text-[var(--brand)] hover:underline"
+                onClick={() => { setStatusFilter("all"); setCategoryFilter("all"); }}
+              >
+                {workspace.all}
+              </button>
+            </Card>
           ) : (
-            documents.map((document) => (
+            visibleDocuments.map((document) => (
               <Card as="article" key={document.id} aria-labelledby={`student-document-title-${document.id}`} className={`rounded-[1.2rem] shadow-[0_18px_50px_-42px_rgba(0,0,0,.28)] ${["rejected", "replace_required"].includes(document.status) ? "border-[#ead59a] bg-[#fff9e9]" : "border-black/[.07] bg-white"}`}>
                 <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-start">
                   <div className="min-w-0">
@@ -482,9 +542,7 @@ export function DocumentsPanel({
                       <div className="mt-4 rounded-[1.05rem] border border-[#ead59a] bg-[#fff9e9] p-4">
                         <h4 className="text-sm font-semibold text-amber-950">{t.list.commentTitle}</h4>
                         <p dir="auto" className="mt-1 text-sm leading-6 text-amber-900">{document.admin_comment}</p>
-                        <p className="mt-2 text-xs leading-5 text-amber-800">
-                          {t.list.commentBoundary}
-                        </p>
+                        <p className="mt-2 text-xs leading-5 text-amber-800">{t.list.commentBoundary}</p>
                       </div>
                     )}
                   </div>
