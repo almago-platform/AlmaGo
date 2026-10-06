@@ -24,6 +24,18 @@
   gap: 1rem;
 }
 
+.prospect-dashboard-decision-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 1280px) {
+  .prospect-dashboard-decision-grid {
+    grid-template-columns: minmax(0, 1.22fr) minmax(18rem, 0.78fr);
+    align-items: stretch;
+  }
+}
+
 .prospect-page-hero-media img,
 .prospect-editorial-panel-media img {
   transform: scale(1.002);
