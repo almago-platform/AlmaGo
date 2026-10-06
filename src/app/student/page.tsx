@@ -558,6 +558,43 @@ export default async function StudentEntry() {
           <EmptyState>{cockpit.activityEmpty}</EmptyState>
         )}
       </section>
+
+      <section className="mt-10 space-y-4 border-t border-[var(--border)] pt-8">
+        <ResponsibilityStrip
+          title={v2.responsibility}
+          items={[
+            {
+              label: v2.you,
+              detail: hasActionRequired ? nextAction.label : t.upToDate,
+              tone: "user",
+            },
+            {
+              label: v2.campus,
+              detail: waitingAlmaGo.length ? v2.campusWorking : cockpit.noActionReason,
+              tone: "campus",
+            },
+            {
+              label: v2.official,
+              detail: v2.officialBoundary,
+              tone: "external",
+            },
+          ]}
+        />
+
+        <details className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)]">
+          <summary className="cursor-pointer list-none px-5 py-4 text-sm font-semibold text-[var(--foreground)]">
+            {v2.detailedJourney}
+            <span className="mt-1 block text-xs font-normal leading-5 text-[var(--muted)]">{v2.detailedJourneyHint}</span>
+          </summary>
+          <div className="border-t border-[var(--border)] p-4 sm:p-5">
+            <AlmagoJourney
+              model={almagoJourney}
+              nextAction={{ label: nextAction.label, detail: nextAction.detail, href: nextAction.href }}
+            />
+          </div>
+        </details>
+      </section>
+
     </main>
   );
 }
@@ -634,42 +671,6 @@ function DashboardUnavailable({ copy }: { copy: (typeof studentDashboardCopy)["f
           <ButtonLink href="/student">{copy.retry}</ButtonLink>
         </div>
       </Card>
-
-      <section className="mt-10 space-y-4 border-t border-[var(--border)] pt-8">
-        <ResponsibilityStrip
-          title={v2.responsibility}
-          items={[
-            {
-              label: v2.you,
-              detail: hasActionRequired ? nextAction.label : t.upToDate,
-              tone: "user",
-            },
-            {
-              label: v2.campus,
-              detail: waitingAlmaGo.length ? v2.campusWorking : cockpit.noActionReason,
-              tone: "campus",
-            },
-            {
-              label: v2.official,
-              detail: v2.officialBoundary,
-              tone: "external",
-            },
-          ]}
-        />
-
-        <details className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)]">
-          <summary className="cursor-pointer list-none px-5 py-4 text-sm font-semibold text-[var(--foreground)]">
-            {v2.detailedJourney}
-            <span className="mt-1 block text-xs font-normal leading-5 text-[var(--muted)]">{v2.detailedJourneyHint}</span>
-          </summary>
-          <div className="border-t border-[var(--border)] p-4 sm:p-5">
-            <AlmagoJourney
-              model={almagoJourney}
-              nextAction={{ label: nextAction.label, detail: nextAction.detail, href: nextAction.href }}
-            />
-          </div>
-        </details>
-      </section>
 
     </main>
   );
