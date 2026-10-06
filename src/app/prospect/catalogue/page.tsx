@@ -3,6 +3,9 @@ import { redirect } from "next/navigation";
 import { ProspectPageHero } from "@/components/prospect/ProspectPageHero";
 import { ProspectProgrammeCatalogueCard } from "@/components/prospect/ProspectProgrammeCatalogueCard";
 import { ProspectProgrammeRecommendationCard } from "@/components/prospect/ProspectProgrammeRecommendationCard";
+import { PremiumEmptyState } from "@/components/product/PremiumEmptyState";
+import { PremiumSectionHeader } from "@/components/product/PremiumSectionHeader";
+import { buttonClassName } from "@/components/ui/Button";
 import { prospectHubCopy } from "@/content/prospect-hub-copy";
 import { getRequestLocale } from "@/lib/i18n-server";
 import { getPhase2StudentAccess } from "@/lib/phase2/access";
@@ -172,20 +175,12 @@ export default async function ProspectCataloguePage({
       <ProspectPageHero eyebrow={t.eyebrow} title={t.title} subtitle={t.subtitle} />
 
       {recommendations.length ? (
-        <section aria-labelledby="prospect-recommended-programmes" className="rounded-[1.4rem] border border-black/[.05] bg-white/55 p-5 shadow-[0_20px_55px_-42px_rgba(0,0,0,.28)] backdrop-blur-sm sm:p-6">
-          <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
-            <div>
-              <p className="inline-flex items-center gap-2 text-[11px] font-extrabold uppercase tracking-[0.15em] text-[var(--brand)]">
-                {t.projectMatch}
-              </p>
-              <h2 id="prospect-recommended-programmes" className="mt-2 text-[clamp(1.55rem,2.5vw,2.15rem)] font-semibold tracking-[-0.035em] text-[#1b1e20]">
-                {t.recommendedTitle}
-              </h2>
-              <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)] sm:text-[0.95rem]">
-                {t.recommendedSubtitle}
-              </p>
-            </div>
-          </div>
+        <section aria-labelledby="prospect-recommended-programmes" className="pc-panel bg-white/70 p-5 backdrop-blur-sm sm:p-6">
+          <PremiumSectionHeader
+            eyebrow={t.projectMatch}
+            title={<span id="prospect-recommended-programmes">{t.recommendedTitle}</span>}
+            description={t.recommendedSubtitle}
+          />
           <div className="grid items-start gap-4 xl:grid-cols-2 2xl:grid-cols-3">
             {recommendations.map((recommendation) => (
               <ProspectProgrammeRecommendationCard
@@ -198,8 +193,8 @@ export default async function ProspectCataloguePage({
         </section>
       ) : null}
 
-      <section className="overflow-hidden rounded-[1.45rem] border border-black/[.07] bg-white shadow-[0_26px_70px_-44px_rgba(0,0,0,.38)]">
-        <div className="border-b border-white/10 bg-[#17191b] px-5 py-5 text-white sm:px-6 sm:py-6">
+      <section className="pc-panel overflow-hidden">
+        <div className="border-b border-white/10 bg-[var(--premium-ink)] px-5 py-5 text-white sm:px-6 sm:py-6">
           <p className="text-[11px] font-extrabold uppercase tracking-[0.15em] text-[var(--accent)]">
             {t.generalCatalogue}
           </p>
@@ -258,13 +253,13 @@ export default async function ProspectCataloguePage({
             <div className="flex flex-wrap gap-3">
               <button
                 type="submit"
-                className="inline-flex min-h-11 items-center rounded-xl bg-[var(--brand)] px-5 text-sm font-bold text-white shadow-[0_12px_28px_-16px_rgba(216,6,33,.85)] transition-all duration-200 hover:-translate-y-px hover:bg-[var(--brand-strong)] hover:shadow-md"
+                className={buttonClassName("primary")}
               >
                 {t.apply}
               </button>
               <Link
                 href="/prospect/catalogue?view=all"
-                className="inline-flex min-h-11 items-center rounded-xl border border-black/10 bg-white px-5 text-sm font-semibold text-[#202326] shadow-sm transition-all duration-200 hover:-translate-y-px hover:border-black/20 hover:bg-[#faf8f3] hover:shadow-md"
+                className={buttonClassName("secondary")}
               >
                 {t.reset}
               </Link>
@@ -284,15 +279,11 @@ export default async function ProspectCataloguePage({
 
       {showGeneralResults ? (
         <section aria-labelledby="prospect-catalogue-results" className="pt-1">
-          <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
-            <div>
-              <h2 id="prospect-catalogue-results" className="text-[clamp(1.55rem,2.5vw,2.15rem)] font-semibold tracking-[-0.035em] text-white">
-                {t.browseAllTitle}
-              </h2>
-              <p className="mt-1 text-sm text-[var(--muted)]" aria-live="polite">
-                {t.results(filtered.length)}
-              </p>
-            </div>
+          <div className="mb-4">
+            <PremiumSectionHeader
+              title={<span id="prospect-catalogue-results">{t.browseAllTitle}</span>}
+              description={<span aria-live="polite">{t.results(filtered.length)}</span>}
+            />
           </div>
 
           {filtered.length ? (
@@ -307,14 +298,21 @@ export default async function ProspectCataloguePage({
               ))}
             </div>
           ) : (
-            <div className="rounded-[1.35rem] border border-dashed border-black/15 bg-white/70 p-10 text-center text-sm text-[var(--muted)] shadow-[0_18px_50px_-40px_rgba(0,0,0,.3)]">
-              {t.noResults}
-            </div>
+            <PremiumEmptyState
+              eyebrow={t.generalCatalogue}
+              title={t.noResults}
+              compact
+              action={
+                <Link href="/prospect/catalogue?view=all" className={buttonClassName("secondary", "min-h-10 px-4 py-2")}>
+                  {t.reset}
+                </Link>
+              }
+            />
           )}
         </section>
       ) : null}
 
-      <p className="rounded-[1.15rem] border border-[#ead59a] bg-[#fff9e9] p-4 text-xs leading-5 text-[#4f4631] shadow-[0_16px_42px_-36px_rgba(139,98,0,.35)]">
+      <p className="pc-waiting-strip p-4 text-xs leading-5 text-[var(--foreground-soft)]">
         {t.boundary}
       </p>
     </main>
