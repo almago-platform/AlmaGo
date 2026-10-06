@@ -661,7 +661,7 @@ function EmptyState({ children }: { children: ReactNode }) {
 
 function DashboardUnavailable({ copy }: { copy: (typeof studentDashboardCopy)["fr"] }) {
   return (
-    <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
+    <StudentPageFrame>
       <PageHeader badge={copy.unavailableBadge} title={copy.dossierEyebrow} />
       <Card>
         <div role="alert">
