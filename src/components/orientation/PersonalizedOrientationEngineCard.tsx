@@ -584,7 +584,7 @@ export function PersonalizedOrientationEngineCard({
         {state === "ready" && result ? (
           <>
             {geographicFallback ? (
-              <div className="mb-5 rounded-[var(--radius-control)] border border-[var(--brand-border)] bg-[var(--brand-soft)] px-4 py-3.5">
+              <div className="mb-5 rounded-[var(--radius-control)] border border-[var(--warning-border)] bg-[var(--premium-gold-wash)] px-4 py-3.5">
                 <p className="text-sm leading-6 text-[var(--foreground)]">
                   {geographicFallback}
                 </p>
