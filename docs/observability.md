@@ -13,8 +13,9 @@ Allowed initial events:
 - `form_submit_result`
 - `navigation_action`
 - `web_vital`
+- `phase2_funnel_step`
 
-Each property must use exactly one of the categorical values in `allowedValues`, except `http_status`, which must be an integer from 100 to 599. Map unexpected values to a safe generic category (`other` or `unknown`) only where that category exists. Never derive event values from free-form user input, error messages, URLs or identifiers. Validation errors must not echo rejected values.
+Each property must use exactly one of the categorical values in `allowedValues`, except `http_status`, which must be an integer from 100 to 599. `phase2_funnel_step` records only the bounded lifecycle step enum from the canonical contract; it must not carry prospect, student, purchase or payment identifiers. Map unexpected values to a safe generic category (`other` or `unknown`) only where that category exists. Never derive event values from free-form user input, error messages, URLs or identifiers. Validation errors must not echo rejected values.
 
 ## Never send
 
