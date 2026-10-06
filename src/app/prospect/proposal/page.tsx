@@ -154,7 +154,7 @@ export default async function ProspectProposalPage() {
           </div>
         </section>
       ) : starterDocuments ? (
-        <section className="pc-panel pc-premium-card pc-theme-red overflow-hidden">
+        <section className="pc-panel pc-premium-card pc-theme-neutral overflow-hidden">
           <div className="p-4 sm:p-5">
             <PremiumSectionHeader
               eyebrow={dashboardCopy.proposalWaiting}
