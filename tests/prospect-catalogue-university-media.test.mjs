@@ -41,7 +41,8 @@ test("prospect catalogue uses visual responsive programme cards", () => {
 
 test("university covers use stored media and retain a polished fallback", () => {
   assert.ok(cover.includes("media?.coverImageUrl"));
-  assert.ok(cover.includes("universityInitials"));
+  assert.ok(cover.includes("programmeLabel"));
+  assert.ok(cover.includes("initials(programmeLabel || universityName)"));
   assert.ok(cover.includes("coverImageSourceUrl"));
   assert.ok(cover.includes("coverImageAttribution"));
   assert.ok(cover.includes("coverImageLicense"));
