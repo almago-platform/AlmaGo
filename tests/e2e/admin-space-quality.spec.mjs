@@ -12,6 +12,7 @@ const pages = [
   { path: "/admin/documents", name: "documents" },
   { path: "/admin/applications", name: "applications" },
   { path: "/admin/orientation", name: "orientation" },
+  { path: "/admin/prospects", name: "prospects" },
   { path: "/admin/universities", name: "universities" },
   { path: "/admin/programs", name: "programs" },
   { path: "/admin/language-courses", name: "language-courses" },
