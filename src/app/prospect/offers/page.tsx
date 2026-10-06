@@ -69,15 +69,15 @@ export default async function ProspectOffersPage() {
           }
         />
 
-        <section className="pc-panel p-5 sm:p-6">
+        <section className="pc-panel pc-premium-card pc-theme-gold p-5 sm:p-6">
           <PremiumSectionHeader title={copy.lockedJourneyTitle} />
           <ol className="mt-5 grid gap-3 lg:grid-cols-3">
             {copy.lockedJourneySteps.map((step, index) => (
               <li
                 key={step}
-                className="relative min-w-0 overflow-hidden rounded-[1.15rem] border border-[var(--premium-border)] bg-[var(--premium-cream)] p-4"
+                className="pc-glass relative min-w-0 overflow-hidden rounded-[1.15rem] p-4"
               >
-                <span className="flex size-8 items-center justify-center rounded-full bg-[var(--premium-ink)] text-xs font-extrabold text-white">
+                <span className="pc-theme-number">
                   {index + 1}
                 </span>
                 <p className="mt-3 text-sm font-semibold leading-6 text-[var(--premium-ink)]">{step}</p>
