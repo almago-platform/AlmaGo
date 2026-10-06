@@ -75,12 +75,14 @@ test("orientation update mode loads only the latest orientation linked to the au
   assert.match(orientationPage, /authenticatedUpdate/);
 });
 
-test("prospect dashboard uses latest orientation plus a bounded append-only history", () => {
+test("prospect hub keeps bounded append-only history and Orientation owns its presentation", () => {
   assert.match(prospectHub, /\.limit\(8\)/);
   assert.match(prospectHub, /buildProspectRoadmap/);
   assert.match(prospectHub, /orientations\[0\]/);
-  assert.match(prospectPage, /<details/);
-  assert.match(prospectPage, /currentVersion/);
+  assert.doesNotMatch(prospectPage, /orientationVersionSummary/);
+  assert.match(prospectOrientationPage, /<details/);
+  assert.match(prospectOrientationPage, /state\.orientations\.slice\(1, 6\)/);
+  assert.match(prospectOrientationPage, /orientationVersionSummary\(orientation\.answers, locale\)/);
   assert.match(prospectOrientationPage, /href="\/orientation\?mode=update"/);
   assert.match(prospectShell, /href: "\/prospect\/orientation"/);
 });
