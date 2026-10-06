@@ -181,12 +181,12 @@ export function ProspectJourneyProgress(props: {
   return (
     <div>
       <div className="mb-3 flex items-center justify-between gap-3 text-sm">
-        <span className="font-bold text-[#202326]">
+        <span className="font-bold text-[var(--foreground)]">
           {currentStepNumber}/{steps.length} {copy.count}
         </span>
-        <span className="rounded-full bg-[#17191b] px-2.5 py-1 text-[11px] font-bold tabular-nums text-white">{percent}%</span>
+        <span className="rounded-full bg-[var(--premium-ink)] px-2.5 py-1 text-[11px] font-bold tabular-nums text-white">{percent}%</span>
       </div>
-      <div className="h-2 overflow-hidden rounded-full bg-[#e9e5de]">
+      <div className="h-2 overflow-hidden rounded-full bg-[var(--premium-cream-strong)]">
         <div
           className="h-full rounded-full bg-[linear-gradient(90deg,var(--brand),#f03248)] shadow-[0_0_16px_rgba(216,6,33,.18)] transition-[width] duration-500"
           style={{ width: `${percent}%` }}
@@ -195,7 +195,7 @@ export function ProspectJourneyProgress(props: {
       </div>
 
       <ol
-        className={`mt-5 grid overflow-hidden rounded-[1.2rem] border border-black/[.07] bg-black/[.05] gap-px sm:grid-cols-2 xl:grid-cols-5 ${props.compact ? "" : "shadow-[0_22px_60px_-42px_rgba(0,0,0,.34)]"}`}
+        className={`mt-5 grid overflow-hidden rounded-[var(--premium-radius-card)] border border-[var(--premium-border)] bg-[var(--premium-border)] gap-px sm:grid-cols-2 xl:grid-cols-5 ${props.compact ? "" : "shadow-[var(--premium-shadow-card)]"}`}
       >
         {steps.map((step, index) => {
           const state = index < activeIndex
@@ -209,9 +209,9 @@ export function ProspectJourneyProgress(props: {
           const surfaceClass = state === "current"
             ? "bg-[linear-gradient(180deg,#fff0f2,#fff8f8)]"
             : state === "done"
-              ? "bg-[#f0f8f3]"
+              ? "bg-[var(--premium-green-wash)]"
               : state === "next"
-                ? "bg-[#fff9e9]"
+                ? "bg-[var(--premium-gold-wash)]"
                 : "bg-white";
 
           return (
@@ -219,12 +219,12 @@ export function ProspectJourneyProgress(props: {
               <Link
                 href={step.href}
                 aria-current={state === "current" ? "step" : undefined}
-                className={`flex min-h-full items-center gap-2.5 px-3 ${props.compact ? "py-2.5" : "py-3"} text-sm transition-all duration-200 hover:bg-[#f6f3ed] ${surfaceClass}`}
+                className={`flex min-h-full items-center gap-2.5 px-3 ${props.compact ? "py-2.5" : "py-3"} text-sm transition-all duration-200 hover:bg-[var(--premium-cream)] ${surfaceClass}`}
               >
                 <span
                   aria-hidden="true"
                   className={`flex size-5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold ${state === "done"
-                    ? "bg-[#17191b] text-white"
+                    ? "bg-[var(--premium-ink)] text-white"
                     : state === "current"
                       ? "bg-[var(--brand)] text-white shadow-[0_0_0_4px_rgba(216,6,33,.08)]"
                       : "bg-white text-[#73797d] ring-1 ring-inset ring-black/10"}`}
