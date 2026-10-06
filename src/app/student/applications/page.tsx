@@ -1,5 +1,4 @@
 import { ButtonLink } from "@/components/ui/ButtonLink";
-import { Card } from "@/components/ui/Card";
 import { PremiumEmptyState } from "@/components/product/PremiumEmptyState";
 import { buttonClassName } from "@/components/ui/Button";
 import Link from "next/link";
