@@ -7,6 +7,7 @@ import { Button, buttonClassName } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { studentDocumentsCopy } from "@/content/student-documents-copy";
+import { studentDocumentsWorkspaceCopy } from "@/content/student-documents-workspace-copy";
 import { rebrandCopy } from "@/lib/brand";
 import {
   documentCategories,
@@ -95,10 +96,13 @@ export function DocumentsPanel({
   const router = useRouter();
   const { locale } = useLocale();
   const t = rebrandCopy(studentDocumentsCopy[locale]);
+  const workspace = studentDocumentsWorkspaceCopy[locale];
   const fileInput = useRef<HTMLInputElement>(null);
   const [category, setCategory] = useState("passport");
   const [feedback, setFeedback] = useState<Feedback>(null);
   const [busy, setBusy] = useState(false);
+  const [statusFilter, setStatusFilter] = useState<"all" | "action" | "review" | "approved">("all");
+  const [categoryFilter, setCategoryFilter] = useState("all");
 
   const approvedCount = documents.filter((document) => document.status === "approved").length;
   const reviewCount = documents.filter((document) => ["pending", "reviewed"].includes(document.status)).length;
@@ -106,20 +110,31 @@ export function DocumentsPanel({
   const correctionCount = correctionDocuments.length;
   const latestDocument = documents[0];
   const priorityDocument = correctionDocuments[0] || documents.find((document) => document.status === "pending") || latestDocument;
-  const checklist = [
-    { id: "identity", label: locale === "fr" ? "Identité" : "الهوية", categories: ["passport"] },
-    { id: "academic", label: locale === "fr" ? "Académique" : "أكاديمي", categories: ["baccalaureate", "transcripts", "university_attestation"] },
-    { id: "languages", label: locale === "fr" ? "Langues" : "اللغات", categories: ["language_certificate"] },
-    { id: "application", label: locale === "fr" ? "Candidature" : "الترشح", categories: ["cv", "motivation_letter", "translation"] },
-    { id: "visa", label: locale === "fr" ? "Visa & préparation" : "التأشيرة والتحضير", categories: ["admission"] },
-  ].map((group) => {
+  const checklistDefinitions = [
+    { id: "identity", label: workspace.groups.identity, categories: ["passport"] },
+    { id: "academic", label: workspace.groups.academic, categories: ["baccalaureate", "transcripts", "university_attestation"] },
+    { id: "languages", label: workspace.groups.languages, categories: ["language_certificate"] },
+    { id: "application", label: workspace.groups.application, categories: ["cv", "motivation_letter", "translation"] },
+    { id: "visa", label: workspace.groups.visa, categories: ["admission"] },
+  ];
+  const checklist = checklistDefinitions.map((group) => {
     const items = documents.filter((document) => group.categories.includes(document.category));
     const ready = items.filter((document) => document.status === "approved").length;
     const needsAction = items.some((document) => ["rejected", "replace_required"].includes(document.status));
     const reviewing = items.some((document) => ["pending", "reviewed"].includes(document.status));
     return { ...group, items, ready, needsAction, reviewing };
   });
-  const checklistReady = checklist.filter((group) => group.items.length > 0 && group.ready === group.items.length).length;
+
+  const visibleDocuments = documents.filter((document) => {
+    const matchesStatus =
+      statusFilter === "all"
+      || (statusFilter === "action" && ["rejected", "replace_required"].includes(document.status))
+      || (statusFilter === "review" && ["pending", "reviewed"].includes(document.status))
+      || (statusFilter === "approved" && document.status === "approved");
+    const group = checklistDefinitions.find((item) => item.id === categoryFilter);
+    const matchesCategory = categoryFilter === "all" || Boolean(group?.categories.includes(document.category));
+    return matchesStatus && matchesCategory;
+  });
 
   async function upload(event: React.FormEvent) {
     event.preventDefault();
