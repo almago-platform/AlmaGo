@@ -2,7 +2,6 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { IntakeFlowCard } from "@/components/prospect/IntakeFlowCard";
 import { ProspectPageHero } from "@/components/prospect/ProspectPageHero";
-import { ProspectProgrammeRecommendationCard } from "@/components/prospect/ProspectProgrammeRecommendationCard";
 import { ProspectQualificationSummary } from "@/components/prospect/ProspectQualificationSummary";
 import { PremiumEmptyState } from "@/components/product/PremiumEmptyState";
 import { PremiumSectionHeader } from "@/components/product/PremiumSectionHeader";
@@ -55,18 +54,6 @@ export default async function ProspectOrientationPage() {
     && state.orientationConfirmed
     && state.intake?.status === "starter_documents";
   const recommendations = prospectCatalogueRecommendations(state.answers, catalogue);
-  const recommendationLabels = {
-    projectMatch: catalogueCopy.projectMatch,
-    preferredCity: catalogueCopy.preferredCity,
-    requirementCheck: catalogueCopy.requirementCheck,
-    field: catalogueCopy.field,
-    german: catalogueCopy.german,
-    uniAssist: catalogueCopy.uniAssist,
-    yes: catalogueCopy.yes,
-    source: catalogueCopy.source,
-    applyLink: catalogueCopy.applyLink,
-  };
-
   return (
     <main className="space-y-6">
       <ProspectPageHero
@@ -165,25 +152,18 @@ export default async function ProspectOrientationPage() {
 
           {recommendations.length ? (
             <section className="pc-panel pc-premium-card pc-theme-gold p-5 sm:p-6">
-              <PremiumSectionHeader
-                eyebrow={catalogueCopy.projectMatch}
-                title={catalogueCopy.recommendedTitle}
-                description={catalogueCopy.recommendedSubtitle}
-                actions={
-                  <Link href="/prospect/catalogue" className={buttonClassName("secondary", "min-h-10 px-4 py-2")}>
-                    {dashboardCopy.recommendedViewAll}
-                  </Link>
-                }
-              />
-              <div className="mt-4 grid items-start gap-4 xl:grid-cols-3">
-                {recommendations.map((recommendation) => (
-                  <ProspectProgrammeRecommendationCard
-                    key={recommendation.programme.id}
-                    recommendation={recommendation}
-                    labels={recommendationLabels}
-                    compact
-                  />
-                ))}
+              <div className="grid gap-4 sm:grid-cols-[auto_minmax(0,1fr)_auto] sm:items-center">
+                <span className="grid size-12 place-items-center rounded-full bg-[var(--premium-ink)] text-sm font-extrabold text-white shadow-[var(--premium-shadow-card)]">
+                  {recommendations.length}
+                </span>
+                <PremiumSectionHeader
+                  eyebrow={catalogueCopy.projectMatch}
+                  title={catalogueCopy.recommendedTitle}
+                  description={catalogueCopy.recommendedSubtitle}
+                />
+                <Link href="/prospect/catalogue" className={buttonClassName("secondary", "min-h-10 px-4 py-2")}>
+                  {dashboardCopy.recommendedViewAll}
+                </Link>
               </div>
             </section>
           ) : (
