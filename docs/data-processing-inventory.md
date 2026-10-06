@@ -77,9 +77,11 @@ Fichiers :
 - les objets sont rangés dans le dossier de l’utilisateur ;
 - les politiques permettent la lecture de son propre dossier et l’accès admin prévu par RLS.
 
-Point non défini dans les migrations :
+Points non définis par les migrations elles-mêmes :
 - la durée de conservation des fichiers ;
-- la procédure opérationnelle garantissant la suppression des objets Storage lors de la suppression d’un compte.
+- l’exécution et la vérification opérationnelles de la suppression des objets Storage lors de la suppression d’un compte.
+
+La procédure opérationnelle de suppression est déjà approuvée par le propriétaire et documentée pour A38 ; elle reste soumise à la validation juridique finale et à la vérification de son exécution en exploitation.
 
 ## 5. Orientation
 
@@ -190,7 +192,7 @@ Important : cette mécanique SQL ne suffit pas à démontrer qu’un **effacemen
 - les sauvegardes du fournisseur ;
 - un futur outil analytics/observabilité.
 
-A38 doit donc définir une procédure et une durée de conservation explicites.
+A38 doit donc faire valider juridiquement la procédure de suppression déjà approuvée, ainsi que les durées de conservation explicites.
 
 ## 11. Tiers techniques visibles dans le projet
 
@@ -276,18 +278,24 @@ Avant toute ouverture commerciale réelle, les conditions applicables, prix publ
 
 ## 14. Décisions encore nécessaires pour A38
 
-Le propriétaire doit confirmer :
-- identité légale de l’éditeur/exploitant ;
-- adresse publique de contact ;
-- email public de contact ;
-- immatriculation/TVA si applicable ;
-- service gratuit ou payant actuellement ;
-- finalités formulées de manière définitive pour les catégories ci-dessus ;
-- durée de conservation par catégorie ;
+Déjà confirmés par le propriétaire et repris dans `docs/A38_OWNER_CONFIRMATION.md` :
+- identité de l’exploitant prévu et forme actuelle ;
+- e-mail public de contact ;
+- statut pré-lancement / orientation gratuite ;
+- existence d’offres TND de test non ouvertes à la vente publique ;
+- politique opérationnelle de conservation ;
 - procédure de suppression de compte et de fichiers Storage ;
-- politique concernant sauvegardes/logs fournisseurs ;
-- base/consentement applicable au futur analytics selon la décision juridique ;
-- personne responsable de la relecture juridique finale.
+- règle 18+ pour la collecte persistée initiale.
+
+Restent réellement ouverts pour la validation finale :
+- adresse publique finale après établissement en Tunisie ;
+- immatriculation / registre / identifiant fiscal et autorisation éventuelle, si applicables ;
+- DPO applicable ou non ;
+- éventuelle activité réglementée / autorisation ;
+- bases juridiques et formulation finale des finalités ;
+- transferts internationaux et garanties contractuelles des fournisseurs ;
+- autorité compétente, droit applicable et règlement des litiges ;
+- relecteur humain/juridique, date de revue, version et date d’entrée en vigueur.
 
 ## 15. Principe de publication
 
