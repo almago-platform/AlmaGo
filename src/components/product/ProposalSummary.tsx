@@ -33,7 +33,7 @@ export function ProposalSummary({
   paymentNote?: ReactNode;
 }) {
   return (
-    <section className="overflow-hidden rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--surface)]">
+    <section className="pc-panel overflow-hidden">
       <div className="grid lg:grid-cols-[minmax(0,1fr)_minmax(17rem,0.38fr)]">
         <div className="p-5 sm:p-6">
           <div className="flex flex-wrap items-center gap-2">
@@ -63,12 +63,12 @@ export function ProposalSummary({
             </div>
           ) : null}
           {boundaries ? (
-            <div className="mt-5 rounded-[var(--radius-control)] border border-[var(--warning-border)] bg-[var(--warning-soft)] px-4 py-3 text-xs leading-5 text-[var(--foreground-soft)]">
+            <div className="mt-5 rounded-[var(--radius-control)] border border-[var(--warning-border)] bg-[var(--premium-gold-wash)] px-4 py-3 text-xs leading-5 text-[var(--foreground-soft)]">
               {boundaries}
             </div>
           ) : null}
         </div>
-        <aside className="border-t border-[var(--border)] bg-[var(--foreground)] p-5 text-white sm:p-6 lg:border-s lg:border-t-0">
+        <aside className="border-t border-[var(--border)] bg-[var(--premium-ink)] p-5 text-white sm:p-6 lg:border-s lg:border-t-0">
           <p className="text-[0.68rem] font-bold uppercase tracking-[0.14em] text-[var(--accent)]">{totalLabel}</p>
           <div className="mt-2 text-4xl font-semibold tracking-[-0.04em]">
             {price}{currency ? <span className="ms-2 text-base font-semibold text-white/70">{currency}</span> : null}
