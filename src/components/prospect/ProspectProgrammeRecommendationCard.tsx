@@ -3,6 +3,33 @@ import { ProspectUniversityCover } from "@/components/prospect/ProspectUniversit
 import { recommendationMatchesPreferredCity } from "@/lib/prospect/programmes";
 import { buttonClassName } from "@/components/ui/Button";
 
+type ProspectLocale = "fr" | "ar" | "en" | "de";
+
+function localizedTeachingLanguage(value: string, locale: ProspectLocale) {
+  const normalized = value.trim().toLocaleLowerCase("de").replace(/\s+/g, " ");
+  const labels = {
+    fr: { german: "Allemand", english: "Anglais", both: "Allemand / anglais" },
+    ar: { german: "الألمانية", english: "الإنجليزية", both: "الألمانية / الإنجليزية" },
+    en: { german: "German", english: "English", both: "German / English" },
+    de: { german: "Deutsch", english: "Englisch", both: "Deutsch / Englisch" },
+  } as const;
+  const isGerman = ["german", "deutsch", "allemand", "الألمانية"].includes(normalized);
+  const isEnglish = ["english", "englisch", "anglais", "الإنجليزية"].includes(normalized);
+  const isBoth = [
+    "german / english",
+    "german & english",
+    "deutsch / englisch",
+    "deutsch & englisch",
+    "allemand / anglais",
+    "allemand et anglais",
+    "الألمانية / الإنجليزية",
+  ].includes(normalized);
+  if (isBoth) return labels[locale].both;
+  if (isGerman) return labels[locale].german;
+  if (isEnglish) return labels[locale].english;
+  return value;
+}
+
 function ArrowIcon() {
   return (
     <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-4 w-4" aria-hidden="true">
@@ -14,9 +41,9 @@ function ArrowIcon() {
 export function ProspectProgrammeRecommendationCard({
   recommendation,
   labels,
+  locale,
   compact = false,
   showUniversityPhoto = true,
-  visualIndex = 1,
 }: {
   recommendation: OrientationProgrammeEvaluation;
   labels: {
@@ -30,12 +57,20 @@ export function ProspectProgrammeRecommendationCard({
     source: string;
     applyLink: string;
   };
+  locale: ProspectLocale;
   compact?: boolean;
   showUniversityPhoto?: boolean;
-  visualIndex?: number;
 }) {
   const programme = recommendation.programme;
   const preferredCity = recommendationMatchesPreferredCity(recommendation);
+  const teachingLanguage = programme.teachingLanguage
+    ? localizedTeachingLanguage(programme.teachingLanguage, locale)
+    : null;
+  const verificationRows = [
+    [labels.german, programme.germanLevelRequired || labels.requirementCheck],
+    [labels.uniAssist, programme.uniAssistRequired ? labels.yes : labels.requirementCheck],
+  ] as const;
+  const verificationCount = verificationRows.filter(([, value]) => value === labels.requirementCheck).length;
 
   const badge = (
     <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--brand-soft)] px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-[0.08em] text-[var(--brand-strong)] ring-1 ring-inset ring-[var(--brand-border)]/60">
@@ -70,31 +105,38 @@ export function ProspectProgrammeRecommendationCard({
         <span className="rounded-full bg-[var(--premium-cream)] px-3 py-1.5 text-xs font-semibold text-[var(--premium-ink-muted)]">
           {programme.degreeLevel}
         </span>
-        {programme.teachingLanguage ? (
+        {teachingLanguage ? (
           <span className="rounded-full bg-[var(--premium-cream)] px-3 py-1.5 text-xs font-semibold text-[var(--premium-ink-muted)]">
-            <bdi dir="auto">{programme.teachingLanguage}</bdi>
+            <bdi dir="auto">{teachingLanguage}</bdi>
           </span>
         ) : null}
       </div>
 
       {!compact ? (
-        <dl className="mt-5 grid gap-2 rounded-2xl border border-[var(--premium-border)] bg-[var(--premium-cream)] p-2.5">
-          {[
-            [labels.field, programme.field || "—"],
-            [labels.german, programme.germanLevelRequired || labels.requirementCheck],
-            [labels.uniAssist, programme.uniAssistRequired ? labels.yes : labels.requirementCheck],
-          ].map(([label, value]) => (
-            <div
-              key={String(label)}
-              className="grid min-w-0 grid-cols-[minmax(6.5rem,0.7fr)_minmax(0,1.3fr)] items-start gap-3 rounded-xl bg-white/55 px-3 py-2.5"
-            >
-              <dt className="text-[10px] font-extrabold uppercase tracking-[0.08em] text-[var(--muted)]">{label}</dt>
-              <dd className="min-w-0 text-sm font-semibold leading-5 text-[var(--foreground)] [overflow-wrap:normal]">
-                <bdi dir="auto">{value}</bdi>
-              </dd>
-            </div>
-          ))}
-        </dl>
+        <div className="mt-5 grid gap-2 sm:grid-cols-[minmax(0,1fr)_minmax(13rem,0.78fr)]">
+          <div className="rounded-2xl border border-[var(--premium-border)] bg-[var(--premium-cream)] px-4 py-3.5">
+            <p className="text-[10px] font-extrabold uppercase tracking-[0.08em] text-[var(--muted)]">{labels.field}</p>
+            <p className="mt-1.5 text-sm font-semibold leading-5 text-[var(--foreground)] [overflow-wrap:normal]">
+              <bdi dir="auto">{programme.field || "—"}</bdi>
+            </p>
+          </div>
+          <details className="rounded-2xl border border-[var(--premium-border)] bg-white/70 px-4 py-3.5">
+            <summary className="cursor-pointer list-none text-sm font-bold text-[var(--foreground)] marker:content-none">
+              <span className="flex items-center justify-between gap-3">
+                <span>{verificationCount ? `${verificationCount} · ${labels.requirementCheck}` : labels.requirementCheck}</span>
+                <span className="text-[var(--brand)]" aria-hidden="true">＋</span>
+              </span>
+            </summary>
+            <dl className="mt-3 grid gap-2 border-t border-[var(--premium-border)] pt-3">
+              {verificationRows.map(([label, value]) => (
+                <div key={label} className="flex items-start justify-between gap-4 text-sm">
+                  <dt className="font-semibold text-[var(--muted)]">{label}</dt>
+                  <dd className="text-end font-semibold text-[var(--foreground)]"><bdi dir="auto">{value}</bdi></dd>
+                </div>
+              ))}
+            </dl>
+          </details>
+        </div>
       ) : null}
 
       <div className="mt-4 flex flex-wrap items-center gap-2.5">
@@ -141,7 +183,6 @@ export function ProspectProgrammeRecommendationCard({
           media={programme.university.media}
           compact
           usePhoto={showUniversityPhoto}
-          editorialIndex={visualIndex}
         />
       </div>
       <div className="p-5 sm:p-6">{body}</div>
