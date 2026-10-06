@@ -10,6 +10,15 @@ const stateTheme = {
   qualified_prospect: "pc-theme-green",
 } as const;
 
+const stateBadgeTheme = {
+  not_evaluated: "border-[var(--info-border)] bg-[var(--info-soft)] text-[var(--info-strong)]",
+  too_early: "border-[var(--info-border)] bg-[var(--info-soft)] text-[var(--info-strong)]",
+  needs_information: "border-[var(--warning-border)] bg-[var(--warning-soft)] text-[var(--warning-strong)]",
+  needs_verification: "border-[var(--warning-border)] bg-[var(--warning-soft)] text-[var(--warning-strong)]",
+  ready_for_review: "border-[var(--success-border)] bg-[var(--success-soft)] text-[var(--success-strong)]",
+  qualified_prospect: "border-[var(--success-border)] bg-[var(--success-soft)] text-[var(--success-strong)]",
+} as const;
+
 export function ProspectQualificationSummary({
   qualification,
   copy,
@@ -42,6 +51,7 @@ export function ProspectQualificationSummary({
     : null;
 
   const themeClass = stateTheme[qualification.state];
+  const badgeClass = stateBadgeTheme[qualification.state];
 
   return (
     <section className={`pc-panel pc-premium-card ${themeClass} p-5 sm:p-6`}>
@@ -54,7 +64,7 @@ export function ProspectQualificationSummary({
             {stateCopy.title}
           </h2>
         </div>
-        <span className="rounded-full border border-[var(--brand-border)]/60 bg-[var(--brand-soft)] px-3 py-1.5 text-xs font-bold text-[var(--brand-strong)]">
+        <span className={`rounded-full border px-3 py-1.5 text-xs font-bold ${badgeClass}`}>
           {stateCopy.label}
         </span>
       </div>
