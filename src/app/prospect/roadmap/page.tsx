@@ -2,6 +2,8 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ProspectJourneyProgress } from "@/components/prospect/ProspectJourneyProgress";
 import { ProspectPageHero } from "@/components/prospect/ProspectPageHero";
+import { PremiumSectionHeader } from "@/components/product/PremiumSectionHeader";
+import { buttonClassName } from "@/components/ui/Button";
 import { prospectHubCopy } from "@/content/prospect-hub-copy";
 import { getRequestLocale } from "@/lib/i18n-server";
 import { getPhase2StudentAccess } from "@/lib/phase2/access";
@@ -173,7 +175,7 @@ export default async function ProspectRoadmapPage() {
         subtitle={t.subtitle}
       />
 
-      <section className="rounded-[1.35rem] border border-black/[.07] bg-white/80 p-5 shadow-[0_22px_60px_-42px_rgba(0,0,0,.34)] backdrop-blur-sm sm:p-6">
+      <section className="pc-panel bg-white/80 p-5 backdrop-blur-sm sm:p-6">
         <ProspectJourneyProgress
           hasOrientation={Boolean(state.current)}
           orientationConfirmed={state.orientationConfirmed}
@@ -185,30 +187,30 @@ export default async function ProspectRoadmapPage() {
       </section>
 
       <section className="grid items-start gap-4 xl:grid-cols-[1.2fr_0.8fr]">
-        <article className="relative overflow-hidden rounded-[1.4rem] border border-[var(--brand-border)]/70 bg-[linear-gradient(135deg,#fff0f2,#fffaf9)] p-5 shadow-[0_26px_70px_-44px_rgba(216,6,33,.34)] sm:p-6">
-          <p className="text-[11px] font-extrabold uppercase tracking-[0.16em] text-[var(--brand)]">
-            {String(current + 1).padStart(2, "0")} · {t.current}
-          </p>
-          <h2 className="mt-2 text-[clamp(1.55rem,2.5vw,2.15rem)] font-semibold tracking-[-0.035em] text-[#1c1f21]">{currentStep.title}</h2>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--muted)]">{currentStep.body}</p>
+        <article className="pc-panel bg-[linear-gradient(135deg,var(--premium-red-wash),var(--premium-paper))] p-5 sm:p-6">
+          <PremiumSectionHeader
+            eyebrow={String(current + 1).padStart(2, "0") + " · " + t.current}
+            title={currentStep.title}
+            description={currentStep.body}
+          />
           <Link
             href={currentStep.href}
-            className="mt-5 inline-flex min-h-11 items-center rounded-xl bg-[var(--brand)] px-5 text-sm font-bold text-white shadow-[0_12px_28px_-16px_rgba(216,6,33,.85)] transition-all duration-200 hover:-translate-y-px hover:bg-[var(--brand-strong)] hover:shadow-md"
+            className={buttonClassName("primary", "mt-5")}
           >
             {t.current}
           </Link>
         </article>
 
         {nextStep ? (
-          <article className="rounded-[1.35rem] border border-black/[.07] bg-white p-5 shadow-[0_22px_60px_-42px_rgba(0,0,0,.34)] sm:p-6">
-            <p className="text-[11px] font-extrabold uppercase tracking-[0.14em] text-[#74797d]">
-              {String(current + 2).padStart(2, "0")} · {t.next}
-            </p>
-            <h2 className="mt-2 text-xl font-semibold tracking-[-0.025em] text-[#202326]">{nextStep.title}</h2>
-            <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{nextStep.body}</p>
+          <article className="pc-panel p-5 sm:p-6">
+            <PremiumSectionHeader
+              eyebrow={String(current + 2).padStart(2, "0") + " · " + t.next}
+              title={nextStep.title}
+              description={nextStep.body}
+            />
             <Link
               href={nextStep.href}
-              className="mt-5 inline-flex min-h-10 items-center rounded-xl border border-black/10 bg-white px-4 text-sm font-semibold text-[#202326] shadow-sm transition-all duration-200 hover:-translate-y-px hover:border-black/20 hover:shadow-md"
+              className={buttonClassName("secondary", "mt-5 min-h-10 px-4 py-2")}
             >
               {t.next}
             </Link>
@@ -219,7 +221,7 @@ export default async function ProspectRoadmapPage() {
       {(completedSteps.length || futureSteps.length) ? (
         <section className="grid items-start gap-4 lg:grid-cols-2">
           {completedSteps.length ? (
-            <details className="rounded-[1.25rem] border border-black/[.07] bg-white p-4 shadow-[0_18px_52px_-42px_rgba(0,0,0,.3)]">
+            <details className="pc-card p-4">
               <summary className="cursor-pointer font-bold">{t.completedGroup}</summary>
               <div className="mt-3 grid gap-2">
                 {completedSteps.map((step, index) => (
@@ -236,14 +238,14 @@ export default async function ProspectRoadmapPage() {
           ) : null}
 
           {futureSteps.length ? (
-            <details className="rounded-[1.25rem] border border-black/[.07] bg-white p-4 shadow-[0_18px_52px_-42px_rgba(0,0,0,.3)]">
+            <details className="pc-card p-4">
               <summary className="cursor-pointer font-bold">{t.futureGroup}</summary>
               <div className="mt-3 grid gap-2">
                 {futureSteps.map((step, index) => (
                   <Link
                     key={step.title}
                     href={step.href}
-                    className="flex items-center justify-between gap-3 rounded-xl border border-black/[.05] bg-[#f6f3ed] px-3.5 py-3 text-sm font-semibold transition-all duration-200 hover:-translate-y-px hover:bg-[var(--brand-soft)]"
+                    className="flex items-center justify-between gap-3 rounded-xl border border-[var(--premium-border)] bg-[var(--premium-cream)] px-3.5 py-3 text-sm font-semibold transition-all duration-200 hover:-translate-y-px hover:bg-[var(--brand-soft)]"
                   >
                     <span>{step.title}</span>
                     <span className="text-xs font-normal text-[var(--muted)]">

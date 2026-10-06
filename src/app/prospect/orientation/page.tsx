@@ -4,6 +4,9 @@ import { IntakeFlowCard } from "@/components/prospect/IntakeFlowCard";
 import { ProspectPageHero } from "@/components/prospect/ProspectPageHero";
 import { ProspectProgrammeRecommendationCard } from "@/components/prospect/ProspectProgrammeRecommendationCard";
 import { ProspectQualificationSummary } from "@/components/prospect/ProspectQualificationSummary";
+import { PremiumEmptyState } from "@/components/product/PremiumEmptyState";
+import { PremiumSectionHeader } from "@/components/product/PremiumSectionHeader";
+import { buttonClassName } from "@/components/ui/Button";
 import { prospectHubCopy } from "@/content/prospect-hub-copy";
 import { prospectQualificationCopy } from "@/content/prospect-qualification-copy";
 import { orientationDiagnosticCopy } from "@/content/orientation-diagnostic-copy";
@@ -95,22 +98,17 @@ export default async function ProspectOrientationPage() {
       ) : null}
 
       {waitingForDocuments ? (
-        <section className="rounded-[1.35rem] border border-[var(--brand-border)]/70 bg-[linear-gradient(135deg,#fff0f2,#fffaf9)] p-5 shadow-[0_24px_64px_-44px_rgba(216,6,33,.34)] sm:p-6">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="max-w-3xl">
-              <p className="text-[11px] font-extrabold uppercase tracking-[0.16em] text-[var(--brand)]">
-                {t.confirmed}
-              </p>
-              <h2 className="mt-2 text-xl font-semibold tracking-[-0.025em] text-[#202326]">{t.nextDocuments}</h2>
-              <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{t.nextDocumentsBody}</p>
-            </div>
-            <Link
-              href="/prospect/documents"
-              className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-xl bg-[var(--brand)] px-5 text-sm font-bold text-white shadow-[0_12px_28px_-16px_rgba(216,6,33,.85)] transition-all duration-200 hover:-translate-y-px hover:bg-[var(--brand-strong)] hover:shadow-md"
-            >
-              {dashboardCopy.browseDocuments}
-            </Link>
-          </div>
+        <section className="pc-panel bg-[linear-gradient(135deg,var(--premium-red-wash),var(--premium-paper))] p-5 sm:p-6">
+          <PremiumSectionHeader
+            eyebrow={t.confirmed}
+            title={t.nextDocuments}
+            description={t.nextDocumentsBody}
+            actions={
+              <Link href="/prospect/documents" className={buttonClassName("primary")}>
+                {dashboardCopy.browseDocuments}
+              </Link>
+            }
+          />
         </section>
       ) : null}
 
@@ -158,24 +156,17 @@ export default async function ProspectOrientationPage() {
           ) : null}
 
           {recommendations.length ? (
-            <section className="rounded-[1.4rem] border border-black/[.07] bg-white/80 p-5 shadow-[0_24px_64px_-44px_rgba(0,0,0,.34)] backdrop-blur-sm sm:p-6">
-              <div className="flex flex-wrap items-end justify-between gap-4">
-                <div>
-                  <p className="text-[11px] font-extrabold uppercase tracking-[0.16em] text-[var(--brand)]">
-                    {catalogueCopy.projectMatch}
-                  </p>
-                  <h2 className="mt-1 text-xl font-bold">{catalogueCopy.recommendedTitle}</h2>
-                  <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
-                    {catalogueCopy.recommendedSubtitle}
-                  </p>
-                </div>
-                <Link
-                  href="/prospect/catalogue"
-                  className="inline-flex min-h-10 items-center rounded-xl border border-black/10 bg-white px-4 text-sm font-semibold text-[#202326] shadow-sm transition-all duration-200 hover:-translate-y-px hover:border-black/20 hover:shadow-md"
-                >
-                  {dashboardCopy.recommendedViewAll}
-                </Link>
-              </div>
+            <section className="pc-panel bg-white/80 p-5 backdrop-blur-sm sm:p-6">
+              <PremiumSectionHeader
+                eyebrow={catalogueCopy.projectMatch}
+                title={catalogueCopy.recommendedTitle}
+                description={catalogueCopy.recommendedSubtitle}
+                actions={
+                  <Link href="/prospect/catalogue" className={buttonClassName("secondary", "min-h-10 px-4 py-2")}>
+                    {dashboardCopy.recommendedViewAll}
+                  </Link>
+                }
+              />
               <div className="mt-4 grid items-start gap-4 xl:grid-cols-3">
                 {recommendations.map((recommendation) => (
                   <ProspectProgrammeRecommendationCard
@@ -228,15 +219,15 @@ export default async function ProspectOrientationPage() {
           ) : null}
         </>
       ) : (
-        <section className="rounded-[1.35rem] border border-dashed border-black/15 bg-white/70 p-8 text-center shadow-[0_18px_50px_-40px_rgba(0,0,0,.3)]">
-          <p className="text-sm text-[var(--muted)]">{t.noOrientation}</p>
-          <Link
-            href="/orientation"
-            className="mt-5 inline-flex min-h-11 items-center rounded-xl bg-[var(--brand)] px-5 text-sm font-bold text-white shadow-[0_12px_28px_-16px_rgba(216,6,33,.85)] transition-all duration-200 hover:-translate-y-px hover:bg-[var(--brand-strong)]"
-          >
-            {t.update}
-          </Link>
-        </section>
+        <PremiumEmptyState
+          eyebrow={t.eyebrow}
+          title={t.noOrientation}
+          action={
+            <Link href="/orientation" className={buttonClassName("primary")}>
+              {t.update}
+            </Link>
+          }
+        />
       )}
     </main>
   );

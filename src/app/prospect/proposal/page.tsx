@@ -2,6 +2,9 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { IntakeFlowCard } from "@/components/prospect/IntakeFlowCard";
 import { ProspectPageHero } from "@/components/prospect/ProspectPageHero";
+import { PremiumEmptyState } from "@/components/product/PremiumEmptyState";
+import { PremiumSectionHeader } from "@/components/product/PremiumSectionHeader";
+import { buttonClassName } from "@/components/ui/Button";
 import { prospectHubCopy } from "@/content/prospect-hub-copy";
 import { getRequestLocale } from "@/lib/i18n-server";
 import { getPhase2StudentAccess } from "@/lib/phase2/access";
@@ -87,74 +90,69 @@ export default async function ProspectProposalPage() {
       <ProspectPageHero eyebrow={t.eyebrow} title={t.title} subtitle={t.subtitle} />
 
       {!state.intake && state.orientationConfirmed ? (
-        <section className="rounded-[1.35rem] border border-[#ead59a] bg-[#fff9e9] p-4 shadow-[0_22px_60px_-42px_rgba(139,98,0,.25)]">
-          <div className="flex items-start gap-3">
-            <span className="mt-1 size-2.5 shrink-0 rounded-full bg-amber-400" aria-hidden="true" />
-            <div>
-              <h2 className="text-xl font-bold">{t.waitingTitle}</h2>
-              <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">{t.waitingBody}</p>
-            </div>
-          </div>
-        </section>
+        <PremiumEmptyState
+          eyebrow={t.eyebrow}
+          title={t.waitingTitle}
+          description={t.waitingBody}
+          compact
+        />
       ) : null}
 
       {preBac && starterDocuments ? (
-        <section className="rounded-[1.4rem] border border-[var(--brand-border)]/70 bg-[linear-gradient(135deg,#fff0f2,#fffaf9)] p-4 shadow-[0_26px_70px_-44px_rgba(216,6,33,.34)] sm:p-5">
-          <p className="text-[11px] font-extrabold uppercase tracking-[0.16em] text-[var(--brand)]">
-            Projet avant le Bac
-          </p>
-          <h2 className="mt-2 text-[clamp(1.55rem,2.5vw,2.15rem)] font-semibold tracking-[-0.035em] text-[#1c1f21]">Votre accompagnement de préparation est déjà actif</h2>
-          <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
-            Vous n’avez pas besoin de fournir le Bac ni le relevé final maintenant. Campus Allemagne peut déjà
-            vous guider sur la langue, les programmes, le budget et les prochaines étapes. La proposition académique
-            définitive viendra après vos résultats et la mise à jour du projet.
-          </p>
+        <section className="pc-panel bg-[linear-gradient(135deg,var(--premium-red-wash),var(--premium-paper))] p-4 sm:p-5">
+          <PremiumSectionHeader
+            eyebrow="Projet avant le Bac"
+            title="Votre accompagnement de préparation est déjà actif"
+            description={
+              <>Vous n’avez pas besoin de fournir le Bac ni le relevé final maintenant. Campus Allemagne peut déjà
+              vous guider sur la langue, les programmes, le budget et les prochaines étapes. La proposition académique
+              définitive viendra après vos résultats et la mise à jour du projet.</>
+            }
+          />
           <div className="mt-4 flex flex-wrap gap-2.5">
             <Link
               href="/prospect/roadmap"
-              className="inline-flex min-h-11 items-center rounded-xl bg-[var(--brand)] px-5 text-sm font-bold text-white shadow-[0_12px_28px_-16px_rgba(216,6,33,.85)] transition-all duration-200 hover:-translate-y-px hover:bg-[var(--brand-strong)] hover:shadow-md"
+              className={buttonClassName("primary")}
             >
               Continuer ma préparation
             </Link>
             <Link
               href="/prospect/catalogue"
-              className="inline-flex min-h-11 items-center rounded-xl border border-black/10 bg-white px-5 text-sm font-semibold text-[#202326] shadow-sm transition-all duration-200 hover:-translate-y-px hover:border-black/20 hover:shadow-md"
+              className={buttonClassName("secondary")}
             >
               Explorer les programmes
             </Link>
             <Link
               href="/prospect/solutions"
-              className="inline-flex min-h-11 items-center rounded-xl border border-black/10 bg-white px-5 text-sm font-semibold text-[#202326] shadow-sm transition-all duration-200 hover:-translate-y-px hover:border-black/20 hover:shadow-md"
+              className={buttonClassName("secondary")}
             >
               Langue & solutions
             </Link>
             <Link
               href="/prospect/documents"
-              className="inline-flex min-h-11 items-center rounded-xl border border-black/10 bg-white px-5 text-sm font-semibold text-[#202326] shadow-sm transition-all duration-200 hover:-translate-y-px hover:border-black/20 hover:shadow-md"
+              className={buttonClassName("secondary")}
             >
               Documents facultatifs
             </Link>
           </div>
         </section>
       ) : starterDocuments ? (
-        <section className="rounded-[1.4rem] border border-[var(--brand-border)]/70 bg-[linear-gradient(135deg,#fff0f2,#fffaf9)] p-4 shadow-[0_26px_70px_-44px_rgba(216,6,33,.34)] sm:p-5">
-          <div className="flex flex-wrap items-start justify-between gap-4">
-            <div className="max-w-3xl">
-              <p className="text-[11px] font-extrabold uppercase tracking-[0.16em] text-[var(--brand)]">
-                {dashboardCopy.proposalWaiting}
-              </p>
-              <h2 className="mt-2 text-[clamp(1.55rem,2.5vw,2.15rem)] font-semibold tracking-[-0.035em] text-[#1c1f21]">{t.documentsTitle}</h2>
-              <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{t.documentsBody}</p>
-            </div>
-            <span className="rounded-full border border-[var(--brand-border)]/60 bg-white px-3 py-1.5 text-xs font-bold text-[var(--brand-strong)] shadow-sm">
-              {dashboardCopy.documentsSummary(
-                state.starterSummary.approved,
-                state.starterSummary.required,
-                state.starterSummary.pending,
-                state.starterSummary.needsReplacement,
-              )}
-            </span>
-          </div>
+        <section className="pc-panel bg-[linear-gradient(135deg,var(--premium-red-wash),var(--premium-paper))] p-4 sm:p-5">
+          <PremiumSectionHeader
+            eyebrow={dashboardCopy.proposalWaiting}
+            title={t.documentsTitle}
+            description={t.documentsBody}
+            actions={
+              <span className="rounded-full border border-[var(--brand-border)]/60 bg-white px-3 py-1.5 text-xs font-bold text-[var(--brand-strong)] shadow-sm">
+                {dashboardCopy.documentsSummary(
+                  state.starterSummary.approved,
+                  state.starterSummary.required,
+                  state.starterSummary.pending,
+                  state.starterSummary.needsReplacement,
+                )}
+              </span>
+            }
+          />
 
           <div className="mt-5 h-2 overflow-hidden rounded-full bg-white/80 ring-1 ring-inset ring-black/[.04]">
             <div
@@ -166,7 +164,7 @@ export default async function ProspectProposalPage() {
 
           <Link
             href="/prospect/documents"
-            className="mt-5 inline-flex min-h-11 items-center rounded-xl bg-[var(--brand)] px-5 text-sm font-bold text-white shadow-[0_12px_28px_-16px_rgba(216,6,33,.85)] transition-all duration-200 hover:-translate-y-px hover:bg-[var(--brand-strong)] hover:shadow-md transition hover:bg-[var(--brand-strong)]"
+            className={buttonClassName("primary", "mt-5")}
           >
             {dashboardCopy.browseDocuments}
           </Link>
@@ -194,28 +192,21 @@ export default async function ProspectProposalPage() {
       )}
 
       {!proposalAvailable && !preBac ? (
-        <section className="rounded-[1.35rem] border border-black/[.07] bg-white p-4 shadow-[0_22px_60px_-42px_rgba(0,0,0,.34)]">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <h2 className="font-bold">{t.waitingTitle}</h2>
-              <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--muted)]">{t.waitingBody}</p>
-            </div>
-            <div className="flex flex-wrap gap-3">
-              <Link
-                href="/prospect/catalogue"
-                className="inline-flex min-h-10 items-center rounded-xl border border-black/10 bg-white px-4 text-sm font-semibold text-[#202326] shadow-sm transition-all duration-200 hover:-translate-y-px hover:border-black/20 hover:shadow-md"
-              >
-                {dashboardCopy.browseCatalogue}
-              </Link>
-              <Link
-                href="/prospect/solutions"
-                className="inline-flex min-h-10 items-center rounded-xl border border-black/10 bg-white px-4 text-sm font-semibold text-[#202326] shadow-sm transition-all duration-200 hover:-translate-y-px hover:border-black/20 hover:shadow-md"
-              >
-                {dashboardCopy.browseSolutions}
-              </Link>
-            </div>
-          </div>
-        </section>
+        <PremiumEmptyState
+          eyebrow={t.eyebrow}
+          title={t.waitingTitle}
+          description={t.waitingBody}
+          action={
+            <Link href="/prospect/catalogue" className={buttonClassName("secondary", "min-h-10 px-4 py-2")}>
+              {dashboardCopy.browseCatalogue}
+            </Link>
+          }
+          secondaryAction={
+            <Link href="/prospect/solutions" className={buttonClassName("ghost", "min-h-10 px-4 py-2")}>
+              {dashboardCopy.browseSolutions}
+            </Link>
+          }
+        />
       ) : null}
     </main>
   );

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { campusRouteLabel } from "@/lib/campus-intake";
 import { ProposalDecisionPanel } from "@/components/prospect/ProposalDecisionPanel";
+import { buttonClassName } from "@/components/ui/Button";
 
 type Recovery = {
   createdAt: string;
@@ -96,7 +97,7 @@ export function IntakeFlowCard({
       .format(new Date(recovery.createdAt));
 
     return (
-      <section className="mt-6 rounded-[1.35rem] border border-[var(--brand-border)]/70 bg-[linear-gradient(135deg,#fff4f5,#fffdf9)] p-5 shadow-[0_24px_64px_-44px_rgba(216,6,33,.35)] sm:p-6">
+      <section className="mt-6 pc-panel bg-[linear-gradient(135deg,var(--premium-red-wash),var(--premium-paper))] p-5 sm:p-6">
         <p className="text-[0.68rem] font-extrabold uppercase tracking-[0.16em] text-[var(--brand)]">
           Orientation retrouvée
         </p>
@@ -134,7 +135,7 @@ export function IntakeFlowCard({
 
   if (orientationId && !orientationConfirmed) {
     return (
-      <section className="mt-6 rounded-[1.35rem] border border-[var(--brand-border)]/70 bg-[linear-gradient(135deg,#fff4f5,#fffdf9)] p-5 shadow-[0_24px_64px_-44px_rgba(216,6,33,.35)] sm:p-6">
+      <section className="mt-6 pc-panel bg-[linear-gradient(135deg,var(--premium-red-wash),var(--premium-paper))] p-5 sm:p-6">
         <p className="text-[0.68rem] font-extrabold uppercase tracking-[0.16em] text-[var(--brand)]">
           Étape 1 · Orientation
         </p>
@@ -169,7 +170,7 @@ export function IntakeFlowCard({
 
   if (intake.status === "starter_documents" && bacStatus === "preparing") {
     return (
-      <section className="mt-6 rounded-[1.35rem] border border-[var(--brand-border)]/70 bg-[linear-gradient(135deg,#fff4f5,#fffdf9)] p-5 shadow-[0_24px_64px_-44px_rgba(216,6,33,.35)] sm:p-6">
+      <section className="mt-6 pc-panel bg-[linear-gradient(135deg,var(--premium-red-wash),var(--premium-paper))] p-5 sm:p-6">
         <p className="text-[0.68rem] font-extrabold uppercase tracking-[0.16em] text-[var(--brand)]">
           Projet avant le Bac
         </p>
@@ -214,7 +215,7 @@ export function IntakeFlowCard({
         </p>
         <Link
           href="/prospect/documents"
-          className="mt-5 inline-flex min-h-11 items-center rounded-xl bg-[var(--brand)] px-5 text-sm font-bold text-white shadow-[0_12px_28px_-16px_rgba(216,6,33,.85)] transition-all duration-200 hover:-translate-y-px hover:bg-[var(--brand-strong)]"
+          className={buttonClassName("primary", "mt-5")}
         >
           Gérer mes documents
         </Link>
@@ -224,15 +225,15 @@ export function IntakeFlowCard({
 
   if (intake.status === "campus_review") {
     return (
-      <section className="mt-6 rounded-[1.35rem] border border-[#ead59a] bg-[#fff9e9] p-5 shadow-[0_22px_60px_-42px_rgba(139,98,0,.25)] sm:p-6">
-        <p className="text-[0.68rem] font-extrabold uppercase tracking-[0.15em] text-[#7b5900]">
+      <section className="mt-6 pc-panel bg-[var(--premium-gold-wash)] p-5 sm:p-6">
+        <p className="text-[0.68rem] font-extrabold uppercase tracking-[0.15em] text-[var(--warning-strong)]">
           Étape 3 · Validation Campus Allemagne
         </p>
         <h2 className="mt-2 text-xl font-semibold tracking-[-0.025em]">Nous examinons votre dossier</h2>
-        <p className="mt-2 max-w-3xl text-sm leading-6 text-[#555b5f]">
+        <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted-strong)]">
           Vos trois pièces obligatoires sont validées. Campus Allemagne analyse maintenant votre orientation et vos preuves pour proposer le parcours adapté.
         </p>
-        <p className="mt-4 text-sm font-bold text-[#6d4f00]">Aucune action requise de votre part pour le moment.</p>
+        <p className="mt-4 text-sm font-bold text-[var(--warning-strong)]">Aucune action requise de votre part pour le moment.</p>
       </section>
     );
   }
@@ -251,7 +252,7 @@ export function IntakeFlowCard({
 
   if (intake.status === "payment_pending") {
     return (
-      <section className="mt-6 rounded-[1.35rem] border border-[var(--brand-border)]/70 bg-[linear-gradient(135deg,#fff4f5,#fffdf9)] p-5 shadow-[0_24px_64px_-44px_rgba(216,6,33,.35)] sm:p-6">
+      <section className="mt-6 pc-panel bg-[linear-gradient(135deg,var(--premium-red-wash),var(--premium-paper))] p-5 sm:p-6">
         <p className="text-[0.68rem] font-extrabold uppercase tracking-[0.16em] text-[var(--brand)]">
           Proposition acceptée · Paiement attendu
         </p>
@@ -261,7 +262,7 @@ export function IntakeFlowCard({
         </p>
         <Link
           href="/prospect/payment"
-          className="mt-5 inline-flex min-h-11 items-center rounded-xl bg-[var(--brand)] px-5 text-sm font-bold text-white shadow-[0_12px_28px_-16px_rgba(216,6,33,.85)] transition-all duration-200 hover:-translate-y-px hover:bg-[var(--brand-strong)]"
+          className={buttonClassName("primary", "mt-5")}
         >
           Ouvrir mon paiement
         </Link>
@@ -271,27 +272,27 @@ export function IntakeFlowCard({
 
   if (intake.status === "paid_pending_validation") {
     return (
-      <section className="mt-6 rounded-[1.35rem] border border-[#ead59a] bg-[#fff9e9] p-5 shadow-[0_22px_60px_-42px_rgba(139,98,0,.25)] sm:p-6">
-        <p className="text-[0.68rem] font-extrabold uppercase tracking-[0.15em] text-[#7b5900]">
+      <section className="mt-6 pc-panel bg-[var(--premium-gold-wash)] p-5 sm:p-6">
+        <p className="text-[0.68rem] font-extrabold uppercase tracking-[0.15em] text-[var(--warning-strong)]">
           Paiement reçu · Validation Campus
         </p>
         <h2 className="mt-2 text-xl font-semibold tracking-[-0.025em]">Nous validons votre paiement</h2>
-        <p className="mt-2 max-w-3xl text-sm leading-6 text-[#555b5f]">
+        <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted-strong)]">
           Le paiement a été enregistré. La phase suivante reste verrouillée jusqu’à la validation interne de Campus Allemagne.
         </p>
-        <p className="mt-4 text-sm font-bold text-[#6d4f00]">Aucune autre action n’est requise pour le moment.</p>
+        <p className="mt-4 text-sm font-bold text-[var(--warning-strong)]">Aucune autre action n’est requise pour le moment.</p>
       </section>
     );
   }
 
   if (intake.status === "student_question") {
     return (
-      <section className="mt-6 rounded-[1.35rem] border border-[#ead59a] bg-[#fff9e9] p-5 shadow-[0_22px_60px_-42px_rgba(139,98,0,.25)] sm:p-6">
-        <p className="text-[0.68rem] font-extrabold uppercase tracking-[0.15em] text-[#7b5900]">
+      <section className="mt-6 pc-panel bg-[var(--premium-gold-wash)] p-5 sm:p-6">
+        <p className="text-[0.68rem] font-extrabold uppercase tracking-[0.15em] text-[var(--warning-strong)]">
           Parcours à revoir
         </p>
         <h2 className="mt-2 text-xl font-semibold tracking-[-0.025em]">Votre demande a été transmise</h2>
-        <p className="mt-2 max-w-3xl text-sm leading-6 text-[#555b5f]">
+        <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted-strong)]">
           Campus Allemagne doit revoir avec vous le parcours proposé avant toute création de procédure.
         </p>
       </section>
@@ -300,14 +301,14 @@ export function IntakeFlowCard({
 
   if (intake.status === "procedure_created") {
     return (
-      <section className="mt-6 rounded-[1.35rem] border border-[#b7dfcd] bg-[#edf8f3] p-5 shadow-[0_22px_60px_-42px_rgba(24,121,78,.22)] sm:p-6">
-        <p className="text-[0.68rem] font-extrabold uppercase tracking-[0.15em] text-[#11633f]">
+      <section className="mt-6 pc-panel bg-[var(--premium-green-wash)] p-5 sm:p-6">
+        <p className="text-[0.68rem] font-extrabold uppercase tracking-[0.15em] text-[var(--success-strong)]">
           Étape 5 · Confirmé
         </p>
         <h2 className="mt-2 text-xl font-semibold tracking-[-0.025em]">
           Parcours confirmé : {campusRouteLabel(intake.proposed_route_key)}
         </h2>
-        <p className="mt-2 max-w-3xl text-sm leading-6 text-[#555b5f]">
+        <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted-strong)]">
           Votre procédure Campus Allemagne a été créée. Les étapes détaillées de la procédure seront traitées dans la phase suivante.
         </p>
       </section>

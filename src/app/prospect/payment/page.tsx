@@ -5,7 +5,8 @@ import { JourneyRail, type JourneyRailStep } from "@/components/product/JourneyR
 import { NextActionPanel } from "@/components/product/NextActionPanel";
 import { ResponsibilityStrip } from "@/components/product/ResponsibilityStrip";
 import { DataList } from "@/components/ui/DataList";
-import { SectionHeader } from "@/components/ui/SectionHeader";
+import { PremiumSectionHeader } from "@/components/product/PremiumSectionHeader";
+import { buttonClassName } from "@/components/ui/Button";
 import { prospectPaymentCopy } from "@/content/prospect-payment-copy";
 import { rebrandCopy } from "@/lib/brand";
 import { getRequestLocale } from "@/lib/i18n-server";
@@ -173,7 +174,7 @@ export default async function ProspectPaymentPage() {
         />
 
         <section className="space-y-3">
-          <SectionHeader eyebrow={copy.progression} title={copy.noneTitle} />
+          <PremiumSectionHeader eyebrow={copy.progression} title={copy.noneTitle} />
           <JourneyRail steps={emptySteps} ariaLabel={copy.progression} />
         </section>
 
@@ -184,7 +185,7 @@ export default async function ProspectPaymentPage() {
           action={
             <Link
               href="/prospect/proposal"
-              className="inline-flex min-h-11 items-center justify-center rounded-xl bg-white px-5 text-sm font-bold text-[#17191b] shadow-md transition-all duration-200 hover:-translate-y-px hover:shadow-lg"
+              className={buttonClassName("secondary")}
             >
               {copy.proposalCta}
             </Link>
@@ -360,7 +361,7 @@ export default async function ProspectPaymentPage() {
       />
 
       <section className="space-y-3">
-        <SectionHeader eyebrow={copy.progression} title={copy.statuses[latest.status]} />
+        <PremiumSectionHeader eyebrow={copy.progression} title={copy.statuses[latest.status]} />
         <JourneyRail steps={steps} ariaLabel={copy.progression} />
       </section>
 
@@ -373,11 +374,7 @@ export default async function ProspectPaymentPage() {
           next.href && next.label ? (
             <Link
               href={next.href}
-              className={
-                next.waiting
-                  ? "inline-flex min-h-11 items-center justify-center rounded-xl border border-black/10 bg-white px-5 text-sm font-semibold text-[#202326] shadow-sm transition-all duration-200 hover:-translate-y-px hover:border-black/20 hover:shadow-md"
-                  : "inline-flex min-h-11 items-center justify-center rounded-xl bg-white px-5 text-sm font-bold text-[#17191b] shadow-md transition-all duration-200 hover:-translate-y-px hover:shadow-lg"
-              }
+              className={buttonClassName(next.waiting ? "secondary" : "secondary")}
             >
               {next.label}
             </Link>
@@ -409,8 +406,8 @@ export default async function ProspectPaymentPage() {
       />
 
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(18rem,0.55fr)]">
-        <section className="rounded-[1.35rem] border border-black/[.07] bg-white p-5 shadow-[0_22px_60px_-42px_rgba(0,0,0,.34)] sm:p-6">
-          <SectionHeader
+        <section className="pc-panel p-5 sm:p-6">
+          <PremiumSectionHeader
             eyebrow={offerName(latest.offer_snapshot) || copy.eyebrow}
             title={copy.statuses[latest.status]}
             description={copy.disclaimer}
@@ -432,8 +429,8 @@ export default async function ProspectPaymentPage() {
           />
         </section>
 
-        <section className="rounded-[1.35rem] border border-black/[.07] bg-white p-5 shadow-[0_22px_60px_-42px_rgba(0,0,0,.34)] sm:p-6">
-          <SectionHeader
+        <section className="pc-panel p-5 sm:p-6">
+          <PremiumSectionHeader
             eyebrow={copy.history}
             title={copy.history}
             description={copy.historyHint}
