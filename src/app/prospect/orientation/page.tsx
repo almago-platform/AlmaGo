@@ -106,7 +106,7 @@ export default async function ProspectOrientationPage() {
       ) : null}
 
       {waitingForDocuments ? (
-        <section className="pc-panel bg-[linear-gradient(135deg,var(--premium-red-wash),var(--premium-paper))] p-5 sm:p-6">
+        <section className="pc-panel pc-premium-card pc-theme-red p-5 sm:p-6">
           <PremiumSectionHeader
             eyebrow={t.confirmed}
             title={t.nextDocuments}
@@ -122,7 +122,7 @@ export default async function ProspectOrientationPage() {
 
       {state.current ? (
         <>
-          <section className="overflow-hidden rounded-[1.4rem] border border-black/[.07] bg-white shadow-[0_26px_70px_-44px_rgba(0,0,0,.38)]">
+          <section className="pc-panel pc-premium-card pc-theme-blue overflow-hidden">
             <div className="grid lg:grid-cols-[minmax(0,1fr)_12.5rem]">
               <div className="p-5 sm:p-5">
                 <p className="text-[11px] font-extrabold uppercase tracking-[0.16em] text-[var(--brand)]">{t.current}</p>
@@ -141,14 +141,14 @@ export default async function ProspectOrientationPage() {
                 </div>
               </div>
 
-              <div className="border-t border-black/[.06] bg-[#f5f1ea] p-4 lg:border-s lg:border-t-0">
+              <div className="pc-glass border-t border-[var(--premium-border)] p-4 lg:border-s lg:border-t-0">
                 <p className="text-xs font-semibold text-[var(--muted)]">{t.savedOn}</p>
                 <p className="mt-1 text-sm font-bold">
                   <bdi dir="auto">{dateFormatter.format(new Date(state.current.created_at))}</bdi>
                 </p>
                 <Link
                   href="/orientation?mode=update"
-                  className="mt-4 inline-flex min-h-10 w-full items-center justify-center rounded-xl border border-[var(--brand-border)] bg-white px-4 text-sm font-bold text-[var(--brand-strong)] shadow-sm transition-all duration-200 hover:-translate-y-px hover:bg-[var(--brand-soft)] hover:shadow-md"
+                  className={buttonClassName("secondary", "mt-4 w-full min-h-10 px-4 py-2")}
                 >
                   {t.update}
                 </Link>
@@ -164,7 +164,7 @@ export default async function ProspectOrientationPage() {
           ) : null}
 
           {recommendations.length ? (
-            <section className="pc-panel bg-white/80 p-5 backdrop-blur-sm sm:p-6">
+            <section className="pc-panel pc-premium-card pc-theme-gold p-5 sm:p-6">
               <PremiumSectionHeader
                 eyebrow={catalogueCopy.projectMatch}
                 title={catalogueCopy.recommendedTitle}
@@ -187,7 +187,7 @@ export default async function ProspectOrientationPage() {
               </div>
             </section>
           ) : (
-            <section className="rounded-[1.4rem] border border-black/[.07] bg-white/80 p-5 shadow-[0_24px_64px_-44px_rgba(0,0,0,.34)] backdrop-blur-sm sm:p-6">
+            <section className="pc-panel pc-premium-card pc-theme-gold p-5 sm:p-6">
               <h2 className="text-xl font-bold">{diagnosticCopy.sections.paths}</h2>
               <div className="mt-4 grid gap-3 md:grid-cols-2">
                 {state.current.diagnostic.paths.map((item) => {
@@ -209,7 +209,7 @@ export default async function ProspectOrientationPage() {
           )}
 
           {state.orientations.length > 1 ? (
-            <details className="rounded-[1.4rem] border border-black/[.07] bg-white/80 p-5 shadow-[0_24px_64px_-44px_rgba(0,0,0,.34)] backdrop-blur-sm sm:p-6">
+            <details className="pc-panel pc-premium-card pc-theme-blue p-5 sm:p-6">
               <summary className="cursor-pointer text-lg font-bold">{t.history}</summary>
               <div className="mt-4 grid gap-2">
                 {state.orientations.slice(1, 6).map((orientation) => (

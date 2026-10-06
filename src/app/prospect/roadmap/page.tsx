@@ -185,7 +185,7 @@ export default async function ProspectRoadmapPage() {
         </div>
       </ProspectPageHero>
 
-      <section className="pc-panel bg-white/80 p-5 backdrop-blur-sm sm:p-6">
+      <section className="pc-panel pc-premium-card pc-theme-blue p-5 sm:p-6">
         <ProspectJourneyProgress
           hasOrientation={Boolean(state.current)}
           orientationConfirmed={state.orientationConfirmed}
@@ -197,7 +197,7 @@ export default async function ProspectRoadmapPage() {
       </section>
 
       <section className="grid items-start gap-4 xl:grid-cols-[1.2fr_0.8fr]">
-        <article className="pc-panel bg-[linear-gradient(135deg,var(--premium-red-wash),var(--premium-paper))] p-5 sm:p-6">
+        <article className="pc-panel pc-premium-card pc-theme-red p-5 sm:p-6">
           <PremiumSectionHeader
             eyebrow={String(current + 1).padStart(2, "0") + " · " + t.current}
             title={currentStep.title}
@@ -212,7 +212,7 @@ export default async function ProspectRoadmapPage() {
         </article>
 
         {nextStep ? (
-          <article className="pc-panel p-5 sm:p-6">
+          <article className="pc-panel pc-premium-card pc-theme-gold p-5 sm:p-6">
             <PremiumSectionHeader
               eyebrow={String(current + 2).padStart(2, "0") + " · " + t.next}
               title={nextStep.title}
@@ -220,7 +220,7 @@ export default async function ProspectRoadmapPage() {
             />
             <Link
               href={nextStep.href}
-              className={buttonClassName("secondary", "mt-5 min-h-10 px-4 py-2")}
+              className={buttonClassName("premium", "mt-5 min-h-10 px-4 py-2")}
             >
               {t.next}
             </Link>
@@ -231,7 +231,7 @@ export default async function ProspectRoadmapPage() {
       {(completedSteps.length || futureSteps.length) ? (
         <section className="grid items-start gap-4 lg:grid-cols-2">
           {completedSteps.length ? (
-            <details className="pc-card p-4">
+            <details className="pc-card pc-premium-card pc-theme-green p-4">
               <summary className="cursor-pointer font-bold">{t.completedGroup}</summary>
               <div className="mt-3 grid gap-2">
                 {completedSteps.map((step, index) => (
@@ -248,14 +248,14 @@ export default async function ProspectRoadmapPage() {
           ) : null}
 
           {futureSteps.length ? (
-            <details className="pc-card p-4">
+            <details className="pc-card pc-premium-card pc-theme-blue p-4">
               <summary className="cursor-pointer font-bold">{t.futureGroup}</summary>
               <div className="mt-3 grid gap-2">
                 {futureSteps.map((step, index) => (
                   <Link
                     key={step.title}
                     href={step.href}
-                    className="flex items-center justify-between gap-3 rounded-xl border border-[var(--premium-border)] bg-[var(--premium-cream)] px-3.5 py-3 text-sm font-semibold transition-all duration-200 hover:-translate-y-px hover:bg-[var(--brand-soft)]"
+                    className="pc-glass flex items-center justify-between gap-3 rounded-xl px-3.5 py-3 text-sm font-semibold transition-all duration-200 hover:-translate-y-0.5 hover:border-[var(--brand-border)]"
                   >
                     <span>{step.title}</span>
                     <span className="text-xs font-normal text-[var(--muted)]">

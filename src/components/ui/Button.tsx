@@ -2,19 +2,21 @@ import type { ButtonHTMLAttributes } from "react";
 
 export const buttonVariants = {
   primary:
-    "border border-transparent bg-[var(--brand)] text-white shadow-[var(--premium-shadow-brand)] hover:bg-[var(--brand-hover)] active:bg-[var(--brand-pressed)] disabled:bg-[var(--brand)] disabled:text-white",
+    "pc-button-primary border border-transparent bg-[var(--brand)] text-white shadow-[var(--premium-shadow-brand)] hover:bg-[var(--brand-hover)] active:bg-[var(--brand-pressed)] disabled:bg-[var(--brand)] disabled:text-white",
+  premium:
+    "pc-button-premium border border-white/10 bg-[var(--premium-ink)] text-white shadow-[var(--premium-shadow-action)] hover:bg-[#222629] active:bg-[#111315] disabled:bg-[var(--premium-ink-muted)] disabled:text-white",
   secondary:
-    "border border-[var(--border-strong)] bg-[var(--surface-raised)] text-[var(--foreground)] shadow-[var(--shadow-xs)] hover:border-[var(--brand-border)] hover:bg-[var(--brand-subtle)] hover:text-[var(--brand-strong)] active:bg-[var(--surface-subtle)] disabled:border-[var(--border)] disabled:bg-[var(--surface-disabled)] disabled:text-[var(--muted)]",
+    "pc-button-secondary border border-[var(--border-strong)] bg-[var(--surface-raised)] text-[var(--foreground)] shadow-[var(--shadow-xs)] hover:border-[var(--brand-border)] hover:bg-[var(--brand-subtle)] hover:text-[var(--brand-strong)] active:bg-[var(--surface-subtle)] disabled:border-[var(--border)] disabled:bg-[var(--surface-disabled)] disabled:text-[var(--muted)]",
   ghost:
-    "border border-transparent bg-transparent text-[var(--foreground-soft)] shadow-none hover:bg-[var(--surface-subtle)] hover:text-[var(--foreground)] active:bg-[var(--surface-muted)] disabled:text-[var(--muted)]",
+    "pc-button-ghost border border-transparent bg-transparent text-[var(--foreground-soft)] shadow-none hover:bg-[var(--surface-subtle)] hover:text-[var(--foreground)] active:bg-[var(--surface-muted)] disabled:text-[var(--muted)]",
   danger:
-    "border border-transparent bg-[var(--danger)] text-white shadow-[var(--shadow-xs)] hover:bg-[var(--danger-strong)] active:bg-[var(--danger-strong)] disabled:bg-[var(--danger)] disabled:text-white",
+    "pc-button-danger border border-transparent bg-[var(--danger)] text-white shadow-[var(--shadow-xs)] hover:bg-[var(--danger-strong)] active:bg-[var(--danger-strong)] disabled:bg-[var(--danger)] disabled:text-white",
 } as const;
 
 export type ButtonVariant = keyof typeof buttonVariants;
 
 export function buttonClassName(variant: ButtonVariant = "primary", className = "") {
-  return `pc-button inline-flex min-h-[var(--control-height)] items-center justify-center gap-2 px-5 py-2.5 text-sm font-semibold transition-[background-color,border-color,color,box-shadow,transform] duration-150 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-55 disabled:shadow-none disabled:active:translate-y-0 ${buttonVariants[variant]} ${className}`;
+  return `pc-button inline-flex min-h-[var(--control-height)] items-center justify-center gap-2 px-5 py-2.5 text-sm font-semibold transition-[background-color,border-color,color,box-shadow,transform,filter] duration-150 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-55 disabled:shadow-none disabled:active:translate-y-0 ${buttonVariants[variant]} ${className}`;
 }
 
 export function Button({

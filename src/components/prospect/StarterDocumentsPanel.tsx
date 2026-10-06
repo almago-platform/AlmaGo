@@ -291,59 +291,91 @@ export function StarterDocumentsPanel({
       {(preBac || !requiredReady) ? (
         <form
           onSubmit={upload}
-          className="pc-panel p-4 sm:p-5"
+          className="pc-panel pc-theme-blue overflow-hidden"
         >
-          <h2 className="text-xl font-bold">Ajouter un document</h2>
-          <div className="mt-4 grid gap-3 sm:grid-cols-2">
-            <label className="text-sm font-semibold">
-              Type de document
-              <select
-                className="field mt-2 w-full rounded-xl border-black/10 bg-[#fbfaf7] shadow-none"
-                value={category}
-                onChange={(event) => setCategory(event.target.value)}
+          <div className="grid min-w-0 lg:grid-cols-[minmax(0,1.28fr)_minmax(17rem,0.72fr)]">
+            <div className="min-w-0 p-4 sm:p-5 lg:p-6">
+              <p className="pc-kicker">Ajout sécurisé</p>
+              <h2 className="mt-2 text-xl font-bold">Ajouter un document</h2>
+
+              <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                <label className="text-sm font-semibold">
+                  Type de document
+                  <select
+                    className="field mt-2 w-full rounded-xl border-black/10 bg-white/85 shadow-none"
+                    value={category}
+                    onChange={(event) => setCategory(event.target.value)}
+                  >
+                    {documentRequirements.map((item) => (
+                      <option key={item.category} value={item.category}>{item.label}</option>
+                    ))}
+                  </select>
+                </label>
+                <div>
+                  <span className="text-sm font-semibold">Fichier</span>
+                  <input
+                    ref={inputRef}
+                    id="prospect-document-file"
+                    className="sr-only"
+                    type="file"
+                    accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"
+                    onChange={(event) => {
+                      setSelectedFileName(event.target.files?.[0]?.name || "");
+                      setError(null);
+                    }}
+                  />
+                  <label
+                    htmlFor="prospect-document-file"
+                    className="pc-glass mt-2 flex min-h-24 cursor-pointer flex-col items-center justify-center rounded-[1.1rem] border-dashed px-4 py-4 text-center transition-all duration-200 hover:-translate-y-0.5 hover:border-[var(--brand)] hover:shadow-[0_18px_46px_-34px_rgba(216,6,33,.32)]"
+                  >
+                    <span className="text-sm font-bold text-[var(--foreground)]">
+                      {selectedFileName || "Choisir un fichier"}
+                    </span>
+                    <span className="mt-1 text-xs leading-5 text-[var(--muted)]">
+                      PDF, JPG ou PNG · 10 MiB maximum
+                    </span>
+                  </label>
+                </div>
+              </div>
+
+              {error ? <p role="alert" className="mt-4 text-sm font-semibold text-red-700">{error}</p> : null}
+              {message ? <p role="status" className="mt-4 text-sm font-semibold text-emerald-800">{message}</p> : null}
+
+              <button
+                type="submit"
+                disabled={busy || !selectedFileName}
+                className={buttonClassName("primary", "mt-5 disabled:cursor-not-allowed disabled:opacity-50")}
               >
-                {documentRequirements.map((item) => (
-                  <option key={item.category} value={item.category}>{item.label}</option>
-                ))}
-              </select>
-            </label>
-            <div>
-              <span className="text-sm font-semibold">Fichier</span>
-              <input
-                ref={inputRef}
-                id="prospect-document-file"
-                className="sr-only"
-                type="file"
-                accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"
-                onChange={(event) => {
-                  setSelectedFileName(event.target.files?.[0]?.name || "");
-                  setError(null);
-                }}
-              />
-              <label
-                htmlFor="prospect-document-file"
-                className="mt-2 flex min-h-24 cursor-pointer flex-col items-center justify-center rounded-[1.1rem] border border-dashed border-black/20 bg-[#f8f5ef] px-4 py-4 text-center transition-all duration-200 hover:-translate-y-px hover:border-[var(--brand)] hover:bg-[var(--brand-soft)] hover:shadow-[0_18px_46px_-36px_rgba(216,6,33,.32)]"
-              >
-                <span className="text-sm font-bold text-[var(--foreground)]">
-                  {selectedFileName || "Choisir un fichier"}
-                </span>
-                <span className="mt-1 text-xs leading-5 text-[var(--muted)]">
-                  PDF, JPG ou PNG · 10 MiB maximum
-                </span>
-              </label>
+                {busy ? "Envoi…" : "Envoyer le document"}
+              </button>
             </div>
+
+            <aside className="border-t border-[var(--premium-border)] bg-white/55 p-4 sm:p-5 lg:border-s lg:border-t-0 lg:p-6">
+              <p className="text-[11px] font-extrabold uppercase tracking-[0.14em] text-[var(--info-strong)]">
+                Avant l’envoi
+              </p>
+              <ol className="mt-4 grid gap-3">
+                {[
+                  ["1", "Choisissez la bonne catégorie", "Passeport, Bac, relevé ou certificat de langue."],
+                  ["2", "Envoyez un fichier lisible", "PDF, JPG ou PNG, jusqu’à 10 MiB."],
+                  ["3", "Suivez la validation", "Campus Allemagne affiche ensuite le statut du document."],
+                ].map(([number, title, body]) => (
+                  <li key={number} className="pc-glass rounded-[1rem] p-3.5">
+                    <div className="flex items-start gap-3">
+                      <span className="pc-theme-number">{number}</span>
+                      <div className="min-w-0">
+                        <p className="text-sm font-bold text-[var(--foreground)]">{title}</p>
+                        <p className="mt-1 text-xs leading-5 text-[var(--muted)]">{body}</p>
+                      </div>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+              <p className="mt-4 text-xs leading-5 text-[var(--muted)]">
+                L’envoi d’un document ne vaut pas validation : son état est confirmé après contrôle Campus.
+              </p>
+            </aside>
           </div>
-
-          {error ? <p role="alert" className="mt-4 text-sm font-semibold text-red-700">{error}</p> : null}
-          {message ? <p role="status" className="mt-4 text-sm font-semibold text-emerald-800">{message}</p> : null}
-
-          <button
-            type="submit"
-            disabled={busy || !selectedFileName}
-            className={buttonClassName("primary", "mt-5 disabled:cursor-not-allowed disabled:opacity-50")}
-          >
-            {busy ? "Envoi…" : "Envoyer le document"}
-          </button>
         </form>
       ) : null}
 

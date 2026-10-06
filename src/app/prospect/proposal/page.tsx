@@ -116,7 +116,7 @@ export default async function ProspectProposalPage() {
       ) : null}
 
       {preBac && starterDocuments ? (
-        <section className="pc-panel bg-[linear-gradient(135deg,var(--premium-red-wash),var(--premium-paper))] p-4 sm:p-5">
+        <section className="pc-panel pc-premium-card pc-theme-green p-4 sm:p-5">
           <PremiumSectionHeader
             eyebrow="Projet avant le Bac"
             title="Votre accompagnement de préparation est déjà actif"
@@ -154,7 +154,7 @@ export default async function ProspectProposalPage() {
           </div>
         </section>
       ) : starterDocuments ? (
-        <section className="pc-panel bg-[linear-gradient(135deg,var(--premium-red-wash),var(--premium-paper))] p-4 sm:p-5">
+        <section className="pc-panel pc-premium-card pc-theme-red p-4 sm:p-5">
           <PremiumSectionHeader
             eyebrow={dashboardCopy.proposalWaiting}
             title={t.documentsTitle}

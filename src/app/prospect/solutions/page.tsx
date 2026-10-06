@@ -158,7 +158,7 @@ export default async function ProspectSolutionsPage() {
       <nav aria-label={t.title} className="grid gap-3 md:grid-cols-2">
         <a
           href="#prospect-language-solutions"
-          className="pc-card pc-card-interactive group flex min-w-0 items-center gap-4 p-4 sm:p-5"
+          className="pc-card pc-card-interactive pc-premium-card pc-theme-red group flex min-w-0 items-center gap-4 p-4 sm:p-5"
         >
           <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-[var(--brand-soft)] text-lg font-black text-[var(--brand)]">A</span>
           <span className="min-w-0">
@@ -170,7 +170,7 @@ export default async function ProspectSolutionsPage() {
 
         <a
           href="#prospect-finance-solutions"
-          className="pc-card pc-card-interactive group flex min-w-0 items-center gap-4 p-4 sm:p-5"
+          className="pc-card pc-card-interactive pc-premium-card pc-theme-blue group flex min-w-0 items-center gap-4 p-4 sm:p-5"
         >
           <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-[var(--premium-ink)] text-lg font-black text-white">€</span>
           <span className="min-w-0">
@@ -190,7 +190,7 @@ export default async function ProspectSolutionsPage() {
         </div>
 
         {languageCourses.length ? (
-          <div className="grid items-start gap-4 lg:grid-cols-2 2xl:grid-cols-3">
+          <div className="grid items-start gap-4 lg:grid-cols-2 xl:grid-cols-3">
             {languageCourses.map((course) => {
               const level = languageLevel(course);
               const price = formatPrice(course.price_cents, course.currency, intlLocale);
@@ -203,7 +203,7 @@ export default async function ProspectSolutionsPage() {
               return (
                 <article
                   key={course.id}
-                  className="pc-card pc-card-interactive p-4 sm:p-5"
+                  className="pc-card pc-card-interactive pc-premium-card p-4 sm:p-5"
                 >
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <p className="text-[11px] font-extrabold uppercase tracking-[0.16em] text-[var(--brand)]">
@@ -275,11 +275,11 @@ export default async function ProspectSolutionsPage() {
                 <p className="mt-1 max-w-3xl text-sm leading-6 text-[var(--muted)]">{sectionCopy.description}</p>
 
                 {options.length ? (
-                  <div className="mt-4 grid items-start gap-4 lg:grid-cols-2 2xl:grid-cols-3">
+                  <div className="mt-4 grid items-start gap-4 lg:grid-cols-2 xl:grid-cols-3">
                     {options.map((option) => (
                       <article
                         key={option.id}
-                        className="pc-card pc-card-interactive p-4 sm:p-5"
+                        className="pc-card pc-card-interactive pc-premium-card pc-theme-blue p-4 sm:p-5"
                       >
                         <p className="text-[11px] font-extrabold uppercase tracking-[0.14em] text-[var(--brand)]"><bdi dir="auto">{option.provider_name}</bdi></p>
                         {option.product_name ? (
@@ -316,7 +316,7 @@ export default async function ProspectSolutionsPage() {
                               href={option.application_url}
                               target="_blank"
                               rel="noreferrer"
-                              className={buttonClassName("primary", "min-h-10 px-4 py-2")}
+                              className={buttonClassName("premium", "min-h-10 px-4 py-2")}
                             >
                               {t.provider}
                             </a>

@@ -699,3 +699,186 @@ html[dir="rtl"] .pc-empty-state-visual::before {
     transform: none;
   }
 }
+
+
+/* -------------------------------------------------------------------------- */
+/* V3.2 Premium Interaction & Theme Polish                                     */
+/* -------------------------------------------------------------------------- */
+
+.pc-theme-red,
+.pc-theme-gold,
+.pc-theme-amber,
+.pc-theme-green,
+.pc-theme-blue,
+.pc-theme-ink {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.pc-theme-red {
+  border-color: color-mix(in srgb, var(--brand) 14%, var(--premium-border));
+  background:
+    radial-gradient(circle at 92% 8%, rgba(219, 4, 35, 0.09), transparent 15rem),
+    linear-gradient(145deg, rgba(255, 241, 243, 0.92), rgba(255, 255, 255, 0.98) 62%);
+}
+
+.pc-theme-gold,
+.pc-theme-amber {
+  border-color: color-mix(in srgb, var(--accent) 25%, var(--premium-border));
+  background:
+    radial-gradient(circle at 88% 0%, rgba(252, 181, 10, 0.16), transparent 15rem),
+    linear-gradient(145deg, rgba(255, 249, 233, 0.96), rgba(255, 255, 255, 0.98) 66%);
+}
+
+.pc-theme-green {
+  border-color: color-mix(in srgb, var(--success) 18%, var(--premium-border));
+  background:
+    radial-gradient(circle at 90% 4%, rgba(24, 121, 78, 0.11), transparent 14rem),
+    linear-gradient(145deg, rgba(239, 249, 243, 0.96), rgba(255, 255, 255, 0.98) 66%);
+}
+
+.pc-theme-blue {
+  border-color: color-mix(in srgb, var(--info) 16%, var(--premium-border));
+  background:
+    radial-gradient(circle at 92% 6%, rgba(37, 99, 166, 0.09), transparent 15rem),
+    linear-gradient(145deg, rgba(242, 246, 248, 0.98), rgba(255, 255, 255, 0.98) 68%);
+}
+
+.pc-theme-ink {
+  border-color: rgba(255, 255, 255, 0.08);
+  background:
+    radial-gradient(circle at 88% 2%, rgba(252, 181, 10, 0.13), transparent 14rem),
+    radial-gradient(circle at 4% 110%, rgba(219, 4, 35, 0.16), transparent 18rem),
+    linear-gradient(145deg, #1b1e20, #111315);
+  color: white;
+  box-shadow: var(--premium-shadow-action);
+}
+
+.pc-glass {
+  border: 1px solid rgba(255, 255, 255, 0.52);
+  background: rgba(255, 255, 255, 0.66);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.78),
+    0 24px 60px -44px rgba(23, 25, 27, 0.4);
+  backdrop-filter: blur(16px) saturate(125%);
+}
+
+.pc-premium-card {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.72),
+    var(--premium-shadow-card);
+  transition:
+    transform var(--premium-duration-base) var(--premium-ease-out),
+    border-color var(--premium-duration-base) var(--premium-ease-standard),
+    box-shadow var(--premium-duration-base) var(--premium-ease-standard),
+    filter var(--premium-duration-base) var(--premium-ease-standard);
+}
+
+.pc-premium-card:hover {
+  transform: translateY(-3px);
+  border-color: color-mix(in srgb, var(--brand) 18%, var(--premium-border));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.8),
+    0 32px 78px -46px rgba(23, 25, 27, 0.5);
+}
+
+.pc-theme-number {
+  display: inline-grid;
+  place-items: center;
+  width: 2.1rem;
+  height: 2.1rem;
+  flex: 0 0 auto;
+  border-radius: 999px;
+  background: var(--premium-ink);
+  color: white;
+  font-size: 0.72rem;
+  font-weight: 800;
+  box-shadow: 0 10px 24px -16px rgba(23, 25, 27, 0.72);
+}
+
+/* Premium button interaction: subtle lift, press feedback and a single light sweep. */
+.pc-button {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  will-change: transform;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    var(--shadow-xs);
+}
+
+.pc-button-primary,
+.pc-button-premium {
+  letter-spacing: -0.01em;
+}
+
+.pc-button-primary {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    0 16px 34px -20px rgba(219, 4, 35, 0.76);
+}
+
+.pc-button-premium {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 18px 38px -22px rgba(0, 0, 0, 0.78);
+}
+
+.pc-button-secondary {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 10px 24px -22px rgba(23, 25, 27, 0.38);
+}
+
+.pc-button-primary::after,
+.pc-button-premium::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(110deg, transparent 22%, rgba(255, 255, 255, 0.22) 48%, transparent 74%);
+  transform: translateX(-125%);
+  transition: transform 520ms var(--premium-ease-out);
+}
+
+.pc-button-primary:not(:disabled):hover::after,
+.pc-button-premium:not(:disabled):hover::after {
+  transform: translateX(125%);
+}
+
+.pc-button:not(:disabled):hover {
+  transform: translateY(-2px);
+  filter: saturate(1.04);
+}
+
+.pc-button:not(:disabled):active {
+  transform: translateY(0) scale(0.985);
+}
+
+.pc-button:focus-visible {
+  box-shadow:
+    0 0 0 4px color-mix(in srgb, var(--brand) 18%, transparent),
+    0 12px 34px -22px rgba(23, 25, 27, 0.5);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pc-premium-card,
+  .pc-button,
+  .pc-button-primary::after,
+  .pc-button-premium::after {
+    transition-duration: 0.01ms;
+  }
+
+  .pc-premium-card:hover,
+  .pc-button:not(:disabled):hover,
+  .pc-button:not(:disabled):active {
+    transform: none;
+  }
+
+  .pc-button-primary::after,
+  .pc-button-premium::after {
+    display: none;
+  }
+}

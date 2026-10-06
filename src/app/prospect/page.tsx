@@ -403,7 +403,7 @@ export default async function ProspectDashboardPage() {
             )
           }
         />
-        <section className="pc-panel p-4 sm:p-5">
+        <section className="pc-panel pc-premium-card pc-theme-blue p-4 sm:p-5">
           <PremiumSectionHeader
             eyebrow={t.proposal}
             title={proposalStatus(state.intake, t)}
@@ -437,7 +437,7 @@ export default async function ProspectDashboardPage() {
       />
 
       {recommendations.length ? (
-        <section className="rounded-[1.4rem] border border-black/[.06] bg-white/75 p-4 shadow-[0_24px_64px_-44px_rgba(0,0,0,.34)] backdrop-blur-sm sm:p-5">
+        <section className="pc-panel pc-premium-card pc-theme-gold p-4 sm:p-5">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
               <p className="text-[11px] font-extrabold uppercase tracking-[0.15em] text-[var(--brand)]">
@@ -450,7 +450,7 @@ export default async function ProspectDashboardPage() {
             </div>
             <Link
               href="/prospect/catalogue"
-              className="inline-flex min-h-10 items-center rounded-xl border border-black/10 bg-white px-4 text-sm font-semibold text-[#202326] shadow-sm transition-all duration-200 hover:-translate-y-px hover:border-black/20 hover:shadow-md"
+              className={buttonClassName("secondary", "min-h-10 px-4 py-2")}
             >
               {t.recommendedViewAll}
             </Link>
@@ -478,7 +478,7 @@ export default async function ProspectDashboardPage() {
 
       <nav
         aria-label={t.browseTitle}
-        className="grid gap-2 rounded-[var(--premium-radius-card)] border border-[var(--premium-border-inverse)] bg-[var(--premium-ink)] p-2.5 text-white shadow-[var(--premium-shadow-action)] sm:grid-cols-3"
+        className="pc-theme-ink grid gap-2 rounded-[var(--premium-radius-card)] p-2.5 text-white sm:grid-cols-3"
       >
         <Link
           href="/prospect/catalogue"
@@ -501,7 +501,7 @@ export default async function ProspectDashboardPage() {
       </nav>
 
       {state.current ? (
-        <section className="rounded-[1.3rem] border border-black/[.07] bg-white/80 p-4 shadow-[0_20px_55px_-42px_rgba(0,0,0,.3)] sm:p-5">
+        <section className="pc-panel pc-premium-card pc-theme-blue p-4 sm:p-5">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="min-w-0">
               <p className="text-[11px] font-extrabold uppercase tracking-[0.15em] text-[var(--brand)]">
@@ -513,7 +513,7 @@ export default async function ProspectDashboardPage() {
             </div>
             <Link
               href="/prospect/orientation"
-              className="inline-flex min-h-10 shrink-0 items-center rounded-xl border border-black/10 bg-white px-4 text-sm font-semibold text-[#202326] shadow-sm transition-all duration-200 hover:-translate-y-px hover:border-black/20 hover:shadow-md"
+              className={buttonClassName("secondary", "min-h-10 shrink-0 px-4 py-2")}
             >
               {t.updateProject}
             </Link>
