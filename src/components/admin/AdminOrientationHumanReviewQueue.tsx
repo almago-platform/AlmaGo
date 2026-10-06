@@ -37,6 +37,29 @@ const pipelineLabels: Record<string, string> = {
   provider_unavailable: "Provider indisponible",
 };
 
+const verificationStatusLabels: Record<string, string> = {
+  verified: "vérifié",
+  needs_review: "à vérifier",
+  unknown: "inconnu",
+};
+
+const verificationFieldLabels: Record<string, string> = {
+  programme_exists: "Programme confirmé",
+  degree_level: "Niveau du diplôme",
+  city: "Ville",
+  teaching_language: "Langue d’enseignement",
+  german_language_requirement: "Exigence d’allemand",
+  english_language_requirement: "Exigence d’anglais",
+  accepted_language_certificates: "Certificats de langue acceptés",
+  intake_terms: "Rentrées",
+  winter_deadline: "Date limite hiver",
+  summer_deadline: "Date limite été",
+  application_route: "Voie de candidature",
+  application_url: "Lien de candidature",
+  studienkolleg_requirement: "Studienkolleg",
+  tuition_or_semester_fees: "Frais de scolarité / semestre",
+};
+
 function initialSelection(review: ReviewRow) {
   if (Array.isArray(review.approved_selection) && review.approved_selection.length) {
     return review.approved_selection;
@@ -151,7 +174,7 @@ export function AdminOrientationHumanReviewQueue({
   }
 
   return (
-    <section aria-labelledby="orientation-human-review-title" className="mb-8">
+    <section aria-labelledby="orientation-human-review-title" className="mb-7">
       <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
         <div>
           <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">
@@ -159,11 +182,11 @@ export function AdminOrientationHumanReviewQueue({
           </p>
           <h2
             id="orientation-human-review-title"
-            className="mt-1 text-2xl font-semibold tracking-[-0.03em] text-slate-950"
+            className="mt-1 text-xl font-semibold tracking-[-0.025em] text-slate-950 sm:text-2xl"
           >
             Audits Orientation V4 a posteriori
           </h2>
-          <p className="mt-1 max-w-4xl text-sm leading-6 text-slate-600">
+          <p className="mt-1 max-w-5xl text-sm leading-6 text-slate-600">
             Le candidat a déjà reçu son résultat automatique avant cette étape. Ici, le conseiller audite ensuite A, B, C et D pour le contrôle qualité.
             Cet audit ne bloque ni ne retire rétroactivement le résultat déjà affiché et ne publie jamais automatiquement une recommandation étudiant.
           </p>
@@ -230,7 +253,7 @@ export function AdminOrientationHumanReviewQueue({
                   </div>
                 </div>
 
-                <div className="mt-5 grid gap-4 xl:grid-cols-2">
+                <div className="mt-5 grid gap-3">
                   <details className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4">
                     <summary className="cursor-pointer text-sm font-bold">
                       A — candidats découverts ({discoveryCandidates.length})
@@ -287,17 +310,17 @@ export function AdminOrientationHumanReviewQueue({
                                   {candidate.institution || "Établissement"}
                                   {candidate.city ? ` · ${candidate.city}` : ""}
                                   {" · "}
-                                  <strong>{verification.overallStatus || "unknown"}</strong>
+                                  <strong>{verificationStatusLabels[verification.overallStatus] || verification.overallStatus || "inconnu"}</strong>
                                 </span>
                               </span>
                             </label>
                             {Array.isArray(verification.facts) ? (
-                              <dl className="mt-3 grid gap-2 sm:grid-cols-2">
+                              <dl className="mt-3 grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
                                 {verification.facts.filter((fact: any) => fact.status !== "unknown").map((fact: any) => (
                                   <div key={fact.field} className="text-xs leading-5">
-                                    <dt className="font-bold">{fact.field}</dt>
+                                    <dt className="font-bold">{verificationFieldLabels[fact.field] || fact.field}</dt>
                                     <dd className="text-slate-600">
-                                      {factValue(fact.value)} · {fact.status}
+                                      {factValue(fact.value)} · {verificationStatusLabels[fact.status] || fact.status}
                                       {fact.sourceUrl ? (
                                         <>
                                           {" · "}
@@ -318,7 +341,7 @@ export function AdminOrientationHumanReviewQueue({
                   </details>
                 </div>
 
-                <div className="mt-4 grid gap-4 xl:grid-cols-2">
+                <div className="mt-4 grid items-start gap-4 xl:grid-cols-[minmax(0,.9fr)_minmax(0,1.1fr)]">
                   <section className="rounded-[var(--radius-control)] border border-[var(--border)] bg-white p-4">
                     <p className="text-sm font-bold">C — shortlist déterministe</p>
                     <div className="mt-3 space-y-3">
