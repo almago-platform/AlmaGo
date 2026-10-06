@@ -6,6 +6,7 @@ import { NextActionPanel } from "@/components/product/NextActionPanel";
 import { redirect } from "next/navigation";
 import { DocumentsPanel } from "@/components/student/DocumentsPanel";
 import { ButtonLink } from "@/components/ui/ButtonLink";
+import { buttonClassName } from "@/components/ui/Button";
 import { createClient } from "@/lib/supabase/server";
 import { getRequestLocale } from "@/lib/i18n-server";
 import { studentDocumentsCopy } from "@/content/student-documents-copy";
@@ -97,7 +98,7 @@ export default async function StudentDocumentsPage() {
         ]}
         actions={
           <>
-            <Link href="/student/procedure" className="inline-flex min-h-10 items-center rounded-[var(--radius-control)] border border-[var(--border-strong)] bg-[var(--surface)] px-4 text-sm font-semibold">
+            <Link href="/student/procedure" className={buttonClassName("secondary", "min-h-10 px-4 py-2")}>
               {locale === "fr" ? "Voir ma procédure" : locale === "ar" ? "عرض إجراءاتي" : locale === "de" ? "Mein Verfahren" : "View procedure"}
             </Link>
           </>
