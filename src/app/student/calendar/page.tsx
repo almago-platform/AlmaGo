@@ -1,4 +1,5 @@
 import { ButtonLink } from "@/components/ui/ButtonLink";
+import { StudentPageFrame } from "@/components/student/StudentPageFrame";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { StudentJourneyHeader } from "@/components/student/StudentJourneyHeader";
@@ -46,7 +47,7 @@ export default async function StudentCalendarPage() {
 
   const fr = locale === "fr";
   return (
-    <main className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 sm:py-7 lg:px-8 lg:py-9">
+    <StudentPageFrame>
       <StudentJourneyHeader
         current="applications"
         eyebrow={fr ? "Calendrier" : "التقويم"}
@@ -109,7 +110,7 @@ export default async function StudentCalendarPage() {
           </section>
         </div>
       )}
-    </main>
+    </StudentPageFrame>
   );
 }
 
