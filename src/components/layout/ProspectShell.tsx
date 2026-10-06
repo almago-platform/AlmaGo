@@ -207,9 +207,9 @@ export function ProspectShell({
       ) : null}
 
       <div className="mx-auto grid min-h-[calc(100vh-67px)] max-w-[100rem] gap-5 px-4 py-4 sm:px-6 sm:py-5 lg:grid-cols-[13rem_minmax(0,1fr)] lg:gap-0 lg:px-0 lg:py-0 xl:grid-cols-[13.25rem_minmax(0,1fr)] 2xl:grid-cols-[13.5rem_minmax(0,1fr)]">
-        <aside className="relative hidden self-stretch overflow-visible border-e border-white/10 bg-[#17191b] text-white shadow-[18px_0_55px_-42px_rgba(0,0,0,.72)] lg:block">
+        <aside className="prospect-desktop-rail relative hidden self-stretch overflow-visible border-e border-white/10 bg-[#17191b] text-white lg:block">
           <div className="lg:sticky lg:top-[67px] lg:max-h-[calc(100vh-67px)] lg:overflow-y-auto lg:py-5 [scrollbar-color:rgba(255,255,255,.16)_transparent] [scrollbar-width:thin]">
-          <div className="relative overflow-hidden border-b border-white/10 px-4 py-4">
+            <div className="relative overflow-hidden border-b border-white/10 px-4 py-4">
             <div className="absolute -end-9 -top-10 h-24 w-24 rounded-full bg-[var(--brand)]/20 blur-2xl" aria-hidden="true" />
             <div className="absolute end-7 top-5 h-8 w-8 rounded-full bg-[var(--accent)]/15 blur-lg" aria-hidden="true" />
             <p className="relative text-[10px] font-extrabold uppercase tracking-[0.18em] text-[var(--accent)]">{t.area}</p>
@@ -226,9 +226,9 @@ export function ProspectShell({
             ) : null}
           </div>
           {navBlock()}
-          <div className="mx-3 mb-3 rounded-xl border border-white/10 bg-white/[.045] px-3 py-3 text-[11px] leading-5 text-white/52">
-            Campus Allemagne · Votre projet, étape par étape.
-          </div>
+            <div className="mx-3 mb-3 rounded-xl border border-white/10 bg-white/[.045] px-3 py-3 text-[11px] leading-5 text-white/52">
+              Campus Allemagne · Votre projet, étape par étape.
+            </div>
           </div>
         </aside>
 
