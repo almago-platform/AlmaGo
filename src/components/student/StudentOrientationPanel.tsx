@@ -11,7 +11,7 @@ import type { MasterRequirementsMatch, RequirementMatchResult } from "@/lib/mast
 import { formatDeadline } from "@/lib/phase4";
 import { localizeCatalogueLabel, localizeProgramRequirement } from "@/lib/student/arabic-display";
 
-type University = { name: string; city: string; bundesland?: string | null };
+type University = { name: string; city: string; bundesland?: string | null; tuition_notes?: string | null };
 type Program = {
   id?: string;
   name: string;
@@ -25,6 +25,7 @@ type Program = {
   german_level_required: string | null;
   english_level_required: string | null;
   diploma_required: string | null;
+  application_fee_notes?: string | null;
   universities: University | University[] | null;
 };
 
@@ -79,6 +80,7 @@ export function StudentOrientationPanel({
   const [searchQuery, setSearchQuery] = useState("");
   const [degreeFilter, setDegreeFilter] = useState("all");
   const [languageFilter, setLanguageFilter] = useState("all");
+  const ui = programCardCopy[locale];
   const visibleItems = items.filter((item) => {
     const program = firstProgram(item);
     const university = firstUniversity(program);
@@ -89,6 +91,10 @@ export function StudentOrientationPanel({
     const matchesLanguage = languageFilter === "all" || program.teaching_language === languageFilter;
     return matchesQuery && matchesDegree && matchesLanguage;
   });
+
+  const compareItems = compareIds
+    .map((id) => items.find((item) => item.id === id))
+    .filter((item): item is Recommendation => Boolean(item && firstProgram(item)));
 
   const interestedCount = items.filter((item) => Boolean(item.student_interest_at)).length;
   const comparableItems = items.filter((item) => firstProgram(item));
