@@ -23,7 +23,7 @@ export default async function StudentOrientationPage() {
   ] = await Promise.all([
     supabase
       .from("program_recommendations")
-      .select("id,status,note,student_interest_at,programs(id,name,degree_level,field,teaching_language,intake_terms,winter_deadline,summer_deadline,application_url,german_level_required,english_level_required,diploma_required,requirements,universities(name,city,bundesland))")
+      .select("id,status,note,student_interest_at,programs(id,name,degree_level,field,teaching_language,intake_terms,winter_deadline,summer_deadline,application_url,german_level_required,english_level_required,diploma_required,application_fee_notes,requirements,universities(name,city,bundesland,tuition_notes))")
       .eq("is_archived", false)
       .order("created_at", { ascending: false }),
     supabase.from("applications").select("program_id,status"),
