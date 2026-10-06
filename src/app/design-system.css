@@ -890,3 +890,17 @@ html[dir="rtl"] .pc-empty-state-visual::before {
     display: none;
   }
 }
+
+
+/* Prospect desktop navigation is a structural rail, not a floating card. */
+@media (min-width: 1024px) {
+  .prospect-desktop-rail::before {
+    content: "";
+    position: absolute;
+    inset-block: 0;
+    inset-inline-end: 100%;
+    width: max(0px, calc((100vw - 100rem) / 2));
+    background: #17191b;
+    pointer-events: none;
+  }
+}
