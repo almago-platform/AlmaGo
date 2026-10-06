@@ -375,30 +375,43 @@ export default async function ProspectDashboardPage() {
         <JourneyRail steps={lifecycleSteps} />
       </section>
 
-      <NextActionPanel
-        eyebrow={t.nextAction}
-        title={waiting ? v2.waitingTitle : action.label}
-        description={
-          waiting
-            ? waitingDescription
-            : !preBac && (!state.intake || state.intake.status === "starter_documents")
-              ? t.documentsSummary(
-                  state.starterSummary.approved,
-                  state.starterSummary.required,
-                  state.starterSummary.pending,
-                  state.starterSummary.needsReplacement,
-                )
-              : undefined
-        }
-        waiting={waiting}
-        action={
-          waiting ? undefined : (
-            <Link href={action.href} className={buttonClassName("primary", "pc-action-primary")}>
-              {action.label}
-            </Link>
-          )
-        }
-      />
+      <div className="prospect-dashboard-decision-grid">
+        <NextActionPanel
+          eyebrow={t.nextAction}
+          title={waiting ? v2.waitingTitle : action.label}
+          description={
+            waiting
+              ? waitingDescription
+              : !preBac && (!state.intake || state.intake.status === "starter_documents")
+                ? t.documentsSummary(
+                    state.starterSummary.approved,
+                    state.starterSummary.required,
+                    state.starterSummary.pending,
+                    state.starterSummary.needsReplacement,
+                  )
+                : undefined
+          }
+          waiting={waiting}
+          action={
+            waiting ? undefined : (
+              <Link href={action.href} className={buttonClassName("primary", "pc-action-primary")}>
+                {action.label}
+              </Link>
+            )
+          }
+        />
+        <section className="pc-panel p-4 sm:p-5">
+          <PremiumSectionHeader
+            eyebrow={t.proposal}
+            title={proposalStatus(state.intake, t)}
+            actions={
+              <Link href="/prospect/proposal" className={buttonClassName("secondary", "min-h-10 px-4 py-2")}>
+                {t.viewProposal}
+              </Link>
+            }
+          />
+        </section>
+      </div>
 
       <ResponsibilityStrip
         items={[
@@ -419,18 +432,6 @@ export default async function ProspectDashboardPage() {
           },
         ]}
       />
-
-      <section className="pc-panel p-4 sm:p-5">
-        <PremiumSectionHeader
-          eyebrow={t.proposal}
-          title={proposalStatus(state.intake, t)}
-          actions={
-            <Link href="/prospect/proposal" className={buttonClassName("secondary", "min-h-10 px-4 py-2")}>
-              {t.viewProposal}
-            </Link>
-          }
-        />
-      </section>
 
       {recommendations.length ? (
         <section className="rounded-[1.4rem] border border-black/[.06] bg-white/75 p-4 shadow-[0_24px_64px_-44px_rgba(0,0,0,.34)] backdrop-blur-sm sm:p-5">

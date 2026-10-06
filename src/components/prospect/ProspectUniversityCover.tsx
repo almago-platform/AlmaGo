@@ -21,14 +21,20 @@ export function ProspectUniversityCover({
   city,
   media,
   compact = false,
+  wide = false,
 }: {
   universityName: string;
   city: string | null;
   media: OrientationUniversityMedia | null;
   compact?: boolean;
+  wide?: boolean;
 }) {
   const imageUrl = media?.coverImageUrl || null;
-  const heightClass = compact ? "h-36" : "h-52";
+  const heightClass = wide
+    ? "h-48 lg:h-full lg:min-h-[22rem]"
+    : compact
+      ? "h-36"
+      : "h-52";
   const imageStyle = imageUrl
     ? {
         backgroundImage: `linear-gradient(180deg, rgba(12,14,15,0.02) 0%, rgba(12,14,15,0.16) 42%, rgba(12,14,15,0.86) 100%), url(${JSON.stringify(imageUrl)})`,

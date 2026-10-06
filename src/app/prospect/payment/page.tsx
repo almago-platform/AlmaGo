@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ActivityTimeline, type ActivityTimelineItem } from "@/components/product/ActivityTimeline";
 import { DossierHeader } from "@/components/product/DossierHeader";
+import { ProspectEditorialPanel } from "@/components/prospect/ProspectEditorialPanel";
 import { JourneyRail, type JourneyRailStep } from "@/components/product/JourneyRail";
 import { NextActionPanel } from "@/components/product/NextActionPanel";
 import { ResponsibilityStrip } from "@/components/product/ResponsibilityStrip";
@@ -13,6 +14,7 @@ import { getRequestLocale } from "@/lib/i18n-server";
 import { formatMinorCurrency } from "@/lib/money";
 import { getPhase2StudentAccess } from "@/lib/phase2/access";
 import { isPhase2PaymentOrchestrationEnabled } from "@/lib/phase2/config";
+import { prospectMedia } from "@/lib/prospect/media";
 
 type PurchaseStatus =
   | "payment_pending"
@@ -173,24 +175,27 @@ export default async function ProspectPaymentPage() {
           statusVariant="neutral"
         />
 
-        <section className="space-y-3">
-          <PremiumSectionHeader eyebrow={copy.progression} title={copy.noneTitle} />
-          <JourneyRail steps={emptySteps} ariaLabel={copy.progression} />
-        </section>
+        <div className="grid min-w-0 items-stretch gap-5 xl:grid-cols-[minmax(0,1.12fr)_minmax(20rem,0.88fr)]">
+          <section className="min-w-0 space-y-3">
+            <PremiumSectionHeader eyebrow={copy.progression} title={copy.noneTitle} />
+            <JourneyRail steps={emptySteps} ariaLabel={copy.progression} />
+          </section>
 
-        <NextActionPanel
-          eyebrow={copy.nextAction}
-          title={copy.noneTitle}
-          description={copy.noneText}
-          action={
-            <Link
-              href="/prospect/proposal"
-              className={buttonClassName("secondary")}
-            >
-              {copy.proposalCta}
-            </Link>
-          }
-        />
+          <ProspectEditorialPanel
+            eyebrow={copy.nextAction}
+            title={copy.noneTitle}
+            description={copy.noneText}
+            imageSrc={prospectMedia.paymentEmpty}
+            actions={
+              <Link
+                href="/prospect/proposal"
+                className={buttonClassName("secondary")}
+              >
+                {copy.proposalCta}
+              </Link>
+            }
+          />
+        </div>
       </main>
     );
   }

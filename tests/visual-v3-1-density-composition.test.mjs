@@ -32,7 +32,8 @@ test("V3.1 reduces vertical whitespace on major Prospect pages", () => {
 
 test("V3.1 avoids stretched sparse grids on wide screens", () => {
   assert.match(orientation, /grid items-start gap-4 xl:grid-cols-3/);
-  assert.match(catalogue, /2xl:grid-cols-3/);
+  assert.match(catalogue, /prospect-programme-grid/);
+  assert.match(catalogue, /wide=\{filtered\.length === 1\}/);
   assert.match(roadmap, /grid items-start gap-4 lg:grid-cols-2/);
 });
 

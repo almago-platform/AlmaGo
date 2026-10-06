@@ -40,7 +40,7 @@ export function ProspectOfferSelector({
   }
 
   return (
-    <div className="grid gap-5 lg:grid-cols-3">
+    <div className="prospect-offer-grid">
       {offers.map((offer) => {
         const selected = selectedId === offer.id;
 
@@ -48,7 +48,7 @@ export function ProspectOfferSelector({
           <article
             key={offer.id}
             className={
-              "pc-card pc-card-interactive relative overflow-hidden p-5 sm:p-6 " +
+              "pc-card pc-card-interactive relative flex min-w-0 flex-col overflow-hidden p-5 sm:p-6 " +
               (selected ? "border-[var(--brand)] ring-4 ring-[var(--brand-soft)]" : "")
             }
           >
@@ -73,7 +73,7 @@ export function ProspectOfferSelector({
               </ul>
             </div>
 
-            <div className="mt-6 border-t border-[var(--premium-border)] pt-5">
+            <div className="mt-auto border-t border-[var(--premium-border)] pt-5">
               <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--muted)]">{copy.price}</p>
               <p className="mt-1 text-[2rem] font-semibold tracking-[-0.04em] text-[var(--premium-ink)]">
                 <bdi dir="auto">{offer.priceLabel}</bdi>

@@ -13,6 +13,7 @@ import { loadVerifiedProgrammeCatalogue } from "@/lib/orientation-engine/catalog
 import type { OrientationProgrammeRecord } from "@/lib/orientation-engine/types";
 import { enrichProspectCatalogueUniversityMedia } from "@/lib/prospect/catalogue-media";
 import { loadProspectHubState } from "@/lib/prospect/hub";
+import { prospectMedia } from "@/lib/prospect/media";
 import {
   prospectCatalogueProfileDefaults,
   prospectCatalogueRecommendations,
@@ -172,7 +173,13 @@ export default async function ProspectCataloguePage({
 
   return (
     <main className="space-y-6">
-      <ProspectPageHero eyebrow={t.eyebrow} title={t.title} subtitle={t.subtitle} />
+      <ProspectPageHero
+        eyebrow={t.eyebrow}
+        title={t.title}
+        subtitle={t.subtitle}
+        variant="split"
+        imageSrc={prospectMedia.catalogueHero}
+      />
 
       {recommendations.length ? (
         <section aria-labelledby="prospect-recommended-programmes" className="pc-panel bg-white/70 p-5 backdrop-blur-sm sm:p-6">
@@ -181,7 +188,7 @@ export default async function ProspectCataloguePage({
             title={<span id="prospect-recommended-programmes">{t.recommendedTitle}</span>}
             description={t.recommendedSubtitle}
           />
-          <div className="grid items-start gap-4 xl:grid-cols-2 2xl:grid-cols-3">
+          <div className="prospect-programme-grid mt-4">
             {recommendations.map((recommendation) => (
               <ProspectProgrammeRecommendationCard
                 key={recommendation.programme.id}
@@ -287,13 +294,14 @@ export default async function ProspectCataloguePage({
           </div>
 
           {filtered.length ? (
-            <div className="grid items-start gap-4 xl:grid-cols-2 2xl:grid-cols-3">
+            <div className="prospect-programme-grid">
               {filtered.map((programme) => (
                 <ProspectProgrammeCatalogueCard
                   key={programme.id}
                   programme={programme}
                   projectMatch={matchesProject(programme, state.answers)}
                   labels={catalogueCardLabels}
+                  wide={filtered.length === 1}
                 />
               ))}
             </div>

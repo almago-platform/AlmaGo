@@ -14,6 +14,7 @@ const route = readFileSync("src/app/api/admin/offers/route.ts", "utf8");
 const adminPage = readFileSync("src/app/admin/offers/page.tsx", "utf8");
 const editor = readFileSync("src/components/admin/CommercialOfferEditor.tsx", "utf8");
 const prospectPage = readFileSync("src/app/prospect/offers/page.tsx", "utf8");
+const editorialPanel = readFileSync("src/components/prospect/ProspectEditorialPanel.tsx", "utf8");
 const money = readFileSync("src/lib/money.ts", "utf8");
 const tunisiaPricing = readFileSync("supabase/migrations/20261004230000_tunisia_test_offer_pricing.sql", "utf8");
 const prospectLoading = readFileSync("src/app/prospect/offers/loading.tsx", "utf8");
@@ -123,15 +124,19 @@ test("brand-soft offer guidance keeps normal text above the contrast floor", () 
   );
   assert.match(
     prospectPage,
-    /bg-\[var\(--brand-soft\)\][\s\S]*text-slate-700/,
+    /ProspectEditorialPanel/,
+  );
+  assert.match(
+    editorialPanel,
+    /pc-panel[\s\S]*text-\[var\(--foreground-soft\)\]/,
   );
   assert.doesNotMatch(
     adminPage,
     /bg-\[var\(--brand-soft\)\][\s\S]{0,500}text-\[var\(--muted\)\]/,
   );
   assert.doesNotMatch(
-    prospectPage,
-    /lockedTitle[\s\S]{0,500}text-\[var\(--muted\)\]/,
+    editorialPanel,
+    /description[\s\S]{0,700}text-\[var\(--muted\)\]/,
   );
 });
 

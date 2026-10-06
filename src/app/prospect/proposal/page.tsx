@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { IntakeFlowCard } from "@/components/prospect/IntakeFlowCard";
 import { ProspectPageHero } from "@/components/prospect/ProspectPageHero";
+import { prospectMedia } from "@/lib/prospect/media";
 import { PremiumEmptyState } from "@/components/product/PremiumEmptyState";
 import { PremiumSectionHeader } from "@/components/product/PremiumSectionHeader";
 import { buttonClassName } from "@/components/ui/Button";
@@ -87,13 +88,29 @@ export default async function ProspectProposalPage() {
 
   return (
     <main className="space-y-6">
-      <ProspectPageHero eyebrow={t.eyebrow} title={t.title} subtitle={t.subtitle} />
+      <ProspectPageHero
+        eyebrow={t.eyebrow}
+        title={t.title}
+        subtitle={t.subtitle}
+        variant="split"
+        imageSrc={prospectMedia.proposalHero}
+      />
 
       {!state.intake && state.orientationConfirmed ? (
         <PremiumEmptyState
           eyebrow={t.eyebrow}
           title={t.waitingTitle}
           description={t.waitingBody}
+          action={
+            <Link href="/prospect/catalogue" className={buttonClassName("secondary", "min-h-10 px-4 py-2")}>
+              {dashboardCopy.browseCatalogue}
+            </Link>
+          }
+          secondaryAction={
+            <Link href="/prospect/solutions" className={buttonClassName("ghost", "min-h-10 px-4 py-2")}>
+              {dashboardCopy.browseSolutions}
+            </Link>
+          }
           compact
         />
       ) : null}
@@ -191,7 +208,7 @@ export default async function ProspectProposalPage() {
         />
       )}
 
-      {!proposalAvailable && !preBac ? (
+      {!proposalAvailable && !preBac && !(!state.intake && state.orientationConfirmed) ? (
         <PremiumEmptyState
           eyebrow={t.eyebrow}
           title={t.waitingTitle}
