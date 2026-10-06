@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ProspectQualificationReviewForm } from "@/components/admin/ProspectQualificationReviewForm";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
+import { AdminWorkflowSection } from "@/components/admin/AdminWorkflowSection";
 import { restorePublicOrientationAnswers } from "@/lib/orientation/public";
 import { acquisitionContextFromStoredInput } from "@/lib/phase2/acquisition";
 import { customerLifecycleStatusLabel } from "@/lib/phase2/access";
@@ -331,37 +332,28 @@ export default async function AdminProspectsPage({
         description="Smart Orientation organise la priorité et Free Validation mesure la demande réelle. Les chiffres montrent des actions observées ; ils ne décident pas automatiquement si le marché est validé."
       />
 
-      <section className="mb-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
-        <article className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-4">
-          <p className="text-2xl font-bold text-slate-950">{queue.length}</p>
-          <p className="mt-1 text-sm font-semibold text-slate-700">
-            prospects sauvegardés
-          </p>
-        </article>
-        <article className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-4">
-          <p className="text-2xl font-bold text-slate-950">{contactableCount}</p>
-          <p className="mt-1 text-sm font-semibold text-slate-700">
-            contact autorisé
-          </p>
-        </article>
-        <article className="rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--brand-soft)] p-4">
-          <p className="text-2xl font-bold text-[var(--foreground)]">{interestedCount}</p>
-          <p className="mt-1 text-sm font-semibold text-[var(--foreground)]">
-            veulent continuer
-          </p>
-        </article>
-        <article className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-4">
-          <p className="text-2xl font-bold text-slate-950">{linkedAccountCount}</p>
-          <p className="mt-1 text-sm font-semibold text-slate-700">
-            comptes gratuits liés
-          </p>
-        </article>
-        <article className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-4">
-          <p className="text-2xl font-bold text-slate-950">{urgentCount}</p>
-          <p className="mt-1 text-sm font-semibold text-slate-700">
-            priorité haute / maintenant
-          </p>
-        </article>
+      <section className="mb-6 rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-4 sm:p-5" aria-label="Résumé de la file prospects">
+        <div className="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
+          <div className="max-w-2xl">
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">File prospects</p>
+            <h2 className="mt-2 text-xl font-semibold tracking-[-0.025em] text-slate-950 sm:text-2xl">
+              {urgentCount
+                ? `${urgentCount} prospect${urgentCount > 1 ? "s" : ""} à traiter en priorité`
+                : "Aucune priorité forte détectée"}
+            </h2>
+            <p className="mt-2 text-sm leading-6 text-slate-600">
+              Les indicateurs décrivent les signaux réellement enregistrés. La décision de qualification reste humaine.
+            </p>
+          </div>
+
+          <div className="grid overflow-hidden rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--border)] grid-cols-2 sm:grid-cols-5 xl:min-w-[44rem]">
+            <ProspectMetric label="Prospects" value={queue.length} />
+            <ProspectMetric label="Contact autorisé" value={contactableCount} />
+            <ProspectMetric label="Veulent continuer" value={interestedCount} tone="brand" />
+            <ProspectMetric label="Comptes liés" value={linkedAccountCount} />
+            <ProspectMetric label="Priorité haute" value={urgentCount} tone={urgentCount ? "warning" : "neutral"} />
+          </div>
+        </div>
       </section>
 
       <form
@@ -494,108 +486,136 @@ export default async function AdminProspectsPage({
                   {priorityDescriptions[smartPriority.state]}
                 </p>
 
-                <dl className="mt-4 grid gap-px overflow-hidden rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--border)] sm:grid-cols-2 lg:grid-cols-4">
-                  <div className="bg-[var(--surface)] p-3">
-                    <dt className="text-xs font-bold uppercase tracking-wide text-[var(--muted)]">Bac</dt>
-                    <dd className="mt-1 text-sm font-semibold">
-                      {answers.bacStatus === "obtained"
-                        ? "Obtenu"
-                        : answers.bacStatus === "preparing"
-                          ? "En préparation"
-                          : answers.bacStatus === "no_bac"
-                            ? "Sans Bac"
-                            : "À compléter"}
-                      {answers.bacYear ? ` · ${answers.bacYear}` : ""}
-                    </dd>
-                  </div>
-                  <div className="bg-[var(--surface)] p-3">
-                    <dt className="text-xs font-bold uppercase tracking-wide text-[var(--muted)]">Moyenne</dt>
-                    <dd className="mt-1 text-sm font-semibold">{averageLabel(item)}</dd>
-                  </div>
-                  <div className="bg-[var(--surface)] p-3">
-                    <dt className="text-xs font-bold uppercase tracking-wide text-[var(--muted)]">Niveau visé</dt>
-                    <dd className="mt-1 text-sm font-semibold">{answers.targetDegree || "À compléter"}</dd>
-                  </div>
-                  <div className="bg-[var(--surface)] p-3">
-                    <dt className="text-xs font-bold uppercase tracking-wide text-[var(--muted)]">Domaine</dt>
-                    <dd className="mt-1 text-sm font-semibold">{answers.targetField || "À compléter"}</dd>
-                  </div>
-                </dl>
+                <div className="mt-4 space-y-3">
+                  <AdminWorkflowSection
+                    step="A"
+                    title="Projet étudiant"
+                    description="Diplôme, moyenne, niveau visé, domaine et signaux utilisés pour organiser la file."
+                    defaultOpen
+                  >
+                    <dl className="grid gap-px overflow-hidden rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--border)] sm:grid-cols-2 lg:grid-cols-4">
+                      <ProspectFact
+                        label="Bac"
+                        value={`${answers.bacStatus === "obtained"
+                          ? "Obtenu"
+                          : answers.bacStatus === "preparing"
+                            ? "En préparation"
+                            : answers.bacStatus === "no_bac"
+                              ? "Sans Bac"
+                              : "À compléter"}${answers.bacYear ? ` · ${answers.bacYear}` : ""}`}
+                      />
+                      <ProspectFact label="Moyenne" value={averageLabel(item)} />
+                      <ProspectFact label="Niveau visé" value={answers.targetDegree || "À compléter"} />
+                      <ProspectFact label="Domaine" value={answers.targetField || "À compléter"} />
+                    </dl>
 
-                <div className="mt-4 flex flex-wrap gap-2" aria-label="Raisons de priorité">
-                  {smartPriority.reasonCodes.map((reason) => (
-                    <span
-                      key={reason}
-                      className="rounded-full border border-[var(--border)] bg-[var(--surface-subtle)] px-2.5 py-1 text-xs font-semibold text-slate-700"
-                    >
-                      {reasonLabels[reason] ?? reason}
-                    </span>
-                  ))}
-                </div>
+                    <div className="mt-4 flex flex-wrap gap-2" aria-label="Raisons de priorité">
+                      {smartPriority.reasonCodes.map((reason) => (
+                        <span
+                          key={reason}
+                          className="rounded-full border border-[var(--border)] bg-white px-2.5 py-1 text-xs font-semibold text-slate-700"
+                        >
+                          {reasonLabels[reason] ?? reason}
+                        </span>
+                      ))}
+                    </div>
 
-                {smartPriority.requiresHumanReview ? (
-                  <div className="mt-4 rounded-[var(--radius-control)] border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-950">
-                    <strong>Revue humaine renforcée.</strong> Ce domaine nécessite une vérification des conditions académiques officielles avant toute conclusion sur les possibilités réelles.
-                  </div>
-                ) : null}
+                    {smartPriority.requiresHumanReview ? (
+                      <div className="mt-4 rounded-[var(--radius-control)] border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-950">
+                        <strong>Revue humaine renforcée.</strong> Ce domaine nécessite une vérification des conditions académiques officielles avant toute conclusion sur les possibilités réelles.
+                      </div>
+                    ) : null}
+                  </AdminWorkflowSection>
 
-                <div className="mt-4 grid gap-3 text-sm md:grid-cols-3">
-                  <div className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-3">
-                    <p className="font-semibold text-slate-900">Contact</p>
-                    <p className="mt-1 text-slate-700">
-                      {prospect.contact_consent
-                        ? "Autorisé explicitement"
-                        : "Non autorisé — ne pas contacter à des fins commerciales"}
-                    </p>
-                  </div>
-                  <div className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-3">
-                    <p className="font-semibold text-slate-900">Demande réelle</p>
-                    {interest ? (
-                      <>
-                        <p className="mt-1 font-semibold text-slate-900">Veut continuer avec Campus Allemagne</p>
-                        <p className="mt-1 text-xs leading-5 text-slate-600">
-                          {interest.source === "orientation_result" ? "Depuis le résultat d’orientation" : "Depuis un suivi e-mail"} · <bdi dir="auto">{dateFormatter.format(new Date(interest.created_at))}</bdi>
-                        </p>
-                      </>
+                  <AdminWorkflowSection
+                    step="B"
+                    title="Demande et contact"
+                    description="Vérifiez le consentement, le signal d’intérêt et l’état du compte avant toute action commerciale."
+                    defaultOpen={Boolean(interest) || prospect.contact_consent}
+                    tone={interest ? "brand" : "neutral"}
+                  >
+                    <div className="grid gap-3 text-sm md:grid-cols-3">
+                      <ProspectInfo
+                        label="Contact"
+                        value={prospect.contact_consent
+                          ? "Autorisé explicitement"
+                          : "Non autorisé — ne pas contacter à des fins commerciales"}
+                      />
+                      <div className="rounded-[var(--radius-control)] border border-[var(--border)] bg-white p-3">
+                        <p className="font-semibold text-slate-900">Demande réelle</p>
+                        {interest ? (
+                          <>
+                            <p className="mt-1 font-semibold text-slate-900">Veut continuer avec Campus Allemagne</p>
+                            <p className="mt-1 text-xs leading-5 text-slate-600">
+                              {interest.source === "orientation_result" ? "Depuis le résultat d’orientation" : "Depuis un suivi e-mail"} · <bdi dir="auto">{dateFormatter.format(new Date(interest.created_at))}</bdi>
+                            </p>
+                          </>
+                        ) : (
+                          <p className="mt-1 text-slate-700">Aucun signal explicite enregistré</p>
+                        )}
+                      </div>
+                      <ProspectInfo label="Compte / accès" value={customerLifecycleStatusLabel(accessStatus)} />
+                    </div>
+
+                    {acquisition ? (
+                      <p className="mt-4 text-xs font-semibold text-slate-600">
+                        Acquisition : <bdi dir="auto">{acquisition.kind} · {acquisition.sourceId}</bdi>
+                      </p>
+                    ) : null}
+                  </AdminWorkflowSection>
+
+                  <AdminWorkflowSection
+                    step="C"
+                    title="Orientation et qualification"
+                    description="Consultez la dernière orientation et l’état de qualification persistant."
+                    defaultOpen={Boolean(orientation)}
+                  >
+                    {!orientation ? (
+                      <p className="text-sm text-slate-600">Aucune orientation enregistrée.</p>
+                    ) : qualification ? (
+                      <div className="grid gap-3 sm:grid-cols-3">
+                        <ProspectInfo
+                          label="Dernière orientation"
+                          value={dateFormatter.format(new Date(orientation.created_at))}
+                        />
+                        <ProspectInfo
+                          label="Qualification"
+                          value={qualificationLabels[qualification.state] ?? qualification.state}
+                        />
+                        <ProspectInfo
+                          label="Origine"
+                          value={qualification.origin === "automatic" ? "Automatique" : "Revue humaine"}
+                        />
+                      </div>
                     ) : (
-                      <p className="mt-1 text-slate-700">Aucun signal explicite enregistré</p>
+                      <p className="text-sm text-slate-600">
+                        Cette orientation n’a pas encore de qualification P2.7 persistée.
+                      </p>
                     )}
-                  </div>
-                  <div className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-3">
-                    <p className="font-semibold text-slate-900">Compte / accès</p>
-                    <p className="mt-1 text-slate-700">{customerLifecycleStatusLabel(accessStatus)}</p>
-                  </div>
+                  </AdminWorkflowSection>
+
+                  <AdminWorkflowSection
+                    step="D"
+                    title="Décision de qualification"
+                    description="La revue humaine ne devient disponible que lorsque les conditions de qualification et d’accès le permettent."
+                    defaultOpen={canReview}
+                    tone={canReview ? "brand" : "neutral"}
+                  >
+                    {canReview && orientation && qualification ? (
+                      <ProspectQualificationReviewForm
+                        orientationId={orientation.id}
+                        qualificationId={qualification.id}
+                      />
+                    ) : (
+                      <div className="rounded-[var(--radius-control)] border border-[var(--border)] bg-white p-3">
+                        <p className="text-sm font-semibold text-slate-900">Aucune décision manuelle disponible maintenant.</p>
+                        <p className="mt-1 text-xs leading-5 text-slate-600">
+                          Le prospect doit atteindre l’état « Prêt pour revue » et conserver un compte prospect avant qu’une revue de qualification puisse être enregistrée ici.
+                        </p>
+                      </div>
+                    )}
+                  </AdminWorkflowSection>
                 </div>
-
-                {acquisition ? (
-                  <p className="mt-4 text-xs font-semibold text-slate-600">
-                    Acquisition : <bdi dir="auto">{acquisition.kind} · {acquisition.sourceId}</bdi>
-                  </p>
-                ) : null}
-
-                {!orientation ? (
-                  <p className="mt-4 text-sm text-slate-600">Aucune orientation enregistrée.</p>
-                ) : qualification ? (
-                  <div className="mt-4 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4 text-sm text-slate-700">
-                    <p>
-                      Dernière orientation : <bdi dir="auto">{dateFormatter.format(new Date(orientation.created_at))}</bdi>
-                    </p>
-                    <p className="mt-1">
-                      Qualification P2.7 : {qualification.origin === "automatic" ? "automatique" : "revue humaine"}
-                    </p>
-                  </div>
-                ) : (
-                  <p className="mt-4 text-sm text-slate-600">
-                    Cette orientation n’a pas encore de qualification P2.7 persistée.
-                  </p>
-                )}
-
-                {canReview && orientation && qualification ? (
-                  <ProspectQualificationReviewForm
-                    orientationId={orientation.id}
-                    qualificationId={qualification.id}
-                  />
-                ) : null}
               </article>
             );
           })}
@@ -604,3 +624,39 @@ export default async function AdminProspectsPage({
     </main>
   );
 }
+
+function ProspectMetric({
+  label,
+  value,
+  tone = "neutral",
+}: {
+  label: string;
+  value: number;
+  tone?: "warning" | "brand" | "neutral";
+}) {
+  return (
+    <div className={`bg-white p-3 ${tone === "warning" && value ? "bg-amber-50/70" : tone === "brand" && value ? "bg-[var(--brand-soft)]/55" : ""}`}>
+      <p className="text-[0.65rem] font-bold uppercase tracking-[0.1em] text-[var(--muted)]">{label}</p>
+      <p className="mt-1 text-2xl font-semibold tracking-tight text-slate-950">{value}</p>
+    </div>
+  );
+}
+
+function ProspectFact({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="bg-white p-3">
+      <dt className="text-xs font-bold uppercase tracking-wide text-[var(--muted)]">{label}</dt>
+      <dd className="mt-1 text-sm font-semibold text-slate-900">{value}</dd>
+    </div>
+  );
+}
+
+function ProspectInfo({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-[var(--radius-control)] border border-[var(--border)] bg-white p-3">
+      <p className="font-semibold text-slate-900">{label}</p>
+      <p className="mt-1 text-slate-700">{value}</p>
+    </div>
+  );
+}
+
