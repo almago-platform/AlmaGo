@@ -11,7 +11,7 @@ const studentLayout = read("src/app/student/layout.tsx");
 const prospectLayout = read("src/app/prospect/layout.tsx");
 const prospectUpdate = read("src/app/api/prospect/orientation/route.ts");
 const adminReview = read("src/app/api/admin/prospects/qualification-review/route.ts");
-const prospectPage = read("src/app/prospect/page.tsx");
+const prospectOrientationPage = read("src/app/prospect/orientation/page.tsx");
 const prospectHub = read("src/lib/prospect/hub.ts");
 const prospectQualificationSummary = read("src/components/prospect/ProspectQualificationSummary.tsx");
 const prospectCopy = read("src/content/prospect-qualification-copy.ts");
@@ -188,13 +188,13 @@ test("P2.7 authorization never relies on user metadata", () => {
 test("P2.7 prospect UI exposes only safe current qualification information", () => {
   assert.match(prospectHub, /\.select\("state,next_action"\)/);
   assert.match(prospectHub, /\.eq\("orientation_id", current\.id\)/);
-  for (const source of [prospectPage, prospectHub, prospectQualificationSummary]) {
+  for (const source of [prospectOrientationPage, prospectHub, prospectQualificationSummary]) {
     assert.doesNotMatch(
       source,
       /review_reason|reviewer_user_id|supersedes_id|reason_codes|missing_fields|verification_requirements/,
     );
   }
-  assert.match(prospectPage, /ProspectQualificationSummary/);
+  assert.match(prospectOrientationPage, /ProspectQualificationSummary/);
   assert.match(prospectQualificationSummary, /qualification\.state/);
   assert.match(prospectQualificationSummary, /qualification\.next_action/);
 
