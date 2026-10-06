@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { StudentPageFrame } from "@/components/student/StudentPageFrame";
+import { StudentPageState } from "@/components/student/StudentPageState";
 import { Badge } from "@/components/ui/Badge";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Card } from "@/components/ui/Card";
@@ -539,16 +540,17 @@ function PathwayUnavailable({ copy }: { copy: (typeof studentPathwayCopy)["fr"] 
   return (
     <StudentPageFrame>
       <StudentJourneyHeader current="pathway" eyebrow={copy.page.eyebrow} title={copy.unavailable.title} />
-      <Card>
-        <div role="alert">
-          <h2 className="text-xl font-semibold text-slate-950">{copy.unavailable.heading}</h2>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">{copy.unavailable.text}</p>
-        </div>
-        <div className="mt-5 flex flex-wrap gap-3">
-          <ButtonLink href="/student/pathway">{copy.unavailable.retry}</ButtonLink>
-          <ButtonLink href="/student" variant="secondary">{copy.unavailable.back}</ButtonLink>
-        </div>
-      </Card>
+      <StudentPageState
+        variant="warning"
+        title={copy.unavailable.heading}
+        description={copy.unavailable.text}
+        actions={
+          <>
+            <ButtonLink href="/student/pathway">{copy.unavailable.retry}</ButtonLink>
+            <ButtonLink href="/student" variant="secondary">{copy.unavailable.back}</ButtonLink>
+          </>
+        }
+      />
     </StudentPageFrame>
   );
 }
