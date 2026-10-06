@@ -24,7 +24,7 @@ export function AuthStoryPanel({ mode }: AuthStoryPanelProps) {
   const story = mode === "login" ? copy.auth.loginStory : copy.auth.signupStory;
 
   return (
-    <section className="auth-story-panel hidden min-h-[700px] overflow-hidden rounded-[1rem] border border-[var(--border)] bg-[var(--surface)] shadow-[0_28px_70px_-52px_rgba(28,33,36,0.55)] lg:flex lg:flex-col">
+    <section className="auth-story-panel pc-panel hidden min-h-[700px] overflow-hidden rounded-[1rem] lg:flex lg:flex-col">
       <div className="auth-story-header flex items-center justify-between gap-3 border-b border-[var(--border)] bg-[var(--surface)] px-7 py-5">
         <Link href="/" className="inline-flex items-center" aria-label={copy.common.homeAria}>
           <BrandLogo className="h-auto w-52" />
@@ -62,7 +62,7 @@ export function AuthStoryPanel({ mode }: AuthStoryPanelProps) {
           {story.points.map(([title, detail], index) => (
             <li
               key={title}
-              className="grid grid-cols-[2.75rem_1fr] gap-3 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] px-4 py-3"
+              className="pc-soft-strip grid grid-cols-[2.75rem_1fr] gap-3 px-4 py-3"
             >
               <span className="pt-0.5 text-xs font-bold tracking-[0.14em] text-[var(--brand-strong)]">
                 {String(index + 1).padStart(2, "0")}
