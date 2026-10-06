@@ -19,6 +19,17 @@ type CockpitCopy = {
   applicationReason: string;
   checklistReason: string;
   noActionReason: string;
+  urgentDeadlineReason: string;
+  attentionEyebrow: string;
+  attentionTitle: string;
+  attentionDescription: string;
+  overdueDeadlines: string;
+  dueSoonDeadlines: string;
+  documentsAttention: string;
+  blockedApplications: string;
+  overdue: string;
+  dueSoon: string;
+  upcoming: string;
   deadlinesTitle: string;
   deadlinesEmpty: string;
   applicationDeadline: string;
@@ -61,6 +72,17 @@ const fr: CockpitCopy = {
   applicationReason: "Une candidature active contient une prochaine action enregistrée.",
   checklistReason: "Cette étape est la prochaine action ouverte dans ton parcours.",
   noActionReason: "Aucune urgence n’est enregistrée. Profite-en pour vérifier l’état général de ton dossier.",
+  urgentDeadlineReason: "Une échéance est dépassée ou arrive dans les 14 prochains jours.",
+  attentionEyebrow: "À surveiller maintenant",
+  attentionTitle: "Les points qui peuvent ralentir ton dossier",
+  attentionDescription: "Traite d’abord les éléments urgents ou bloquants, puis reprends le reste de ton parcours.",
+  overdueDeadlines: "Deadlines dépassées",
+  dueSoonDeadlines: "Deadlines sous 14 jours",
+  documentsAttention: "Documents à traiter",
+  blockedApplications: "Candidatures bloquées",
+  overdue: "Dépassée",
+  dueSoon: "Sous 14 jours",
+  upcoming: "À venir",
   deadlinesTitle: "Deadlines importantes",
   deadlinesEmpty: "Aucune échéance importante enregistrée pour le moment.",
   applicationDeadline: "Candidature",
@@ -103,6 +125,17 @@ const en: CockpitCopy = {
   applicationReason: "An active application has a next action recorded.",
   checklistReason: "This is the next open step in your journey.",
   noActionReason: "Nothing urgent is recorded. Use this moment to review the overall state of your file.",
+  urgentDeadlineReason: "A deadline is overdue or falls within the next 14 days.",
+  attentionEyebrow: "Watch now",
+  attentionTitle: "Items that can slow down your dossier",
+  attentionDescription: "Handle urgent or blocking items first, then continue with the rest of your journey.",
+  overdueDeadlines: "Overdue deadlines",
+  dueSoonDeadlines: "Deadlines within 14 days",
+  documentsAttention: "Documents needing action",
+  blockedApplications: "Blocked applications",
+  overdue: "Overdue",
+  dueSoon: "Within 14 days",
+  upcoming: "Upcoming",
   deadlinesTitle: "Important deadlines",
   deadlinesEmpty: "No important deadline is recorded right now.",
   applicationDeadline: "Application",
@@ -145,6 +178,17 @@ const de: CockpitCopy = {
   applicationReason: "Für eine aktive Bewerbung ist eine nächste Aktion hinterlegt.",
   checklistReason: "Das ist der nächste offene Schritt in deinem Ablauf.",
   noActionReason: "Es gibt keine dringende Aufgabe. Nutze den Moment für einen Überblick über deine Akte.",
+  urgentDeadlineReason: "Eine Frist ist abgelaufen oder liegt innerhalb der nächsten 14 Tage.",
+  attentionEyebrow: "Jetzt beachten",
+  attentionTitle: "Punkte, die dein Dossier ausbremsen können",
+  attentionDescription: "Bearbeite zuerst dringende oder blockierende Punkte und setze danach deinen Weg fort.",
+  overdueDeadlines: "Abgelaufene Fristen",
+  dueSoonDeadlines: "Fristen in 14 Tagen",
+  documentsAttention: "Unterlagen mit Handlungsbedarf",
+  blockedApplications: "Blockierte Bewerbungen",
+  overdue: "Abgelaufen",
+  dueSoon: "In 14 Tagen",
+  upcoming: "Bevorstehend",
   deadlinesTitle: "Wichtige Fristen",
   deadlinesEmpty: "Derzeit ist keine wichtige Frist gespeichert.",
   applicationDeadline: "Bewerbung",
@@ -187,6 +231,17 @@ const ar: CockpitCopy = {
   applicationReason: "يوجد طلب تقديم نشط له خطوة تالية مسجلة.",
   checklistReason: "هذه هي الخطوة المفتوحة التالية في مسارك.",
   noActionReason: "لا توجد أولوية عاجلة الآن. يمكنك مراجعة الحالة العامة لملفك.",
+  urgentDeadlineReason: "هناك موعد منتهٍ أو موعد خلال الأيام الأربعة عشر القادمة.",
+  attentionEyebrow: "ما يجب مراقبته الآن",
+  attentionTitle: "نقاط قد تؤخر ملفك",
+  attentionDescription: "عالج أولًا العناصر العاجلة أو المعرقلة، ثم واصل باقي خطواتك.",
+  overdueDeadlines: "مواعيد منتهية",
+  dueSoonDeadlines: "مواعيد خلال 14 يومًا",
+  documentsAttention: "وثائق تحتاج إلى إجراء",
+  blockedApplications: "طلبات تقديم معرّقلة",
+  overdue: "منتهٍ",
+  dueSoon: "خلال 14 يومًا",
+  upcoming: "قادم",
   deadlinesTitle: "المواعيد المهمة",
   deadlinesEmpty: "لا توجد مواعيد مهمة مسجلة حاليًا.",
   applicationDeadline: "طلب تقديم",
