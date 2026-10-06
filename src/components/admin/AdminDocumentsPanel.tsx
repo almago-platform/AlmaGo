@@ -385,7 +385,7 @@ export function AdminDocumentsPanel({
                     {document.admin_comment ? (
                       <div className="mt-4 rounded-[var(--radius-control)] border border-[var(--border)] bg-white p-3">
                         <p className="text-xs font-bold uppercase tracking-[0.12em] text-slate-700">
-                          Dernier message enregistré
+                          Message actuellement enregistré
                         </p>
                         <p className="mt-2 text-sm leading-6 text-slate-700 [overflow-wrap:anywhere]">
                           {document.admin_comment}
@@ -420,7 +420,7 @@ export function AdminDocumentsPanel({
                   <AdminWorkflowSection
                     step="C"
                     title="Preuve de parcours"
-                    description="Classez la pièce si elle doit servir de preuve académique. Cette classification est distincte de la revue du fichier."
+                    description="L’approbation du fichier et son acceptation comme preuve de parcours sont deux décisions distinctes. Classez la pièce uniquement si elle doit servir de preuve académique."
                     badge={
                       currentEvidence ? (
                         <Badge variant={evidenceStatusVariant(currentEvidence.verification_status)}>
@@ -430,6 +430,10 @@ export function AdminDocumentsPanel({
                     }
                     defaultOpen={Boolean(currentEvidence)}
                   >
+                    <p className="mb-3 text-xs font-bold uppercase tracking-[0.12em] text-slate-700">
+                      Classification académique
+                    </p>
+
                     {linkedEvidence.length > 1 ? (
                       <p className="mb-3 text-xs leading-5 text-amber-800">
                         Plusieurs classifications sont liées à ce fichier. Le formulaire ci-dessous modifie la classification la plus récemment chargée.
@@ -611,6 +615,7 @@ export function AdminDocumentsPanel({
           })}
         </section>
       )}
+      </div>
     </div>
   );
 }
