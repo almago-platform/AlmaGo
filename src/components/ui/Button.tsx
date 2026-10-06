@@ -2,7 +2,7 @@ import type { ButtonHTMLAttributes } from "react";
 
 export const buttonVariants = {
   primary:
-    "border border-transparent bg-[var(--brand)] text-white shadow-[var(--shadow-xs)] hover:bg-[var(--brand-hover)] active:bg-[var(--brand-pressed)] disabled:bg-[var(--brand)] disabled:text-white",
+    "border border-transparent bg-[var(--brand)] text-white shadow-[var(--premium-shadow-brand)] hover:bg-[var(--brand-hover)] active:bg-[var(--brand-pressed)] disabled:bg-[var(--brand)] disabled:text-white",
   secondary:
     "border border-[var(--border-strong)] bg-[var(--surface-raised)] text-[var(--foreground)] shadow-[var(--shadow-xs)] hover:border-[var(--brand-border)] hover:bg-[var(--brand-subtle)] hover:text-[var(--brand-strong)] active:bg-[var(--surface-subtle)] disabled:border-[var(--border)] disabled:bg-[var(--surface-disabled)] disabled:text-[var(--muted)]",
   ghost:
@@ -14,7 +14,7 @@ export const buttonVariants = {
 export type ButtonVariant = keyof typeof buttonVariants;
 
 export function buttonClassName(variant: ButtonVariant = "primary", className = "") {
-  return `inline-flex min-h-[var(--control-height)] items-center justify-center gap-2 rounded-[var(--radius-control)] px-5 py-2.5 text-sm font-semibold transition-[background-color,border-color,color,box-shadow,transform] duration-150 focus-visible:outline-none active:translate-y-px disabled:cursor-not-allowed disabled:opacity-55 disabled:shadow-none disabled:active:translate-y-0 ${buttonVariants[variant]} ${className}`;
+  return `pc-button inline-flex min-h-[var(--control-height)] items-center justify-center gap-2 px-5 py-2.5 text-sm font-semibold transition-[background-color,border-color,color,box-shadow,transform] duration-150 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-55 disabled:shadow-none disabled:active:translate-y-0 ${buttonVariants[variant]} ${className}`;
 }
 
 export function Button({
