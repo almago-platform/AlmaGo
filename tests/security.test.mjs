@@ -114,3 +114,45 @@ test("authenticated users cannot write their own role assignment", () => {
   assert.match(grants, /grant select on table public\.user_roles to authenticated/i);
   assert.doesNotMatch(grants, /grant[^;]*(?:insert|update|delete)[^;]*public\.user_roles/i);
 });
+
+
+test("advisor service-only tables stay closed to anon and authenticated clients", () => {
+  const serviceOnlyTables = [
+    "orientation_discovery_run_candidates",
+    "orientation_discovery_runs",
+    "orientation_programme_verifications",
+    "orientation_research_programs",
+    "orientation_verification_runs",
+    "payment_provider_events",
+    "technical_logs",
+  ];
+
+  for (const table of serviceOnlyTables) {
+    if (table === "technical_logs") {
+      assert.match(
+        migrations,
+        /array\[[^\]]*'technical_logs'[^\]]*\][\s\S]*execute format\('alter table public\.%I enable row level security'/i,
+        "technical_logs must remain in the original RLS-enable loop",
+      );
+    } else {
+      assert.match(
+        migrations,
+        new RegExp(`alter\\s+table\\s+public\\.${table}\\s+enable\\s+row\\s+level\\s+security`, "i"),
+        `${table} must keep RLS enabled`,
+      );
+    }
+    assert.doesNotMatch(
+      migrations,
+      new RegExp(
+        `grant[^;]+on\\s+(?:table\\s+)?public\\.${table}[^;]+to\\s+[^;]*(?:anon|authenticated)`,
+        "i",
+      ),
+      `${table} must not gain anon/authenticated table grants`,
+    );
+    assert.doesNotMatch(
+      migrations,
+      new RegExp(`create\\s+policy[^;]+on\\s+(?:table\\s+)?public\\.${table}`, "i"),
+      `${table} must remain service-only without client RLS policies`,
+    );
+  }
+});
