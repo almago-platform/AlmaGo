@@ -1,7 +1,17 @@
 name: AlmaGo Browser Quality
 
-# Partner-Ready Calm Mode: browser/accessibility checks are explicit and milestone-driven.
+# V3.2: bounded visual regression gate on UI PRs; full suite remains manually dispatchable.
 on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "src/app/**"
+      - "src/components/**"
+      - "src/content/**"
+      - "public/**"
+      - "tests/e2e/**"
+      - "playwright.config.mjs"
+      - ".github/workflows/almago-browser-quality.yml"
   workflow_dispatch:
 
 permissions:
@@ -67,11 +77,22 @@ jobs:
           cat artifacts/server.log
           exit 1
 
-      - name: Playwright responsive and accessibility smoke tests
+      - name: V3.2 bounded PR visual regression gate
+        if: github.event_name == 'pull_request'
+        run: |
+          npx playwright test tests/e2e/visual-v3-2-gate.spec.mjs \
+            --config=playwright.config.mjs \
+            --project=mobile-compact-chromium \
+            --project=mobile-chromium \
+            --project=desktop-1280-chromium \
+            --project=desktop-chromium
+
+      - name: Full manual responsive and accessibility suite
+        if: github.event_name == 'workflow_dispatch'
         run: npx playwright test --config=playwright.config.mjs
 
       - name: Gemini visual review of screenshots
-        if: ${{ vars.ALMAGO_AI_ENABLED == 'true' && vars.ALMAGO_AI_BILLING_CAP_CONFIRMED == 'true' }}
+        if: ${{ github.event_name == 'workflow_dispatch' && vars.ALMAGO_AI_ENABLED == 'true' && vars.ALMAGO_AI_BILLING_CAP_CONFIRMED == 'true' }}
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           ALMAGO_GEMINI_MODEL: ${{ vars.ALMAGO_GEMINI_MODEL }}
@@ -79,7 +100,7 @@ jobs:
         run: node autonomy/visual-review.mjs artifacts/screenshots
 
       - name: Lighthouse advisory budgets
-        if: always()
+        if: github.event_name == 'workflow_dispatch'
         run: npx lhci autorun --config=./lighthouserc.cjs || true
 
       - name: Store browser-quality artifacts
@@ -89,5 +110,6 @@ jobs:
           name: almago-browser-quality-${{ github.run_id }}
           path: |
             artifacts/
+            test-results/
           if-no-files-found: warn
           retention-days: 7
