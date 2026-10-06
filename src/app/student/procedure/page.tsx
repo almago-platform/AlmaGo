@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { StudentPageFrame } from "@/components/student/StudentPageFrame";
 import { redirect } from "next/navigation";
 import { ActivityTimeline, type ActivityTimelineItem } from "@/components/product/ActivityTimeline";
 import { DossierHeader } from "@/components/product/DossierHeader";
@@ -341,7 +342,7 @@ export default async function StudentProcedurePage() {
             { label: t.external, detail: t.externalWaiting, tone: "external" },
           ]}
         />
-      </main>
+      </StudentPageFrame>
     );
   }
 
@@ -408,7 +409,7 @@ export default async function StudentProcedurePage() {
   }));
 
   return (
-    <main className="mx-auto w-full max-w-[92rem] space-y-7 px-4 py-5 sm:px-6 sm:py-6 xl:px-8">
+    <StudentPageFrame className="space-y-7">
       <DossierHeader
         eyebrow={t.eyebrow}
         title={t.title}
@@ -537,6 +538,6 @@ export default async function StudentProcedurePage() {
           </section>
         </aside>
       </div>
-    </main>
+    </StudentPageFrame>
   );
 }
