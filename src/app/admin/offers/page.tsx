@@ -2,6 +2,12 @@ import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { CommercialOfferEditor } from "@/components/admin/CommercialOfferEditor";
 import { createClient } from "@/lib/supabase/server";
 
+const offerStatusLabels: Record<string, string> = {
+  draft: "brouillon",
+  published: "publiée",
+  archived: "archivée",
+};
+
 type OfferCode = "bronze" | "silver" | "gold";
 
 type OfferRow = {
@@ -99,7 +105,7 @@ export default async function AdminOffersPage() {
 
               {latest ? (
                 <p className="mt-3 text-xs leading-5 text-slate-600">
-                  Dernière version enregistrée : v{latest.version} · {latest.status}
+                  Dernière version enregistrée : v{latest.version} · {offerStatusLabels[latest.status] || latest.status}
                 </p>
               ) : (
                 <p className="mt-3 text-xs leading-5 text-slate-600">
