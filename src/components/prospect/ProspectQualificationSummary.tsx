@@ -1,6 +1,15 @@
 import type { ProspectQualificationCopy } from "@/content/prospect-qualification-copy";
 import type { ProspectStoredQualification } from "@/lib/prospect/hub";
 
+const stateTheme = {
+  not_evaluated: "pc-theme-blue",
+  too_early: "pc-theme-blue",
+  needs_information: "pc-theme-red",
+  needs_verification: "pc-theme-gold",
+  ready_for_review: "pc-theme-green",
+  qualified_prospect: "pc-theme-green",
+} as const;
+
 export function ProspectQualificationSummary({
   qualification,
   copy,
@@ -10,7 +19,7 @@ export function ProspectQualificationSummary({
 }) {
   if (!qualification) {
     return (
-      <section className="pc-panel bg-white/80 p-5 backdrop-blur-sm sm:p-6">
+      <section className="pc-panel pc-premium-card pc-theme-blue p-5 sm:p-6">
         <p className="text-[11px] font-extrabold uppercase tracking-[0.15em] text-[var(--brand)]">
           {copy.eyebrow}
         </p>
@@ -32,8 +41,10 @@ export function ProspectQualificationSummary({
     ? copy.actions[qualification.next_action]
     : null;
 
+  const themeClass = stateTheme[qualification.state];
+
   return (
-    <section className="pc-panel bg-white/80 p-5 backdrop-blur-sm sm:p-6">
+    <section className={`pc-panel pc-premium-card ${themeClass} p-5 sm:p-6`}>
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <p className="text-[11px] font-extrabold uppercase tracking-[0.15em] text-[var(--brand)]">
@@ -53,7 +64,7 @@ export function ProspectQualificationSummary({
       </p>
 
       {actionCopy ? (
-        <div className="pc-soft-strip mt-5 p-4">
+        <div className="pc-glass mt-5 rounded-[var(--premium-radius-control)] p-4">
           <p className="text-xs font-bold uppercase tracking-[0.1em] text-[var(--muted)]">
             {actionCopy.label}
           </p>
