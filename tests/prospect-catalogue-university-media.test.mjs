@@ -27,7 +27,7 @@ test("prospect catalogue supports deterministic sorting without client-side stat
 
 test("prospect catalogue uses visual responsive programme cards", () => {
   assert.ok(page.includes("ProspectProgrammeCatalogueCard"));
-  assert.ok(page.includes("grid gap-5 xl:grid-cols-2"));
+  assert.ok(page.includes("grid items-start gap-4 xl:grid-cols-2 2xl:grid-cols-3"));
   assert.ok(card.includes("ProspectUniversityCover"));
   assert.ok(card.includes("programme.university.name"));
   assert.ok(card.includes("programme.degreeLevel"));
