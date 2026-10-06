@@ -29,7 +29,7 @@ export function DocumentRow({
   const current = statusConfig[status];
 
   return (
-    <article className="border-b border-[var(--border)] py-4 last:border-b-0">
+    <article className="border-b border-[var(--premium-border)] py-4 last:border-b-0">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
@@ -41,7 +41,7 @@ export function DocumentRow({
           ) : null}
           {metadata ? <div className="mt-2 text-xs leading-5 text-[var(--muted)]">{metadata}</div> : null}
           {note ? (
-            <div className="mt-3 rounded-[var(--radius-control)] bg-[var(--surface-subtle)] px-3 py-2 text-xs leading-5 text-[var(--foreground-soft)]">
+            <div className="mt-3 rounded-[var(--radius-control)] bg-[var(--premium-cream)] px-3 py-2 text-xs leading-5 text-[var(--foreground-soft)]">
               {note}
             </div>
           ) : null}

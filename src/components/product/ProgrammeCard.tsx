@@ -42,7 +42,7 @@ export function ProgrammeCard({
   const facts = [degree, location, language, intake].filter(Boolean);
 
   return (
-    <article className="flex h-full flex-col rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5">
+    <article className="pc-card pc-card-interactive flex h-full flex-col p-5">
       <div className="flex flex-wrap items-center gap-2">
         <Badge variant={status.variant}>{statusLabel ?? status.label}</Badge>
       </div>
@@ -66,7 +66,7 @@ export function ProgrammeCard({
             {actionLabel} →
           </Link>
         ) : null}
-        {footer ? <div className="mt-3 border-t border-[var(--border)] pt-3">{footer}</div> : null}
+        {footer ? <div className="mt-3 border-t border-[var(--premium-border)] pt-3">{footer}</div> : null}
       </div>
     </article>
   );
