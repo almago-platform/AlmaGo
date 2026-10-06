@@ -425,7 +425,7 @@ function SummaryCard({ title, value, badge, tone }: { title: string; value: numb
 
 function ChecklistUnavailable({ copy }: { copy: (typeof studentChecklistCopy)["fr"] }) {
   return (
-    <main className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 sm:py-7 lg:px-8 lg:py-9">
+    <StudentPageFrame>
       <StudentJourneyHeader current="checklist" eyebrow={copy.page.eyebrow} title={copy.page.title} />
       <StudentPageState
         variant="warning"
