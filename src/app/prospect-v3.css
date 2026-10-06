@@ -17,6 +17,13 @@
   gap: 1.25rem;
 }
 
+.prospect-programme-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+  align-items: start;
+  gap: 1rem;
+}
+
 .prospect-page-hero-media img,
 .prospect-editorial-panel-media img {
   transform: scale(1.002);
