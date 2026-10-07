@@ -123,7 +123,7 @@ export function AppShell({
     en: "Communication",
     de: "Kommunikation",
   } as const;
-  const studentGroups = studentGroupIndexes.map((indexes, groupIndex) => ({
+  const studentGroups: Array<{ label: string; items: NavItem[] }> = studentGroupIndexes.map((indexes, groupIndex) => ({
     label: shell.groups[groupIndex],
     items: indexes.map((index) => localizedStudentItems[index]),
   }));
