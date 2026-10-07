@@ -13,6 +13,7 @@ Render est le runtime canonique de l’application.
 - health check : `/api/health`
 
 Le nom du service peut évoluer pour le lancement public ; le domaine final doit être configuré via `SITE_URL` / `ALMAGO_PRODUCTION_URL`.
+Le dashboard Render reste la source de vérité pour la configuration live du service existant.
 
 ## Déploiement
 
