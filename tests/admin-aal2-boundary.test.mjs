@@ -8,6 +8,8 @@ const auth = read("src/lib/auth/access.ts");
 const layout = read("src/app/admin/layout.tsx");
 const challenge = read("src/components/auth/AdminMfaChallenge.tsx");
 const migration = read("supabase/migrations/20261007130000_harden_candidate_student_boundary.sql");
+const authenticatedE2e = read("tests/e2e/authenticated.spec.mjs");
+const adminQualityE2e = read("tests/e2e/admin-space-quality.spec.mjs");
 
 test("admin server authorization fails closed unless the session is AAL2", () => {
   assert.equal(hasAdminAuthenticatorAssurance(null), false);
@@ -52,4 +54,16 @@ test("every sensitive custom admin route uses the canonical AAL2 guard", () => {
     assert.match(source, /getAdminUser\(\)/, path);
     assert.doesNotMatch(source, /from\(["']user_roles["']\)/, path);
   }
+});
+
+test("authenticated admin browser evidence preserves the AAL2 boundary", () => {
+  assert.match(authenticatedE2e, /admin-challenge/);
+  assert.match(authenticatedE2e, /pathname\)\.toBe\("\/mfa"\)/);
+  assert.match(authenticatedE2e, /deniedApi\.status\(\)\)\.toBe\(403\)/);
+  assert.match(authenticatedE2e, /completeAdminMfaChallenge/);
+  assert.match(authenticatedE2e, /fail closed rather than skip MFA/);
+  assert.doesNotMatch(authenticatedE2e, /test\.skip\([\s\S]{0,120}adminTotp/);
+
+  assert.match(adminQualityE2e, /admin-challenge/);
+  assert.match(adminQualityE2e, /completeAdminMfaChallenge/);
 });
