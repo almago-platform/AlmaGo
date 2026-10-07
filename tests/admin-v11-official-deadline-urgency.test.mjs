@@ -116,3 +116,12 @@ test("Admin V11 centralizes official deadline truth instead of trusting non-null
   assert.match(team, /adminActionDateIsTrusted/);
   assert.match(team, /applicationDateIsTrusted/);
 });
+
+test("Admin V11 submitted application deadlines cannot drive generic overdue work queues", () => {
+  assert.match(risk, /applicationDateIsOperationalWorkDate/);
+  assert.match(risk, /application\.deadline_kind === "official_hard_deadline"[\s\S]*isSubmittedApplicationStatus\(application\.status\)/);
+
+  assert.match(dashboard, /applicationDateIsOperationalWorkDate\(item\)/);
+  assert.match(people, /applicationDateIsOperationalWorkDate\(item\)/);
+  assert.match(team, /applicationDateIsOperationalWorkDate\(item\)/);
+});
