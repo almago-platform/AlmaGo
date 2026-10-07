@@ -88,3 +88,33 @@ test("Admin V11 promotes explicitly blocked procedure cases into a dedicated wor
   assert.match(people, /blocked: "Bloqués"/);
   assert.match(people, /Bloqué · \{person\.blockedActions\}/);
 });
+
+test("Admin V11 exposes who each dossier is waiting on without inventing student obligations", () => {
+  for (const label of ["Attend Campus", "Attend étudiant", "Attend externe"]) {
+    assert.ok(dashboard.includes(label), label);
+    assert.ok(people.includes(label), label);
+  }
+
+  for (const href of [
+    "/admin/people?work=waiting_campus",
+    "/admin/people?work=waiting_student",
+    "/admin/people?work=waiting_external",
+  ]) {
+    assert.ok(dashboard.includes(href), href);
+  }
+
+  assert.match(dashboard, /item\.status === "waiting_almago"/);
+  assert.match(dashboard, /item\.status === "waiting_student"[\s\S]*item\.requires_student_action[\s\S]*item\.student_action_reason\?\.trim\(\)/);
+  assert.match(dashboard, /item\.status === "waiting_external"/);
+
+  assert.match(people, /work === "waiting_campus"/);
+  assert.match(people, /work === "waiting_student"/);
+  assert.match(people, /work === "waiting_external"/);
+  assert.match(people, /item\.status === "waiting_student"[\s\S]*item\.requires_student_action[\s\S]*item\.student_action_reason\?\.trim\(\)/);
+});
+
+test("Admin V11 prioritizes dossiers explicitly waiting on Campus before passive monitoring", () => {
+  assert.match(dashboard, /waitingCampusCases > 0/);
+  assert.match(dashboard, /Étudiants attendent Campus/);
+  assert.match(dashboard, /Traiter les attentes Campus/);
+});
