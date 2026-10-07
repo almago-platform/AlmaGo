@@ -378,5 +378,52 @@ select is((select count(*) from public.academic_evidence), 3::bigint, 'service r
 select is((select count(*) from public.applications), 3::bigint, 'service role bypasses application RLS');
 reset role;
 
+
+-- The pre-provisioned dossier-message-attachments bucket must remain client-only
+-- until candidate messaging is explicitly reconciled in a later reviewed change.
+select ok(
+  exists (
+    select 1 from pg_policies
+    where schemaname = 'storage'
+      and tablename = 'objects'
+      and policyname = 'message attachments own read'
+      and qual ilike '%has_student_client_access%'
+  ),
+  'message attachment owner reads require client entitlement'
+);
+select ok(
+  exists (
+    select 1 from pg_policies
+    where schemaname = 'storage'
+      and tablename = 'objects'
+      and policyname = 'message attachments own upload'
+      and with_check ilike '%has_student_client_access%'
+  ),
+  'message attachment owner uploads require client entitlement'
+);
+select ok(
+  exists (
+    select 1 from pg_policies
+    where schemaname = 'storage'
+      and tablename = 'objects'
+      and policyname = 'message attachments own delete'
+      and qual ilike '%has_student_client_access%'
+  ),
+  'message attachment owner deletes require client entitlement'
+);
+select ok(
+  not exists (
+    select 1 from pg_policies
+    where schemaname = 'storage'
+      and tablename = 'objects'
+      and cmd = 'UPDATE'
+      and (
+        qual ilike '%dossier-message-attachments%'
+        or with_check ilike '%dossier-message-attachments%'
+      )
+  ),
+  'message attachment upsert/update stays disabled'
+);
+
 select * from finish();
 rollback;
