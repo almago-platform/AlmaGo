@@ -62,3 +62,11 @@ jobs:
           curl --fail --silent --show-error "$PRODUCTION_URL/login" > /dev/null
           curl --fail --silent --show-error "$PRODUCTION_URL/orientation" > /dev/null
           curl --fail --silent --show-error "$PRODUCTION_URL/api/health" > /dev/null
+
+  authenticated-e2e:
+    name: Authenticated AAL2 evidence
+    needs: release-gate
+    uses: ./.github/workflows/almago-authenticated-e2e.yml
+    with:
+      target: render
+    secrets: inherit
