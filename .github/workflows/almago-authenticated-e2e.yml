@@ -9,6 +9,13 @@ on:
         default: render
         type: choice
         options: [render, local]
+  workflow_call:
+    inputs:
+      target:
+        description: "Authenticated E2E target"
+        required: false
+        default: render
+        type: string
 
 permissions:
   contents: read
@@ -28,6 +35,7 @@ jobs:
       ALMAGO_E2E_STUDENT_PASSWORD: ${{ secrets.ALMAGO_E2E_STUDENT_PASSWORD }}
       ALMAGO_E2E_ADMIN_EMAIL: ${{ vars.ALMAGO_E2E_ADMIN_EMAIL || 'phase3.admin.b@almago.test' }}
       ALMAGO_E2E_ADMIN_PASSWORD: ${{ secrets.ALMAGO_E2E_ADMIN_PASSWORD }}
+      ALMAGO_E2E_ADMIN_TOTP_SECRET: ${{ secrets.ALMAGO_E2E_ADMIN_TOTP_SECRET }}
       ALMAGO_E2E_TARGET: ${{ inputs.target || 'render' }}
       CI: "true"
     steps:
@@ -41,7 +49,7 @@ jobs:
       - name: Require E2E configuration
         shell: bash
         run: |
-          for name in NEXT_PUBLIC_SUPABASE_URL NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ALMAGO_E2E_STUDENT_EMAIL ALMAGO_E2E_STUDENT_PASSWORD ALMAGO_E2E_ADMIN_EMAIL ALMAGO_E2E_ADMIN_PASSWORD; do
+          for name in NEXT_PUBLIC_SUPABASE_URL NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ALMAGO_E2E_STUDENT_EMAIL ALMAGO_E2E_STUDENT_PASSWORD ALMAGO_E2E_ADMIN_EMAIL ALMAGO_E2E_ADMIN_PASSWORD ALMAGO_E2E_ADMIN_TOTP_SECRET; do
             if [ -z "${!name}" ]; then echo "::error::$name is required"; exit 1; fi
           done
 
