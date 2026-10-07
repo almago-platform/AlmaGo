@@ -7,6 +7,8 @@ import { AdminLoadError } from "@/components/admin/AdminLoadError";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { PremiumSectionHeader } from "@/components/product/PremiumSectionHeader";
 import { catalogVerificationCutoff } from "@/lib/catalog-freshness";
+import { isActiveApplication } from "@/lib/application-workflow";
+import { isOpenAdminAction } from "@/lib/admin/people";
 
 export const dynamic = "force-dynamic";
 
@@ -16,6 +18,8 @@ export default async function AdminEntry() {
   const now = new Date();
   const staleCutoff = catalogVerificationCutoff(now);
   const dueSoonCutoff = new Date(now.getTime() - 23 * 24 * 60 * 60 * 1000).toISOString();
+  const staleContactCutoff = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000).toISOString();
+  const { data: { user: currentAdmin } } = await supabase.auth.getUser();
 
   if (!staleCutoff) {
     return (
@@ -38,6 +42,13 @@ export default async function AdminEntry() {
     { count: dueLanguageCount, error: dueLanguageError },
     { count: staleFinanceCount, error: staleFinanceError },
     { count: dueFinanceCount, error: dueFinanceError },
+    unreadNotificationsResult,
+    accessRowsResult,
+    intakeRowsResult,
+    assignmentsResult,
+    recentContactsResult,
+    actionsResult,
+    applicationRowsResult,
   ] = await Promise.all([
     supabase.from("universities").select("id", { count: "exact", head: true }).eq("is_active", true),
     supabase.from("programs").select("id", { count: "exact", head: true }).eq("is_active", true),
@@ -50,12 +61,23 @@ export default async function AdminEntry() {
     supabase.from("language_courses").select("id", { count: "exact", head: true }).eq("is_active", true).gt("verified_at", staleCutoff).lte("verified_at", dueSoonCutoff),
     supabase.from("finance_insurance_catalog").select("id", { count: "exact", head: true }).eq("is_active", true).lte("verified_at", staleCutoff),
     supabase.from("finance_insurance_catalog").select("id", { count: "exact", head: true }).eq("is_active", true).gt("verified_at", staleCutoff).lte("verified_at", dueSoonCutoff),
+    currentAdmin
+      ? supabase.from("notifications").select("id", { count: "exact", head: true }).eq("user_id", currentAdmin.id).is("read_at", null)
+      : Promise.resolve({ count: 0, error: null }),
+    supabase.from("customer_access").select("user_id,status").limit(1000),
+    supabase.from("student_intake_cases").select("student_id,status").limit(1000),
+    supabase.from("student_case_assignments").select("student_id,assigned_admin_id").limit(1000),
+    supabase.from("student_case_notes").select("student_id,kind,occurred_at").neq("kind", "internal_note").gte("occurred_at", staleContactCutoff).limit(3000),
+    supabase.from("student_checklist_items").select("student_id,status").limit(5000),
+    supabase.from("applications").select("student_id,status,next_action").limit(5000),
   ]);
 
   if (
     universitiesError || programsError || applicationsError || documentsError
     || intakeAttentionError || studentQuestionError || orientationError
     || staleLanguageError || dueLanguageError || staleFinanceError || dueFinanceError
+    || unreadNotificationsResult.error || accessRowsResult.error || intakeRowsResult.error
+    || assignmentsResult.error || recentContactsResult.error || actionsResult.error || applicationRowsResult.error
   ) {
     return (
       <main className="mx-auto w-full max-w-[92rem] px-4 py-6 sm:px-6 sm:py-7 xl:px-8">
@@ -77,6 +99,34 @@ export default async function AdminEntry() {
   const dueFinance = dueFinanceCount || 0;
   const staleCatalogue = staleLanguage + staleFinance;
   const dueCatalogue = dueLanguage + dueFinance;
+
+  const unreadNotifications = unreadNotificationsResult.count || 0;
+  const operationalIds = new Set<string>();
+  for (const item of accessRowsResult.data || []) {
+    if (item.status !== "client_completed") operationalIds.add(item.user_id);
+  }
+  for (const item of intakeRowsResult.data || []) operationalIds.add(item.student_id);
+
+  const assignedIds = new Set(
+    (assignmentsResult.data || [])
+      .filter((item) => Boolean(item.assigned_admin_id))
+      .map((item) => item.student_id),
+  );
+  const contactedRecentlyIds = new Set(
+    (recentContactsResult.data || []).map((item) => item.student_id),
+  );
+  const explicitActionIds = new Set<string>();
+  for (const item of actionsResult.data || []) {
+    if (isOpenAdminAction(item.status)) explicitActionIds.add(item.student_id);
+  }
+  for (const item of applicationRowsResult.data || []) {
+    if (isActiveApplication(item.status) && item.next_action?.trim()) explicitActionIds.add(item.student_id);
+  }
+
+  const operationalList = [...operationalIds];
+  const unassignedCases = operationalList.filter((id) => !assignedIds.has(id)).length;
+  const staleContactCases = operationalList.filter((id) => !contactedRecentlyIds.has(id)).length;
+  const missingNextActionCases = operationalList.filter((id) => !explicitActionIds.has(id)).length;
 
   const priority = studentQuestions > 0
     ? {
@@ -142,6 +192,44 @@ export default async function AdminEntry() {
           </>
         }
       />
+
+      <section aria-labelledby="daily-cockpit-title" className="mb-6">
+        <PremiumSectionHeader
+          eyebrow="Cockpit quotidien"
+          title={<span id="daily-cockpit-title">Ce qui peut être oublié aujourd’hui</span>}
+          description="Ces signaux transversaux complètent les files métier et ouvrent directement la bonne vue."
+        />
+        <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <DailySignalCard
+            href="/admin/inbox"
+            label="Boîte de réception"
+            value={unreadNotifications}
+            detail={unreadNotifications ? "Événements non lus pour votre compte admin" : "Aucun événement non lu"}
+            tone={unreadNotifications ? "warning" : "success"}
+          />
+          <DailySignalCard
+            href="/admin/people?work=no_action"
+            label="Sans prochaine action"
+            value={missingNextActionCases}
+            detail="Dossiers actifs sans action explicite enregistrée"
+            tone={missingNextActionCases ? "warning" : "success"}
+          />
+          <DailySignalCard
+            href="/admin/people?work=unassigned"
+            label="Non attribués"
+            value={unassignedCases}
+            detail="Dossiers actifs sans conseiller responsable"
+            tone={unassignedCases ? "warning" : "success"}
+          />
+          <DailySignalCard
+            href="/admin/people?work=stale"
+            label="Sans contact 14 j"
+            value={staleContactCases}
+            detail="Dossiers actifs sans contact journalisé récemment"
+            tone={staleContactCases ? "info" : "success"}
+          />
+        </div>
+      </section>
 
       <section aria-label="Priorité opérationnelle" className="grid gap-4 lg:grid-cols-[minmax(0,1.5fr)_minmax(17rem,0.7fr)]">
         <Card className="pc-card relative overflow-hidden">
@@ -366,6 +454,38 @@ function CatalogHealthRow({
       <Badge variant={stale ? "warning" : dueSoon ? "info" : "success"}>
         {stale ? "Action requise" : dueSoon ? "À planifier" : "À jour"}
       </Badge>
+    </Link>
+  );
+}
+
+
+function DailySignalCard({
+  href,
+  label,
+  value,
+  detail,
+  tone,
+}: {
+  href: string;
+  label: string;
+  value: number;
+  detail: string;
+  tone: "warning" | "info" | "success";
+}) {
+  return (
+    <Link
+      href={href}
+      className="group rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-4 transition-colors hover:bg-[var(--surface-subtle)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)]"
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">{label}</p>
+          <p className="mt-2 text-3xl font-semibold tracking-tight text-slate-950">{value}</p>
+        </div>
+        <Badge variant={tone}>{value ? "À vérifier" : "À jour"}</Badge>
+      </div>
+      <p className="mt-3 text-sm leading-5 text-slate-600">{detail}</p>
+      <p className="mt-3 text-xs font-bold text-[var(--brand)]">Ouvrir →</p>
     </Link>
   );
 }
