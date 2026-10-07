@@ -123,3 +123,24 @@ test("Admin V11 keeps direct student replies ahead of generic Campus waits", () 
     "student replies should stay ahead of generic Campus waiting states",
   );
 });
+
+test("Admin V11 keeps the Team cockpit aligned with blocked and waiting-state queues", () => {
+  for (const label of ["Bloqués", "Attend Campus", "Attend étudiant", "Attend externe"]) {
+    assert.ok(team.includes(label), label);
+  }
+
+  assert.match(team, /blockedStudentIds/);
+  assert.match(team, /waitingCampusStudentIds/);
+  assert.match(team, /waitingStudentStudentIds/);
+  assert.match(team, /waitingExternalStudentIds/);
+  assert.match(team, /action\.status === "waiting_student"[\s\S]*action\.requires_student_action[\s\S]*action\.student_action_reason\?\.trim\(\)/);
+
+  for (const href of [
+    "/admin/people?work=blocked",
+    "/admin/people?work=waiting_campus",
+    "/admin/people?work=waiting_student",
+    "/admin/people?work=waiting_external",
+  ]) {
+    assert.ok(team.includes(href), href);
+  }
+});
