@@ -10,6 +10,7 @@ import { AdminDossierActionsPanel, type AdminDossierActionItem } from "@/compone
 import { AdminCaseOwnerPanel, type AdminAdvisorOption } from "@/components/admin/AdminCaseOwnerPanel";
 import { AdminCaseJournalPanel, type AdminCaseNoteItem } from "@/components/admin/AdminCaseJournalPanel";
 import { AdminDocumentRequirementsPanel, type AdminDocumentRequirementItem } from "@/components/admin/AdminDocumentRequirementsPanel";
+import { AdminStudentProjectPanel } from "@/components/admin/AdminStudentProjectPanel";
 import { DossierMessageThread, type DossierMessageItem } from "@/components/product/DossierMessageThread";
 import { Badge } from "@/components/ui/Badge";
 import { DataList } from "@/components/ui/DataList";
@@ -180,7 +181,7 @@ export default async function AdminStudentDossierPage({
   ] = await Promise.all([
     supabase
       .from("profiles")
-      .select("id,first_name,last_name,full_name")
+      .select("id,first_name,last_name,full_name,target_degree,target_field,study_language,german_level,general_average,preferred_cities,target_intake,budget_range")
       .eq("id", studentId)
       .maybeSingle(),
     supabase
@@ -607,6 +608,7 @@ export default async function AdminStudentDossierPage({
           ["#actions", "Actions"],
           ["#messages", "Messages"],
           ["#journal", "Journal interne"],
+          ["#project", "Projet"],
           ["#orientation", "Orientation"],
           ["#documents", "Documents"],
           ["#applications", "Candidatures"],
@@ -671,6 +673,22 @@ export default async function AdminStudentDossierPage({
 
       <div className="grid gap-7 xl:grid-cols-[minmax(0,1.35fr)_minmax(19rem,0.65fr)]">
         <div className="space-y-7">
+          <div id="project" className="scroll-mt-24">
+            <AdminStudentProjectPanel
+              studentId={studentId}
+              project={{
+                target_degree: profile?.target_degree || null,
+                target_field: profile?.target_field || null,
+                study_language: profile?.study_language || null,
+                german_level: profile?.german_level || null,
+                general_average: profile?.general_average ?? null,
+                preferred_cities: Array.isArray(profile?.preferred_cities) ? profile.preferred_cities : [],
+                target_intake: profile?.target_intake || null,
+                budget_range: profile?.budget_range || null,
+              }}
+            />
+          </div>
+
           <section id="orientation" className="pc-panel scroll-mt-24 p-5 sm:p-6">
             <PremiumSectionHeader
               eyebrow="Projet"
