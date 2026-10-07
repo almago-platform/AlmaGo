@@ -57,15 +57,24 @@ export async function PATCH(
     budget_range: nullableText(body.budget_range, 120),
   };
 
-  const { data: current, error: loadError } = await supabase
-    .from("profiles")
-    .select("id,target_degree,target_field,study_language,german_level,general_average,preferred_cities,target_intake,budget_range")
-    .eq("id", studentId)
-    .maybeSingle();
+  const [profileResult, regulatoryProjectResult] = await Promise.all([
+    supabase
+      .from("profiles")
+      .select("id,target_degree,target_field,study_language,german_level,general_average,preferred_cities,target_intake,budget_range")
+      .eq("id", studentId)
+      .maybeSingle(),
+    supabase
+      .from("student_projects")
+      .select("id,target_degree,target_field,target_intake,preferred_cities,current_german_level,preferred_study_language")
+      .eq("student_id", studentId)
+      .maybeSingle(),
+  ]);
 
-  if (loadError) {
+  if (profileResult.error || regulatoryProjectResult.error) {
     return NextResponse.json({ error: "Impossible de charger le projet actuel." }, { status: 500 });
   }
+  const current = profileResult.data;
+  const regulatoryProject = regulatoryProjectResult.data;
   if (!current) {
     return NextResponse.json({ error: "Profil étudiant introuvable." }, { status: 404 });
   }
@@ -87,6 +96,45 @@ export async function PATCH(
     return NextResponse.json({ error: "Impossible d’enregistrer le projet étudiant." }, { status: 500 });
   }
 
+  const regulatoryNext = regulatoryProject
+    ? {
+        target_degree: nextProject.target_degree,
+        target_field: nextProject.target_field,
+        target_intake: nextProject.target_intake,
+        preferred_cities: nextProject.preferred_cities,
+        current_german_level: nextProject.german_level,
+        preferred_study_language: nextProject.study_language,
+      }
+    : null;
+
+  if (regulatoryProject && regulatoryNext) {
+    const { error: regulatoryUpdateError } = await supabase
+      .from("student_projects")
+      .update(regulatoryNext)
+      .eq("id", regulatoryProject.id)
+      .eq("student_id", studentId);
+
+    if (regulatoryUpdateError) {
+      await supabase
+        .from("profiles")
+        .update({
+          target_degree: current.target_degree,
+          target_field: current.target_field,
+          study_language: current.study_language,
+          german_level: current.german_level,
+          general_average: current.general_average,
+          preferred_cities: current.preferred_cities,
+          target_intake: current.target_intake,
+          budget_range: current.budget_range,
+        })
+        .eq("id", studentId);
+      return NextResponse.json(
+        { error: "La modification a été annulée car le projet de procédure n’a pas pu être synchronisé." },
+        { status: 500 },
+      );
+    }
+  }
+
   const { error: historyError } = await supabase.from("student_history").insert({
     student_id: studentId,
     actor_id: user.id,
@@ -94,6 +142,7 @@ export async function PATCH(
     message: "Le projet d’études enregistré dans le dossier a été mis à jour par Campus Allemagne.",
     metadata: {
       changed_fields: changedFields,
+      regulatory_project_synced: Boolean(regulatoryProject),
     },
   });
 
@@ -109,6 +158,20 @@ export async function PATCH(
       budget_range: current.budget_range,
     };
     await supabase.from("profiles").update(rollback).eq("id", studentId);
+    if (regulatoryProject) {
+      await supabase
+        .from("student_projects")
+        .update({
+          target_degree: regulatoryProject.target_degree,
+          target_field: regulatoryProject.target_field,
+          target_intake: regulatoryProject.target_intake,
+          preferred_cities: regulatoryProject.preferred_cities,
+          current_german_level: regulatoryProject.current_german_level,
+          preferred_study_language: regulatoryProject.preferred_study_language,
+        })
+        .eq("id", regulatoryProject.id)
+        .eq("student_id", studentId);
+    }
     return NextResponse.json(
       { error: "La modification a été annulée car son historique n’a pas pu être enregistré." },
       { status: 500 },
