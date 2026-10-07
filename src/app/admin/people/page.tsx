@@ -62,6 +62,19 @@ type DocumentRow = {
   status: string;
 };
 
+type CurrentProcedureRow = {
+  id: string;
+  student_id: string;
+};
+
+type RequirementSignalRow = {
+  student_id: string;
+  student_procedure_id: string;
+  status: string;
+  requested_from_student: boolean;
+  student_request_reason: string | null;
+};
+
 type ApplicationRow = {
   id: string;
   student_id: string;
@@ -123,6 +136,7 @@ type WorkView =
   | "waiting_external"
   | "deadline_verify"
   | "application_risk"
+  | "document_replacement"
   | "official_overdue"
   | "official_3"
   | "official_7"
@@ -148,6 +162,7 @@ type PersonRecord = {
   stage: string;
   orientationCount: number;
   pendingDocuments: number;
+  replacementDocuments: number;
   activeApplications: number;
   openActions: number;
   blockedActions: number;
@@ -180,6 +195,7 @@ const validWorkViews = new Set<WorkView>([
   "waiting_external",
   "deadline_verify",
   "application_risk",
+  "document_replacement",
   "official_overdue",
   "official_3",
   "official_7",
@@ -211,6 +227,7 @@ const workLabels: Record<WorkView, string> = {
   waiting_external: "Attend externe",
   deadline_verify: "Dates à vérifier",
   application_risk: "VPD / uni-assist à risque",
+  document_replacement: "Documents à remplacer",
   official_overdue: "Deadline officielle dépassée",
   official_3: "Deadline officielle ≤ 3 j",
   official_7: "Deadline officielle ≤ 7 j",
@@ -344,8 +361,19 @@ export default async function AdminPeoplePage({
   const prospectIds = prospects.map((item) => item.id);
   const profileIds = [...new Set([...userIds, ...adminIds])];
 
-  const [profilesResult, intakeResult, documentsResult, applicationsResult, actionsResult, orientationsResult, assignmentsResult, caseNotesResult, messagesResult] =
-    await Promise.all([
+  const [
+    profilesResult,
+    intakeResult,
+    documentsResult,
+    applicationsResult,
+    actionsResult,
+    orientationsResult,
+    assignmentsResult,
+    caseNotesResult,
+    messagesResult,
+    currentProceduresResult,
+    requirementSignalsResult,
+  ] = await Promise.all([
       profileIds.length
         ? supabase.from("profiles").select("id,first_name,last_name,full_name").in("id", profileIds)
         : Promise.resolve({ data: [], error: null }),
@@ -373,6 +401,12 @@ export default async function AdminPeoplePage({
       userIds.length
         ? supabase.from("student_dossier_messages").select("student_id").in("student_id", userIds).eq("sender_role", "student").is("admin_read_at", null).limit(3000)
         : Promise.resolve({ data: [], error: null }),
+      userIds.length
+        ? supabase.from("student_procedures").select("id,student_id").in("student_id", userIds).eq("is_current", true)
+        : Promise.resolve({ data: [], error: null }),
+      userIds.length
+        ? supabase.from("student_document_requirements").select("student_id,student_procedure_id,status,requested_from_student,student_request_reason").in("student_id", userIds).limit(5000)
+        : Promise.resolve({ data: [], error: null }),
     ]);
 
   const fatalError =
@@ -387,7 +421,9 @@ export default async function AdminPeoplePage({
     || orientationsResult.error
     || assignmentsResult.error
     || caseNotesResult.error
-    || messagesResult.error;
+    || messagesResult.error
+    || currentProceduresResult.error
+    || requirementSignalsResult.error;
 
   if (fatalError) {
     return (
@@ -409,6 +445,8 @@ export default async function AdminPeoplePage({
   const orientations = (orientationsResult.data || []) as OrientationRow[];
   const assignments = (assignmentsResult.data || []) as AssignmentRow[];
   const caseNotes = (caseNotesResult.data || []) as CaseNoteRow[];
+  const currentProcedures = (currentProceduresResult.data || []) as CurrentProcedureRow[];
+  const requirementSignals = (requirementSignalsResult.data || []) as RequirementSignalRow[];
   const unreadMessagesByUser = new Map<string, number>();
   for (const item of messagesResult.data || []) {
     unreadMessagesByUser.set(item.student_id, (unreadMessagesByUser.get(item.student_id) || 0) + 1);
@@ -444,6 +482,13 @@ export default async function AdminPeoplePage({
   const actionsByUser = new Map<string, ActionRow[]>();
   for (const item of actions) actionsByUser.set(item.student_id, [...(actionsByUser.get(item.student_id) || []), item]);
 
+  const currentProcedureIdByUser = new Map(currentProcedures.map((item) => [item.student_id, item.id]));
+  const requirementsByUser = new Map<string, RequirementSignalRow[]>();
+  for (const item of requirementSignals) {
+    if (currentProcedureIdByUser.get(item.student_id) !== item.student_procedure_id) continue;
+    requirementsByUser.set(item.student_id, [...(requirementsByUser.get(item.student_id) || []), item]);
+  }
+
   const orientationCountByProspect = new Map<string, number>();
   for (const item of orientations) {
     orientationCountByProspect.set(item.prospect_id, (orientationCountByProspect.get(item.prospect_id) || 0) + 1);
@@ -470,17 +515,27 @@ export default async function AdminPeoplePage({
     const personApplications = applicationsByUser.get(userId) || [];
     const activeApplications = personApplications.filter((item) => isActiveApplication(item.status)).sort(compareApplications);
     const personActions = actionsByUser.get(userId) || [];
+    const personRequirements = requirementsByUser.get(userId) || [];
     const openActions = personActions.filter((item) => isOpenAdminAction(item.status)).sort(compareDue);
     const blockedActions = personActions.filter((item) => item.status === "blocked").length;
-    const waitingOnCampus = openActions.filter((item) => item.status === "waiting_almago").length;
+    const waitingOnCampus = openActions.filter((item) => item.status === "waiting_almago").length
+      + personRequirements.filter((item) =>
+        ["authentication_required", "translation_required", "legalisation_to_verify", "legalisation_required"].includes(item.status)
+      ).length;
     const waitingOnStudent = openActions.filter((item) =>
       item.status === "waiting_student"
       && item.requires_student_action
       && Boolean(item.student_action_reason?.trim())
-    ).length;
+    ).length
+      + personRequirements.filter((item) =>
+        item.requested_from_student
+        && ["requested", "replacement_required"].includes(item.status)
+        && Boolean(item.student_request_reason?.trim())
+      ).length;
     const waitingOnExternal = openActions.filter((item) => item.status === "waiting_external").length;
     const humanOpenActions = personActions.filter((item) => isHumanAdminAction(item)).sort(compareDue);
     const pendingDocuments = personDocuments.filter((item) => attentionDocumentStatuses.has(item.status)).length;
+    const replacementDocuments = personRequirements.filter((item) => item.status === "replacement_required").length;
     const segment = classifyAdminPerson(access?.status, Boolean(intake));
     const email = prospect?.email || "Adresse non enregistrée";
     const currentStage = adminDossierStageIndex(intake?.status, activeApplications.length > 0);
@@ -562,6 +617,7 @@ export default async function AdminPeoplePage({
       stage: adminDossierLifecycle[currentStage] || "Orientation",
       orientationCount: prospect ? orientationCountByProspect.get(prospect.id) || 0 : 0,
       pendingDocuments,
+      replacementDocuments,
       activeApplications: activeApplications.length,
       openActions: humanOpenActions.length,
       blockedActions,
@@ -608,6 +664,7 @@ export default async function AdminPeoplePage({
       stage: "Compte à lier",
       orientationCount: orientationCountByProspect.get(prospect.id) || 0,
       pendingDocuments: 0,
+      replacementDocuments: 0,
       activeApplications: 0,
       openActions: 0,
       blockedActions: 0,
@@ -667,6 +724,7 @@ export default async function AdminPeoplePage({
     waiting_external: operationalRecords.filter((item) => item.waitingOnExternal > 0).length,
     deadline_verify: operationalRecords.filter((item) => item.hasUnverifiedDeadline).length,
     application_risk: operationalRecords.filter((item) => item.applicationRouteRisks > 0).length,
+    document_replacement: operationalRecords.filter((item) => item.replacementDocuments > 0).length,
     official_overdue: operationalRecords.filter((item) => item.officialDeadlineUrgency?.kind === "overdue").length,
     official_3: operationalRecords.filter((item) =>
       Boolean(item.officialDeadlineUrgency && item.officialDeadlineUrgency.daysRemaining >= 0 && item.officialDeadlineUrgency.daysRemaining <= 3)
@@ -705,6 +763,7 @@ export default async function AdminPeoplePage({
     if (work === "waiting_external" && (!item.userId || item.segment === "archived" || item.waitingOnExternal < 1)) return false;
     if (work === "deadline_verify" && (!item.userId || item.segment === "archived" || !item.hasUnverifiedDeadline)) return false;
     if (work === "application_risk" && (!item.userId || item.segment === "archived" || item.applicationRouteRisks < 1)) return false;
+    if (work === "document_replacement" && (!item.userId || item.segment === "archived" || item.replacementDocuments < 1)) return false;
     if (work === "official_overdue" && (!item.userId || item.segment === "archived" || item.officialDeadlineUrgency?.kind !== "overdue")) return false;
     if (work === "official_3" && (!item.userId || item.segment === "archived" || !item.officialDeadlineUrgency || item.officialDeadlineUrgency.daysRemaining < 0 || item.officialDeadlineUrgency.daysRemaining > 3)) return false;
     if (work === "official_7" && (!item.userId || item.segment === "archived" || !item.officialDeadlineUrgency || item.officialDeadlineUrgency.daysRemaining < 0 || item.officialDeadlineUrgency.daysRemaining > 7)) return false;
@@ -895,6 +954,7 @@ export default async function AdminPeoplePage({
                       {person.waitingOnExternal > 0 ? <Badge variant="neutral">Attend externe · {person.waitingOnExternal}</Badge> : null}
                       {person.hasUnverifiedDeadline ? <Badge variant="warning">Source/date non vérifiée</Badge> : null}
                       {person.applicationRouteRisks > 0 ? <Badge variant="warning">VPD / uni-assist à risque · {person.applicationRouteRisks}</Badge> : null}
+                      {person.replacementDocuments > 0 ? <Badge variant="warning">À remplacer · {person.replacementDocuments}</Badge> : null}
                       {person.officialDeadlineUrgency ? (
                         <Badge variant={
                           person.officialDeadlineUrgency.kind === "overdue" || person.officialDeadlineUrgency.kind === "d3"
@@ -939,7 +999,12 @@ export default async function AdminPeoplePage({
                     <p className="mt-1 text-sm font-semibold text-slate-900">
                       {person.pendingDocuments} doc. · {person.activeApplications} cand.
                     </p>
-                    <p className="mt-1 text-xs text-slate-500">{person.openActions} action{person.openActions > 1 ? "s" : ""}</p>
+                    <p className="mt-1 text-xs text-slate-500">
+                      {person.replacementDocuments
+                        ? `${person.replacementDocuments} remplacement${person.replacementDocuments > 1 ? "s" : ""} · `
+                        : ""}
+                      {person.openActions} action{person.openActions > 1 ? "s" : ""}
+                    </p>
                   </div>
 
                   <div className="min-w-0">
