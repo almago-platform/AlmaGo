@@ -7,7 +7,10 @@ import { AdminLoadError } from "@/components/admin/AdminLoadError";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { PremiumSectionHeader } from "@/components/product/PremiumSectionHeader";
 import { catalogVerificationCutoff } from "@/lib/catalog-freshness";
-import { applicationRouteRisk } from "@/lib/admin/application-risk";
+import {
+  applicationOfficialDeadlineUrgency,
+  applicationRouteRisk,
+} from "@/lib/admin/application-risk";
 import { isActiveApplication } from "@/lib/application-workflow";
 import { isOpenAdminAction } from "@/lib/admin/people";
 
@@ -176,6 +179,11 @@ export default async function AdminEntry() {
 
   const unverifiedDeadlineCaseIds = new Set<string>();
   const applicationRiskCaseIds = new Set<string>();
+  const officialOverdueCaseIds = new Set<string>();
+  const officialD3CaseIds = new Set<string>();
+  const officialD7CaseIds = new Set<string>();
+  const officialD14CaseIds = new Set<string>();
+  const officialD30CaseIds = new Set<string>();
   for (const item of humanActions) {
     if (item.due_date && !actionDeadlineIsTrusted(item)) {
       unverifiedDeadlineCaseIds.add(item.student_id);
@@ -194,6 +202,21 @@ export default async function AdminEntry() {
     }, today)) {
       applicationRiskCaseIds.add(item.student_id);
     }
+
+    const officialUrgency = applicationOfficialDeadlineUrgency({
+      status: item.status,
+      deadline: item.deadline,
+      deadline_kind: item.deadline_kind,
+      deadlineTrusted: trusted,
+    }, today);
+    if (officialUrgency?.kind === "overdue") {
+      officialOverdueCaseIds.add(item.student_id);
+    } else if (officialUrgency) {
+      if (officialUrgency.daysRemaining <= 30) officialD30CaseIds.add(item.student_id);
+      if (officialUrgency.daysRemaining <= 14) officialD14CaseIds.add(item.student_id);
+      if (officialUrgency.daysRemaining <= 7) officialD7CaseIds.add(item.student_id);
+      if (officialUrgency.daysRemaining <= 3) officialD3CaseIds.add(item.student_id);
+    }
   }
 
   const operationalList = [...operationalIds];
@@ -203,6 +226,11 @@ export default async function AdminEntry() {
   const waitingExternalCases = operationalList.filter((id) => waitingExternalCaseIds.has(id)).length;
   const deadlineVerifyCases = operationalList.filter((id) => unverifiedDeadlineCaseIds.has(id)).length;
   const applicationRiskCases = operationalList.filter((id) => applicationRiskCaseIds.has(id)).length;
+  const officialOverdueCases = operationalList.filter((id) => officialOverdueCaseIds.has(id)).length;
+  const officialD3Cases = operationalList.filter((id) => officialD3CaseIds.has(id)).length;
+  const officialD7Cases = operationalList.filter((id) => officialD7CaseIds.has(id)).length;
+  const officialD14Cases = operationalList.filter((id) => officialD14CaseIds.has(id)).length;
+  const officialD30Cases = operationalList.filter((id) => officialD30CaseIds.has(id)).length;
   const unassignedCases = operationalList.filter((id) => !assignedIds.has(id)).length;
   const staleContactCases = operationalList.filter((id) => !contactedRecentlyIds.has(id)).length;
   const missingNextActionCases = operationalList.filter((id) => !explicitActionIds.has(id)).length;
@@ -240,8 +268,18 @@ export default async function AdminEntry() {
     return Boolean(due && due >= today && due <= weekEnd);
   }).length;
 
-  const priority = blockedCases > 0
+  const priority = officialOverdueCases > 0
     ? {
+        badge: "Deadline officielle dépassée",
+        title: officialOverdueCases > 1
+          ? `${officialOverdueCases} dossiers ont dépassé une deadline officielle vérifiée`
+          : "1 dossier a dépassé une deadline officielle vérifiée",
+        description: "La candidature n’est pas encore enregistrée comme soumise alors que sa deadline officielle vérifiée est dépassée. Vérifiez immédiatement la situation réelle et le statut du dossier.",
+        href: "/admin/people?work=official_overdue",
+        action: "Escalader les deadlines",
+      }
+    : blockedCases > 0
+      ? {
         badge: "Dossiers bloqués",
         title: blockedCases > 1
           ? `${blockedCases} dossiers ont un blocage explicite`
@@ -387,6 +425,55 @@ export default async function AdminEntry() {
             detail="Dossiers à préparer avant leur prochaine date de travail fiable"
             tone={weekCases ? "info" : "success"}
             statusLabel={weekCases ? "À préparer" : "À jour"}
+          />
+        </div>
+
+        <div className="mt-5">
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Deadlines officielles vérifiées</p>
+          <p className="mt-1 text-sm leading-6 text-slate-600">
+            Compteurs cumulatifs uniquement pour les candidatures encore à déposer. Une date non vérifiée reste hors de ces alertes.
+          </p>
+        </div>
+        <div className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+          <DailySignalCard
+            href="/admin/people?work=official_overdue"
+            label="Dépassées"
+            value={officialOverdueCases}
+            detail="Deadline officielle vérifiée dépassée avant soumission"
+            tone={officialOverdueCases ? "error" : "success"}
+            statusLabel={officialOverdueCases ? "Escalade" : "À jour"}
+          />
+          <DailySignalCard
+            href="/admin/people?work=official_3"
+            label="≤ 3 jours"
+            value={officialD3Cases}
+            detail="Dossiers à J-3 ou moins de leur deadline officielle"
+            tone={officialD3Cases ? "error" : "success"}
+            statusLabel={officialD3Cases ? "Critique" : "À jour"}
+          />
+          <DailySignalCard
+            href="/admin/people?work=official_7"
+            label="≤ 7 jours"
+            value={officialD7Cases}
+            detail="Dossiers à J-7 ou moins de leur deadline officielle"
+            tone={officialD7Cases ? "warning" : "success"}
+            statusLabel={officialD7Cases ? "Urgent" : "À jour"}
+          />
+          <DailySignalCard
+            href="/admin/people?work=official_14"
+            label="≤ 14 jours"
+            value={officialD14Cases}
+            detail="Dossiers à J-14 ou moins de leur deadline officielle"
+            tone={officialD14Cases ? "warning" : "success"}
+            statusLabel={officialD14Cases ? "Attention" : "À jour"}
+          />
+          <DailySignalCard
+            href="/admin/people?work=official_30"
+            label="≤ 30 jours"
+            value={officialD30Cases}
+            detail="Dossiers entrant dans la fenêtre d’information J-30"
+            tone={officialD30Cases ? "info" : "success"}
+            statusLabel={officialD30Cases ? "À préparer" : "À jour"}
           />
         </div>
 
