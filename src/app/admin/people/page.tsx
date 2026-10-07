@@ -73,6 +73,9 @@ type ActionRow = {
   owner: string | null;
   due_date: string | null;
   deadline_kind: string | null;
+  official_source_url: string | null;
+  official_source_verified_at: string | null;
+  deadline_cycle: string | null;
   created_at: string;
 };
 
@@ -202,6 +205,18 @@ function applicationDeadlineIsVerified(application: ApplicationRow) {
   );
 }
 
+function actionDeadlineIsVerified(action: ActionRow) {
+  if (!action.due_date) return false;
+  if (action.deadline_kind === "internal_target" || action.deadline_kind === "source_review_date") {
+    return true;
+  }
+  return Boolean(
+    action.official_source_url
+    && action.official_source_verified_at
+    && action.deadline_cycle,
+  );
+}
+
 export const dynamic = "force-dynamic";
 
 export default async function AdminPeoplePage({
@@ -263,7 +278,7 @@ export default async function AdminPeoplePage({
         ? supabase.from("applications").select("id,student_id,status,deadline,deadline_kind,deadline_source_url,deadline_verified_at,deadline_cycle,next_action,created_at").in("student_id", userIds)
         : Promise.resolve({ data: [], error: null }),
       userIds.length
-        ? supabase.from("student_checklist_items").select("id,student_id,title,description,status,owner,due_date,deadline_kind,created_at").in("student_id", userIds)
+        ? supabase.from("student_checklist_items").select("id,student_id,title,description,status,owner,due_date,deadline_kind,official_source_url,official_source_verified_at,deadline_cycle,created_at").in("student_id", userIds)
         : Promise.resolve({ data: [], error: null }),
       prospectIds.length
         ? supabase.from("orientations").select("id,prospect_id,created_at").in("prospect_id", prospectIds)
