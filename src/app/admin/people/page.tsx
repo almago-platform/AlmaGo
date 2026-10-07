@@ -272,7 +272,7 @@ export default async function AdminPeoplePage({
   const prospectIds = prospects.map((item) => item.id);
   const profileIds = [...new Set([...userIds, ...adminIds])];
 
-  const [profilesResult, intakeResult, documentsResult, applicationsResult, actionsResult, orientationsResult, assignmentsResult] =
+  const [profilesResult, intakeResult, documentsResult, applicationsResult, actionsResult, orientationsResult, assignmentsResult, caseNotesResult] =
     await Promise.all([
       profileIds.length
         ? supabase.from("profiles").select("id,first_name,last_name,full_name").in("id", profileIds)
@@ -295,6 +295,9 @@ export default async function AdminPeoplePage({
       userIds.length
         ? supabase.from("student_case_assignments").select("student_id,assigned_admin_id,assigned_at,updated_at").in("student_id", userIds)
         : Promise.resolve({ data: [], error: null }),
+      userIds.length
+        ? supabase.from("student_case_notes").select("student_id,kind,occurred_at").in("student_id", userIds).neq("kind", "internal_note").order("occurred_at", { ascending: false }).limit(3000)
+        : Promise.resolve({ data: [], error: null }),
     ]);
 
   const fatalError =
@@ -307,7 +310,8 @@ export default async function AdminPeoplePage({
     || applicationsResult.error
     || actionsResult.error
     || orientationsResult.error
-    || assignmentsResult.error;
+    || assignmentsResult.error
+    || caseNotesResult.error;
 
   if (fatalError) {
     return (
@@ -328,6 +332,7 @@ export default async function AdminPeoplePage({
   const actions = (actionsResult.data || []) as ActionRow[];
   const orientations = (orientationsResult.data || []) as OrientationRow[];
   const assignments = (assignmentsResult.data || []) as AssignmentRow[];
+  const caseNotes = (caseNotesResult.data || []) as CaseNoteRow[];
 
   const profileByUser = new Map(profiles.map((item) => [item.id, item]));
   const accessByUser = new Map(accessRows.map((item) => [item.user_id, item]));
