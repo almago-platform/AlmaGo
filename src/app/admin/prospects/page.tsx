@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ProspectQualificationReviewForm } from "@/components/admin/ProspectQualificationReviewForm";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { AdminWorkflowSection } from "@/components/admin/AdminWorkflowSection";
+import { buttonClassName } from "@/components/ui/Button";
 import { restorePublicOrientationAnswers } from "@/lib/orientation/public";
 import { acquisitionContextFromStoredInput } from "@/lib/phase2/acquisition";
 import { customerLifecycleStatusLabel } from "@/lib/phase2/access";
@@ -479,6 +480,14 @@ export default async function AdminProspectsPage({
                         ? qualificationLabels[qualification.state] ?? qualification.state
                         : "Qualification non persistée"}
                     </span>
+                    {prospect.user_id ? (
+                      <Link
+                        href={`/admin/dossiers/${prospect.user_id}`}
+                        className={buttonClassName("ghost", "min-h-8 px-2.5 py-1 text-xs")}
+                      >
+                        Dossier 360°
+                      </Link>
+                    ) : null}
                   </div>
                 </div>
 
