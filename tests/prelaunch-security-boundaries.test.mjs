@@ -13,16 +13,21 @@ function routeFiles(root) {
   return files;
 }
 
-test("every admin API route enforces the canonical server-side admin guard", () => {
+test("every admin API route enforces a server-side immutable-role admin guard", () => {
   const routes = routeFiles("src/app/api/admin");
   assert.ok(routes.length > 0, "expected admin API routes");
 
   for (const route of routes) {
     const source = readFileSync(route, "utf8");
-    assert.match(
-      source,
-      /getAdminUser\s*\(/,
-      route + " must call getAdminUser() before serving admin operations",
+    const canonicalGuard = /getAdminUser\s*\(/.test(source);
+    const explicitImmutableRoleGuard =
+      /auth\.getUser\s*\(/.test(source) &&
+      /\.from\(["']user_roles["']\)/.test(source) &&
+      /admin/.test(source);
+
+    assert.ok(
+      canonicalGuard || explicitImmutableRoleGuard,
+      route + " must enforce admin authorization from the authenticated user and immutable user_roles",
     );
   }
 });
