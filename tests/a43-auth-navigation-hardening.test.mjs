@@ -7,9 +7,11 @@ const isolation = readFileSync("tests/e2e/authenticated.spec.mjs", "utf8");
 const student = readFileSync("tests/e2e/student-space-quality.spec.mjs", "utf8");
 const admin = readFileSync("tests/e2e/admin-space-quality.spec.mjs", "utf8");
 
-test("A43 login helper is role-aware", () => {
+test("A43 login helper is role-aware and models the MFA challenge", () => {
   assert.match(helper, /expectedArea === "admin"/);
+  assert.match(helper, /expectedArea === "admin-challenge"/);
   assert.match(helper, /\/admin/);
+  assert.match(helper, /\/mfa/);
   assert.match(helper, /\/student/);
 });
 
@@ -25,9 +27,11 @@ test("A43 matrices use realistic per-test timeouts", () => {
   assert.match(admin, /test\.setTimeout\(180_000\)/);
 });
 
-test("A43 admin login explicitly waits for the admin area", () => {
-  assert.match(isolation, /adminPassword, "admin"/);
-  assert.match(admin, /adminPassword, "admin"/);
+test("A43 admin login explicitly waits for MFA before the admin area", () => {
+  assert.match(isolation, /adminPassword, "admin-challenge"/);
+  assert.match(admin, /adminPassword, "admin-challenge"/);
+  assert.match(isolation, /completeAdminMfaChallenge/);
+  assert.match(admin, /completeAdminMfaChallenge/);
 });
 
 
