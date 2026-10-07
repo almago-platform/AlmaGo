@@ -22,6 +22,7 @@ import {
   type KnownApplicationStatus,
 } from "@/lib/application-workflow";
 import { campusRouteLabel } from "@/lib/campus-intake";
+import { recommendationStatusLabels } from "@/lib/phase4";
 import { formatMinorCurrency } from "@/lib/money";
 import { restorePublicOrientationAnswers } from "@/lib/orientation/public";
 import { orientationProjectFacts } from "@/lib/prospect/orientation-presentation";
@@ -69,6 +70,17 @@ type DocumentRowData = {
   created_at: string;
 };
 
+type ProgramRecommendationRow = {
+  id: string;
+  status: string;
+  note: string | null;
+  created_at: string;
+  programs:
+    | { name: string | null; degree_level: string | null; field: string | null; universities: { name: string | null; city: string | null } | null }
+    | Array<{ name: string | null; degree_level: string | null; field: string | null; universities: { name: string | null; city: string | null } | null }>
+    | null;
+};
+
 type DocumentRequirementRow = AdminDocumentRequirementItem & {
   student_procedure_id: string | null;
 };
@@ -102,6 +114,13 @@ function offerName(snapshot: unknown) {
   if (!snapshot || typeof snapshot !== "object") return null;
   const value = (snapshot as Record<string, unknown>).display_name;
   return typeof value === "string" && value.trim() ? value.trim() : null;
+}
+
+function recommendationTone(status: string) {
+  if (status === "recommended" || status === "possible") return "success" as const;
+  if (status === "missing_requirements") return "warning" as const;
+  if (status === "ambitious") return "info" as const;
+  return "neutral" as const;
 }
 
 function applicationTone(status: string) {
@@ -170,6 +189,7 @@ export default async function AdminStudentDossierPage({
     documentsResult,
     procedureResult,
     requirementsResult,
+    recommendationsResult,
     applicationsResult,
     purchasesResult,
     actionsResult,
@@ -217,6 +237,12 @@ export default async function AdminStudentDossierPage({
       .select("id,student_procedure_id,requirement_key,label,category,status,requested_from_student,student_request_reason,student_request_due_date,document_id,created_at,updated_at")
       .eq("student_id", studentId)
       .order("created_at", { ascending: true }),
+    supabase
+      .from("program_recommendations")
+      .select("id,status,note,created_at,programs(name,degree_level,field,universities(name,city))")
+      .eq("student_id", studentId)
+      .eq("is_archived", false)
+      .order("created_at", { ascending: false }),
     supabase
       .from("applications")
       .select("id,status,intake,deadline,next_action,result,created_at,programs(name,universities(name,city)),application_events(id,event_type,message,visible_to_student,created_at)")
@@ -272,6 +298,7 @@ export default async function AdminStudentDossierPage({
   const currentProcedureId = procedureResult.data?.id || null;
   const documentRequirements = ((requirementsResult.data || []) as DocumentRequirementRow[])
     .filter((item) => Boolean(currentProcedureId) && item.student_procedure_id === currentProcedureId);
+  const recommendations = (recommendationsResult.data || []) as unknown as ProgramRecommendationRow[];
   const applications = (applicationsResult.data || []) as unknown as ApplicationRow[];
   const purchase = ((purchasesResult.data || []) as PurchaseRow[])[0] ?? null;
   const dossierActions = (actionsResult.data || []) as AdminDossierActionItem[];
@@ -293,6 +320,7 @@ export default async function AdminStudentDossierPage({
     || documentsResult.error
     || procedureResult.error
     || requirementsResult.error
+    || recommendationsResult.error
     || applicationsResult.error
     || purchasesResult.error
     || actionsResult.error
@@ -691,31 +719,66 @@ export default async function AdminStudentDossierPage({
 
           <section id="orientation" className="pc-panel scroll-mt-24 p-5 sm:p-6">
             <PremiumSectionHeader
-              eyebrow="Projet"
-              title="Orientation retenue"
-              description="Les informations ci-dessous proviennent de l’orientation actuellement rattachée au dossier."
+              eyebrow="Orientation Campus"
+              title={recommendations.length
+                ? `${recommendations.length} recommandation${recommendations.length > 1 ? "s" : ""} active${recommendations.length > 1 ? "s" : ""}`
+                : "Aucune recommandation Campus publiée"}
+              description="Le projet étudiant décrit le besoin. Cette section montre séparément les programmes réellement recommandés par Campus Allemagne."
+              actions={
+                <Link
+                  href={`/admin/orientation?student=${studentId}`}
+                  className={buttonClassName("secondary", "min-h-9 px-3 py-1.5 text-xs")}
+                >
+                  Gérer l’orientation
+                </Link>
+              }
             />
-            <DataList
-              className="mt-5"
-              items={[
-                { label: "Diplôme visé", value: answers.targetDegree || "À confirmer" },
-                { label: "Domaine", value: answers.targetField || "À confirmer" },
-                { label: "Allemand", value: answers.germanLevel || "À confirmer" },
-                { label: "Situation Bac", value: bacStatusLabel(answers.bacStatus) },
-                {
-                  label: "Villes préférées",
-                  value: answers.preferredCities.length ? answers.preferredCities.join(", ") : "Aucune préférence enregistrée",
-                },
-                {
-                  label: "Rentrée visée",
-                  value: [answers.targetIntakeSeason, answers.targetIntakeYear].filter(Boolean).join(" ") || "À confirmer",
-                },
-              ]}
-            />
+
+            {recommendations.length ? (
+              <div className="mt-5 divide-y divide-[var(--border)] rounded-[var(--radius-control)] border border-[var(--border)] bg-white">
+                {recommendations.map((recommendation) => {
+                  const program = Array.isArray(recommendation.programs)
+                    ? recommendation.programs[0] ?? null
+                    : recommendation.programs;
+                  const university = Array.isArray(program?.universities)
+                    ? program?.universities[0] ?? null
+                    : program?.universities;
+                  return (
+                    <article key={recommendation.id} className="p-4">
+                      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                        <div className="min-w-0">
+                          <h3 className="text-sm font-bold text-slate-950">{program?.name || "Programme"}</h3>
+                          <p className="mt-1 text-sm leading-5 text-slate-600">
+                            {university?.name || "Université à confirmer"}
+                            {university?.city ? ` · ${university.city}` : ""}
+                            {program?.degree_level ? ` · ${program.degree_level}` : ""}
+                          </p>
+                          {recommendation.note ? (
+                            <p className="mt-2 text-sm leading-6 text-slate-700">{recommendation.note}</p>
+                          ) : null}
+                        </div>
+                        <Badge variant={recommendationTone(recommendation.status)}>
+                          {recommendationStatusLabels[recommendation.status] || recommendation.status}
+                        </Badge>
+                      </div>
+                    </article>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="mt-5">
+                <PremiumEmptyState
+                  eyebrow="Orientation Campus"
+                  title="Aucun programme recommandé"
+                  description="Complétez le projet étudiant puis ouvrez l’orientation pour publier une recommandation fondée sur les informations vérifiées."
+                  compact
+                />
+              </div>
+            )}
 
             <div className="mt-5 border-t border-[var(--border)] pt-4">
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <p className="text-sm font-bold text-slate-950">Toutes les orientations</p>
+                <p className="text-sm font-bold text-slate-950">Historique des projets / orientations saisis</p>
                 <Badge variant="neutral">{orientationHistory.length}</Badge>
               </div>
               {orientationHistory.length ? (
