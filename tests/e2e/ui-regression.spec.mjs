@@ -18,6 +18,27 @@ async function expectNoHorizontalOverflow(page, label) {
   expect(overflow, label + " must not overflow horizontally").toBeLessThanOrEqual(1);
 }
 
+async function expectNonceCsp(page, response, label) {
+  const csp = response?.headers()["content-security-policy-report-only"] || "";
+  expect(csp, label + " should return CSP Report-Only").toContain("script-src 'self'");
+
+  const matches = [...csp.matchAll(/script-src[^;]*'nonce-([^']+)'[^;]*'strict-dynamic'/g)];
+  expect(matches, label + " should expose exactly one nonce-based script policy").toHaveLength(1);
+  const nonce = matches[0][1];
+
+  expect(csp).not.toContain("'unsafe-eval'");
+  expect(csp).toContain("report-uri /api/security/csp-report");
+  expect(response?.headers()["content-security-policy"]).toBeUndefined();
+
+  const renderedNonces = await page.locator("script").evaluateAll((scripts) =>
+    scripts.map((script) => script.nonce).filter(Boolean),
+  );
+  expect(renderedNonces.length, label + " should render nonce-bearing Next scripts").toBeGreaterThan(0);
+  for (const renderedNonce of renderedNonces) {
+    expect(renderedNonce).toBe(nonce);
+  }
+}
+
 function maxCssDuration(value) {
   return Math.max(
     ...String(value)
@@ -38,6 +59,10 @@ test.describe("V3.2 bounded public visual regression gate", () => {
       const response = await page.goto(target.path, { waitUntil: "networkidle" });
       expect(response, target.path + " should return a response").not.toBeNull();
       expect(response?.ok(), target.path + " should return successfully").toBeTruthy();
+
+      if (target.name === "home") {
+        await expectNonceCsp(page, response, target.path);
+      }
 
       await expect(page.locator("body")).toBeVisible();
       await expect(page.locator("main").first()).toBeVisible();
