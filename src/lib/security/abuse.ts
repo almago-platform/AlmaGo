@@ -74,9 +74,10 @@ function validForwardedAddress(value: string | undefined) {
 }
 
 /**
- * Render terminates public traffic before it reaches the application. We use
- * only the right-most X-Forwarded-For value appended closest to the app, never
- * the client-controlled left-most value. Outside Render, forwarded headers are
+ * Render terminates public traffic before it reaches the application and sets
+ * the first X-Forwarded-For entry to the real client address. Never trust a
+ * later hop here: user-supplied X-Forwarded-For values can otherwise let a
+ * caller rotate rate-limit identities. Outside Render, forwarded headers are
  * not trusted and callers share a fail-closed anonymous bucket.
  */
 export function resolveTrustedClientAddress(
@@ -88,8 +89,8 @@ export function resolveTrustedClientAddress(
   const chain = headers.get("x-forwarded-for");
   if (!chain) return null;
 
-  const rightMost = chain.split(",").at(-1);
-  return validForwardedAddress(rightMost);
+  const first = chain.split(",", 1)[0];
+  return validForwardedAddress(first);
 }
 
 function digest(value: string) {
