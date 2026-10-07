@@ -99,7 +99,7 @@ type CaseNoteRow = {
 };
 
 type PersonView = "all" | AdminPersonSegment;
-type WorkView = "all" | "overdue" | "today" | "week" | "stale" | "unassigned" | "mine";
+type WorkView = "all" | "overdue" | "today" | "week" | "no_action" | "stale" | "unassigned" | "mine";
 
 type PersonRecord = {
   key: string;
@@ -123,12 +123,13 @@ type PersonRecord = {
   assignedAdminName: string | null;
   lastContactAt: string | null;
   lastContactKind: string | null;
+  hasExplicitNextAction: boolean;
   needsAttention: boolean;
   updatedAt: string;
 };
 
 const validViews = new Set<PersonView>(["all", "prospect", "candidate", "student", "archived"]);
-const validWorkViews = new Set<WorkView>(["all", "overdue", "today", "week", "stale", "unassigned", "mine"]);
+const validWorkViews = new Set<WorkView>(["all", "overdue", "today", "week", "no_action", "stale", "unassigned", "mine"]);
 
 const viewLabels: Record<PersonView, string> = {
   all: "Tous",
@@ -143,6 +144,7 @@ const workLabels: Record<WorkView, string> = {
   overdue: "En retard",
   today: "Aujourd’hui",
   week: "7 prochains jours",
+  no_action: "Sans prochaine action",
   stale: "Sans contact 14 j",
   unassigned: "Non attribués",
   mine: "Mes dossiers",
@@ -405,6 +407,7 @@ export default async function AdminPeoplePage({
     const currentStage = adminDossierStageIndex(intake?.status, activeApplications.length > 0);
     const recordedAction = openActions[0] || null;
     const applicationAction = activeApplications.find((item) => Boolean(item.next_action)) || null;
+    const hasExplicitNextAction = Boolean(recordedAction || applicationAction);
     const fallback = adminDossierNextAction(intake?.status, activeApplications.length > 0);
 
     const nextAction = recordedAction?.title
@@ -473,7 +476,8 @@ export default async function AdminPeoplePage({
         : null,
       lastContactAt: latestContact?.occurred_at || null,
       lastContactKind: latestContact?.kind || null,
-      needsAttention,
+      hasExplicitNextAction,
+      needsAttention: needsAttention || (segment !== "archived" && !hasExplicitNextAction),
       updatedAt: intake?.updated_at || prospect?.updated_at || access?.status_changed_at || "",
     };
   });
@@ -503,6 +507,7 @@ export default async function AdminPeoplePage({
       assignedAdminName: null,
       lastContactAt: null,
       lastContactKind: null,
+      hasExplicitNextAction: false,
       needsAttention: false,
       updatedAt: prospect.updated_at,
     });
@@ -540,6 +545,7 @@ export default async function AdminPeoplePage({
     overdue: operationalRecords.filter((item) => Boolean(item.dueDate && item.dueDate < today)).length,
     today: operationalRecords.filter((item) => item.dueDate === today).length,
     week: operationalRecords.filter((item) => Boolean(item.dueDate && item.dueDate >= today && item.dueDate <= weekEnd)).length,
+    no_action: operationalRecords.filter((item) => !item.hasExplicitNextAction).length,
     stale: operationalRecords.filter((item) => {
       const contactDate = dateKey(item.lastContactAt);
       return !contactDate || contactDate < staleContactCutoff;
@@ -557,6 +563,7 @@ export default async function AdminPeoplePage({
     if (work === "overdue" && !(item.dueDate && item.dueDate < today)) return false;
     if (work === "today" && item.dueDate !== today) return false;
     if (work === "week" && !(item.dueDate && item.dueDate >= today && item.dueDate <= weekEnd)) return false;
+    if (work === "no_action" && (!item.userId || item.segment === "archived" || item.hasExplicitNextAction)) return false;
     if (work === "stale") {
       const contactDate = dateKey(item.lastContactAt);
       if (!item.userId || item.segment === "archived" || (contactDate && contactDate >= staleContactCutoff)) return false;
@@ -734,6 +741,7 @@ export default async function AdminPeoplePage({
                       {overdue ? <Badge variant="error">En retard</Badge> : null}
                       {!overdue && dueToday ? <Badge variant="warning">Aujourd’hui</Badge> : null}
                       {!overdue && !dueToday && person.needsAttention ? <Badge variant="warning">Attention</Badge> : null}
+                      {!person.hasExplicitNextAction && person.userId && person.segment !== "archived" ? <Badge variant="neutral">Sans action</Badge> : null}
                     </div>
                     <h2 className="mt-2 truncate text-base font-bold text-slate-950">{person.name}</h2>
                     <p className="mt-1 truncate text-xs text-slate-600"><bdi dir="auto">{person.email}</bdi></p>
