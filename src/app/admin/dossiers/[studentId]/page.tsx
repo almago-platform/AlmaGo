@@ -263,7 +263,7 @@ export default async function AdminStudentDossierPage({
       .maybeSingle(),
     supabase
       .from("student_document_requirements")
-      .select("id,student_procedure_id,requirement_key,label,category,status,requested_from_student,student_request_reason,student_request_due_date,document_id,created_at,updated_at")
+      .select("id,student_procedure_id,requirement_key,label,category,status,requested_from_student,student_request_reason,student_request_due_date,document_id,requires_tunisian_authentication,requires_translation,requires_german_legalisation,legalisation_status,legalisation_reason,due_date,deadline_kind,deadline_cycle,source_url,source_verified_at,admin_note,created_at,updated_at")
       .eq("student_id", studentId)
       .order("created_at", { ascending: true }),
     supabase
@@ -557,6 +557,41 @@ export default async function AdminStudentDossierPage({
       href: "#documents",
       actionLabel: "Voir la demande",
     });
+  }
+
+  for (const requirement of documentRequirements) {
+    if (requirement.status === "legalisation_to_verify") {
+      addBlocker({
+        id: `document-legalisation-review:${requirement.id}`,
+        kind: "Légalisation à vérifier",
+        title: requirement.label,
+        reason: requirement.legalisation_reason?.trim()
+          || "La nécessité d’une légalisation allemande doit être vérifiée avant de poursuivre cette opération documentaire.",
+        owner: "almago",
+        severity: "warning",
+        href: "#documents",
+        actionLabel: "Vérifier la règle",
+      });
+    }
+
+    if (["authentication_required", "translation_required", "legalisation_required"].includes(requirement.status)) {
+      addBlocker({
+        id: `document-internal-operation:${requirement.id}`,
+        kind: requirement.status === "authentication_required"
+          ? "Authentification à lancer"
+          : requirement.status === "translation_required"
+            ? "Traduction à lancer"
+            : "Légalisation à lancer",
+        title: requirement.label,
+        reason: requirement.admin_note?.trim()
+          || requirement.legalisation_reason?.trim()
+          || "Une opération documentaire interne est requise avant que la pièce puisse être considérée comme prête.",
+        owner: "almago",
+        severity: "warning",
+        href: "#documents",
+        actionLabel: "Voir l’exigence",
+      });
+    }
   }
 
   for (const document of documentsAwaitingDecision) {
