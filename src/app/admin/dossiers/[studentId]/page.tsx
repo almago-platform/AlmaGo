@@ -456,9 +456,13 @@ export default async function AdminStudentDossierPage({
   const personSegment = classifyAdminPerson(access?.status, Boolean(intake));
   const currentStage = adminDossierStageIndex(intake?.status, applications.length > 0);
   const workflowNextAction = adminDossierNextAction(intake?.status, applications.length > 0);
-  const latestOperationalDocuments = [...new Map(
-    documents.map((item) => [item.category, item] as const),
-  ).values()];
+  const latestDocumentByCategory = new Map<string, DocumentRowData>();
+  for (const item of documents) {
+    if (!latestDocumentByCategory.has(item.category)) {
+      latestDocumentByCategory.set(item.category, item);
+    }
+  }
+  const latestOperationalDocuments = [...latestDocumentByCategory.values()];
   const documentsAwaitingDecision = latestOperationalDocuments.filter((item) =>
     item.status === "pending" || item.status === "reviewed"
   );
