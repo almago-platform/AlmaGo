@@ -8,7 +8,7 @@ import { createClient } from "@/lib/supabase/server";
 const offerStatusLabels: Record<string, string> = {
   draft: "brouillon",
   published: "publiée",
-  archived: "archivée",
+  retired: "retirée",
 };
 
 type OfferCode = "bronze" | "silver" | "gold";
