@@ -315,7 +315,7 @@ function AdminQueueRow({
 
       <div className="flex min-w-[4rem] items-baseline gap-2 lg:block">
         <p className="text-3xl font-semibold tracking-tight text-slate-950">{value}</p>
-        <span className="text-xs font-semibold text-slate-500 lg:hidden">{status}</span>
+        <span className="text-xs font-semibold text-slate-600 lg:hidden">{status}</span>
       </div>
 
       <div className="min-w-0">
