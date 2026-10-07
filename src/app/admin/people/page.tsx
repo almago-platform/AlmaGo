@@ -160,7 +160,7 @@ const segmentBadgeVariant: Record<AdminPersonSegment, "neutral" | "info" | "succ
   archived: "neutral",
 };
 
-const attentionDocumentStatuses = new Set(["pending", "reviewed", "replace_required", "rejected"]);
+const attentionDocumentStatuses = new Set(["pending", "reviewed"]);
 
 function displayName(profile: ProfileRow | undefined, email: string) {
   const split = [profile?.first_name, profile?.last_name].filter(Boolean).join(" ").trim();
