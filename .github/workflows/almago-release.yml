@@ -14,20 +14,36 @@ jobs:
   release-gate:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 40
     env:
       PRODUCTION_URL: ${{ vars.ALMAGO_PRODUCTION_URL || 'https://almago-dev.onrender.com' }}
+      ALMAGO_BASE_URL: ${{ vars.ALMAGO_PRODUCTION_URL || 'https://almago-dev.onrender.com' }}
       NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
       NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
+      ALMAGO_E2E_STUDENT_EMAIL: ${{ vars.ALMAGO_E2E_STUDENT_EMAIL || 'phase3.student.c@almago.test' }}
+      ALMAGO_E2E_STUDENT_PASSWORD: ${{ secrets.ALMAGO_E2E_STUDENT_PASSWORD }}
+      ALMAGO_E2E_ADMIN_EMAIL: ${{ vars.ALMAGO_E2E_ADMIN_EMAIL || 'phase3.admin.b@almago.test' }}
+      ALMAGO_E2E_ADMIN_PASSWORD: ${{ secrets.ALMAGO_E2E_ADMIN_PASSWORD }}
+      ALMAGO_E2E_ADMIN_TOTP_SECRET: ${{ secrets.ALMAGO_E2E_ADMIN_TOTP_SECRET }}
+      CI: "true"
     steps:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
+
       - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
+
       - run: npm ci
+
+      - name: Require authenticated release configuration
+        shell: bash
+        run: |
+          for name in NEXT_PUBLIC_SUPABASE_URL NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ALMAGO_E2E_STUDENT_EMAIL ALMAGO_E2E_STUDENT_PASSWORD ALMAGO_E2E_ADMIN_EMAIL ALMAGO_E2E_ADMIN_PASSWORD ALMAGO_E2E_ADMIN_TOTP_SECRET; do
+            if [ -z "${!name}" ]; then echo "::error::$name is required for release"; exit 1; fi
+          done
 
       - name: Production dependency audit
         run: npm audit --omit=dev --audit-level=high
@@ -37,6 +53,12 @@ jobs:
       - run: npm run lint
       - run: npm run build
       - run: git diff --check
+
+      - name: Install authenticated browser tools
+        run: npm install --no-save --package-lock=false @playwright/test@1.55.0 @axe-core/playwright@4.10.2
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
 
       - name: Verify exact Render revision
         shell: bash
@@ -62,3 +84,6 @@ jobs:
           curl --fail --silent --show-error "$PRODUCTION_URL/login" > /dev/null
           curl --fail --silent --show-error "$PRODUCTION_URL/orientation" > /dev/null
           curl --fail --silent --show-error "$PRODUCTION_URL/api/health" > /dev/null
+
+      - name: Authenticated AAL2 release evidence
+        run: npx playwright test tests/e2e/authenticated.spec.mjs --project=desktop-chromium
