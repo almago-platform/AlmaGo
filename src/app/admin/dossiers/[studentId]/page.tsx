@@ -31,7 +31,7 @@ import {
   customerAccessLabel,
   purchaseStatusLabel,
 } from "@/lib/admin/student-dossier";
-import { adminActionOwnerLabel, adminActionWaiting, isOpenAdminAction } from "@/lib/admin/people";
+import { adminActionOwnerLabel, adminActionWaiting, adminPersonSegmentLabels, classifyAdminPerson, isOpenAdminAction } from "@/lib/admin/people";
 import { createClient } from "@/lib/supabase/server";
 
 type ApplicationRow = {
@@ -121,6 +121,24 @@ function bacStatusLabel(value: string) {
 
 function latestDocument(documents: DocumentRowData[], category: string) {
   return documents.find((document) => document.category === category) ?? null;
+}
+
+function documentStatusLabel(status: string) {
+  if (status === "approved") return "Approuvé";
+  if (status === "pending") return "À vérifier";
+  if (status === "reviewed") return "Revu";
+  if (status === "replace_required") return "Remplacement demandé";
+  if (status === "rejected") return "Rejeté";
+  if (status === "quarantined") return "Quarantaine";
+  return status;
+}
+
+function documentStatusVariant(status: string): "success" | "info" | "warning" | "error" | "neutral" {
+  if (status === "approved") return "success";
+  if (status === "pending" || status === "reviewed") return "info";
+  if (status === "replace_required") return "warning";
+  if (status === "rejected" || status === "quarantined") return "error";
+  return "neutral";
 }
 
 export const dynamic = "force-dynamic";
@@ -259,28 +277,34 @@ export default async function AdminStudentDossierPage({
     );
   }
 
-  let orientation = null as {
+  let orientationHistory = [] as Array<{
     id: string;
     input: unknown;
     created_at: string;
-  } | null;
+  }>;
 
-  if (intake?.orientation_id) {
-    const orientationResult = await supabase
-      .from("orientations")
-      .select("id,input,created_at")
-      .eq("id", intake.orientation_id)
-      .maybeSingle();
-    orientation = orientationResult.data;
-  } else if (prospect?.id) {
+  if (prospect?.id) {
     const orientationResult = await supabase
       .from("orientations")
       .select("id,input,created_at")
       .eq("prospect_id", prospect.id)
       .order("created_at", { ascending: false })
-      .limit(1);
-    orientation = orientationResult.data?.[0] ?? null;
+      .limit(30);
+    orientationHistory = (orientationResult.data || []) as typeof orientationHistory;
   }
+
+  if (intake?.orientation_id && !orientationHistory.some((item) => item.id === intake.orientation_id)) {
+    const orientationResult = await supabase
+      .from("orientations")
+      .select("id,input,created_at")
+      .eq("id", intake.orientation_id)
+      .maybeSingle();
+    if (orientationResult.data) orientationHistory.unshift(orientationResult.data);
+  }
+
+  const orientation = intake?.orientation_id
+    ? orientationHistory.find((item) => item.id === intake.orientation_id) || orientationHistory[0] || null
+    : orientationHistory[0] || null;
 
   const offerResult = intake?.proposed_offer_version_id
     ? await supabase
@@ -301,6 +325,7 @@ export default async function AdminStudentDossierPage({
     || profile?.full_name
     || "Étudiant";
   const email = prospect?.email || "Adresse non enregistrée";
+  const personSegment = classifyAdminPerson(access?.status, Boolean(intake));
   const currentStage = adminDossierStageIndex(intake?.status, applications.length > 0);
   const workflowNextAction = adminDossierNextAction(intake?.status, applications.length > 0);
   const recordedNextAction = dossierActions.find((item) => isOpenAdminAction(item.status)) || null;
@@ -410,9 +435,9 @@ export default async function AdminStudentDossierPage({
   return (
     <main className="mx-auto w-full max-w-[92rem] space-y-7 px-4 py-5 sm:px-6 sm:py-6 xl:px-8">
       <DossierHeader
-        eyebrow="Dossier étudiant · vue 360°"
+        eyebrow={`${adminPersonSegmentLabels[personSegment]} · dossier 360°`}
         title={name}
-        description="Une seule vue pour comprendre le projet, les pièces, la proposition, le paiement et la suite du parcours."
+        description="Une seule vue pour comprendre la personne, ses orientations, ses pièces, ses candidatures, ses actions et la suite du parcours."
         status={adminDossierStatusLabel(intake?.status)}
         statusVariant={adminDossierStatusVariant(intake?.status)}
         facts={[
@@ -513,6 +538,45 @@ export default async function AdminStudentDossierPage({
                 },
               ]}
             />
+
+            <div className="mt-5 border-t border-[var(--border)] pt-4">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <p className="text-sm font-bold text-slate-950">Toutes les orientations</p>
+                <Badge variant="neutral">{orientationHistory.length}</Badge>
+              </div>
+              {orientationHistory.length ? (
+                <div className="mt-3 divide-y divide-[var(--border)] rounded-[var(--radius-control)] border border-[var(--border)] bg-white">
+                  {orientationHistory.map((item) => {
+                    const itemInput = item.input && typeof item.input === "object"
+                      ? item.input as Record<string, unknown>
+                      : {};
+                    const itemAnswers = restorePublicOrientationAnswers(itemInput.answers);
+                    const itemFacts = orientationProjectFacts(itemAnswers, "fr");
+                    const current = item.id === orientation?.id;
+                    return (
+                      <div key={item.id} className="flex flex-col gap-3 p-3 sm:flex-row sm:items-center sm:justify-between">
+                        <div className="min-w-0">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <p className="text-sm font-semibold text-slate-950">
+                              {itemAnswers.targetDegree || "Projet"} · {itemAnswers.targetField || "Domaine à confirmer"}
+                            </p>
+                            {current ? <Badge variant="info">Orientation retenue</Badge> : null}
+                          </div>
+                          <p className="mt-1 text-xs leading-5 text-slate-600">
+                            {itemFacts.length ? itemFacts.join(" · ") : "Orientation enregistrée"}
+                          </p>
+                        </div>
+                        <time className="text-xs font-semibold text-slate-500" dateTime={item.created_at}>
+                          {formatDate(item.created_at)}
+                        </time>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <p className="mt-3 text-sm text-slate-600">Aucune orientation enregistrée.</p>
+              )}
+            </div>
           </section>
 
           <section id="documents" className="pc-panel scroll-mt-24 p-5 sm:p-6">
@@ -543,6 +607,25 @@ export default async function AdminStudentDossierPage({
                 );
               })}
             </div>
+
+            {documents.length ? (
+              <details className="mt-5 rounded-[var(--radius-control)] border border-[var(--border)] bg-white p-4">
+                <summary className="cursor-pointer text-sm font-bold text-slate-950">
+                  Tous les fichiers enregistrés · {documents.length}
+                </summary>
+                <div className="mt-3 divide-y divide-[var(--border)]">
+                  {documents.map((document) => (
+                    <div key={document.id} className="flex flex-col gap-3 py-3 sm:flex-row sm:items-center sm:justify-between">
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-semibold text-slate-900">{document.original_filename || document.category}</p>
+                        <p className="mt-1 text-xs text-slate-500">{document.category} · {formatDate(document.created_at)}</p>
+                      </div>
+                      <Badge variant={documentStatusVariant(document.status)}>{documentStatusLabel(document.status)}</Badge>
+                    </div>
+                  ))}
+                </div>
+              </details>
+            ) : null}
           </section>
 
           <section id="commercial" className="pc-panel scroll-mt-24 p-5 sm:p-6">
@@ -586,7 +669,7 @@ export default async function AdminStudentDossierPage({
 
             {applications.length ? (
               <div className="mt-5 divide-y divide-[var(--border)] border-y border-[var(--border)]">
-                {applications.slice(0, 6).map((application) => {
+                {applications.map((application) => {
                   const program = firstProgram(application);
                   const university = program?.universities;
                   const universityValue = Array.isArray(university) ? university[0] ?? null : university;
