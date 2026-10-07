@@ -85,13 +85,68 @@ test("account ceilings do not collapse distinct accounts behind one address", ()
   );
 });
 
+test("one account cannot multiply its quota across client addresses", () => {
+  const previousRender = process.env.RENDER;
+  process.env.RENDER = "true";
+  const policy = {
+    route: `test_account_addresses_${Date.now()}`,
+    burst: { limit: 1, windowMs: 60_000 },
+    sustained: { limit: 1, windowMs: 60_000 },
+  };
+
+  try {
+    const first = new Request("https://example.test/api", {
+      headers: { "x-forwarded-for": "198.51.100.20" },
+    });
+    const second = new Request("https://example.test/api", {
+      headers: { "x-forwarded-for": "198.51.100.21" },
+    });
+    assert.equal(enforceRequestRateLimit(first, policy, { accountId: "same-account", now: 0 }), null);
+    assert.equal(
+      enforceRequestRateLimit(second, policy, { accountId: "same-account", now: 1 })?.status,
+      429,
+    );
+  } finally {
+    if (previousRender === undefined) delete process.env.RENDER;
+    else process.env.RENDER = previousRender;
+  }
+});
+
+test("daily AI budget is global and recovers after its window", async () => {
+  const policy = {
+    route: `test_daily_budget_${Date.now()}`,
+    burst: { limit: 10, windowMs: 60_000 },
+    sustained: { limit: 10, windowMs: 60_000 },
+    global: { limit: 2, windowMs: 24 * 60 * 60_000 },
+  };
+  const request = new Request("https://example.test/api");
+
+  assert.equal(enforceRequestRateLimit(request, policy, { accountId: "a", now: 0 }), null);
+  assert.equal(enforceRequestRateLimit(request, policy, { accountId: "b", now: 1 }), null);
+  const limited = enforceRequestRateLimit(request, policy, { accountId: "c", now: 2 });
+  assert.equal(limited?.status, 429);
+  assert.deepEqual(await limited?.json(), {
+    error: "Too many requests. Please try again later.",
+  });
+  assert.equal(
+    enforceRequestRateLimit(request, policy, {
+      accountId: "c",
+      now: 24 * 60 * 60_000,
+    }),
+    null,
+  );
+});
+
 test("expensive work has a bounded concurrency lease", () => {
   const route = `test_concurrency_${Date.now()}`;
-  const first = acquireRequestConcurrency(route, 1);
+  const first = acquireRequestConcurrency(route, 2);
+  const second = acquireRequestConcurrency(route, 2);
   assert.ok(first);
-  assert.equal(acquireRequestConcurrency(route, 1), null);
+  assert.ok(second);
+  assert.equal(acquireRequestConcurrency(route, 2), null);
   first.release();
-  assert.ok(acquireRequestConcurrency(route, 1));
+  assert.ok(acquireRequestConcurrency(route, 2));
+  second.release();
 });
 
 test("priority public routes use bounded abuse controls and provider timeouts", async () => {

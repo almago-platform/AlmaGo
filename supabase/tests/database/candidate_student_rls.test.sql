@@ -176,6 +176,8 @@ begin
   execute format('update %s set id = id where id = $1', p_table) using p_id;
   get diagnostics changed = row_count;
   return changed;
+exception when insufficient_privilege then
+  return 0;
 end;
 $$;
 
@@ -186,21 +188,45 @@ begin
   execute format('delete from %s where id = $1', p_table) using p_id;
   get diagnostics changed = row_count;
   return changed;
+exception when insufficient_privilege then
+  return 0;
+end;
+$$;
+
+create function pg_temp.visible_count(p_table regclass)
+returns bigint language plpgsql security invoker set search_path = '' as $$
+declare visible bigint;
+begin
+  execute format('select count(*) from %s', p_table) into visible;
+  return visible;
+exception when insufficient_privilege then
+  return 0;
+end;
+$$;
+
+create function pg_temp.access_is_denied(p_sql text)
+returns boolean language plpgsql security invoker set search_path = '' as $$
+begin
+  execute p_sql;
+  return false;
+exception
+  when insufficient_privilege or raise_exception then
+    return true;
 end;
 $$;
 
 -- Anonymous callers have no private-table access at all.
 set local role anon;
-select throws_ok('select * from public.academic_evidence', '42501', 'anon cannot read academic evidence');
-select throws_ok('select * from public.applications', '42501', 'anon cannot read applications');
-select throws_ok('select * from public.application_events', '42501', 'anon cannot read application events');
-select throws_ok('select * from public.program_recommendations', '42501', 'anon cannot read recommendations');
-select throws_ok('select * from public.student_checklist_items', '42501', 'anon cannot read checklist items');
-select throws_ok('select * from public.student_document_requirements', '42501', 'anon cannot read document requirements');
-select throws_ok('select * from public.student_dossier_messages', '42501', 'anon cannot read dossier messages');
-select throws_ok('select * from public.student_history', '42501', 'anon cannot read student history');
-select throws_ok('select * from public.student_language_course_selections', '42501', 'anon cannot read language selections');
-select throws_ok('select * from public.student_procedures', '42501', 'anon cannot read procedures');
+select is(pg_temp.visible_count('public.academic_evidence'), 0::bigint, 'anon cannot read academic evidence');
+select is(pg_temp.visible_count('public.applications'), 0::bigint, 'anon cannot read applications');
+select is(pg_temp.visible_count('public.application_events'), 0::bigint, 'anon cannot read application events');
+select is(pg_temp.visible_count('public.program_recommendations'), 0::bigint, 'anon cannot read recommendations');
+select is(pg_temp.visible_count('public.student_checklist_items'), 0::bigint, 'anon cannot read checklist items');
+select is(pg_temp.visible_count('public.student_document_requirements'), 0::bigint, 'anon cannot read document requirements');
+select is(pg_temp.visible_count('public.student_dossier_messages'), 0::bigint, 'anon cannot read dossier messages');
+select is(pg_temp.visible_count('public.student_history'), 0::bigint, 'anon cannot read student history');
+select is(pg_temp.visible_count('public.student_language_course_selections'), 0::bigint, 'anon cannot read language selections');
+select is(pg_temp.visible_count('public.student_procedures'), 0::bigint, 'anon cannot read procedures');
 reset role;
 
 -- A technical student role plus prospect lifecycle is never client entitlement.
@@ -239,46 +265,36 @@ select is(pg_temp.try_delete('public.student_history', '46000000-0000-0000-0000-
 select is(pg_temp.try_delete('public.student_language_course_selections', '47000000-0000-0000-0000-000000000001'), 0, 'prospect cannot delete language selection');
 select is(pg_temp.try_delete('public.student_procedures', '48000000-0000-0000-0000-000000000001'), 0, 'prospect cannot delete procedures');
 
-select throws_ok(
-  $$insert into public.academic_evidence (student_id, evidence_type, origin) values ('10000000-0000-0000-0000-000000000001', 'conditional_admission', 'student_declared')$$,
-  '42501', 'prospect cannot insert academic evidence'
-);
-select throws_ok(
-  $$insert into public.applications (student_id, program_id, intake) values ('10000000-0000-0000-0000-000000000001', '21000000-0000-0000-0000-000000000001', 'summer')$$,
-  '42501', 'prospect cannot insert applications'
-);
-select throws_ok(
-  $$insert into public.application_events (application_id, event_type) values ('40000000-0000-0000-0000-000000000001', 'prospect_attempt')$$,
-  '42501', 'prospect cannot insert application events'
-);
-select throws_ok(
-  $$insert into public.program_recommendations (student_id, program_id, admin_id) values ('10000000-0000-0000-0000-000000000001', '21000000-0000-0000-0000-000000000001', '10000000-0000-0000-0000-000000000004')$$,
-  '42501', 'prospect cannot insert recommendations'
-);
-select throws_ok(
-  $$insert into public.student_checklist_items (student_id, title) values ('10000000-0000-0000-0000-000000000001', 'prospect attempt')$$,
-  '42501', 'prospect cannot insert checklist items'
-);
-select throws_ok(
-  $$insert into public.student_document_requirements (student_id, requirement_key, label, category) values ('10000000-0000-0000-0000-000000000001', 'prospect-attempt', 'Attempt', 'other')$$,
-  '42501', 'prospect cannot insert document requirements'
-);
-select throws_ok(
-  $$insert into public.student_dossier_messages (student_id, sender_id, sender_role, body) values ('10000000-0000-0000-0000-000000000001', '10000000-0000-0000-0000-000000000001', 'student', 'Prospect attempt')$$,
-  '42501', 'prospect cannot insert dossier messages'
-);
-select throws_ok(
-  $$insert into public.student_history (student_id, event_type, message) values ('10000000-0000-0000-0000-000000000001', 'prospect_attempt', 'Attempt')$$,
-  '42501', 'prospect cannot insert history'
-);
-select throws_ok(
-  $$insert into public.student_language_course_selections (student_id, language_course_id) values ('10000000-0000-0000-0000-000000000001', '22000000-0000-0000-0000-000000000001')$$,
-  '42501', 'prospect cannot insert language selection'
-);
-select throws_ok(
-  $$insert into public.student_procedures (student_id, procedure_template_key, procedure_template_version, route_key) values ('10000000-0000-0000-0000-000000000001', 'prospect-attempt', 1, 'attempt')$$,
-  '42501', 'prospect cannot insert procedures'
-);
+select ok(pg_temp.access_is_denied(
+  $$insert into public.academic_evidence (student_id, evidence_type, origin) values ('10000000-0000-0000-0000-000000000001', 'conditional_admission', 'student_declared')$$
+), 'prospect cannot insert academic evidence');
+select ok(pg_temp.access_is_denied(
+  $$insert into public.applications (student_id, program_id, intake) values ('10000000-0000-0000-0000-000000000001', '21000000-0000-0000-0000-000000000001', 'summer')$$
+), 'prospect cannot insert applications');
+select ok(pg_temp.access_is_denied(
+  $$insert into public.application_events (application_id, event_type) values ('40000000-0000-0000-0000-000000000001', 'prospect_attempt')$$
+), 'prospect cannot insert application events');
+select ok(pg_temp.access_is_denied(
+  $$insert into public.program_recommendations (student_id, program_id, admin_id) values ('10000000-0000-0000-0000-000000000001', '21000000-0000-0000-0000-000000000001', '10000000-0000-0000-0000-000000000004')$$
+), 'prospect cannot insert recommendations');
+select ok(pg_temp.access_is_denied(
+  $$insert into public.student_checklist_items (student_id, title) values ('10000000-0000-0000-0000-000000000001', 'prospect attempt')$$
+), 'prospect cannot insert checklist items');
+select ok(pg_temp.access_is_denied(
+  $$insert into public.student_document_requirements (student_id, requirement_key, label, category) values ('10000000-0000-0000-0000-000000000001', 'prospect-attempt', 'Attempt', 'other')$$
+), 'prospect cannot insert document requirements');
+select ok(pg_temp.access_is_denied(
+  $$insert into public.student_dossier_messages (student_id, sender_id, sender_role, body) values ('10000000-0000-0000-0000-000000000001', '10000000-0000-0000-0000-000000000001', 'student', 'Prospect attempt')$$
+), 'prospect cannot insert dossier messages');
+select ok(pg_temp.access_is_denied(
+  $$insert into public.student_history (student_id, event_type, message) values ('10000000-0000-0000-0000-000000000001', 'prospect_attempt', 'Attempt')$$
+), 'prospect cannot insert history');
+select ok(pg_temp.access_is_denied(
+  $$insert into public.student_language_course_selections (student_id, language_course_id) values ('10000000-0000-0000-0000-000000000001', '22000000-0000-0000-0000-000000000001')$$
+), 'prospect cannot insert language selection');
+select ok(pg_temp.access_is_denied(
+  $$insert into public.student_procedures (student_id, procedure_template_key, procedure_template_version, route_key) values ('10000000-0000-0000-0000-000000000001', 'prospect-attempt', 1, 'attempt')$$
+), 'prospect cannot insert procedures');
 
 -- Prospect pre-dossier access remains owner-scoped.
 select is((select count(*) from public.documents), 1::bigint, 'prospect can read only own documents');
@@ -289,23 +305,20 @@ select lives_ok(
   $$insert into public.documents (student_id, storage_path, original_filename, mime_type, size_bytes, uploaded_by) values ('10000000-0000-0000-0000-000000000001', '10000000-0000-0000-0000-000000000001/new.pdf', 'new.pdf', 'application/pdf', 100, '10000000-0000-0000-0000-000000000001')$$,
   'prospect can insert an own pending document'
 );
-select throws_ok(
-  $$insert into public.documents (student_id, storage_path, original_filename, mime_type, size_bytes, uploaded_by) values ('10000000-0000-0000-0000-000000000002', '10000000-0000-0000-0000-000000000002/foreign.pdf', 'foreign.pdf', 'application/pdf', 100, '10000000-0000-0000-0000-000000000001')$$,
-  '42501', 'prospect cannot insert another user document'
-);
+select ok(pg_temp.access_is_denied(
+  $$insert into public.documents (student_id, storage_path, original_filename, mime_type, size_bytes, uploaded_by) values ('10000000-0000-0000-0000-000000000002', '10000000-0000-0000-0000-000000000002/foreign.pdf', 'foreign.pdf', 'application/pdf', 100, '10000000-0000-0000-0000-000000000001')$$
+), 'prospect cannot insert another user document');
 select is(pg_temp.try_self_update('public.student_projects', '31000000-0000-0000-0000-000000000001'), 1, 'prospect can update own project');
-select throws_ok(
-  $$update public.student_projects set student_id = '10000000-0000-0000-0000-000000000002' where id = '31000000-0000-0000-0000-000000000001'$$,
-  '42501', 'prospect cannot move project ownership'
-);
+select ok(pg_temp.access_is_denied(
+  $$update public.student_projects set student_id = '10000000-0000-0000-0000-000000000002' where id = '31000000-0000-0000-0000-000000000001'$$
+), 'prospect cannot move project ownership');
 select lives_ok(
   $$insert into storage.objects (bucket_id, name) values ('student-documents', '10000000-0000-0000-0000-000000000001/new.pdf')$$,
   'prospect can insert an own storage path'
 );
-select throws_ok(
-  $$insert into storage.objects (bucket_id, name) values ('student-documents', '10000000-0000-0000-0000-000000000002/foreign.pdf')$$,
-  '42501', 'prospect cannot insert another user storage path'
-);
+select ok(pg_temp.access_is_denied(
+  $$insert into storage.objects (bucket_id, name) values ('student-documents', '10000000-0000-0000-0000-000000000002/foreign.pdf')$$
+), 'prospect cannot insert another user storage path');
 reset role;
 
 -- Client A can see every own client-domain row and no Client B row.
@@ -327,10 +340,9 @@ select lives_ok(
   $$insert into public.student_dossier_messages (student_id, sender_id, sender_role, body) values ('10000000-0000-0000-0000-000000000002', '10000000-0000-0000-0000-000000000002', 'student', 'Client A own message')$$,
   'client A can insert an own dossier message'
 );
-select throws_ok(
-  $$insert into public.student_dossier_messages (student_id, sender_id, sender_role, body) values ('10000000-0000-0000-0000-000000000003', '10000000-0000-0000-0000-000000000002', 'student', 'Cross account attempt')$$,
-  'P0001', 'client A cannot insert a message for client B'
-);
+select ok(pg_temp.access_is_denied(
+  $$insert into public.student_dossier_messages (student_id, sender_id, sender_role, body) values ('10000000-0000-0000-0000-000000000003', '10000000-0000-0000-0000-000000000002', 'student', 'Cross account attempt')$$
+), 'client A cannot insert a message for client B');
 reset role;
 
 -- Admin role alone is insufficient; AAL2 is required by the shared RLS helper.

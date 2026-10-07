@@ -19,17 +19,32 @@ test("Phase 2 feature flag is disabled by default", () => {
 });
 
 test("client entitlement is independent from feature flag state", () => {
-  for (const status of [
+  const flagEnvironments = [
+    {},
+    { ALMAGO_PHASE2_ENABLED: "false" },
+    { ALMAGO_PHASE2_ENABLED: "true" },
+    { ALMAGO_PHASE2_ENABLED: "malformed" },
+  ];
+  const nonClientStatuses = [
     null,
     "prospect_account",
     "qualified_prospect",
     "payment_pending",
     "paid_pending_validation",
-  ]) {
-    assert.equal(hasClientLifecycleEntitlement(status), false, String(status));
+  ];
+
+  for (const env of flagEnvironments) {
+    isPhase2AccessEnabled(env);
+    for (const status of nonClientStatuses) {
+      assert.equal(
+        hasClientLifecycleEntitlement(status),
+        false,
+        `${env.ALMAGO_PHASE2_ENABLED ?? "missing"}:${status}`,
+      );
+    }
+    assert.equal(hasClientLifecycleEntitlement("client_active"), true);
+    assert.equal(hasClientLifecycleEntitlement("client_completed"), true);
   }
-  assert.equal(hasClientLifecycleEntitlement("client_active"), true);
-  assert.equal(hasClientLifecycleEntitlement("client_completed"), true);
 });
 
 test("Phase 2 commercial lifecycle stays separate from technical roles", () => {
