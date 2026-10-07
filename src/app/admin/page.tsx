@@ -19,6 +19,8 @@ export default async function AdminEntry() {
   const staleCutoff = catalogVerificationCutoff(now);
   const dueSoonCutoff = new Date(now.getTime() - 23 * 24 * 60 * 60 * 1000).toISOString();
   const staleContactCutoff = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000).toISOString();
+  const today = now.toISOString().slice(0, 10);
+  const weekEnd = shiftDateKey(today, 7);
   const { data: { user: currentAdmin } } = await supabase.auth.getUser();
 
   if (!staleCutoff) {
@@ -68,8 +70,8 @@ export default async function AdminEntry() {
     supabase.from("student_intake_cases").select("student_id,status").limit(1000),
     supabase.from("student_case_assignments").select("student_id,assigned_admin_id").limit(1000),
     supabase.from("student_case_notes").select("student_id,kind,occurred_at").neq("kind", "internal_note").gte("occurred_at", staleContactCutoff).limit(3000),
-    supabase.from("student_checklist_items").select("student_id,status").limit(5000),
-    supabase.from("applications").select("student_id,status,next_action").limit(5000),
+    supabase.from("student_checklist_items").select("student_id,title,status,owner,due_date,deadline_kind,official_source_url,official_source_verified_at,deadline_cycle,template_id").limit(5000),
+    supabase.from("applications").select("student_id,status,next_action,deadline,deadline_kind,deadline_source_url,deadline_verified_at,deadline_cycle").limit(5000),
   ]);
 
   if (
@@ -107,6 +109,9 @@ export default async function AdminEntry() {
   }
   for (const item of intakeRowsResult.data || []) operationalIds.add(item.student_id);
 
+  const assignmentByStudent = new Map(
+    (assignmentsResult.data || []).map((item) => [item.student_id, item.assigned_admin_id]),
+  );
   const assignedIds = new Set(
     (assignmentsResult.data || [])
       .filter((item) => Boolean(item.assigned_admin_id))
@@ -116,17 +121,52 @@ export default async function AdminEntry() {
     (recentContactsResult.data || []).map((item) => item.student_id),
   );
   const explicitActionIds = new Set<string>();
-  for (const item of actionsResult.data || []) {
-    if (isOpenAdminAction(item.status)) explicitActionIds.add(item.student_id);
-  }
+  const humanCampusActions = (actionsResult.data || []).filter((item) =>
+    isOpenAdminAction(item.status)
+    && item.template_id === null
+    && (item.owner === "almago" || item.owner === "joint")
+  );
+  for (const item of humanCampusActions) explicitActionIds.add(item.student_id);
   for (const item of applicationRowsResult.data || []) {
     if (isActiveApplication(item.status) && item.next_action?.trim()) explicitActionIds.add(item.student_id);
+  }
+
+  const nearestDueByStudent = new Map<string, string>();
+  const registerDue = (studentId: string, value: string | null | undefined) => {
+    const key = dateKey(value || null);
+    if (!key) return;
+    const current = nearestDueByStudent.get(studentId);
+    if (!current || key < current) nearestDueByStudent.set(studentId, key);
+  };
+
+  for (const item of humanCampusActions) {
+    if (actionDeadlineIsTrusted(item)) registerDue(item.student_id, item.due_date);
+  }
+  for (const item of applicationRowsResult.data || []) {
+    if (isActiveApplication(item.status) && applicationDeadlineIsTrusted(item)) {
+      registerDue(item.student_id, item.deadline);
+    }
   }
 
   const operationalList = [...operationalIds];
   const unassignedCases = operationalList.filter((id) => !assignedIds.has(id)).length;
   const staleContactCases = operationalList.filter((id) => !contactedRecentlyIds.has(id)).length;
   const missingNextActionCases = operationalList.filter((id) => !explicitActionIds.has(id)).length;
+  const myCases = currentAdmin
+    ? operationalList.filter((id) => assignmentByStudent.get(id) === currentAdmin.id).length
+    : 0;
+  const myOpenActions = currentAdmin
+    ? humanCampusActions.filter((item) => assignmentByStudent.get(item.student_id) === currentAdmin.id).length
+    : 0;
+  const overdueCases = operationalList.filter((id) => {
+    const due = nearestDueByStudent.get(id);
+    return Boolean(due && due < today);
+  }).length;
+  const todayCases = operationalList.filter((id) => nearestDueByStudent.get(id) === today).length;
+  const weekCases = operationalList.filter((id) => {
+    const due = nearestDueByStudent.get(id);
+    return Boolean(due && due >= today && due <= weekEnd);
+  }).length;
 
   const priority = studentQuestions > 0
     ? {
@@ -197,23 +237,63 @@ export default async function AdminEntry() {
       <section aria-labelledby="daily-cockpit-title" className="mb-6">
         <PremiumSectionHeader
           eyebrow="Cockpit quotidien"
-          title={<span id="daily-cockpit-title">Ce qui peut être oublié aujourd’hui</span>}
-          description="Ces signaux transversaux complètent les files métier et ouvrent directement la bonne vue."
+          title={<span id="daily-cockpit-title">Ce que l’équipe doit traiter maintenant</span>}
+          description="Les premières cartes montrent la charge datée et votre portefeuille. Les suivantes signalent les dossiers qui risquent de disparaître du radar."
         />
+
         <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <DailySignalCard
+            href="/admin/people?work=mine"
+            label="Mes dossiers"
+            value={myCases}
+            detail={myOpenActions
+              ? `${myOpenActions} action${myOpenActions > 1 ? "s" : ""} humaine${myOpenActions > 1 ? "s" : ""} ouverte${myOpenActions > 1 ? "s" : ""}`
+              : "Aucune action humaine ouverte dans votre portefeuille"}
+            tone={myOpenActions ? "info" : "success"}
+            statusLabel={myOpenActions ? "À piloter" : "À jour"}
+          />
+          <DailySignalCard
+            href="/admin/people?work=overdue"
+            label="En retard"
+            value={overdueCases}
+            detail="Dossiers avec une échéance vérifiée ou une cible interne dépassée"
+            tone={overdueCases ? "error" : "success"}
+            statusLabel={overdueCases ? "Urgent" : "À jour"}
+          />
+          <DailySignalCard
+            href="/admin/people?work=today"
+            label="Aujourd’hui"
+            value={todayCases}
+            detail="Dossiers dont la prochaine date de travail fiable tombe aujourd’hui"
+            tone={todayCases ? "warning" : "success"}
+            statusLabel={todayCases ? "À traiter" : "À jour"}
+          />
+          <DailySignalCard
+            href="/admin/people?work=week"
+            label="7 prochains jours"
+            value={weekCases}
+            detail="Dossiers à préparer avant leur prochaine date de travail fiable"
+            tone={weekCases ? "info" : "success"}
+            statusLabel={weekCases ? "À préparer" : "À jour"}
+          />
+        </div>
+
+        <div className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           <DailySignalCard
             href="/admin/inbox"
             label="Boîte de réception"
             value={unreadNotifications}
             detail={unreadNotifications ? "Événements non lus pour votre compte admin" : "Aucun événement non lu"}
             tone={unreadNotifications ? "warning" : "success"}
+            statusLabel={unreadNotifications ? "Nouveau" : "À jour"}
           />
           <DailySignalCard
             href="/admin/people?work=no_action"
             label="Sans prochaine action"
             value={missingNextActionCases}
-            detail="Dossiers actifs sans action explicite enregistrée"
+            detail="Dossiers actifs sans action humaine explicite ni prochaine action candidature"
             tone={missingNextActionCases ? "warning" : "success"}
+            statusLabel={missingNextActionCases ? "À compléter" : "À jour"}
           />
           <DailySignalCard
             href="/admin/people?work=unassigned"
@@ -221,6 +301,7 @@ export default async function AdminEntry() {
             value={unassignedCases}
             detail="Dossiers actifs sans conseiller responsable"
             tone={unassignedCases ? "warning" : "success"}
+            statusLabel={unassignedCases ? "À répartir" : "À jour"}
           />
           <DailySignalCard
             href="/admin/people?work=stale"
@@ -228,6 +309,7 @@ export default async function AdminEntry() {
             value={staleContactCases}
             detail="Dossiers actifs sans contact journalisé récemment"
             tone={staleContactCases ? "info" : "success"}
+            statusLabel={staleContactCases ? "À reprendre" : "À jour"}
           />
         </div>
       </section>
@@ -466,12 +548,14 @@ function DailySignalCard({
   value,
   detail,
   tone,
+  statusLabel,
 }: {
   href: string;
   label: string;
   value: number;
   detail: string;
-  tone: "warning" | "info" | "success";
+  tone: "warning" | "info" | "success" | "error";
+  statusLabel?: string;
 }) {
   return (
     <Link
@@ -483,10 +567,55 @@ function DailySignalCard({
           <p className="text-xs font-bold uppercase tracking-[0.12em] text-slate-600">{label}</p>
           <p className="mt-2 text-3xl font-semibold tracking-tight text-slate-950">{value}</p>
         </div>
-        <Badge variant={tone}>{value ? "À vérifier" : "À jour"}</Badge>
+        <Badge variant={tone}>{statusLabel || (value ? "À vérifier" : "À jour")}</Badge>
       </div>
       <p className="mt-3 text-sm leading-5 text-slate-600">{detail}</p>
       <p className="mt-3 text-xs font-bold text-[var(--brand)]">Ouvrir →</p>
     </Link>
+  );
+}
+
+function dateKey(value: string | null) {
+  if (!value) return null;
+  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return value;
+  const timestamp = Date.parse(value);
+  return Number.isFinite(timestamp) ? new Date(timestamp).toISOString().slice(0, 10) : null;
+}
+
+function shiftDateKey(value: string, days: number) {
+  const [year, month, day] = value.split("-").map(Number);
+  const date = new Date(Date.UTC(year, month - 1, day + days));
+  return date.toISOString().slice(0, 10);
+}
+
+function actionDeadlineIsTrusted(action: {
+  due_date: string | null;
+  deadline_kind: string | null;
+  official_source_url: string | null;
+  official_source_verified_at: string | null;
+  deadline_cycle: string | null;
+}) {
+  if (!action.due_date) return false;
+  if (action.deadline_kind === "internal_target" || action.deadline_kind === "source_review_date") return true;
+  return Boolean(
+    action.official_source_url
+    && action.official_source_verified_at
+    && action.deadline_cycle,
+  );
+}
+
+function applicationDeadlineIsTrusted(application: {
+  deadline: string | null;
+  deadline_kind: string | null;
+  deadline_source_url: string | null;
+  deadline_verified_at: string | null;
+  deadline_cycle: string | null;
+}) {
+  if (!application.deadline) return false;
+  if (application.deadline_kind === "internal_target" || application.deadline_kind === "source_review_date") return true;
+  return Boolean(
+    application.deadline_source_url
+    && application.deadline_verified_at
+    && application.deadline_cycle,
   );
 }
