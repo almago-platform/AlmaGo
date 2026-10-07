@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/Badge";
@@ -359,15 +360,23 @@ export function AdminDocumentsPanel({
                     </h2>
                   </div>
 
-                  <a
-                    href={`/api/documents/${document.id}/view`}
-                    aria-label={`Ouvrir ${document.original_filename} dans un nouvel onglet`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className={buttonClassName("secondary", "h-fit shrink-0 self-start")}
-                  >
-                    Ouvrir le document
-                  </a>
+                  <div className="flex flex-wrap gap-2 lg:justify-end">
+                    <Link
+                      href={`/admin/dossiers/${document.student_id}`}
+                      className={buttonClassName("ghost", "h-fit shrink-0 self-start px-3")}
+                    >
+                      Dossier 360°
+                    </Link>
+                    <a
+                      href={`/api/documents/${document.id}/view`}
+                      aria-label={`Ouvrir ${document.original_filename} dans un nouvel onglet`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className={buttonClassName("secondary", "h-fit shrink-0 self-start")}
+                    >
+                      Ouvrir le document
+                    </a>
+                  </div>
                 </div>
 
                 <div className="mt-5 space-y-3">
