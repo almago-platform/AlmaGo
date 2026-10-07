@@ -48,7 +48,7 @@ import {
   customerAccessLabel,
   purchaseStatusLabel,
 } from "@/lib/admin/student-dossier";
-import { adminActionOwnerLabel, adminActionWaiting, adminPersonSegmentLabels, classifyAdminPerson, isOpenAdminAction } from "@/lib/admin/people";
+import { adminActionOwnerLabel, adminActionWaiting, adminPersonSegmentLabels, classifyAdminPerson, isHumanAdminAction, isOpenAdminAction } from "@/lib/admin/people";
 import { createClient } from "@/lib/supabase/server";
 
 type ApplicationRow = {
@@ -285,7 +285,7 @@ export default async function AdminStudentDossierPage({
       .limit(1),
     supabase
       .from("student_checklist_items")
-      .select("id,title,description,status,owner,due_date,template_id,completed_at,created_at,requires_student_action,student_action_reason,blocked_reason,deadline_kind")
+      .select("id,title,description,status,owner,due_date,template_id,procedure_step_template_id,completed_at,created_at,requires_student_action,student_action_reason,blocked_reason,deadline_kind")
       .eq("student_id", studentId)
       .order("due_date", { ascending: true, nullsFirst: false })
       .order("created_at", { ascending: true }),
@@ -498,7 +498,7 @@ export default async function AdminStudentDossierPage({
   const studentDocumentRequests = documentRequirements.filter((item) =>
     item.requested_from_student && (item.status === "requested" || item.status === "replacement_required")
   );
-  const recordedNextAction = dossierActions.find((item) => isOpenAdminAction(item.status) && item.template_id === null) || null;
+  const recordedNextAction = dossierActions.find((item) => isHumanAdminAction(item)) || null;
 
   const blockers: AdminDossierBlocker[] = [];
   const blockerIds = new Set<string>();
