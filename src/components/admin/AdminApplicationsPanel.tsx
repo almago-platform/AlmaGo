@@ -9,6 +9,10 @@ import { Card } from "@/components/ui/Card";
 import { AdminWorkflowSection } from "@/components/admin/AdminWorkflowSection";
 import { PremiumEmptyState } from "@/components/product/PremiumEmptyState";
 import {
+  applicationRouteRisk,
+  applicationRouteRiskLabel,
+} from "@/lib/admin/application-risk";
+import {
   allowedApplicationTransitions,
   studentApplicationStageLabel,
   transitionRequirements,
@@ -98,6 +102,7 @@ export function AdminApplicationsPanel({
   const [notice, setNotice] = useState<Notice | null>(null);
   const [edits, setEdits] = useState<Record<string, ApplicationEdit>>({});
   const [deadlineEdits, setDeadlineEdits] = useState<Record<string, DeadlineEdit>>({});
+  const todayKey = new Date().toISOString().slice(0, 10);
 
   const studentOptions = useMemo(() => {
     const unique = new Map<string, string>();
@@ -160,6 +165,15 @@ export function AdminApplicationsPanel({
       isActiveApplication(application.status)
       && Boolean(application.deadline)
       && !applicationDeadlineIsTrusted(application),
+  ).length;
+  const routeRiskCount = scopedItems.filter((application) =>
+    Boolean(applicationRouteRisk({
+      status: application.status,
+      application_method: application.application_method,
+      deadline: application.deadline,
+      deadline_kind: application.deadline_kind,
+      deadlineTrusted: applicationDeadlineIsTrusted(application),
+    }, todayKey))
   ).length;
 
   function changeEdit(id: string, edit: ApplicationEdit) {
@@ -330,11 +344,12 @@ export function AdminApplicationsPanel({
             </p>
           </div>
 
-          <div className="grid overflow-hidden rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--border)] grid-cols-2 sm:grid-cols-4 xl:min-w-[42rem]">
+          <div className="grid overflow-hidden rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--border)] grid-cols-2 sm:grid-cols-5 xl:min-w-[52rem]">
             <QueueMetric label="Actives" value={activeCount} />
             <QueueMetric label="Sans action" value={missingActionCount} tone={missingActionCount ? "warning" : "neutral"} />
             <QueueMetric label="En retard" value={overdueCount} tone={overdueCount ? "warning" : "neutral"} />
             <QueueMetric label="Dates à vérifier" value={unverifiedDeadlineCount} tone={unverifiedDeadlineCount ? "warning" : "neutral"} />
+            <QueueMetric label="VPD / uni-assist à risque" value={routeRiskCount} tone={routeRiskCount ? "warning" : "neutral"} />
           </div>
         </div>
       </Card>
@@ -417,6 +432,13 @@ export function AdminApplicationsPanel({
             isActiveApplication(application.status)
             && Boolean(application.deadline)
             && !trustedDeadline;
+          const routeRisk = applicationRouteRisk({
+            status: application.status,
+            application_method: application.application_method,
+            deadline: application.deadline,
+            deadline_kind: application.deadline_kind,
+            deadlineTrusted: trustedDeadline,
+          }, todayKey);
           const hasRecordedAction =
             isActiveApplication(application.status) && Boolean(application.next_action?.trim());
           const isDirty =
@@ -463,6 +485,7 @@ export function AdminApplicationsPanel({
                 <div className="flex flex-wrap gap-2 sm:justify-end">
                   {isOverdue && <Badge variant="warning">Échéance dépassée</Badge>}
                   {hasUnverifiedDeadline && <Badge variant="warning">Date à vérifier</Badge>}
+                  {routeRisk ? <Badge variant="warning">{applicationRouteRiskLabel(routeRisk.kind)}</Badge> : null}
                   {!hasRecordedAction && isActiveApplication(application.status) && <Badge variant="warning">Sans prochaine action</Badge>}
                   {hasRecordedAction && <Badge variant="info">Action enregistrée</Badge>}
                   <span className={`status-badge shrink-0 ${statusTone(application.status)}`}>
@@ -509,6 +532,10 @@ export function AdminApplicationsPanel({
                   ) : hasUnverifiedDeadline ? (
                     <p className="mt-4 rounded-[var(--radius-control)] border border-amber-200 bg-amber-50 p-3 text-sm leading-6 text-amber-950">
                       Une date est enregistrée, mais sa provenance n’est pas suffisamment vérifiée. Elle ne doit pas être utilisée comme deadline officielle tant que la source, le cycle et la date de vérification ne sont pas confirmés.
+                    </p>
+                  ) : routeRisk ? (
+                    <p className="mt-4 rounded-[var(--radius-control)] border border-amber-200 bg-amber-50 p-3 text-sm leading-6 text-amber-950">
+                      {applicationRouteRiskLabel(routeRisk.kind)} · la cible interne D-{routeRisk.leadDays} est atteinte ou dépassée. Cette cible aide Campus Allemagne à préparer le dossier ; elle ne remplace pas la deadline officielle.
                     </p>
                   ) : null}
 
