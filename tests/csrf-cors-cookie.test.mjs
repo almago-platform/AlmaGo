@@ -1,7 +1,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { validateMutationRequest } from "../src/lib/security/request.ts";
+import {
+  validateMutationPayload,
+  validateMutationRequest,
+} from "../src/lib/security/request.ts";
 
 const env = {
   NODE_ENV: "production",
@@ -98,6 +101,34 @@ test("oversized mutation bodies are rejected before route handling", () => {
     ),
     { status: 413, code: "body_size" },
   );
+});
+
+test("legitimate document multipart bodies retain the existing 10 MiB workflow", () => {
+  assert.equal(
+    validateMutationRequest(
+      mutation({
+        contentType: "multipart/form-data; boundary=local-test",
+        extraHeaders: { "content-length": String(10 * 1_048_576) },
+      }),
+      env,
+    ),
+    null,
+  );
+});
+
+test("malformed JSON and chunked oversized JSON fail before route handling", async () => {
+  const malformed = mutation({ body: "{" });
+  assert.equal(validateMutationRequest(malformed, env), null);
+  assert.deepEqual(await validateMutationPayload(malformed), {
+    status: 400,
+    code: "json",
+  });
+
+  const oversized = mutation({ body: `"${"x".repeat(1_048_576)}"` });
+  assert.deepEqual(await validateMutationPayload(oversized), {
+    status: 413,
+    code: "body_size",
+  });
 });
 
 test("bodyless same-origin mutations remain supported", () => {

@@ -32,6 +32,27 @@ test("CSP inventory contains current browser-side image origins", async () => {
   ).value;
   assert.match(csp, /https:\/\/images\.pexels\.com/);
   assert.match(csp, /https:\/\/images\.unsplash\.com/);
+  assert.match(csp, /https:\/\/upload\.wikimedia\.org/);
+  assert.match(csp, /script-src 'self'/);
+  assert.match(csp, /style-src 'self' 'unsafe-inline'/);
+  assert.match(csp, /font-src 'self' data:/);
+});
+
+test("CSP permits only the configured Supabase HTTP and realtime origins", async () => {
+  const previous = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  process.env.NEXT_PUBLIC_SUPABASE_URL = "https://project-ref.supabase.co";
+  try {
+    const configured = (await import(`../next.config.ts?supabase=${Date.now()}`)).default;
+    const rules = await configured.headers();
+    const global = rules.find((rule) => rule.source === "/:path*");
+    const csp = global.headers.find(
+      ({ key }) => key === "Content-Security-Policy-Report-Only",
+    ).value;
+    assert.match(csp, /connect-src 'self' https:\/\/project-ref\.supabase\.co wss:\/\/project-ref\.supabase\.co/);
+  } finally {
+    if (previous === undefined) delete process.env.NEXT_PUBLIC_SUPABASE_URL;
+    else process.env.NEXT_PUBLIC_SUPABASE_URL = previous;
+  }
 });
 
 test("CSP reporting is bounded and records no report URL or user data", async () => {

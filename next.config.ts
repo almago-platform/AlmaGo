@@ -22,7 +22,7 @@ const contentSecurityPolicyReportOnly = [
   "form-action 'self'",
   "script-src 'self'",
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob: https://images.pexels.com https://images.unsplash.com",
+  "img-src 'self' data: blob: https://images.pexels.com https://images.unsplash.com https://upload.wikimedia.org",
   "font-src 'self' data:",
   `connect-src 'self' ${supabaseConnectSources().join(" ")}`.trim(),
   "worker-src 'self' blob:",

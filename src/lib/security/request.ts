@@ -1,12 +1,17 @@
 type RuntimeEnv = Record<string, string | undefined>;
 
 const MUTATION_METHODS = new Set(["POST", "PUT", "PATCH", "DELETE"]);
-const MAX_MUTATION_BYTES = 1_048_576;
+const MAX_STRUCTURED_BODY_BYTES = 1_048_576;
+const MAX_MULTIPART_BODY_BYTES = 11 * 1_048_576;
 
 export type MutationRejection = {
-  status: 403 | 413 | 415;
-  code: "origin" | "host" | "content_type" | "body_size";
+  status: 400 | 403 | 413 | 415;
+  code: "origin" | "host" | "content_type" | "body_size" | "json";
 };
+
+function mediaType(value: string | null) {
+  return value?.split(";", 1)[0]?.trim().toLowerCase() || null;
+}
 
 function normalizedOrigin(value: string | null | undefined) {
   if (!value) return null;
@@ -41,17 +46,23 @@ export function trustedMutationOrigins(env: RuntimeEnv = process.env) {
 
 function validContentType(value: string | null, pathname: string) {
   if (!value) return false;
-  const mediaType = value.split(";", 1)[0]?.trim().toLowerCase();
+  const type = mediaType(value);
   if (
     pathname === "/api/security/csp-report"
-    && (mediaType === "application/csp-report" || mediaType === "application/reports+json")
+    && (type === "application/csp-report" || type === "application/reports+json")
   ) {
     return true;
   }
-  if (mediaType === "application/json") return true;
-  if (mediaType === "application/x-www-form-urlencoded") return true;
-  if (mediaType !== "multipart/form-data") return false;
+  if (type === "application/json") return true;
+  if (type === "application/x-www-form-urlencoded") return true;
+  if (type !== "multipart/form-data") return false;
   return /;\s*boundary=[^;\s]+/i.test(value);
+}
+
+function maximumBodyBytes(contentType: string | null) {
+  return mediaType(contentType) === "multipart/form-data"
+    ? MAX_MULTIPART_BODY_BYTES
+    : MAX_STRUCTURED_BODY_BYTES;
 }
 
 export function validateMutationRequest(
@@ -92,7 +103,11 @@ export function validateMutationRequest(
   const rawLength = request.headers.get("content-length");
   if (rawLength) {
     const length = Number(rawLength);
-    if (!Number.isSafeInteger(length) || length < 0 || length > MAX_MUTATION_BYTES) {
+    if (
+      !Number.isSafeInteger(length)
+      || length < 0
+      || length > maximumBodyBytes(request.headers.get("content-type"))
+    ) {
       return { status: 413, code: "body_size" };
     }
   }
@@ -105,6 +120,29 @@ export function validateMutationRequest(
   }
 
   return null;
+}
+
+export async function validateMutationPayload(
+  request: Request,
+): Promise<MutationRejection | null> {
+  if (!MUTATION_METHODS.has(request.method.toUpperCase()) || request.body === null) {
+    return null;
+  }
+
+  const type = mediaType(request.headers.get("content-type"));
+  if (type !== "application/json") return null;
+
+  const bytes = await request.clone().arrayBuffer();
+  if (bytes.byteLength > MAX_STRUCTURED_BODY_BYTES) {
+    return { status: 413, code: "body_size" };
+  }
+
+  try {
+    JSON.parse(new TextDecoder().decode(bytes));
+    return null;
+  } catch {
+    return { status: 400, code: "json" };
+  }
 }
 
 export function mutationRejectionResponse(rejection: MutationRejection) {
