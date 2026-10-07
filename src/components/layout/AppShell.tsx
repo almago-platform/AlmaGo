@@ -50,7 +50,7 @@ const studentItems: NavItem[] = [
 ];
 
 const studentGroupIndexes = [
-  [0, 11],
+  [0],
   [1, 2, 3, 4, 5],
   [6, 7, 8],
   [9, 10],
@@ -117,10 +117,22 @@ export function AppShell({
       helper: messageNavCopy[locale][1],
     },
   ];
-  const studentGroups = studentGroupIndexes.map((indexes, groupIndex) => ({
-    label: shell.groups[groupIndex],
-    items: indexes.map((index) => localizedStudentItems[index]),
-  }));
+  const messageGroupCopy = {
+    fr: "Communication",
+    ar: "التواصل",
+    en: "Communication",
+    de: "Kommunikation",
+  } as const;
+  const studentGroups = [
+    ...studentGroupIndexes.map((indexes, groupIndex) => ({
+      label: shell.groups[groupIndex],
+      items: indexes.map((index) => localizedStudentItems[index]),
+    })),
+    {
+      label: messageGroupCopy[locale],
+      items: [localizedStudentItems[11]],
+    },
+  ];
   const partnerDemoItem: NavItem = {
     label: "Démo partenaires",
     href: "/admin/partner-demo",
