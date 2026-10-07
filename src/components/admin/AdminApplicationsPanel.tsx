@@ -29,6 +29,13 @@ type ApplicationEdit = {
   transitionConfirmed: boolean;
 };
 
+type DeadlineEdit = {
+  deadline: string;
+  sourceUrl: string;
+  cycle: string;
+  applicationMethod: string;
+};
+
 type Notice = {
   text: string;
   tone: "success" | "error";
@@ -90,6 +97,7 @@ export function AdminApplicationsPanel({
   const savingIdsRef = useRef(new Set<string>());
   const [notice, setNotice] = useState<Notice | null>(null);
   const [edits, setEdits] = useState<Record<string, ApplicationEdit>>({});
+  const [deadlineEdits, setDeadlineEdits] = useState<Record<string, DeadlineEdit>>({});
 
   const studentOptions = useMemo(() => {
     const unique = new Map<string, string>();
@@ -156,6 +164,86 @@ export function AdminApplicationsPanel({
 
   function changeEdit(id: string, edit: ApplicationEdit) {
     setEdits((current) => ({ ...current, [id]: edit }));
+  }
+
+  function changeDeadlineEdit(id: string, edit: DeadlineEdit) {
+    setDeadlineEdits((current) => ({ ...current, [id]: edit }));
+  }
+
+  async function saveDeadline(
+    application: any,
+    edit: DeadlineEdit,
+    mode: "verify" | "mark_to_verify",
+  ) {
+    const id = application.id as string;
+    if (savingIdsRef.current.has(id)) return;
+
+    savingIdsRef.current.add(id);
+    setBusyIds((current) => new Set(current).add(id));
+    setNotice(null);
+
+    try {
+      const response = await fetch(`/api/admin/applications/${id}/deadline`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          mode,
+          deadline: edit.deadline || null,
+          source_url: edit.sourceUrl,
+          cycle: edit.cycle,
+          application_method: edit.applicationMethod,
+        }),
+      });
+      const result = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        setNotice({
+          text: result.error || "Impossible d’enregistrer les informations de deadline.",
+          tone: "error",
+        });
+        return;
+      }
+
+      const verifiedAt = mode === "verify" ? new Date().toISOString() : null;
+      setItems((current) =>
+        current.map((item) =>
+          item.id === id
+            ? {
+                ...item,
+                deadline: edit.deadline || null,
+                deadline_kind: "official_hard_deadline",
+                deadline_source_url: mode === "verify" ? edit.sourceUrl : null,
+                deadline_verified_at: verifiedAt,
+                deadline_cycle: edit.cycle || null,
+                application_method: edit.applicationMethod,
+              }
+            : item,
+        ),
+      );
+      setDeadlineEdits((current) => {
+        const next = { ...current };
+        delete next[id];
+        return next;
+      });
+      setNotice({
+        tone: "success",
+        text: mode === "verify"
+          ? "Échéance officielle vérifiée et historisée."
+          : "Date enregistrée comme information à vérifier avant utilisation officielle.",
+      });
+    } catch {
+      setNotice({
+        tone: "error",
+        text: "Impossible d’enregistrer la deadline pour le moment. Vérifiez votre connexion puis réessayez.",
+      });
+    } finally {
+      savingIdsRef.current.delete(id);
+      setBusyIds((current) => {
+        const next = new Set(current);
+        next.delete(id);
+        return next;
+      });
+    }
   }
 
   async function update(id: string, nextStatus: string, nextAction: string, note: string, transitionConfirmed: boolean) {
@@ -304,6 +392,12 @@ export function AdminApplicationsPanel({
             transitionConfirmed: false,
           };
           const isSaving = busyIds.has(application.id);
+          const deadlineEdit = deadlineEdits[application.id] || {
+            deadline: application.deadline || "",
+            sourceUrl: application.deadline_source_url || "",
+            cycle: application.deadline_cycle || "",
+            applicationMethod: application.application_method || "unknown",
+          };
           const allowedTargets = allowedApplicationTransitions(application.status);
           const statusOptions = [application.status, ...allowedTargets.filter((item) => item !== application.status)];
           const pendingRequirements = edit.status !== application.status
@@ -417,6 +511,109 @@ export function AdminApplicationsPanel({
                       Une date est enregistrée, mais sa provenance n’est pas suffisamment vérifiée. Elle ne doit pas être utilisée comme deadline officielle tant que la source, le cycle et la date de vérification ne sont pas confirmés.
                     </p>
                   ) : null}
+
+                  <details className="mt-4 rounded-[var(--radius-control)] border border-[var(--border)] bg-white p-4">
+                    <summary className="cursor-pointer text-sm font-bold text-slate-950">
+                      Vérifier ou corriger la deadline
+                    </summary>
+                    <p className="mt-2 text-xs leading-5 text-slate-600">
+                      Une deadline officielle n’est utilisée dans les alertes qu’après vérification de sa source et de son cycle.
+                    </p>
+
+                    <div className="mt-4 grid gap-4 lg:grid-cols-2">
+                      <label className="text-sm font-medium text-slate-700">
+                        Date
+                        <input
+                          type="date"
+                          value={deadlineEdit.deadline}
+                          onChange={(event) => changeDeadlineEdit(application.id, { ...deadlineEdit, deadline: event.target.value })}
+                          className="field mt-2 bg-white"
+                          disabled={isSaving}
+                        />
+                      </label>
+
+                      <label className="text-sm font-medium text-slate-700">
+                        Cycle / rentrée concernée
+                        <input
+                          value={deadlineEdit.cycle}
+                          onChange={(event) => changeDeadlineEdit(application.id, { ...deadlineEdit, cycle: event.target.value })}
+                          className="field mt-2 bg-white"
+                          placeholder="Ex. Wintersemester 2027/28"
+                          maxLength={120}
+                          disabled={isSaving}
+                        />
+                      </label>
+
+                      <label className="text-sm font-medium text-slate-700">
+                        Méthode de candidature
+                        <select
+                          value={deadlineEdit.applicationMethod}
+                          onChange={(event) => changeDeadlineEdit(application.id, { ...deadlineEdit, applicationMethod: event.target.value })}
+                          className="field mt-2 bg-white"
+                          disabled={isSaving}
+                        >
+                          <option value="unknown">À confirmer</option>
+                          <option value="direct">Directe université</option>
+                          <option value="uni_assist">uni-assist</option>
+                          <option value="vpd_then_direct">VPD puis candidature directe</option>
+                          <option value="other_documented">Autre méthode documentée</option>
+                        </select>
+                      </label>
+
+                      <label className="text-sm font-medium text-slate-700">
+                        Source officielle
+                        <input
+                          type="url"
+                          value={deadlineEdit.sourceUrl}
+                          onChange={(event) => changeDeadlineEdit(application.id, { ...deadlineEdit, sourceUrl: event.target.value })}
+                          className="field mt-2 bg-white"
+                          placeholder="https://..."
+                          maxLength={1000}
+                          disabled={isSaving}
+                        />
+                      </label>
+                    </div>
+
+                    {application.deadline_source_url ? (
+                      <p className="mt-3 text-xs leading-5 text-slate-600">
+                        Source actuelle ·{" "}
+                        <a
+                          href={application.deadline_source_url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="font-semibold text-[var(--brand)] hover:underline"
+                        >
+                          ouvrir la source officielle
+                        </a>
+                        {application.deadline_verified_at
+                          ? ` · vérifiée le ${formatRecordedDate(application.deadline_verified_at)}`
+                          : ""}
+                      </p>
+                    ) : null}
+
+                    <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        disabled={isSaving}
+                        onClick={() => saveDeadline(application, deadlineEdit, "mark_to_verify")}
+                      >
+                        Enregistrer à vérifier
+                      </Button>
+                      <Button
+                        type="button"
+                        disabled={
+                          isSaving
+                          || !deadlineEdit.deadline
+                          || !deadlineEdit.cycle.trim()
+                          || !deadlineEdit.sourceUrl.trim()
+                        }
+                        onClick={() => saveDeadline(application, deadlineEdit, "verify")}
+                      >
+                        Vérifier comme échéance officielle
+                      </Button>
+                    </div>
+                  </details>
                 </AdminWorkflowSection>
 
                 <AdminWorkflowSection
