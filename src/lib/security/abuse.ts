@@ -37,6 +37,11 @@ export const PUBLIC_ABUSE_POLICIES = {
     burst: { limit: 5, windowMs: 10 * 60_000 },
     sustained: { limit: 20, windowMs: 24 * 60 * 60_000 },
   },
+  cspReport: {
+    route: "csp_report",
+    burst: { limit: 20, windowMs: 60_000 },
+    sustained: { limit: 200, windowMs: 24 * 60 * 60_000 },
+  },
 } satisfies Record<string, AbusePolicy>;
 
 type Counter = {
