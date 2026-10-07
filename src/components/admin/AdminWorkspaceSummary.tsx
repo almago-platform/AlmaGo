@@ -29,10 +29,7 @@ export function AdminWorkspaceSummary({
           {action ? <div className="mt-4">{action}</div> : null}
         </div>
 
-        <div
-          className="grid overflow-hidden rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--border)]"
-          style={{ gridTemplateColumns: `repeat(${Math.max(metrics.length, 1)}, minmax(0, 1fr))` }}
-        >
+        <div className="grid w-full grid-cols-2 overflow-hidden rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--border)] sm:grid-flow-col sm:auto-cols-fr xl:w-auto xl:min-w-[32rem]">
           {metrics.map((metric) => {
             const toneClass =
               metric.tone === "brand"
@@ -44,7 +41,7 @@ export function AdminWorkspaceSummary({
                     : "bg-white";
 
             return (
-              <div key={metric.label} className={`${toneClass} min-w-[8.5rem] p-3 sm:p-4`}>
+              <div key={metric.label} className={`${toneClass} min-w-0 p-3 sm:p-4`}>
                 <p className="text-[0.66rem] font-bold uppercase tracking-[0.1em] text-[var(--muted)]">{metric.label}</p>
                 <div className="mt-1 text-2xl font-semibold tracking-tight text-slate-950">{metric.value}</div>
               </div>
