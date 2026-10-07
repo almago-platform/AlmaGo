@@ -29,6 +29,7 @@ const icons = {
   solutions: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={iconClass} aria-hidden="true"><path d="M12 3.5v17M3.5 12h17" /><circle cx="12" cy="12" r="8.5" /></svg>,
   offers: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={iconClass} aria-hidden="true"><path d="M4 7.5h16v11H4z" /><path d="M8 7.5V5.8A1.8 1.8 0 0 1 9.8 4h4.4A1.8 1.8 0 0 1 16 5.8v1.7M4 11.5h16" /></svg>,
   payment: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={iconClass} aria-hidden="true"><rect x="3.5" y="6" width="17" height="12" rx="2" /><path d="M3.5 10h17M7 14h3" /></svg>,
+  messages: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={iconClass} aria-hidden="true"><path d="M4 5.5h16v11H9l-5 4v-15Z" /><path d="M8 10h8M8 13h5" /></svg>,
   menu: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={iconClass} aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" /></svg>,
   close: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={iconClass} aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg>,
   logout: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={iconClass} aria-hidden="true"><path d="M10 5H5v14h5M14 8l4 4-4 4M18 12H9" /></svg>,
@@ -49,6 +50,12 @@ export function ProspectShell({
   const t = prospectHubCopy[locale].shell;
   const offersCopy = prospectOffersCopy[locale];
   const paymentCopy = prospectPaymentCopy[locale];
+  const messageNavCopy = {
+    fr: "Messages",
+    ar: "الرسائل",
+    en: "Messages",
+    de: "Nachrichten",
+  } as const;
   const name = displayName?.trim();
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -57,6 +64,7 @@ export function ProspectShell({
     { href: "/prospect/orientation", label: t.links.orientation, icon: icons.orientation },
     { href: "/prospect/catalogue", label: t.links.catalogue, icon: icons.catalogue },
     { href: "/prospect/documents", label: t.links.documents, icon: icons.documents },
+    { href: "/prospect/messages", label: messageNavCopy[locale], icon: icons.messages },
     { href: "/prospect/proposal", label: t.links.proposal, icon: icons.proposal },
     { href: "/prospect/roadmap", label: t.links.roadmap, icon: icons.roadmap },
   ];
