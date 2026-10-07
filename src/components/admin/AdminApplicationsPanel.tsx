@@ -13,6 +13,7 @@ import {
   applicationOfficialDeadlineUrgencyLabel,
   applicationRouteRisk,
   applicationRouteRiskLabel,
+  campusTodayDateKey,
 } from "@/lib/admin/application-risk";
 import {
   allowedApplicationTransitions,
@@ -103,7 +104,7 @@ export function AdminApplicationsPanel({
   const [notice, setNotice] = useState<Notice | null>(null);
   const [edits, setEdits] = useState<Record<string, ApplicationEdit>>({});
   const [deadlineEdits, setDeadlineEdits] = useState<Record<string, DeadlineEdit>>({});
-  const todayKey = new Date().toISOString().slice(0, 10);
+  const todayKey = campusTodayDateKey();
 
   const studentOptions = useMemo(() => {
     const unique = new Map<string, string>();
