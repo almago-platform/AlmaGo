@@ -70,7 +70,7 @@ export default async function AdminEntry() {
     supabase.from("student_intake_cases").select("student_id,status").limit(1000),
     supabase.from("student_case_assignments").select("student_id,assigned_admin_id").limit(1000),
     supabase.from("student_case_notes").select("student_id,kind,occurred_at").neq("kind", "internal_note").gte("occurred_at", staleContactCutoff).limit(3000),
-    supabase.from("student_checklist_items").select("id,student_id,title,status,owner,due_date,deadline_kind,official_source_url,official_source_verified_at,deadline_cycle,template_id").limit(5000),
+    supabase.from("student_checklist_items").select("id,student_id,title,status,owner,due_date,deadline_kind,official_source_url,official_source_verified_at,deadline_cycle,template_id,requires_student_action,student_action_reason").limit(5000),
     supabase.from("applications").select("student_id,status,next_action,deadline,deadline_kind,deadline_source_url,deadline_verified_at,deadline_cycle").limit(5000),
   ]);
 
@@ -126,6 +126,25 @@ export default async function AdminEntry() {
       .filter((item) => item.status === "blocked")
       .map((item) => item.student_id),
   );
+  const waitingCampusCaseIds = new Set(
+    (actionsResult.data || [])
+      .filter((item) => item.status === "waiting_almago")
+      .map((item) => item.student_id),
+  );
+  const waitingStudentCaseIds = new Set(
+    (actionsResult.data || [])
+      .filter((item) =>
+        item.status === "waiting_student"
+        && item.requires_student_action
+        && Boolean(item.student_action_reason?.trim())
+      )
+      .map((item) => item.student_id),
+  );
+  const waitingExternalCaseIds = new Set(
+    (actionsResult.data || [])
+      .filter((item) => item.status === "waiting_external")
+      .map((item) => item.student_id),
+  );
   const humanActions = (actionsResult.data || []).filter((item) =>
     isOpenAdminAction(item.status) && item.template_id === null
   );
@@ -156,6 +175,9 @@ export default async function AdminEntry() {
 
   const operationalList = [...operationalIds];
   const blockedCases = operationalList.filter((id) => blockedCaseIds.has(id)).length;
+  const waitingCampusCases = operationalList.filter((id) => waitingCampusCaseIds.has(id)).length;
+  const waitingStudentCases = operationalList.filter((id) => waitingStudentCaseIds.has(id)).length;
+  const waitingExternalCases = operationalList.filter((id) => waitingExternalCaseIds.has(id)).length;
   const unassignedCases = operationalList.filter((id) => !assignedIds.has(id)).length;
   const staleContactCases = operationalList.filter((id) => !contactedRecentlyIds.has(id)).length;
   const missingNextActionCases = operationalList.filter((id) => !explicitActionIds.has(id)).length;
@@ -203,8 +225,18 @@ export default async function AdminEntry() {
         href: "/admin/people?work=blocked",
         action: "Traiter les blocages",
       }
-    : studentQuestions > 0
+    : waitingCampusCases > 0
       ? {
+          badge: "Étudiants attendent Campus",
+          title: waitingCampusCases > 1
+            ? `${waitingCampusCases} dossiers attendent une action Campus Allemagne`
+            : "1 dossier attend une action Campus Allemagne",
+          description: "Une étape de procédure est explicitement en attente de Campus Allemagne. Ouvrez la file concernée et traitez l’action avant de laisser avancer le dossier.",
+          href: "/admin/people?work=waiting_campus",
+          action: "Traiter les attentes Campus",
+        }
+      : studentQuestions > 0
+        ? {
         badge: "Réponse étudiant reçue",
         title: studentQuestions > 1
           ? `${studentQuestions} étudiants attendent une réponse de Campus Allemagne`
@@ -345,6 +377,33 @@ export default async function AdminEntry() {
             detail="Dossiers actifs sans contact journalisé récemment"
             tone={staleContactCases ? "info" : "success"}
             statusLabel={staleContactCases ? "À reprendre" : "À jour"}
+          />
+        </div>
+
+        <div className="mt-3 grid gap-3 sm:grid-cols-3">
+          <DailySignalCard
+            href="/admin/people?work=waiting_campus"
+            label="Attend Campus"
+            value={waitingCampusCases}
+            detail="Étapes explicitement en attente d’une action Campus Allemagne"
+            tone={waitingCampusCases ? "warning" : "success"}
+            statusLabel={waitingCampusCases ? "À traiter" : "À jour"}
+          />
+          <DailySignalCard
+            href="/admin/people?work=waiting_student"
+            label="Attend étudiant"
+            value={waitingStudentCases}
+            detail="Actions personnelles ciblées avec une raison explicite pour l’étudiant"
+            tone={waitingStudentCases ? "info" : "success"}
+            statusLabel={waitingStudentCases ? "En attente" : "À jour"}
+          />
+          <DailySignalCard
+            href="/admin/people?work=waiting_external"
+            label="Attend externe"
+            value={waitingExternalCases}
+            detail="Étapes qui dépendent d’une université, autorité ou autre acteur externe"
+            tone={waitingExternalCases ? "info" : "success"}
+            statusLabel={waitingExternalCases ? "À suivre" : "À jour"}
           />
         </div>
       </section>
