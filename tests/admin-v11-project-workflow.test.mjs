@@ -54,3 +54,13 @@ test("Admin V11 dossier separates the project from Campus programme recommendati
   assert.match(dossier, /Historique des projets \/ orientations saisis/);
   assert.match(dossier, /recommendationStatusLabels/);
 });
+
+test("Admin V11 keeps the operational profile and regulatory project aligned", () => {
+  assert.match(projectRoute, /from\("student_projects"\)/);
+  assert.match(projectRoute, /regulatoryNext/);
+  assert.match(projectRoute, /regulatoryOutOfSync/);
+  assert.match(projectRoute, /current_german_level: nextProject\.german_level/);
+  assert.match(projectRoute, /preferred_study_language: nextProject\.study_language/);
+  assert.match(projectRoute, /procedure_project_synced/);
+  assert.match(projectPanel, /Le projet de procédure a été resynchronisé/);
+});
