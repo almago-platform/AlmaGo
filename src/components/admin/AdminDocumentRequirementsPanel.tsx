@@ -46,6 +46,23 @@ const starterRequirementKeys = new Set([
   "existing_language_certificate",
 ]);
 
+const processingOperations = [
+  { value: "accepted_original", label: "Original validé" },
+  { value: "authentication_required", label: "Authentification requise" },
+  { value: "authentication_in_progress", label: "Authentification en cours" },
+  { value: "authenticated", label: "Authentification terminée" },
+  { value: "translation_required", label: "Traduction requise" },
+  { value: "translation_in_progress", label: "Traduction en cours" },
+  { value: "translated", label: "Traduction terminée" },
+  { value: "legalisation_to_verify", label: "Légalisation à vérifier" },
+  { value: "legalisation_required", label: "Légalisation requise" },
+  { value: "legalisation_in_progress", label: "Légalisation en cours" },
+  { value: "legalisation_not_required", label: "Légalisation non requise · pièce prête" },
+  { value: "legalisation_completed", label: "Légalisation terminée · pièce prête" },
+  { value: "ready", label: "Pièce prête" },
+  { value: "not_applicable", label: "Non applicable" },
+] as const;
+
 function requirementLabel(status: string) {
   return ({
     requested: "Demandé",
@@ -120,6 +137,10 @@ export function AdminDocumentRequirementsPanel({
   const [reason, setReason] = useState("");
   const [dueDate, setDueDate] = useState("");
   const [busy, setBusy] = useState(false);
+  const [processingId, setProcessingId] = useState<string | null>(null);
+  const [operationById, setOperationById] = useState<Record<string, string>>({});
+  const [noteById, setNoteById] = useState<Record<string, string>>({});
+  const [legalisationReasonById, setLegalisationReasonById] = useState<Record<string, string>>({});
   const [notice, setNotice] = useState<{ tone: "success" | "error"; text: string } | null>(null);
 
   const documentById = new Map(documents.map((item) => [item.id, item]));
@@ -170,6 +191,52 @@ export function AdminDocumentRequirementsPanel({
         text: "Impossible d’enregistrer cette demande pour le moment. Vérifiez votre connexion puis réessayez.",
       });
       setBusy(false);
+    }
+  }
+
+  async function updateProcessing(item: AdminDocumentRequirementItem) {
+    const operation = operationById[item.id] || "";
+    if (!operation) {
+      setNotice({ tone: "error", text: "Choisissez d’abord l’état de traitement à enregistrer." });
+      return;
+    }
+
+    setProcessingId(item.id);
+    setNotice(null);
+    try {
+      const response = await fetch(
+        `/api/admin/dossiers/${studentId}/documents/requirements/${item.id}`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            operation,
+            admin_note: noteById[item.id] ?? item.admin_note ?? "",
+            legalisation_reason:
+              legalisationReasonById[item.id] ?? item.legalisation_reason ?? "",
+          }),
+        },
+      );
+      const payload = await response.json().catch(() => ({})) as { error?: string };
+      if (!response.ok) {
+        setNotice({
+          tone: "error",
+          text: payload.error || "Impossible de mettre à jour le traitement documentaire.",
+        });
+        setProcessingId(null);
+        return;
+      }
+
+      setNotice({ tone: "success", text: "Traitement documentaire mis à jour." });
+      setOperationById((current) => ({ ...current, [item.id]: "" }));
+      setProcessingId(null);
+      router.refresh();
+    } catch {
+      setNotice({
+        tone: "error",
+        text: "Impossible de mettre à jour le traitement documentaire pour le moment.",
+      });
+      setProcessingId(null);
     }
   }
 
@@ -312,6 +379,76 @@ export function AdminDocumentRequirementsPanel({
                     </span>
                   )}
                 </div>
+
+                <details className="lg:col-span-3 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-3">
+                  <summary className="cursor-pointer text-xs font-bold uppercase tracking-[0.1em] text-slate-700">
+                    Mettre à jour le traitement interne
+                  </summary>
+                  <div className="mt-3 grid gap-3 lg:grid-cols-2">
+                    <label className="text-xs font-semibold text-slate-700">
+                      Nouvel état
+                      <select
+                        value={operationById[item.id] || ""}
+                        onChange={(event) => setOperationById((current) => ({
+                          ...current,
+                          [item.id]: event.target.value,
+                        }))}
+                        className="field mt-1 bg-white"
+                        disabled={processingId === item.id}
+                      >
+                        <option value="">Choisir…</option>
+                        {processingOperations.map((operation) => (
+                          <option key={operation.value} value={operation.value}>{operation.label}</option>
+                        ))}
+                      </select>
+                    </label>
+
+                    <label className="text-xs font-semibold text-slate-700">
+                      Motif / source de légalisation
+                      <input
+                        value={legalisationReasonById[item.id] ?? item.legalisation_reason ?? ""}
+                        onChange={(event) => setLegalisationReasonById((current) => ({
+                          ...current,
+                          [item.id]: event.target.value,
+                        }))}
+                        maxLength={1600}
+                        className="field mt-1 bg-white"
+                        placeholder="Obligatoire pour « à vérifier » ou « requise »"
+                        disabled={processingId === item.id}
+                      />
+                    </label>
+
+                    <label className="text-xs font-semibold text-slate-700 lg:col-span-2">
+                      Note interne
+                      <textarea
+                        value={noteById[item.id] ?? item.admin_note ?? ""}
+                        onChange={(event) => setNoteById((current) => ({
+                          ...current,
+                          [item.id]: event.target.value,
+                        }))}
+                        maxLength={1600}
+                        rows={2}
+                        className="field mt-1 resize-y bg-white"
+                        placeholder="Contexte utile pour l’équipe"
+                        disabled={processingId === item.id}
+                      />
+                    </label>
+                  </div>
+                  <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                    <p className="text-xs leading-5 text-slate-500">
+                      Les changements sont enregistrés dans l’historique de la procédure. Une légalisation n’est jamais activée automatiquement.
+                    </p>
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      disabled={processingId === item.id || !(operationById[item.id] || "")}
+                      onClick={() => updateProcessing(item)}
+                      className="shrink-0"
+                    >
+                      {processingId === item.id ? "Enregistrement…" : "Enregistrer le traitement"}
+                    </Button>
+                  </div>
+                </details>
               </article>
             );
           })}
