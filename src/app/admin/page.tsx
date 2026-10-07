@@ -10,6 +10,7 @@ import { catalogVerificationCutoff } from "@/lib/catalog-freshness";
 import {
   applicationOfficialDeadlineUrgency,
   applicationRouteRisk,
+  campusTodayDateKey,
 } from "@/lib/admin/application-risk";
 import { isActiveApplication } from "@/lib/application-workflow";
 import { isOpenAdminAction } from "@/lib/admin/people";
@@ -23,7 +24,7 @@ export default async function AdminEntry() {
   const staleCutoff = catalogVerificationCutoff(now);
   const dueSoonCutoff = new Date(now.getTime() - 23 * 24 * 60 * 60 * 1000).toISOString();
   const staleContactCutoff = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000).toISOString();
-  const today = now.toISOString().slice(0, 10);
+  const today = campusTodayDateKey(now);
   const weekEnd = shiftDateKey(today, 7);
   const { data: { user: currentAdmin } } = await supabase.auth.getUser();
 
