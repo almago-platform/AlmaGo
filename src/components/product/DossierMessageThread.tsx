@@ -113,7 +113,7 @@ export function DossierMessageThread({
               Communication dossier
             </p>
             <Badge variant={unreadCount ? "warning" : "neutral"}>
-              {unreadCount ? \`\${unreadCount} non lu\${unreadCount > 1 ? "s" : ""}\` : "À jour"}
+              {unreadCount ? `${unreadCount} non lu${unreadCount > 1 ? "s" : ""}` : "À jour"}
             </Badge>
           </div>
           <h2 className="mt-2 text-xl font-semibold tracking-[-0.025em] text-slate-950">{title}</h2>
@@ -130,11 +130,11 @@ export function DossierMessageThread({
       {notice ? (
         <p
           role={notice.tone === "error" ? "alert" : "status"}
-          className={\`border-b border-[var(--border)] px-4 py-3 text-sm font-semibold sm:px-5 \${
+          className={`border-b border-[var(--border)] px-4 py-3 text-sm font-semibold sm:px-5 ${
             notice.tone === "error"
               ? "bg-red-50 text-red-800"
               : "bg-emerald-50 text-emerald-800"
-          }\`}
+          }`}
         >
           {notice.text}
         </p>
@@ -150,11 +150,11 @@ export function DossierMessageThread({
               return (
                 <article
                   key={item.id}
-                  className={\`max-w-[46rem] rounded-[var(--radius-panel)] border p-4 \${
+                  className={`max-w-[46rem] rounded-[var(--radius-panel)] border p-4 ${
                     mine
                       ? "ml-auto border-[var(--brand-border)] bg-white"
                       : "mr-auto border-[var(--border)] bg-white"
-                  }\`}
+                  }`}
                 >
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <p className="text-xs font-bold uppercase tracking-[0.1em] text-slate-600">
