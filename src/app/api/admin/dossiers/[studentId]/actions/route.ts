@@ -143,7 +143,7 @@ export async function PATCH(
 
   const { data: current, error: loadError } = await supabase
     .from("student_checklist_items")
-    .select("id,status,owner,template_id,completed_at")
+    .select("id,status,owner,template_id,procedure_step_template_id,completed_at")
     .eq("id", actionId)
     .eq("student_id", studentId)
     .maybeSingle();
@@ -152,9 +152,9 @@ export async function PATCH(
     return NextResponse.json({ error: "Impossible de vérifier l’action." }, { status: 500 });
   }
   if (!current) return NextResponse.json({ error: "Action introuvable." }, { status: 404 });
-  if (current.template_id) {
+  if (current.template_id || current.procedure_step_template_id) {
     return NextResponse.json(
-      { error: "Cette étape est pilotée par la procédure et ne peut pas être modifiée ici." },
+      { error: "Cette étape est pilotée automatiquement et ne peut pas être modifiée ici." },
       { status: 409 },
     );
   }
