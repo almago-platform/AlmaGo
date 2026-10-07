@@ -12,7 +12,7 @@ import {
   applicationRouteRisk,
   campusTodayDateKey,
 } from "@/lib/admin/application-risk";
-import { isOpenAdminAction } from "@/lib/admin/people";
+import { isHumanAdminAction } from "@/lib/admin/people";
 import { isActiveApplication } from "@/lib/application-workflow";
 import { createClient } from "@/lib/supabase/server";
 
@@ -36,6 +36,7 @@ type ActionRow = {
   owner: string | null;
   due_date: string | null;
   template_id: string | null;
+  procedure_step_template_id: string | null;
   requires_student_action: boolean;
   student_action_reason: string | null;
   deadline_kind: string | null;
@@ -115,7 +116,7 @@ export default async function AdminTeamPage() {
     supabase.from("student_case_assignments").select("student_id,assigned_admin_id").limit(1000),
     supabase
       .from("student_checklist_items")
-      .select("student_id,status,owner,due_date,template_id,requires_student_action,student_action_reason,deadline_kind,official_source_url,official_source_verified_at,deadline_cycle")
+      .select("student_id,status,owner,due_date,template_id,procedure_step_template_id,requires_student_action,student_action_reason,deadline_kind,official_source_url,official_source_verified_at,deadline_cycle")
       .limit(5000),
     supabase
       .from("applications")
@@ -235,7 +236,7 @@ export default async function AdminTeamPage() {
   const officialD7StudentIds = new Set<string>();
   for (const action of (actionsResult.data || []) as ActionRow[]) {
     if (!operationalIds.has(action.student_id)) continue;
-    if (!isOpenAdminAction(action.status) || action.template_id !== null) continue;
+    if (!isHumanAdminAction(action)) continue;
     if (action.due_date && !actionDeadlineIsTrusted(action)) {
       unverifiedDeadlineStudentIds.add(action.student_id);
     }
@@ -302,7 +303,7 @@ export default async function AdminTeamPage() {
     workload.assigned += 1;
 
     const openActions = (actionsByStudent.get(studentId) || []).filter((item) =>
-      isOpenAdminAction(item.status) && item.template_id === null
+      isHumanAdminAction(item)
     );
     const activeApplications = (applicationsByStudent.get(studentId) || []).filter((item) => isActiveApplication(item.status));
 
