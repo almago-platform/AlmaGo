@@ -1,47 +1,32 @@
-# AlmaGo observability contract
+# AlmaGo — Observability contract
 
-A44 remains **disabled by default** until a production observability/analytics provider is connected and the privacy/legal review in A38 is complete. A43 must pass first.
+La télémétrie est fondée sur une liste blanche définie dans `config/telemetry-events.json` et validée côté runtime par `src/lib/telemetry.ts`.
 
-## Privacy boundary
+## Frontière de confidentialité
 
-Telemetry is allow-list only. The canonical contract is `config/telemetry-events.json`. The runtime gate in `src/lib/telemetry.ts` checks **both property names and values** against it.
+Ne jamais envoyer :
 
-Allowed initial events:
+- noms, e-mails, téléphones ou adresses ;
+- identifiants internes/étudiants ;
+- mots de passe, tokens, cookies ou clés API ;
+- contenu ou nom de documents privés ;
+- notes/messages libres ;
+- informations de profil sensibles ;
+- URL complètes contenant des identifiants ou query strings ;
+- IP brute depuis le code applicatif.
 
-- `route_render_failed`
-- `api_request_failed`
-- `form_submit_result`
-- `navigation_action`
-- `web_vital`
-- `phase2_funnel_step`
+Les valeurs d’événements doivent rester dans les catégories explicitement autorisées.
 
-Each property must use exactly one of the categorical values in `allowedValues`, except `http_status`, which must be an integer from 100 to 599. `phase2_funnel_step` records only the bounded lifecycle step enum from the canonical contract; it must not carry prospect, student, purchase or payment identifiers. Map unexpected values to a safe generic category (`other` or `unknown`) only where that category exists. Never derive event values from free-form user input, error messages, URLs or identifiers. Validation errors must not echo rejected values.
+## Activation d’un fournisseur
 
-## Never send
+Avant d’activer un fournisseur externe :
 
-Do not send:
+1. valider la base légale et la notice de confidentialité ;
+2. conserver les secrets uniquement côté serveur ;
+3. définir la rétention ;
+4. désactiver la capture automatique non revue (session replay, profils, payloads réseau, URLs complètes) ;
+5. tester avec des données synthétiques ;
+6. inspecter les payloads réellement envoyés ;
+7. surveiller les erreurs de livraison.
 
-- names, email addresses, phone numbers or postal addresses;
-- internal/user IDs or student IDs;
-- passwords, auth tokens, cookies, API keys or Authorization headers;
-- uploaded document contents, file names or free-form notes/messages;
-- nationality, birth information or other profile values;
-- full URLs containing identifiers or query strings;
-- raw IP addresses from application code.
-
-Provider-side defaults must also be reviewed before production activation. Do not enable automatic capture of page URLs, session replay, user profiles, network payloads, or unfiltered exception messages.
-
-## Provider activation checklist
-
-1. Complete A38 legal/privacy review and A43 authenticated E2E.
-2. Create/connect the provider account.
-3. Store provider secrets only in Render environment variables and GitHub Actions secrets.
-4. Configure retention and any consent requirement.
-5. Map provider events to the allow-list contract; disable provider automatic capture until separately reviewed.
-6. Verify production error capture with synthetic/test-only data.
-7. Inspect outgoing application payloads and provider-side enrichment for forbidden data.
-8. Mark A44 complete only after this verification.
-
-Recommended low-friction path: keep Render as the canonical runtime and connect a dedicated analytics/error provider only after the final privacy review. Any provider must respect the allow-list contract and automatic capture must remain disabled until reviewed.
-
-No telemetry provider is currently hard-coded into AlmaGo. Render runtime logs are operational logs only and do not replace the A44 product telemetry contract.
+Les logs Render/Supabase restent des logs opérationnels et ne remplacent pas ce contrat de télémétrie produit.
