@@ -7,6 +7,7 @@ import { JourneyRail, type JourneyRailStep } from "@/components/product/JourneyR
 import { NextActionPanel } from "@/components/product/NextActionPanel";
 import { AdminLoadError } from "@/components/admin/AdminLoadError";
 import { AdminDossierActionsPanel, type AdminDossierActionItem } from "@/components/admin/AdminDossierActionsPanel";
+import { AdminCaseOwnerPanel, type AdminAdvisorOption } from "@/components/admin/AdminCaseOwnerPanel";
 import { Badge } from "@/components/ui/Badge";
 import { DataList } from "@/components/ui/DataList";
 import { PremiumEmptyState } from "@/components/product/PremiumEmptyState";
@@ -163,6 +164,8 @@ export default async function AdminStudentDossierPage({
     purchasesResult,
     actionsResult,
     historyResult,
+    assignmentResult,
+    adminRolesResult,
   ] = await Promise.all([
     supabase
       .from("profiles")
@@ -212,6 +215,15 @@ export default async function AdminStudentDossierPage({
       .eq("student_id", studentId)
       .order("created_at", { ascending: false })
       .limit(40),
+    supabase
+      .from("student_case_assignments")
+      .select("student_id,assigned_admin_id,assigned_at,updated_at")
+      .eq("student_id", studentId)
+      .maybeSingle(),
+    supabase
+      .from("user_roles")
+      .select("user_id")
+      .eq("role", "admin"),
   ]);
 
   const profile = profileResult.data;
@@ -223,6 +235,8 @@ export default async function AdminStudentDossierPage({
   const purchase = ((purchasesResult.data || []) as PurchaseRow[])[0] ?? null;
   const dossierActions = (actionsResult.data || []) as AdminDossierActionItem[];
   const historyRows = (historyResult.data || []) as HistoryRow[];
+  const assignment = assignmentResult.data;
+  const adminIds = (adminRolesResult.data || []).map((item) => item.user_id);
 
   if (!profile && !prospect && !intake) {
     notFound();
@@ -237,7 +251,9 @@ export default async function AdminStudentDossierPage({
     || applicationsResult.error
     || purchasesResult.error
     || actionsResult.error
-    || historyResult.error;
+    || historyResult.error
+    || assignmentResult.error
+    || adminRolesResult.error;
 
   if (fatalError) {
     return (
@@ -276,6 +292,28 @@ export default async function AdminStudentDossierPage({
       </main>
     );
   }
+
+  const advisorProfilesResult = adminIds.length
+    ? await supabase
+        .from("profiles")
+        .select("id,first_name,last_name,full_name")
+        .in("id", adminIds)
+    : { data: [], error: null };
+
+  const advisorProfiles = advisorProfilesResult.data || [];
+  const advisorProfileById = new Map(advisorProfiles.map((item) => [item.id, item]));
+  const advisorOptions: AdminAdvisorOption[] = adminIds
+    .map((id, index) => {
+      const item = advisorProfileById.get(id);
+      const split = [item?.first_name, item?.last_name].filter(Boolean).join(" ").trim();
+      return {
+        id,
+        name: split || item?.full_name?.trim() || `Conseiller Campus ${index + 1}`,
+      };
+    })
+    .sort((left, right) => left.name.localeCompare(right.name, "fr"));
+  const assignedAdminName =
+    advisorOptions.find((item) => item.id === assignment?.assigned_admin_id)?.name || null;
 
   let orientationHistory = [] as Array<{
     id: string;
@@ -717,6 +755,13 @@ export default async function AdminStudentDossierPage({
         </div>
 
         <aside className="space-y-7">
+          <AdminCaseOwnerPanel
+            studentId={studentId}
+            advisors={advisorOptions}
+            assignedAdminId={assignment?.assigned_admin_id || null}
+            assignedAdminName={assignedAdminName}
+          />
+
           <section className="pc-card p-5">
             <PremiumSectionHeader eyebrow="Synthèse" title="Repères du dossier" />
             <div className="mt-4 flex flex-wrap gap-2">
