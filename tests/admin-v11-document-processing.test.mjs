@@ -7,6 +7,7 @@ const read = (path) => readFileSync(path, "utf8");
 const dossier = read("src/app/admin/dossiers/[studentId]/page.tsx");
 const panel = read("src/components/admin/AdminDocumentRequirementsPanel.tsx");
 const smartDocuments = read("supabase/migrations/20261005174000_student_v2_smart_documents.sql");
+const route = read("src/app/api/admin/dossiers/[studentId]/documents/requirements/[requirementId]/route.ts");
 
 test("Admin V11 Dossier 360 loads document processing truth without creating a parallel document model", () => {
   for (const field of [
@@ -80,4 +81,34 @@ test("Admin V11 keeps source provenance and procedure dates visibly typed", () =
   assert.match(panel, /Revue de source/);
   assert.match(panel, /source_verified_at/);
   assert.match(panel, /deadline_cycle/);
+});
+
+test("Admin V11 document processing is actionable through an admin-only current-procedure API", () => {
+  assert.match(route, /getAdminUser/);
+  assert.match(route, /if \(!user\)/);
+  assert.match(route, /if \(!isAdmin\)/);
+  assert.match(route, /\.eq\("student_id", studentId\)/);
+  assert.match(route, /\.eq\("is_current", true\)/);
+  assert.match(route, /ancienne procédure/);
+  assert.match(panel, /Mettre à jour le traitement interne/);
+  assert.match(panel, /Enregistrer le traitement/);
+});
+
+test("Admin V11 legalisation mutation never infers a positive requirement from the default unknown state", () => {
+  assert.match(route, /legalisation_to_verify/);
+  assert.match(route, /requires_german_legalisation: null/);
+  assert.match(route, /legalisation_status: "to_verify"/);
+  assert.match(route, /legalisation_not_required/);
+  assert.match(route, /requires_german_legalisation: false/);
+  assert.match(route, /legalisation_status: "not_required"/);
+  assert.match(route, /legalisation_required/);
+  assert.match(route, /requires_german_legalisation: true/);
+  assert.match(route, /Ajoutez le motif ou la source de la décision de légalisation/);
+});
+
+test("Admin V11 internal document writes rely on the existing audited requirement table", () => {
+  assert.match(route, /from\("student_document_requirements"\)/);
+  assert.match(route, /\.update\(update\)/);
+  assert.doesNotMatch(route, /from\("(document_operations|document_processing|legalisations)"\)/);
+  assert.match(panel, /Les changements sont enregistrés dans l’historique de la procédure/);
 });
