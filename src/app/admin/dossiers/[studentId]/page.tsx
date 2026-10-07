@@ -517,7 +517,7 @@ export default async function AdminStudentDossierPage({
       index === 1 ? "/admin/documents"
         : index === 2 || index === 3 ? "/admin/intake"
           : index === 4 ? "/admin/payments"
-            : index === 6 ? "/admin/applications"
+            : index === 6 ? `/admin/applications?student=${studentId}`
               : undefined,
   }));
 
@@ -905,7 +905,7 @@ export default async function AdminStudentDossierPage({
               description="Le détail opérationnel et les changements de statut restent dans la file Candidatures."
               actions={
                 applications.length ? (
-                  <Link href="/admin/applications" className={buttonClassName("ghost", "min-h-8 px-2.5 py-1 text-xs")}>
+                  <Link href={`/admin/applications?student=${studentId}`} className={buttonClassName("ghost", "min-h-8 px-2.5 py-1 text-xs")}>
                     Ouvrir Candidatures →
                   </Link>
                 ) : undefined
