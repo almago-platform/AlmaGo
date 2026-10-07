@@ -1,11 +1,12 @@
 import { mkdirSync } from "node:fs";
 import AxeBuilder from "@axe-core/playwright";
 import { test, expect } from "@playwright/test";
-import { loginWithRedactedPassword } from "./auth-test-helpers.mjs";
+import { completeAdminMfaChallenge, loginWithRedactedPassword } from "./auth-test-helpers.mjs";
 
 const adminEmail = process.env.ALMAGO_E2E_ADMIN_EMAIL;
 const adminPassword = process.env.ALMAGO_E2E_ADMIN_PASSWORD;
-const configured = Boolean(adminEmail && adminPassword);
+const adminTotpSecret = process.env.ALMAGO_E2E_ADMIN_TOTP_SECRET;
+const configured = Boolean(adminEmail && adminPassword && adminTotpSecret);
 
 const pages = [
   { path: "/admin", name: "dashboard" },
@@ -25,10 +26,11 @@ mkdirSync("artifacts/auth-e2e/admin-screenshots", { recursive: true });
 
 test.describe("authenticated Admin Space quality", () => {
   test.setTimeout(180_000);
-  test.skip(!configured, "Admin Space quality requires the dedicated admin E2E account.");
+  test.skip(!configured, "Admin Space quality requires the dedicated admin E2E account and verified TOTP secret.");
 
   test("all admin pages fit, remain accessible and capture responsive evidence", async ({ page }, testInfo) => {
-    await loginWithRedactedPassword(page, adminEmail, adminPassword, "admin");
+    await loginWithRedactedPassword(page, adminEmail, adminPassword, "admin-challenge");
+    await completeAdminMfaChallenge(page, adminTotpSecret);
 
     for (const target of pages) {
       if (new URL(page.url()).pathname !== target.path) {
