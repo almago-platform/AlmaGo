@@ -92,8 +92,14 @@ type AssignmentRow = {
   updated_at: string;
 };
 
+type CaseNoteRow = {
+  student_id: string;
+  kind: string;
+  occurred_at: string;
+};
+
 type PersonView = "all" | AdminPersonSegment;
-type WorkView = "all" | "overdue" | "today" | "week" | "unassigned" | "mine";
+type WorkView = "all" | "overdue" | "today" | "week" | "stale" | "unassigned" | "mine";
 
 type PersonRecord = {
   key: string;
@@ -115,12 +121,14 @@ type PersonRecord = {
   hasUnverifiedDeadline: boolean;
   assignedAdminId: string | null;
   assignedAdminName: string | null;
+  lastContactAt: string | null;
+  lastContactKind: string | null;
   needsAttention: boolean;
   updatedAt: string;
 };
 
 const validViews = new Set<PersonView>(["all", "prospect", "candidate", "student", "archived"]);
-const validWorkViews = new Set<WorkView>(["all", "overdue", "today", "week", "unassigned", "mine"]);
+const validWorkViews = new Set<WorkView>(["all", "overdue", "today", "week", "stale", "unassigned", "mine"]);
 
 const viewLabels: Record<PersonView, string> = {
   all: "Tous",
@@ -135,6 +143,7 @@ const workLabels: Record<WorkView, string> = {
   overdue: "En retard",
   today: "Aujourd’hui",
   week: "7 prochains jours",
+  stale: "Sans contact 14 j",
   unassigned: "Non attribués",
   mine: "Mes dossiers",
 };
@@ -217,6 +226,16 @@ function actionDeadlineIsVerified(action: ActionRow) {
   );
 }
 
+function contactKindLabel(kind: string | null) {
+  if (kind === "call") return "Appel";
+  if (kind === "email") return "E-mail";
+  if (kind === "whatsapp") return "WhatsApp";
+  if (kind === "meeting") return "Rendez-vous";
+  if (kind === "document_request") return "Demande document";
+  if (kind === "university_contact") return "Contact université";
+  return "Contact";
+}
+
 export const dynamic = "force-dynamic";
 
 export default async function AdminPeoplePage({
@@ -263,7 +282,7 @@ export default async function AdminPeoplePage({
   const prospectIds = prospects.map((item) => item.id);
   const profileIds = [...new Set([...userIds, ...adminIds])];
 
-  const [profilesResult, intakeResult, documentsResult, applicationsResult, actionsResult, orientationsResult, assignmentsResult] =
+  const [profilesResult, intakeResult, documentsResult, applicationsResult, actionsResult, orientationsResult, assignmentsResult, caseNotesResult] =
     await Promise.all([
       profileIds.length
         ? supabase.from("profiles").select("id,first_name,last_name,full_name").in("id", profileIds)
@@ -286,6 +305,9 @@ export default async function AdminPeoplePage({
       userIds.length
         ? supabase.from("student_case_assignments").select("student_id,assigned_admin_id,assigned_at,updated_at").in("student_id", userIds)
         : Promise.resolve({ data: [], error: null }),
+      userIds.length
+        ? supabase.from("student_case_notes").select("student_id,kind,occurred_at").in("student_id", userIds).neq("kind", "internal_note").order("occurred_at", { ascending: false }).limit(3000)
+        : Promise.resolve({ data: [], error: null }),
     ]);
 
   const fatalError =
@@ -298,7 +320,8 @@ export default async function AdminPeoplePage({
     || applicationsResult.error
     || actionsResult.error
     || orientationsResult.error
-    || assignmentsResult.error;
+    || assignmentsResult.error
+    || caseNotesResult.error;
 
   if (fatalError) {
     return (
@@ -319,6 +342,7 @@ export default async function AdminPeoplePage({
   const actions = (actionsResult.data || []) as ActionRow[];
   const orientations = (orientationsResult.data || []) as OrientationRow[];
   const assignments = (assignmentsResult.data || []) as AssignmentRow[];
+  const caseNotes = (caseNotesResult.data || []) as CaseNoteRow[];
 
   const profileByUser = new Map(profiles.map((item) => [item.id, item]));
   const accessByUser = new Map(accessRows.map((item) => [item.user_id, item]));
@@ -355,8 +379,14 @@ export default async function AdminPeoplePage({
     orientationCountByProspect.set(item.prospect_id, (orientationCountByProspect.get(item.prospect_id) || 0) + 1);
   }
 
+  const latestContactByUser = new Map<string, CaseNoteRow>();
+  for (const item of caseNotes) {
+    if (!latestContactByUser.has(item.student_id)) latestContactByUser.set(item.student_id, item);
+  }
+
   const today = new Date().toISOString().slice(0, 10);
   const weekEnd = shiftDateKey(today, 7);
+  const staleContactCutoff = shiftDateKey(today, -14);
 
   const records: PersonRecord[] = userIds.map((userId) => {
     const profile = profileByUser.get(userId);
@@ -364,6 +394,7 @@ export default async function AdminPeoplePage({
     const access = accessByUser.get(userId);
     const intake = intakeByUser.get(userId);
     const assignment = assignmentByUser.get(userId);
+    const latestContact = latestContactByUser.get(userId);
     const personDocuments = docsByUser.get(userId) || [];
     const personApplications = applicationsByUser.get(userId) || [];
     const activeApplications = personApplications.filter((item) => isActiveApplication(item.status)).sort(compareApplications);
@@ -440,6 +471,8 @@ export default async function AdminPeoplePage({
       assignedAdminName: assignment?.assigned_admin_id
         ? advisorNameById.get(assignment.assigned_admin_id) || "Conseiller Campus"
         : null,
+      lastContactAt: latestContact?.occurred_at || null,
+      lastContactKind: latestContact?.kind || null,
       needsAttention,
       updatedAt: intake?.updated_at || prospect?.updated_at || access?.status_changed_at || "",
     };
@@ -468,6 +501,8 @@ export default async function AdminPeoplePage({
       hasUnverifiedDeadline: false,
       assignedAdminId: null,
       assignedAdminName: null,
+      lastContactAt: null,
+      lastContactKind: null,
       needsAttention: false,
       updatedAt: prospect.updated_at,
     });
@@ -505,6 +540,10 @@ export default async function AdminPeoplePage({
     overdue: operationalRecords.filter((item) => Boolean(item.dueDate && item.dueDate < today)).length,
     today: operationalRecords.filter((item) => item.dueDate === today).length,
     week: operationalRecords.filter((item) => Boolean(item.dueDate && item.dueDate >= today && item.dueDate <= weekEnd)).length,
+    stale: operationalRecords.filter((item) => {
+      const contactDate = dateKey(item.lastContactAt);
+      return !contactDate || contactDate < staleContactCutoff;
+    }).length,
     unassigned: operationalRecords.filter((item) => !item.assignedAdminId).length,
     mine: currentAdmin
       ? operationalRecords.filter((item) => item.assignedAdminId === currentAdmin.id).length
@@ -518,6 +557,10 @@ export default async function AdminPeoplePage({
     if (work === "overdue" && !(item.dueDate && item.dueDate < today)) return false;
     if (work === "today" && item.dueDate !== today) return false;
     if (work === "week" && !(item.dueDate && item.dueDate >= today && item.dueDate <= weekEnd)) return false;
+    if (work === "stale") {
+      const contactDate = dateKey(item.lastContactAt);
+      if (!item.userId || item.segment === "archived" || (contactDate && contactDate >= staleContactCutoff)) return false;
+    }
     if (work === "unassigned" && (!item.userId || item.segment === "archived" || item.assignedAdminId)) return false;
     if (work === "mine" && (!currentAdmin || item.assignedAdminId !== currentAdmin.id)) return false;
 
@@ -672,6 +715,12 @@ export default async function AdminPeoplePage({
             {filtered.map((person) => {
               const overdue = Boolean(person.dueDate && person.dueDate < today);
               const dueToday = person.dueDate === today;
+              const lastContactDate = dateKey(person.lastContactAt);
+              const staleContact = Boolean(
+                person.userId
+                && person.segment !== "archived"
+                && (!lastContactDate || lastContactDate < staleContactCutoff),
+              );
               return (
                 <article
                   key={person.key}
@@ -694,6 +743,11 @@ export default async function AdminPeoplePage({
                     <p className="text-[0.68rem] font-bold uppercase tracking-[0.1em] text-[var(--muted)]">Conseiller</p>
                     <p className={`mt-1 text-sm font-semibold ${person.assignedAdminName ? "text-slate-900" : "text-amber-800"}`}>
                       {person.assignedAdminName || "Non attribué"}
+                    </p>
+                    <p className={`mt-1 text-[11px] font-semibold ${staleContact ? "text-amber-800" : "text-slate-500"}`}>
+                      {person.lastContactAt
+                        ? `${contactKindLabel(person.lastContactKind)} · ${formatDate(person.lastContactAt)}`
+                        : "Aucun contact journalisé"}
                     </p>
                   </div>
 

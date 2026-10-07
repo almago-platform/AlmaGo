@@ -8,6 +8,7 @@ import { NextActionPanel } from "@/components/product/NextActionPanel";
 import { AdminLoadError } from "@/components/admin/AdminLoadError";
 import { AdminDossierActionsPanel, type AdminDossierActionItem } from "@/components/admin/AdminDossierActionsPanel";
 import { AdminCaseOwnerPanel, type AdminAdvisorOption } from "@/components/admin/AdminCaseOwnerPanel";
+import { AdminCaseJournalPanel, type AdminCaseNoteItem } from "@/components/admin/AdminCaseJournalPanel";
 import { Badge } from "@/components/ui/Badge";
 import { DataList } from "@/components/ui/DataList";
 import { PremiumEmptyState } from "@/components/product/PremiumEmptyState";
@@ -166,6 +167,7 @@ export default async function AdminStudentDossierPage({
     historyResult,
     assignmentResult,
     adminRolesResult,
+    caseNotesResult,
   ] = await Promise.all([
     supabase
       .from("profiles")
@@ -224,6 +226,13 @@ export default async function AdminStudentDossierPage({
       .from("user_roles")
       .select("user_id")
       .eq("role", "admin"),
+    supabase
+      .from("student_case_notes")
+      .select("id,author_id,kind,content,occurred_at,created_at")
+      .eq("student_id", studentId)
+      .order("occurred_at", { ascending: false })
+      .order("created_at", { ascending: false })
+      .limit(50),
   ]);
 
   const profile = profileResult.data;
@@ -237,6 +246,7 @@ export default async function AdminStudentDossierPage({
   const historyRows = (historyResult.data || []) as HistoryRow[];
   const assignment = assignmentResult.data;
   const adminIds = (adminRolesResult.data || []).map((item) => item.user_id);
+  const caseNotesRaw = caseNotesResult.data || [];
 
   if (!profile && !prospect && !intake) {
     notFound();
@@ -253,7 +263,8 @@ export default async function AdminStudentDossierPage({
     || actionsResult.error
     || historyResult.error
     || assignmentResult.error
-    || adminRolesResult.error;
+    || adminRolesResult.error
+    || caseNotesResult.error;
 
   if (fatalError) {
     return (
@@ -314,6 +325,18 @@ export default async function AdminStudentDossierPage({
     .sort((left, right) => left.name.localeCompare(right.name, "fr"));
   const assignedAdminName =
     advisorOptions.find((item) => item.id === assignment?.assigned_admin_id)?.name || null;
+  const advisorNameById = new Map(advisorOptions.map((item) => [item.id, item.name]));
+  const caseNotes: AdminCaseNoteItem[] = caseNotesRaw.map((item) => ({
+    id: item.id,
+    kind: item.kind,
+    content: item.content,
+    occurred_at: item.occurred_at,
+    created_at: item.created_at,
+    author_name: item.author_id
+      ? advisorNameById.get(item.author_id) || "Ancien administrateur"
+      : "Ancien administrateur",
+  }));
+  const latestContact = caseNotes.find((item) => item.kind !== "internal_note") || null;
 
   let orientationHistory = [] as Array<{
     id: string;
@@ -482,6 +505,7 @@ export default async function AdminStudentDossierPage({
           { label: "Contact", value: <bdi dir="auto">{email}</bdi> },
           { label: "Accès", value: customerAccessLabel(access?.status) },
           { label: "Parcours", value: campusRouteLabel(intake?.proposed_route_key) },
+          { label: "Dernier contact", value: latestContact ? formatDate(latestContact.occurred_at) : "Aucun contact journalisé" },
           { label: "Dernière mise à jour", value: formatDate(intake?.updated_at || prospect?.updated_at) },
         ]}
         actions={
@@ -501,6 +525,7 @@ export default async function AdminStudentDossierPage({
         {[
           ["#overview", "Synthèse"],
           ["#actions", "Actions"],
+          ["#journal", "Journal interne"],
           ["#orientation", "Orientation"],
           ["#documents", "Documents"],
           ["#applications", "Candidatures"],
@@ -550,6 +575,8 @@ export default async function AdminStudentDossierPage({
       <div id="actions" className="scroll-mt-24">
         <AdminDossierActionsPanel studentId={studentId} actions={dossierActions} />
       </div>
+
+      <AdminCaseJournalPanel studentId={studentId} notes={caseNotes} />
 
       <div className="grid gap-7 xl:grid-cols-[minmax(0,1.35fr)_minmax(19rem,0.65fr)]">
         <div className="space-y-7">
