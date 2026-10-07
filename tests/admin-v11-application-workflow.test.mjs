@@ -56,3 +56,34 @@ test("Admin V11 deadline editor requires source and cycle before official verifi
   assert.match(panel, /!deadlineEdit\.cycle\.trim\(\)/);
   assert.match(panel, /!deadlineEdit\.sourceUrl\.trim\(\)/);
 });
+
+const createRoute = read("src/app/api/admin/applications/route.ts");
+const recommendationAction = read("src/components/admin/AdminRecommendationApplicationAction.tsx");
+
+test("Admin V11 can create an application from an active Campus recommendation", () => {
+  assert.match(createRoute, /getAdminUser/);
+  assert.match(createRoute, /from\("program_recommendations"\)/);
+  assert.match(createRoute, /programPublicationIssues/);
+  assert.match(createRoute, /resolveApplicationIntake/);
+  assert.match(createRoute, /from\("student_projects"\)/);
+  assert.match(createRoute, /from\("applications"\)[\s\S]*\.insert/);
+  assert.match(createRoute, /status: "interested"/);
+  assert.match(createRoute, /admin_application_created/);
+});
+
+test("Admin V11 refuses unsafe recommendation-to-application transitions", () => {
+  assert.match(createRoute, /recommendation\.is_archived/);
+  assert.match(createRoute, /recommendation\.status === "not_recommended"/);
+  assert.match(createRoute, /!university\?\.is_active/);
+  assert.match(createRoute, /needs_manual_review/);
+  assert.match(createRoute, /deadline_passed/);
+  assert.match(createRoute, /23505/);
+});
+
+test("Dossier 360 exposes the recommendation-to-application action without duplicating applications", () => {
+  assert.match(dossier, /AdminRecommendationApplicationAction/);
+  assert.match(dossier, /applicationProgramIds/);
+  assert.match(dossier, /hasApplication=\{applicationProgramIds\.has\(recommendation\.program_id\)\}/);
+  assert.match(recommendationAction, /Créer la candidature/);
+  assert.match(recommendationAction, /Candidature déjà rattachée/);
+});
