@@ -7,6 +7,7 @@ import { JourneyRail, type JourneyRailStep } from "@/components/product/JourneyR
 import { NextActionPanel } from "@/components/product/NextActionPanel";
 import { AdminLoadError } from "@/components/admin/AdminLoadError";
 import { AdminDossierActionsPanel, type AdminDossierActionItem } from "@/components/admin/AdminDossierActionsPanel";
+import { AdminDossierBlockersPanel, type AdminDossierBlocker } from "@/components/admin/AdminDossierBlockersPanel";
 import { AdminCaseOwnerPanel, type AdminAdvisorOption } from "@/components/admin/AdminCaseOwnerPanel";
 import { AdminCaseJournalPanel, type AdminCaseNoteItem } from "@/components/admin/AdminCaseJournalPanel";
 import { AdminDocumentRequirementsPanel, type AdminDocumentRequirementItem } from "@/components/admin/AdminDocumentRequirementsPanel";
@@ -20,6 +21,7 @@ import { PremiumSectionHeader } from "@/components/product/PremiumSectionHeader"
 import { buttonClassName } from "@/components/ui/Button";
 import {
   applicationStatusLabels,
+  isActiveApplication,
   type KnownApplicationStatus,
 } from "@/lib/application-workflow";
 import { campusRouteLabel } from "@/lib/campus-intake";
@@ -47,6 +49,10 @@ type ApplicationRow = {
   status: string;
   intake: string | null;
   deadline: string | null;
+  deadline_kind: string | null;
+  deadline_source_url: string | null;
+  deadline_verified_at: string | null;
+  deadline_cycle: string | null;
   next_action: string | null;
   result: string | null;
   created_at: string;
@@ -88,6 +94,13 @@ type DocumentRequirementRow = AdminDocumentRequirementItem & {
   student_procedure_id: string | null;
 };
 
+type DossierActionRow = AdminDossierActionItem & {
+  requires_student_action: boolean;
+  student_action_reason: string | null;
+  blocked_reason: string | null;
+  deadline_kind: string | null;
+};
+
 type PurchaseRow = {
   id: string;
   offer_snapshot: unknown;
@@ -124,6 +137,18 @@ function recommendationTone(status: string) {
   if (status === "missing_requirements") return "warning" as const;
   if (status === "ambitious") return "info" as const;
   return "neutral" as const;
+}
+
+function applicationDeadlineIsTrusted(application: ApplicationRow) {
+  if (!application.deadline) return false;
+  if (application.deadline_kind === "internal_target" || application.deadline_kind === "source_review_date") {
+    return true;
+  }
+  return Boolean(
+    application.deadline_source_url
+    && application.deadline_verified_at
+    && application.deadline_cycle,
+  );
 }
 
 function applicationTone(status: string) {
@@ -248,7 +273,7 @@ export default async function AdminStudentDossierPage({
       .order("created_at", { ascending: false }),
     supabase
       .from("applications")
-      .select("id,program_id,status,intake,deadline,next_action,result,created_at,programs(name,universities(name,city)),application_events(id,event_type,message,visible_to_student,created_at)")
+      .select("id,program_id,status,intake,deadline,deadline_kind,deadline_source_url,deadline_verified_at,deadline_cycle,next_action,result,created_at,programs(name,universities(name,city)),application_events(id,event_type,message,visible_to_student,created_at)")
       .eq("student_id", studentId)
       .order("deadline", { ascending: true, nullsFirst: false }),
     supabase
@@ -259,7 +284,7 @@ export default async function AdminStudentDossierPage({
       .limit(1),
     supabase
       .from("student_checklist_items")
-      .select("id,title,description,status,owner,due_date,template_id,completed_at,created_at")
+      .select("id,title,description,status,owner,due_date,template_id,completed_at,created_at,requires_student_action,student_action_reason,blocked_reason,deadline_kind")
       .eq("student_id", studentId)
       .order("due_date", { ascending: true, nullsFirst: false })
       .order("created_at", { ascending: true }),
@@ -304,7 +329,7 @@ export default async function AdminStudentDossierPage({
   const recommendations = (recommendationsResult.data || []) as unknown as ProgramRecommendationRow[];
   const applications = (applicationsResult.data || []) as unknown as ApplicationRow[];
   const purchase = ((purchasesResult.data || []) as PurchaseRow[])[0] ?? null;
-  const dossierActions = (actionsResult.data || []) as AdminDossierActionItem[];
+  const dossierActions = (actionsResult.data || []) as DossierActionRow[];
   const historyRows = (historyResult.data || []) as HistoryRow[];
   const assignment = assignmentResult.data;
   const adminIds = (adminRolesResult.data || []).map((item) => item.user_id);
@@ -473,6 +498,127 @@ export default async function AdminStudentDossierPage({
     item.requested_from_student && (item.status === "requested" || item.status === "replacement_required")
   );
   const recordedNextAction = dossierActions.find((item) => isOpenAdminAction(item.status) && item.template_id === null) || null;
+
+  const blockers: AdminDossierBlocker[] = [];
+  const blockerIds = new Set<string>();
+  const addBlocker = (blocker: AdminDossierBlocker) => {
+    if (blockerIds.has(blocker.id)) return;
+    blockerIds.add(blocker.id);
+    blockers.push(blocker);
+  };
+
+  for (const action of dossierActions) {
+    if (action.status === "blocked") {
+      addBlocker({
+        id: `action:${action.id}`,
+        kind: "Étape bloquée",
+        title: action.title,
+        reason: action.blocked_reason?.trim()
+          || action.description?.trim()
+          || "Cette étape est explicitement marquée comme bloquée dans la procédure.",
+        owner: action.owner === "student" || action.owner === "external" || action.owner === "joint"
+          ? action.owner
+          : "almago",
+        severity: "critical",
+        href: "#actions",
+        actionLabel: "Traiter l’action",
+      });
+    }
+  }
+
+  for (const requirement of studentDocumentRequests) {
+    addBlocker({
+      id: `document-request:${requirement.id}`,
+      kind: requirement.status === "replacement_required" ? "Remplacement requis" : "Pièce attendue",
+      title: requirement.label,
+      reason: requirement.student_request_reason?.trim()
+        || "Une pièce ou une action personnelle est nécessaire avant de poursuivre cette partie du dossier.",
+      owner: "student",
+      severity: requirement.status === "replacement_required" ? "critical" : "warning",
+      href: "#documents",
+      actionLabel: "Voir la demande",
+    });
+  }
+
+  for (const document of documentsAwaitingDecision) {
+    addBlocker({
+      id: `document-decision:${document.id}`,
+      kind: "Décision Campus",
+      title: document.original_filename || `Document ${document.category}`,
+      reason: "La version actuelle a été reçue mais attend encore une validation, un rejet ou une demande de remplacement.",
+      owner: "almago",
+      severity: "warning",
+      href: "/admin/documents",
+      actionLabel: "Décider",
+    });
+  }
+
+  for (const application of applications) {
+    if (!isActiveApplication(application.status)) continue;
+    const programName = firstProgram(application)?.name || "Candidature";
+
+    if (application.deadline && !applicationDeadlineIsTrusted(application)) {
+      addBlocker({
+        id: `application-deadline:${application.id}`,
+        kind: "Deadline à vérifier",
+        title: programName,
+        reason: "Une date est enregistrée sans provenance complète. Elle ne peut pas servir d’échéance officielle avant vérification de la source, du cycle et de la date de vérification.",
+        owner: "almago",
+        severity: "critical",
+        href: `/admin/applications?student=${studentId}`,
+        actionLabel: "Vérifier la deadline",
+      });
+    }
+
+    if (!application.next_action?.trim()) {
+      addBlocker({
+        id: `application-next-action:${application.id}`,
+        kind: "Suivi incomplet",
+        title: programName,
+        reason: "Cette candidature est active mais aucune prochaine action n’est enregistrée pour l’équipe.",
+        owner: "almago",
+        severity: "warning",
+        href: `/admin/applications?student=${studentId}`,
+        actionLabel: "Définir l’action",
+      });
+    }
+  }
+
+  const missingProjectFields = [
+    !profile?.target_degree ? "diplôme visé" : null,
+    !profile?.target_field ? "domaine" : null,
+    !profile?.target_intake ? "rentrée visée" : null,
+  ].filter((value): value is string => Boolean(value));
+
+  if (missingProjectFields.length) {
+    addBlocker({
+      id: "project:missing-core",
+      kind: "Projet incomplet",
+      title: "Informations de projet à confirmer",
+      reason: `Il manque : ${missingProjectFields.join(", ")}. Ces informations structurent l’orientation et la préparation des candidatures.`,
+      owner: "joint",
+      severity: "warning",
+      href: "#project",
+      actionLabel: "Compléter le projet",
+    });
+  }
+
+  if (access?.status === "client_active" && !currentProcedureId) {
+    addBlocker({
+      id: "procedure:missing-current",
+      kind: "Procédure absente",
+      title: "Aucune procédure Campus active",
+      reason: "Le client est actif mais aucune procédure courante n’est rattachée au dossier. Vérifiez l’activation commerciale et le parcours avant de créer des obligations manuelles.",
+      owner: "almago",
+      severity: "critical",
+      href: "/admin/intake",
+      actionLabel: "Vérifier l’activation",
+    });
+  }
+
+  const blockerRank = { critical: 0, warning: 1, info: 2 } as const;
+  blockers.sort((left, right) => blockerRank[left.severity] - blockerRank[right.severity]);
+
   const nextAction = unreadStudentMessages > 0
     ? {
         title: unreadStudentMessages > 1
@@ -642,6 +788,7 @@ export default async function AdminStudentDossierPage({
       >
         {[
           ["#overview", "Synthèse"],
+          ["#blockers", "Blocages"],
           ["#actions", "Actions"],
           ["#messages", "Messages"],
           ["#journal", "Journal interne"],
@@ -691,6 +838,10 @@ export default async function AdminStudentDossierPage({
           ) : undefined
         }
       />
+
+      <div id="blockers" className="scroll-mt-24">
+        <AdminDossierBlockersPanel blockers={blockers} />
+      </div>
 
       <div id="actions" className="scroll-mt-24">
         <AdminDossierActionsPanel studentId={studentId} actions={dossierActions} />
