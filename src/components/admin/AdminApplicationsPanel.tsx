@@ -24,7 +24,6 @@ import {
   applicationStatusLabels,
   formatDeadline,
   isActiveApplication,
-  isPastDeadline,
   statusTone,
 } from "@/lib/phase4";
 
