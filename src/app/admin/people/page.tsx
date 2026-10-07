@@ -12,6 +12,7 @@ import {
   adminActionOwnerLabel,
   adminPersonSegmentLabels,
   classifyAdminPerson,
+  isHumanAdminAction,
   isOpenAdminAction,
   type AdminPersonSegment,
 } from "@/lib/admin/people";
@@ -84,6 +85,7 @@ type ActionRow = {
   owner: string | null;
   due_date: string | null;
   template_id: string | null;
+  procedure_step_template_id: string | null;
   requires_student_action: boolean;
   student_action_reason: string | null;
   deadline_kind: string | null;
@@ -357,7 +359,7 @@ export default async function AdminPeoplePage({
         ? supabase.from("applications").select("id,student_id,status,deadline,deadline_kind,deadline_source_url,deadline_verified_at,deadline_cycle,application_method,next_action,created_at").in("student_id", userIds)
         : Promise.resolve({ data: [], error: null }),
       userIds.length
-        ? supabase.from("student_checklist_items").select("id,student_id,title,description,status,owner,due_date,template_id,requires_student_action,student_action_reason,deadline_kind,official_source_url,official_source_verified_at,deadline_cycle,created_at").in("student_id", userIds)
+        ? supabase.from("student_checklist_items").select("id,student_id,title,description,status,owner,due_date,template_id,procedure_step_template_id,requires_student_action,student_action_reason,deadline_kind,official_source_url,official_source_verified_at,deadline_cycle,created_at").in("student_id", userIds)
         : Promise.resolve({ data: [], error: null }),
       prospectIds.length
         ? supabase.from("orientations").select("id,prospect_id,created_at").in("prospect_id", prospectIds)
@@ -477,7 +479,7 @@ export default async function AdminPeoplePage({
       && Boolean(item.student_action_reason?.trim())
     ).length;
     const waitingOnExternal = openActions.filter((item) => item.status === "waiting_external").length;
-    const humanOpenActions = openActions.filter((item) => item.template_id === null);
+    const humanOpenActions = personActions.filter((item) => isHumanAdminAction(item)).sort(compareDue);
     const pendingDocuments = personDocuments.filter((item) => attentionDocumentStatuses.has(item.status)).length;
     const segment = classifyAdminPerson(access?.status, Boolean(intake));
     const email = prospect?.email || "Adresse non enregistrée";
