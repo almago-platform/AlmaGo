@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       mode:
-        description: "Preview eligible merged branches or delete an explicit manifest"
+        description: "Preview eligible deletions or delete an explicit manifest"
         required: true
         default: dry-run
         type: choice
@@ -12,7 +12,12 @@ on:
           - dry-run
           - delete
       branch_specs:
-        description: "Optional whitespace-separated branch@40-char-sha specs; required for delete mode (max 20)"
+        description: "Optional comma/newline list: branch/name@40-char-sha. Required for deletion."
+        required: false
+        default: ""
+        type: string
+      confirm_delete:
+        description: "Required only for deletion mode: type DELETE_MERGED_BRANCHES"
         required: false
         default: ""
         type: string
@@ -30,11 +35,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: Inspect and optionally delete merged branches safely
+      - name: Review merged AlmaGo branches safely
         uses: actions/github-script@v9
         env:
           CLEANUP_MODE: ${{ inputs.mode }}
-          CLEANUP_BRANCH_SPECS: ${{ inputs.branch_specs }}
+          BRANCH_SPECS: ${{ inputs.branch_specs }}
+          CONFIRM_DELETE: ${{ inputs.confirm_delete }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -42,91 +48,144 @@ jobs:
             const repo = context.repo.repo;
             const requestedMode = process.env.CLEANUP_MODE || "dry-run";
             const execute = requestedMode === "delete";
-            const rawSpecs = (process.env.CLEANUP_BRANCH_SPECS || "").trim();
-            const protectedPrefixes = ["archive/", "backup/"];
-            const maxDeletes = 20;
+            const confirmation = String(process.env.CONFIRM_DELETE || "");
+            const maxDeletePerRun = 20;
 
-            const requested = [];
-            const seenRequestedBranches = new Set();
-            if (rawSpecs) {
-              for (const spec of rawSpecs.split(/\s+/).filter(Boolean)) {
-                const match = spec.match(/^(.+)@([0-9a-f]{40})$/i);
-                if (!match) {
-                  throw new Error(
-                    `Invalid branch spec "${spec}". Expected branch/name@40-char-sha.`,
-                  );
-                }
-                const branch = match[1];
-                const sha = match[2].toLowerCase();
-                if (seenRequestedBranches.has(branch)) {
-                  throw new Error(`Duplicate branch spec for "${branch}".`);
-                }
-                seenRequestedBranches.add(branch);
-                requested.push({ branch, sha });
+            const rawSpecs = String(process.env.BRANCH_SPECS || "");
+            const requested = new Map();
+            const malformedSpecs = [];
+
+            for (const raw of rawSpecs.split(/[,\n\r]+/)) {
+              const spec = raw.trim();
+              if (!spec) continue;
+              const match = spec.match(/^(.+)@([0-9a-fA-F]{40})$/);
+              if (!match) {
+                malformedSpecs.push(spec);
+                continue;
               }
+              const branch = match[1].trim();
+              const sha = match[2].toLowerCase();
+              if (!branch) {
+                malformedSpecs.push(spec);
+                continue;
+              }
+              const previous = requested.get(branch);
+              if (previous && previous !== sha) {
+                malformedSpecs.push(spec);
+                continue;
+              }
+              requested.set(branch, sha);
             }
 
-            if (requested.length > maxDeletes) {
-              throw new Error(
-                `Refusing ${requested.length} explicit specs; the safety cap is ${maxDeletes}.`,
+            if (malformedSpecs.length) {
+              core.setFailed(
+                "Invalid branch_specs entries: " + malformedSpecs.join(", "),
               );
+              return;
             }
-            if (execute && requested.length === 0) {
-              throw new Error(
-                "Delete mode requires at least one explicit branch@sha spec. Run dry-run first.",
+
+            if (execute && confirmation !== "DELETE_MERGED_BRANCHES") {
+              core.setFailed(
+                "Deletion mode requires confirm_delete=DELETE_MERGED_BRANCHES.",
               );
+              return;
+            }
+
+            if (execute && requested.size === 0) {
+              core.setFailed(
+                "Deletion mode requires at least one explicit branch@sha entry in branch_specs.",
+              );
+              return;
+            }
+
+            if (requested.size > maxDeletePerRun) {
+              core.setFailed(
+                `At most ${maxDeletePerRun} explicit branch@sha specs are allowed per run.`,
+              );
+              return;
             }
 
             const { data: repository } = await github.rest.repos.get({ owner, repo });
             const defaultBranch = repository.default_branch || "main";
 
-            const openPulls = await github.paginate(github.rest.pulls.list, {
-              owner, repo, state: "open", per_page: 100,
+            const allowedPrefixes = [
+              "codex/",
+              "design/",
+              "phase5/",
+              "hardening/",
+              "feat/",
+              "automation/",
+              "chore/",
+              "plan/",
+              "ci/",
+              "docs/",
+              "fix/",
+              "test/",
+              "dependabot/",
+            ];
+            const permanentlyExcludedPrefixes = ["archive/", "backup/"];
+
+            const listOpenPulls = () =>
+              github.paginate(github.rest.pulls.list, {
+                owner,
+                repo,
+                state: "open",
+                per_page: 100,
+              });
+
+            const branchSets = (pulls) => ({
+              heads: new Set(
+                pulls
+                  .filter(pr => pr.head.repo?.full_name === `${owner}/${repo}`)
+                  .map(pr => pr.head.ref),
+              ),
+              bases: new Set(
+                pulls
+                  .filter(pr => pr.base.repo?.full_name === `${owner}/${repo}`)
+                  .map(pr => pr.base.ref),
+              ),
             });
-            const openHeads = new Set(
-              openPulls
-                .filter(pr => pr.head.repo?.full_name === `${owner}/${repo}`)
-                .map(pr => pr.head.ref),
-            );
-            const openBases = new Set(
-              openPulls
-                .filter(pr => pr.base.repo?.full_name === `${owner}/${repo}`)
-                .map(pr => pr.base.ref),
-            );
+
+            const openPulls = await listOpenPulls();
+            const { heads: openHeads, bases: openBases } = branchSets(openPulls);
 
             const closedPulls = await github.paginate(github.rest.pulls.list, {
-              owner, repo, state: "closed", base: defaultBranch, per_page: 100,
+              owner,
+              repo,
+              state: "closed",
+              base: defaultBranch,
+              per_page: 100,
             });
 
-            const mergedHeadShas = new Map();
+            const mergedByBranch = new Map();
             for (const pr of closedPulls) {
-              if (!pr.merged_at || pr.head.repo?.full_name !== `${owner}/${repo}`) continue;
-              const branch = pr.head.ref;
-              const shas = mergedHeadShas.get(branch) || new Set();
-              shas.add(String(pr.head.sha).toLowerCase());
-              mergedHeadShas.set(branch, shas);
-            }
-
-            const skipped = [];
-            const eligible = new Map();
-            const candidateBranches = requested.length
-              ? requested.map(entry => entry.branch)
-              : [...mergedHeadShas.keys()].sort();
-
-            for (const branch of candidateBranches) {
               if (
-                branch === defaultBranch ||
-                protectedPrefixes.some(prefix => branch.startsWith(prefix)) ||
-                openHeads.has(branch) ||
-                openBases.has(branch)
+                !pr.merged_at ||
+                pr.head.repo?.full_name !== `${owner}/${repo}` ||
+                !allowedPrefixes.some(prefix => pr.head.ref.startsWith(prefix))
               ) {
-                skipped.push({ branch, reason: "protected-or-active" });
                 continue;
               }
 
-              const knownMergedShas = mergedHeadShas.get(branch);
-              if (!knownMergedShas) {
-                skipped.push({ branch, reason: "no-merged-pr-head" });
+              if (!mergedByBranch.has(pr.head.ref)) {
+                mergedByBranch.set(pr.head.ref, []);
+              }
+              mergedByBranch.get(pr.head.ref).push(pr);
+            }
+
+            const discoveredEligible = [];
+            const skippedProtected = [];
+            const skippedChanged = [];
+
+            for (const branch of [...mergedByBranch.keys()].sort()) {
+              if (
+                branch === defaultBranch ||
+                branch === "main" ||
+                openHeads.has(branch) ||
+                openBases.has(branch) ||
+                permanentlyExcludedPrefixes.some(prefix => branch.startsWith(prefix))
+              ) {
+                skippedProtected.push(branch);
                 continue;
               }
 
@@ -138,102 +197,181 @@ jobs:
                   ref: `heads/${branch}`,
                 });
               } catch (error) {
-                if (error.status === 404) {
-                  skipped.push({ branch, reason: "already-absent" });
-                  continue;
-                }
+                if (error.status === 404) continue;
                 throw error;
               }
 
               const currentSha = String(currentRef.data.object.sha).toLowerCase();
-              if (!knownMergedShas.has(currentSha)) {
-                skipped.push({ branch, reason: "tip-moved-after-merge" });
+              const mergedPulls = mergedByBranch.get(branch) || [];
+              const exactMergedHead = mergedPulls.some(
+                pr => String(pr.head.sha).toLowerCase() === currentSha,
+              );
+
+              if (!exactMergedHead) {
+                skippedChanged.push(`${branch} @ ${currentSha}`);
                 continue;
               }
 
-              eligible.set(branch, { branch, sha: currentSha });
+              discoveredEligible.push({ branch, sha: currentSha });
             }
 
-            let planned;
-            if (requested.length) {
-              planned = requested.map(entry => {
-                const candidate = eligible.get(entry.branch);
-                if (!candidate) {
-                  throw new Error(
-                    `Requested branch "${entry.branch}" is not eligible for cleanup.`,
-                  );
-                }
-                if (candidate.sha !== entry.sha) {
-                  throw new Error(
-                    `Expected SHA mismatch for "${entry.branch}": manifest=${entry.sha}, current=${candidate.sha}.`,
-                  );
-                }
-                return candidate;
-              });
-            } else {
-              planned = [...eligible.values()];
+            const discoveredByBranch = new Map(
+              discoveredEligible.map(candidate => [candidate.branch, candidate]),
+            );
+
+            const requestErrors = [];
+            for (const [branch, expectedSha] of requested) {
+              const candidate = discoveredByBranch.get(branch);
+              if (!candidate) {
+                requestErrors.push(`${branch}: not eligible or not found`);
+                continue;
+              }
+              if (candidate.sha !== expectedSha) {
+                requestErrors.push(
+                  `${branch}: expected ${expectedSha}, current ${candidate.sha}`,
+                );
+              }
+            }
+
+            if (requestErrors.length) {
+              core.setFailed(
+                "Requested branch_specs failed validation: " +
+                  requestErrors.join("; "),
+              );
+              return;
+            }
+
+            const eligible =
+              requested.size > 0
+                ? [...requested.keys()].map(branch => discoveredByBranch.get(branch))
+                : discoveredEligible;
+
+            if (execute && eligible.length > maxDeletePerRun) {
+              core.setFailed(
+                `Refusing to delete ${eligible.length} branches in one run; maximum is ${maxDeletePerRun}.`,
+              );
+              return;
             }
 
             const deleted = [];
 
             if (execute) {
-              // Complete a second validation pass for the full requested manifest
-              // before the first destructive operation.
-              for (const entry of planned) {
+              // Validate the entire requested set immediately before any destructive
+              // operation. No branch is deleted if this full preflight drifts.
+              const preDeletePulls = await listOpenPulls();
+              const {
+                heads: preDeleteOpenHeads,
+                bases: preDeleteOpenBases,
+              } = branchSets(preDeletePulls);
+
+              for (const candidate of eligible) {
+                if (
+                  preDeleteOpenHeads.has(candidate.branch) ||
+                  preDeleteOpenBases.has(candidate.branch)
+                ) {
+                  throw new Error(
+                    `Branch became active in an open PR before deletion: ${candidate.branch}`,
+                  );
+                }
+
                 const { data: validationRef } = await github.rest.git.getRef({
                   owner,
                   repo,
-                  ref: `heads/${entry.branch}`,
+                  ref: `heads/${candidate.branch}`,
                 });
                 const validationSha = String(validationRef.object.sha).toLowerCase();
-                const knownMergedShas = mergedHeadShas.get(entry.branch);
-                if (
-                  validationSha !== entry.sha ||
-                  !knownMergedShas?.has(validationSha)
-                ) {
+                if (validationSha !== candidate.sha) {
                   throw new Error(
-                    `Cleanup manifest drifted before deletion: "${entry.branch}" is now ${validationSha}.`,
+                    `Branch tip changed before deletion: ${candidate.branch} expected ${candidate.sha}, got ${validationSha}`,
                   );
                 }
               }
 
-              for (const entry of planned) {
-                // Re-read immediately before each delete to fail closed on races.
-                const { data: freshRef } = await github.rest.git.getRef({
-                  owner,
-                  repo,
-                  ref: `heads/${entry.branch}`,
-                });
-                const freshSha = String(freshRef.object.sha).toLowerCase();
-                const knownMergedShas = mergedHeadShas.get(entry.branch);
-                if (freshSha !== entry.sha || !knownMergedShas?.has(freshSha)) {
+              for (const candidate of eligible) {
+                // Re-list PRs and re-read the ref immediately before each deletion.
+                const freshOpenPulls = await listOpenPulls();
+                const {
+                  heads: freshOpenHeads,
+                  bases: freshOpenBases,
+                } = branchSets(freshOpenPulls);
+
+                if (
+                  freshOpenHeads.has(candidate.branch) ||
+                  freshOpenBases.has(candidate.branch)
+                ) {
                   throw new Error(
-                    `Cleanup manifest drifted immediately before delete: "${entry.branch}" is now ${freshSha}.`,
+                    `Branch became active in an open PR during deletion preflight: ${candidate.branch}`,
+                  );
+                }
+
+                let freshRef;
+                try {
+                  freshRef = await github.rest.git.getRef({
+                    owner,
+                    repo,
+                    ref: `heads/${candidate.branch}`,
+                  });
+                } catch (error) {
+                  if (error.status === 404) {
+                    throw new Error(
+                      `Branch disappeared during deletion preflight: ${candidate.branch}`,
+                    );
+                  }
+                  throw error;
+                }
+
+                const freshSha = String(freshRef.data.object.sha).toLowerCase();
+                if (freshSha !== candidate.sha) {
+                  throw new Error(
+                    `Branch tip changed during deletion preflight: ${candidate.branch} expected ${candidate.sha}, got ${freshSha}`,
+                  );
+                }
+
+                const exactMergedHead = (mergedByBranch.get(candidate.branch) || []).some(
+                  pr => String(pr.head.sha).toLowerCase() === freshSha,
+                );
+                if (!exactMergedHead) {
+                  throw new Error(
+                    `Branch no longer matches a merged PR head: ${candidate.branch} @ ${freshSha}`,
                   );
                 }
 
                 await github.rest.git.deleteRef({
                   owner,
                   repo,
-                  ref: `heads/${entry.branch}`,
+                  ref: `heads/${candidate.branch}`,
                 });
-                deleted.push({ branch: entry.branch, sha: freshSha });
+                deleted.push(`${candidate.branch} @ ${candidate.sha}`);
               }
             }
 
-            const format = entries =>
-              entries.length
-                ? entries.map(entry => `- \`${entry.branch}\`${entry.sha ? ` @ \`${entry.sha}\`` : ""}${entry.reason ? ` — ${entry.reason}` : ""}`).join("\n")
-                : "- none";
+            const requestedSummary = [...requested.entries()].map(
+              ([branch, sha]) => `${branch} @ ${sha}`,
+            );
+            const eligibleSummary = eligible.map(
+              ({ branch, sha }) => `${branch} @ ${sha}`,
+            );
 
             await core.summary
               .addHeading("AlmaGo merged branch cleanup")
-              .addRaw(`Mode: **${requestedMode}**\n\n`)
-              .addRaw(`Explicit manifest entries: **${requested.length}**\n\n`)
-              .addHeading(`Eligible/planned (${planned.length})`, 2)
-              .addRaw(`${format(planned)}\n\n`)
-              .addHeading(`Deleted (${deleted.length})`, 2)
-              .addRaw(`${format(deleted)}\n\n`)
-              .addHeading(`Skipped (${skipped.length})`, 2)
-              .addRaw(`${format(skipped)}\n`)
+              .addRaw(`Mode: ${execute ? "DELETE" : "DRY RUN"}\n\n`)
+              .addRaw("Explicit branch specs: " + requestedSummary.length + "\n")
+              .addList(requestedSummary.length ? requestedSummary : ["None."])
+              .addRaw("\nEligible in this run: " + eligibleSummary.length + "\n")
+              .addList(eligibleSummary.length ? eligibleSummary : ["None."])
+              .addRaw("\nPer-run deletion cap: " + maxDeletePerRun + "\n")
+              .addRaw("\nDeleted: " + deleted.length + "\n")
+              .addList(deleted.length ? deleted : ["None."])
+              .addRaw(
+                "\nSkipped because branch is protected/open: " +
+                  skippedProtected.length +
+                  "\n",
+              )
+              .addList(skippedProtected.length ? skippedProtected : ["None."])
+              .addRaw(
+                "\nSkipped because current tip no longer matches a merged PR head: " +
+                  skippedChanged.length +
+                  "\n",
+              )
+              .addList(skippedChanged.length ? skippedChanged : ["None."])
               .write();
