@@ -523,6 +523,24 @@ export default async function AdminStudentDossierPage({
         href: "#actions",
         actionLabel: "Traiter l’action",
       });
+      continue;
+    }
+
+    if (
+      action.status === "waiting_student"
+      && action.requires_student_action
+      && action.student_action_reason?.trim()
+    ) {
+      addBlocker({
+        id: `student-action:${action.id}`,
+        kind: "Action étudiante requise",
+        title: action.title,
+        reason: action.student_action_reason.trim(),
+        owner: action.owner === "joint" ? "joint" : "student",
+        severity: "warning",
+        href: "#actions",
+        actionLabel: "Voir l’action",
+      });
     }
   }
 
