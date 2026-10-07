@@ -25,6 +25,7 @@ import {
   type KnownApplicationStatus,
 } from "@/lib/application-workflow";
 import {
+  applicationDateIsTrusted,
   applicationOfficialDeadlineUrgency,
   applicationOfficialDeadlineUrgencyLabel,
   applicationRouteRisk,
@@ -148,15 +149,7 @@ function recommendationTone(status: string) {
 }
 
 function applicationDeadlineIsTrusted(application: ApplicationRow) {
-  if (!application.deadline) return false;
-  if (application.deadline_kind === "internal_target" || application.deadline_kind === "source_review_date") {
-    return true;
-  }
-  return Boolean(
-    application.deadline_source_url
-    && application.deadline_verified_at
-    && application.deadline_cycle,
-  );
+  return applicationDateIsTrusted(application);
 }
 
 function applicationTone(status: string) {
