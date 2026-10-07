@@ -30,7 +30,22 @@ function isOperation(value: unknown): value is RequirementOperation {
   return typeof value === "string" && operations.includes(value as RequirementOperation);
 }
 
-function updateForOperation(operation: RequirementOperation, note: string, legalisationReason: string) {
+function validHttpUrl(value: string) {
+  if (!value) return false;
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" || url.protocol === "http:";
+  } catch {
+    return false;
+  }
+}
+
+function updateForOperation(
+  operation: RequirementOperation,
+  note: string,
+  legalisationReason: string,
+  sourceUrl: string,
+) {
   const base: Record<string, unknown> = {
     admin_note: note || null,
     updated_at: new Date().toISOString(),
@@ -62,6 +77,7 @@ function updateForOperation(operation: RequirementOperation, note: string, legal
       requires_german_legalisation: null,
       legalisation_status: "to_verify",
       legalisation_reason: legalisationReason || null,
+      ...(sourceUrl ? { source_url: sourceUrl, source_verified_at: null } : {}),
     };
   }
   if (operation === "legalisation_required") {
@@ -71,6 +87,8 @@ function updateForOperation(operation: RequirementOperation, note: string, legal
       requires_german_legalisation: true,
       legalisation_status: "required",
       legalisation_reason: legalisationReason || null,
+      source_url: sourceUrl,
+      source_verified_at: new Date().toISOString(),
     };
   }
   if (operation === "legalisation_in_progress") {
@@ -89,6 +107,8 @@ function updateForOperation(operation: RequirementOperation, note: string, legal
       requires_german_legalisation: false,
       legalisation_status: "not_required",
       legalisation_reason: legalisationReason || null,
+      source_url: sourceUrl,
+      source_verified_at: new Date().toISOString(),
     };
   }
   if (operation === "legalisation_completed") {
@@ -124,9 +144,14 @@ export async function PATCH(
 
   const note = cleanText(body.admin_note, 1600);
   const legalisationReason = cleanText(body.legalisation_reason, 1600);
+  const sourceUrl = cleanText(body.source_url, 1000);
+
+  if (sourceUrl && !validHttpUrl(sourceUrl)) {
+    return NextResponse.json({ error: "La source doit être une URL HTTP(S) valide." }, { status: 400 });
+  }
 
   if (
-    ["legalisation_to_verify", "legalisation_required"].includes(body.operation)
+    ["legalisation_to_verify", "legalisation_required", "legalisation_not_required"].includes(body.operation)
     && legalisationReason.length < 3
   ) {
     return NextResponse.json(
@@ -135,9 +160,19 @@ export async function PATCH(
     );
   }
 
+  if (
+    ["legalisation_required", "legalisation_not_required"].includes(body.operation)
+    && !sourceUrl
+  ) {
+    return NextResponse.json(
+      { error: "Ajoutez la source officielle utilisée pour décider la légalisation." },
+      { status: 400 },
+    );
+  }
+
   const { data: requirement, error: requirementError } = await supabase
     .from("student_document_requirements")
-    .select("id,student_id,student_procedure_id")
+    .select("id,student_id,student_procedure_id,document_id")
     .eq("id", requirementId)
     .eq("student_id", studentId)
     .maybeSingle();
@@ -167,7 +202,25 @@ export async function PATCH(
     );
   }
 
-  const update = updateForOperation(body.operation, note, legalisationReason);
+  const linkedDocumentRequired = new Set<RequirementOperation>([
+    "accepted_original",
+    "authentication_in_progress",
+    "authenticated",
+    "translation_in_progress",
+    "translated",
+    "legalisation_in_progress",
+    "legalisation_not_required",
+    "legalisation_completed",
+    "ready",
+  ]);
+  if (linkedDocumentRequired.has(body.operation) && !requirement.document_id) {
+    return NextResponse.json(
+      { error: "Cette transition nécessite d’abord un fichier lié à l’exigence." },
+      { status: 409 },
+    );
+  }
+
+  const update = updateForOperation(body.operation, note, legalisationReason, sourceUrl);
   const { error: updateError } = await supabase
     .from("student_document_requirements")
     .update(update)
