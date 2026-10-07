@@ -45,3 +45,12 @@ test("Admin V11 orientation can open with the dossier student already selected",
   assert.match(orientationPanel, /initialStudentId/);
   assert.match(orientationPanel, /student\.id === initialStudentId && student\.onboarding_completed/);
 });
+
+test("Admin V11 dossier separates the project from Campus programme recommendations", () => {
+  assert.match(dossier, /from\("program_recommendations"\)/);
+  assert.match(dossier, /Orientation Campus/);
+  assert.match(dossier, /Le projet étudiant décrit le besoin/);
+  assert.match(dossier, /Gérer l’orientation/);
+  assert.match(dossier, /Historique des projets \/ orientations saisis/);
+  assert.match(dossier, /recommendationStatusLabels/);
+});
