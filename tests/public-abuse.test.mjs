@@ -10,7 +10,7 @@ import {
 
 const root = new URL("../", import.meta.url);
 
-test("forwarded client addresses are trusted only on Render and use the right-most hop", () => {
+test("forwarded client addresses are trusted only on Render and use Render's first canonical hop", () => {
   const headers = new Headers({
     "x-forwarded-for": "198.51.100.7, 203.0.113.9",
   });
@@ -18,11 +18,11 @@ test("forwarded client addresses are trusted only on Render and use the right-mo
   assert.equal(resolveTrustedClientAddress(headers, {}), null);
   assert.equal(
     resolveTrustedClientAddress(headers, { RENDER: "true" }),
-    "203.0.113.9",
+    "198.51.100.7",
   );
   assert.equal(
     resolveTrustedClientAddress(
-      new Headers({ "x-forwarded-for": "spoofed" }),
+      new Headers({ "x-forwarded-for": "spoofed, 203.0.113.9" }),
       { RENDER: "true" },
     ),
     null,
