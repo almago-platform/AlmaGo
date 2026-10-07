@@ -59,6 +59,8 @@ export default async function AdminEntry() {
     recentContactsResult,
     actionsResult,
     applicationRowsResult,
+    currentProceduresResult,
+    requirementSignalsResult,
   ] = await Promise.all([
     supabase.from("universities").select("id", { count: "exact", head: true }).eq("is_active", true),
     supabase.from("programs").select("id", { count: "exact", head: true }).eq("is_active", true),
@@ -80,6 +82,8 @@ export default async function AdminEntry() {
     supabase.from("student_case_notes").select("student_id,kind,occurred_at").neq("kind", "internal_note").gte("occurred_at", staleContactCutoff).limit(3000),
     supabase.from("student_checklist_items").select("id,student_id,title,status,owner,due_date,deadline_kind,official_source_url,official_source_verified_at,deadline_cycle,template_id,procedure_step_template_id,requires_student_action,student_action_reason").limit(5000),
     supabase.from("applications").select("student_id,status,next_action,deadline,deadline_kind,deadline_source_url,deadline_verified_at,deadline_cycle,application_method").limit(5000),
+    supabase.from("student_procedures").select("id,student_id").eq("is_current", true).limit(1000),
+    supabase.from("student_document_requirements").select("student_id,student_procedure_id,status,requested_from_student,student_request_reason").limit(5000),
   ]);
 
   if (
@@ -88,6 +92,7 @@ export default async function AdminEntry() {
     || staleLanguageError || dueLanguageError || staleFinanceError || dueFinanceError
     || unreadNotificationsResult.error || accessRowsResult.error || intakeRowsResult.error
     || assignmentsResult.error || recentContactsResult.error || actionsResult.error || applicationRowsResult.error
+    || currentProceduresResult.error || requirementSignalsResult.error
   ) {
     return (
       <main className="mx-auto w-full max-w-[92rem] px-4 py-6 sm:px-6 sm:py-7 xl:px-8">
@@ -128,6 +133,13 @@ export default async function AdminEntry() {
   const contactedRecentlyIds = new Set(
     (recentContactsResult.data || []).map((item) => item.student_id),
   );
+  const currentProcedureIds = new Set(
+    (currentProceduresResult.data || []).map((item) => item.id),
+  );
+  const currentRequirementSignals = (requirementSignalsResult.data || []).filter((item) =>
+    currentProcedureIds.has(item.student_procedure_id)
+  );
+
   const explicitActionIds = new Set<string>();
   const blockedCaseIds = new Set(
     (actionsResult.data || [])
@@ -139,6 +151,11 @@ export default async function AdminEntry() {
       .filter((item) => item.status === "waiting_almago")
       .map((item) => item.student_id),
   );
+  for (const requirement of currentRequirementSignals) {
+    if (["authentication_required", "translation_required", "legalisation_to_verify", "legalisation_required"].includes(requirement.status)) {
+      waitingCampusCaseIds.add(requirement.student_id);
+    }
+  }
   const waitingStudentCaseIds = new Set(
     (actionsResult.data || [])
       .filter((item) =>
@@ -148,6 +165,19 @@ export default async function AdminEntry() {
       )
       .map((item) => item.student_id),
   );
+  const replacementDocumentCaseIds = new Set<string>();
+  for (const requirement of currentRequirementSignals) {
+    if (
+      requirement.requested_from_student
+      && ["requested", "replacement_required"].includes(requirement.status)
+      && Boolean(requirement.student_request_reason?.trim())
+    ) {
+      waitingStudentCaseIds.add(requirement.student_id);
+    }
+    if (requirement.status === "replacement_required") {
+      replacementDocumentCaseIds.add(requirement.student_id);
+    }
+  }
   const waitingExternalCaseIds = new Set(
     (actionsResult.data || [])
       .filter((item) => item.status === "waiting_external")
@@ -228,6 +258,7 @@ export default async function AdminEntry() {
   const waitingCampusCases = operationalList.filter((id) => waitingCampusCaseIds.has(id)).length;
   const waitingStudentCases = operationalList.filter((id) => waitingStudentCaseIds.has(id)).length;
   const waitingExternalCases = operationalList.filter((id) => waitingExternalCaseIds.has(id)).length;
+  const replacementDocumentCases = operationalList.filter((id) => replacementDocumentCaseIds.has(id)).length;
   const deadlineVerifyCases = operationalList.filter((id) => unverifiedDeadlineCaseIds.has(id)).length;
   const applicationRiskCases = operationalList.filter((id) => applicationRiskCaseIds.has(id)).length;
   const officialOverdueCases = operationalList.filter((id) => officialOverdueCaseIds.has(id)).length;
@@ -516,7 +547,7 @@ export default async function AdminEntry() {
           />
         </div>
 
-        <div className="mt-3 grid gap-3 sm:grid-cols-3">
+        <div className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           <DailySignalCard
             href="/admin/people?work=waiting_campus"
             label="Attend Campus"
@@ -540,6 +571,14 @@ export default async function AdminEntry() {
             detail="Étapes qui dépendent d’une université, autorité ou autre acteur externe"
             tone={waitingExternalCases ? "info" : "success"}
             statusLabel={waitingExternalCases ? "À suivre" : "À jour"}
+          />
+          <DailySignalCard
+            href="/admin/people?work=document_replacement"
+            label="Documents à remplacer"
+            value={replacementDocumentCases}
+            detail="Dossiers dont une exigence de la procédure attend une nouvelle version étudiante"
+            tone={replacementDocumentCases ? "warning" : "success"}
+            statusLabel={replacementDocumentCases ? "Étudiant attendu" : "À jour"}
           />
         </div>
 
