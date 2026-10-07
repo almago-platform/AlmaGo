@@ -5,6 +5,7 @@ import test from "node:test";
 const read = (path) => readFileSync(path, "utf8");
 
 const migration = read("supabase/migrations/20261007103000_student_dossier_messages.sql");
+const receipts = read("supabase/migrations/20261007104500_student_dossier_message_receipts.sql");
 const adminRoute = read("src/app/api/admin/dossiers/[studentId]/messages/route.ts");
 const studentRoute = read("src/app/api/student/messages/route.ts");
 const thread = read("src/components/product/DossierMessageThread.tsx");
@@ -23,14 +24,15 @@ test("Admin V10 adds one shared dossier message thread with strict student/admin
   assert.match(migration, /public\.is_admin\(\)/);
 });
 
-test("Admin V10 read receipts are mutated only through scoped security-definer functions", () => {
-  assert.match(migration, /student_mark_dossier_messages_read/);
-  assert.match(migration, /admin_mark_dossier_messages_read/);
-  assert.match(migration, /where student_id = auth\.uid\(\)/);
-  assert.match(migration, /where student_id = p_student_id/);
-  assert.match(migration, /grant execute on function public\.student_mark_dossier_messages_read/);
-  assert.match(migration, /grant execute on function public\.admin_mark_dossier_messages_read/);
-  assert.doesNotMatch(migration, /grant update on table public\.student_dossier_messages/i);
+test("Admin V10 read receipts are hardened with RLS and column-level update grants", () => {
+  assert.match(receipts, /student dossier messages student read receipt/);
+  assert.match(receipts, /student dossier messages admin read receipt/);
+  assert.match(receipts, /grant update \(student_read_at, admin_read_at\)/);
+  assert.match(receipts, /validate_student_dossier_message_receipt/);
+  assert.match(receipts, /invalid_admin_read_receipt/);
+  assert.match(receipts, /invalid_student_read_receipt/);
+  assert.match(receipts, /drop function if exists public\.student_mark_dossier_messages_read/);
+  assert.match(receipts, /drop function if exists public\.admin_mark_dossier_messages_read/);
 });
 
 test("Admin V10 student replies notify the assigned advisor and admin messages notify the student", () => {
@@ -52,6 +54,8 @@ test("Admin V10 routes keep message creation scoped to the current actor", () =>
   assert.match(studentRoute, /!access\.isStudent \|\| !access\.canUseClientFeatures/);
   assert.match(studentRoute, /student_id: user\.id/);
   assert.match(studentRoute, /sender_role: "student"/);
+  assert.match(adminRoute, /update\(\{ admin_read_at: readAt \}\)/);
+  assert.match(studentRoute, /update\(\{ student_read_at: readAt \}\)/);
 });
 
 test("Admin V10 dossier 360 separates student-visible messages from internal notes", () => {
