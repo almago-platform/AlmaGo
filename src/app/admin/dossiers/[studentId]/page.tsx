@@ -25,6 +25,8 @@ import {
   type KnownApplicationStatus,
 } from "@/lib/application-workflow";
 import {
+  applicationOfficialDeadlineUrgency,
+  applicationOfficialDeadlineUrgencyLabel,
   applicationRouteRisk,
   applicationRouteRiskLabel,
 } from "@/lib/admin/application-risk";
@@ -592,6 +594,37 @@ export default async function AdminStudentDossierPage({
         severity: "critical",
         href: `/admin/applications?student=${studentId}`,
         actionLabel: "Vérifier la deadline",
+      });
+    }
+
+    const officialUrgency = applicationOfficialDeadlineUrgency({
+      status: application.status,
+      deadline: application.deadline,
+      deadline_kind: application.deadline_kind,
+      deadlineTrusted: trustedApplicationDeadline,
+    }, todayKey);
+
+    if (officialUrgency?.kind === "overdue") {
+      addBlocker({
+        id: `application-official-overdue:${application.id}`,
+        kind: "Deadline officielle dépassée",
+        title: programName,
+        reason: "La candidature n’est pas enregistrée comme soumise alors que sa deadline officielle vérifiée est dépassée. Vérifiez immédiatement la situation réelle avant toute autre décision.",
+        owner: "almago",
+        severity: "critical",
+        href: `/admin/applications?student=${studentId}`,
+        actionLabel: "Escalader maintenant",
+      });
+    } else if (officialUrgency?.kind === "d3" || officialUrgency?.kind === "d7") {
+      addBlocker({
+        id: `application-official-urgent:${application.id}`,
+        kind: applicationOfficialDeadlineUrgencyLabel(officialUrgency),
+        title: programName,
+        reason: `La deadline officielle vérifiée approche dans ${officialUrgency.daysRemaining} jour${officialUrgency.daysRemaining > 1 ? "s" : ""}. Confirmez que le dépôt peut encore être réalisé à temps.`,
+        owner: "almago",
+        severity: officialUrgency.kind === "d3" ? "critical" : "warning",
+        href: `/admin/applications?student=${studentId}`,
+        actionLabel: "Sécuriser le dépôt",
       });
     }
 
