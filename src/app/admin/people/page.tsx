@@ -16,6 +16,8 @@ import {
   type AdminPersonSegment,
 } from "@/lib/admin/people";
 import {
+  adminActionDateIsTrusted,
+  applicationDateIsTrusted,
   applicationOfficialDeadlineUrgency,
   applicationOfficialDeadlineUrgencyLabel,
   applicationRouteRisk,
@@ -276,27 +278,11 @@ function shiftDateKey(value: string, days: number) {
 }
 
 function applicationDeadlineIsVerified(application: ApplicationRow) {
-  if (!application.deadline) return false;
-  if (application.deadline_kind === "internal_target" || application.deadline_kind === "source_review_date") {
-    return true;
-  }
-  return Boolean(
-    application.deadline_source_url
-    && application.deadline_verified_at
-    && application.deadline_cycle,
-  );
+  return applicationDateIsTrusted(application);
 }
 
 function actionDeadlineIsVerified(action: ActionRow) {
-  if (!action.due_date) return false;
-  if (action.deadline_kind === "internal_target" || action.deadline_kind === "source_review_date") {
-    return true;
-  }
-  return Boolean(
-    action.official_source_url
-    && action.official_source_verified_at
-    && action.deadline_cycle,
-  );
+  return adminActionDateIsTrusted(action);
 }
 
 function contactKindLabel(kind: string | null) {
