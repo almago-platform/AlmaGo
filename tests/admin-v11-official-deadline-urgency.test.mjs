@@ -89,3 +89,13 @@ test("Admin V11 Team cockpit exposes official deadline escalation signals", () =
   assert.match(team, /Deadlines dépassées/);
   assert.match(team, /Deadline ≤ 7 j/);
 });
+
+test("Admin V11 deadline urgency is anchored to the Europe/Berlin calendar day", () => {
+  assert.match(risk, /campusTodayDateKey/);
+  assert.match(risk, /timeZone: "Europe\/Berlin"/);
+  assert.match(dashboard, /campusTodayDateKey\(now\)/);
+  assert.match(people, /campusTodayDateKey\(\)/);
+  assert.match(applications, /campusTodayDateKey\(\)/);
+  assert.match(dossier, /campusTodayDateKey\(\)/);
+  assert.match(team, /campusTodayDateKey\(\)/);
+});
