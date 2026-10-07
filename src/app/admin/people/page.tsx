@@ -15,7 +15,12 @@ import {
   isOpenAdminAction,
   type AdminPersonSegment,
 } from "@/lib/admin/people";
-import { applicationRouteRisk } from "@/lib/admin/application-risk";
+import {
+  applicationOfficialDeadlineUrgency,
+  applicationOfficialDeadlineUrgencyLabel,
+  applicationRouteRisk,
+  type ApplicationOfficialDeadlineUrgency,
+} from "@/lib/admin/application-risk";
 import { isActiveApplication } from "@/lib/application-workflow";
 import { customerLifecycleStatusLabel } from "@/lib/phase2/access";
 import { createClient } from "@/lib/supabase/server";
@@ -104,7 +109,27 @@ type CaseNoteRow = {
 };
 
 type PersonView = "all" | AdminPersonSegment;
-type WorkView = "all" | "blocked" | "waiting_campus" | "waiting_student" | "waiting_external" | "deadline_verify" | "application_risk" | "overdue" | "today" | "week" | "messages" | "no_action" | "stale" | "unassigned" | "mine";
+type WorkView =
+  | "all"
+  | "blocked"
+  | "waiting_campus"
+  | "waiting_student"
+  | "waiting_external"
+  | "deadline_verify"
+  | "application_risk"
+  | "official_overdue"
+  | "official_3"
+  | "official_7"
+  | "official_14"
+  | "official_30"
+  | "overdue"
+  | "today"
+  | "week"
+  | "messages"
+  | "no_action"
+  | "stale"
+  | "unassigned"
+  | "mine";
 
 type PersonRecord = {
   key: string;
@@ -129,6 +154,7 @@ type PersonRecord = {
   dueKind: "official" | "internal" | null;
   hasUnverifiedDeadline: boolean;
   applicationRouteRisks: number;
+  officialDeadlineUrgency: ApplicationOfficialDeadlineUrgency | null;
   assignedAdminId: string | null;
   assignedAdminName: string | null;
   lastContactAt: string | null;
@@ -140,7 +166,28 @@ type PersonRecord = {
 };
 
 const validViews = new Set<PersonView>(["all", "prospect", "candidate", "student", "archived"]);
-const validWorkViews = new Set<WorkView>(["all", "blocked", "waiting_campus", "waiting_student", "waiting_external", "deadline_verify", "application_risk", "overdue", "today", "week", "messages", "no_action", "stale", "unassigned", "mine"]);
+const validWorkViews = new Set<WorkView>([
+  "all",
+  "blocked",
+  "waiting_campus",
+  "waiting_student",
+  "waiting_external",
+  "deadline_verify",
+  "application_risk",
+  "official_overdue",
+  "official_3",
+  "official_7",
+  "official_14",
+  "official_30",
+  "overdue",
+  "today",
+  "week",
+  "messages",
+  "no_action",
+  "stale",
+  "unassigned",
+  "mine",
+]);
 
 const viewLabels: Record<PersonView, string> = {
   all: "Tous",
@@ -158,6 +205,11 @@ const workLabels: Record<WorkView, string> = {
   waiting_external: "Attend externe",
   deadline_verify: "Dates à vérifier",
   application_risk: "VPD / uni-assist à risque",
+  official_overdue: "Deadline officielle dépassée",
+  official_3: "Deadline officielle ≤ 3 j",
+  official_7: "Deadline officielle ≤ 7 j",
+  official_14: "Deadline officielle ≤ 14 j",
+  official_30: "Deadline officielle ≤ 30 j",
   overdue: "En retard",
   today: "Aujourd’hui",
   week: "7 prochains jours",
@@ -487,6 +539,17 @@ export default async function AdminPeoplePage({
         deadlineTrusted: applicationDeadlineIsVerified(item),
       }, today))
     ).length;
+    const officialDeadlineUrgency = activeApplications
+      .flatMap((item) => {
+        const urgency = applicationOfficialDeadlineUrgency({
+          status: item.status,
+          deadline: item.deadline,
+          deadline_kind: item.deadline_kind,
+          deadlineTrusted: applicationDeadlineIsVerified(item),
+        }, today);
+        return urgency ? [urgency] : [];
+      })
+      .sort((left, right) => left.daysRemaining - right.daysRemaining)[0] || null;
 
     const dueDate = nearestDate?.date || null;
     const dueKind = nearestDate?.kind || null;
@@ -521,6 +584,7 @@ export default async function AdminPeoplePage({
       dueKind,
       hasUnverifiedDeadline,
       applicationRouteRisks,
+      officialDeadlineUrgency,
       assignedAdminId: assignment?.assigned_admin_id || null,
       assignedAdminName: assignment?.assigned_admin_id
         ? advisorNameById.get(assignment.assigned_admin_id) || "Conseiller Campus"
@@ -533,6 +597,7 @@ export default async function AdminPeoplePage({
         || blockedActions > 0
         || waitingOnCampus > 0
         || applicationRouteRisks > 0
+        || Boolean(officialDeadlineUrgency)
         || unreadMessages > 0
         || (segment !== "archived" && !hasExplicitNextAction),
       updatedAt: intake?.updated_at || prospect?.updated_at || access?.status_changed_at || "",
@@ -565,6 +630,7 @@ export default async function AdminPeoplePage({
       dueKind: null,
       hasUnverifiedDeadline: false,
       applicationRouteRisks: 0,
+      officialDeadlineUrgency: null,
       assignedAdminId: null,
       assignedAdminName: null,
       lastContactAt: null,
@@ -611,6 +677,19 @@ export default async function AdminPeoplePage({
     waiting_external: operationalRecords.filter((item) => item.waitingOnExternal > 0).length,
     deadline_verify: operationalRecords.filter((item) => item.hasUnverifiedDeadline).length,
     application_risk: operationalRecords.filter((item) => item.applicationRouteRisks > 0).length,
+    official_overdue: operationalRecords.filter((item) => item.officialDeadlineUrgency?.kind === "overdue").length,
+    official_3: operationalRecords.filter((item) =>
+      Boolean(item.officialDeadlineUrgency && item.officialDeadlineUrgency.daysRemaining >= 0 && item.officialDeadlineUrgency.daysRemaining <= 3)
+    ).length,
+    official_7: operationalRecords.filter((item) =>
+      Boolean(item.officialDeadlineUrgency && item.officialDeadlineUrgency.daysRemaining >= 0 && item.officialDeadlineUrgency.daysRemaining <= 7)
+    ).length,
+    official_14: operationalRecords.filter((item) =>
+      Boolean(item.officialDeadlineUrgency && item.officialDeadlineUrgency.daysRemaining >= 0 && item.officialDeadlineUrgency.daysRemaining <= 14)
+    ).length,
+    official_30: operationalRecords.filter((item) =>
+      Boolean(item.officialDeadlineUrgency && item.officialDeadlineUrgency.daysRemaining >= 0 && item.officialDeadlineUrgency.daysRemaining <= 30)
+    ).length,
     overdue: operationalRecords.filter((item) => Boolean(item.dueDate && item.dueDate < today)).length,
     today: operationalRecords.filter((item) => item.dueDate === today).length,
     week: operationalRecords.filter((item) => Boolean(item.dueDate && item.dueDate >= today && item.dueDate <= weekEnd)).length,
@@ -636,6 +715,11 @@ export default async function AdminPeoplePage({
     if (work === "waiting_external" && (!item.userId || item.segment === "archived" || item.waitingOnExternal < 1)) return false;
     if (work === "deadline_verify" && (!item.userId || item.segment === "archived" || !item.hasUnverifiedDeadline)) return false;
     if (work === "application_risk" && (!item.userId || item.segment === "archived" || item.applicationRouteRisks < 1)) return false;
+    if (work === "official_overdue" && (!item.userId || item.segment === "archived" || item.officialDeadlineUrgency?.kind !== "overdue")) return false;
+    if (work === "official_3" && (!item.userId || item.segment === "archived" || !item.officialDeadlineUrgency || item.officialDeadlineUrgency.daysRemaining < 0 || item.officialDeadlineUrgency.daysRemaining > 3)) return false;
+    if (work === "official_7" && (!item.userId || item.segment === "archived" || !item.officialDeadlineUrgency || item.officialDeadlineUrgency.daysRemaining < 0 || item.officialDeadlineUrgency.daysRemaining > 7)) return false;
+    if (work === "official_14" && (!item.userId || item.segment === "archived" || !item.officialDeadlineUrgency || item.officialDeadlineUrgency.daysRemaining < 0 || item.officialDeadlineUrgency.daysRemaining > 14)) return false;
+    if (work === "official_30" && (!item.userId || item.segment === "archived" || !item.officialDeadlineUrgency || item.officialDeadlineUrgency.daysRemaining < 0 || item.officialDeadlineUrgency.daysRemaining > 30)) return false;
     if (work === "overdue" && !(item.dueDate && item.dueDate < today)) return false;
     if (work === "today" && item.dueDate !== today) return false;
     if (work === "week" && !(item.dueDate && item.dueDate >= today && item.dueDate <= weekEnd)) return false;
@@ -821,6 +905,17 @@ export default async function AdminPeoplePage({
                       {person.waitingOnExternal > 0 ? <Badge variant="neutral">Attend externe · {person.waitingOnExternal}</Badge> : null}
                       {person.hasUnverifiedDeadline ? <Badge variant="warning">Source/date non vérifiée</Badge> : null}
                       {person.applicationRouteRisks > 0 ? <Badge variant="warning">VPD / uni-assist à risque · {person.applicationRouteRisks}</Badge> : null}
+                      {person.officialDeadlineUrgency ? (
+                        <Badge variant={
+                          person.officialDeadlineUrgency.kind === "overdue" || person.officialDeadlineUrgency.kind === "d3"
+                            ? "error"
+                            : person.officialDeadlineUrgency.kind === "d7" || person.officialDeadlineUrgency.kind === "d14"
+                              ? "warning"
+                              : "info"
+                        }>
+                          {applicationOfficialDeadlineUrgencyLabel(person.officialDeadlineUrgency)}
+                        </Badge>
+                      ) : null}
                       {overdue ? <Badge variant="error">En retard</Badge> : null}
                       {!overdue && dueToday ? <Badge variant="warning">Aujourd’hui</Badge> : null}
                       {!overdue && !dueToday && person.needsAttention ? <Badge variant="warning">Attention</Badge> : null}
