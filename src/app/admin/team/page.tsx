@@ -28,6 +28,8 @@ type ActionRow = {
   owner: string | null;
   due_date: string | null;
   template_id: string | null;
+  requires_student_action: boolean;
+  student_action_reason: string | null;
   deadline_kind: string | null;
   official_source_url: string | null;
   official_source_verified_at: string | null;
@@ -116,7 +118,7 @@ export default async function AdminTeamPage() {
     supabase.from("student_case_assignments").select("student_id,assigned_admin_id").limit(1000),
     supabase
       .from("student_checklist_items")
-      .select("student_id,status,owner,due_date,template_id,deadline_kind,official_source_url,official_source_verified_at,deadline_cycle")
+      .select("student_id,status,owner,due_date,template_id,requires_student_action,student_action_reason,deadline_kind,official_source_url,official_source_verified_at,deadline_cycle")
       .limit(5000),
     supabase
       .from("applications")
@@ -211,6 +213,24 @@ export default async function AdminTeamPage() {
 
   const today = new Date().toISOString().slice(0, 10);
   const staleContactCutoff = shiftDateKey(today, -14);
+
+  const blockedStudentIds = new Set<string>();
+  const waitingCampusStudentIds = new Set<string>();
+  const waitingStudentStudentIds = new Set<string>();
+  const waitingExternalStudentIds = new Set<string>();
+  for (const action of (actionsResult.data || []) as ActionRow[]) {
+    if (!operationalIds.has(action.student_id)) continue;
+    if (action.status === "blocked") blockedStudentIds.add(action.student_id);
+    if (action.status === "waiting_almago") waitingCampusStudentIds.add(action.student_id);
+    if (
+      action.status === "waiting_student"
+      && action.requires_student_action
+      && action.student_action_reason?.trim()
+    ) {
+      waitingStudentStudentIds.add(action.student_id);
+    }
+    if (action.status === "waiting_external") waitingExternalStudentIds.add(action.student_id);
+  }
 
   const byAdvisor = new Map<string, AdvisorWorkload>(
     advisors.map((advisor) => [
@@ -314,6 +334,37 @@ export default async function AdminTeamPage() {
           { label: "Sans action", value: totalMissingAction, tone: totalMissingAction ? "warning" : "success" },
         ]}
       />
+
+      <section className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4" aria-label="États d’attente de l’équipe">
+        <TeamStateCard
+          href="/admin/people?work=blocked"
+          label="Bloqués"
+          value={blockedStudentIds.size}
+          detail="Étape explicitement bloquée"
+          tone={blockedStudentIds.size ? "error" : "success"}
+        />
+        <TeamStateCard
+          href="/admin/people?work=waiting_campus"
+          label="Attend Campus"
+          value={waitingCampusStudentIds.size}
+          detail="Une action Campus Allemagne est attendue"
+          tone={waitingCampusStudentIds.size ? "warning" : "success"}
+        />
+        <TeamStateCard
+          href="/admin/people?work=waiting_student"
+          label="Attend étudiant"
+          value={waitingStudentStudentIds.size}
+          detail="Action personnelle ciblée et justifiée"
+          tone={waitingStudentStudentIds.size ? "info" : "success"}
+        />
+        <TeamStateCard
+          href="/admin/people?work=waiting_external"
+          label="Attend externe"
+          value={waitingExternalStudentIds.size}
+          detail="Université, autorité ou autre acteur externe"
+          tone={waitingExternalStudentIds.size ? "info" : "success"}
+        />
+      </section>
 
       <section className="mt-5 overflow-hidden rounded-[var(--radius-panel)] border border-[var(--border)] bg-white" aria-labelledby="team-workload-title">
         <div className="flex flex-col gap-3 border-b border-[var(--border)] p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
@@ -428,5 +479,36 @@ function WorkMetric({
       <p className="text-[0.68rem] font-bold uppercase tracking-[0.1em] text-slate-600">{label}</p>
       <p className={`mt-1 text-lg font-semibold ${warning ? "text-amber-800" : "text-slate-950"}`}>{value}</p>
     </div>
+  );
+}
+
+
+function TeamStateCard({
+  href,
+  label,
+  value,
+  detail,
+  tone,
+}: {
+  href: string;
+  label: string;
+  value: number;
+  detail: string;
+  tone: "error" | "warning" | "info" | "success";
+}) {
+  return (
+    <Link
+      href={href}
+      className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-4 transition-colors hover:bg-[var(--surface-subtle)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)]"
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-[0.12em] text-slate-600">{label}</p>
+          <p className="mt-2 text-2xl font-semibold tracking-tight text-slate-950">{value}</p>
+        </div>
+        <Badge variant={tone}>{value ? "À suivre" : "À jour"}</Badge>
+      </div>
+      <p className="mt-2 text-sm leading-5 text-slate-600">{detail}</p>
+    </Link>
   );
 }
