@@ -24,7 +24,9 @@ test("Admin V11 never counts an unverified application date as overdue", () => {
   assert.match(panel, /deadline_source_url/);
   assert.match(panel, /deadline_verified_at/);
   assert.match(panel, /deadline_cycle/);
-  assert.match(panel, /applicationDeadlineIsTrusted\(application\)[\s\S]*isPastDeadline/);
+  assert.match(panel, /applicationOfficialDeadlineUrgency/);
+  assert.match(panel, /deadlineTrusted: applicationDeadlineIsTrusted\(application\)/);
+  assert.doesNotMatch(panel, /isPastDeadline/);
   assert.match(panel, /Dates à vérifier/);
   assert.match(panel, /Date à vérifier/);
 });
