@@ -718,7 +718,7 @@ export default async function AdminPeoplePage({
                   </div>
 
                   <div>
-                    <p className="text-[0.68rem] font-bold uppercase tracking-[0.1em] text-[var(--muted)]">Date clé</p>
+                    <p className="text-[0.68rem] font-bold uppercase tracking-[0.1em] text-[var(--muted)]">Échéance / date clé</p>
                     {person.dueDate ? (
                       <>
                         <p className={`mt-1 text-sm font-semibold ${overdue ? "text-red-700" : "text-slate-900"}`}>
