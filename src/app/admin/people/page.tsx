@@ -501,7 +501,7 @@ export default async function AdminPeoplePage({
 
   const operationalRecords = records.filter((item) => item.userId && item.segment !== "archived");
   const workCounts: Record<WorkView, number> = {
-    all: operationalRecords.length,
+    all: records.length,
     overdue: operationalRecords.filter((item) => Boolean(item.dueDate && item.dueDate < today)).length,
     today: operationalRecords.filter((item) => item.dueDate === today).length,
     week: operationalRecords.filter((item) => Boolean(item.dueDate && item.dueDate >= today && item.dueDate <= weekEnd)).length,
@@ -532,8 +532,9 @@ export default async function AdminPeoplePage({
     ].some((value) => value.toLocaleLowerCase("fr").includes(search));
   });
 
-  const attentionCount = operationalRecords.filter((item) => item.needsAttention).length;
-  const campusActionCount = operationalRecords.filter((item) => item.nextActionOwner === "Campus Allemagne").length;
+  const filteredOperational = filtered.filter((item) => item.userId && item.segment !== "archived");
+  const attentionCount = filteredOperational.filter((item) => item.needsAttention).length;
+  const campusActionCount = filteredOperational.filter((item) => item.nextActionOwner === "Campus Allemagne").length;
 
   const peopleHref = (overrides: Partial<{ view: PersonView; work: WorkView; advisor: string; q: string }>) => {
     const query = new URLSearchParams();
