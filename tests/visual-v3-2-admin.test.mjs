@@ -48,7 +48,7 @@ test("Admin V3.2 premiumizes dossier 360 while preserving its read-only context 
   }
   assert.match(dossier, /pc-panel/);
   assert.match(dossier, /pc-card/);
-  assert.match(dossier, /Dossier étudiant · vue 360°/);
+  assert.match(dossier, /dossier 360°/);
   assert.match(dossier, /Les mutations sensibles restent dans leurs écrans métier dédiés/);
   assert.match(dossier, /eyebrow="Action Campus prioritaire"/);
   for (const table of [
@@ -59,6 +59,8 @@ test("Admin V3.2 premiumizes dossier 360 while preserving its read-only context 
     'from("documents")',
     'from("applications")',
     'from("commercial_purchases")',
+    'from("student_checklist_items")',
+    'from("student_history")',
   ]) {
     assert.ok(dossier.includes(table));
   }
