@@ -238,6 +238,7 @@ export default async function AdminTeamPage() {
   const applicationRiskStudentIds = new Set<string>();
   for (const action of (actionsResult.data || []) as ActionRow[]) {
     if (!operationalIds.has(action.student_id)) continue;
+    if (!isOpenAdminAction(action.status) || action.template_id !== null) continue;
     if (action.due_date && !actionDeadlineIsTrusted(action)) {
       unverifiedDeadlineStudentIds.add(action.student_id);
     }
