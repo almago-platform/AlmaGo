@@ -16,7 +16,7 @@ import {
   campusTodayDateKey,
 } from "@/lib/admin/application-risk";
 import { isActiveApplication } from "@/lib/application-workflow";
-import { isOpenAdminAction } from "@/lib/admin/people";
+import { isHumanAdminAction } from "@/lib/admin/people";
 
 export const dynamic = "force-dynamic";
 
@@ -78,7 +78,7 @@ export default async function AdminEntry() {
     supabase.from("student_intake_cases").select("student_id,status").limit(1000),
     supabase.from("student_case_assignments").select("student_id,assigned_admin_id").limit(1000),
     supabase.from("student_case_notes").select("student_id,kind,occurred_at").neq("kind", "internal_note").gte("occurred_at", staleContactCutoff).limit(3000),
-    supabase.from("student_checklist_items").select("id,student_id,title,status,owner,due_date,deadline_kind,official_source_url,official_source_verified_at,deadline_cycle,template_id,requires_student_action,student_action_reason").limit(5000),
+    supabase.from("student_checklist_items").select("id,student_id,title,status,owner,due_date,deadline_kind,official_source_url,official_source_verified_at,deadline_cycle,template_id,procedure_step_template_id,requires_student_action,student_action_reason").limit(5000),
     supabase.from("applications").select("student_id,status,next_action,deadline,deadline_kind,deadline_source_url,deadline_verified_at,deadline_cycle,application_method").limit(5000),
   ]);
 
@@ -154,7 +154,7 @@ export default async function AdminEntry() {
       .map((item) => item.student_id),
   );
   const humanActions = (actionsResult.data || []).filter((item) =>
-    isOpenAdminAction(item.status) && item.template_id === null
+    isHumanAdminAction(item)
   );
   const humanCampusActions = humanActions.filter((item) =>
     item.owner === "almago" || item.owner === "joint"
