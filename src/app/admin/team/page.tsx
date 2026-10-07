@@ -62,6 +62,19 @@ type ContactRow = {
   occurred_at: string;
 };
 
+type CurrentProcedureRow = {
+  id: string;
+  student_id: string;
+};
+
+type RequirementSignalRow = {
+  student_id: string;
+  student_procedure_id: string;
+  status: string;
+  requested_from_student: boolean;
+  student_request_reason: string | null;
+};
+
 type AdvisorWorkload = {
   id: string;
   name: string;
@@ -109,6 +122,8 @@ export default async function AdminTeamPage() {
     actionsResult,
     applicationsResult,
     contactsResult,
+    currentProceduresResult,
+    requirementSignalsResult,
   ] = await Promise.all([
     supabase.from("user_roles").select("user_id").eq("role", "admin"),
     supabase.from("customer_access").select("user_id,status").limit(1000),
@@ -128,6 +143,15 @@ export default async function AdminTeamPage() {
       .neq("kind", "internal_note")
       .order("occurred_at", { ascending: false })
       .limit(3000),
+    supabase
+      .from("student_procedures")
+      .select("id,student_id")
+      .eq("is_current", true)
+      .limit(1000),
+    supabase
+      .from("student_document_requirements")
+      .select("student_id,student_procedure_id,status,requested_from_student,student_request_reason")
+      .limit(5000),
   ]);
 
   const firstError = rolesResult.error
@@ -136,7 +160,9 @@ export default async function AdminTeamPage() {
     || assignmentsResult.error
     || actionsResult.error
     || applicationsResult.error
-    || contactsResult.error;
+    || contactsResult.error
+    || currentProceduresResult.error
+    || requirementSignalsResult.error;
 
   if (firstError) {
     return (
@@ -189,6 +215,12 @@ export default async function AdminTeamPage() {
   }
   for (const item of intakeResult.data || []) operationalIds.add(item.student_id);
 
+  const currentProcedureIds = new Set(
+    ((currentProceduresResult.data || []) as CurrentProcedureRow[]).map((item) => item.id),
+  );
+  const currentRequirementSignals = ((requirementSignalsResult.data || []) as RequirementSignalRow[])
+    .filter((item) => currentProcedureIds.has(item.student_procedure_id));
+
   const assignments = (assignmentsResult.data || []) as AssignmentRow[];
   const assignmentByStudent = new Map(assignments.map((item) => [item.student_id, item.assigned_admin_id]));
 
@@ -228,6 +260,23 @@ export default async function AdminTeamPage() {
       waitingStudentStudentIds.add(action.student_id);
     }
     if (action.status === "waiting_external") waitingExternalStudentIds.add(action.student_id);
+  }
+
+  const replacementDocumentStudentIds = new Set<string>();
+  for (const requirement of currentRequirementSignals) {
+    if (
+      requirement.requested_from_student
+      && ["requested", "replacement_required"].includes(requirement.status)
+      && Boolean(requirement.student_request_reason?.trim())
+    ) {
+      waitingStudentStudentIds.add(requirement.student_id);
+    }
+    if (["authentication_required", "translation_required", "legalisation_to_verify", "legalisation_required"].includes(requirement.status)) {
+      waitingCampusStudentIds.add(requirement.student_id);
+    }
+    if (requirement.status === "replacement_required") {
+      replacementDocumentStudentIds.add(requirement.student_id);
+    }
   }
 
   const unverifiedDeadlineStudentIds = new Set<string>();
@@ -429,6 +478,13 @@ export default async function AdminTeamPage() {
           value={officialD7StudentIds.size}
           detail="Dossier à J-7 ou moins d’une deadline officielle vérifiée"
           tone={officialD7StudentIds.size ? "warning" : "success"}
+        />
+        <TeamStateCard
+          href="/admin/people?work=document_replacement"
+          label="Documents à remplacer"
+          value={replacementDocumentStudentIds.size}
+          detail="Une nouvelle version est attendue de l’étudiant"
+          tone={replacementDocumentStudentIds.size ? "warning" : "success"}
         />
       </section>
 
