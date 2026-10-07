@@ -136,11 +136,15 @@ test("Admin V11 surfaces only current-procedure document replacements in operati
 });
 
 test("Admin V11 waiting-state queues include targeted current document requests without inventing student work", () => {
-  for (const source of [dashboard, people, team]) {
+  for (const source of [dashboard, team]) {
     assert.match(source, /requirement\.requested_from_student/);
     assert.match(source, /\["requested", "replacement_required"\]\.includes\(requirement\.status\)/);
     assert.match(source, /requirement\.student_request_reason\?\.trim\(\)/);
   }
+
+  assert.match(people, /item\.requested_from_student/);
+  assert.match(people, /\["requested", "replacement_required"\]\.includes\(item\.status\)/);
+  assert.match(people, /item\.student_request_reason\?\.trim\(\)/);
 });
 
 test("Admin V11 requires a sourced decision before concluding German legalisation", () => {
