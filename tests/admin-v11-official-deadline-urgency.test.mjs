@@ -99,3 +99,20 @@ test("Admin V11 deadline urgency is anchored to the Europe/Berlin calendar day",
   assert.match(dossier, /campusTodayDateKey\(\)/);
   assert.match(team, /campusTodayDateKey\(\)/);
 });
+
+test("Admin V11 centralizes official deadline truth instead of trusting non-null provenance fields", () => {
+  assert.match(risk, /applicationDateIsTrusted/);
+  assert.match(risk, /adminActionDateIsTrusted/);
+  assert.match(risk, /evaluateCampusApplicationDeadline/);
+  assert.match(risk, /evaluateCampusOfficialDeadline/);
+  assert.match(risk, /evaluation\.status === "open" \|\| evaluation\.status === "closed"/);
+
+  assert.match(dashboard, /adminActionDateIsTrusted/);
+  assert.match(dashboard, /applicationDateIsTrusted/);
+  assert.match(people, /adminActionDateIsTrusted/);
+  assert.match(people, /applicationDateIsTrusted/);
+  assert.match(applications, /applicationDateIsTrusted/);
+  assert.match(dossier, /applicationDateIsTrusted/);
+  assert.match(team, /adminActionDateIsTrusted/);
+  assert.match(team, /applicationDateIsTrusted/);
+});
