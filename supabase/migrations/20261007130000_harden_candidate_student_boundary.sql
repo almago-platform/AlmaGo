@@ -328,5 +328,36 @@ create policy "student projects combined update"
     )
   );
 
+-- Storage is a separate RLS boundary: a prospect must not gain student-document
+-- access merely by knowing its own UID-based object prefix.
+drop policy if exists "document objects own folder" on storage.objects;
+create policy "document objects own folder"
+  on storage.objects for select to authenticated
+  using (
+    bucket_id = 'student-documents'
+    and (storage.foldername(name))[1] = (select auth.uid())::text
+    and (select private.has_student_client_access())
+  );
+
+drop policy if exists "document objects own upload" on storage.objects;
+create policy "document objects own upload"
+  on storage.objects for insert to authenticated
+  with check (
+    bucket_id = 'student-documents'
+    and (storage.foldername(name))[1] = (select auth.uid())::text
+    and (select private.has_student_client_access())
+  );
+
+-- The existing delete helper validates the matching documents row/status; require
+-- active client entitlement as an additional outer gate.
+drop policy if exists "document objects own allowed delete" on storage.objects;
+create policy "document objects own allowed delete"
+  on storage.objects for delete to authenticated
+  using (
+    bucket_id = 'student-documents'
+    and (select private.has_student_client_access())
+    and public.can_delete_own_document_object(name)
+  );
+
 -- Profiles are shared by prospect and client flows, so their owner policy stays available.
 -- Prospect/payment/customer-access tables also remain intentionally accessible to their owner.
