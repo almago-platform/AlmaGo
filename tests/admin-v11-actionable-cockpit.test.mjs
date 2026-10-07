@@ -48,11 +48,12 @@ test("Admin V11 keeps deadline provenance safeguards for daily workload", () => 
     "deadline_source_url",
     "deadline_verified_at",
     "deadline_cycle",
-    "internal_target",
   ]) {
     assert.ok(dashboard.includes(source), source);
   }
 
+  assert.match(dashboard, /adminActionDateIsTrusted/);
+  assert.match(dashboard, /applicationDateIsTrusted/);
   assert.match(dashboard, /actionDeadlineIsTrusted/);
   assert.match(dashboard, /applicationDeadlineIsTrusted/);
   assert.match(dashboard, /nearestDueByStudent/);
