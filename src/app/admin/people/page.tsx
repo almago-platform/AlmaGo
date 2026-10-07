@@ -72,6 +72,7 @@ type ActionRow = {
   status: string;
   owner: string | null;
   due_date: string | null;
+  template_id: string | null;
   deadline_kind: string | null;
   official_source_url: string | null;
   official_source_verified_at: string | null;
@@ -301,7 +302,7 @@ export default async function AdminPeoplePage({
         ? supabase.from("applications").select("id,student_id,status,deadline,deadline_kind,deadline_source_url,deadline_verified_at,deadline_cycle,next_action,created_at").in("student_id", userIds)
         : Promise.resolve({ data: [], error: null }),
       userIds.length
-        ? supabase.from("student_checklist_items").select("id,student_id,title,description,status,owner,due_date,deadline_kind,official_source_url,official_source_verified_at,deadline_cycle,created_at").in("student_id", userIds)
+        ? supabase.from("student_checklist_items").select("id,student_id,title,description,status,owner,due_date,template_id,deadline_kind,official_source_url,official_source_verified_at,deadline_cycle,created_at").in("student_id", userIds)
         : Promise.resolve({ data: [], error: null }),
       prospectIds.length
         ? supabase.from("orientations").select("id,prospect_id,created_at").in("prospect_id", prospectIds)
@@ -412,11 +413,12 @@ export default async function AdminPeoplePage({
     const personApplications = applicationsByUser.get(userId) || [];
     const activeApplications = personApplications.filter((item) => isActiveApplication(item.status)).sort(compareApplications);
     const openActions = (actionsByUser.get(userId) || []).filter((item) => isOpenAdminAction(item.status)).sort(compareDue);
+    const humanOpenActions = openActions.filter((item) => item.template_id === null);
     const pendingDocuments = personDocuments.filter((item) => attentionDocumentStatuses.has(item.status)).length;
     const segment = classifyAdminPerson(access?.status, Boolean(intake));
     const email = prospect?.email || "Adresse non enregistrée";
     const currentStage = adminDossierStageIndex(intake?.status, activeApplications.length > 0);
-    const recordedAction = openActions[0] || null;
+    const recordedAction = humanOpenActions[0] || null;
     const applicationAction = activeApplications.find((item) => Boolean(item.next_action)) || null;
     const hasExplicitNextAction = Boolean(recordedAction || applicationAction);
     const fallback = adminDossierNextAction(intake?.status, activeApplications.length > 0);
@@ -432,7 +434,7 @@ export default async function AdminPeoplePage({
           ? "En attente"
           : "Campus Allemagne";
 
-    const datedActions = openActions.flatMap((item) => {
+    const datedActions = humanOpenActions.flatMap((item) => {
       const date = dateKey(item.due_date);
       if (!date || !actionDeadlineIsVerified(item)) return [];
       const official = item.deadline_kind === "official_hard_deadline"
@@ -450,12 +452,12 @@ export default async function AdminPeoplePage({
       .sort((left, right) => left.date.localeCompare(right.date));
     const nearestDate = dateCandidates[0] || null;
     const hasUnverifiedDeadline =
-      openActions.some((item) => Boolean(item.due_date) && !actionDeadlineIsVerified(item))
+      humanOpenActions.some((item) => Boolean(item.due_date) && !actionDeadlineIsVerified(item))
       || activeApplications.some((item) => Boolean(item.deadline) && !applicationDeadlineIsVerified(item));
 
     const dueDate = nearestDate?.date || null;
     const dueKind = nearestDate?.kind || null;
-    const campusActions = openActions.filter((item) => item.owner === "almago" || item.owner === "joint").length;
+    const campusActions = humanOpenActions.filter((item) => item.owner === "almago" || item.owner === "joint").length;
     const needsAttention = segment !== "archived" && (
       pendingDocuments > 0
       || campusActions > 0
@@ -475,7 +477,7 @@ export default async function AdminPeoplePage({
       orientationCount: prospect ? orientationCountByProspect.get(prospect.id) || 0 : 0,
       pendingDocuments,
       activeApplications: activeApplications.length,
-      openActions: openActions.length,
+      openActions: humanOpenActions.length,
       nextAction,
       nextActionOwner,
       dueDate,
