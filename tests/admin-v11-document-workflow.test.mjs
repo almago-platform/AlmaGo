@@ -55,8 +55,9 @@ test("Admin V11 dossier keeps prior document versions visible", () => {
   assert.match(dossier, /Tous les fichiers enregistrés/);
 });
 
-test("Admin V11 dossier priority ignores procedure-generated system steps", () => {
-  assert.match(dossier, /isOpenAdminAction\(item\.status\) && item\.template_id === null/);
+test("Admin V11 dossier priority ignores every system-managed step", () => {
+  assert.match(dossier, /isHumanAdminAction\(item\)/);
+  assert.match(dossier, /procedure_step_template_id/);
 });
 
 test("Admin V11 document queue shows only the latest version per student and category", () => {
