@@ -87,3 +87,9 @@ test("Admin V11 dossier priority follows the real operational interruption order
   assert.match(dossier, /href: "\/admin\/documents"/);
   assert.match(dossier, /href: "#documents"/);
 });
+
+test("Admin V11 dossier priority uses the newest document version per category", () => {
+  assert.match(dossier, /latestDocumentByCategory/);
+  assert.match(dossier, /if \(!latestDocumentByCategory\.has\(item\.category\)\)/);
+  assert.match(dossier, /documentsAwaitingDecision/);
+});
