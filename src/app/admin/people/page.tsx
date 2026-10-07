@@ -715,6 +715,12 @@ export default async function AdminPeoplePage({
             {filtered.map((person) => {
               const overdue = Boolean(person.dueDate && person.dueDate < today);
               const dueToday = person.dueDate === today;
+              const lastContactDate = dateKey(person.lastContactAt);
+              const staleContact = Boolean(
+                person.userId
+                && person.segment !== "archived"
+                && (!lastContactDate || lastContactDate < staleContactCutoff),
+              );
               return (
                 <article
                   key={person.key}
@@ -737,6 +743,11 @@ export default async function AdminPeoplePage({
                     <p className="text-[0.68rem] font-bold uppercase tracking-[0.1em] text-[var(--muted)]">Conseiller</p>
                     <p className={`mt-1 text-sm font-semibold ${person.assignedAdminName ? "text-slate-900" : "text-amber-800"}`}>
                       {person.assignedAdminName || "Non attribué"}
+                    </p>
+                    <p className={`mt-1 text-[11px] font-semibold ${staleContact ? "text-amber-800" : "text-slate-500"}`}>
+                      {person.lastContactAt
+                        ? `${contactKindLabel(person.lastContactKind)} · ${formatDate(person.lastContactAt)}`
+                        : "Aucun contact journalisé"}
                     </p>
                   </div>
 
