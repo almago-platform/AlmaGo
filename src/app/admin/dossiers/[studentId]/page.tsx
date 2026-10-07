@@ -29,6 +29,7 @@ import {
   applicationOfficialDeadlineUrgencyLabel,
   applicationRouteRisk,
   applicationRouteRiskLabel,
+  campusTodayDateKey,
 } from "@/lib/admin/application-risk";
 import { campusRouteLabel } from "@/lib/campus-intake";
 import { recommendationStatusLabels } from "@/lib/phase4";
@@ -578,7 +579,7 @@ export default async function AdminStudentDossierPage({
     });
   }
 
-  const todayKey = new Date().toISOString().slice(0, 10);
+  const todayKey = campusTodayDateKey();
   for (const application of applications) {
     if (!isActiveApplication(application.status)) continue;
     const programName = firstProgram(application)?.name || "Candidature";
