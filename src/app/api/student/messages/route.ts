@@ -55,7 +55,14 @@ export async function PATCH(request: Request) {
     return NextResponse.json({ error: "Action invalide." }, { status: 400 });
   }
 
-  const { data, error } = await supabase.rpc("student_mark_dossier_messages_read");
+  const readAt = new Date().toISOString();
+  const { data, error } = await supabase
+    .from("student_dossier_messages")
+    .update({ student_read_at: readAt })
+    .eq("student_id", user.id)
+    .eq("sender_role", "admin")
+    .is("student_read_at", null)
+    .select("id");
 
   if (error) {
     return NextResponse.json(
@@ -64,5 +71,5 @@ export async function PATCH(request: Request) {
     );
   }
 
-  return NextResponse.json({ ok: true, updated: Number(data || 0) });
+  return NextResponse.json({ ok: true, updated: data?.length || 0 });
 }
