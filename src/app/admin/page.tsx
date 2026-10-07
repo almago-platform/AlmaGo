@@ -369,7 +369,7 @@ export default async function AdminEntry() {
                       <p className="mt-1 text-xs text-slate-600">{name}</p>
                     </div>
                     <div>
-                      <p className="text-[0.68rem] font-bold uppercase tracking-[0.1em] text-slate-500">Cible interne</p>
+                      <p className="text-[0.68rem] font-bold uppercase tracking-[0.1em] text-slate-600">Cible interne</p>
                       <p className={`mt-1 text-sm font-semibold ${overdue ? "text-red-700" : dueToday ? "text-amber-800" : "text-slate-900"}`}>
                         {due ? formatDashboardDate(due) : "Sans date"}
                       </p>
