@@ -42,7 +42,9 @@ test("Partner-Ready rehearsal proves role isolation and broad student/admin surf
   assert.match(workflow, /admin-space-quality\.spec\.mjs/);
 
   assert.match(auth, /student account reaches only the student area/);
-  assert.match(auth, /admin account passes server-side page and API role guards/);
+  assert.match(auth, /admin AAL1 is challenged before page and API authorization/);
+  assert.match(auth, /admin AAL2 passes page and API authorization/);
+  assert.match(auth, /completeAdminMfaChallenge/);
 
   for (const route of [
     "/student",
