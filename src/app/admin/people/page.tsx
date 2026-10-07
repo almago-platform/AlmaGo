@@ -92,8 +92,14 @@ type AssignmentRow = {
   updated_at: string;
 };
 
+type CaseNoteRow = {
+  student_id: string;
+  kind: string;
+  occurred_at: string;
+};
+
 type PersonView = "all" | AdminPersonSegment;
-type WorkView = "all" | "overdue" | "today" | "week" | "unassigned" | "mine";
+type WorkView = "all" | "overdue" | "today" | "week" | "stale" | "unassigned" | "mine";
 
 type PersonRecord = {
   key: string;
@@ -115,12 +121,14 @@ type PersonRecord = {
   hasUnverifiedDeadline: boolean;
   assignedAdminId: string | null;
   assignedAdminName: string | null;
+  lastContactAt: string | null;
+  lastContactKind: string | null;
   needsAttention: boolean;
   updatedAt: string;
 };
 
 const validViews = new Set<PersonView>(["all", "prospect", "candidate", "student", "archived"]);
-const validWorkViews = new Set<WorkView>(["all", "overdue", "today", "week", "unassigned", "mine"]);
+const validWorkViews = new Set<WorkView>(["all", "overdue", "today", "week", "stale", "unassigned", "mine"]);
 
 const viewLabels: Record<PersonView, string> = {
   all: "Tous",
@@ -135,6 +143,7 @@ const workLabels: Record<WorkView, string> = {
   overdue: "En retard",
   today: "Aujourd’hui",
   week: "7 prochains jours",
+  stale: "Sans contact 14 j",
   unassigned: "Non attribués",
   mine: "Mes dossiers",
 };
