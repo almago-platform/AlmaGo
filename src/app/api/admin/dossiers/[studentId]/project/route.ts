@@ -79,23 +79,6 @@ export async function PATCH(
     return NextResponse.json({ error: "Profil étudiant introuvable." }, { status: 404 });
   }
 
-  const changedFields = Object.entries(nextProject)
-    .filter(([key, value]) => JSON.stringify(current[key as keyof typeof current] ?? null) !== JSON.stringify(value))
-    .map(([key]) => key);
-
-  if (!changedFields.length) {
-    return NextResponse.json({ ok: true, changed_fields: [] });
-  }
-
-  const { error: updateError } = await supabase
-    .from("profiles")
-    .update(nextProject)
-    .eq("id", studentId);
-
-  if (updateError) {
-    return NextResponse.json({ error: "Impossible d’enregistrer le projet étudiant." }, { status: 500 });
-  }
-
   const regulatoryNext = regulatoryProject
     ? {
         target_degree: nextProject.target_degree,
@@ -106,6 +89,31 @@ export async function PATCH(
         preferred_study_language: nextProject.study_language,
       }
     : null;
+
+  const changedFields = Object.entries(nextProject)
+    .filter(([key, value]) => JSON.stringify(current[key as keyof typeof current] ?? null) !== JSON.stringify(value))
+    .map(([key]) => key);
+  const regulatoryOutOfSync = Boolean(
+    regulatoryProject
+    && regulatoryNext
+    && Object.entries(regulatoryNext).some(
+      ([key, value]) =>
+        JSON.stringify(regulatoryProject[key as keyof typeof regulatoryProject] ?? null) !== JSON.stringify(value),
+    )
+  );
+
+  if (!changedFields.length && !regulatoryOutOfSync) {
+    return NextResponse.json({ ok: true, changed_fields: [], procedure_project_synced: false });
+  }
+
+  const { error: updateError } = await supabase
+    .from("profiles")
+    .update(nextProject)
+    .eq("id", studentId);
+
+  if (updateError) {
+    return NextResponse.json({ error: "Impossible d’enregistrer le projet étudiant." }, { status: 500 });
+  }
 
   if (regulatoryProject && regulatoryNext) {
     const { error: regulatoryUpdateError } = await supabase
@@ -142,7 +150,7 @@ export async function PATCH(
     message: "Le projet d’études enregistré dans le dossier a été mis à jour par Campus Allemagne.",
     metadata: {
       changed_fields: changedFields,
-      regulatory_project_synced: Boolean(regulatoryProject),
+      regulatory_project_synced: Boolean(regulatoryProject && regulatoryOutOfSync),
     },
   });
 
@@ -178,5 +186,9 @@ export async function PATCH(
     );
   }
 
-  return NextResponse.json({ ok: true, changed_fields: changedFields });
+  return NextResponse.json({
+    ok: true,
+    changed_fields: changedFields,
+    procedure_project_synced: Boolean(regulatoryProject && regulatoryOutOfSync),
+  });
 }
