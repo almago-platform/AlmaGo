@@ -49,6 +49,7 @@ jobs:
       ALMAGO_E2E_STUDENT_PASSWORD: ${{ secrets.ALMAGO_E2E_STUDENT_PASSWORD }}
       ALMAGO_E2E_ADMIN_EMAIL: ${{ vars.ALMAGO_E2E_ADMIN_EMAIL || 'phase3.admin.b@almago.test' }}
       ALMAGO_E2E_ADMIN_PASSWORD: ${{ secrets.ALMAGO_E2E_ADMIN_PASSWORD }}
+      ALMAGO_E2E_ADMIN_TOTP_SECRET: ${{ secrets.ALMAGO_E2E_ADMIN_TOTP_SECRET }}
       ALMAGO_E2E_PROBE_MODE: ${{ inputs.probe }}
     steps:
       - name: Detect authenticated E2E configuration
@@ -56,7 +57,7 @@ jobs:
         shell: bash
         run: |
           missing=()
-          for name in NEXT_PUBLIC_SUPABASE_URL NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ALMAGO_E2E_STUDENT_EMAIL ALMAGO_E2E_STUDENT_PASSWORD ALMAGO_E2E_ADMIN_EMAIL ALMAGO_E2E_ADMIN_PASSWORD; do
+          for name in NEXT_PUBLIC_SUPABASE_URL NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ALMAGO_E2E_STUDENT_EMAIL ALMAGO_E2E_STUDENT_PASSWORD ALMAGO_E2E_ADMIN_EMAIL ALMAGO_E2E_ADMIN_PASSWORD ALMAGO_E2E_ADMIN_TOTP_SECRET; do
             if [ -z "${!name}" ]; then missing+=("$name"); fi
           done
 
@@ -86,6 +87,7 @@ jobs:
       ALMAGO_E2E_STUDENT_PASSWORD: ${{ secrets.ALMAGO_E2E_STUDENT_PASSWORD }}
       ALMAGO_E2E_ADMIN_EMAIL: ${{ vars.ALMAGO_E2E_ADMIN_EMAIL || 'phase3.admin.b@almago.test' }}
       ALMAGO_E2E_ADMIN_PASSWORD: ${{ secrets.ALMAGO_E2E_ADMIN_PASSWORD }}
+      ALMAGO_E2E_ADMIN_TOTP_SECRET: ${{ secrets.ALMAGO_E2E_ADMIN_TOTP_SECRET }}
       CI: "true"
       ALMAGO_E2E_TARGET: ${{ github.event_name == 'issue_comment' && 'render' || inputs.target || 'render' }}
       ALMAGO_E2E_REDACT_SECRETS: "true"
