@@ -226,6 +226,16 @@ function actionDeadlineIsVerified(action: ActionRow) {
   );
 }
 
+function contactKindLabel(kind: string | null) {
+  if (kind === "call") return "Appel";
+  if (kind === "email") return "E-mail";
+  if (kind === "whatsapp") return "WhatsApp";
+  if (kind === "meeting") return "Rendez-vous";
+  if (kind === "document_request") return "Demande document";
+  if (kind === "university_contact") return "Contact université";
+  return "Contact";
+}
+
 export const dynamic = "force-dynamic";
 
 export default async function AdminPeoplePage({
@@ -369,8 +379,14 @@ export default async function AdminPeoplePage({
     orientationCountByProspect.set(item.prospect_id, (orientationCountByProspect.get(item.prospect_id) || 0) + 1);
   }
 
+  const latestContactByUser = new Map<string, CaseNoteRow>();
+  for (const item of caseNotes) {
+    if (!latestContactByUser.has(item.student_id)) latestContactByUser.set(item.student_id, item);
+  }
+
   const today = new Date().toISOString().slice(0, 10);
   const weekEnd = shiftDateKey(today, 7);
+  const staleContactCutoff = shiftDateKey(today, -14);
 
   const records: PersonRecord[] = userIds.map((userId) => {
     const profile = profileByUser.get(userId);
@@ -378,6 +394,7 @@ export default async function AdminPeoplePage({
     const access = accessByUser.get(userId);
     const intake = intakeByUser.get(userId);
     const assignment = assignmentByUser.get(userId);
+    const latestContact = latestContactByUser.get(userId);
     const personDocuments = docsByUser.get(userId) || [];
     const personApplications = applicationsByUser.get(userId) || [];
     const activeApplications = personApplications.filter((item) => isActiveApplication(item.status)).sort(compareApplications);
@@ -454,6 +471,8 @@ export default async function AdminPeoplePage({
       assignedAdminName: assignment?.assigned_admin_id
         ? advisorNameById.get(assignment.assigned_admin_id) || "Conseiller Campus"
         : null,
+      lastContactAt: latestContact?.occurred_at || null,
+      lastContactKind: latestContact?.kind || null,
       needsAttention,
       updatedAt: intake?.updated_at || prospect?.updated_at || access?.status_changed_at || "",
     };
@@ -482,6 +501,8 @@ export default async function AdminPeoplePage({
       hasUnverifiedDeadline: false,
       assignedAdminId: null,
       assignedAdminName: null,
+      lastContactAt: null,
+      lastContactKind: null,
       needsAttention: false,
       updatedAt: prospect.updated_at,
     });
@@ -519,6 +540,10 @@ export default async function AdminPeoplePage({
     overdue: operationalRecords.filter((item) => Boolean(item.dueDate && item.dueDate < today)).length,
     today: operationalRecords.filter((item) => item.dueDate === today).length,
     week: operationalRecords.filter((item) => Boolean(item.dueDate && item.dueDate >= today && item.dueDate <= weekEnd)).length,
+    stale: operationalRecords.filter((item) => {
+      const contactDate = dateKey(item.lastContactAt);
+      return !contactDate || contactDate < staleContactCutoff;
+    }).length,
     unassigned: operationalRecords.filter((item) => !item.assignedAdminId).length,
     mine: currentAdmin
       ? operationalRecords.filter((item) => item.assignedAdminId === currentAdmin.id).length
@@ -532,6 +557,10 @@ export default async function AdminPeoplePage({
     if (work === "overdue" && !(item.dueDate && item.dueDate < today)) return false;
     if (work === "today" && item.dueDate !== today) return false;
     if (work === "week" && !(item.dueDate && item.dueDate >= today && item.dueDate <= weekEnd)) return false;
+    if (work === "stale") {
+      const contactDate = dateKey(item.lastContactAt);
+      if (!item.userId || item.segment === "archived" || (contactDate && contactDate >= staleContactCutoff)) return false;
+    }
     if (work === "unassigned" && (!item.userId || item.segment === "archived" || item.assignedAdminId)) return false;
     if (work === "mine" && (!currentAdmin || item.assignedAdminId !== currentAdmin.id)) return false;
 
