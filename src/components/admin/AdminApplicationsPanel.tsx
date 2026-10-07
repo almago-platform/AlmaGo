@@ -9,6 +9,7 @@ import { Card } from "@/components/ui/Card";
 import { AdminWorkflowSection } from "@/components/admin/AdminWorkflowSection";
 import { PremiumEmptyState } from "@/components/product/PremiumEmptyState";
 import {
+  applicationDateIsTrusted,
   applicationOfficialDeadlineUrgency,
   applicationOfficialDeadlineUrgencyLabel,
   applicationRouteRisk,
@@ -60,15 +61,7 @@ function firstUniversity(program: any) {
 }
 
 function applicationDeadlineIsTrusted(application: any) {
-  if (!application.deadline) return false;
-  if (application.deadline_kind === "internal_target" || application.deadline_kind === "source_review_date") {
-    return true;
-  }
-  return Boolean(
-    application.deadline_source_url
-    && application.deadline_verified_at
-    && application.deadline_cycle,
-  );
+  return applicationDateIsTrusted(application);
 }
 
 function deadlineProvenanceLabel(application: any) {
