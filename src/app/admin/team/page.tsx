@@ -5,6 +5,8 @@ import { AdminWorkspaceSummary } from "@/components/admin/AdminWorkspaceSummary"
 import { Badge } from "@/components/ui/Badge";
 import { buttonClassName } from "@/components/ui/Button";
 import {
+  adminActionDateIsTrusted,
+  applicationDateIsTrusted,
   applicationOfficialDeadlineUrgency,
   applicationRouteRisk,
   campusTodayDateKey,
@@ -86,23 +88,11 @@ function shiftDateKey(value: string, days: number) {
 }
 
 function actionDeadlineIsTrusted(item: ActionRow) {
-  if (!item.due_date) return false;
-  if (item.deadline_kind === "internal_target" || item.deadline_kind === "source_review_date") return true;
-  return Boolean(
-    item.official_source_url
-    && item.official_source_verified_at
-    && item.deadline_cycle,
-  );
+  return adminActionDateIsTrusted(item);
 }
 
 function applicationDeadlineIsTrusted(item: ApplicationRow) {
-  if (!item.deadline) return false;
-  if (item.deadline_kind === "internal_target" || item.deadline_kind === "source_review_date") return true;
-  return Boolean(
-    item.deadline_source_url
-    && item.deadline_verified_at
-    && item.deadline_cycle,
-  );
+  return applicationDateIsTrusted(item);
 }
 
 export default async function AdminTeamPage() {
