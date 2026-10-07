@@ -1,6 +1,5 @@
 name: AlmaGo Browser Quality
 
-# V3.2: bounded visual regression gate on UI PRs; full suite remains manually dispatchable.
 on:
   pull_request:
     branches: [main]
@@ -22,9 +21,9 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  public-browser-quality:
+  browser-quality:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 30
     env:
       CI: "true"
       ALMAGO_PHASE2_ENABLED: "true"
@@ -37,20 +36,10 @@ jobs:
           node-version: 22
           cache: npm
 
-      - name: Install application dependencies
-        run: npm ci
+      - run: npm ci
 
-      - name: Install browser-quality tools without changing the lockfile
-        # Keep Supabase on the exact version already proven by npm ci. A no-save
-        # tooling install otherwise re-resolves the package.json caret and can
-        # transiently request an unpublished/yanked realtime-js release.
+      - name: Install browser test tools without changing the lockfile
         run: npm install --no-save --package-lock=false @supabase/supabase-js@2.116.0 @playwright/test@1.55.0 @axe-core/playwright@4.10.2 @lhci/cli@0.15.1
-
-      - name: Cache Playwright browser
-        uses: actions/cache@v6
-        with:
-          path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-1.55.0-chromium
 
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
@@ -65,14 +54,12 @@ jobs:
             echo "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_browser_quality_placeholder" >> "$GITHUB_ENV"
           fi
 
-      - name: Build AlmaGo
-        run: npm run build
-
-      - name: Start production server
+      - name: Build and start production server
+        shell: bash
         run: |
           mkdir -p artifacts
+          npm run build
           npm start -- -p 3000 > artifacts/server.log 2>&1 &
-          echo $! > /tmp/almago-server.pid
           for i in {1..40}; do
             if curl --fail --silent http://127.0.0.1:3000/ > /dev/null; then exit 0; fi
             sleep 2
@@ -80,8 +67,7 @@ jobs:
           cat artifacts/server.log
           exit 1
 
-      - name: V3.2 bounded PR visual regression gate
-        if: github.event_name == 'pull_request'
+      - name: Responsive and accessibility regression
         run: |
           npx playwright test tests/e2e/visual-v3-2-gate.spec.mjs \
             --config=playwright.config.mjs \
@@ -90,23 +76,15 @@ jobs:
             --project=desktop-1280-chromium \
             --project=desktop-chromium
 
-      - name: Full manual responsive and accessibility suite
+      - name: Full browser suite
         if: github.event_name == 'workflow_dispatch'
         run: npx playwright test --config=playwright.config.mjs
-
-      - name: Gemini visual review of screenshots
-        if: ${{ github.event_name == 'workflow_dispatch' && vars.ALMAGO_AI_ENABLED == 'true' && vars.ALMAGO_AI_BILLING_CAP_CONFIRMED == 'true' }}
-        env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          ALMAGO_GEMINI_MODEL: ${{ vars.ALMAGO_GEMINI_MODEL }}
-          ALMAGO_VISUAL_REVIEW_MAX_IMAGES: "2"
-        run: node autonomy/visual-review.mjs artifacts/screenshots
 
       - name: Lighthouse advisory budgets
         if: github.event_name == 'workflow_dispatch'
         run: npx lhci autorun --config=./lighthouserc.cjs || true
 
-      - name: Store browser-quality artifacts
+      - name: Store browser artifacts
         if: always()
         uses: actions/upload-artifact@v7
         with:
