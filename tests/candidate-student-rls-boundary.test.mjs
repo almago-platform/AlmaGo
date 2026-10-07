@@ -92,3 +92,21 @@ test("prospect profile ownership remains intentionally available", () => {
   assert.doesNotMatch(migration, /drop policy if exists "prospects /i);
   assert.doesNotMatch(migration, /drop policy if exists "customer access /i);
 });
+
+test("student document storage requires active client entitlement", () => {
+  for (const policy of [
+    "document objects own folder",
+    "document objects own upload",
+    "document objects own allowed delete",
+  ]) {
+    assert.match(
+      migration,
+      new RegExp(
+        'create policy "' + policy + '"[\\s\\S]*?private\\.has_student_client_access\\(\\)',
+        "i",
+      ),
+      policy,
+    );
+  }
+  assert.match(migration, /bucket_id = 'student-documents'/i);
+});
