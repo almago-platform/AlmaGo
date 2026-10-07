@@ -104,3 +104,12 @@ test("Admin V4 sourced catalogues separate facts, verification and publication",
     assert.match(source, /Publier dans l’espace étudiant/);
   }
 });
+
+
+test("Admin V4 dashboard work queues are anchored in one consolidated panel", () => {
+  assert.match(dashboard, /File opérationnelle consolidée/);
+  assert.match(dashboard, /AdminQueueRow/);
+  assert.match(dashboard, /divide-y divide-\[var\(--border\)\]/);
+  assert.doesNotMatch(dashboard, /function AdminSummaryCard/);
+  assert.doesNotMatch(dashboard, /mt-4 grid gap-4 md:grid-cols-2 2xl:grid-cols-3/);
+});
