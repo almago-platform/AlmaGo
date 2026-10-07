@@ -1,8 +1,10 @@
+import Link from "next/link";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { AdminPaymentActivationForm } from "@/components/admin/AdminPaymentActivationForm";
 import { isPhase2PaymentOrchestrationEnabled } from "@/lib/phase2/config";
 import { createClient } from "@/lib/supabase/server";
 import { formatMinorCurrency } from "@/lib/money";
+import { buttonClassName } from "@/components/ui/Button";
 
 type PurchaseRow = {
   id: string;
@@ -208,6 +210,12 @@ export default async function AdminPaymentsPage() {
                     <span className="rounded-full bg-[var(--brand-soft)] px-2.5 py-1 text-xs font-bold text-[var(--brand-strong)]">
                       accès : {accessStatus}
                     </span>
+                    <Link
+                      href={`/admin/dossiers/${purchase.user_id}`}
+                      className={buttonClassName("ghost", "min-h-8 px-2.5 py-1 text-xs")}
+                    >
+                      Dossier 360°
+                    </Link>
                   </div>
                 </div>
 
