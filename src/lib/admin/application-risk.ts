@@ -36,15 +36,15 @@ export function applicationRouteRisk(
   if (!application.deadline || !application.deadlineTrusted) return null;
   if (application.deadline_kind !== "official_hard_deadline") return null;
 
-  const method = application.application_method;
-  const leadDays = method === "uni_assist"
-    ? 56
-    : method === "vpd_then_direct"
-      ? 70
-      : null;
+  const method: ApplicationRouteRiskKind | null =
+    application.application_method === "uni_assist"
+      ? "uni_assist"
+      : application.application_method === "vpd_then_direct"
+        ? "vpd_then_direct"
+        : null;
+  if (!method) return null;
 
-  if (!leadDays) return null;
-
+  const leadDays: 56 | 70 = method === "uni_assist" ? 56 : 70;
   const targetDate = shiftDateKey(application.deadline, -leadDays);
   if (!targetDate || todayKey < targetDate) return null;
 
