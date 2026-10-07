@@ -6,7 +6,6 @@ import {
   isFreeValidationPilotEnabled,
   isPhase2AccessEnabled,
   isPhase2AccountLinkingEnabled,
-  isPhase2DevPaymentAdapterEnabled,
   isPhase2EmailDeliveryEnabled,
   isPhase2PaymentOrchestrationEnabled,
   isPhase2ProspectCaptureEnabled,
@@ -39,7 +38,6 @@ const partnerEnv = {
   ALMAGO_PHASE2_ACCOUNT_LINKING_ENABLED: "true",
   ALMAGO_PHASE2_EMAIL_DELIVERY_ENABLED: "true",
   ALMAGO_PHASE2_PAYMENT_ORCHESTRATION_ENABLED: "true",
-  ALMAGO_PHASE2_DEV_PAYMENT_ADAPTER_ENABLED: "true",
   ALMAGO_PHASE2_ATTRIBUTION_ENABLED: "true",
   ALMAGO_PHASE2_FUNNEL_TELEMETRY_ENABLED: "true",
   ALMAGO_FREE_VALIDATION_PILOT_ENABLED: "true",
@@ -62,7 +60,6 @@ test("partner mode keeps Phase 2 UI available but fails closed on persistence an
   assert.equal(isPhase2AccountLinkingEnabled(partnerEnv), false);
   assert.equal(isPhase2EmailDeliveryEnabled(partnerEnv), false);
   assert.equal(isPhase2PaymentOrchestrationEnabled(partnerEnv), false);
-  assert.equal(isPhase2DevPaymentAdapterEnabled(partnerEnv), false);
   assert.equal(isFreeValidationPilotEnabled(partnerEnv), false);
 });
 
@@ -103,7 +100,6 @@ test("normal mode retains explicit opt-in behavior outside the safety lock", () 
     ALMAGO_PHASE2_ACCOUNT_LINKING_ENABLED: "true",
     ALMAGO_PHASE2_EMAIL_DELIVERY_ENABLED: "true",
     ALMAGO_PHASE2_PAYMENT_ORCHESTRATION_ENABLED: "true",
-    ALMAGO_PHASE2_DEV_PAYMENT_ADAPTER_ENABLED: "true",
     ALMAGO_PHASE2_ATTRIBUTION_ENABLED: "true",
     ALMAGO_FREE_VALIDATION_PILOT_ENABLED: "true",
   };
@@ -113,7 +109,6 @@ test("normal mode retains explicit opt-in behavior outside the safety lock", () 
   assert.equal(isPhase2AccountLinkingEnabled(normalEnv), true);
   assert.equal(isPhase2EmailDeliveryEnabled(normalEnv), true);
   assert.equal(isPhase2PaymentOrchestrationEnabled(normalEnv), true);
-  assert.equal(isPhase2DevPaymentAdapterEnabled(normalEnv), true);
   assert.equal(isPhase2AttributionEnabled(normalEnv), true);
   assert.equal(isFreeValidationPilotEnabled(normalEnv), true);
 });

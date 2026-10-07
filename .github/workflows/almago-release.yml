@@ -1,0 +1,64 @@
+name: AlmaGo Release Gate
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: almago-release-gate
+  cancel-in-progress: true
+
+jobs:
+  release-gate:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      PRODUCTION_URL: ${{ vars.ALMAGO_PRODUCTION_URL || 'https://almago-dev.onrender.com' }}
+      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+
+      - name: Production dependency audit
+        run: npm audit --omit=dev --audit-level=high
+
+      - run: npm test
+      - run: npx tsc --noEmit
+      - run: npm run lint
+      - run: npm run build
+      - run: git diff --check
+
+      - name: Verify exact Render revision
+        shell: bash
+        run: |
+          expected="${GITHUB_SHA:0:12}"
+          for i in {1..60}; do
+            health="$(curl --fail --silent --show-error --max-time 10 "$PRODUCTION_URL/api/health" 2>/dev/null || true)"
+            revision="$(printf '%s' "$health" | jq -r '.revision // empty' 2>/dev/null || true)"
+            branch="$(printf '%s' "$health" | jq -r '.branch // empty' 2>/dev/null || true)"
+            if [ "$revision" = "$expected" ] && [ "$branch" = "main" ]; then
+              echo "$health"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "::error::Production does not serve exact main revision $expected"
+          exit 1
+
+      - name: Public smoke checks
+        shell: bash
+        run: |
+          curl --fail --silent --show-error "$PRODUCTION_URL/" > /dev/null
+          curl --fail --silent --show-error "$PRODUCTION_URL/login" > /dev/null
+          curl --fail --silent --show-error "$PRODUCTION_URL/orientation" > /dev/null
+          curl --fail --silent --show-error "$PRODUCTION_URL/api/health" > /dev/null

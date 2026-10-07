@@ -8,10 +8,11 @@ const nodeVersion = readFileSync(".node-version", "utf8").trim();
 
 test("Render production Blueprint uses the supported Next.js Node deployment contract", () => {
   assert.match(blueprint, /type:\s*web/);
+  assert.match(blueprint, /name:\s*almago-dev/);
   assert.match(blueprint, /runtime:\s*node/);
   assert.match(blueprint, /region:\s*frankfurt/);
-  assert.match(blueprint, /plan:\s*1c-2g/);
-  assert.match(blueprint, /buildCommand:\s*npm ci && npm run build/);
+  assert.match(blueprint, /plan:\s*free/);
+  assert.match(blueprint, /buildCommand:\s*npm ci --include=dev && npm run build/);
   assert.match(blueprint, /startCommand:\s*npm start/);
   assert.match(blueprint, /healthCheckPath:\s*\/api\/health/);
   assert.match(blueprint, /autoDeployTrigger:\s*commit/);
