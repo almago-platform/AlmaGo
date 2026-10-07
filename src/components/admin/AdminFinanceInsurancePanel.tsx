@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { AdminWorkflowSection } from "@/components/admin/AdminWorkflowSection";
 import { financeInsuranceKinds, type FinanceInsuranceKind } from "@/lib/finance-insurance";
 import { catalogVerificationExpiresAt, isCatalogVerificationCurrent } from "@/lib/catalog-freshness";
 
@@ -189,45 +190,86 @@ export function AdminFinanceInsurancePanel({ options }: { options: Option[] }) {
       </div>
 
       {formOpen && (
-      <Card>
-        <form onSubmit={save} className="space-y-5">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-            <div>
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">{editing ? "Modification" : "Nouvelle option"}</p>
-              <h2 className="mt-2 text-2xl font-bold text-slate-950">{editing ? "Modifier l’option" : "Ajouter une option"}</h2>
-              <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">Une option active doit avoir une source officielle et une date de vérification.</p>
+        <Card>
+          <form onSubmit={save} className="space-y-4">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">{editing ? "Modification" : "Nouvelle option"}</p>
+                <h2 className="mt-2 text-2xl font-bold text-slate-950">{editing ? "Modifier l’option" : "Ajouter une option"}</h2>
+                <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">Une option active doit avoir une source officielle et une date de vérification.</p>
+              </div>
+              {editing && <Button type="button" variant="secondary" onClick={reset}>Annuler</Button>}
             </div>
-            {editing && <Button type="button" variant="secondary" onClick={reset}>Annuler</Button>}
-          </div>
 
-          <div className="grid gap-4 md:grid-cols-2">
-            <Field label="Fournisseur" required value={form.provider_name} onChange={(value) => change("provider_name", value)} />
-            <Field label="Produit" value={form.product_name} onChange={(value) => change("product_name", value)} />
-            <label className="text-sm font-medium text-slate-700">
-              Catégorie
-              <select className="field" value={form.kind} onChange={(event) => change("kind", event.target.value as FinanceInsuranceKind)}>
-                {financeInsuranceKinds.map((kind) => <option key={kind} value={kind}>{kindLabels[kind]}</option>)}
-              </select>
-            </label>
-            <Field label="Source officielle" required placeholder="https://..." value={form.official_source_url} onChange={(value) => change("official_source_url", value)} />
-            <Field label="Lien fournisseur / candidature" placeholder="https://..." value={form.application_url} onChange={(value) => change("application_url", value)} />
-            <label className="text-sm font-medium text-slate-700">
-              Vérifié le
-              <input className="field" type="datetime-local" value={form.verified_at} onChange={(event) => change("verified_at", event.target.value)} />
-            </label>
-            <TextArea label="Description factuelle" value={form.description} onChange={(value) => change("description", value)} />
-            <TextArea label="Prix / frais publiés" value={form.price_notes} onChange={(value) => change("price_notes", value)} />
-            <TextArea label="Conditions publiées" value={form.eligibility_notes} onChange={(value) => change("eligibility_notes", value)} />
-            <label className="flex min-h-12 items-center gap-3 rounded-[var(--radius-control)] border border-[var(--border)] px-4 py-3 text-sm font-semibold text-slate-700">
-              <input type="checkbox" checked={form.is_active} onChange={(event) => change("is_active", event.target.checked)} />
-              Publier dans l’espace étudiant
-            </label>
-          </div>
+            <AdminWorkflowSection
+              step="A"
+              title="Fournisseur et produit"
+              description="Identifiez le fournisseur, le produit et sa catégorie."
+              defaultOpen
+            >
+              <div className="grid gap-4 md:grid-cols-2">
+                <Field label="Fournisseur" required value={form.provider_name} onChange={(value) => change("provider_name", value)} />
+                <Field label="Produit" value={form.product_name} onChange={(value) => change("product_name", value)} />
+                <label className="text-sm font-medium text-slate-700">
+                  Catégorie
+                  <select className="field mt-2 bg-white" value={form.kind} onChange={(event) => change("kind", event.target.value as FinanceInsuranceKind)}>
+                    {financeInsuranceKinds.map((kind) => <option key={kind} value={kind}>{kindLabels[kind]}</option>)}
+                  </select>
+                </label>
+              </div>
+            </AdminWorkflowSection>
 
-          <Button type="submit" disabled={busy}>{busy ? "Enregistrement…" : editing ? "Enregistrer" : "Ajouter"}</Button>
-          {notice && <p role={notice.tone === "error" ? "alert" : "status"} className={notice.tone === "error" ? "text-sm font-semibold text-red-700" : "text-sm font-semibold text-emerald-700"}>{notice.text}</p>}
-        </form>
-      </Card>
+            <AdminWorkflowSection
+              step="B"
+              title="Informations factuelles"
+              description="Décrivez uniquement les informations publiées, sans classement fournisseur ni conclusion d’éligibilité."
+            >
+              <div className="grid gap-4 md:grid-cols-2">
+                <TextArea label="Description factuelle" value={form.description} onChange={(value) => change("description", value)} />
+                <TextArea label="Prix / frais publiés" value={form.price_notes} onChange={(value) => change("price_notes", value)} />
+                <div className="md:col-span-2">
+                  <TextArea label="Conditions publiées" value={form.eligibility_notes} onChange={(value) => change("eligibility_notes", value)} />
+                </div>
+              </div>
+            </AdminWorkflowSection>
+
+            <AdminWorkflowSection
+              step="C"
+              title="Source et vérification"
+              description="Conservez un accès direct à la source officielle et la date du dernier contrôle humain."
+              tone="warning"
+            >
+              <div className="grid gap-4 md:grid-cols-2">
+                <Field label="Source officielle" required placeholder="https://..." value={form.official_source_url} onChange={(value) => change("official_source_url", value)} />
+                <Field label="Lien fournisseur / candidature" placeholder="https://..." value={form.application_url} onChange={(value) => change("application_url", value)} />
+                <label className="text-sm font-medium text-slate-700">
+                  Vérifié le
+                  <input className="field mt-2 bg-white" type="datetime-local" value={form.verified_at} onChange={(event) => change("verified_at", event.target.value)} />
+                </label>
+              </div>
+            </AdminWorkflowSection>
+
+            <AdminWorkflowSection
+              step="D"
+              title="Publication"
+              description="L’activation rend cette option disponible dans l’espace étudiant selon les règles existantes."
+              defaultOpen
+              tone="brand"
+            >
+              <label className="flex min-h-12 items-center gap-3 rounded-[var(--radius-control)] border border-[var(--border)] bg-white px-4 py-3 text-sm font-semibold text-slate-700">
+                <input type="checkbox" checked={form.is_active} onChange={(event) => change("is_active", event.target.checked)} />
+                Publier dans l’espace étudiant
+              </label>
+
+              <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                {notice ? (
+                  <p role={notice.tone === "error" ? "alert" : "status"} className={notice.tone === "error" ? "text-sm font-semibold text-red-700" : "text-sm font-semibold text-emerald-700"}>{notice.text}</p>
+                ) : <span />}
+                <Button type="submit" disabled={busy}>{busy ? "Enregistrement…" : editing ? "Enregistrer" : "Ajouter"}</Button>
+              </div>
+            </AdminWorkflowSection>
+          </form>
+        </Card>
       )}
 
       <section>

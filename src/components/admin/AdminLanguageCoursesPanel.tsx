@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { AdminWorkflowSection } from "@/components/admin/AdminWorkflowSection";
 import { languageCourseLevels, type LanguageCourseLevel, type LanguageCoursePurpose } from "@/lib/language-courses";
 import { catalogVerificationExpiresAt, isCatalogVerificationCurrent } from "@/lib/catalog-freshness";
 
@@ -211,39 +212,102 @@ export function AdminLanguageCoursesPanel({ courses }: { courses: Course[] }) {
       </div>
 
       {formOpen && (
-      <Card>
-        <form onSubmit={save} className="space-y-5">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-            <div>
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">{editing ? "Modification" : "Nouveau cours"}</p>
-              <h2 className="mt-2 text-2xl font-bold text-slate-950">{editing ? "Modifier le cours" : "Ajouter un cours"}</h2>
-              <p className="mt-2 text-sm leading-6 text-slate-600">Un cours actif doit avoir une source officielle valide et une vérification datée.</p>
+        <Card>
+          <form onSubmit={save} className="space-y-4">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">{editing ? "Modification" : "Nouveau cours"}</p>
+                <h2 className="mt-2 text-2xl font-bold text-slate-950">{editing ? "Modifier le cours" : "Ajouter un cours"}</h2>
+                <p className="mt-2 text-sm leading-6 text-slate-600">Un cours actif doit avoir une source officielle valide et une vérification datée.</p>
+              </div>
+              {editing && <Button type="button" variant="secondary" onClick={reset}>Annuler</Button>}
             </div>
-            {editing && <Button type="button" variant="secondary" onClick={reset}>Annuler</Button>}
-          </div>
 
-          <div className="grid gap-4 md:grid-cols-2">
-            <Field label="Titre" required value={form.title} onChange={(value) => change("title", value)} />
-            <Field label="Fournisseur / école" required value={form.provider_name} onChange={(value) => change("provider_name", value)} />
-            <Field label="Ville" value={form.city} onChange={(value) => change("city", value)} />
-            <Field label="Langue" required value={form.language} onChange={(value) => change("language", value)} />
-            <label className="text-sm font-medium text-slate-700">Objectif<select className="field" value={form.purpose} onChange={(event) => change("purpose", event.target.value as LanguageCoursePurpose)}><option value="study_preparation">Préparation aux études</option><option value="standalone_language">Cours de langue autonome</option></select></label>
-            <label className="text-sm font-medium text-slate-700">Niveau de départ<select className="field" value={form.level_from} onChange={(event) => change("level_from", event.target.value)}><option value="">À confirmer</option>{languageCourseLevels.map((level) => <option key={level}>{level}</option>)}</select></label>
-            <label className="text-sm font-medium text-slate-700">Niveau cible<select className="field" value={form.level_to} onChange={(event) => change("level_to", event.target.value)}><option value="">À confirmer</option>{languageCourseLevels.map((level) => <option key={level}>{level}</option>)}</select></label>
-            <Field label="Heures / semaine" type="number" value={form.hours_per_week} onChange={(value) => change("hours_per_week", value)} />
-            <Field label="Début" type="date" value={form.starts_on} onChange={(value) => change("starts_on", value)} />
-            <Field label="Fin" type="date" value={form.ends_on} onChange={(value) => change("ends_on", value)} />
-            <Field label="Prix EUR" type="number" value={form.price_eur} onChange={(value) => change("price_eur", value)} />
-            <Field label="Source officielle" placeholder="https://..." value={form.source_url} onChange={(value) => change("source_url", value)} />
-            <Field label="Lien candidature" placeholder="https://..." value={form.application_url} onChange={(value) => change("application_url", value)} />
-            <label className="text-sm font-medium text-slate-700">Vérifié le<input className="field" type="datetime-local" value={form.verified_at} onChange={(event) => change("verified_at", event.target.value)} /></label>
-            <label className="flex min-h-12 items-center gap-3 rounded-[var(--radius-control)] border border-[var(--border)] px-4 py-3 text-sm font-semibold text-slate-700"><input type="checkbox" checked={form.is_active} onChange={(event) => change("is_active", event.target.checked)} />Publier dans l’espace étudiant</label>
-          </div>
+            <AdminWorkflowSection
+              step="A"
+              title="Cours et fournisseur"
+              description="Identité du cours, école, ville, langue et objectif."
+              defaultOpen
+            >
+              <div className="grid gap-4 md:grid-cols-2">
+                <Field label="Titre" required value={form.title} onChange={(value) => change("title", value)} />
+                <Field label="Fournisseur / école" required value={form.provider_name} onChange={(value) => change("provider_name", value)} />
+                <Field label="Ville" value={form.city} onChange={(value) => change("city", value)} />
+                <Field label="Langue" required value={form.language} onChange={(value) => change("language", value)} />
+                <label className="text-sm font-medium text-slate-700">
+                  Objectif
+                  <select className="field mt-2 bg-white" value={form.purpose} onChange={(event) => change("purpose", event.target.value as LanguageCoursePurpose)}>
+                    <option value="study_preparation">Préparation aux études</option>
+                    <option value="standalone_language">Cours de langue autonome</option>
+                  </select>
+                </label>
+              </div>
+            </AdminWorkflowSection>
 
-          <Button type="submit" disabled={busy}>{busy ? "Enregistrement…" : editing ? "Enregistrer" : "Ajouter"}</Button>
-          {notice && <p role={notice.tone === "error" ? "alert" : "status"} className={notice.tone === "error" ? "text-sm font-semibold text-red-700" : "text-sm font-semibold text-emerald-700"}>{notice.text}</p>}
-        </form>
-      </Card>
+            <AdminWorkflowSection
+              step="B"
+              title="Niveaux, rythme et prix"
+              description="Décrivez les niveaux, la période, le volume hebdomadaire et le prix réellement publié."
+            >
+              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                <label className="text-sm font-medium text-slate-700">
+                  Niveau de départ
+                  <select className="field mt-2 bg-white" value={form.level_from} onChange={(event) => change("level_from", event.target.value)}>
+                    <option value="">À confirmer</option>
+                    {languageCourseLevels.map((level) => <option key={level}>{level}</option>)}
+                  </select>
+                </label>
+                <label className="text-sm font-medium text-slate-700">
+                  Niveau cible
+                  <select className="field mt-2 bg-white" value={form.level_to} onChange={(event) => change("level_to", event.target.value)}>
+                    <option value="">À confirmer</option>
+                    {languageCourseLevels.map((level) => <option key={level}>{level}</option>)}
+                  </select>
+                </label>
+                <Field label="Heures / semaine" type="number" value={form.hours_per_week} onChange={(value) => change("hours_per_week", value)} />
+                <Field label="Début" type="date" value={form.starts_on} onChange={(value) => change("starts_on", value)} />
+                <Field label="Fin" type="date" value={form.ends_on} onChange={(value) => change("ends_on", value)} />
+                <Field label="Prix EUR" type="number" value={form.price_eur} onChange={(value) => change("price_eur", value)} />
+              </div>
+            </AdminWorkflowSection>
+
+            <AdminWorkflowSection
+              step="C"
+              title="Source et vérification"
+              description="Une fiche publiée doit pouvoir être contrôlée directement sur la source officielle."
+              tone="warning"
+            >
+              <div className="grid gap-4 md:grid-cols-2">
+                <Field label="Source officielle" placeholder="https://..." value={form.source_url} onChange={(value) => change("source_url", value)} />
+                <Field label="Lien candidature" placeholder="https://..." value={form.application_url} onChange={(value) => change("application_url", value)} />
+                <label className="text-sm font-medium text-slate-700">
+                  Vérifié le
+                  <input className="field mt-2 bg-white" type="datetime-local" value={form.verified_at} onChange={(event) => change("verified_at", event.target.value)} />
+                </label>
+              </div>
+            </AdminWorkflowSection>
+
+            <AdminWorkflowSection
+              step="D"
+              title="Publication"
+              description="L’activation rend la fiche disponible dans l’espace étudiant selon les règles existantes."
+              defaultOpen
+              tone="brand"
+            >
+              <label className="flex min-h-12 items-center gap-3 rounded-[var(--radius-control)] border border-[var(--border)] bg-white px-4 py-3 text-sm font-semibold text-slate-700">
+                <input type="checkbox" checked={form.is_active} onChange={(event) => change("is_active", event.target.checked)} />
+                Publier dans l’espace étudiant
+              </label>
+
+              <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                {notice ? (
+                  <p role={notice.tone === "error" ? "alert" : "status"} className={notice.tone === "error" ? "text-sm font-semibold text-red-700" : "text-sm font-semibold text-emerald-700"}>{notice.text}</p>
+                ) : <span />}
+                <Button type="submit" disabled={busy}>{busy ? "Enregistrement…" : editing ? "Enregistrer" : "Ajouter"}</Button>
+              </div>
+            </AdminWorkflowSection>
+          </form>
+        </Card>
       )}
 
       <section>

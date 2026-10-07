@@ -2,6 +2,8 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { AdminWorkflowSection } from "@/components/admin/AdminWorkflowSection";
+import { Button } from "@/components/ui/Button";
 
 export function CommercialOfferEditor({
   offerCode,
@@ -75,35 +77,48 @@ export function CommercialOfferEditor({
   }
 
   return (
-    <div className="mt-4 grid gap-4">
-      <div>
-        <label className="text-sm font-semibold text-slate-900" htmlFor={offerCode + "-name"}>
-          Nom affiché
-        </label>
-        <input
-          id={offerCode + "-name"}
-          value={displayName}
-          onChange={(event) => setDisplayName(event.target.value)}
-          maxLength={80}
-          className="mt-1.5 w-full rounded-[var(--radius-control)] border border-[var(--border)] bg-white px-3 py-2 text-sm text-slate-950"
-        />
-      </div>
+    <div className="mt-4 space-y-3">
+      <AdminWorkflowSection
+        step="A"
+        title="Présentation de l’offre"
+        description="Définissez le nom et le résumé qui seront visibles lorsqu’une version sera publiée."
+        defaultOpen
+      >
+        <div className="grid gap-4 lg:grid-cols-2">
+          <div>
+            <label className="text-sm font-semibold text-slate-900" htmlFor={offerCode + "-name"}>
+              Nom affiché
+            </label>
+            <input
+              id={offerCode + "-name"}
+              value={displayName}
+              onChange={(event) => setDisplayName(event.target.value)}
+              maxLength={80}
+              className="field mt-2 bg-white"
+            />
+          </div>
 
-      <div>
-        <label className="text-sm font-semibold text-slate-900" htmlFor={offerCode + "-summary"}>
-          Résumé
-        </label>
-        <textarea
-          id={offerCode + "-summary"}
-          value={summary}
-          onChange={(event) => setSummary(event.target.value)}
-          rows={3}
-          maxLength={500}
-          className="mt-1.5 w-full rounded-[var(--radius-control)] border border-[var(--border)] bg-white px-3 py-2 text-sm text-slate-950"
-        />
-      </div>
+          <div>
+            <label className="text-sm font-semibold text-slate-900" htmlFor={offerCode + "-summary"}>
+              Résumé
+            </label>
+            <textarea
+              id={offerCode + "-summary"}
+              value={summary}
+              onChange={(event) => setSummary(event.target.value)}
+              rows={3}
+              maxLength={500}
+              className="field mt-2 min-h-24 resize-y bg-white"
+            />
+          </div>
+        </div>
+      </AdminWorkflowSection>
 
-      <div>
+      <AdminWorkflowSection
+        step="B"
+        title="Services inclus"
+        description="Un service par ligne. La publication exige au moins un service."
+      >
         <label className="text-sm font-semibold text-slate-900" htmlFor={offerCode + "-services"}>
           Services inclus — un par ligne
         </label>
@@ -112,61 +127,78 @@ export function CommercialOfferEditor({
           value={services}
           onChange={(event) => setServices(event.target.value)}
           rows={6}
-          className="mt-1.5 w-full rounded-[var(--radius-control)] border border-[var(--border)] bg-white px-3 py-2 text-sm text-slate-950"
+          className="field mt-2 min-h-36 resize-y bg-white"
         />
-      </div>
+      </AdminWorkflowSection>
 
-      <div className="grid gap-3 sm:grid-cols-2">
-        <div>
-          <label className="text-sm font-semibold text-slate-900" htmlFor={offerCode + "-price"}>
-            Prix en unité monétaire minimale
-          </label>
-          <input
-            id={offerCode + "-price"}
-            type="number"
-            min="0"
-            step="1"
-            value={priceMinor}
-            onChange={(event) => setPriceMinor(event.target.value)}
-            className="mt-1.5 w-full rounded-[var(--radius-control)] border border-[var(--border)] bg-white px-3 py-2 text-sm text-slate-950"
-          />
-          <p className="mt-1 text-xs text-slate-600">Ex. EUR : 9900 = 99,00 €. TND : 590000 = 590 DT.</p>
+      <AdminWorkflowSection
+        step="C"
+        title="Prix et devise"
+        description="Le montant reste stocké dans l’unité monétaire minimale et la devise doit utiliser le code ISO."
+      >
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div>
+            <label className="text-sm font-semibold text-slate-900" htmlFor={offerCode + "-price"}>
+              Prix en unité monétaire minimale
+            </label>
+            <input
+              id={offerCode + "-price"}
+              type="number"
+              min="0"
+              step="1"
+              value={priceMinor}
+              onChange={(event) => setPriceMinor(event.target.value)}
+              className="field mt-2 bg-white"
+            />
+            <p className="mt-1 text-xs text-slate-600">Ex. EUR : 9900 = 99,00 €. TND : 590000 = 590 DT.</p>
+          </div>
+          <div>
+            <label className="text-sm font-semibold text-slate-900" htmlFor={offerCode + "-currency"}>
+              Devise ISO
+            </label>
+            <input
+              id={offerCode + "-currency"}
+              value={currency}
+              onChange={(event) => setCurrency(event.target.value.toUpperCase())}
+              maxLength={3}
+              placeholder="EUR"
+              className="field mt-2 bg-white uppercase"
+            />
+          </div>
         </div>
-        <div>
-          <label className="text-sm font-semibold text-slate-900" htmlFor={offerCode + "-currency"}>
-            Devise ISO
-          </label>
-          <input
-            id={offerCode + "-currency"}
-            value={currency}
-            onChange={(event) => setCurrency(event.target.value.toUpperCase())}
-            maxLength={3}
-            placeholder="EUR"
-            className="mt-1.5 w-full rounded-[var(--radius-control)] border border-[var(--border)] bg-white px-3 py-2 text-sm uppercase text-slate-950"
-          />
+      </AdminWorkflowSection>
+
+      <AdminWorkflowSection
+        step="D"
+        title="Version et publication"
+        description="Un brouillon reste interne. Publier crée une nouvelle version visible selon les règles commerciales existantes."
+        defaultOpen
+        tone="brand"
+      >
+        {message ? (
+          <p role="status" className="mb-4 rounded-[var(--radius-control)] border border-[var(--border)] bg-white p-3 text-sm text-slate-700">
+            {message}
+          </p>
+        ) : null}
+
+        <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={() => submit("draft")}
+            disabled={pending !== null}
+          >
+            {pending === "draft" ? "Enregistrement…" : "Créer un brouillon"}
+          </Button>
+          <Button
+            type="button"
+            onClick={() => submit("publish")}
+            disabled={pending !== null}
+          >
+            {pending === "publish" ? "Publication…" : "Publier cette version"}
+          </Button>
         </div>
-      </div>
-
-      {message ? <p role="status" className="text-sm text-slate-700">{message}</p> : null}
-
-      <div className="flex flex-wrap gap-2">
-        <button
-          type="button"
-          onClick={() => submit("draft")}
-          disabled={pending !== null}
-          className="min-h-10 rounded-[var(--radius-control)] border border-[var(--border)] bg-white px-4 text-sm font-bold text-slate-900 disabled:opacity-60"
-        >
-          {pending === "draft" ? "Enregistrement…" : "Créer un brouillon"}
-        </button>
-        <button
-          type="button"
-          onClick={() => submit("publish")}
-          disabled={pending !== null}
-          className="min-h-10 rounded-[var(--radius-control)] bg-[var(--brand)] px-4 text-sm font-bold text-white disabled:opacity-60"
-        >
-          {pending === "publish" ? "Publication…" : "Publier cette version"}
-        </button>
-      </div>
+      </AdminWorkflowSection>
     </div>
   );
 }

@@ -1,11 +1,14 @@
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { CommercialOfferEditor } from "@/components/admin/CommercialOfferEditor";
+import { AdminWorkspaceSummary } from "@/components/admin/AdminWorkspaceSummary";
+import { Badge } from "@/components/ui/Badge";
+import { Card } from "@/components/ui/Card";
 import { createClient } from "@/lib/supabase/server";
 
 const offerStatusLabels: Record<string, string> = {
   draft: "brouillon",
   published: "publiée",
-  archived: "archivée",
+  retired: "retirée",
 };
 
 type OfferCode = "bronze" | "silver" | "gold";
@@ -63,12 +66,26 @@ export default async function AdminOffersPage() {
     }
   }
 
+  const publishedCount = publishedByOffer.size;
+  const draftCount = [...latestByOffer.values()].filter((version) => version.status === "draft").length;
+
   return (
     <main className="mx-auto w-full max-w-[92rem] px-4 py-5 sm:px-6 sm:py-6 xl:px-8">
       <AdminPageHeader
         section="Offres"
         title="Bronze, Silver et Gold"
         description="Créez des versions historisées. Aucun prix ni service n’est publié tant que vous ne cliquez pas explicitement sur « Publier cette version »."
+      />
+
+      <AdminWorkspaceSummary
+        eyebrow="Catalogue commercial"
+        title="Versions et publication"
+        description="Chaque offre suit le même cycle : contenu, services, prix, puis publication explicite."
+        metrics={[
+          { label: "Offres", value: offerOrder.length },
+          { label: "Publiées", value: publishedCount, tone: publishedCount ? "success" : "neutral" },
+          { label: "Brouillons récents", value: draftCount, tone: draftCount ? "warning" : "neutral" },
+        ]}
       />
 
       <section className="mb-6 rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--brand-soft)] p-5">
@@ -80,27 +97,30 @@ export default async function AdminOffersPage() {
         </p>
       </section>
 
-      <div className="grid gap-5 xl:grid-cols-3">
+      <div className="space-y-4">
         {offerOrder.map((code) => {
           const offer = offerByCode.get(code);
           const latest = offer ? latestByOffer.get(offer.id) ?? null : null;
           const published = offer ? publishedByOffer.get(offer.id) ?? null : null;
 
           return (
-            <section
+            <Card
+              as="section"
               key={code}
-              className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-5 sm:p-6"
+              className="min-w-0 overflow-hidden bg-white"
             >
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">
                     {code}
                   </p>
-                  <h2 className="mt-1 text-xl font-bold capitalize text-slate-950">{code}</h2>
+                  <h2 className="mt-1 text-xl font-bold text-slate-950">
+                    {latest?.display_name || code[0].toUpperCase() + code.slice(1)}
+                  </h2>
                 </div>
-                <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-700">
+                <Badge variant={published ? "success" : "neutral"}>
                   {published ? "Publié v" + published.version : "Non publié"}
-                </span>
+                </Badge>
               </div>
 
               {latest ? (
@@ -121,7 +141,7 @@ export default async function AdminOffersPage() {
                 initialPriceMinor={latest?.price_minor ?? null}
                 initialCurrency={latest?.currency ?? null}
               />
-            </section>
+            </Card>
           );
         })}
       </div>

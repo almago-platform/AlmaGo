@@ -1,6 +1,7 @@
 import { AdminProgramsPanel } from "@/components/admin/AdminProgramsPanel";
 import { AdminLoadError } from "@/components/admin/AdminLoadError";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
+import { AdminWorkspaceSummary } from "@/components/admin/AdminWorkspaceSummary";
 import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -35,21 +36,17 @@ export default async function AdminProgramsPage() {
         title="Programmes"
         description="Recherchez d’abord une formation existante, puis maintenez uniquement ses critères, échéances et sources vérifiées."
       />
-      <div className="mb-5 grid gap-3 sm:grid-cols-3">
-        <Metric label="Programmes" value={programRows.length} />
-        <Metric label="Actifs" value={activePrograms} emphasis />
-        <Metric label="Universités actives" value={universities?.length || 0} />
-      </div>
+      <AdminWorkspaceSummary
+        eyebrow="Catalogue programmes"
+        title="Formations utilisées par l’orientation"
+        description="Maintenez les programmes actifs, leurs critères et les universités disponibles sans transformer une donnée catalogue en décision d’admission."
+        metrics={[
+          { label: "Programmes", value: programRows.length },
+          { label: "Actifs", value: activePrograms, tone: activePrograms ? "success" : "neutral" },
+          { label: "Universités actives", value: universities?.length || 0 },
+        ]}
+      />
       <AdminProgramsPanel programs={programRows} universities={universities || []} />
     </main>
-  );
-}
-
-function Metric({ label, value, emphasis = false }: { label: string; value: number; emphasis?: boolean }) {
-  return (
-    <div className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] px-4 py-3">
-      <p className="text-[0.68rem] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">{label}</p>
-      <p className={`mt-1 text-2xl font-semibold tracking-[-0.03em] ${emphasis ? "text-[var(--brand)]" : "text-[var(--foreground)]"}`}>{value}</p>
-    </div>
   );
 }

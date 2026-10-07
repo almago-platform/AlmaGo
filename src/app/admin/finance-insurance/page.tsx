@@ -1,6 +1,8 @@
 import { AdminFinanceInsurancePanel } from "@/components/admin/AdminFinanceInsurancePanel";
 import { AdminLoadError } from "@/components/admin/AdminLoadError";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
+import { AdminWorkspaceSummary } from "@/components/admin/AdminWorkspaceSummary";
+import { isCatalogVerificationCurrent } from "@/lib/catalog-freshness";
 import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -26,6 +28,10 @@ export default async function AdminFinanceInsurancePage() {
     );
   }
 
+  const options = data || [];
+  const activeCount = options.filter((option) => option.is_active).length;
+  const staleCount = options.filter((option) => option.is_active && !isCatalogVerificationCurrent(option.verified_at)).length;
+
   return (
     <main className="mx-auto w-full max-w-[92rem] px-4 py-5 sm:px-6 sm:py-6 xl:px-8">
       <AdminPageHeader
@@ -33,7 +39,17 @@ export default async function AdminFinanceInsurancePage() {
         title="Finance & assurance"
         description="Publiez uniquement des informations factuelles appuyées par une source officielle. AlmaGo ne classe pas les fournisseurs et ne déduit pas l’éligibilité d’un étudiant."
       />
-      <AdminFinanceInsurancePanel options={data || []} />
+      <AdminWorkspaceSummary
+        eyebrow="Catalogue finance"
+        title="Options factuelles et revalidation"
+        description="Maintenez des informations officielles, datées et sans classement fournisseur ni déduction automatique d’éligibilité."
+        metrics={[
+          { label: "Options", value: options.length },
+          { label: "Actives", value: activeCount, tone: activeCount ? "success" : "neutral" },
+          { label: "À revalider", value: staleCount, tone: staleCount ? "warning" : "neutral" },
+        ]}
+      />
+      <AdminFinanceInsurancePanel options={options} />
     </main>
   );
 }
