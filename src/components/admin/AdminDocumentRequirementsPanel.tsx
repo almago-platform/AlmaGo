@@ -16,6 +16,17 @@ export type AdminDocumentRequirementItem = {
   student_request_reason: string | null;
   student_request_due_date: string | null;
   document_id: string | null;
+  requires_tunisian_authentication: boolean;
+  requires_translation: boolean;
+  requires_german_legalisation: boolean | null;
+  legalisation_status: string | null;
+  legalisation_reason: string | null;
+  due_date: string | null;
+  deadline_kind: string | null;
+  deadline_cycle: string | null;
+  source_url: string | null;
+  source_verified_at: string | null;
+  admin_note: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -69,6 +80,29 @@ function formatDate(value: string | null) {
   const timestamp = Date.parse(value + (value.length === 10 ? "T12:00:00Z" : ""));
   if (!Number.isFinite(timestamp)) return null;
   return new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium", timeZone: "UTC" }).format(new Date(timestamp));
+}
+
+function processBadgeVariant(value: string | null): "success" | "warning" | "info" | "neutral" {
+  if (value === "completed" || value === "authenticated" || value === "translated") return "success";
+  if (value === "required" || value === "to_verify") return "warning";
+  if (value === "submitted_external" || value?.endsWith("_in_progress")) return "info";
+  return "neutral";
+}
+
+function legalisationLabel(item: AdminDocumentRequirementItem) {
+  if (item.legalisation_status === "completed") return "Légalisation terminée";
+  if (item.legalisation_status === "submitted_external") return "Légalisation · externe";
+  if (item.legalisation_status === "required" || item.requires_german_legalisation === true) return "Légalisation requise";
+  if (item.legalisation_status === "not_required" || item.requires_german_legalisation === false) return "Légalisation non requise";
+  return "Légalisation à vérifier";
+}
+
+function requirementDeadlineLabel(kind: string | null) {
+  if (kind === "official_hard_deadline") return "Deadline officielle";
+  if (kind === "official_external_date") return "Date externe officielle";
+  if (kind === "internal_target") return "Cible interne";
+  if (kind === "source_review_date") return "Revue de source";
+  return "Date procédure";
 }
 
 export function AdminDocumentRequirementsPanel({
@@ -148,7 +182,7 @@ export function AdminDocumentRequirementsPanel({
             Ce qui est demandé, reçu et validé
           </h3>
           <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
-            Une exigence reste distincte du fichier envoyé. Ainsi, un remplacement ne supprime pas les anciennes versions et l’équipe voit toujours ce qui manque réellement.
+            Une exigence reste distincte du fichier envoyé. Le panneau conserve aussi les opérations internes d’authentification, traduction et légalisation, leur motif et leur source lorsqu’ils sont enregistrés.
           </p>
         </div>
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
@@ -190,6 +224,62 @@ export function AdminDocumentRequirementsPanel({
                   {item.student_request_reason ? (
                     <p className="mt-2 text-sm leading-5 text-slate-600">{item.student_request_reason}</p>
                   ) : null}
+
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {item.requires_tunisian_authentication || item.status.startsWith("authentication_") || item.status === "authenticated" ? (
+                      <Badge variant={processBadgeVariant(item.status)}>
+                        {item.status === "authenticated"
+                          ? "Authentification terminée"
+                          : item.status === "authentication_in_progress"
+                            ? "Authentification en cours"
+                            : "Authentification requise"}
+                      </Badge>
+                    ) : null}
+                    {item.requires_translation || item.status.startsWith("translation_") || item.status === "translated" ? (
+                      <Badge variant={processBadgeVariant(item.status)}>
+                        {item.status === "translated"
+                          ? "Traduction terminée"
+                          : item.status === "translation_in_progress"
+                            ? "Traduction en cours"
+                            : "Traduction requise"}
+                      </Badge>
+                    ) : null}
+                    <Badge variant={processBadgeVariant(item.legalisation_status)}>
+                      {legalisationLabel(item)}
+                    </Badge>
+                  </div>
+
+                  {item.legalisation_reason ? (
+                    <p className="mt-2 text-xs leading-5 text-slate-600">
+                      Motif légalisation · {item.legalisation_reason}
+                    </p>
+                  ) : null}
+                  {item.admin_note ? (
+                    <p className="mt-2 rounded-[var(--radius-control)] bg-slate-50 px-3 py-2 text-xs leading-5 text-slate-700">
+                      Note interne · {item.admin_note}
+                    </p>
+                  ) : null}
+                  {item.source_url ? (
+                    <p className="mt-2 text-xs leading-5 text-slate-600">
+                      Source ·{" "}
+                      <a
+                        href={item.source_url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="font-semibold text-[var(--brand)] hover:underline"
+                      >
+                        ouvrir la source officielle
+                      </a>
+                      {item.source_verified_at ? ` · vérifiée le ${formatDate(item.source_verified_at)}` : " · vérification à confirmer"}
+                    </p>
+                  ) : null}
+                  {item.due_date ? (
+                    <p className="mt-2 text-xs font-semibold text-slate-600">
+                      {requirementDeadlineLabel(item.deadline_kind)} · {formatDate(item.due_date)}
+                      {item.deadline_cycle ? ` · ${item.deadline_cycle}` : ""}
+                    </p>
+                  ) : null}
+
                   {linked ? (
                     <p className="mt-2 text-xs font-semibold text-slate-600">
                       Fichier lié · {linked.original_filename || linked.category}
