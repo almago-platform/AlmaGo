@@ -4,6 +4,7 @@ import { AdminLoadError } from "@/components/admin/AdminLoadError";
 import { AdminWorkspaceSummary } from "@/components/admin/AdminWorkspaceSummary";
 import { Badge } from "@/components/ui/Badge";
 import { buttonClassName } from "@/components/ui/Button";
+import { applicationRouteRisk } from "@/lib/admin/application-risk";
 import { isOpenAdminAction } from "@/lib/admin/people";
 import { isActiveApplication } from "@/lib/application-workflow";
 import { createClient } from "@/lib/supabase/server";
@@ -44,6 +45,7 @@ type ApplicationRow = {
   deadline_source_url: string | null;
   deadline_verified_at: string | null;
   deadline_cycle: string | null;
+  application_method: string | null;
   next_action: string | null;
 };
 
@@ -122,7 +124,7 @@ export default async function AdminTeamPage() {
       .limit(5000),
     supabase
       .from("applications")
-      .select("student_id,status,deadline,deadline_kind,deadline_source_url,deadline_verified_at,deadline_cycle,next_action")
+      .select("student_id,status,deadline,deadline_kind,deadline_source_url,deadline_verified_at,deadline_cycle,application_method,next_action")
       .limit(5000),
     supabase
       .from("student_case_notes")
@@ -232,6 +234,31 @@ export default async function AdminTeamPage() {
     if (action.status === "waiting_external") waitingExternalStudentIds.add(action.student_id);
   }
 
+  const unverifiedDeadlineStudentIds = new Set<string>();
+  const applicationRiskStudentIds = new Set<string>();
+  for (const action of (actionsResult.data || []) as ActionRow[]) {
+    if (!operationalIds.has(action.student_id)) continue;
+    if (action.due_date && !actionDeadlineIsTrusted(action)) {
+      unverifiedDeadlineStudentIds.add(action.student_id);
+    }
+  }
+  for (const application of (applicationsResult.data || []) as ApplicationRow[]) {
+    if (!operationalIds.has(application.student_id) || !isActiveApplication(application.status)) continue;
+    const trusted = applicationDeadlineIsTrusted(application);
+    if (application.deadline && !trusted) {
+      unverifiedDeadlineStudentIds.add(application.student_id);
+    }
+    if (applicationRouteRisk({
+      status: application.status,
+      application_method: application.application_method,
+      deadline: application.deadline,
+      deadline_kind: application.deadline_kind,
+      deadlineTrusted: trusted,
+    }, today)) {
+      applicationRiskStudentIds.add(application.student_id);
+    }
+  }
+
   const byAdvisor = new Map<string, AdvisorWorkload>(
     advisors.map((advisor) => [
       advisor.id,
@@ -335,7 +362,7 @@ export default async function AdminTeamPage() {
         ]}
       />
 
-      <section className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4" aria-label="États d’attente de l’équipe">
+      <section className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3" aria-label="États d’attente et risques de l’équipe">
         <TeamStateCard
           href="/admin/people?work=blocked"
           label="Bloqués"
@@ -363,6 +390,20 @@ export default async function AdminTeamPage() {
           value={waitingExternalStudentIds.size}
           detail="Université, autorité ou autre acteur externe"
           tone={waitingExternalStudentIds.size ? "info" : "success"}
+        />
+        <TeamStateCard
+          href="/admin/people?work=deadline_verify"
+          label="Dates à vérifier"
+          value={unverifiedDeadlineStudentIds.size}
+          detail="Date enregistrée sans provenance complète"
+          tone={unverifiedDeadlineStudentIds.size ? "warning" : "success"}
+        />
+        <TeamStateCard
+          href="/admin/people?work=application_risk"
+          label="VPD / uni-assist à risque"
+          value={applicationRiskStudentIds.size}
+          detail="Cible interne D-70 ou D-56 atteinte avant soumission"
+          tone={applicationRiskStudentIds.size ? "warning" : "success"}
         />
       </section>
 
