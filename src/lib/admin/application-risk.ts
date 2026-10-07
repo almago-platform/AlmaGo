@@ -2,6 +2,68 @@ import {
   isActiveApplication,
   isSubmittedApplicationStatus,
 } from "@/lib/application-workflow";
+import {
+  evaluateCampusApplicationDeadline,
+  evaluateCampusOfficialDeadline,
+} from "@/lib/student/procedure-deadline";
+
+type ApplicationDeadlineTruthInput = {
+  deadline: string | null | undefined;
+  deadline_kind: string | null | undefined;
+  deadline_source_url: string | null | undefined;
+  deadline_verified_at: string | null | undefined;
+  deadline_cycle: string | null | undefined;
+};
+
+type AdminActionDeadlineTruthInput = {
+  due_date: string | null | undefined;
+  deadline_kind: string | null | undefined;
+  official_source_url: string | null | undefined;
+  official_source_verified_at: string | null | undefined;
+  deadline_cycle: string | null | undefined;
+};
+
+export function applicationDateIsTrusted(
+  application: ApplicationDeadlineTruthInput,
+  now: Date = new Date(),
+) {
+  if (!application.deadline) return false;
+  if (application.deadline_kind === "internal_target" || application.deadline_kind === "source_review_date") {
+    return dateKeyDayNumber(application.deadline) !== null;
+  }
+  if (application.deadline_kind !== "official_hard_deadline" && application.deadline_kind !== "official_external_date") {
+    return false;
+  }
+  const evaluation = evaluateCampusApplicationDeadline({
+    deadline: application.deadline,
+    deadline_kind: application.deadline_kind,
+    deadline_source_url: application.deadline_source_url || null,
+    deadline_verified_at: application.deadline_verified_at || null,
+    deadline_cycle: application.deadline_cycle || null,
+  }, now);
+  return evaluation.status === "open" || evaluation.status === "closed";
+}
+
+export function adminActionDateIsTrusted(
+  action: AdminActionDeadlineTruthInput,
+  now: Date = new Date(),
+) {
+  if (!action.due_date) return false;
+  if (action.deadline_kind === "internal_target" || action.deadline_kind === "source_review_date") {
+    return dateKeyDayNumber(action.due_date) !== null;
+  }
+  if (action.deadline_kind !== "official_hard_deadline" && action.deadline_kind !== "official_external_date") {
+    return false;
+  }
+  const evaluation = evaluateCampusOfficialDeadline({
+    kind: action.deadline_kind,
+    date: action.due_date,
+    cycle: action.deadline_cycle || null,
+    sourceUrl: action.official_source_url || null,
+    verifiedAt: action.official_source_verified_at || null,
+  }, now);
+  return evaluation.status === "open" || evaluation.status === "closed";
+}
 
 export type ApplicationRouteRiskKind = "uni_assist" | "vpd_then_direct";
 
