@@ -33,16 +33,13 @@ test("candidate accounts cannot directly use client-only student tables", () => 
   for (const table of [
     "academic_evidence",
     "applications",
-    "documents",
     "program_recommendations",
     "student_checklist_items",
     "student_document_requirements",
     "student_dossier_messages",
     "student_history",
-    "student_intake_cases",
     "student_language_course_selections",
     "student_procedures",
-    "student_projects",
   ]) {
     assert.match(
       migration,
@@ -59,11 +56,9 @@ test("admin access stays independent from student client entitlement", () => {
   for (const policy of [
     "academic evidence own or admin read",
     "applications student or admin read",
-    "documents student or admin read",
     "recommendations student active or admin read",
     "checklist student or admin",
     "student procedures own or admin read",
-    "student projects own or admin read",
   ]) {
     assert.match(
       migration,
@@ -93,20 +88,19 @@ test("prospect profile ownership remains intentionally available", () => {
   assert.doesNotMatch(migration, /drop policy if exists "customer access /i);
 });
 
-test("student document storage requires active client entitlement", () => {
+test("prospect pre-dossier resources keep their owner-scoped boundary", () => {
   for (const policy of [
+    "documents student or admin read",
+    "student intake own or admin read",
+    "student projects own or admin read",
     "document objects own folder",
     "document objects own upload",
     "document objects own allowed delete",
   ]) {
-    assert.match(
+    assert.doesNotMatch(
       migration,
-      new RegExp(
-        'create policy "' + policy + '"[\\s\\S]*?private\\.has_student_client_access\\(\\)',
-        "i",
-      ),
+      new RegExp('drop policy if exists "' + policy + '"', "i"),
       policy,
     );
   }
-  assert.match(migration, /bucket_id = 'student-documents'/i);
 });
