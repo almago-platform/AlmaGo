@@ -49,3 +49,10 @@ test("Admin V11 blocker list prioritizes critical issues before warnings", () =>
   assert.match(dossier, /blockerRank = \{ critical: 0, warning: 1, info: 2 \}/);
   assert.match(dossier, /blockers\.sort/);
 });
+
+test("Admin V11 only surfaces a targeted student checklist action when its reason is explicit", () => {
+  assert.match(dossier, /action\.status === "waiting_student"/);
+  assert.match(dossier, /action\.requires_student_action/);
+  assert.match(dossier, /action\.student_action_reason\?\.trim\(\)/);
+  assert.match(dossier, /Action étudiante requise/);
+});
