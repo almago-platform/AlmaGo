@@ -141,6 +141,7 @@ export function AdminDocumentRequirementsPanel({
   const [operationById, setOperationById] = useState<Record<string, string>>({});
   const [noteById, setNoteById] = useState<Record<string, string>>({});
   const [legalisationReasonById, setLegalisationReasonById] = useState<Record<string, string>>({});
+  const [sourceUrlById, setSourceUrlById] = useState<Record<string, string>>({});
   const [notice, setNotice] = useState<{ tone: "success" | "error"; text: string } | null>(null);
 
   const documentById = new Map(documents.map((item) => [item.id, item]));
@@ -214,6 +215,7 @@ export function AdminDocumentRequirementsPanel({
             admin_note: noteById[item.id] ?? item.admin_note ?? "",
             legalisation_reason:
               legalisationReasonById[item.id] ?? item.legalisation_reason ?? "",
+            source_url: sourceUrlById[item.id] ?? item.source_url ?? "",
           }),
         },
       );
@@ -404,7 +406,7 @@ export function AdminDocumentRequirementsPanel({
                     </label>
 
                     <label className="text-xs font-semibold text-slate-700">
-                      Motif / source de légalisation
+                      Motif de légalisation
                       <input
                         value={legalisationReasonById[item.id] ?? item.legalisation_reason ?? ""}
                         onChange={(event) => setLegalisationReasonById((current) => ({
@@ -413,9 +415,28 @@ export function AdminDocumentRequirementsPanel({
                         }))}
                         maxLength={1600}
                         className="field mt-1 bg-white"
-                        placeholder="Obligatoire pour « à vérifier » ou « requise »"
+                        placeholder="Pourquoi vérifier, exiger ou exclure la légalisation ?"
                         disabled={processingId === item.id}
                       />
+                    </label>
+
+                    <label className="text-xs font-semibold text-slate-700 lg:col-span-2">
+                      Source officielle utilisée pour la décision
+                      <input
+                        type="url"
+                        value={sourceUrlById[item.id] ?? item.source_url ?? ""}
+                        onChange={(event) => setSourceUrlById((current) => ({
+                          ...current,
+                          [item.id]: event.target.value,
+                        }))}
+                        maxLength={1000}
+                        className="field mt-1 bg-white"
+                        placeholder="https://..."
+                        disabled={processingId === item.id}
+                      />
+                      <span className="mt-1 block text-xs font-normal leading-5 text-slate-500">
+                        Obligatoire pour conclure « légalisation requise » ou « non requise ». Une simple vérification à faire peut rester sans source confirmée.
+                      </span>
                     </label>
 
                     <label className="text-xs font-semibold text-slate-700 lg:col-span-2">
@@ -436,7 +457,7 @@ export function AdminDocumentRequirementsPanel({
                   </div>
                   <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                     <p className="text-xs leading-5 text-slate-500">
-                      Les changements sont enregistrés dans l’historique de la procédure. Une légalisation n’est jamais activée automatiquement.
+                      Les changements sont enregistrés dans l’historique de la procédure. Une décision positive ou négative de légalisation exige une source officielle ; rien n’est déduit automatiquement.
                     </p>
                     <Button
                       type="button"
