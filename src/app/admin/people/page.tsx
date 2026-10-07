@@ -207,16 +207,20 @@ export const dynamic = "force-dynamic";
 export default async function AdminPeoplePage({
   searchParams,
 }: {
-  searchParams: Promise<{ view?: string; q?: string }>;
+  searchParams: Promise<{ view?: string; work?: string; advisor?: string; q?: string }>;
 }) {
   const params = await searchParams;
   const requestedView = params.view as PersonView | undefined;
+  const requestedWork = params.work as WorkView | undefined;
   const view: PersonView = requestedView && validViews.has(requestedView) ? requestedView : "all";
+  const work: WorkView = requestedWork && validWorkViews.has(requestedWork) ? requestedWork : "all";
+  const advisorFilter = (params.advisor || "").trim();
   const search = (params.q || "").trim().toLocaleLowerCase("fr");
 
   const supabase = await createClient();
+  const { data: { user: currentAdmin } } = await supabase.auth.getUser();
 
-  const [prospectsResult, accessResult] = await Promise.all([
+  const [prospectsResult, accessResult, adminRolesResult] = await Promise.all([
     supabase
       .from("prospects")
       .select("id,email,user_id,created_at,updated_at")
@@ -227,21 +231,27 @@ export default async function AdminPeoplePage({
       .select("user_id,status,status_changed_at")
       .order("status_changed_at", { ascending: false })
       .limit(500),
+    supabase
+      .from("user_roles")
+      .select("user_id")
+      .eq("role", "admin"),
   ]);
 
   const prospects = (prospectsResult.data || []) as ProspectRow[];
   const accessRows = (accessResult.data || []) as AccessRow[];
+  const adminIds = (adminRolesResult.data || []).map((item) => item.user_id);
 
   const userIds = [...new Set([
     ...prospects.flatMap((item) => item.user_id ? [item.user_id] : []),
     ...accessRows.map((item) => item.user_id),
   ])];
   const prospectIds = prospects.map((item) => item.id);
+  const profileIds = [...new Set([...userIds, ...adminIds])];
 
-  const [profilesResult, intakeResult, documentsResult, applicationsResult, actionsResult, orientationsResult] =
+  const [profilesResult, intakeResult, documentsResult, applicationsResult, actionsResult, orientationsResult, assignmentsResult] =
     await Promise.all([
-      userIds.length
-        ? supabase.from("profiles").select("id,first_name,last_name,full_name").in("id", userIds)
+      profileIds.length
+        ? supabase.from("profiles").select("id,first_name,last_name,full_name").in("id", profileIds)
         : Promise.resolve({ data: [], error: null }),
       userIds.length
         ? supabase.from("student_intake_cases").select("student_id,status,updated_at").in("student_id", userIds)
@@ -250,25 +260,30 @@ export default async function AdminPeoplePage({
         ? supabase.from("documents").select("student_id,status").in("student_id", userIds)
         : Promise.resolve({ data: [], error: null }),
       userIds.length
-        ? supabase.from("applications").select("id,student_id,status,deadline,next_action,created_at").in("student_id", userIds)
+        ? supabase.from("applications").select("id,student_id,status,deadline,deadline_kind,deadline_source_url,deadline_verified_at,deadline_cycle,next_action,created_at").in("student_id", userIds)
         : Promise.resolve({ data: [], error: null }),
       userIds.length
-        ? supabase.from("student_checklist_items").select("id,student_id,title,description,status,owner,due_date,created_at").in("student_id", userIds)
+        ? supabase.from("student_checklist_items").select("id,student_id,title,description,status,owner,due_date,deadline_kind,created_at").in("student_id", userIds)
         : Promise.resolve({ data: [], error: null }),
       prospectIds.length
         ? supabase.from("orientations").select("id,prospect_id,created_at").in("prospect_id", prospectIds)
+        : Promise.resolve({ data: [], error: null }),
+      userIds.length
+        ? supabase.from("student_case_assignments").select("student_id,assigned_admin_id,assigned_at,updated_at").in("student_id", userIds)
         : Promise.resolve({ data: [], error: null }),
     ]);
 
   const fatalError =
     prospectsResult.error
     || accessResult.error
+    || adminRolesResult.error
     || profilesResult.error
     || intakeResult.error
     || documentsResult.error
     || applicationsResult.error
     || actionsResult.error
-    || orientationsResult.error;
+    || orientationsResult.error
+    || assignmentsResult.error;
 
   if (fatalError) {
     return (
@@ -288,6 +303,7 @@ export default async function AdminPeoplePage({
   const applications = (applicationsResult.data || []) as ApplicationRow[];
   const actions = (actionsResult.data || []) as ActionRow[];
   const orientations = (orientationsResult.data || []) as OrientationRow[];
+  const assignments = (assignmentsResult.data || []) as AssignmentRow[];
 
   const profileByUser = new Map(profiles.map((item) => [item.id, item]));
   const accessByUser = new Map(accessRows.map((item) => [item.user_id, item]));
