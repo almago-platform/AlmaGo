@@ -106,8 +106,8 @@ export function AdminDocumentsPanel({
   const [notice, setNotice] = useState<Notice | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
 
-  const pendingCount = documents.filter((document) => document.status === "pending").length;
-  const replacementCount = documents.filter((document) => document.status === "replace_required").length;
+  const reviewCount = documents.filter((document) => ["pending", "reviewed"].includes(document.status)).length;
+  const waitingStudentCount = documents.filter((document) => ["replace_required", "rejected"].includes(document.status)).length;
   const approvedCount = documents.filter((document) => document.status === "approved").length;
 
   async function review(id: string, status: (typeof reviewStatuses)[number]) {
@@ -272,20 +272,22 @@ export function AdminDocumentsPanel({
               File documentaire
             </p>
             <h2 className="mt-2 text-xl font-semibold tracking-[-0.025em] text-slate-950 sm:text-2xl">
-              {pendingCount + replacementCount
-                ? `${pendingCount + replacementCount} document${pendingCount + replacementCount > 1 ? "s" : ""} à traiter`
-                : "La file documentaire est à jour"}
+              {reviewCount
+                ? `${reviewCount} document${reviewCount > 1 ? "s" : ""} attend${reviewCount > 1 ? "ent" : ""} une décision`
+                : waitingStudentCount
+                  ? `${waitingStudentCount} document${waitingStudentCount > 1 ? "s" : ""} attend${waitingStudentCount > 1 ? "ent" : ""} l’étudiant`
+                  : "La file documentaire est à jour"}
             </h2>
             <p className="mt-2 text-sm leading-6 text-slate-600">
-              Ouvrez un dossier, vérifiez la pièce, classez sa valeur académique si nécessaire, puis enregistrez une décision explicite.
+              La file montre uniquement la version actuelle de chaque type de pièce. Les anciennes versions restent disponibles dans le Dossier 360° de l’étudiant.
             </p>
           </div>
 
           <div className="grid overflow-hidden rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--border)] grid-cols-2 sm:grid-cols-4 xl:min-w-[36rem]">
-            <QueueSummary label="Visibles" value={documents.length} />
-            <QueueSummary label="En attente" value={pendingCount} />
-            <QueueSummary label="Approuvés" value={approvedCount} />
-            <QueueSummary label="À remplacer" value={replacementCount} tone="warning" />
+            <QueueSummary label="Versions actuelles" value={documents.length} />
+            <QueueSummary label="À décider" value={reviewCount} tone={reviewCount ? "warning" : undefined} />
+            <QueueSummary label="Validés" value={approvedCount} />
+            <QueueSummary label="Attend étudiant" value={waitingStudentCount} tone={waitingStudentCount ? "warning" : undefined} />
           </div>
         </div>
       </Card>
@@ -323,7 +325,10 @@ export function AdminDocumentsPanel({
             const profile = Array.isArray(document.profiles) ? document.profiles[0] : document.profiles;
             const studentName = [profile?.first_name, profile?.last_name].filter(Boolean).join(" ") || "Étudiant";
             const isReplacement = document.status === "replace_required";
+            const isRejected = document.status === "rejected";
+            const isWaitingStudent = isReplacement || isRejected;
             const isApproved = document.status === "approved";
+            const needsDecision = document.status === "pending" || document.status === "reviewed";
             const isBusy = busy === document.id;
             const linkedEvidence = evidence.filter((item) => item.document_id === document.id);
             const currentEvidence = linkedEvidence[0];
@@ -338,13 +343,19 @@ export function AdminDocumentsPanel({
                 as="article"
                 key={document.id}
                 aria-labelledby={`admin-document-title-${document.id}`}
-                className={`min-w-0 overflow-hidden ${isReplacement ? "border-[var(--warning-border)] bg-[var(--premium-gold-wash)]/35" : "bg-white"}`}
+                className={`min-w-0 overflow-hidden ${isWaitingStudent ? "border-[var(--warning-border)] bg-[var(--premium-gold-wash)]/35" : "bg-white"}`}
               >
                 <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-start">
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
-                      <Badge variant={isReplacement ? "warning" : isApproved ? "success" : "info"}>
-                        {isReplacement ? "Remplacement demandé" : isApproved ? "Document approuvé" : "À vérifier"}
+                      <Badge variant={isWaitingStudent ? "warning" : isApproved ? "success" : "info"}>
+                        {isReplacement
+                          ? "Remplacement demandé"
+                          : isRejected
+                            ? "Rejeté · correction attendue"
+                            : isApproved
+                              ? "Document approuvé"
+                              : "À vérifier"}
                       </Badge>
                       <span className="text-xs font-semibold text-[var(--muted)]">File #{index + 1}</span>
                     </div>
@@ -407,7 +418,7 @@ export function AdminDocumentsPanel({
                     title="Message étudiant"
                     description="Rédigez uniquement ce que l’étudiant peut lire dans son espace."
                     badge={<Badge variant="info">Visible étudiant</Badge>}
-                    defaultOpen={!isApproved}
+                    defaultOpen={needsDecision}
                     tone="brand"
                   >
                     <label className="block text-sm font-semibold text-slate-700">
@@ -559,13 +570,17 @@ export function AdminDocumentsPanel({
                     step="D"
                     title="Décision documentaire"
                     description="Validez la pièce ou laissez le dossier dans un état qui exige une action."
-                    defaultOpen
+                    defaultOpen={needsDecision}
                     tone="brand"
                   >
                     <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                       <div className="max-w-2xl">
                         <p className="text-sm leading-6 text-slate-600">
-                          Approuver valide la pièce. Un remplacement ou un rejet conserve le dossier dans un état nécessitant une action ou un suivi.
+                          {needsDecision
+                            ? "Approuver valide la pièce. Un remplacement ou un rejet transfère la prochaine action à l’étudiant."
+                            : isWaitingStudent
+                              ? "La décision actuelle attend une nouvelle pièce de l’étudiant. Rouvrez cette décision seulement si vous devez la corriger."
+                              : "Cette pièce est déjà validée. Une nouvelle décision doit rester exceptionnelle et traçable."}
                         </p>
                       </div>
 
