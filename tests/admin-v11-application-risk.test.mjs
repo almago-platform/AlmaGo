@@ -8,6 +8,7 @@ const risk = read("src/lib/admin/application-risk.ts");
 const dashboard = read("src/app/admin/page.tsx");
 const people = read("src/app/admin/people/page.tsx");
 const applications = read("src/components/admin/AdminApplicationsPanel.tsx");
+const team = read("src/app/admin/team/page.tsx");
 
 test("Admin V11 application risk derives only from verified official hard deadlines", () => {
   assert.match(risk, /deadline_kind !== "official_hard_deadline"/);
@@ -51,4 +52,14 @@ test("Admin V11 application cards show route risk without relabelling the intern
   assert.match(applications, /VPD \/ uni-assist à risque/);
   assert.match(applications, /cible interne D-/);
   assert.match(applications, /deadline officielle/);
+});
+
+test("Admin V11 Team cockpit uses the same source and application-route risk queues", () => {
+  assert.match(team, /applicationRouteRisk/);
+  assert.match(team, /unverifiedDeadlineStudentIds/);
+  assert.match(team, /applicationRiskStudentIds/);
+  assert.match(team, /\/admin\/people\?work=deadline_verify/);
+  assert.match(team, /\/admin\/people\?work=application_risk/);
+  assert.match(team, /Dates à vérifier/);
+  assert.match(team, /VPD \/ uni-assist à risque/);
 });
