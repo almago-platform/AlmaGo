@@ -74,9 +74,8 @@ test("review RPC is service-role-only", () => {
 });
 
 test("admin API verifies session role and never accepts reviewer identity from browser", () => {
-  assert.match(route, /supabase\.auth\.getUser\(\)/);
-  assert.match(route, /from\("user_roles"\)/);
-  assert.match(route, /role\?\.role !== "admin"/);
+  assert.match(route, /getAdminUser\(\)/);
+  assert.match(route, /if \(!isAdmin\)/);
   assert.match(route, /p_admin_user_id: user\.id/);
   assert.match(route, /p_orientation_id: orientationId/);
   assert.match(route, /p_expected_latest_qualification_id: expectedQualificationId/);

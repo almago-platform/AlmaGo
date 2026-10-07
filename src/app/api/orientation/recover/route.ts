@@ -1,13 +1,27 @@
 import { NextResponse } from "next/server";
 import { getAuthenticatedUser } from "@/lib/auth/access";
 import { createPrivilegedSupabaseClient } from "@/lib/supabase/privileged";
+import { enforceRequestRateLimit, PUBLIC_ABUSE_POLICIES } from "@/lib/security/abuse";
 
-export async function POST() {
+export async function POST(request: Request) {
+  const ipLimited = enforceRequestRateLimit(
+    request,
+    PUBLIC_ABUSE_POLICIES.orientationAccountMutation,
+  );
+  if (ipLimited) return ipLimited;
+
   const { user } = await getAuthenticatedUser();
 
   if (!user?.email) {
     return NextResponse.json({ error: "Non authentifié." }, { status: 401 });
   }
+
+  const accountLimited = enforceRequestRateLimit(
+    request,
+    PUBLIC_ABUSE_POLICIES.orientationAccountMutation,
+    { accountId: user.id },
+  );
+  if (accountLimited) return accountLimited;
 
   if (!user.email_confirmed_at) {
     return NextResponse.json(

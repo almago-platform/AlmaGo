@@ -28,6 +28,7 @@ import {
   normalizeAcquisitionContext,
 } from "@/lib/phase2/acquisition";
 import { createPrivilegedSupabaseClient } from "@/lib/supabase/privileged";
+import { enforceRequestRateLimit, PUBLIC_ABUSE_POLICIES } from "@/lib/security/abuse";
 
 const MAX_BODY_BYTES = 24_000;
 const ENGINE_VERSION = "public-orientation-v1";
@@ -78,7 +79,21 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Not found." }, { status: 404 });
   }
 
+  const ipLimited = enforceRequestRateLimit(
+    request,
+    PUBLIC_ABUSE_POLICIES.orientationProspect,
+  );
+  if (ipLimited) return ipLimited;
+
   const { user: authenticatedUser } = await getAuthenticatedUser();
+  if (authenticatedUser) {
+    const accountLimited = enforceRequestRateLimit(
+      request,
+      PUBLIC_ABUSE_POLICIES.orientationProspect,
+      { accountId: authenticatedUser.id },
+    );
+    if (accountLimited) return accountLimited;
+  }
 
   const contentLength = Number(request.headers.get("content-length") || "0");
   if (contentLength > MAX_BODY_BYTES) {

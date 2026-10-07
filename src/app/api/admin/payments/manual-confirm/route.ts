@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
+import { getAdminUser } from "@/lib/auth/access";
 import { isPhase2PaymentOrchestrationEnabled } from "@/lib/phase2/config";
 import { recordManualPhase2Payment } from "@/lib/phase2/payment";
-import { createClient } from "@/lib/supabase/server";
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
@@ -10,22 +10,13 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Orchestration désactivée." }, { status: 503 });
   }
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { user, isAdmin } = await getAdminUser();
 
   if (!user) {
     return NextResponse.json({ error: "Non authentifié." }, { status: 401 });
   }
 
-  const { data: role } = await supabase
-    .from("user_roles")
-    .select("role")
-    .eq("user_id", user.id)
-    .maybeSingle();
-
-  if (role?.role !== "admin") {
+  if (!isAdmin) {
     return NextResponse.json({ error: "Accès administrateur requis." }, { status: 403 });
   }
 

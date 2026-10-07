@@ -33,7 +33,7 @@ jobs:
         github.event.pull_request.draft == false
       )
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
     env:
       PR_NUMBER: ${{ github.event.pull_request.number || github.event.client_payload.pull_number }}
       EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.event.client_payload.head_sha }}
@@ -78,6 +78,26 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Setup isolated Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: 2.120.0
+
+      - name: Start isolated Supabase test stack
+        run: supabase start
+
+      - name: Executable database authorization tests
+        run: supabase test db
+
+      - name: Executable PostgREST and Storage IDOR tests
+        shell: bash
+        run: |
+          eval "$(supabase status -o env)"
+          SUPABASE_URL="$API_URL" \
+          SUPABASE_ANON_KEY="$ANON_KEY" \
+          SUPABASE_SERVICE_ROLE_KEY="$SERVICE_ROLE_KEY" \
+          node tests/security/local-supabase-idor.mjs
 
 
       - name: Tests

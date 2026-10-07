@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { join } from "node:path";
 import test from "node:test";
+import { hasClientLifecycleEntitlement } from "../src/lib/auth/entitlement.ts";
 import { isPhase2AccessEnabled } from "../src/lib/phase2/config.ts";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
@@ -13,7 +14,37 @@ const access = read("src/lib/phase2/access.ts");
 test("Phase 2 feature flag is disabled by default", () => {
   assert.equal(isPhase2AccessEnabled({}), false);
   assert.equal(isPhase2AccessEnabled({ ALMAGO_PHASE2_ENABLED: "false" }), false);
+  assert.equal(isPhase2AccessEnabled({ ALMAGO_PHASE2_ENABLED: "malformed" }), false);
   assert.equal(isPhase2AccessEnabled({ ALMAGO_PHASE2_ENABLED: "true" }), true);
+});
+
+test("client entitlement is independent from feature flag state", () => {
+  const flagEnvironments = [
+    {},
+    { ALMAGO_PHASE2_ENABLED: "false" },
+    { ALMAGO_PHASE2_ENABLED: "true" },
+    { ALMAGO_PHASE2_ENABLED: "malformed" },
+  ];
+  const nonClientStatuses = [
+    null,
+    "prospect_account",
+    "qualified_prospect",
+    "payment_pending",
+    "paid_pending_validation",
+  ];
+
+  for (const env of flagEnvironments) {
+    isPhase2AccessEnabled(env);
+    for (const status of nonClientStatuses) {
+      assert.equal(
+        hasClientLifecycleEntitlement(status),
+        false,
+        `${env.ALMAGO_PHASE2_ENABLED ?? "missing"}:${status}`,
+      );
+    }
+    assert.equal(hasClientLifecycleEntitlement("client_active"), true);
+    assert.equal(hasClientLifecycleEntitlement("client_completed"), true);
+  }
 });
 
 test("Phase 2 commercial lifecycle stays separate from technical roles", () => {
@@ -60,11 +91,12 @@ test("authenticated clients cannot mutate commercial access directly", () => {
   assert.match(migration, /customer access own or admin read/i);
 });
 
-test("server helper fails closed once Phase 2 is enabled", () => {
+test("server helper always derives client entitlement from lifecycle state", () => {
   assert.match(access, /getPhase2StudentAccess/);
-  assert.match(access, /if \(!phase2Enabled\)/);
-  assert.match(access, /customerStatus:\s*"client_active"/);
   assert.match(access, /\.from\("customer_access"\)/);
   assert.match(access, /canUseClientFeatures\(customerStatus\)/);
+  assert.doesNotMatch(access, /if \(!phase2Enabled\)/);
+  assert.doesNotMatch(access, /customerStatus:\s*"client_active"/);
+  assert.doesNotMatch(access, /canUseClientFeatures:\s*true/);
   assert.doesNotMatch(access, /user_metadata|raw_user_meta_data/);
 });
