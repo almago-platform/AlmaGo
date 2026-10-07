@@ -113,8 +113,13 @@ test("Admin V11 exposes who each dossier is waiting on without inventing student
   assert.match(people, /item\.status === "waiting_student"[\s\S]*item\.requires_student_action[\s\S]*item\.student_action_reason\?\.trim\(\)/);
 });
 
-test("Admin V11 prioritizes dossiers explicitly waiting on Campus before passive monitoring", () => {
+test("Admin V11 keeps direct student replies ahead of generic Campus waits", () => {
+  assert.match(dashboard, /studentQuestions > 0/);
   assert.match(dashboard, /waitingCampusCases > 0/);
   assert.match(dashboard, /Étudiants attendent Campus/);
   assert.match(dashboard, /Traiter les attentes Campus/);
+  assert.ok(
+    dashboard.indexOf("studentQuestions > 0") < dashboard.indexOf("waitingCampusCases > 0"),
+    "student replies should stay ahead of generic Campus waiting states",
+  );
 });
