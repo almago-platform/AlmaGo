@@ -123,16 +123,14 @@ export function AppShell({
     en: "Communication",
     de: "Kommunikation",
   } as const;
-  const studentGroups = [
-    ...studentGroupIndexes.map((indexes, groupIndex) => ({
-      label: shell.groups[groupIndex],
-      items: indexes.map((index) => localizedStudentItems[index]),
-    })),
-    {
-      label: messageGroupCopy[locale],
-      items: [localizedStudentItems[11]],
-    },
-  ];
+  const studentGroups = studentGroupIndexes.map((indexes, groupIndex) => ({
+    label: shell.groups[groupIndex],
+    items: indexes.map((index) => localizedStudentItems[index]),
+  }));
+  studentGroups.push({
+    label: messageGroupCopy[locale],
+    items: [localizedStudentItems[11]],
+  });
   const partnerDemoItem: NavItem = {
     label: "Démo partenaires",
     href: "/admin/partner-demo",
