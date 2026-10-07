@@ -479,7 +479,7 @@ function DailySignalCard({
     >
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">{label}</p>
+          <p className="text-xs font-bold uppercase tracking-[0.12em] text-slate-600">{label}</p>
           <p className="mt-2 text-3xl font-semibold tracking-tight text-slate-950">{value}</p>
         </div>
         <Badge variant={tone}>{value ? "À vérifier" : "À jour"}</Badge>
