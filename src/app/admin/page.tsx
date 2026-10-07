@@ -55,7 +55,7 @@ export default async function AdminEntry() {
     supabase.from("universities").select("id", { count: "exact", head: true }).eq("is_active", true),
     supabase.from("programs").select("id", { count: "exact", head: true }).eq("is_active", true),
     supabase.from("applications").select("id", { count: "exact", head: true }).not("status", "in", "(admission,rejection,withdrawn)"),
-    supabase.from("documents").select("id", { count: "exact", head: true }).in("status", ["pending", "replace_required"]),
+    supabase.from("documents").select("id", { count: "exact", head: true }).in("status", ["pending", "reviewed"]),
     supabase.from("student_intake_cases").select("student_id", { count: "exact", head: true }).in("status", ["student_question", "campus_review", "paid_pending_validation"]),
     supabase.from("student_intake_cases").select("student_id", { count: "exact", head: true }).eq("status", "student_question"),
     supabase.from("program_recommendations").select("id", { count: "exact", head: true }).eq("is_archived", false),
@@ -183,7 +183,7 @@ export default async function AdminEntry() {
       ? {
           badge: "Documents à traiter",
           title: `${documents} document${documents > 1 ? "s" : ""} demande${documents > 1 ? "nt" : ""} votre attention`,
-          description: "Commencez par la file documentaire : une vérification ou un remplacement demandé peut bloquer la suite du dossier étudiant.",
+          description: "Commencez par la file documentaire : ces pièces ont été reçues et attendent une décision de l’équipe.",
           href: "/admin/documents",
           action: "Ouvrir la file documents",
         }
