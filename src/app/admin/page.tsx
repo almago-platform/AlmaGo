@@ -121,12 +121,13 @@ export default async function AdminEntry() {
     (recentContactsResult.data || []).map((item) => item.student_id),
   );
   const explicitActionIds = new Set<string>();
-  const humanCampusActions = (actionsResult.data || []).filter((item) =>
-    isOpenAdminAction(item.status)
-    && item.template_id === null
-    && (item.owner === "almago" || item.owner === "joint")
+  const humanActions = (actionsResult.data || []).filter((item) =>
+    isOpenAdminAction(item.status) && item.template_id === null
   );
-  for (const item of humanCampusActions) explicitActionIds.add(item.student_id);
+  const humanCampusActions = humanActions.filter((item) =>
+    item.owner === "almago" || item.owner === "joint"
+  );
+  for (const item of humanActions) explicitActionIds.add(item.student_id);
   for (const item of applicationRowsResult.data || []) {
     if (isActiveApplication(item.status) && item.next_action?.trim()) explicitActionIds.add(item.student_id);
   }
@@ -139,7 +140,7 @@ export default async function AdminEntry() {
     if (!current || key < current) nearestDueByStudent.set(studentId, key);
   };
 
-  for (const item of humanCampusActions) {
+  for (const item of humanActions) {
     if (actionDeadlineIsTrusted(item)) registerDue(item.student_id, item.due_date);
   }
   for (const item of applicationRowsResult.data || []) {
