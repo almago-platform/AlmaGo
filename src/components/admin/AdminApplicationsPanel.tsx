@@ -9,6 +9,8 @@ import { Card } from "@/components/ui/Card";
 import { AdminWorkflowSection } from "@/components/admin/AdminWorkflowSection";
 import { PremiumEmptyState } from "@/components/product/PremiumEmptyState";
 import {
+  applicationOfficialDeadlineUrgency,
+  applicationOfficialDeadlineUrgencyLabel,
   applicationRouteRisk,
   applicationRouteRiskLabel,
 } from "@/lib/admin/application-risk";
@@ -153,12 +155,18 @@ export function AdminApplicationsPanel({
   const missingActionCount = scopedItems.filter(
     (application) => isActiveApplication(application.status) && !application.next_action?.trim(),
   ).length;
-  const overdueCount = scopedItems.filter(
-    (application) =>
-      isActiveApplication(application.status)
-      && Boolean(application.deadline)
-      && applicationDeadlineIsTrusted(application)
-      && isPastDeadline(application.deadline),
+  const officialDeadlineUrgencies = scopedItems.flatMap((application) => {
+    const urgency = applicationOfficialDeadlineUrgency({
+      status: application.status,
+      deadline: application.deadline,
+      deadline_kind: application.deadline_kind,
+      deadlineTrusted: applicationDeadlineIsTrusted(application),
+    }, todayKey);
+    return urgency ? [urgency] : [];
+  });
+  const overdueCount = officialDeadlineUrgencies.filter((urgency) => urgency.kind === "overdue").length;
+  const officialDeadline30Count = officialDeadlineUrgencies.filter((urgency) =>
+    urgency.daysRemaining >= 0 && urgency.daysRemaining <= 30
   ).length;
   const unverifiedDeadlineCount = scopedItems.filter(
     (application) =>
@@ -344,10 +352,11 @@ export function AdminApplicationsPanel({
             </p>
           </div>
 
-          <div className="grid overflow-hidden rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--border)] grid-cols-2 sm:grid-cols-5 xl:min-w-[52rem]">
+          <div className="grid overflow-hidden rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--border)] grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 xl:min-w-[62rem]">
             <QueueMetric label="Actives" value={activeCount} />
             <QueueMetric label="Sans action" value={missingActionCount} tone={missingActionCount ? "warning" : "neutral"} />
-            <QueueMetric label="En retard" value={overdueCount} tone={overdueCount ? "warning" : "neutral"} />
+            <QueueMetric label="Officielles dépassées" value={overdueCount} tone={overdueCount ? "warning" : "neutral"} />
+            <QueueMetric label="Officielles ≤ 30 j" value={officialDeadline30Count} tone={officialDeadline30Count ? "warning" : "neutral"} />
             <QueueMetric label="Dates à vérifier" value={unverifiedDeadlineCount} tone={unverifiedDeadlineCount ? "warning" : "neutral"} />
             <QueueMetric label="VPD / uni-assist à risque" value={routeRiskCount} tone={routeRiskCount ? "warning" : "neutral"} />
           </div>
@@ -423,11 +432,13 @@ export function AdminApplicationsPanel({
             && edit.status !== application.status
             && !edit.note.trim();
           const trustedDeadline = applicationDeadlineIsTrusted(application);
-          const isOverdue =
-            isActiveApplication(application.status)
-            && Boolean(application.deadline)
-            && trustedDeadline
-            && isPastDeadline(application.deadline);
+          const officialUrgency = applicationOfficialDeadlineUrgency({
+            status: application.status,
+            deadline: application.deadline,
+            deadline_kind: application.deadline_kind,
+            deadlineTrusted: trustedDeadline,
+          }, todayKey);
+          const isOverdue = officialUrgency?.kind === "overdue";
           const hasUnverifiedDeadline =
             isActiveApplication(application.status)
             && Boolean(application.deadline)
@@ -483,7 +494,17 @@ export function AdminApplicationsPanel({
                   )}
                 </div>
                 <div className="flex flex-wrap gap-2 sm:justify-end">
-                  {isOverdue && <Badge variant="warning">Échéance dépassée</Badge>}
+                  {officialUrgency ? (
+                    <Badge variant={
+                      officialUrgency.kind === "overdue" || officialUrgency.kind === "d3"
+                        ? "error"
+                        : officialUrgency.kind === "d7" || officialUrgency.kind === "d14"
+                          ? "warning"
+                          : "info"
+                    }>
+                      {applicationOfficialDeadlineUrgencyLabel(officialUrgency)}
+                    </Badge>
+                  ) : null}
                   {hasUnverifiedDeadline && <Badge variant="warning">Date à vérifier</Badge>}
                   {routeRisk ? <Badge variant="warning">{applicationRouteRiskLabel(routeRisk.kind)}</Badge> : null}
                   {!hasRecordedAction && isActiveApplication(application.status) && <Badge variant="warning">Sans prochaine action</Badge>}
@@ -526,8 +547,12 @@ export function AdminApplicationsPanel({
                   </dl>
 
                   {isOverdue ? (
-                    <p className="mt-4 rounded-[var(--radius-control)] border border-amber-200 bg-amber-50 p-3 text-sm font-semibold text-amber-950">
-                      L’échéance fiable enregistrée est dépassée. Vérifiez le statut réel avant toute modification.
+                    <p className="mt-4 rounded-[var(--radius-control)] border border-red-200 bg-red-50 p-3 text-sm font-semibold text-red-950">
+                      La deadline officielle vérifiée est dépassée et la candidature n’est pas enregistrée comme soumise. Vérifiez immédiatement le statut réel avant toute autre action.
+                    </p>
+                  ) : officialUrgency?.kind === "d3" ? (
+                    <p className="mt-4 rounded-[var(--radius-control)] border border-red-200 bg-red-50 p-3 text-sm font-semibold text-red-950">
+                      Deadline officielle critique : {applicationOfficialDeadlineUrgencyLabel(officialUrgency)}. Confirmez que le dossier peut être déposé à temps.
                     </p>
                   ) : hasUnverifiedDeadline ? (
                     <p className="mt-4 rounded-[var(--radius-control)] border border-amber-200 bg-amber-50 p-3 text-sm leading-6 text-amber-950">
