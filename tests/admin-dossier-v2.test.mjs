@@ -32,11 +32,13 @@ test("admin dossier V2 is a single 360-degree read context", () => {
     'from("documents")',
     'from("applications")',
     'from("commercial_purchases")',
+    'from("student_checklist_items")',
+    'from("student_history")',
   ]) {
     assert.ok(dossierPage.includes(table));
   }
 
-  assert.ok(dossierPage.includes("Dossier étudiant · vue 360°"));
+  assert.ok(dossierPage.includes("dossier 360°"));
   assert.ok(dossierPage.includes("Les mutations sensibles restent dans leurs écrans métier dédiés"));
 });
 

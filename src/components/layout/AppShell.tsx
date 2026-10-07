@@ -57,12 +57,14 @@ const studentGroupIndexes = [
 
 const adminItems: NavItem[] = [
   { label: "Vue d’ensemble", href: "/admin", icon: icons.dashboard, helper: "Priorités de l’équipe" },
+  { label: "Personnes", href: "/admin/people", icon: icons.profile, helper: "Prospects, candidats et étudiants" },
+  { label: "Prospects", href: "/admin/prospects", icon: icons.orientation, helper: "Qualification des projets" },
+  { label: "Dossiers Campus", href: "/admin/intake", icon: icons.checklist, helper: "Décisions et parcours" },
   { label: "Documents", href: "/admin/documents", icon: icons.documents, helper: "Pièces à vérifier" },
   { label: "Candidatures", href: "/admin/applications", icon: icons.applications, helper: "Dossiers et échéances" },
   { label: "Orientation", href: "/admin/orientation", icon: icons.orientation, helper: "Recommandations étudiants" },
-  { label: "Prospects", href: "/admin/prospects", icon: icons.profile, helper: "Qualification des projets" },
-  { label: "Offres", href: "/admin/offers", icon: icons.applications, helper: "Bronze, Silver et Gold" },
   { label: "Paiements", href: "/admin/payments", icon: icons.applications, helper: "Validation et activation client" },
+  { label: "Offres", href: "/admin/offers", icon: icons.applications, helper: "Bronze, Silver et Gold" },
   { label: "Universités", href: "/admin/universities", icon: icons.universities, helper: "Établissements" },
   { label: "Programmes", href: "/admin/programs", icon: icons.programs, helper: "Formations" },
   { label: "Cours de langue", href: "/admin/language-courses", icon: icons.programs, helper: "Préparation linguistique" },
@@ -71,6 +73,7 @@ const adminItems: NavItem[] = [
 
 function isActive(pathname: string, href: string) {
   if (href === "/student" || href === "/admin") return pathname === href;
+  if (href === "/admin/people" && pathname.startsWith("/admin/dossiers/")) return true;
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
@@ -110,11 +113,28 @@ export function AppShell({
     ? [...adminItems, partnerDemoItem]
     : adminItems;
   const adminGroups = [
-    { label: "Pilotage", items: currentAdminItems.slice(0, 1) },
-    { label: "Opérations", items: currentAdminItems.slice(1, 7) },
-    { label: "Catalogue Allemagne", items: currentAdminItems.slice(7, 11) },
+    { label: "Pilotage", items: currentAdminItems.filter((item) => item.href === "/admin") },
+    {
+      label: "Personnes",
+      items: currentAdminItems.filter((item) =>
+        ["/admin/people", "/admin/prospects"].includes(item.href),
+      ),
+    },
+    {
+      label: "Files de travail",
+      items: currentAdminItems.filter((item) =>
+        ["/admin/intake", "/admin/documents", "/admin/applications", "/admin/orientation", "/admin/payments"].includes(item.href),
+      ),
+    },
+    { label: "Commercial", items: currentAdminItems.filter((item) => item.href === "/admin/offers") },
+    {
+      label: "Catalogue Allemagne",
+      items: currentAdminItems.filter((item) =>
+        ["/admin/universities", "/admin/programs", "/admin/language-courses", "/admin/finance-insurance"].includes(item.href),
+      ),
+    },
     ...(partnerPrelaunch
-      ? [{ label: "Pré-lancement", items: currentAdminItems.slice(11) }]
+      ? [{ label: "Pré-lancement", items: currentAdminItems.filter((item) => item.href === "/admin/partner-demo") }]
       : []),
   ];
   const items = role === "admin" ? currentAdminItems : localizedStudentItems;

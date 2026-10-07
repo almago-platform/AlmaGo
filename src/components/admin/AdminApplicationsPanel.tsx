@@ -1,9 +1,10 @@
 "use client";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import Link from "next/link";
 import { useMemo, useRef, useState } from "react";
 import { Badge } from "@/components/ui/Badge";
-import { Button } from "@/components/ui/Button";
+import { Button, buttonClassName } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { AdminWorkflowSection } from "@/components/admin/AdminWorkflowSection";
 import { PremiumEmptyState } from "@/components/product/PremiumEmptyState";
@@ -292,6 +293,12 @@ export function AdminApplicationsPanel({ applications }: { applications: any[] }
                   <span className={`status-badge shrink-0 ${statusTone(application.status)}`}>
                     {applicationStatusLabels[application.status] || application.status}
                   </span>
+                  <Link
+                    href={`/admin/dossiers/${application.student_id}`}
+                    className={buttonClassName("ghost", "min-h-8 px-2.5 py-1 text-xs")}
+                  >
+                    Dossier 360°
+                  </Link>
                 </div>
               </div>
 

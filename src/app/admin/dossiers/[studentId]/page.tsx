@@ -6,6 +6,7 @@ import { DocumentRow } from "@/components/product/DocumentRow";
 import { JourneyRail, type JourneyRailStep } from "@/components/product/JourneyRail";
 import { NextActionPanel } from "@/components/product/NextActionPanel";
 import { AdminLoadError } from "@/components/admin/AdminLoadError";
+import { AdminDossierActionsPanel, type AdminDossierActionItem } from "@/components/admin/AdminDossierActionsPanel";
 import { Badge } from "@/components/ui/Badge";
 import { DataList } from "@/components/ui/DataList";
 import { PremiumEmptyState } from "@/components/product/PremiumEmptyState";
@@ -30,6 +31,7 @@ import {
   customerAccessLabel,
   purchaseStatusLabel,
 } from "@/lib/admin/student-dossier";
+import { adminActionOwnerLabel, adminActionWaiting, adminPersonSegmentLabels, classifyAdminPerson, isOpenAdminAction } from "@/lib/admin/people";
 import { createClient } from "@/lib/supabase/server";
 
 type ApplicationRow = {
@@ -70,6 +72,13 @@ type PurchaseRow = {
   status: string;
   created_at: string;
   updated_at: string;
+};
+
+type HistoryRow = {
+  id: string;
+  event_type: string;
+  message: string;
+  created_at: string;
 };
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -114,6 +123,24 @@ function latestDocument(documents: DocumentRowData[], category: string) {
   return documents.find((document) => document.category === category) ?? null;
 }
 
+function documentStatusLabel(status: string) {
+  if (status === "approved") return "Approuvé";
+  if (status === "pending") return "À vérifier";
+  if (status === "reviewed") return "Revu";
+  if (status === "replace_required") return "Remplacement demandé";
+  if (status === "rejected") return "Rejeté";
+  if (status === "quarantined") return "Quarantaine";
+  return status;
+}
+
+function documentStatusVariant(status: string): "success" | "info" | "warning" | "error" | "neutral" {
+  if (status === "approved") return "success";
+  if (status === "pending" || status === "reviewed") return "info";
+  if (status === "replace_required") return "warning";
+  if (status === "rejected" || status === "quarantined") return "error";
+  return "neutral";
+}
+
 export const dynamic = "force-dynamic";
 
 export default async function AdminStudentDossierPage({
@@ -134,6 +161,8 @@ export default async function AdminStudentDossierPage({
     documentsResult,
     applicationsResult,
     purchasesResult,
+    actionsResult,
+    historyResult,
   ] = await Promise.all([
     supabase
       .from("profiles")
@@ -171,6 +200,18 @@ export default async function AdminStudentDossierPage({
       .eq("user_id", studentId)
       .order("created_at", { ascending: false })
       .limit(1),
+    supabase
+      .from("student_checklist_items")
+      .select("id,title,description,status,owner,due_date,template_id,completed_at,created_at")
+      .eq("student_id", studentId)
+      .order("due_date", { ascending: true, nullsFirst: false })
+      .order("created_at", { ascending: true }),
+    supabase
+      .from("student_history")
+      .select("id,event_type,message,created_at")
+      .eq("student_id", studentId)
+      .order("created_at", { ascending: false })
+      .limit(40),
   ]);
 
   const profile = profileResult.data;
@@ -180,6 +221,8 @@ export default async function AdminStudentDossierPage({
   const documents = (documentsResult.data || []) as DocumentRowData[];
   const applications = (applicationsResult.data || []) as unknown as ApplicationRow[];
   const purchase = ((purchasesResult.data || []) as PurchaseRow[])[0] ?? null;
+  const dossierActions = (actionsResult.data || []) as AdminDossierActionItem[];
+  const historyRows = (historyResult.data || []) as HistoryRow[];
 
   if (!profile && !prospect && !intake) {
     notFound();
@@ -192,7 +235,9 @@ export default async function AdminStudentDossierPage({
     || accessResult.error
     || documentsResult.error
     || applicationsResult.error
-    || purchasesResult.error;
+    || purchasesResult.error
+    || actionsResult.error
+    || historyResult.error;
 
   if (fatalError) {
     return (
@@ -232,28 +277,34 @@ export default async function AdminStudentDossierPage({
     );
   }
 
-  let orientation = null as {
+  let orientationHistory = [] as Array<{
     id: string;
     input: unknown;
     created_at: string;
-  } | null;
+  }>;
 
-  if (intake?.orientation_id) {
-    const orientationResult = await supabase
-      .from("orientations")
-      .select("id,input,created_at")
-      .eq("id", intake.orientation_id)
-      .maybeSingle();
-    orientation = orientationResult.data;
-  } else if (prospect?.id) {
+  if (prospect?.id) {
     const orientationResult = await supabase
       .from("orientations")
       .select("id,input,created_at")
       .eq("prospect_id", prospect.id)
       .order("created_at", { ascending: false })
-      .limit(1);
-    orientation = orientationResult.data?.[0] ?? null;
+      .limit(30);
+    orientationHistory = (orientationResult.data || []) as typeof orientationHistory;
   }
+
+  if (intake?.orientation_id && !orientationHistory.some((item) => item.id === intake.orientation_id)) {
+    const orientationResult = await supabase
+      .from("orientations")
+      .select("id,input,created_at")
+      .eq("id", intake.orientation_id)
+      .maybeSingle();
+    if (orientationResult.data) orientationHistory.unshift(orientationResult.data);
+  }
+
+  const orientation = intake?.orientation_id
+    ? orientationHistory.find((item) => item.id === intake.orientation_id) || orientationHistory[0] || null
+    : orientationHistory[0] || null;
 
   const offerResult = intake?.proposed_offer_version_id
     ? await supabase
@@ -274,8 +325,18 @@ export default async function AdminStudentDossierPage({
     || profile?.full_name
     || "Étudiant";
   const email = prospect?.email || "Adresse non enregistrée";
+  const personSegment = classifyAdminPerson(access?.status, Boolean(intake));
   const currentStage = adminDossierStageIndex(intake?.status, applications.length > 0);
-  const nextAction = adminDossierNextAction(intake?.status, applications.length > 0);
+  const workflowNextAction = adminDossierNextAction(intake?.status, applications.length > 0);
+  const recordedNextAction = dossierActions.find((item) => isOpenAdminAction(item.status)) || null;
+  const nextAction = recordedNextAction
+    ? {
+        title: recordedNextAction.title,
+        description: `${adminActionOwnerLabel(recordedNextAction.owner)} · ${recordedNextAction.description || "Action enregistrée dans le suivi du dossier."}`,
+        href: null as string | null,
+        waiting: adminActionWaiting(recordedNextAction.status),
+      }
+    : workflowNextAction;
 
   const lifecycleSteps: JourneyRailStep[] = adminDossierLifecycle.map((label, index) => ({
     label,
@@ -296,8 +357,24 @@ export default async function AdminStudentDossierPage({
               : undefined,
   }));
 
-  const timeline: ActivityTimelineItem[] = [];
-  if (orientation?.created_at) {
+  const timeline: ActivityTimelineItem[] = historyRows.map((item) => ({
+    title:
+      item.event_type.includes("document") ? "Documents"
+        : item.event_type.includes("payment") || item.event_type.includes("purchase") ? "Paiement"
+          : item.event_type.includes("application") ? "Candidature"
+            : item.event_type.includes("orientation") || item.event_type.includes("route") ? "Orientation / parcours"
+              : item.event_type.includes("action") ? "Action de suivi"
+                : "Dossier mis à jour",
+    description: item.message,
+    timestamp: formatDate(item.created_at),
+    tone:
+      item.event_type.includes("payment") ? "info"
+        : item.event_type.includes("document") ? "warning"
+          : item.event_type.includes("orientation") || item.event_type.includes("route") ? "brand"
+            : "neutral",
+  }));
+
+  if (!historyRows.length && orientation?.created_at) {
     timeline.push({
       title: "Orientation enregistrée",
       description: projectFacts.length ? projectFacts.join(" · ") : "Projet enregistré dans AlmaGo.",
@@ -305,7 +382,7 @@ export default async function AdminStudentDossierPage({
       tone: "brand",
     });
   }
-  if (intake?.student_responded_at) {
+  if (!historyRows.length && intake?.student_responded_at) {
     timeline.push({
       title: "Réponse de l’étudiant",
       description: intake.student_response_note || "Une réponse a été envoyée depuis l’espace Prospect.",
@@ -313,7 +390,7 @@ export default async function AdminStudentDossierPage({
       tone: "warning",
     });
   }
-  if (purchase?.created_at) {
+  if (!historyRows.length && purchase?.created_at) {
     timeline.push({
       title: "Achat créé",
       description: `${offerName(purchase.offer_snapshot) || "Offre Campus Allemagne"} · ${purchaseStatusLabel(purchase.status)}`,
@@ -322,7 +399,7 @@ export default async function AdminStudentDossierPage({
     });
   }
 
-  for (const application of applications) {
+  if (!historyRows.length) for (const application of applications) {
     for (const event of application.application_events || []) {
       timeline.push({
         title: event.event_type === "application_status_changed"
@@ -358,9 +435,9 @@ export default async function AdminStudentDossierPage({
   return (
     <main className="mx-auto w-full max-w-[92rem] space-y-7 px-4 py-5 sm:px-6 sm:py-6 xl:px-8">
       <DossierHeader
-        eyebrow="Dossier étudiant · vue 360°"
+        eyebrow={`${adminPersonSegmentLabels[personSegment]} · dossier 360°`}
         title={name}
-        description="Une seule vue pour comprendre le projet, les pièces, la proposition, le paiement et la suite du parcours."
+        description="Une seule vue pour comprendre la personne, ses orientations, ses pièces, ses candidatures, ses actions et la suite du parcours."
         status={adminDossierStatusLabel(intake?.status)}
         statusVariant={adminDossierStatusVariant(intake?.status)}
         facts={[
@@ -371,15 +448,38 @@ export default async function AdminStudentDossierPage({
         ]}
         actions={
           <Link
-            href="/admin/intake"
+            href="/admin/people"
             className={buttonClassName("secondary", "min-h-10 px-4 py-2")}
           >
-            Retour à la file
+            Retour aux personnes
           </Link>
         }
       />
 
-      <section className="space-y-3">
+      <nav
+        aria-label="Navigation du dossier"
+        className="pc-card flex flex-wrap gap-1.5 p-2"
+      >
+        {[
+          ["#overview", "Synthèse"],
+          ["#actions", "Actions"],
+          ["#orientation", "Orientation"],
+          ["#documents", "Documents"],
+          ["#applications", "Candidatures"],
+          ["#commercial", "Offre & paiement"],
+          ["#history", "Historique"],
+        ].map(([href, label]) => (
+          <a
+            key={href}
+            href={href}
+            className="rounded-[var(--radius-control)] px-3 py-2 text-xs font-bold text-slate-600 transition-colors hover:bg-[var(--surface-subtle)] hover:text-[var(--brand)]"
+          >
+            {label}
+          </a>
+        ))}
+      </nav>
+
+      <section id="overview" className="scroll-mt-24 space-y-3">
         <PremiumSectionHeader
           eyebrow="Cycle du dossier"
           title="Où en est cette personne ?"
@@ -409,9 +509,13 @@ export default async function AdminStudentDossierPage({
         }
       />
 
+      <div id="actions" className="scroll-mt-24">
+        <AdminDossierActionsPanel studentId={studentId} actions={dossierActions} />
+      </div>
+
       <div className="grid gap-7 xl:grid-cols-[minmax(0,1.35fr)_minmax(19rem,0.65fr)]">
         <div className="space-y-7">
-          <section className="pc-panel p-5 sm:p-6">
+          <section id="orientation" className="pc-panel scroll-mt-24 p-5 sm:p-6">
             <PremiumSectionHeader
               eyebrow="Projet"
               title="Orientation retenue"
@@ -434,9 +538,48 @@ export default async function AdminStudentDossierPage({
                 },
               ]}
             />
+
+            <div className="mt-5 border-t border-[var(--border)] pt-4">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <p className="text-sm font-bold text-slate-950">Toutes les orientations</p>
+                <Badge variant="neutral">{orientationHistory.length}</Badge>
+              </div>
+              {orientationHistory.length ? (
+                <div className="mt-3 divide-y divide-[var(--border)] rounded-[var(--radius-control)] border border-[var(--border)] bg-white">
+                  {orientationHistory.map((item) => {
+                    const itemInput = item.input && typeof item.input === "object"
+                      ? item.input as Record<string, unknown>
+                      : {};
+                    const itemAnswers = restorePublicOrientationAnswers(itemInput.answers);
+                    const itemFacts = orientationProjectFacts(itemAnswers, "fr");
+                    const current = item.id === orientation?.id;
+                    return (
+                      <div key={item.id} className="flex flex-col gap-3 p-3 sm:flex-row sm:items-center sm:justify-between">
+                        <div className="min-w-0">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <p className="text-sm font-semibold text-slate-950">
+                              {itemAnswers.targetDegree || "Projet"} · {itemAnswers.targetField || "Domaine à confirmer"}
+                            </p>
+                            {current ? <Badge variant="info">Orientation retenue</Badge> : null}
+                          </div>
+                          <p className="mt-1 text-xs leading-5 text-slate-600">
+                            {itemFacts.length ? itemFacts.join(" · ") : "Orientation enregistrée"}
+                          </p>
+                        </div>
+                        <time className="text-xs font-semibold text-slate-500" dateTime={item.created_at}>
+                          {formatDate(item.created_at)}
+                        </time>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <p className="mt-3 text-sm text-slate-600">Aucune orientation enregistrée.</p>
+              )}
+            </div>
           </section>
 
-          <section className="pc-panel p-5 sm:p-6">
+          <section id="documents" className="pc-panel scroll-mt-24 p-5 sm:p-6">
             <PremiumSectionHeader
               eyebrow="Pièces"
               title="Documents du dossier"
@@ -464,9 +607,28 @@ export default async function AdminStudentDossierPage({
                 );
               })}
             </div>
+
+            {documents.length ? (
+              <details className="mt-5 rounded-[var(--radius-control)] border border-[var(--border)] bg-white p-4">
+                <summary className="cursor-pointer text-sm font-bold text-slate-950">
+                  Tous les fichiers enregistrés · {documents.length}
+                </summary>
+                <div className="mt-3 divide-y divide-[var(--border)]">
+                  {documents.map((document) => (
+                    <div key={document.id} className="flex flex-col gap-3 py-3 sm:flex-row sm:items-center sm:justify-between">
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-semibold text-slate-900">{document.original_filename || document.category}</p>
+                        <p className="mt-1 text-xs text-slate-500">{document.category} · {formatDate(document.created_at)}</p>
+                      </div>
+                      <Badge variant={documentStatusVariant(document.status)}>{documentStatusLabel(document.status)}</Badge>
+                    </div>
+                  ))}
+                </div>
+              </details>
+            ) : null}
           </section>
 
-          <section className="pc-panel p-5 sm:p-6">
+          <section id="commercial" className="pc-panel scroll-mt-24 p-5 sm:p-6">
             <PremiumSectionHeader
               eyebrow="Proposition & paiement"
               title="Cadre commercial du dossier"
@@ -491,7 +653,7 @@ export default async function AdminStudentDossierPage({
             ) : null}
           </section>
 
-          <section className="pc-panel p-5 sm:p-6">
+          <section id="applications" className="pc-panel scroll-mt-24 p-5 sm:p-6">
             <PremiumSectionHeader
               eyebrow="Candidatures"
               title={applications.length ? `${applications.length} candidature${applications.length > 1 ? "s" : ""} rattachée${applications.length > 1 ? "s" : ""}` : "Aucune candidature enregistrée"}
@@ -507,7 +669,7 @@ export default async function AdminStudentDossierPage({
 
             {applications.length ? (
               <div className="mt-5 divide-y divide-[var(--border)] border-y border-[var(--border)]">
-                {applications.slice(0, 6).map((application) => {
+                {applications.map((application) => {
                   const program = firstProgram(application);
                   const university = program?.universities;
                   const universityValue = Array.isArray(university) ? university[0] ?? null : university;
@@ -567,7 +729,7 @@ export default async function AdminStudentDossierPage({
             </div>
           </section>
 
-          <section className="pc-card p-5">
+          <section id="history" className="pc-card scroll-mt-24 p-5">
             <PremiumSectionHeader
               eyebrow="Historique"
               title="Activité récente"
@@ -575,7 +737,7 @@ export default async function AdminStudentDossierPage({
             />
             <div className="mt-5">
               <ActivityTimeline
-                items={timeline.slice(0, 8)}
+                items={timeline.slice(0, 12)}
                 empty="Aucune activité récente n’est disponible pour ce dossier."
               />
             </div>
