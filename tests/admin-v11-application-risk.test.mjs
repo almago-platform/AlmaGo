@@ -9,6 +9,7 @@ const dashboard = read("src/app/admin/page.tsx");
 const people = read("src/app/admin/people/page.tsx");
 const applications = read("src/components/admin/AdminApplicationsPanel.tsx");
 const team = read("src/app/admin/team/page.tsx");
+const dossier = read("src/app/admin/dossiers/[studentId]/page.tsx");
 
 test("Admin V11 application risk derives only from verified official hard deadlines", () => {
   assert.match(risk, /deadline_kind !== "official_hard_deadline"/);
@@ -62,4 +63,12 @@ test("Admin V11 Team cockpit uses the same source and application-route risk que
   assert.match(team, /\/admin\/people\?work=application_risk/);
   assert.match(team, /Dates à vérifier/);
   assert.match(team, /VPD \/ uni-assist à risque/);
+});
+
+test("Admin V11 Dossier 360 exposes the same verified route risk as an actionable blocker", () => {
+  assert.match(dossier, /applicationRouteRisk/);
+  assert.match(dossier, /applicationRouteRiskLabel/);
+  assert.match(dossier, /application-route-risk/);
+  assert.match(dossier, /Accélérer la préparation/);
+  assert.match(dossier, /ne remplace pas la deadline officielle/);
 });
