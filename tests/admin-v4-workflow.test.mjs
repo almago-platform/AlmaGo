@@ -9,6 +9,12 @@ const documents = read("src/components/admin/AdminDocumentsPanel.tsx");
 const workflow = read("src/components/admin/AdminWorkflowSection.tsx");
 const applications = read("src/components/admin/AdminApplicationsPanel.tsx");
 const prospects = read("src/app/admin/prospects/page.tsx");
+const offers = read("src/components/admin/CommercialOfferEditor.tsx");
+const programs = read("src/components/admin/AdminProgramsPanel.tsx");
+const universities = read("src/components/admin/AdminUniversitiesPanel.tsx");
+const language = read("src/components/admin/AdminLanguageCoursesPanel.tsx");
+const finance = read("src/components/admin/AdminFinanceInsurancePanel.tsx");
+const catalogueSummary = read("src/components/admin/AdminWorkspaceSummary.tsx");
 
 test("Admin V4 introduces a shared orientation-style workflow primitive", () => {
   assert.match(workflow, /export function AdminWorkflowSection/);
@@ -62,4 +68,39 @@ test("Admin V4 prospects use the same A-D reading order without automating quali
   assert.match(prospects, /step="D"[\s\S]*title="Décision de qualification"/);
   assert.match(prospects, /ProspectQualificationReviewForm/);
   assert.doesNotMatch(prospects, /\.update\(|\.insert\(/);
+});
+
+
+test("Admin V4 catalogue pages share one compact operational summary", () => {
+  assert.match(catalogueSummary, /export function AdminWorkspaceSummary/);
+  assert.match(catalogueSummary, /metrics/);
+  assert.match(catalogueSummary, /eyebrow/);
+});
+
+test("Admin V4 commercial offers follow the same A-D publication workflow", () => {
+  assert.match(offers, /AdminWorkflowSection/);
+  assert.match(offers, /step="A"[\s\S]*title="Présentation de l’offre"/);
+  assert.match(offers, /step="B"[\s\S]*title="Services inclus"/);
+  assert.match(offers, /step="C"[\s\S]*title="Prix et devise"/);
+  assert.match(offers, /step="D"[\s\S]*title="Version et publication"/);
+  assert.match(offers, /submit\("draft"\)/);
+  assert.match(offers, /submit\("publish"\)/);
+});
+
+test("Admin V4 university and programme editors use the shared workflow primitive", () => {
+  assert.match(universities, /AdminWorkflowSection/);
+  assert.match(universities, /step="A"[\s\S]*title="Identité et localisation"/);
+  assert.match(universities, /step="D"[\s\S]*title="Description et informations financières"/);
+  assert.match(programs, /AdminWorkflowSection/);
+  assert.match(programs, /step="A"[\s\S]*title="Identité du programme"/);
+  assert.match(programs, /step="F"[\s\S]*title="Maintenance interne"/);
+});
+
+test("Admin V4 sourced catalogues separate facts, verification and publication", () => {
+  for (const source of [language, finance]) {
+    assert.match(source, /AdminWorkflowSection/);
+    assert.match(source, /step="C"[\s\S]*title="Source et vérification"/);
+    assert.match(source, /step="D"[\s\S]*title="Publication"/);
+    assert.match(source, /Publier dans l’espace étudiant/);
+  }
 });
