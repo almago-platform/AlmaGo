@@ -30,6 +30,7 @@ const icons = {
   applications: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={iconClass} aria-hidden="true"><path d="M5 5h14v16H5z" /><path d="M9 3h6v4H9zM8 11h8M8 15h8" /></svg>,
   universities: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={iconClass} aria-hidden="true"><path d="m3 9 9-5 9 5-9 5-9-5Z" /><path d="M6 12v5c3 2 9 2 12 0v-5M21 10v6" /></svg>,
   programs: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={iconClass} aria-hidden="true"><path d="M4 5h16v14H4z" /><path d="M8 9h8M8 13h5" /></svg>,
+  messages: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={iconClass} aria-hidden="true"><path d="M4 5.5h16v11H9l-5 4v-15Z" /><path d="M8 10h8M8 13h5" /></svg>,
   menu: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={iconClass} aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" /></svg>,
   close: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={iconClass} aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg>,
 };
@@ -49,7 +50,7 @@ const studentItems: NavItem[] = [
 ];
 
 const studentGroupIndexes = [
-  [0],
+  [0, 11],
   [1, 2, 3, 4, 5],
   [6, 7, 8],
   [9, 10],
@@ -93,14 +94,29 @@ export function AppShell({
   const pathname = usePathname();
   const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { copy, direction } = useLocale();
+  const { copy, direction, locale } = useLocale();
   const shell = copy.shell;
   const shellHomeAria = role === "student" ? copy.common.homeAria : "Accueil AlmaGo";
-  const localizedStudentItems = studentItems.map((item, index) => ({
+  const localizedStudentBaseItems = studentItems.map((item, index) => ({
     ...item,
     label: shell.items[index][0],
     helper: shell.items[index][1],
   }));
+  const messageNavCopy = {
+    fr: ["Messages", "Écrire à Campus Allemagne"],
+    ar: ["الرسائل", "التواصل مع Campus Allemagne"],
+    en: ["Messages", "Contact Campus Allemagne"],
+    de: ["Nachrichten", "Campus Allemagne kontaktieren"],
+  } as const;
+  const localizedStudentItems: NavItem[] = [
+    ...localizedStudentBaseItems,
+    {
+      label: messageNavCopy[locale][0],
+      href: "/student/messages",
+      icon: icons.messages,
+      helper: messageNavCopy[locale][1],
+    },
+  ];
   const studentGroups = studentGroupIndexes.map((indexes, groupIndex) => ({
     label: shell.groups[groupIndex],
     items: indexes.map((index) => localizedStudentItems[index]),
