@@ -8,6 +8,9 @@ const dossier = read("src/app/admin/dossiers/[studentId]/page.tsx");
 const panel = read("src/components/admin/AdminDocumentRequirementsPanel.tsx");
 const smartDocuments = read("supabase/migrations/20261005174000_student_v2_smart_documents.sql");
 const route = read("src/app/api/admin/dossiers/[studentId]/documents/requirements/[requirementId]/route.ts");
+const dashboard = read("src/app/admin/page.tsx");
+const people = read("src/app/admin/people/page.tsx");
+const team = read("src/app/admin/team/page.tsx");
 
 test("Admin V11 Dossier 360 loads document processing truth without creating a parallel document model", () => {
   for (const field of [
@@ -111,4 +114,31 @@ test("Admin V11 internal document writes rely on the existing audited requiremen
   assert.match(route, /\.update\(update\)/);
   assert.doesNotMatch(route, /from\("(document_operations|document_processing|legalisations)"\)/);
   assert.match(panel, /Les changements sont enregistrés dans l’historique de la procédure/);
+});
+
+test("Admin V11 surfaces only current-procedure document replacements in operational queues", () => {
+  for (const source of [dashboard, people, team]) {
+    assert.match(source, /student_document_requirements/);
+    assert.match(source, /student_procedures/);
+    assert.match(source, /replacement_required/);
+  }
+
+  assert.match(dashboard, /replacementDocumentCaseIds/);
+  assert.match(dashboard, /\/admin\/people\?work=document_replacement/);
+  assert.match(dashboard, /Documents à remplacer/);
+
+  assert.match(people, /document_replacement/);
+  assert.match(people, /replacementDocuments/);
+  assert.match(people, /À remplacer · \{person\.replacementDocuments\}/);
+
+  assert.match(team, /replacementDocumentStudentIds/);
+  assert.match(team, /\/admin\/people\?work=document_replacement/);
+});
+
+test("Admin V11 waiting-state queues include targeted current document requests without inventing student work", () => {
+  for (const source of [dashboard, people, team]) {
+    assert.match(source, /requirement\.requested_from_student/);
+    assert.match(source, /\["requested", "replacement_required"\]\.includes\(requirement\.status\)/);
+    assert.match(source, /requirement\.student_request_reason\?\.trim\(\)/);
+  }
 });
