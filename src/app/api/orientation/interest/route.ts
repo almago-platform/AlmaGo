@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { hashFreeValidationInterestToken } from "@/lib/phase2/free-validation-interest-token";
 import { isPhase2ProspectCaptureEnabled } from "@/lib/phase2/config";
 import { createPrivilegedSupabaseClient } from "@/lib/supabase/privileged";
+import { enforceRequestRateLimit, PUBLIC_ABUSE_POLICIES } from "@/lib/security/abuse";
 
 const MAX_BODY_BYTES = 2_000;
 const SIGNAL_VERSION = "free-validation-interest-v1";
@@ -10,6 +11,12 @@ export async function POST(request: Request) {
   if (!isPhase2ProspectCaptureEnabled()) {
     return NextResponse.json({ error: "Not found." }, { status: 404 });
   }
+
+  const limited = enforceRequestRateLimit(
+    request,
+    PUBLIC_ABUSE_POLICIES.orientationInterest,
+  );
+  if (limited) return limited;
 
   const contentLength = Number(request.headers.get("content-length") || "0");
   if (contentLength > MAX_BODY_BYTES) {

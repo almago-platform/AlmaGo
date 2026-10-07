@@ -3,6 +3,7 @@ import { getAuthenticatedUser } from "@/lib/auth/access";
 import { hashOrientationResumeToken } from "@/lib/orientation/resume-token";
 import { isPhase2AccountLinkingEnabled } from "@/lib/phase2/config";
 import { createPrivilegedSupabaseClient } from "@/lib/supabase/privileged";
+import { enforceRequestRateLimit, PUBLIC_ABUSE_POLICIES } from "@/lib/security/abuse";
 
 const MAX_BODY_BYTES = 1_024;
 
@@ -10,6 +11,12 @@ export async function POST(request: Request) {
   if (!isPhase2AccountLinkingEnabled()) {
     return NextResponse.json({ error: "Not found." }, { status: 404 });
   }
+
+  const ipLimited = enforceRequestRateLimit(
+    request,
+    PUBLIC_ABUSE_POLICIES.orientationAccountMutation,
+  );
+  if (ipLimited) return ipLimited;
 
   const contentLength = Number(request.headers.get("content-length") || "0");
   if (contentLength > MAX_BODY_BYTES) {
@@ -20,6 +27,13 @@ export async function POST(request: Request) {
   if (!user?.email) {
     return NextResponse.json({ error: "Authentication required." }, { status: 401 });
   }
+
+  const accountLimited = enforceRequestRateLimit(
+    request,
+    PUBLIC_ABUSE_POLICIES.orientationAccountMutation,
+    { accountId: user.id },
+  );
+  if (accountLimited) return accountLimited;
 
   let body: unknown;
   try {
