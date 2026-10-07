@@ -328,7 +328,8 @@ select is((select count(*) from public.academic_evidence), 1::bigint, 'client A 
 select is((select count(*) from public.applications), 1::bigint, 'client A sees only own applications');
 select is((select count(*) from public.application_events), 1::bigint, 'client A sees only own application events');
 select is((select count(*) from public.program_recommendations), 1::bigint, 'client A sees only own recommendations');
-select is((select count(*) from public.student_checklist_items), 1::bigint, 'client A sees only own checklist');
+select is((select count(*) from public.student_checklist_items where id = '43000000-0000-0000-0000-000000000002'), 1::bigint, 'client A sees own checklist fixture');
+select is((select count(*) from public.student_checklist_items where id = '43000000-0000-0000-0000-000000000003'), 0::bigint, 'client A cannot see client B checklist fixture');
 select is((select count(*) from public.student_document_requirements), 1::bigint, 'client A sees only own document requirements');
 select is((select count(*) from public.student_dossier_messages), 1::bigint, 'client A sees only own messages');
 select is((select count(*) from public.student_history), 1::bigint, 'client A sees only own history');
@@ -359,7 +360,7 @@ select is((select count(*) from public.academic_evidence), 3::bigint, 'admin AAL
 select is((select count(*) from public.applications), 3::bigint, 'admin AAL2 reads applications');
 select is((select count(*) from public.application_events), 3::bigint, 'admin AAL2 reads application events');
 select is((select count(*) from public.program_recommendations), 3::bigint, 'admin AAL2 reads recommendations');
-select is((select count(*) from public.student_checklist_items), 3::bigint, 'admin AAL2 reads checklist');
+select is((select count(*) from public.student_checklist_items where id in ('43000000-0000-0000-0000-000000000001', '43000000-0000-0000-0000-000000000002', '43000000-0000-0000-0000-000000000003')), 3::bigint, 'admin AAL2 reads all checklist fixtures');
 select is((select count(*) from public.student_document_requirements), 3::bigint, 'admin AAL2 reads document requirements');
 select is((select count(*) from public.student_dossier_messages), 4::bigint, 'admin AAL2 reads dossier messages');
 select is((select count(*) from public.student_history), 3::bigint, 'admin AAL2 reads history');
