@@ -30,6 +30,9 @@ jobs:
 
       - run: npm ci
 
+      - name: Production dependency audit
+        run: npm audit --omit=dev --audit-level=high
+
       - name: Setup isolated Supabase CLI
         uses: supabase/setup-cli@v1
         with:
