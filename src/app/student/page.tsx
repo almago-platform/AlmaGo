@@ -62,6 +62,8 @@ const studentV2Copy = {
     detailedJourney: "Voir le détail du parcours",
     detailedJourneyHint: "Ouvrez cette vue seulement si vous souhaitez consulter les huit étapes historiques du dossier.",
     procedure: "Ouvrir ma procédure",
+    messages: "Messages",
+    messagesAttention: "Nouveaux messages",
   },
   ar: {
     space: "مساحة الطالب",
@@ -76,6 +78,8 @@ const studentV2Copy = {
     detailedJourney: "عرض تفاصيل المسار",
     detailedJourneyHint: "افتح هذه النظرة فقط إذا أردت الاطلاع على المراحل التاريخية الثماني للملف.",
     procedure: "فتح إجراءاتي",
+    messages: "الرسائل",
+    messagesAttention: "رسائل جديدة",
   },
   en: {
     space: "Student space",
@@ -90,6 +94,8 @@ const studentV2Copy = {
     detailedJourney: "View detailed journey",
     detailedJourneyHint: "Open this view only if you want to inspect the eight historical stages of the dossier.",
     procedure: "Open my procedure",
+    messages: "Messages",
+    messagesAttention: "New messages",
   },
   de: {
     space: "Studierendenbereich",
@@ -104,6 +110,8 @@ const studentV2Copy = {
     detailedJourney: "Detaillierten Weg anzeigen",
     detailedJourneyHint: "Öffnen Sie diese Ansicht nur, wenn Sie die acht historischen Dossier-Schritte sehen möchten.",
     procedure: "Mein Verfahren öffnen",
+    messages: "Nachrichten",
+    messagesAttention: "Neue Nachrichten",
   },
 } as const;
 
@@ -135,6 +143,7 @@ export default async function StudentEntry() {
     { data: recommendations, error: recommendationsError },
     { data: applications, error: applicationsError },
     { data: project, error: projectError },
+    { data: messages, error: messagesError },
   ] = await Promise.all([
     supabase
       .from("student_checklist_items")
@@ -158,9 +167,15 @@ export default async function StudentEntry() {
       .select("path,target_degree,target_field,target_intake")
       .eq("student_id", user.id)
       .maybeSingle(),
+    supabase
+      .from("student_dossier_messages")
+      .select("id,sender_role,student_read_at,created_at")
+      .eq("student_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(50),
   ]);
 
-  if (itemsError || documentsError || recommendationsError || applicationsError || projectError) {
+  if (itemsError || documentsError || recommendationsError || applicationsError || projectError || messagesError) {
     return <DashboardUnavailable copy={t} />;
   }
 
@@ -177,6 +192,9 @@ export default async function StudentEntry() {
   const studentDocuments = documents || [];
   const studentRecommendations = recommendations || [];
   const studentApplications = applications || [];
+  const unreadCampusMessages = (messages || []).filter((item) =>
+    item.sender_role === "admin" && !item.student_read_at
+  ).length;
 
   const completed = checklist.filter((item) => item.status === "completed" || item.status === "done").length;
   const progression = checklist.length ? Math.round((completed / checklist.length) * 100) : 0;
@@ -349,6 +367,9 @@ export default async function StudentEntry() {
   const documentAttentionCount = allMissingRequiredDocuments.length + allDocumentsToFix.length;
 
   const attentionItems = [
+    unreadCampusMessages
+      ? { label: v2.messagesAttention, value: unreadCampusMessages, href: "/student/messages", tone: "info" as const }
+      : null,
     overdueDeadlineCount
       ? { label: cockpit.overdueDeadlines, value: overdueDeadlineCount, href: "/student/calendar", tone: "error" as const }
       : null,
@@ -432,6 +453,12 @@ export default async function StudentEntry() {
               className="inline-flex min-h-10 items-center rounded-[var(--radius-control)] border border-white/20 bg-white/[.06] px-4 text-sm font-semibold text-white transition hover:bg-white/[.1]"
             >
               {t.pathwayCta}
+            </Link>
+            <Link
+              href="/student/messages"
+              className="inline-flex min-h-10 items-center rounded-[var(--radius-control)] border border-white/20 bg-white/[.06] px-4 text-sm font-semibold text-white transition hover:bg-white/[.1]"
+            >
+              {v2.messages}{unreadCampusMessages ? " · " + unreadCampusMessages : ""}
             </Link>
           </>
         }

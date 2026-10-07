@@ -9,6 +9,7 @@ import { AdminLoadError } from "@/components/admin/AdminLoadError";
 import { AdminDossierActionsPanel, type AdminDossierActionItem } from "@/components/admin/AdminDossierActionsPanel";
 import { AdminCaseOwnerPanel, type AdminAdvisorOption } from "@/components/admin/AdminCaseOwnerPanel";
 import { AdminCaseJournalPanel, type AdminCaseNoteItem } from "@/components/admin/AdminCaseJournalPanel";
+import { DossierMessageThread, type DossierMessageItem } from "@/components/product/DossierMessageThread";
 import { Badge } from "@/components/ui/Badge";
 import { DataList } from "@/components/ui/DataList";
 import { PremiumEmptyState } from "@/components/product/PremiumEmptyState";
@@ -168,6 +169,7 @@ export default async function AdminStudentDossierPage({
     assignmentResult,
     adminRolesResult,
     caseNotesResult,
+    messagesResult,
   ] = await Promise.all([
     supabase
       .from("profiles")
@@ -233,6 +235,12 @@ export default async function AdminStudentDossierPage({
       .order("occurred_at", { ascending: false })
       .order("created_at", { ascending: false })
       .limit(50),
+    supabase
+      .from("student_dossier_messages")
+      .select("id,sender_role,body,student_read_at,admin_read_at,created_at")
+      .eq("student_id", studentId)
+      .order("created_at", { ascending: true })
+      .limit(200),
   ]);
 
   const profile = profileResult.data;
@@ -247,6 +255,7 @@ export default async function AdminStudentDossierPage({
   const assignment = assignmentResult.data;
   const adminIds = (adminRolesResult.data || []).map((item) => item.user_id);
   const caseNotesRaw = caseNotesResult.data || [];
+  const dossierMessages = (messagesResult.data || []) as DossierMessageItem[];
 
   if (!profile && !prospect && !intake) {
     notFound();
@@ -264,7 +273,8 @@ export default async function AdminStudentDossierPage({
     || historyResult.error
     || assignmentResult.error
     || adminRolesResult.error
-    || caseNotesResult.error;
+    || caseNotesResult.error
+    || messagesResult.error;
 
   if (fatalError) {
     return (
@@ -525,6 +535,7 @@ export default async function AdminStudentDossierPage({
         {[
           ["#overview", "Synthèse"],
           ["#actions", "Actions"],
+          ["#messages", "Messages"],
           ["#journal", "Journal interne"],
           ["#orientation", "Orientation"],
           ["#documents", "Documents"],
@@ -574,6 +585,16 @@ export default async function AdminStudentDossierPage({
 
       <div id="actions" className="scroll-mt-24">
         <AdminDossierActionsPanel studentId={studentId} actions={dossierActions} />
+      </div>
+
+      <div id="messages" className="scroll-mt-24">
+        <DossierMessageThread
+          messages={dossierMessages}
+          endpoint={"/api/admin/dossiers/" + studentId + "/messages"}
+          viewerRole="admin"
+          title="Messages avec l’étudiant"
+          description="Ce fil est visible par l’étudiant. Utilisez le Journal interne pour les informations réservées à l’équipe."
+        />
       </div>
 
       <AdminCaseJournalPanel studentId={studentId} notes={caseNotes} />
