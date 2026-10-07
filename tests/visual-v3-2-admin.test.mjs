@@ -25,7 +25,8 @@ test("Admin V3.2 preserves the established dark workspace header", () => {
 test("Admin V3.2 premiumizes the command center without changing priority truth", () => {
   assert.match(dashboard, /PremiumSectionHeader/);
   assert.match(dashboard, /pc-card/);
-  assert.match(dashboard, /pc-card-interactive/);
+  assert.match(dashboard, /File opérationnelle consolidée/);
+  assert.match(dashboard, /AdminQueueRow/);
   assert.match(dashboard, /Dossiers Campus/);
   assert.match(dashboard, /Réponse étudiant reçue/);
   assert.match(dashboard, /from\("student_intake_cases"\)/);
