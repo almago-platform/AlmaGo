@@ -18,7 +18,7 @@ const serverSections = [
 ].map((path) => readFileSync(path, "utf8"));
 
 test("homepage keeps the approved logo source while using responsive Next image optimization", () => {
-  assert.match(logo, /campus-allemagne-logo-approved\.png/);
+  assert.match(logo, /campus-allemagne-logo-approved\.webp/);
   assert.doesNotMatch(logo, /unoptimized/);
   assert.match(logo, /sizes=/);
 });
