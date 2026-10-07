@@ -46,18 +46,73 @@ function firstUniversity(program: any) {
   return Array.isArray(program?.universities) ? program.universities[0] : program?.universities;
 }
 
-export function AdminApplicationsPanel({ applications }: { applications: any[] }) {
+function applicationDeadlineIsTrusted(application: any) {
+  if (!application.deadline) return false;
+  if (application.deadline_kind === "internal_target" || application.deadline_kind === "source_review_date") {
+    return true;
+  }
+  return Boolean(
+    application.deadline_source_url
+    && application.deadline_verified_at
+    && application.deadline_cycle,
+  );
+}
+
+function deadlineProvenanceLabel(application: any) {
+  if (!application.deadline) return null;
+  if (application.deadline_kind === "internal_target") return "Cible interne";
+  if (application.deadline_kind === "source_review_date") return "Date de revue source";
+  if (
+    (application.deadline_kind === "official_hard_deadline" || application.deadline_kind === "official_external_date")
+    && applicationDeadlineIsTrusted(application)
+  ) {
+    return "Échéance officielle vérifiée";
+  }
+  return applicationDeadlineIsTrusted(application) ? "Date vérifiée" : "Source / date à vérifier";
+}
+
+export function AdminApplicationsPanel({
+  applications,
+  initialStudentId = "",
+}: {
+  applications: any[];
+  initialStudentId?: string;
+}) {
   const [items, setItems] = useState(applications);
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState("all");
+  const [studentIdFilter, setStudentIdFilter] = useState(
+    applications.some((application) => application.student_id === initialStudentId)
+      ? initialStudentId
+      : "",
+  );
   const [busyIds, setBusyIds] = useState<Set<string>>(() => new Set());
   const savingIdsRef = useRef(new Set<string>());
   const [notice, setNotice] = useState<Notice | null>(null);
   const [edits, setEdits] = useState<Record<string, ApplicationEdit>>({});
 
+  const studentOptions = useMemo(() => {
+    const unique = new Map<string, string>();
+    for (const application of items) {
+      const student = firstProfile(application);
+      const name = [student?.first_name, student?.last_name].filter(Boolean).join(" ").trim();
+      unique.set(application.student_id, name || "Étudiant");
+    }
+    return [...unique.entries()]
+      .map(([id, name]) => ({ id, name }))
+      .sort((left, right) => left.name.localeCompare(right.name, "fr"));
+  }, [items]);
+
+  const scopedItems = useMemo(
+    () => studentIdFilter
+      ? items.filter((application) => application.student_id === studentIdFilter)
+      : items,
+    [items, studentIdFilter],
+  );
+
   const filtered = useMemo(() => {
     const normalized = query.trim().toLocaleLowerCase("fr");
-    return items.filter((application) => {
+    return scopedItems.filter((application) => {
       if (status !== "all" && application.status !== status) return false;
       if (!normalized) return true;
 
@@ -79,17 +134,24 @@ export function AdminApplicationsPanel({ applications }: { applications: any[] }
 
       return searchable.includes(normalized);
     });
-  }, [items, query, status]);
+  }, [query, scopedItems, status]);
 
-  const activeCount = items.filter((application) => isActiveApplication(application.status)).length;
-  const actionCount = items.filter(
-    (application) => isActiveApplication(application.status) && Boolean(application.next_action),
+  const activeCount = scopedItems.filter((application) => isActiveApplication(application.status)).length;
+  const missingActionCount = scopedItems.filter(
+    (application) => isActiveApplication(application.status) && !application.next_action?.trim(),
   ).length;
-  const overdueCount = items.filter(
+  const overdueCount = scopedItems.filter(
     (application) =>
-      isActiveApplication(application.status) &&
-      Boolean(application.deadline) &&
-      isPastDeadline(application.deadline),
+      isActiveApplication(application.status)
+      && Boolean(application.deadline)
+      && applicationDeadlineIsTrusted(application)
+      && isPastDeadline(application.deadline),
+  ).length;
+  const unverifiedDeadlineCount = scopedItems.filter(
+    (application) =>
+      isActiveApplication(application.status)
+      && Boolean(application.deadline)
+      && !applicationDeadlineIsTrusted(application),
   ).length;
 
   function changeEdit(id: string, edit: ApplicationEdit) {
@@ -180,10 +242,11 @@ export function AdminApplicationsPanel({ applications }: { applications: any[] }
             </p>
           </div>
 
-          <div className="grid overflow-hidden rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--border)] grid-cols-3 xl:min-w-[34rem]">
+          <div className="grid overflow-hidden rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--border)] grid-cols-2 sm:grid-cols-4 xl:min-w-[42rem]">
             <QueueMetric label="Actives" value={activeCount} />
-            <QueueMetric label="Avec action" value={actionCount} tone={actionCount ? "info" : "neutral"} />
+            <QueueMetric label="Sans action" value={missingActionCount} tone={missingActionCount ? "warning" : "neutral"} />
             <QueueMetric label="En retard" value={overdueCount} tone={overdueCount ? "warning" : "neutral"} />
+            <QueueMetric label="Dates à vérifier" value={unverifiedDeadlineCount} tone={unverifiedDeadlineCount ? "warning" : "neutral"} />
           </div>
         </div>
       </Card>
@@ -193,7 +256,7 @@ export function AdminApplicationsPanel({ applications }: { applications: any[] }
           <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">Trouver un dossier</p>
           <p className="mt-1 text-sm leading-6 text-slate-600">Recherchez par étudiant, programme, établissement ou prochaine action.</p>
         </div>
-        <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_15rem]">
+        <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_15rem_15rem]">
           <label className="block text-sm font-medium text-slate-700">
             Rechercher
             <input
@@ -202,6 +265,15 @@ export function AdminApplicationsPanel({ applications }: { applications: any[] }
               placeholder="Étudiant, programme, université, ville ou action"
               className="field"
             />
+          </label>
+          <label className="block text-sm font-medium text-slate-700">
+            Étudiant
+            <select value={studentIdFilter} onChange={(event) => setStudentIdFilter(event.target.value)} className="field">
+              <option value="">Tous les étudiants</option>
+              {studentOptions.map((student) => (
+                <option key={student.id} value={student.id}>{student.name}</option>
+              ))}
+            </select>
           </label>
           <label className="block text-sm font-medium text-slate-700">
             Statut
@@ -241,12 +313,18 @@ export function AdminApplicationsPanel({ applications }: { applications: any[] }
           const needsDecisionNote = ["admission", "rejection"].includes(edit.status)
             && edit.status !== application.status
             && !edit.note.trim();
+          const trustedDeadline = applicationDeadlineIsTrusted(application);
           const isOverdue =
-            isActiveApplication(application.status) &&
-            Boolean(application.deadline) &&
-            isPastDeadline(application.deadline);
+            isActiveApplication(application.status)
+            && Boolean(application.deadline)
+            && trustedDeadline
+            && isPastDeadline(application.deadline);
+          const hasUnverifiedDeadline =
+            isActiveApplication(application.status)
+            && Boolean(application.deadline)
+            && !trustedDeadline;
           const hasRecordedAction =
-            isActiveApplication(application.status) && Boolean(application.next_action);
+            isActiveApplication(application.status) && Boolean(application.next_action?.trim());
           const isDirty =
             edit.status !== application.status ||
             edit.nextAction !== (application.next_action || "") ||
@@ -283,12 +361,15 @@ export function AdminApplicationsPanel({ applications }: { applications: any[] }
                   </p>
                   {application.deadline && (
                     <p className="mt-1 text-xs font-semibold text-[var(--muted)]">
-                      Échéance {formatDeadline(application.deadline)}
+                      {trustedDeadline ? "Date de travail" : "Date enregistrée"} · {formatDeadline(application.deadline)}
+                      {" · "}{deadlineProvenanceLabel(application)}
                     </p>
                   )}
                 </div>
                 <div className="flex flex-wrap gap-2 sm:justify-end">
                   {isOverdue && <Badge variant="warning">Échéance dépassée</Badge>}
+                  {hasUnverifiedDeadline && <Badge variant="warning">Date à vérifier</Badge>}
+                  {!hasRecordedAction && isActiveApplication(application.status) && <Badge variant="warning">Sans prochaine action</Badge>}
                   {hasRecordedAction && <Badge variant="info">Action enregistrée</Badge>}
                   <span className={`status-badge shrink-0 ${statusTone(application.status)}`}>
                     {applicationStatusLabels[application.status] || application.status}
@@ -329,7 +410,11 @@ export function AdminApplicationsPanel({ applications }: { applications: any[] }
 
                   {isOverdue ? (
                     <p className="mt-4 rounded-[var(--radius-control)] border border-amber-200 bg-amber-50 p-3 text-sm font-semibold text-amber-950">
-                      L’échéance enregistrée est dépassée. Vérifiez le statut réel avant toute modification.
+                      L’échéance fiable enregistrée est dépassée. Vérifiez le statut réel avant toute modification.
+                    </p>
+                  ) : hasUnverifiedDeadline ? (
+                    <p className="mt-4 rounded-[var(--radius-control)] border border-amber-200 bg-amber-50 p-3 text-sm leading-6 text-amber-950">
+                      Une date est enregistrée, mais sa provenance n’est pas suffisamment vérifiée. Elle ne doit pas être utilisée comme deadline officielle tant que la source, le cycle et la date de vérification ne sont pas confirmés.
                     </p>
                   ) : null}
                 </AdminWorkflowSection>
