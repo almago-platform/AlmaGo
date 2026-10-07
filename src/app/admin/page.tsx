@@ -225,6 +225,16 @@ export default async function AdminEntry() {
         href: "/admin/people?work=blocked",
         action: "Traiter les blocages",
       }
+    : studentQuestions > 0
+      ? {
+        badge: "Réponse étudiant reçue",
+        title: studentQuestions > 1
+          ? `${studentQuestions} étudiants attendent une réponse de Campus Allemagne`
+          : "1 étudiant attend une réponse de Campus Allemagne",
+        description: "Une demande de discussion a été envoyée depuis l’espace étudiant. Ouvrez la file des parcours pour répondre ou ajuster la proposition.",
+        href: "/admin/intake",
+        action: "Répondre aux étudiants",
+      }
     : waitingCampusCases > 0
       ? {
           badge: "Étudiants attendent Campus",
@@ -235,17 +245,7 @@ export default async function AdminEntry() {
           href: "/admin/people?work=waiting_campus",
           action: "Traiter les attentes Campus",
         }
-      : studentQuestions > 0
-        ? {
-        badge: "Réponse étudiant reçue",
-        title: studentQuestions > 1
-          ? `${studentQuestions} étudiants attendent une réponse de Campus Allemagne`
-          : "1 étudiant attend une réponse de Campus Allemagne",
-        description: "Une demande de discussion a été envoyée depuis l’espace étudiant. Ouvrez la file des parcours pour répondre ou ajuster la proposition.",
-        href: "/admin/intake",
-        action: "Répondre aux étudiants",
-      }
-    : documents > 0
+      : documents > 0
       ? {
           badge: "Documents à traiter",
           title: `${documents} document${documents > 1 ? "s" : ""} demande${documents > 1 ? "nt" : ""} votre attention`,
