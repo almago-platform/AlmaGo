@@ -1,9 +1,10 @@
 "use client";
 
-import { useMemo, useState, type ReactNode } from "react";
+import { useMemo, useState } from "react";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { AdminWorkflowSection } from "@/components/admin/AdminWorkflowSection";
 import {
   buildMasterRequirementsDocument,
   emptyMasterRequirementsForm,
@@ -255,7 +256,7 @@ export function AdminProgramsPanel({
           </div>
 
           <div className="space-y-4">
-            <FormSection title="1. Identité du programme">
+            <AdminWorkflowSection step="A" title="Identité du programme" description="Université, nom, niveau et domaine." defaultOpen>
               <div className="grid gap-3 lg:grid-cols-2">
                 <label className="block text-sm font-medium text-slate-700">
                   Université
@@ -292,9 +293,9 @@ export function AdminProgramsPanel({
                   <input value={form.field} onChange={(event) => change("field", event.target.value)} placeholder="Informatique, ingénierie…" className="field" />
                 </label>
               </div>
-            </FormSection>
+            </AdminWorkflowSection>
 
-            <FormSection title="2. Structure des études">
+            <AdminWorkflowSection step="B" title="Structure des études" description="Langue d’enseignement, rentrée et durée du cursus.">
               <div className="grid gap-3 md:grid-cols-3">
                 <label className="block text-sm font-medium text-slate-700">
                   Langue d’enseignement
@@ -309,9 +310,9 @@ export function AdminProgramsPanel({
                   <input value={form.duration} onChange={(event) => change("duration", event.target.value)} placeholder="6 semestres" className="field" />
                 </label>
               </div>
-            </FormSection>
+            </AdminWorkflowSection>
 
-            <FormSection title="3. Critères d’admission enregistrés">
+            <AdminWorkflowSection step="C" title="Critères d’admission enregistrés" description="Ne renseignez que les critères effectivement publiés par la source officielle.">
               <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
                 <label className="block text-sm font-medium text-slate-700">
                   NC / restriction
@@ -340,9 +341,9 @@ export function AdminProgramsPanel({
                 <ToggleField label="TestAS requis" checked={form.testas_required} onChange={(checked) => change("testas_required", checked)} />
                 <ToggleField label="Uni-Assist requis" checked={form.uni_assist_required} onChange={(checked) => change("uni_assist_required", checked)} />
               </div>
-            </FormSection>
+            </AdminWorkflowSection>
 
-            <FormSection title="4. Échéances et candidature">
+            <AdminWorkflowSection step="D" title="Échéances et candidature" description="Dates limites, voie de candidature et frais officiels.">
               <div className="grid gap-3 md:grid-cols-2">
                 <label className="block text-sm font-medium text-slate-700">
                   Deadline semestre d’hiver
@@ -361,9 +362,9 @@ export function AdminProgramsPanel({
                   <textarea value={form.application_fee_notes} onChange={(event) => change("application_fee_notes", event.target.value)} placeholder="Frais ou notes vérifiées." className="field min-h-24 resize-y" />
                 </label>
               </div>
-            </FormSection>
+            </AdminWorkflowSection>
 
-            <FormSection title="5. Exigences Master vérifiées">
+            <AdminWorkflowSection step="E" title="Exigences Master vérifiées" description="Structurez uniquement les exigences appuyées par une source officielle et datée.">
               <p className="mb-4 max-w-3xl text-sm leading-6 text-slate-600">
                 Utilisez cette section uniquement pour des exigences publiées par une source officielle. Les anciens champs du catalogue ne sont jamais convertis automatiquement.
               </p>
@@ -436,9 +437,9 @@ export function AdminProgramsPanel({
               <p className="mt-3 text-xs leading-5 text-[var(--muted)]">
                 Une exigence n’est enregistrée comme structurée que si sa source HTTPS et ses dates de vérification sont valides. Une valeur vide reste inconnue et n’est jamais transformée en zéro.
               </p>
-            </FormSection>
+            </AdminWorkflowSection>
 
-            <FormSection title="6. Maintenance interne">
+            <AdminWorkflowSection step="F" title="Maintenance interne" description="Notes internes et état actif du programme dans AlmaGo.">
               <div className="mb-3 inline-flex rounded-full border border-[var(--border)] bg-white px-3 py-1.5 text-xs font-bold text-slate-600">Interne à AlmaGo</div>
               <label className="block text-sm font-medium text-slate-700">
                 Notes AlmaGo
@@ -448,7 +449,7 @@ export function AdminProgramsPanel({
               <p className="text-xs leading-5 text-[var(--muted)]">
                 Les notes AlmaGo restent internes à l’équipe. Elles ne sont pas présentées comme une information officielle de l’établissement. L’état actif contrôle l’utilisation du programme dans les parcours qui s’appuient sur le catalogue actif.
               </p>
-            </FormSection>
+            </AdminWorkflowSection>
           </div>
 
           <div className="mt-5 flex flex-col gap-3 border-t border-[var(--border)] pt-5 sm:flex-row sm:items-center sm:justify-between">
@@ -545,15 +546,6 @@ export function AdminProgramsPanel({
         )}
       </section>
     </div>
-  );
-}
-
-function FormSection({ title, children }: { title: string; children: ReactNode }) {
-  return (
-    <section className="min-w-0 overflow-hidden rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface-muted)]/35 p-4">
-      <h3 className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">{title}</h3>
-      <div className="mt-4">{children}</div>
-    </section>
   );
 }
 
