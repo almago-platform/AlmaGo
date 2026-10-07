@@ -31,10 +31,14 @@ test("Admin V11 puts assigned and dated workload first on the dashboard", () => 
   }
 });
 
-test("Admin V11 only treats manual checklist rows as explicit human actions", () => {
-  assert.match(dashboard, /item\.template_id === null/);
-  assert.match(people, /humanOpenActions = openActions\.filter\(\(item\) => item\.template_id === null\)/);
-  assert.match(team, /isOpenAdminAction\(item\.status\) && item\.template_id === null/);
+test("Admin V11 only treats rows without legacy or procedure templates as explicit human actions", () => {
+  assert.match(dashboard, /isHumanAdminAction\(item\)/);
+  assert.match(people, /isHumanAdminAction\(item\)/);
+  assert.match(team, /isHumanAdminAction\(item\)/);
+
+  for (const source of [dashboard, people, team]) {
+    assert.ok(source.includes("procedure_step_template_id"), "procedure_step_template_id");
+  }
 });
 
 test("Admin V11 keeps deadline provenance safeguards for daily workload", () => {
@@ -70,7 +74,7 @@ test("Admin V11 keeps dashboard counts linked to existing People work queues", (
 test("Admin V11 dashboard lists only assigned human actions as personal work", () => {
   assert.match(dashboard, /Mes prochaines actions/);
   assert.match(dashboard, /myHumanActions/);
-  assert.match(dashboard, /item\.template_id === null/);
+  assert.match(dashboard, /isHumanAdminAction\(item\)/);
   assert.match(dashboard, /assignmentByStudent\.get\(item\.student_id\) === currentAdmin\.id/);
   assert.match(dashboard, /\/admin\/dossiers\/\$\{item\.student_id\}#actions/);
   assert.match(dashboard, /Les étapes système restent hors de cette liste/);
@@ -82,7 +86,8 @@ test("Admin V11 promotes explicitly blocked procedure cases into a dedicated wor
   assert.match(dashboard, /Dossiers bloqués/);
   assert.match(dashboard, /\/admin\/people\?work=blocked/);
 
-  assert.match(people, /type WorkView = "all" \| "blocked"/);
+  assert.match(people, /type WorkView =/);
+  assert.match(people, /\| "blocked"/);
   assert.match(people, /blockedActions/);
   assert.match(people, /work === "blocked"/);
   assert.match(people, /blocked: "Bloqués"/);
