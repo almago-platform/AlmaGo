@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/Badge";
 import { buttonClassName } from "@/components/ui/Button";
 import {
   adminActionDateIsTrusted,
+  applicationDateIsOperationalWorkDate,
   applicationDateIsTrusted,
   applicationOfficialDeadlineUrgency,
   applicationRouteRisk,
@@ -319,7 +320,7 @@ export default async function AdminTeamPage() {
       }),
       ...activeApplications.flatMap((item) => {
         const key = dateKey(item.deadline);
-        return key && applicationDeadlineIsTrusted(item) ? [key] : [];
+        return key && applicationDateIsOperationalWorkDate(item) ? [key] : [];
       }),
     ].sort();
 
