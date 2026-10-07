@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -66,7 +66,7 @@ export function AdminDossierActionsPanel({
     [actions],
   );
 
-  async function createAction(event: React.FormEvent<HTMLFormElement>) {
+  async function createAction(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setBusy("create");
     setNotice(null);
