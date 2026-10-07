@@ -7,6 +7,7 @@ import { AdminLoadError } from "@/components/admin/AdminLoadError";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { PremiumSectionHeader } from "@/components/product/PremiumSectionHeader";
 import { catalogVerificationCutoff } from "@/lib/catalog-freshness";
+import { applicationRouteRisk } from "@/lib/admin/application-risk";
 import { isActiveApplication } from "@/lib/application-workflow";
 import { isOpenAdminAction } from "@/lib/admin/people";
 
@@ -71,7 +72,7 @@ export default async function AdminEntry() {
     supabase.from("student_case_assignments").select("student_id,assigned_admin_id").limit(1000),
     supabase.from("student_case_notes").select("student_id,kind,occurred_at").neq("kind", "internal_note").gte("occurred_at", staleContactCutoff).limit(3000),
     supabase.from("student_checklist_items").select("id,student_id,title,status,owner,due_date,deadline_kind,official_source_url,official_source_verified_at,deadline_cycle,template_id,requires_student_action,student_action_reason").limit(5000),
-    supabase.from("applications").select("student_id,status,next_action,deadline,deadline_kind,deadline_source_url,deadline_verified_at,deadline_cycle").limit(5000),
+    supabase.from("applications").select("student_id,status,next_action,deadline,deadline_kind,deadline_source_url,deadline_verified_at,deadline_cycle,application_method").limit(5000),
   ]);
 
   if (
@@ -173,11 +174,35 @@ export default async function AdminEntry() {
     }
   }
 
+  const unverifiedDeadlineCaseIds = new Set<string>();
+  const applicationRiskCaseIds = new Set<string>();
+  for (const item of humanActions) {
+    if (item.due_date && !actionDeadlineIsTrusted(item)) {
+      unverifiedDeadlineCaseIds.add(item.student_id);
+    }
+  }
+  for (const item of applicationRowsResult.data || []) {
+    if (!isActiveApplication(item.status)) continue;
+    const trusted = applicationDeadlineIsTrusted(item);
+    if (item.deadline && !trusted) unverifiedDeadlineCaseIds.add(item.student_id);
+    if (applicationRouteRisk({
+      status: item.status,
+      application_method: item.application_method,
+      deadline: item.deadline,
+      deadline_kind: item.deadline_kind,
+      deadlineTrusted: trusted,
+    }, today)) {
+      applicationRiskCaseIds.add(item.student_id);
+    }
+  }
+
   const operationalList = [...operationalIds];
   const blockedCases = operationalList.filter((id) => blockedCaseIds.has(id)).length;
   const waitingCampusCases = operationalList.filter((id) => waitingCampusCaseIds.has(id)).length;
   const waitingStudentCases = operationalList.filter((id) => waitingStudentCaseIds.has(id)).length;
   const waitingExternalCases = operationalList.filter((id) => waitingExternalCaseIds.has(id)).length;
+  const deadlineVerifyCases = operationalList.filter((id) => unverifiedDeadlineCaseIds.has(id)).length;
+  const applicationRiskCases = operationalList.filter((id) => applicationRiskCaseIds.has(id)).length;
   const unassignedCases = operationalList.filter((id) => !assignedIds.has(id)).length;
   const staleContactCases = operationalList.filter((id) => !contactedRecentlyIds.has(id)).length;
   const missingNextActionCases = operationalList.filter((id) => !explicitActionIds.has(id)).length;
@@ -261,7 +286,27 @@ export default async function AdminEntry() {
             href: "/admin/intake",
             action: "Ouvrir les dossiers",
           }
-        : applications > 0
+        : deadlineVerifyCases > 0
+          ? {
+              badge: "Dates à vérifier",
+              title: deadlineVerifyCases > 1
+                ? `${deadlineVerifyCases} dossiers contiennent une date non vérifiée`
+                : "1 dossier contient une date non vérifiée",
+              description: "Une date sans source, cycle ou vérification complète ne doit pas piloter un compte à rebours officiel. Vérifiez sa provenance avant de l’utiliser.",
+              href: "/admin/people?work=deadline_verify",
+              action: "Vérifier les dates",
+            }
+          : applicationRiskCases > 0
+            ? {
+                badge: "VPD / uni-assist à risque",
+                title: applicationRiskCases > 1
+                  ? `${applicationRiskCases} dossiers ont dépassé leur cible interne de préparation`
+                  : "1 dossier a dépassé sa cible interne de préparation",
+                description: "La deadline officielle est vérifiée, mais la cible interne D-70 pour VPD ou D-56 pour uni-assist est atteinte ou dépassée avant soumission.",
+                href: "/admin/people?work=application_risk",
+                action: "Traiter les candidatures à risque",
+              }
+            : applications > 0
           ? {
               badge: "Candidatures actives",
               title: `${applications} candidature${applications > 1 ? "s" : ""} reste${applications > 1 ? "nt" : ""} en suivi`,
@@ -404,6 +449,25 @@ export default async function AdminEntry() {
             detail="Étapes qui dépendent d’une université, autorité ou autre acteur externe"
             tone={waitingExternalCases ? "info" : "success"}
             statusLabel={waitingExternalCases ? "À suivre" : "À jour"}
+          />
+        </div>
+
+        <div className="mt-3 grid gap-3 sm:grid-cols-2">
+          <DailySignalCard
+            href="/admin/people?work=deadline_verify"
+            label="Dates à vérifier"
+            value={deadlineVerifyCases}
+            detail="Dossiers avec une date enregistrée dont la provenance officielle n’est pas complète"
+            tone={deadlineVerifyCases ? "warning" : "success"}
+            statusLabel={deadlineVerifyCases ? "À vérifier" : "À jour"}
+          />
+          <DailySignalCard
+            href="/admin/people?work=application_risk"
+            label="VPD / uni-assist à risque"
+            value={applicationRiskCases}
+            detail="Cible interne D-70 (VPD) ou D-56 (uni-assist) atteinte sur une deadline officielle vérifiée"
+            tone={applicationRiskCases ? "warning" : "success"}
+            statusLabel={applicationRiskCases ? "À accélérer" : "À jour"}
           />
         </div>
       </section>
