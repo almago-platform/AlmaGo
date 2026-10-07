@@ -80,9 +80,19 @@ jobs:
           cat /tmp/almago-e2e.log
           exit 1
 
-      - name: Verify Render health
+      - name: Verify exact Render revision
         if: env.ALMAGO_E2E_TARGET == 'render'
-        run: curl --fail --show-error --silent "$ALMAGO_BASE_URL/api/health"
+        shell: bash
+        run: |
+          expected="${GITHUB_SHA:0:12}"
+          health="$(curl --fail --silent --show-error --max-time 10 "$ALMAGO_BASE_URL/api/health")"
+          revision="$(printf '%s' "$health" | jq -r '.revision // empty')"
+          branch="$(printf '%s' "$health" | jq -r '.branch // empty')"
+          if [ "$revision" != "$expected" ] || [ "$branch" != "main" ]; then
+            echo "::error::Authenticated E2E requires exact Render revision $expected on main; got ${revision:-none} on ${branch:-none}."
+            exit 1
+          fi
+          printf '%s\n' "$health"
 
       - name: Student/admin isolation
         run: npx playwright test tests/e2e/authenticated.spec.mjs --project=desktop-chromium
@@ -92,3 +102,22 @@ jobs:
 
       - name: Admin quality
         run: npx playwright test tests/e2e/admin-space-quality.spec.mjs
+
+      - name: Revalidate exact main and Render after authenticated evidence
+        if: env.ALMAGO_E2E_TARGET == 'render'
+        shell: bash
+        run: |
+          current_main="$(git ls-remote origin refs/heads/main | awk '{print $1}')"
+          if [ "$current_main" != "$GITHUB_SHA" ]; then
+            echo "::error::main changed during authenticated E2E. Tested $GITHUB_SHA, current $current_main."
+            exit 1
+          fi
+
+          expected="${GITHUB_SHA:0:12}"
+          health="$(curl --fail --silent --show-error --max-time 10 "$ALMAGO_BASE_URL/api/health")"
+          revision="$(printf '%s' "$health" | jq -r '.revision // empty')"
+          branch="$(printf '%s' "$health" | jq -r '.branch // empty')"
+          if [ "$revision" != "$expected" ] || [ "$branch" != "main" ]; then
+            echo "::error::Render drifted during authenticated E2E. Expected $expected on main; got ${revision:-none} on ${branch:-none}."
+            exit 1
+          fi
