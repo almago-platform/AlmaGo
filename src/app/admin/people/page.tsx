@@ -17,6 +17,7 @@ import {
 } from "@/lib/admin/people";
 import {
   adminActionDateIsTrusted,
+  applicationDateIsOperationalWorkDate,
   applicationDateIsTrusted,
   applicationOfficialDeadlineUrgency,
   applicationOfficialDeadlineUrgencyLabel,
@@ -506,7 +507,7 @@ export default async function AdminPeoplePage({
     });
     const datedApplications = activeApplications.flatMap((item) => {
       const date = dateKey(item.deadline);
-      if (!date || !applicationDeadlineIsVerified(item)) return [];
+      if (!date || !applicationDateIsOperationalWorkDate(item)) return [];
       const official = item.deadline_kind === "official_hard_deadline"
         || item.deadline_kind === "official_external_date";
       return [{ date, kind: official ? "official" as const : "internal" as const }];
