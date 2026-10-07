@@ -8,6 +8,7 @@ import {
   adminActionOwnerLabel,
   adminActionStatusLabel,
   isOpenAdminAction,
+  isSystemManagedAdminAction,
 } from "@/lib/admin/people";
 
 export type AdminDossierActionItem = {
@@ -18,6 +19,7 @@ export type AdminDossierActionItem = {
   owner: string | null;
   due_date: string | null;
   template_id: string | null;
+  procedure_step_template_id: string | null;
   completed_at: string | null;
 };
 
@@ -163,7 +165,13 @@ export function AdminDossierActionsPanel({
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
                     <Badge variant={statusVariant(item.status)}>{adminActionStatusLabel(item.status)}</Badge>
-                    {item.template_id ? <Badge variant="neutral">Étape système</Badge> : <Badge variant="info">Action dossier</Badge>}
+                    {item.procedure_step_template_id ? (
+                      <Badge variant="neutral">Étape procédure</Badge>
+                    ) : item.template_id ? (
+                      <Badge variant="neutral">Checklist synchronisée</Badge>
+                    ) : (
+                      <Badge variant="info">Action dossier</Badge>
+                    )}
                   </div>
                   <h3 className="mt-2 text-sm font-bold text-slate-950">{item.title}</h3>
                   {item.description ? (
@@ -185,8 +193,12 @@ export function AdminDossierActionsPanel({
                 </div>
 
                 <div className="flex lg:justify-end">
-                  {item.template_id ? (
-                    <span className="text-xs text-slate-500">Pilotée par la procédure</span>
+                  {isSystemManagedAdminAction(item) ? (
+                    <span className="text-xs text-slate-500">
+                      {item.procedure_step_template_id
+                        ? "Pilotée par la procédure"
+                        : "Pilotée par une synchronisation métier"}
+                    </span>
                   ) : (
                     <Button
                       type="button"
@@ -291,7 +303,7 @@ export function AdminDossierActionsPanel({
                   <p className="text-sm font-semibold text-slate-900">{item.title}</p>
                   <p className="mt-1 text-xs text-slate-500">{adminActionOwnerLabel(item.owner)}</p>
                 </div>
-                {!item.template_id ? (
+                {!isSystemManagedAdminAction(item) ? (
                   <Button
                     type="button"
                     variant="ghost"
