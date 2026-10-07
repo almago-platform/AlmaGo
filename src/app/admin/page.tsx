@@ -8,6 +8,8 @@ import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { PremiumSectionHeader } from "@/components/product/PremiumSectionHeader";
 import { catalogVerificationCutoff } from "@/lib/catalog-freshness";
 import {
+  adminActionDateIsTrusted,
+  applicationDateIsTrusted,
   applicationOfficialDeadlineUrgency,
   applicationRouteRisk,
   campusTodayDateKey,
@@ -891,36 +893,12 @@ function shiftDateKey(value: string, days: number) {
   return date.toISOString().slice(0, 10);
 }
 
-function actionDeadlineIsTrusted(action: {
-  due_date: string | null;
-  deadline_kind: string | null;
-  official_source_url: string | null;
-  official_source_verified_at: string | null;
-  deadline_cycle: string | null;
-}) {
-  if (!action.due_date) return false;
-  if (action.deadline_kind === "internal_target" || action.deadline_kind === "source_review_date") return true;
-  return Boolean(
-    action.official_source_url
-    && action.official_source_verified_at
-    && action.deadline_cycle,
-  );
+function actionDeadlineIsTrusted(action: Parameters<typeof adminActionDateIsTrusted>[0]) {
+  return adminActionDateIsTrusted(action);
 }
 
-function applicationDeadlineIsTrusted(application: {
-  deadline: string | null;
-  deadline_kind: string | null;
-  deadline_source_url: string | null;
-  deadline_verified_at: string | null;
-  deadline_cycle: string | null;
-}) {
-  if (!application.deadline) return false;
-  if (application.deadline_kind === "internal_target" || application.deadline_kind === "source_review_date") return true;
-  return Boolean(
-    application.deadline_source_url
-    && application.deadline_verified_at
-    && application.deadline_cycle,
-  );
+function applicationDeadlineIsTrusted(application: Parameters<typeof applicationDateIsTrusted>[0]) {
+  return applicationDateIsTrusted(application);
 }
 
 function formatDashboardDate(value: string) {
