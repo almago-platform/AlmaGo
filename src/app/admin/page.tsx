@@ -70,7 +70,7 @@ export default async function AdminEntry() {
     supabase.from("student_intake_cases").select("student_id,status").limit(1000),
     supabase.from("student_case_assignments").select("student_id,assigned_admin_id").limit(1000),
     supabase.from("student_case_notes").select("student_id,kind,occurred_at").neq("kind", "internal_note").gte("occurred_at", staleContactCutoff).limit(3000),
-    supabase.from("student_checklist_items").select("student_id,title,status,owner,due_date,deadline_kind,official_source_url,official_source_verified_at,deadline_cycle,template_id").limit(5000),
+    supabase.from("student_checklist_items").select("id,student_id,title,status,owner,due_date,deadline_kind,official_source_url,official_source_verified_at,deadline_cycle,template_id").limit(5000),
     supabase.from("applications").select("student_id,status,next_action,deadline,deadline_kind,deadline_source_url,deadline_verified_at,deadline_cycle").limit(5000),
   ]);
 
@@ -156,9 +156,27 @@ export default async function AdminEntry() {
   const myCases = currentAdmin
     ? operationalList.filter((id) => assignmentByStudent.get(id) === currentAdmin.id).length
     : 0;
-  const myOpenActions = currentAdmin
-    ? humanCampusActions.filter((item) => assignmentByStudent.get(item.student_id) === currentAdmin.id).length
-    : 0;
+  const myHumanActions = currentAdmin
+    ? humanCampusActions
+        .filter((item) => assignmentByStudent.get(item.student_id) === currentAdmin.id)
+        .sort((left, right) => {
+          const leftDate = actionDeadlineIsTrusted(left) ? dateKey(left.due_date) : null;
+          const rightDate = actionDeadlineIsTrusted(right) ? dateKey(right.due_date) : null;
+          if (leftDate && rightDate) return leftDate.localeCompare(rightDate);
+          if (leftDate) return -1;
+          if (rightDate) return 1;
+          return left.title.localeCompare(right.title, "fr");
+        })
+    : [];
+  const myOpenActions = myHumanActions.length;
+
+  const taskStudentIds = [...new Set(myHumanActions.slice(0, 5).map((item) => item.student_id))];
+  const taskProfilesResult = taskStudentIds.length
+    ? await supabase.from("profiles").select("id,first_name,last_name,full_name").in("id", taskStudentIds)
+    : { data: [], error: null };
+  const taskProfileByStudent = new Map(
+    (taskProfilesResult.data || []).map((profile) => [profile.id, profile]),
+  );
   const overdueCases = operationalList.filter((id) => {
     const due = nearestDueByStudent.get(id);
     return Boolean(due && due < today);
@@ -313,6 +331,63 @@ export default async function AdminEntry() {
             statusLabel={staleContactCases ? "À reprendre" : "À jour"}
           />
         </div>
+      </section>
+
+      <section className="mb-6" aria-labelledby="my-actions-title">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Mon travail</p>
+            <h2 id="my-actions-title" className="mt-1 text-xl font-semibold tracking-[-0.025em] text-slate-950">
+              Mes prochaines actions
+            </h2>
+            <p className="mt-1 text-sm leading-6 text-slate-600">
+              Seulement les actions humaines des dossiers qui vous sont attribués. Les étapes système restent hors de cette liste.
+            </p>
+          </div>
+          <ButtonLink href="/admin/people?work=mine" variant="secondary">Voir mon portefeuille</ButtonLink>
+        </div>
+
+        <Card className="mt-4 overflow-hidden p-0 shadow-none">
+          {myHumanActions.length ? (
+            <div className="divide-y divide-[var(--border)]">
+              {myHumanActions.slice(0, 5).map((item) => {
+                const profile = taskProfileByStudent.get(item.student_id);
+                const name = [profile?.first_name, profile?.last_name].filter(Boolean).join(" ").trim()
+                  || profile?.full_name?.trim()
+                  || "Dossier étudiant";
+                const due = actionDeadlineIsTrusted(item) ? dateKey(item.due_date) : null;
+                const overdue = Boolean(due && due < today);
+                const dueToday = due === today;
+                return (
+                  <Link
+                    key={item.id}
+                    href={`/admin/dossiers/${item.student_id}#actions`}
+                    className="group grid gap-3 px-4 py-4 transition-colors hover:bg-[var(--surface-subtle)] sm:grid-cols-[minmax(0,1fr)_11rem_auto] sm:items-center sm:px-5"
+                  >
+                    <div className="min-w-0">
+                      <p className="text-sm font-bold text-slate-950">{item.title}</p>
+                      <p className="mt-1 text-xs text-slate-600">{name}</p>
+                    </div>
+                    <div>
+                      <p className="text-[0.68rem] font-bold uppercase tracking-[0.1em] text-slate-500">Cible interne</p>
+                      <p className={`mt-1 text-sm font-semibold ${overdue ? "text-red-700" : dueToday ? "text-amber-800" : "text-slate-900"}`}>
+                        {due ? formatDashboardDate(due) : "Sans date"}
+                      </p>
+                    </div>
+                    <span className="text-xs font-bold text-[var(--brand)] group-hover:underline">Ouvrir →</span>
+                  </Link>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="px-4 py-5 sm:px-5">
+              <p className="text-sm font-bold text-slate-950">Aucune action humaine ouverte dans votre portefeuille.</p>
+              <p className="mt-1 text-sm leading-5 text-slate-600">
+                Les étapes automatiques de procédure ne sont pas comptées comme du travail conseiller.
+              </p>
+            </div>
+          )}
+        </Card>
       </section>
 
       <section aria-label="Priorité opérationnelle" className="grid gap-4 lg:grid-cols-[minmax(0,1.5fr)_minmax(17rem,0.7fr)]">
@@ -619,4 +694,10 @@ function applicationDeadlineIsTrusted(application: {
     && application.deadline_verified_at
     && application.deadline_cycle,
   );
+}
+
+function formatDashboardDate(value: string) {
+  const timestamp = Date.parse(value + "T12:00:00Z");
+  if (!Number.isFinite(timestamp)) return value;
+  return new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium", timeZone: "UTC" }).format(new Date(timestamp));
 }
