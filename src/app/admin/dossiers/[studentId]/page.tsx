@@ -424,15 +424,54 @@ export default async function AdminStudentDossierPage({
   const personSegment = classifyAdminPerson(access?.status, Boolean(intake));
   const currentStage = adminDossierStageIndex(intake?.status, applications.length > 0);
   const workflowNextAction = adminDossierNextAction(intake?.status, applications.length > 0);
+  const latestOperationalDocuments = [...new Map(
+    documents.map((item) => [item.category, item] as const),
+  ).values()];
+  const documentsAwaitingDecision = latestOperationalDocuments.filter((item) =>
+    item.status === "pending" || item.status === "reviewed"
+  );
+  const unreadStudentMessages = dossierMessages.filter((item) =>
+    item.sender_role === "student" && !item.admin_read_at
+  ).length;
+  const studentDocumentRequests = documentRequirements.filter((item) =>
+    item.requested_from_student && (item.status === "requested" || item.status === "replacement_required")
+  );
   const recordedNextAction = dossierActions.find((item) => isOpenAdminAction(item.status) && item.template_id === null) || null;
-  const nextAction = recordedNextAction
+  const nextAction = unreadStudentMessages > 0
     ? {
-        title: recordedNextAction.title,
-        description: `${adminActionOwnerLabel(recordedNextAction.owner)} · ${recordedNextAction.description || "Action enregistrée dans le suivi du dossier."}`,
-        href: null as string | null,
-        waiting: adminActionWaiting(recordedNextAction.status),
+        title: unreadStudentMessages > 1
+          ? `${unreadStudentMessages} messages étudiants attendent une réponse`
+          : "1 message étudiant attend une réponse",
+        description: "Ouvrez le fil étudiant et répondez avant de poursuivre les autres actions du dossier.",
+        href: "#messages" as string | null,
+        waiting: false,
       }
-    : workflowNextAction;
+    : documentsAwaitingDecision.length > 0
+      ? {
+          title: documentsAwaitingDecision.length > 1
+            ? `${documentsAwaitingDecision.length} documents attendent une décision`
+            : "1 document attend une décision",
+          description: "Une pièce reçue attend une validation, un rejet ou une demande de remplacement.",
+          href: "/admin/documents" as string | null,
+          waiting: false,
+        }
+      : recordedNextAction
+        ? {
+            title: recordedNextAction.title,
+            description: `${adminActionOwnerLabel(recordedNextAction.owner)} · ${recordedNextAction.description || "Action enregistrée dans le suivi du dossier."}`,
+            href: "#actions" as string | null,
+            waiting: adminActionWaiting(recordedNextAction.status),
+          }
+        : studentDocumentRequests.length > 0
+          ? {
+              title: studentDocumentRequests.length > 1
+                ? `En attente de ${studentDocumentRequests.length} documents de l’étudiant`
+                : `En attente du document « ${studentDocumentRequests[0].label} »`,
+              description: "La prochaine action appartient à l’étudiant. La demande reste visible dans le suivi documentaire.",
+              href: "#documents" as string | null,
+              waiting: true,
+            }
+          : workflowNextAction;
 
   const lifecycleSteps: JourneyRailStep[] = adminDossierLifecycle.map((label, index) => ({
     label,
