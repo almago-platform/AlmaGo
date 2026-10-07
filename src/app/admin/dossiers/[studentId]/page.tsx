@@ -9,6 +9,7 @@ import { AdminLoadError } from "@/components/admin/AdminLoadError";
 import { AdminDossierActionsPanel, type AdminDossierActionItem } from "@/components/admin/AdminDossierActionsPanel";
 import { AdminCaseOwnerPanel, type AdminAdvisorOption } from "@/components/admin/AdminCaseOwnerPanel";
 import { AdminCaseJournalPanel, type AdminCaseNoteItem } from "@/components/admin/AdminCaseJournalPanel";
+import { AdminDocumentRequirementsPanel, type AdminDocumentRequirementItem } from "@/components/admin/AdminDocumentRequirementsPanel";
 import { DossierMessageThread, type DossierMessageItem } from "@/components/product/DossierMessageThread";
 import { Badge } from "@/components/ui/Badge";
 import { DataList } from "@/components/ui/DataList";
@@ -65,6 +66,10 @@ type DocumentRowData = {
   status: string;
   admin_comment: string | null;
   created_at: string;
+};
+
+type DocumentRequirementRow = AdminDocumentRequirementItem & {
+  student_procedure_id: string | null;
 };
 
 type PurchaseRow = {
@@ -162,6 +167,8 @@ export default async function AdminStudentDossierPage({
     intakeResult,
     accessResult,
     documentsResult,
+    procedureResult,
+    requirementsResult,
     applicationsResult,
     purchasesResult,
     actionsResult,
@@ -196,6 +203,19 @@ export default async function AdminStudentDossierPage({
       .select("id,category,original_filename,status,admin_comment,created_at")
       .eq("student_id", studentId)
       .order("created_at", { ascending: false }),
+    supabase
+      .from("student_procedures")
+      .select("id")
+      .eq("student_id", studentId)
+      .eq("is_current", true)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle(),
+    supabase
+      .from("student_document_requirements")
+      .select("id,student_procedure_id,requirement_key,label,category,status,requested_from_student,student_request_reason,student_request_due_date,document_id,created_at,updated_at")
+      .eq("student_id", studentId)
+      .order("created_at", { ascending: true }),
     supabase
       .from("applications")
       .select("id,status,intake,deadline,next_action,result,created_at,programs(name,universities(name,city)),application_events(id,event_type,message,visible_to_student,created_at)")
@@ -248,6 +268,9 @@ export default async function AdminStudentDossierPage({
   const intake = intakeResult.data;
   const access = accessResult.data;
   const documents = (documentsResult.data || []) as DocumentRowData[];
+  const currentProcedureId = procedureResult.data?.id || null;
+  const documentRequirements = ((requirementsResult.data || []) as DocumentRequirementRow[])
+    .filter((item) => Boolean(currentProcedureId) && item.student_procedure_id === currentProcedureId);
   const applications = (applicationsResult.data || []) as unknown as ApplicationRow[];
   const purchase = ((purchasesResult.data || []) as PurchaseRow[])[0] ?? null;
   const dossierActions = (actionsResult.data || []) as AdminDossierActionItem[];
@@ -267,6 +290,8 @@ export default async function AdminStudentDossierPage({
     || intakeResult.error
     || accessResult.error
     || documentsResult.error
+    || procedureResult.error
+    || requirementsResult.error
     || applicationsResult.error
     || purchasesResult.error
     || actionsResult.error
@@ -399,7 +424,7 @@ export default async function AdminStudentDossierPage({
   const personSegment = classifyAdminPerson(access?.status, Boolean(intake));
   const currentStage = adminDossierStageIndex(intake?.status, applications.length > 0);
   const workflowNextAction = adminDossierNextAction(intake?.status, applications.length > 0);
-  const recordedNextAction = dossierActions.find((item) => isOpenAdminAction(item.status)) || null;
+  const recordedNextAction = dossierActions.find((item) => isOpenAdminAction(item.status) && item.template_id === null) || null;
   const nextAction = recordedNextAction
     ? {
         title: recordedNextAction.title,
@@ -676,7 +701,13 @@ export default async function AdminStudentDossierPage({
                 </Link>
               }
             />
-            <div className="mt-4">
+            <AdminDocumentRequirementsPanel
+              studentId={studentId}
+              requirements={documentRequirements}
+              documents={documents}
+            />
+
+            <div className="mt-5">
               {documentDefinitions.map((definition) => {
                 const document = latestDocument(documents, definition.category);
                 const baseStatus = adminDocumentState(documents, definition.category);
