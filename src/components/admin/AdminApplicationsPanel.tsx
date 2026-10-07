@@ -9,6 +9,14 @@ import { Card } from "@/components/ui/Card";
 import { AdminWorkflowSection } from "@/components/admin/AdminWorkflowSection";
 import { PremiumEmptyState } from "@/components/product/PremiumEmptyState";
 import {
+  applicationDateIsTrusted,
+  applicationOfficialDeadlineUrgency,
+  applicationOfficialDeadlineUrgencyLabel,
+  applicationRouteRisk,
+  applicationRouteRiskLabel,
+  campusTodayDateKey,
+} from "@/lib/admin/application-risk";
+import {
   allowedApplicationTransitions,
   studentApplicationStageLabel,
   transitionRequirements,
@@ -18,7 +26,6 @@ import {
   applicationStatusLabels,
   formatDeadline,
   isActiveApplication,
-  isPastDeadline,
   statusTone,
 } from "@/lib/phase4";
 
@@ -27,6 +34,13 @@ type ApplicationEdit = {
   nextAction: string;
   note: string;
   transitionConfirmed: boolean;
+};
+
+type DeadlineEdit = {
+  deadline: string;
+  sourceUrl: string;
+  cycle: string;
+  applicationMethod: string;
 };
 
 type Notice = {
@@ -46,18 +60,67 @@ function firstUniversity(program: any) {
   return Array.isArray(program?.universities) ? program.universities[0] : program?.universities;
 }
 
-export function AdminApplicationsPanel({ applications }: { applications: any[] }) {
+function applicationDeadlineIsTrusted(application: any) {
+  return applicationDateIsTrusted(application);
+}
+
+function deadlineProvenanceLabel(application: any) {
+  if (!application.deadline) return null;
+  if (application.deadline_kind === "internal_target") return "Cible interne";
+  if (application.deadline_kind === "source_review_date") return "Date de revue source";
+  if (
+    (application.deadline_kind === "official_hard_deadline" || application.deadline_kind === "official_external_date")
+    && applicationDeadlineIsTrusted(application)
+  ) {
+    return "Échéance officielle vérifiée";
+  }
+  return applicationDeadlineIsTrusted(application) ? "Date vérifiée" : "Source / date à vérifier";
+}
+
+export function AdminApplicationsPanel({
+  applications,
+  initialStudentId = "",
+}: {
+  applications: any[];
+  initialStudentId?: string;
+}) {
   const [items, setItems] = useState(applications);
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState("all");
+  const [studentIdFilter, setStudentIdFilter] = useState(
+    applications.some((application) => application.student_id === initialStudentId)
+      ? initialStudentId
+      : "",
+  );
   const [busyIds, setBusyIds] = useState<Set<string>>(() => new Set());
   const savingIdsRef = useRef(new Set<string>());
   const [notice, setNotice] = useState<Notice | null>(null);
   const [edits, setEdits] = useState<Record<string, ApplicationEdit>>({});
+  const [deadlineEdits, setDeadlineEdits] = useState<Record<string, DeadlineEdit>>({});
+  const todayKey = campusTodayDateKey();
+
+  const studentOptions = useMemo(() => {
+    const unique = new Map<string, string>();
+    for (const application of items) {
+      const student = firstProfile(application);
+      const name = [student?.first_name, student?.last_name].filter(Boolean).join(" ").trim();
+      unique.set(application.student_id, name || "Étudiant");
+    }
+    return [...unique.entries()]
+      .map(([id, name]) => ({ id, name }))
+      .sort((left, right) => left.name.localeCompare(right.name, "fr"));
+  }, [items]);
+
+  const scopedItems = useMemo(
+    () => studentIdFilter
+      ? items.filter((application) => application.student_id === studentIdFilter)
+      : items,
+    [items, studentIdFilter],
+  );
 
   const filtered = useMemo(() => {
     const normalized = query.trim().toLocaleLowerCase("fr");
-    return items.filter((application) => {
+    return scopedItems.filter((application) => {
       if (status !== "all" && application.status !== status) return false;
       if (!normalized) return true;
 
@@ -79,21 +142,123 @@ export function AdminApplicationsPanel({ applications }: { applications: any[] }
 
       return searchable.includes(normalized);
     });
-  }, [items, query, status]);
+  }, [query, scopedItems, status]);
 
-  const activeCount = items.filter((application) => isActiveApplication(application.status)).length;
-  const actionCount = items.filter(
-    (application) => isActiveApplication(application.status) && Boolean(application.next_action),
+  const activeCount = scopedItems.filter((application) => isActiveApplication(application.status)).length;
+  const missingActionCount = scopedItems.filter(
+    (application) => isActiveApplication(application.status) && !application.next_action?.trim(),
   ).length;
-  const overdueCount = items.filter(
+  const officialDeadlineUrgencies = scopedItems.flatMap((application) => {
+    const urgency = applicationOfficialDeadlineUrgency({
+      status: application.status,
+      deadline: application.deadline,
+      deadline_kind: application.deadline_kind,
+      deadlineTrusted: applicationDeadlineIsTrusted(application),
+    }, todayKey);
+    return urgency ? [urgency] : [];
+  });
+  const overdueCount = officialDeadlineUrgencies.filter((urgency) => urgency.kind === "overdue").length;
+  const officialDeadline30Count = officialDeadlineUrgencies.filter((urgency) =>
+    urgency.daysRemaining >= 0 && urgency.daysRemaining <= 30
+  ).length;
+  const unverifiedDeadlineCount = scopedItems.filter(
     (application) =>
-      isActiveApplication(application.status) &&
-      Boolean(application.deadline) &&
-      isPastDeadline(application.deadline),
+      isActiveApplication(application.status)
+      && Boolean(application.deadline)
+      && !applicationDeadlineIsTrusted(application),
+  ).length;
+  const routeRiskCount = scopedItems.filter((application) =>
+    Boolean(applicationRouteRisk({
+      status: application.status,
+      application_method: application.application_method,
+      deadline: application.deadline,
+      deadline_kind: application.deadline_kind,
+      deadlineTrusted: applicationDeadlineIsTrusted(application),
+    }, todayKey))
   ).length;
 
   function changeEdit(id: string, edit: ApplicationEdit) {
     setEdits((current) => ({ ...current, [id]: edit }));
+  }
+
+  function changeDeadlineEdit(id: string, edit: DeadlineEdit) {
+    setDeadlineEdits((current) => ({ ...current, [id]: edit }));
+  }
+
+  async function saveDeadline(
+    application: any,
+    edit: DeadlineEdit,
+    mode: "verify" | "mark_to_verify",
+  ) {
+    const id = application.id as string;
+    if (savingIdsRef.current.has(id)) return;
+
+    savingIdsRef.current.add(id);
+    setBusyIds((current) => new Set(current).add(id));
+    setNotice(null);
+
+    try {
+      const response = await fetch(`/api/admin/applications/${id}/deadline`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          mode,
+          deadline: edit.deadline || null,
+          source_url: edit.sourceUrl,
+          cycle: edit.cycle,
+          application_method: edit.applicationMethod,
+        }),
+      });
+      const result = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        setNotice({
+          text: result.error || "Impossible d’enregistrer les informations de deadline.",
+          tone: "error",
+        });
+        return;
+      }
+
+      const verifiedAt = mode === "verify" ? new Date().toISOString() : null;
+      setItems((current) =>
+        current.map((item) =>
+          item.id === id
+            ? {
+                ...item,
+                deadline: edit.deadline || null,
+                deadline_kind: "official_hard_deadline",
+                deadline_source_url: mode === "verify" ? edit.sourceUrl : null,
+                deadline_verified_at: verifiedAt,
+                deadline_cycle: edit.cycle || null,
+                application_method: edit.applicationMethod,
+              }
+            : item,
+        ),
+      );
+      setDeadlineEdits((current) => {
+        const next = { ...current };
+        delete next[id];
+        return next;
+      });
+      setNotice({
+        tone: "success",
+        text: mode === "verify"
+          ? "Échéance officielle vérifiée et historisée."
+          : "Date enregistrée comme information à vérifier avant utilisation officielle.",
+      });
+    } catch {
+      setNotice({
+        tone: "error",
+        text: "Impossible d’enregistrer la deadline pour le moment. Vérifiez votre connexion puis réessayez.",
+      });
+    } finally {
+      savingIdsRef.current.delete(id);
+      setBusyIds((current) => {
+        const next = new Set(current);
+        next.delete(id);
+        return next;
+      });
+    }
   }
 
   async function update(id: string, nextStatus: string, nextAction: string, note: string, transitionConfirmed: boolean) {
@@ -180,10 +345,13 @@ export function AdminApplicationsPanel({ applications }: { applications: any[] }
             </p>
           </div>
 
-          <div className="grid overflow-hidden rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--border)] grid-cols-3 xl:min-w-[34rem]">
+          <div className="grid overflow-hidden rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--border)] grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 xl:min-w-[62rem]">
             <QueueMetric label="Actives" value={activeCount} />
-            <QueueMetric label="Avec action" value={actionCount} tone={actionCount ? "info" : "neutral"} />
-            <QueueMetric label="En retard" value={overdueCount} tone={overdueCount ? "warning" : "neutral"} />
+            <QueueMetric label="Sans action" value={missingActionCount} tone={missingActionCount ? "warning" : "neutral"} />
+            <QueueMetric label="Officielles dépassées" value={overdueCount} tone={overdueCount ? "warning" : "neutral"} />
+            <QueueMetric label="Officielles ≤ 30 j" value={officialDeadline30Count} tone={officialDeadline30Count ? "warning" : "neutral"} />
+            <QueueMetric label="Dates à vérifier" value={unverifiedDeadlineCount} tone={unverifiedDeadlineCount ? "warning" : "neutral"} />
+            <QueueMetric label="VPD / uni-assist à risque" value={routeRiskCount} tone={routeRiskCount ? "warning" : "neutral"} />
           </div>
         </div>
       </Card>
@@ -193,7 +361,7 @@ export function AdminApplicationsPanel({ applications }: { applications: any[] }
           <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">Trouver un dossier</p>
           <p className="mt-1 text-sm leading-6 text-slate-600">Recherchez par étudiant, programme, établissement ou prochaine action.</p>
         </div>
-        <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_15rem]">
+        <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_15rem_15rem]">
           <label className="block text-sm font-medium text-slate-700">
             Rechercher
             <input
@@ -202,6 +370,15 @@ export function AdminApplicationsPanel({ applications }: { applications: any[] }
               placeholder="Étudiant, programme, université, ville ou action"
               className="field"
             />
+          </label>
+          <label className="block text-sm font-medium text-slate-700">
+            Étudiant
+            <select value={studentIdFilter} onChange={(event) => setStudentIdFilter(event.target.value)} className="field">
+              <option value="">Tous les étudiants</option>
+              {studentOptions.map((student) => (
+                <option key={student.id} value={student.id}>{student.name}</option>
+              ))}
+            </select>
           </label>
           <label className="block text-sm font-medium text-slate-700">
             Statut
@@ -232,6 +409,12 @@ export function AdminApplicationsPanel({ applications }: { applications: any[] }
             transitionConfirmed: false,
           };
           const isSaving = busyIds.has(application.id);
+          const deadlineEdit = deadlineEdits[application.id] || {
+            deadline: application.deadline || "",
+            sourceUrl: application.deadline_source_url || "",
+            cycle: application.deadline_cycle || "",
+            applicationMethod: application.application_method || "unknown",
+          };
           const allowedTargets = allowedApplicationTransitions(application.status);
           const statusOptions = [application.status, ...allowedTargets.filter((item) => item !== application.status)];
           const pendingRequirements = edit.status !== application.status
@@ -241,12 +424,27 @@ export function AdminApplicationsPanel({ applications }: { applications: any[] }
           const needsDecisionNote = ["admission", "rejection"].includes(edit.status)
             && edit.status !== application.status
             && !edit.note.trim();
-          const isOverdue =
-            isActiveApplication(application.status) &&
-            Boolean(application.deadline) &&
-            isPastDeadline(application.deadline);
+          const trustedDeadline = applicationDeadlineIsTrusted(application);
+          const officialUrgency = applicationOfficialDeadlineUrgency({
+            status: application.status,
+            deadline: application.deadline,
+            deadline_kind: application.deadline_kind,
+            deadlineTrusted: trustedDeadline,
+          }, todayKey);
+          const isOverdue = officialUrgency?.kind === "overdue";
+          const hasUnverifiedDeadline =
+            isActiveApplication(application.status)
+            && Boolean(application.deadline)
+            && !trustedDeadline;
+          const routeRisk = applicationRouteRisk({
+            status: application.status,
+            application_method: application.application_method,
+            deadline: application.deadline,
+            deadline_kind: application.deadline_kind,
+            deadlineTrusted: trustedDeadline,
+          }, todayKey);
           const hasRecordedAction =
-            isActiveApplication(application.status) && Boolean(application.next_action);
+            isActiveApplication(application.status) && Boolean(application.next_action?.trim());
           const isDirty =
             edit.status !== application.status ||
             edit.nextAction !== (application.next_action || "") ||
@@ -283,12 +481,26 @@ export function AdminApplicationsPanel({ applications }: { applications: any[] }
                   </p>
                   {application.deadline && (
                     <p className="mt-1 text-xs font-semibold text-[var(--muted)]">
-                      Échéance {formatDeadline(application.deadline)}
+                      {trustedDeadline ? "Date de travail" : "Date enregistrée"} · {formatDeadline(application.deadline)}
+                      {" · "}{deadlineProvenanceLabel(application)}
                     </p>
                   )}
                 </div>
                 <div className="flex flex-wrap gap-2 sm:justify-end">
-                  {isOverdue && <Badge variant="warning">Échéance dépassée</Badge>}
+                  {officialUrgency ? (
+                    <Badge variant={
+                      officialUrgency.kind === "overdue" || officialUrgency.kind === "d3"
+                        ? "error"
+                        : officialUrgency.kind === "d7" || officialUrgency.kind === "d14"
+                          ? "warning"
+                          : "info"
+                    }>
+                      {applicationOfficialDeadlineUrgencyLabel(officialUrgency)}
+                    </Badge>
+                  ) : null}
+                  {hasUnverifiedDeadline && <Badge variant="warning">Date à vérifier</Badge>}
+                  {routeRisk ? <Badge variant="warning">{applicationRouteRiskLabel(routeRisk.kind)}</Badge> : null}
+                  {!hasRecordedAction && isActiveApplication(application.status) && <Badge variant="warning">Sans prochaine action</Badge>}
                   {hasRecordedAction && <Badge variant="info">Action enregistrée</Badge>}
                   <span className={`status-badge shrink-0 ${statusTone(application.status)}`}>
                     {applicationStatusLabels[application.status] || application.status}
@@ -328,10 +540,125 @@ export function AdminApplicationsPanel({ applications }: { applications: any[] }
                   </dl>
 
                   {isOverdue ? (
-                    <p className="mt-4 rounded-[var(--radius-control)] border border-amber-200 bg-amber-50 p-3 text-sm font-semibold text-amber-950">
-                      L’échéance enregistrée est dépassée. Vérifiez le statut réel avant toute modification.
+                    <p className="mt-4 rounded-[var(--radius-control)] border border-red-200 bg-red-50 p-3 text-sm font-semibold text-red-950">
+                      La deadline officielle vérifiée est dépassée et la candidature n’est pas enregistrée comme soumise. Vérifiez immédiatement le statut réel avant toute autre action.
+                    </p>
+                  ) : officialUrgency?.kind === "d3" ? (
+                    <p className="mt-4 rounded-[var(--radius-control)] border border-red-200 bg-red-50 p-3 text-sm font-semibold text-red-950">
+                      Deadline officielle critique : {applicationOfficialDeadlineUrgencyLabel(officialUrgency)}. Confirmez que le dossier peut être déposé à temps.
+                    </p>
+                  ) : hasUnverifiedDeadline ? (
+                    <p className="mt-4 rounded-[var(--radius-control)] border border-amber-200 bg-amber-50 p-3 text-sm leading-6 text-amber-950">
+                      Une date est enregistrée, mais sa provenance n’est pas suffisamment vérifiée. Elle ne doit pas être utilisée comme deadline officielle tant que la source, le cycle et la date de vérification ne sont pas confirmés.
+                    </p>
+                  ) : routeRisk ? (
+                    <p className="mt-4 rounded-[var(--radius-control)] border border-amber-200 bg-amber-50 p-3 text-sm leading-6 text-amber-950">
+                      {applicationRouteRiskLabel(routeRisk.kind)} · la cible interne D-{routeRisk.leadDays} est atteinte ou dépassée. Cette cible aide Campus Allemagne à préparer le dossier ; elle ne remplace pas la deadline officielle.
                     </p>
                   ) : null}
+
+                  <details className="mt-4 rounded-[var(--radius-control)] border border-[var(--border)] bg-white p-4">
+                    <summary className="cursor-pointer text-sm font-bold text-slate-950">
+                      Vérifier ou corriger la deadline
+                    </summary>
+                    <p className="mt-2 text-xs leading-5 text-slate-600">
+                      Une deadline officielle n’est utilisée dans les alertes qu’après vérification de sa source et de son cycle.
+                    </p>
+
+                    <div className="mt-4 grid gap-4 lg:grid-cols-2">
+                      <label className="text-sm font-medium text-slate-700">
+                        Date
+                        <input
+                          type="date"
+                          value={deadlineEdit.deadline}
+                          onChange={(event) => changeDeadlineEdit(application.id, { ...deadlineEdit, deadline: event.target.value })}
+                          className="field mt-2 bg-white"
+                          disabled={isSaving}
+                        />
+                      </label>
+
+                      <label className="text-sm font-medium text-slate-700">
+                        Cycle / rentrée concernée
+                        <input
+                          value={deadlineEdit.cycle}
+                          onChange={(event) => changeDeadlineEdit(application.id, { ...deadlineEdit, cycle: event.target.value })}
+                          className="field mt-2 bg-white"
+                          placeholder="Ex. Wintersemester 2027/28"
+                          maxLength={120}
+                          disabled={isSaving}
+                        />
+                      </label>
+
+                      <label className="text-sm font-medium text-slate-700">
+                        Méthode de candidature
+                        <select
+                          value={deadlineEdit.applicationMethod}
+                          onChange={(event) => changeDeadlineEdit(application.id, { ...deadlineEdit, applicationMethod: event.target.value })}
+                          className="field mt-2 bg-white"
+                          disabled={isSaving}
+                        >
+                          <option value="unknown">À confirmer</option>
+                          <option value="direct">Directe université</option>
+                          <option value="uni_assist">uni-assist</option>
+                          <option value="vpd_then_direct">VPD puis candidature directe</option>
+                          <option value="other_documented">Autre méthode documentée</option>
+                        </select>
+                      </label>
+
+                      <label className="text-sm font-medium text-slate-700">
+                        Source officielle
+                        <input
+                          type="url"
+                          value={deadlineEdit.sourceUrl}
+                          onChange={(event) => changeDeadlineEdit(application.id, { ...deadlineEdit, sourceUrl: event.target.value })}
+                          className="field mt-2 bg-white"
+                          placeholder="https://..."
+                          maxLength={1000}
+                          disabled={isSaving}
+                        />
+                      </label>
+                    </div>
+
+                    {application.deadline_source_url ? (
+                      <p className="mt-3 text-xs leading-5 text-slate-600">
+                        Source actuelle ·{" "}
+                        <a
+                          href={application.deadline_source_url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="font-semibold text-[var(--brand)] hover:underline"
+                        >
+                          ouvrir la source officielle
+                        </a>
+                        {application.deadline_verified_at
+                          ? ` · vérifiée le ${formatRecordedDate(application.deadline_verified_at)}`
+                          : ""}
+                      </p>
+                    ) : null}
+
+                    <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        disabled={isSaving}
+                        onClick={() => saveDeadline(application, deadlineEdit, "mark_to_verify")}
+                      >
+                        Enregistrer à vérifier
+                      </Button>
+                      <Button
+                        type="button"
+                        disabled={
+                          isSaving
+                          || !deadlineEdit.deadline
+                          || !deadlineEdit.cycle.trim()
+                          || !deadlineEdit.sourceUrl.trim()
+                        }
+                        onClick={() => saveDeadline(application, deadlineEdit, "verify")}
+                      >
+                        Vérifier comme échéance officielle
+                      </Button>
+                    </div>
+                  </details>
                 </AdminWorkflowSection>
 
                 <AdminWorkflowSection

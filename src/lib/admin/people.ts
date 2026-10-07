@@ -59,6 +59,21 @@ export function isOpenAdminAction(status: string | null | undefined) {
   return openAdminActionStatuses.has(status || "");
 }
 
+export function isSystemManagedAdminAction(item: {
+  template_id?: string | null;
+  procedure_step_template_id?: string | null;
+}) {
+  return Boolean(item.template_id || item.procedure_step_template_id);
+}
+
+export function isHumanAdminAction(item: {
+  status: string | null | undefined;
+  template_id?: string | null;
+  procedure_step_template_id?: string | null;
+}) {
+  return isOpenAdminAction(item.status) && !isSystemManagedAdminAction(item);
+}
+
 export function adminActionWaiting(status: string | null | undefined) {
   return status === "waiting_student" || status === "waiting_external";
 }

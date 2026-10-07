@@ -41,7 +41,10 @@ jobs:
         run: npm ci
 
       - name: Install browser-quality tools without changing the lockfile
-        run: npm install --no-save --package-lock=false @playwright/test@1.55.0 @axe-core/playwright@4.10.2 @lhci/cli@0.15.1
+        # Keep Supabase on the exact version already proven by npm ci. A no-save
+        # tooling install otherwise re-resolves the package.json caret and can
+        # transiently request an unpublished/yanked realtime-js release.
+        run: npm install --no-save --package-lock=false @supabase/supabase-js@2.116.0 @playwright/test@1.55.0 @axe-core/playwright@4.10.2 @lhci/cli@0.15.1
 
       - name: Cache Playwright browser
         uses: actions/cache@v6

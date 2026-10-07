@@ -15,8 +15,8 @@ export default async function AdminDocumentsPage() {
     supabase
       .from("documents")
       .select("id,student_id,category,original_filename,status,admin_comment,created_at")
-      .in("status", ["pending", "replace_required", "approved"])
-      .order("created_at", { ascending: true }),
+      .in("status", ["pending", "reviewed", "replace_required", "rejected", "approved"])
+      .order("created_at", { ascending: false }),
     supabase
       .from("academic_evidence")
       .select("id,student_id,evidence_type,institution,evidence_date,origin,verification_status,document_id,verified_at,created_at,updated_at")
@@ -40,7 +40,20 @@ export default async function AdminDocumentsPage() {
     );
   }
 
-  const rawDocuments = documentsResult.data || [];
+  const allDocuments = documentsResult.data || [];
+  const latestByStudentCategory = new Map<string, (typeof allDocuments)[number]>();
+  for (const document of allDocuments) {
+    const key = `${document.student_id}:${document.category}`;
+    if (!latestByStudentCategory.has(key)) latestByStudentCategory.set(key, document);
+  }
+  const rawDocuments = [...latestByStudentCategory.values()].sort((left, right) => {
+    const priority = (status: string) =>
+      status === "pending" || status === "reviewed" ? 0
+        : status === "replace_required" || status === "rejected" ? 1
+          : 2;
+    return priority(left.status) - priority(right.status)
+      || right.created_at.localeCompare(left.created_at);
+  });
   const studentIds = [...new Set(rawDocuments.map((document) => document.student_id))];
   const profilesResult = studentIds.length
     ? await supabase.from("profiles").select("id,first_name,last_name").in("id", studentIds)
@@ -57,7 +70,7 @@ export default async function AdminDocumentsPage() {
       <AdminPageHeader
         section="Opérations"
         title="Documents"
-        description="Traitez les pièces en attente, consultez le contexte du dossier et gardez explicite tout message qui sera visible par l’étudiant."
+        description="Traitez la version actuelle de chaque pièce. Les anciennes versions restent conservées dans le Dossier 360°."
       />
       <AdminDocumentsPanel
         documents={documents}
