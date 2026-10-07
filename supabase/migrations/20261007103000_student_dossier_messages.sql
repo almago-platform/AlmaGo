@@ -44,6 +44,12 @@ create policy "student dossier messages student insert"
     student_id = (select auth.uid())
     and sender_id = (select auth.uid())
     and sender_role = 'student'
+    and exists (
+      select 1
+      from public.user_roles roles
+      where roles.user_id = (select auth.uid())
+        and roles.role = 'student'
+    )
   );
 
 drop policy if exists "student dossier messages admin insert"
@@ -75,6 +81,15 @@ begin
   if new.sender_role = 'student' then
     if new.student_id <> auth.uid() or new.sender_id <> auth.uid() then
       raise exception 'invalid_student_sender';
+    end if;
+
+    if not exists (
+      select 1
+      from public.user_roles roles
+      where roles.user_id = auth.uid()
+        and roles.role = 'student'
+    ) then
+      raise exception 'student_role_required';
     end if;
     new.student_read_at := coalesce(new.student_read_at, now());
     new.admin_read_at := null;
