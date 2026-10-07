@@ -73,6 +73,8 @@ type ActionRow = {
   owner: string | null;
   due_date: string | null;
   template_id: string | null;
+  requires_student_action: boolean;
+  student_action_reason: string | null;
   deadline_kind: string | null;
   official_source_url: string | null;
   official_source_verified_at: string | null;
@@ -100,7 +102,7 @@ type CaseNoteRow = {
 };
 
 type PersonView = "all" | AdminPersonSegment;
-type WorkView = "all" | "blocked" | "overdue" | "today" | "week" | "messages" | "no_action" | "stale" | "unassigned" | "mine";
+type WorkView = "all" | "blocked" | "waiting_campus" | "waiting_student" | "waiting_external" | "overdue" | "today" | "week" | "messages" | "no_action" | "stale" | "unassigned" | "mine";
 
 type PersonRecord = {
   key: string;
@@ -116,6 +118,9 @@ type PersonRecord = {
   activeApplications: number;
   openActions: number;
   blockedActions: number;
+  waitingOnCampus: number;
+  waitingOnStudent: number;
+  waitingOnExternal: number;
   nextAction: string;
   nextActionOwner: string;
   dueDate: string | null;
@@ -132,7 +137,7 @@ type PersonRecord = {
 };
 
 const validViews = new Set<PersonView>(["all", "prospect", "candidate", "student", "archived"]);
-const validWorkViews = new Set<WorkView>(["all", "blocked", "overdue", "today", "week", "messages", "no_action", "stale", "unassigned", "mine"]);
+const validWorkViews = new Set<WorkView>(["all", "blocked", "waiting_campus", "waiting_student", "waiting_external", "overdue", "today", "week", "messages", "no_action", "stale", "unassigned", "mine"]);
 
 const viewLabels: Record<PersonView, string> = {
   all: "Tous",
@@ -145,6 +150,9 @@ const viewLabels: Record<PersonView, string> = {
 const workLabels: Record<WorkView, string> = {
   all: "Tous les dossiers",
   blocked: "Bloqués",
+  waiting_campus: "Attend Campus",
+  waiting_student: "Attend étudiant",
+  waiting_external: "Attend externe",
   overdue: "En retard",
   today: "Aujourd’hui",
   week: "7 prochains jours",
@@ -304,7 +312,7 @@ export default async function AdminPeoplePage({
         ? supabase.from("applications").select("id,student_id,status,deadline,deadline_kind,deadline_source_url,deadline_verified_at,deadline_cycle,next_action,created_at").in("student_id", userIds)
         : Promise.resolve({ data: [], error: null }),
       userIds.length
-        ? supabase.from("student_checklist_items").select("id,student_id,title,description,status,owner,due_date,template_id,deadline_kind,official_source_url,official_source_verified_at,deadline_cycle,created_at").in("student_id", userIds)
+        ? supabase.from("student_checklist_items").select("id,student_id,title,description,status,owner,due_date,template_id,requires_student_action,student_action_reason,deadline_kind,official_source_url,official_source_verified_at,deadline_cycle,created_at").in("student_id", userIds)
         : Promise.resolve({ data: [], error: null }),
       prospectIds.length
         ? supabase.from("orientations").select("id,prospect_id,created_at").in("prospect_id", prospectIds)
@@ -417,6 +425,13 @@ export default async function AdminPeoplePage({
     const personActions = actionsByUser.get(userId) || [];
     const openActions = personActions.filter((item) => isOpenAdminAction(item.status)).sort(compareDue);
     const blockedActions = personActions.filter((item) => item.status === "blocked").length;
+    const waitingOnCampus = openActions.filter((item) => item.status === "waiting_almago").length;
+    const waitingOnStudent = openActions.filter((item) =>
+      item.status === "waiting_student"
+      && item.requires_student_action
+      && Boolean(item.student_action_reason?.trim())
+    ).length;
+    const waitingOnExternal = openActions.filter((item) => item.status === "waiting_external").length;
     const humanOpenActions = openActions.filter((item) => item.template_id === null);
     const pendingDocuments = personDocuments.filter((item) => attentionDocumentStatuses.has(item.status)).length;
     const segment = classifyAdminPerson(access?.status, Boolean(intake));
@@ -483,6 +498,9 @@ export default async function AdminPeoplePage({
       activeApplications: activeApplications.length,
       openActions: humanOpenActions.length,
       blockedActions,
+      waitingOnCampus,
+      waitingOnStudent,
+      waitingOnExternal,
       nextAction,
       nextActionOwner,
       dueDate,
@@ -496,7 +514,11 @@ export default async function AdminPeoplePage({
       lastContactKind: latestContact?.kind || null,
       unreadMessages,
       hasExplicitNextAction,
-      needsAttention: needsAttention || blockedActions > 0 || unreadMessages > 0 || (segment !== "archived" && !hasExplicitNextAction),
+      needsAttention: needsAttention
+        || blockedActions > 0
+        || waitingOnCampus > 0
+        || unreadMessages > 0
+        || (segment !== "archived" && !hasExplicitNextAction),
       updatedAt: intake?.updated_at || prospect?.updated_at || access?.status_changed_at || "",
     };
   });
@@ -518,6 +540,9 @@ export default async function AdminPeoplePage({
       activeApplications: 0,
       openActions: 0,
       blockedActions: 0,
+      waitingOnCampus: 0,
+      waitingOnStudent: 0,
+      waitingOnExternal: 0,
       nextAction: "Lier le prospect à un compte vérifié pour ouvrir son dossier 360°",
       nextActionOwner: "Prospect",
       dueDate: null,
@@ -564,6 +589,9 @@ export default async function AdminPeoplePage({
   const workCounts: Record<WorkView, number> = {
     all: records.length,
     blocked: operationalRecords.filter((item) => item.blockedActions > 0).length,
+    waiting_campus: operationalRecords.filter((item) => item.waitingOnCampus > 0).length,
+    waiting_student: operationalRecords.filter((item) => item.waitingOnStudent > 0).length,
+    waiting_external: operationalRecords.filter((item) => item.waitingOnExternal > 0).length,
     overdue: operationalRecords.filter((item) => Boolean(item.dueDate && item.dueDate < today)).length,
     today: operationalRecords.filter((item) => item.dueDate === today).length,
     week: operationalRecords.filter((item) => Boolean(item.dueDate && item.dueDate >= today && item.dueDate <= weekEnd)).length,
@@ -584,6 +612,9 @@ export default async function AdminPeoplePage({
     if (selectedAdvisor && item.assignedAdminId !== selectedAdvisor) return false;
 
     if (work === "blocked" && (!item.userId || item.segment === "archived" || item.blockedActions < 1)) return false;
+    if (work === "waiting_campus" && (!item.userId || item.segment === "archived" || item.waitingOnCampus < 1)) return false;
+    if (work === "waiting_student" && (!item.userId || item.segment === "archived" || item.waitingOnStudent < 1)) return false;
+    if (work === "waiting_external" && (!item.userId || item.segment === "archived" || item.waitingOnExternal < 1)) return false;
     if (work === "overdue" && !(item.dueDate && item.dueDate < today)) return false;
     if (work === "today" && item.dueDate !== today) return false;
     if (work === "week" && !(item.dueDate && item.dueDate >= today && item.dueDate <= weekEnd)) return false;
@@ -764,6 +795,9 @@ export default async function AdminPeoplePage({
                         {adminPersonSegmentLabels[person.segment]}
                       </Badge>
                       {person.blockedActions > 0 ? <Badge variant="error">Bloqué · {person.blockedActions}</Badge> : null}
+                      {person.waitingOnCampus > 0 ? <Badge variant="warning">Attend Campus · {person.waitingOnCampus}</Badge> : null}
+                      {person.waitingOnStudent > 0 ? <Badge variant="info">Attend étudiant · {person.waitingOnStudent}</Badge> : null}
+                      {person.waitingOnExternal > 0 ? <Badge variant="neutral">Attend externe · {person.waitingOnExternal}</Badge> : null}
                       {overdue ? <Badge variant="error">En retard</Badge> : null}
                       {!overdue && dueToday ? <Badge variant="warning">Aujourd’hui</Badge> : null}
                       {!overdue && !dueToday && person.needsAttention ? <Badge variant="warning">Attention</Badge> : null}
