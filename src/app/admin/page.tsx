@@ -187,6 +187,7 @@ export default async function AdminEntry() {
         actions={
           <>
             <ButtonLink href="/admin/people">Ouvrir Personnes</ButtonLink>
+            <ButtonLink href="/admin/team" variant="secondary">Voir l’équipe</ButtonLink>
             <ButtonLink href="/admin/intake" variant="secondary">Dossiers Campus</ButtonLink>
             <ButtonLink href="/admin/documents" variant="secondary">Traiter les documents</ButtonLink>
           </>
