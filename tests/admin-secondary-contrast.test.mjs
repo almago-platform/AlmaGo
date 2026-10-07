@@ -8,7 +8,6 @@ const files = [
   "src/components/admin/AdminDocumentsPanel.tsx",
   "src/components/admin/AdminFinanceInsurancePanel.tsx",
   "src/components/admin/AdminLanguageCoursesPanel.tsx",
-  "src/components/admin/AdminNav.tsx",
   "src/components/admin/AdminOrientationHumanReviewQueue.tsx",
   "src/components/admin/AdminOrientationPanel.tsx",
   "src/components/admin/AdminProgramsPanel.tsx",
