@@ -13,7 +13,8 @@ const financePanel = readFileSync("src/components/admin/AdminFinanceInsurancePan
 
 test("admin shell groups operational work separately from Germany catalogue maintenance", () => {
   assert.match(shell, /const adminGroups/);
-  assert.match(shell, /label: "Opérations"/);
+  assert.match(shell, /label: "Personnes"/);
+  assert.match(shell, /label: "Files de travail"/);
   assert.match(shell, /label: "Catalogue Allemagne"/);
   assert.match(shell, /lg:w-\[15\.5rem\]/);
   assert.match(shell, /lg:pl-\[15\.5rem\]/);
