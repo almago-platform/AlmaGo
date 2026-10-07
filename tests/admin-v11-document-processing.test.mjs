@@ -142,3 +142,31 @@ test("Admin V11 waiting-state queues include targeted current document requests 
     assert.match(source, /requirement\.student_request_reason\?\.trim\(\)/);
   }
 });
+
+test("Admin V11 requires a sourced decision before concluding German legalisation", () => {
+  assert.match(route, /legalisation_required", "legalisation_not_required"/);
+  assert.match(route, /Ajoutez la source officielle utilisée pour décider la légalisation/);
+  assert.match(route, /source_url: sourceUrl/);
+  assert.match(route, /source_verified_at: new Date\(\)\.toISOString\(\)/);
+  assert.match(route, /validHttpUrl/);
+  assert.match(panel, /Source officielle utilisée pour la décision/);
+  assert.match(panel, /Obligatoire pour conclure « légalisation requise » ou « non requise »/);
+});
+
+test("Admin V11 cannot complete file-processing work before a document is actually linked", () => {
+  assert.match(route, /linkedDocumentRequired/);
+  assert.match(route, /requirement\.document_id/);
+  assert.match(route, /Cette transition nécessite d’abord un fichier lié à l’exigence/);
+  for (const operation of [
+    '"accepted_original"',
+    '"authentication_in_progress"',
+    '"authenticated"',
+    '"translation_in_progress"',
+    '"translated"',
+    '"legalisation_in_progress"',
+    '"legalisation_completed"',
+    '"ready"',
+  ]) {
+    assert.ok(route.includes(operation), operation);
+  }
+});
