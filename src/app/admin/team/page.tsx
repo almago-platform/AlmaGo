@@ -7,6 +7,7 @@ import { buttonClassName } from "@/components/ui/Button";
 import {
   applicationOfficialDeadlineUrgency,
   applicationRouteRisk,
+  campusTodayDateKey,
 } from "@/lib/admin/application-risk";
 import { isOpenAdminAction } from "@/lib/admin/people";
 import { isActiveApplication } from "@/lib/application-workflow";
@@ -216,7 +217,7 @@ export default async function AdminTeamPage() {
     }
   }
 
-  const today = new Date().toISOString().slice(0, 10);
+  const today = campusTodayDateKey();
   const staleContactCutoff = shiftDateKey(today, -14);
 
   const blockedStudentIds = new Set<string>();
