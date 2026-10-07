@@ -3,10 +3,8 @@
 Canonical website identity.
 
 Runtime assets:
-- `campus-allemagne-logo-approved.webp` — horizontal logo used by the web interface.
-- `campus-allemagne-symbol-approved.webp` — compact UI mark.
-- `campus-allemagne-symbol-approved.png` — PNG compact mark retained for PWA metadata.
-- `campus-allemagne-logo-approved.png` — approved source/master artwork retained as a lossless reference.
+- `campus-allemagne-logo-approved.png` — approved horizontal logo used by the web interface.
+- `campus-allemagne-symbol-approved.png` — approved compact mark used by the web interface and PWA metadata.
 - `campus-allemagne-favicon-v4.svg` — browser favicon optimized for small sizes.
 
 The approved artwork must not be redrawn, re-typeset, mirrored, stretched, recolored or reconstructed. RTL changes page direction only.

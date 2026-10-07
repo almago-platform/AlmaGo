@@ -15,8 +15,8 @@ export function BrandLogo({
   priority = false,
 }: BrandLogoProps) {
   const src = symbolOnly
-    ? "/brand/campus-allemagne-symbol-approved.webp"
-    : "/brand/campus-allemagne-logo-approved.webp";
+    ? "/brand/campus-allemagne-symbol-approved.png"
+    : "/brand/campus-allemagne-logo-approved.png";
 
   return (
     <Image
