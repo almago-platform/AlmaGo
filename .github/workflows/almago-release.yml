@@ -43,8 +43,7 @@ jobs:
             revision="$(printf '%s' "$health" | jq -r '.revision // empty' 2>/dev/null || true)"
             branch="$(printf '%s' "$health" | jq -r '.branch // empty' 2>/dev/null || true)"
             if [ "$revision" = "$expected" ] && [ "$branch" = "main" ]; then
-              printf '%s
-' "$health"
+              echo "$health"
               exit 0
             fi
             sleep 5
