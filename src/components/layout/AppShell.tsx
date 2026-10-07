@@ -117,20 +117,11 @@ export function AppShell({
       helper: messageNavCopy[locale][1],
     },
   ];
-  const messageGroupCopy = {
-    fr: "Communication",
-    ar: "التواصل",
-    en: "Communication",
-    de: "Kommunikation",
-  } as const;
-  const studentGroups: Array<{ label: string; items: NavItem[] }> = studentGroupIndexes.map((indexes, groupIndex) => ({
+  const studentGroups = studentGroupIndexes.map((indexes, groupIndex) => ({
     label: shell.groups[groupIndex],
     items: indexes.map((index) => localizedStudentItems[index]),
   }));
-  studentGroups.push({
-    label: messageGroupCopy[locale],
-    items: [localizedStudentItems[11]],
-  });
+  studentGroups[0]?.items.push(localizedStudentItems[11]);
   const partnerDemoItem: NavItem = {
     label: "Démo partenaires",
     href: "/admin/partner-demo",
