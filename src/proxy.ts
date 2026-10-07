@@ -1,4 +1,6 @@
+import { randomUUID } from "node:crypto";
 import { type NextRequest } from "next/server";
+import { buildContentSecurityPolicy } from "@/lib/security/csp";
 import {
   mutationRejectionResponse,
   validateMutationPayload,
@@ -14,7 +16,18 @@ export async function proxy(request: NextRequest) {
     if (payloadRejection) return mutationRejectionResponse(payloadRejection);
   }
 
-  return updateSession(request);
+  const nonce = randomUUID();
+  const csp = buildContentSecurityPolicy(nonce);
+  const requestHeaders = new Headers();
+  requestHeaders.set("x-nonce", nonce);
+  // Next.js reads the incoming CSP to propagate the nonce onto framework scripts.
+  // This header is forwarded only to the application render path, not the browser.
+  requestHeaders.set("Content-Security-Policy", csp);
+
+  const responseHeaders = new Headers();
+  responseHeaders.set("Content-Security-Policy-Report-Only", csp);
+
+  return updateSession(request, { requestHeaders, responseHeaders });
 }
 
 export const config = {

@@ -67,6 +67,9 @@ jobs:
           cat artifacts/server.log
           exit 1
 
+      - name: Runtime CSP nonce smoke
+        run: node tests/security/csp-runtime-smoke.mjs http://127.0.0.1:3000
+
       - name: Responsive and accessibility regression
         run: |
           npx playwright test tests/e2e/ui-regression.spec.mjs \
