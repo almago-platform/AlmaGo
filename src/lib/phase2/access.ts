@@ -37,29 +37,19 @@ export function canUseClientFeatures(status: CustomerLifecycleStatus | null) {
 
 export async function getPhase2StudentAccess() {
   const auth = await getTechnicalStudentUser();
+  const phase2Enabled = isPhase2AccessEnabled();
 
   if (!auth.user || !auth.isStudent) {
     return {
       ...auth,
-      phase2Enabled: isPhase2AccessEnabled(),
+      phase2Enabled,
       customerStatus: null as CustomerLifecycleStatus | null,
       canUseClientFeatures: false,
     };
   }
 
-  const phase2Enabled = isPhase2AccessEnabled();
-
-  // P2.0 is safe to merge before public activation. Until the server flag is enabled,
-  // Phase 1 student access remains exactly as it was.
-  if (!phase2Enabled) {
-    return {
-      ...auth,
-      phase2Enabled,
-      customerStatus: "client_active" as CustomerLifecycleStatus,
-      canUseClientFeatures: true,
-    };
-  }
-
+  // Feature flags may disable Phase 2 UX, but they must never widen authorization.
+  // Client entitlement always comes from the immutable server-side lifecycle row.
   const { data: access } = await auth.supabase
     .from("customer_access")
     .select("status")
