@@ -105,9 +105,8 @@ test("already-migrated environments receive an additive offer RLS correlation re
 });
 
 test("admin API derives admin identity from session and validates owner-controlled content", () => {
-  assert.match(route, /supabase\.auth\.getUser\(\)/);
-  assert.match(route, /from\("user_roles"\)/);
-  assert.match(route, /role\?\.role !== "admin"/);
+  assert.match(route, /getAdminUser\(\)/);
+  assert.match(route, /if \(!isAdmin\)/);
   assert.match(route, /p_admin_user_id: user\.id/);
   assert.doesNotMatch(route, /record\.(?:admin|adminId|userId|user_id)/);
   assert.match(route, /offerCodes = new Set\(\["bronze", "silver", "gold"\]\)/);

@@ -92,9 +92,8 @@ test("P2.7 qualification history is append-only and browser read-only under owne
 });
 
 test("P2.7 human review is authenticated, independently admin-verified and stale-safe", () => {
-  assert.match(adminReview, /supabase\.auth\.getUser\(\)/);
-  assert.match(adminReview, /from\("user_roles"\)/);
-  assert.match(adminReview, /role\?\.role !== "admin"/);
+  assert.match(adminReview, /getAdminUser\(\)/);
+  assert.match(adminReview, /if \(!isAdmin\)/);
   assert.match(adminReview, /p_admin_user_id: user\.id/);
   assert.doesNotMatch(
     adminReview,

@@ -29,6 +29,42 @@ $$;
 revoke all on function private.has_student_client_access() from public, anon;
 grant execute on function private.has_student_client_access() to authenticated, service_role;
 
+-- Admin privileges require both the immutable database role and an AAL2 JWT.
+-- Updating the shared helper makes the requirement apply to every existing
+-- admin RLS policy without adding permissive-policy bypasses.
+create or replace function private.is_admin()
+returns boolean
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select
+    coalesce((select auth.jwt() ->> 'aal') = 'aal2', false)
+    and exists (
+      select 1
+      from public.user_roles role
+      where role.user_id = (select auth.uid())
+        and role.role = 'admin'::public.app_role
+    );
+$$;
+
+revoke all on function private.is_admin() from public, anon;
+grant execute on function private.is_admin() to authenticated, service_role;
+
+create or replace function public.is_admin()
+returns boolean
+language sql
+stable
+security invoker
+set search_path = ''
+as $$
+  select private.is_admin();
+$$;
+
+revoke all on function public.is_admin() from public, anon;
+grant execute on function public.is_admin() to authenticated, service_role;
+
 -- Client-only student-domain policies. Admin access is intentionally preserved.
 -- Shared pre-dossier resources (documents, Storage, student_intake_cases and
 -- student_projects) deliberately keep their owner-scoped policies because

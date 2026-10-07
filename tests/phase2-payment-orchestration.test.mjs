@@ -170,8 +170,8 @@ test("development payment confirmation is impossible in production and default-o
 });
 
 test("admin manual payment confirmation is authenticated, server-priced and audited", () => {
-  assert.match(manualAdminRoute, /supabase\.auth\.getUser\(\)/);
-  assert.match(manualAdminRoute, /role\?\.role !== "admin"/);
+  assert.match(manualAdminRoute, /getAdminUser\(\)/);
+  assert.match(manualAdminRoute, /if \(!isAdmin\)/);
   assert.match(
     manualAdminRoute,
     /recordManualPhase2Payment\(\s*user\.id,\s*purchaseId,\s*reference/,
@@ -192,8 +192,8 @@ test("admin manual payment confirmation is authenticated, server-priced and audi
 });
 
 test("admin activation derives admin identity and payment page exposes the two-step manual flow", () => {
-  assert.match(adminRoute, /supabase\.auth\.getUser\(\)/);
-  assert.match(adminRoute, /role\?\.role !== "admin"/);
+  assert.match(adminRoute, /getAdminUser\(\)/);
+  assert.match(adminRoute, /if \(!isAdmin\)/);
   assert.match(adminRoute, /activatePhase2PaidPurchase\(user\.id, purchaseId\)/);
   assert.doesNotMatch(adminRoute, /record\.(?:adminId|userId|user_id|status|amount|currency)/);
   assert.match(adminPage, /purchase\.status === "payment_pending"/);

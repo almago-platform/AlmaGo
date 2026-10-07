@@ -1,4 +1,5 @@
 import { hasClientLifecycleEntitlement } from "@/lib/auth/entitlement";
+import { hasAdminAuthenticatorAssurance } from "@/lib/auth/assurance";
 import { createClient } from "@/lib/supabase/server";
 
 export async function getAuthenticatedUser() {
@@ -9,9 +10,33 @@ export async function getAuthenticatedUser() {
 
 export async function getAdminUser() {
   const { supabase, user } = await getAuthenticatedUser();
-  if (!user) return { supabase, user: null, isAdmin: false };
+  if (!user) {
+    return {
+      supabase,
+      user: null,
+      hasAdminRole: false,
+      aal: null,
+      isAdmin: false,
+    };
+  }
   const { data: role } = await supabase.from("user_roles").select("role").eq("user_id", user.id).maybeSingle();
-  return { supabase, user, isAdmin: role?.role === "admin" };
+  const hasAdminRole = role?.role === "admin";
+
+  if (!hasAdminRole) {
+    return { supabase, user, hasAdminRole, aal: null, isAdmin: false };
+  }
+
+  const { data: assurance, error } =
+    await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+  const aal = error ? null : assurance.currentLevel;
+
+  return {
+    supabase,
+    user,
+    hasAdminRole,
+    aal,
+    isAdmin: hasAdminAuthenticatorAssurance(aal),
+  };
 }
 
 export async function getTechnicalStudentUser() {
