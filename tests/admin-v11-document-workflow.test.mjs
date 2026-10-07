@@ -77,3 +77,13 @@ test("Admin V11 separates staff decisions from documents waiting on the student"
   assert.match(documents, /waitingStudentCount/);
   assert.match(documents, /attend.*l’étudiant/);
 });
+
+test("Admin V11 dossier priority follows the real operational interruption order", () => {
+  assert.match(dossier, /unreadStudentMessages > 0/);
+  assert.match(dossier, /documentsAwaitingDecision\.length > 0/);
+  assert.match(dossier, /recordedNextAction/);
+  assert.match(dossier, /studentDocumentRequests\.length > 0/);
+  assert.match(dossier, /href: "#messages"/);
+  assert.match(dossier, /href: "\/admin\/documents"/);
+  assert.match(dossier, /href: "#documents"/);
+});
