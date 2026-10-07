@@ -60,11 +60,12 @@ test("authenticated clients cannot mutate commercial access directly", () => {
   assert.match(migration, /customer access own or admin read/i);
 });
 
-test("server helper fails closed once Phase 2 is enabled", () => {
+test("server helper always derives client entitlement from lifecycle state", () => {
   assert.match(access, /getPhase2StudentAccess/);
-  assert.match(access, /if \(!phase2Enabled\)/);
-  assert.match(access, /customerStatus:\s*"client_active"/);
   assert.match(access, /\.from\("customer_access"\)/);
   assert.match(access, /canUseClientFeatures\(customerStatus\)/);
+  assert.doesNotMatch(access, /if \(!phase2Enabled\)/);
+  assert.doesNotMatch(access, /customerStatus:\s*"client_active"/);
+  assert.doesNotMatch(access, /canUseClientFeatures:\s*true/);
   assert.doesNotMatch(access, /user_metadata|raw_user_meta_data/);
 });
