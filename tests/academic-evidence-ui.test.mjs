@@ -39,7 +39,7 @@ test("Admin page loads document ownership plus evidence and includes approved fi
   assert.match(adminPage, /id,student_id,category/);
   assert.match(adminPage, /from\("academic_evidence"\)/);
   assert.match(adminPage, /toAdminAcademicEvidenceView/);
-  assert.match(adminPage, /\["pending", "replace_required", "approved"\]/);
+  assert.match(adminPage, /\["pending", "reviewed", "replace_required", "rejected", "approved"\]/);
 });
 
 test("Admin workflow keeps document approval and pathway evidence acceptance distinct", () => {

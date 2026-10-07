@@ -39,11 +39,11 @@ test("Admin application cards expose the factual workflow stage and recorded nex
   assert.match(panel, /Aucune prochaine action n’est enregistrée pour ce dossier actif/);
 });
 
-test("deadline copy is rendered only when an actual deadline exists", () => {
-  assert.match(
-    panel,
-    /application\.deadline && \([\s\S]*?Échéance \{formatDeadline\(application\.deadline\)\}/,
-  );
+test("deadline copy is rendered only when an actual deadline exists and keeps provenance explicit", () => {
+  assert.match(panel, /application\.deadline && \(/);
+  assert.match(panel, /formatDeadline\(application\.deadline\)/);
+  assert.match(panel, /deadlineProvenanceLabel\(application\)/);
+  assert.match(panel, /Source \/ date à vérifier/);
 });
 
 test("history remains chronologically scanned and explicitly scoped per application", () => {

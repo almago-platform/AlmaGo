@@ -58,7 +58,8 @@ test("Admin V5 dossier action management reuses checklist ownership and deadline
 });
 
 test("Admin V5 dossier 360 exposes full person context and auditable action history", () => {
-  assert.match(dossier, /Toutes les orientations/);
+  assert.match(dossier, /Orientation Campus/);
+  assert.match(dossier, /Historique des projets \/ orientations saisis/);
   assert.match(dossier, /Tous les fichiers enregistrés/);
   assert.match(dossier, /AdminDossierActionsPanel/);
   assert.match(dossier, /from\("student_history"\)/);

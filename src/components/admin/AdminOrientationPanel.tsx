@@ -22,12 +22,17 @@ export function AdminOrientationPanel({
   students,
   programs,
   recommendations,
+  initialStudentId = "",
 }: {
   students: any[];
   programs: any[];
   recommendations: any[];
+  initialStudentId?: string;
 }) {
-  const [studentId, setStudentId] = useState("");
+  const initialStudent = students.find((student) =>
+    student.id === initialStudentId && student.onboarding_completed
+  );
+  const [studentId, setStudentId] = useState(initialStudent?.id || "");
   const [programId, setProgramId] = useState("");
   const [status, setStatus] = useState("recommended");
   const [note, setNote] = useState("");

@@ -6,7 +6,13 @@ import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminOrientationPage() {
+export default async function AdminOrientationPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ student?: string }>;
+}) {
+  const params = await searchParams;
+  const requestedStudentId = (params.student || "").trim();
   const supabase = await createClient();
   const [
     { data: students, error: studentsError },
@@ -115,6 +121,7 @@ export default async function AdminOrientationPage() {
         students={students || []}
         programs={programs || []}
         recommendations={recommendations || []}
+        initialStudentId={requestedStudentId}
       />
     </main>
   );

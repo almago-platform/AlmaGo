@@ -4,7 +4,15 @@ import { AdminLoadError } from "@/components/admin/AdminLoadError";
 import { AdminWorkspaceSummary } from "@/components/admin/AdminWorkspaceSummary";
 import { Badge } from "@/components/ui/Badge";
 import { buttonClassName } from "@/components/ui/Button";
-import { isOpenAdminAction } from "@/lib/admin/people";
+import {
+  adminActionDateIsTrusted,
+  applicationDateIsOperationalWorkDate,
+  applicationDateIsTrusted,
+  applicationOfficialDeadlineUrgency,
+  applicationRouteRisk,
+  campusTodayDateKey,
+} from "@/lib/admin/application-risk";
+import { isHumanAdminAction } from "@/lib/admin/people";
 import { isActiveApplication } from "@/lib/application-workflow";
 import { createClient } from "@/lib/supabase/server";
 
@@ -25,7 +33,12 @@ type AssignmentRow = {
 type ActionRow = {
   student_id: string;
   status: string;
+  owner: string | null;
   due_date: string | null;
+  template_id: string | null;
+  procedure_step_template_id: string | null;
+  requires_student_action: boolean;
+  student_action_reason: string | null;
   deadline_kind: string | null;
   official_source_url: string | null;
   official_source_verified_at: string | null;
@@ -40,12 +53,26 @@ type ApplicationRow = {
   deadline_source_url: string | null;
   deadline_verified_at: string | null;
   deadline_cycle: string | null;
+  application_method: string | null;
   next_action: string | null;
 };
 
 type ContactRow = {
   student_id: string;
   occurred_at: string;
+};
+
+type CurrentProcedureRow = {
+  id: string;
+  student_id: string;
+};
+
+type RequirementSignalRow = {
+  student_id: string;
+  student_procedure_id: string;
+  status: string;
+  requested_from_student: boolean;
+  student_request_reason: string | null;
 };
 
 type AdvisorWorkload = {
@@ -76,23 +103,11 @@ function shiftDateKey(value: string, days: number) {
 }
 
 function actionDeadlineIsTrusted(item: ActionRow) {
-  if (!item.due_date) return false;
-  if (item.deadline_kind === "internal_target" || item.deadline_kind === "source_review_date") return true;
-  return Boolean(
-    item.official_source_url
-    && item.official_source_verified_at
-    && item.deadline_cycle,
-  );
+  return adminActionDateIsTrusted(item);
 }
 
 function applicationDeadlineIsTrusted(item: ApplicationRow) {
-  if (!item.deadline) return false;
-  if (item.deadline_kind === "internal_target" || item.deadline_kind === "source_review_date") return true;
-  return Boolean(
-    item.deadline_source_url
-    && item.deadline_verified_at
-    && item.deadline_cycle,
-  );
+  return applicationDateIsTrusted(item);
 }
 
 export default async function AdminTeamPage() {
@@ -107,6 +122,8 @@ export default async function AdminTeamPage() {
     actionsResult,
     applicationsResult,
     contactsResult,
+    currentProceduresResult,
+    requirementSignalsResult,
   ] = await Promise.all([
     supabase.from("user_roles").select("user_id").eq("role", "admin"),
     supabase.from("customer_access").select("user_id,status").limit(1000),
@@ -114,11 +131,11 @@ export default async function AdminTeamPage() {
     supabase.from("student_case_assignments").select("student_id,assigned_admin_id").limit(1000),
     supabase
       .from("student_checklist_items")
-      .select("student_id,status,due_date,deadline_kind,official_source_url,official_source_verified_at,deadline_cycle")
+      .select("student_id,status,owner,due_date,template_id,procedure_step_template_id,requires_student_action,student_action_reason,deadline_kind,official_source_url,official_source_verified_at,deadline_cycle")
       .limit(5000),
     supabase
       .from("applications")
-      .select("student_id,status,deadline,deadline_kind,deadline_source_url,deadline_verified_at,deadline_cycle,next_action")
+      .select("student_id,status,deadline,deadline_kind,deadline_source_url,deadline_verified_at,deadline_cycle,application_method,next_action")
       .limit(5000),
     supabase
       .from("student_case_notes")
@@ -126,6 +143,15 @@ export default async function AdminTeamPage() {
       .neq("kind", "internal_note")
       .order("occurred_at", { ascending: false })
       .limit(3000),
+    supabase
+      .from("student_procedures")
+      .select("id,student_id")
+      .eq("is_current", true)
+      .limit(1000),
+    supabase
+      .from("student_document_requirements")
+      .select("student_id,student_procedure_id,status,requested_from_student,student_request_reason")
+      .limit(5000),
   ]);
 
   const firstError = rolesResult.error
@@ -134,7 +160,9 @@ export default async function AdminTeamPage() {
     || assignmentsResult.error
     || actionsResult.error
     || applicationsResult.error
-    || contactsResult.error;
+    || contactsResult.error
+    || currentProceduresResult.error
+    || requirementSignalsResult.error;
 
   if (firstError) {
     return (
@@ -187,6 +215,12 @@ export default async function AdminTeamPage() {
   }
   for (const item of intakeResult.data || []) operationalIds.add(item.student_id);
 
+  const currentProcedureIds = new Set(
+    ((currentProceduresResult.data || []) as CurrentProcedureRow[]).map((item) => item.id),
+  );
+  const currentRequirementSignals = ((requirementSignalsResult.data || []) as RequirementSignalRow[])
+    .filter((item) => currentProcedureIds.has(item.student_procedure_id));
+
   const assignments = (assignmentsResult.data || []) as AssignmentRow[];
   const assignmentByStudent = new Map(assignments.map((item) => [item.student_id, item.assigned_admin_id]));
 
@@ -207,8 +241,83 @@ export default async function AdminTeamPage() {
     }
   }
 
-  const today = new Date().toISOString().slice(0, 10);
+  const today = campusTodayDateKey();
   const staleContactCutoff = shiftDateKey(today, -14);
+
+  const blockedStudentIds = new Set<string>();
+  const waitingCampusStudentIds = new Set<string>();
+  const waitingStudentStudentIds = new Set<string>();
+  const waitingExternalStudentIds = new Set<string>();
+  for (const action of (actionsResult.data || []) as ActionRow[]) {
+    if (!operationalIds.has(action.student_id)) continue;
+    if (action.status === "blocked") blockedStudentIds.add(action.student_id);
+    if (action.status === "waiting_almago") waitingCampusStudentIds.add(action.student_id);
+    if (
+      action.status === "waiting_student"
+      && action.requires_student_action
+      && action.student_action_reason?.trim()
+    ) {
+      waitingStudentStudentIds.add(action.student_id);
+    }
+    if (action.status === "waiting_external") waitingExternalStudentIds.add(action.student_id);
+  }
+
+  const replacementDocumentStudentIds = new Set<string>();
+  for (const requirement of currentRequirementSignals) {
+    if (
+      requirement.requested_from_student
+      && ["requested", "replacement_required"].includes(requirement.status)
+      && Boolean(requirement.student_request_reason?.trim())
+    ) {
+      waitingStudentStudentIds.add(requirement.student_id);
+    }
+    if (["authentication_required", "translation_required", "legalisation_to_verify", "legalisation_required"].includes(requirement.status)) {
+      waitingCampusStudentIds.add(requirement.student_id);
+    }
+    if (requirement.status === "replacement_required") {
+      replacementDocumentStudentIds.add(requirement.student_id);
+    }
+  }
+
+  const unverifiedDeadlineStudentIds = new Set<string>();
+  const applicationRiskStudentIds = new Set<string>();
+  const officialOverdueStudentIds = new Set<string>();
+  const officialD7StudentIds = new Set<string>();
+  for (const action of (actionsResult.data || []) as ActionRow[]) {
+    if (!operationalIds.has(action.student_id)) continue;
+    if (!isHumanAdminAction(action)) continue;
+    if (action.due_date && !actionDeadlineIsTrusted(action)) {
+      unverifiedDeadlineStudentIds.add(action.student_id);
+    }
+  }
+  for (const application of (applicationsResult.data || []) as ApplicationRow[]) {
+    if (!operationalIds.has(application.student_id) || !isActiveApplication(application.status)) continue;
+    const trusted = applicationDeadlineIsTrusted(application);
+    if (application.deadline && !trusted) {
+      unverifiedDeadlineStudentIds.add(application.student_id);
+    }
+    if (applicationRouteRisk({
+      status: application.status,
+      application_method: application.application_method,
+      deadline: application.deadline,
+      deadline_kind: application.deadline_kind,
+      deadlineTrusted: trusted,
+    }, today)) {
+      applicationRiskStudentIds.add(application.student_id);
+    }
+
+    const officialUrgency = applicationOfficialDeadlineUrgency({
+      status: application.status,
+      deadline: application.deadline,
+      deadline_kind: application.deadline_kind,
+      deadlineTrusted: trusted,
+    }, today);
+    if (officialUrgency?.kind === "overdue") {
+      officialOverdueStudentIds.add(application.student_id);
+    } else if (officialUrgency && officialUrgency.daysRemaining <= 7) {
+      officialD7StudentIds.add(application.student_id);
+    }
+  }
 
   const byAdvisor = new Map<string, AdvisorWorkload>(
     advisors.map((advisor) => [
@@ -242,7 +351,9 @@ export default async function AdminTeamPage() {
 
     workload.assigned += 1;
 
-    const openActions = (actionsByStudent.get(studentId) || []).filter((item) => isOpenAdminAction(item.status));
+    const openActions = (actionsByStudent.get(studentId) || []).filter((item) =>
+      isHumanAdminAction(item)
+    );
     const activeApplications = (applicationsByStudent.get(studentId) || []).filter((item) => isActiveApplication(item.status));
 
     const hasExplicitNextAction = openActions.length > 0
@@ -259,7 +370,7 @@ export default async function AdminTeamPage() {
       }),
       ...activeApplications.flatMap((item) => {
         const key = dateKey(item.deadline);
-        return key && applicationDeadlineIsTrusted(item) ? [key] : [];
+        return key && applicationDateIsOperationalWorkDate(item) ? [key] : [];
       }),
     ].sort();
 
@@ -310,6 +421,72 @@ export default async function AdminTeamPage() {
           { label: "Sans action", value: totalMissingAction, tone: totalMissingAction ? "warning" : "success" },
         ]}
       />
+
+      <section className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4" aria-label="États d’attente, deadlines et risques de l’équipe">
+        <TeamStateCard
+          href="/admin/people?work=blocked"
+          label="Bloqués"
+          value={blockedStudentIds.size}
+          detail="Étape explicitement bloquée"
+          tone={blockedStudentIds.size ? "error" : "success"}
+        />
+        <TeamStateCard
+          href="/admin/people?work=waiting_campus"
+          label="Attend Campus"
+          value={waitingCampusStudentIds.size}
+          detail="Une action Campus Allemagne est attendue"
+          tone={waitingCampusStudentIds.size ? "warning" : "success"}
+        />
+        <TeamStateCard
+          href="/admin/people?work=waiting_student"
+          label="Attend étudiant"
+          value={waitingStudentStudentIds.size}
+          detail="Action personnelle ciblée et justifiée"
+          tone={waitingStudentStudentIds.size ? "info" : "success"}
+        />
+        <TeamStateCard
+          href="/admin/people?work=waiting_external"
+          label="Attend externe"
+          value={waitingExternalStudentIds.size}
+          detail="Université, autorité ou autre acteur externe"
+          tone={waitingExternalStudentIds.size ? "info" : "success"}
+        />
+        <TeamStateCard
+          href="/admin/people?work=deadline_verify"
+          label="Dates à vérifier"
+          value={unverifiedDeadlineStudentIds.size}
+          detail="Date enregistrée sans provenance complète"
+          tone={unverifiedDeadlineStudentIds.size ? "warning" : "success"}
+        />
+        <TeamStateCard
+          href="/admin/people?work=application_risk"
+          label="VPD / uni-assist à risque"
+          value={applicationRiskStudentIds.size}
+          detail="Cible interne D-70 ou D-56 atteinte avant soumission"
+          tone={applicationRiskStudentIds.size ? "warning" : "success"}
+        />
+        <TeamStateCard
+          href="/admin/people?work=official_overdue"
+          label="Deadlines dépassées"
+          value={officialOverdueStudentIds.size}
+          detail="Deadline officielle vérifiée dépassée avant soumission"
+          tone={officialOverdueStudentIds.size ? "error" : "success"}
+        />
+        <TeamStateCard
+          href="/admin/people?work=official_7"
+          label="Deadline ≤ 7 j"
+          value={officialD7StudentIds.size}
+          detail="Dossier à J-7 ou moins d’une deadline officielle vérifiée"
+          tone={officialD7StudentIds.size ? "warning" : "success"}
+        />
+        <TeamStateCard
+          href="/admin/people?work=document_replacement"
+          label="Documents à remplacer"
+          value={replacementDocumentStudentIds.size}
+          detail="Une nouvelle version est attendue de l’étudiant"
+          tone={replacementDocumentStudentIds.size ? "warning" : "success"}
+        />
+      </section>
 
       <section className="mt-5 overflow-hidden rounded-[var(--radius-panel)] border border-[var(--border)] bg-white" aria-labelledby="team-workload-title">
         <div className="flex flex-col gap-3 border-b border-[var(--border)] p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
@@ -424,5 +601,36 @@ function WorkMetric({
       <p className="text-[0.68rem] font-bold uppercase tracking-[0.1em] text-slate-600">{label}</p>
       <p className={`mt-1 text-lg font-semibold ${warning ? "text-amber-800" : "text-slate-950"}`}>{value}</p>
     </div>
+  );
+}
+
+
+function TeamStateCard({
+  href,
+  label,
+  value,
+  detail,
+  tone,
+}: {
+  href: string;
+  label: string;
+  value: number;
+  detail: string;
+  tone: "error" | "warning" | "info" | "success";
+}) {
+  return (
+    <Link
+      href={href}
+      className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-4 transition-colors hover:bg-[var(--surface-subtle)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)]"
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-[0.12em] text-slate-600">{label}</p>
+          <p className="mt-2 text-2xl font-semibold tracking-tight text-slate-950">{value}</p>
+        </div>
+        <Badge variant={tone}>{value ? "À suivre" : "À jour"}</Badge>
+      </div>
+      <p className="mt-2 text-sm leading-5 text-slate-600">{detail}</p>
+    </Link>
   );
 }

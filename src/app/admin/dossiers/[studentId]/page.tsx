@@ -7,8 +7,12 @@ import { JourneyRail, type JourneyRailStep } from "@/components/product/JourneyR
 import { NextActionPanel } from "@/components/product/NextActionPanel";
 import { AdminLoadError } from "@/components/admin/AdminLoadError";
 import { AdminDossierActionsPanel, type AdminDossierActionItem } from "@/components/admin/AdminDossierActionsPanel";
+import { AdminDossierBlockersPanel, type AdminDossierBlocker } from "@/components/admin/AdminDossierBlockersPanel";
 import { AdminCaseOwnerPanel, type AdminAdvisorOption } from "@/components/admin/AdminCaseOwnerPanel";
 import { AdminCaseJournalPanel, type AdminCaseNoteItem } from "@/components/admin/AdminCaseJournalPanel";
+import { AdminDocumentRequirementsPanel, type AdminDocumentRequirementItem } from "@/components/admin/AdminDocumentRequirementsPanel";
+import { AdminStudentProjectPanel } from "@/components/admin/AdminStudentProjectPanel";
+import { AdminRecommendationApplicationAction } from "@/components/admin/AdminRecommendationApplicationAction";
 import { DossierMessageThread, type DossierMessageItem } from "@/components/product/DossierMessageThread";
 import { Badge } from "@/components/ui/Badge";
 import { DataList } from "@/components/ui/DataList";
@@ -17,9 +21,19 @@ import { PremiumSectionHeader } from "@/components/product/PremiumSectionHeader"
 import { buttonClassName } from "@/components/ui/Button";
 import {
   applicationStatusLabels,
+  isActiveApplication,
   type KnownApplicationStatus,
 } from "@/lib/application-workflow";
+import {
+  applicationDateIsTrusted,
+  applicationOfficialDeadlineUrgency,
+  applicationOfficialDeadlineUrgencyLabel,
+  applicationRouteRisk,
+  applicationRouteRiskLabel,
+  campusTodayDateKey,
+} from "@/lib/admin/application-risk";
 import { campusRouteLabel } from "@/lib/campus-intake";
+import { recommendationStatusLabels } from "@/lib/phase4";
 import { formatMinorCurrency } from "@/lib/money";
 import { restorePublicOrientationAnswers } from "@/lib/orientation/public";
 import { orientationProjectFacts } from "@/lib/prospect/orientation-presentation";
@@ -34,14 +48,20 @@ import {
   customerAccessLabel,
   purchaseStatusLabel,
 } from "@/lib/admin/student-dossier";
-import { adminActionOwnerLabel, adminActionWaiting, adminPersonSegmentLabels, classifyAdminPerson, isOpenAdminAction } from "@/lib/admin/people";
+import { adminActionOwnerLabel, adminActionWaiting, adminPersonSegmentLabels, classifyAdminPerson, isHumanAdminAction, isOpenAdminAction } from "@/lib/admin/people";
 import { createClient } from "@/lib/supabase/server";
 
 type ApplicationRow = {
   id: string;
+  program_id: string;
   status: string;
   intake: string | null;
   deadline: string | null;
+  deadline_kind: string | null;
+  deadline_source_url: string | null;
+  deadline_verified_at: string | null;
+  deadline_cycle: string | null;
+  application_method: string | null;
   next_action: string | null;
   result: string | null;
   created_at: string;
@@ -65,6 +85,29 @@ type DocumentRowData = {
   status: string;
   admin_comment: string | null;
   created_at: string;
+};
+
+type ProgramRecommendationRow = {
+  id: string;
+  program_id: string;
+  status: string;
+  note: string | null;
+  created_at: string;
+  programs:
+    | { name: string | null; degree_level: string | null; field: string | null; universities: { name: string | null; city: string | null } | null }
+    | Array<{ name: string | null; degree_level: string | null; field: string | null; universities: { name: string | null; city: string | null } | null }>
+    | null;
+};
+
+type DocumentRequirementRow = AdminDocumentRequirementItem & {
+  student_procedure_id: string | null;
+};
+
+type DossierActionRow = AdminDossierActionItem & {
+  requires_student_action: boolean;
+  student_action_reason: string | null;
+  blocked_reason: string | null;
+  deadline_kind: string | null;
 };
 
 type PurchaseRow = {
@@ -96,6 +139,17 @@ function offerName(snapshot: unknown) {
   if (!snapshot || typeof snapshot !== "object") return null;
   const value = (snapshot as Record<string, unknown>).display_name;
   return typeof value === "string" && value.trim() ? value.trim() : null;
+}
+
+function recommendationTone(status: string) {
+  if (status === "recommended" || status === "possible") return "success" as const;
+  if (status === "missing_requirements") return "warning" as const;
+  if (status === "ambitious") return "info" as const;
+  return "neutral" as const;
+}
+
+function applicationDeadlineIsTrusted(application: ApplicationRow) {
+  return applicationDateIsTrusted(application);
 }
 
 function applicationTone(status: string) {
@@ -162,6 +216,9 @@ export default async function AdminStudentDossierPage({
     intakeResult,
     accessResult,
     documentsResult,
+    procedureResult,
+    requirementsResult,
+    recommendationsResult,
     applicationsResult,
     purchasesResult,
     actionsResult,
@@ -173,7 +230,7 @@ export default async function AdminStudentDossierPage({
   ] = await Promise.all([
     supabase
       .from("profiles")
-      .select("id,first_name,last_name,full_name")
+      .select("id,first_name,last_name,full_name,target_degree,target_field,study_language,german_level,general_average,preferred_cities,target_intake,budget_range")
       .eq("id", studentId)
       .maybeSingle(),
     supabase
@@ -197,8 +254,27 @@ export default async function AdminStudentDossierPage({
       .eq("student_id", studentId)
       .order("created_at", { ascending: false }),
     supabase
+      .from("student_procedures")
+      .select("id")
+      .eq("student_id", studentId)
+      .eq("is_current", true)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle(),
+    supabase
+      .from("student_document_requirements")
+      .select("id,student_procedure_id,requirement_key,label,category,status,requested_from_student,student_request_reason,student_request_due_date,document_id,requires_tunisian_authentication,requires_translation,requires_german_legalisation,legalisation_status,legalisation_reason,due_date,deadline_kind,deadline_cycle,source_url,source_verified_at,admin_note,created_at,updated_at")
+      .eq("student_id", studentId)
+      .order("created_at", { ascending: true }),
+    supabase
+      .from("program_recommendations")
+      .select("id,program_id,status,note,created_at,programs(name,degree_level,field,universities(name,city))")
+      .eq("student_id", studentId)
+      .eq("is_archived", false)
+      .order("created_at", { ascending: false }),
+    supabase
       .from("applications")
-      .select("id,status,intake,deadline,next_action,result,created_at,programs(name,universities(name,city)),application_events(id,event_type,message,visible_to_student,created_at)")
+      .select("id,program_id,status,intake,deadline,deadline_kind,deadline_source_url,deadline_verified_at,deadline_cycle,application_method,next_action,result,created_at,programs(name,universities(name,city)),application_events(id,event_type,message,visible_to_student,created_at)")
       .eq("student_id", studentId)
       .order("deadline", { ascending: true, nullsFirst: false }),
     supabase
@@ -209,7 +285,7 @@ export default async function AdminStudentDossierPage({
       .limit(1),
     supabase
       .from("student_checklist_items")
-      .select("id,title,description,status,owner,due_date,template_id,completed_at,created_at")
+      .select("id,title,description,status,owner,due_date,template_id,procedure_step_template_id,completed_at,created_at,requires_student_action,student_action_reason,blocked_reason,deadline_kind")
       .eq("student_id", studentId)
       .order("due_date", { ascending: true, nullsFirst: false })
       .order("created_at", { ascending: true }),
@@ -248,9 +324,13 @@ export default async function AdminStudentDossierPage({
   const intake = intakeResult.data;
   const access = accessResult.data;
   const documents = (documentsResult.data || []) as DocumentRowData[];
+  const currentProcedureId = procedureResult.data?.id || null;
+  const documentRequirements = ((requirementsResult.data || []) as DocumentRequirementRow[])
+    .filter((item) => Boolean(currentProcedureId) && item.student_procedure_id === currentProcedureId);
+  const recommendations = (recommendationsResult.data || []) as unknown as ProgramRecommendationRow[];
   const applications = (applicationsResult.data || []) as unknown as ApplicationRow[];
   const purchase = ((purchasesResult.data || []) as PurchaseRow[])[0] ?? null;
-  const dossierActions = (actionsResult.data || []) as AdminDossierActionItem[];
+  const dossierActions = (actionsResult.data || []) as DossierActionRow[];
   const historyRows = (historyResult.data || []) as HistoryRow[];
   const assignment = assignmentResult.data;
   const adminIds = (adminRolesResult.data || []).map((item) => item.user_id);
@@ -267,6 +347,9 @@ export default async function AdminStudentDossierPage({
     || intakeResult.error
     || accessResult.error
     || documentsResult.error
+    || procedureResult.error
+    || requirementsResult.error
+    || recommendationsResult.error
     || applicationsResult.error
     || purchasesResult.error
     || actionsResult.error
@@ -399,15 +482,286 @@ export default async function AdminStudentDossierPage({
   const personSegment = classifyAdminPerson(access?.status, Boolean(intake));
   const currentStage = adminDossierStageIndex(intake?.status, applications.length > 0);
   const workflowNextAction = adminDossierNextAction(intake?.status, applications.length > 0);
-  const recordedNextAction = dossierActions.find((item) => isOpenAdminAction(item.status)) || null;
-  const nextAction = recordedNextAction
+  const latestDocumentByCategory = new Map<string, DocumentRowData>();
+  for (const item of documents) {
+    if (!latestDocumentByCategory.has(item.category)) {
+      latestDocumentByCategory.set(item.category, item);
+    }
+  }
+  const latestOperationalDocuments = [...latestDocumentByCategory.values()];
+  const documentsAwaitingDecision = latestOperationalDocuments.filter((item) =>
+    item.status === "pending" || item.status === "reviewed"
+  );
+  const unreadStudentMessages = dossierMessages.filter((item) =>
+    item.sender_role === "student" && !item.admin_read_at
+  ).length;
+  const studentDocumentRequests = documentRequirements.filter((item) =>
+    item.requested_from_student && (item.status === "requested" || item.status === "replacement_required")
+  );
+  const recordedNextAction = dossierActions.find((item) => isHumanAdminAction(item)) || null;
+
+  const blockers: AdminDossierBlocker[] = [];
+  const blockerIds = new Set<string>();
+  const addBlocker = (blocker: AdminDossierBlocker) => {
+    if (blockerIds.has(blocker.id)) return;
+    blockerIds.add(blocker.id);
+    blockers.push(blocker);
+  };
+
+  for (const action of dossierActions) {
+    if (action.status === "blocked") {
+      addBlocker({
+        id: `action:${action.id}`,
+        kind: "Étape bloquée",
+        title: action.title,
+        reason: action.blocked_reason?.trim()
+          || action.description?.trim()
+          || "Cette étape est explicitement marquée comme bloquée dans la procédure.",
+        owner: action.owner === "student" || action.owner === "external" || action.owner === "joint"
+          ? action.owner
+          : "almago",
+        severity: "critical",
+        href: "#actions",
+        actionLabel: "Traiter l’action",
+      });
+      continue;
+    }
+
+    if (
+      action.status === "waiting_student"
+      && action.requires_student_action
+      && action.student_action_reason?.trim()
+    ) {
+      addBlocker({
+        id: `student-action:${action.id}`,
+        kind: "Action étudiante requise",
+        title: action.title,
+        reason: action.student_action_reason.trim(),
+        owner: action.owner === "joint" ? "joint" : "student",
+        severity: "warning",
+        href: "#actions",
+        actionLabel: "Voir l’action",
+      });
+    }
+  }
+
+  for (const requirement of studentDocumentRequests) {
+    addBlocker({
+      id: `document-request:${requirement.id}`,
+      kind: requirement.status === "replacement_required" ? "Remplacement requis" : "Pièce attendue",
+      title: requirement.label,
+      reason: requirement.student_request_reason?.trim()
+        || "Une pièce ou une action personnelle est nécessaire avant de poursuivre cette partie du dossier.",
+      owner: "student",
+      severity: requirement.status === "replacement_required" ? "critical" : "warning",
+      href: "#documents",
+      actionLabel: "Voir la demande",
+    });
+  }
+
+  for (const requirement of documentRequirements) {
+    if (requirement.status === "legalisation_to_verify") {
+      addBlocker({
+        id: `document-legalisation-review:${requirement.id}`,
+        kind: "Légalisation à vérifier",
+        title: requirement.label,
+        reason: requirement.legalisation_reason?.trim()
+          || "La nécessité d’une légalisation allemande doit être vérifiée avant de poursuivre cette opération documentaire.",
+        owner: "almago",
+        severity: "warning",
+        href: "#documents",
+        actionLabel: "Vérifier la règle",
+      });
+    }
+
+    if (["authentication_required", "translation_required", "legalisation_required"].includes(requirement.status)) {
+      addBlocker({
+        id: `document-internal-operation:${requirement.id}`,
+        kind: requirement.status === "authentication_required"
+          ? "Authentification à lancer"
+          : requirement.status === "translation_required"
+            ? "Traduction à lancer"
+            : "Légalisation à lancer",
+        title: requirement.label,
+        reason: requirement.admin_note?.trim()
+          || requirement.legalisation_reason?.trim()
+          || "Une opération documentaire interne est requise avant que la pièce puisse être considérée comme prête.",
+        owner: "almago",
+        severity: "warning",
+        href: "#documents",
+        actionLabel: "Voir l’exigence",
+      });
+    }
+  }
+
+  for (const document of documentsAwaitingDecision) {
+    addBlocker({
+      id: `document-decision:${document.id}`,
+      kind: "Décision Campus",
+      title: document.original_filename || `Document ${document.category}`,
+      reason: "La version actuelle a été reçue mais attend encore une validation, un rejet ou une demande de remplacement.",
+      owner: "almago",
+      severity: "warning",
+      href: "/admin/documents",
+      actionLabel: "Décider",
+    });
+  }
+
+  const todayKey = campusTodayDateKey();
+  for (const application of applications) {
+    if (!isActiveApplication(application.status)) continue;
+    const programName = firstProgram(application)?.name || "Candidature";
+    const trustedApplicationDeadline = applicationDeadlineIsTrusted(application);
+
+    if (application.deadline && !trustedApplicationDeadline) {
+      addBlocker({
+        id: `application-deadline:${application.id}`,
+        kind: "Deadline à vérifier",
+        title: programName,
+        reason: "Une date est enregistrée sans provenance complète. Elle ne peut pas servir d’échéance officielle avant vérification de la source, du cycle et de la date de vérification.",
+        owner: "almago",
+        severity: "critical",
+        href: `/admin/applications?student=${studentId}`,
+        actionLabel: "Vérifier la deadline",
+      });
+    }
+
+    const officialUrgency = applicationOfficialDeadlineUrgency({
+      status: application.status,
+      deadline: application.deadline,
+      deadline_kind: application.deadline_kind,
+      deadlineTrusted: trustedApplicationDeadline,
+    }, todayKey);
+
+    if (officialUrgency?.kind === "overdue") {
+      addBlocker({
+        id: `application-official-overdue:${application.id}`,
+        kind: "Deadline officielle dépassée",
+        title: programName,
+        reason: "La candidature n’est pas enregistrée comme soumise alors que sa deadline officielle vérifiée est dépassée. Vérifiez immédiatement la situation réelle avant toute autre décision.",
+        owner: "almago",
+        severity: "critical",
+        href: `/admin/applications?student=${studentId}`,
+        actionLabel: "Escalader maintenant",
+      });
+    } else if (officialUrgency?.kind === "d3" || officialUrgency?.kind === "d7") {
+      addBlocker({
+        id: `application-official-urgent:${application.id}`,
+        kind: applicationOfficialDeadlineUrgencyLabel(officialUrgency),
+        title: programName,
+        reason: `La deadline officielle vérifiée approche dans ${officialUrgency.daysRemaining} jour${officialUrgency.daysRemaining > 1 ? "s" : ""}. Confirmez que le dépôt peut encore être réalisé à temps.`,
+        owner: "almago",
+        severity: officialUrgency.kind === "d3" ? "critical" : "warning",
+        href: `/admin/applications?student=${studentId}`,
+        actionLabel: "Sécuriser le dépôt",
+      });
+    }
+
+    const routeRisk = applicationRouteRisk({
+      status: application.status,
+      application_method: application.application_method,
+      deadline: application.deadline,
+      deadline_kind: application.deadline_kind,
+      deadlineTrusted: trustedApplicationDeadline,
+    }, todayKey);
+
+    if (routeRisk) {
+      addBlocker({
+        id: `application-route-risk:${application.id}`,
+        kind: applicationRouteRiskLabel(routeRisk.kind),
+        title: programName,
+        reason: `La cible interne D-${routeRisk.leadDays} est atteinte ou dépassée avant soumission. Elle sert à sécuriser la préparation du dossier et ne remplace pas la deadline officielle.`,
+        owner: "almago",
+        severity: "warning",
+        href: `/admin/applications?student=${studentId}`,
+        actionLabel: "Accélérer la préparation",
+      });
+    }
+
+    if (!application.next_action?.trim()) {
+      addBlocker({
+        id: `application-next-action:${application.id}`,
+        kind: "Suivi incomplet",
+        title: programName,
+        reason: "Cette candidature est active mais aucune prochaine action n’est enregistrée pour l’équipe.",
+        owner: "almago",
+        severity: "warning",
+        href: `/admin/applications?student=${studentId}`,
+        actionLabel: "Définir l’action",
+      });
+    }
+  }
+
+  const missingProjectFields = [
+    !profile?.target_degree ? "diplôme visé" : null,
+    !profile?.target_field ? "domaine" : null,
+    !profile?.target_intake ? "rentrée visée" : null,
+  ].filter((value): value is string => Boolean(value));
+
+  if (missingProjectFields.length) {
+    addBlocker({
+      id: "project:missing-core",
+      kind: "Projet incomplet",
+      title: "Informations de projet à confirmer",
+      reason: `Il manque : ${missingProjectFields.join(", ")}. Ces informations structurent l’orientation et la préparation des candidatures.`,
+      owner: "joint",
+      severity: "warning",
+      href: "#project",
+      actionLabel: "Compléter le projet",
+    });
+  }
+
+  if (access?.status === "client_active" && !currentProcedureId) {
+    addBlocker({
+      id: "procedure:missing-current",
+      kind: "Procédure absente",
+      title: "Aucune procédure Campus active",
+      reason: "Le client est actif mais aucune procédure courante n’est rattachée au dossier. Vérifiez l’activation commerciale et le parcours avant de créer des obligations manuelles.",
+      owner: "almago",
+      severity: "critical",
+      href: "/admin/intake",
+      actionLabel: "Vérifier l’activation",
+    });
+  }
+
+  const blockerRank = { critical: 0, warning: 1, info: 2 } as const;
+  blockers.sort((left, right) => blockerRank[left.severity] - blockerRank[right.severity]);
+
+  const nextAction = unreadStudentMessages > 0
     ? {
-        title: recordedNextAction.title,
-        description: `${adminActionOwnerLabel(recordedNextAction.owner)} · ${recordedNextAction.description || "Action enregistrée dans le suivi du dossier."}`,
-        href: null as string | null,
-        waiting: adminActionWaiting(recordedNextAction.status),
+        title: unreadStudentMessages > 1
+          ? `${unreadStudentMessages} messages étudiants attendent une réponse`
+          : "1 message étudiant attend une réponse",
+        description: "Ouvrez le fil étudiant et répondez avant de poursuivre les autres actions du dossier.",
+        href: "#messages" as string | null,
+        waiting: false,
       }
-    : workflowNextAction;
+    : documentsAwaitingDecision.length > 0
+      ? {
+          title: documentsAwaitingDecision.length > 1
+            ? `${documentsAwaitingDecision.length} documents attendent une décision`
+            : "1 document attend une décision",
+          description: "Une pièce reçue attend une validation, un rejet ou une demande de remplacement.",
+          href: "/admin/documents" as string | null,
+          waiting: false,
+        }
+      : recordedNextAction
+        ? {
+            title: recordedNextAction.title,
+            description: `${adminActionOwnerLabel(recordedNextAction.owner)} · ${recordedNextAction.description || "Action enregistrée dans le suivi du dossier."}`,
+            href: "#actions" as string | null,
+            waiting: adminActionWaiting(recordedNextAction.status),
+          }
+        : studentDocumentRequests.length > 0
+          ? {
+              title: studentDocumentRequests.length > 1
+                ? `En attente de ${studentDocumentRequests.length} documents de l’étudiant`
+                : `En attente du document « ${studentDocumentRequests[0].label} »`,
+              description: "La prochaine action appartient à l’étudiant. La demande reste visible dans le suivi documentaire.",
+              href: "#documents" as string | null,
+              waiting: true,
+            }
+          : workflowNextAction;
 
   const lifecycleSteps: JourneyRailStep[] = adminDossierLifecycle.map((label, index) => ({
     label,
@@ -424,7 +778,7 @@ export default async function AdminStudentDossierPage({
       index === 1 ? "/admin/documents"
         : index === 2 || index === 3 ? "/admin/intake"
           : index === 4 ? "/admin/payments"
-            : index === 6 ? "/admin/applications"
+            : index === 6 ? `/admin/applications?student=${studentId}`
               : undefined,
   }));
 
@@ -489,12 +843,20 @@ export default async function AdminStudentDossierPage({
     return rightDate - leftDate;
   });
 
+  const documentVersionById = new Map<string, number>();
+  for (const category of [...new Set(documents.map((item) => item.category))]) {
+    const versions = documents.filter((item) => item.category === category).slice().reverse();
+    versions.forEach((item, index) => documentVersionById.set(item.id, index + 1));
+  }
+
   const documentDefinitions = [
     { category: "passport", title: "Passeport", optional: answers.bacStatus === "preparing" },
     { category: "baccalaureate", title: "Baccalauréat", optional: answers.bacStatus === "preparing" },
     { category: "transcripts", title: "Relevé de notes", optional: answers.bacStatus === "preparing" },
     { category: "language_certificate", title: "Certificat de langue", optional: true },
   ];
+
+  const applicationProgramIds = new Set(applications.map((item) => item.program_id));
 
   const purchaseAmount = purchase
     ? formatMinorCurrency(purchase.amount_minor, purchase.currency, "fr-FR")
@@ -534,9 +896,11 @@ export default async function AdminStudentDossierPage({
       >
         {[
           ["#overview", "Synthèse"],
+          ["#blockers", "Blocages"],
           ["#actions", "Actions"],
           ["#messages", "Messages"],
           ["#journal", "Journal interne"],
+          ["#project", "Projet"],
           ["#orientation", "Orientation"],
           ["#documents", "Documents"],
           ["#applications", "Candidatures"],
@@ -583,6 +947,10 @@ export default async function AdminStudentDossierPage({
         }
       />
 
+      <div id="blockers" className="scroll-mt-24">
+        <AdminDossierBlockersPanel blockers={blockers} />
+      </div>
+
       <div id="actions" className="scroll-mt-24">
         <AdminDossierActionsPanel studentId={studentId} actions={dossierActions} />
       </div>
@@ -601,33 +969,88 @@ export default async function AdminStudentDossierPage({
 
       <div className="grid gap-7 xl:grid-cols-[minmax(0,1.35fr)_minmax(19rem,0.65fr)]">
         <div className="space-y-7">
+          <div id="project" className="scroll-mt-24">
+            <AdminStudentProjectPanel
+              studentId={studentId}
+              project={{
+                target_degree: profile?.target_degree || null,
+                target_field: profile?.target_field || null,
+                study_language: profile?.study_language || null,
+                german_level: profile?.german_level || null,
+                general_average: profile?.general_average ?? null,
+                preferred_cities: Array.isArray(profile?.preferred_cities) ? profile.preferred_cities : [],
+                target_intake: profile?.target_intake || null,
+                budget_range: profile?.budget_range || null,
+              }}
+            />
+          </div>
+
           <section id="orientation" className="pc-panel scroll-mt-24 p-5 sm:p-6">
             <PremiumSectionHeader
-              eyebrow="Projet"
-              title="Orientation retenue"
-              description="Les informations ci-dessous proviennent de l’orientation actuellement rattachée au dossier."
+              eyebrow="Orientation Campus"
+              title={recommendations.length
+                ? `${recommendations.length} recommandation${recommendations.length > 1 ? "s" : ""} active${recommendations.length > 1 ? "s" : ""}`
+                : "Aucune recommandation Campus publiée"}
+              description="Le projet étudiant décrit le besoin. Cette section montre séparément les programmes réellement recommandés par Campus Allemagne."
+              actions={
+                <Link
+                  href={`/admin/orientation?student=${studentId}`}
+                  className={buttonClassName("secondary", "min-h-9 px-3 py-1.5 text-xs")}
+                >
+                  Gérer l’orientation
+                </Link>
+              }
             />
-            <DataList
-              className="mt-5"
-              items={[
-                { label: "Diplôme visé", value: answers.targetDegree || "À confirmer" },
-                { label: "Domaine", value: answers.targetField || "À confirmer" },
-                { label: "Allemand", value: answers.germanLevel || "À confirmer" },
-                { label: "Situation Bac", value: bacStatusLabel(answers.bacStatus) },
-                {
-                  label: "Villes préférées",
-                  value: answers.preferredCities.length ? answers.preferredCities.join(", ") : "Aucune préférence enregistrée",
-                },
-                {
-                  label: "Rentrée visée",
-                  value: [answers.targetIntakeSeason, answers.targetIntakeYear].filter(Boolean).join(" ") || "À confirmer",
-                },
-              ]}
-            />
+
+            {recommendations.length ? (
+              <div className="mt-5 divide-y divide-[var(--border)] rounded-[var(--radius-control)] border border-[var(--border)] bg-white">
+                {recommendations.map((recommendation) => {
+                  const program = Array.isArray(recommendation.programs)
+                    ? recommendation.programs[0] ?? null
+                    : recommendation.programs;
+                  const university = Array.isArray(program?.universities)
+                    ? program?.universities[0] ?? null
+                    : program?.universities;
+                  return (
+                    <article key={recommendation.id} className="p-4">
+                      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                        <div className="min-w-0">
+                          <h3 className="text-sm font-bold text-slate-950">{program?.name || "Programme"}</h3>
+                          <p className="mt-1 text-sm leading-5 text-slate-600">
+                            {university?.name || "Université à confirmer"}
+                            {university?.city ? ` · ${university.city}` : ""}
+                            {program?.degree_level ? ` · ${program.degree_level}` : ""}
+                          </p>
+                          {recommendation.note ? (
+                            <p className="mt-2 text-sm leading-6 text-slate-700">{recommendation.note}</p>
+                          ) : null}
+                          <AdminRecommendationApplicationAction
+                            recommendationId={recommendation.id}
+                            hasApplication={applicationProgramIds.has(recommendation.program_id)}
+                          />
+                        </div>
+                        <Badge variant={recommendationTone(recommendation.status)}>
+                          {recommendationStatusLabels[recommendation.status] || recommendation.status}
+                        </Badge>
+                      </div>
+                    </article>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="mt-5">
+                <PremiumEmptyState
+                  eyebrow="Orientation Campus"
+                  title="Aucun programme recommandé"
+                  description="Complétez le projet étudiant puis ouvrez l’orientation pour publier une recommandation fondée sur les informations vérifiées."
+                  compact
+                />
+              </div>
+            )}
 
             <div className="mt-5 border-t border-[var(--border)] pt-4">
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <p className="text-sm font-bold text-slate-950">Toutes les orientations</p>
+                <p className="text-sm font-bold text-slate-950">Historique des projets / orientations saisis</p>
                 <Badge variant="neutral">{orientationHistory.length}</Badge>
               </div>
               {orientationHistory.length ? (
@@ -676,7 +1099,13 @@ export default async function AdminStudentDossierPage({
                 </Link>
               }
             />
-            <div className="mt-4">
+            <AdminDocumentRequirementsPanel
+              studentId={studentId}
+              requirements={documentRequirements}
+              documents={documents}
+            />
+
+            <div className="mt-5">
               {documentDefinitions.map((definition) => {
                 const document = latestDocument(documents, definition.category);
                 const baseStatus = adminDocumentState(documents, definition.category);
@@ -687,7 +1116,7 @@ export default async function AdminStudentDossierPage({
                     title={definition.title}
                     status={status}
                     description={document?.original_filename || (definition.optional ? "Non requis à ce stade." : "Aucun fichier enregistré.")}
-                    metadata={document ? `Ajouté le ${formatDate(document.created_at)}` : undefined}
+                    metadata={document ? `Version ${documentVersionById.get(document.id) || 1} · ajoutée le ${formatDate(document.created_at)}` : undefined}
                     note={document?.admin_comment || undefined}
                   />
                 );
@@ -704,7 +1133,9 @@ export default async function AdminStudentDossierPage({
                     <div key={document.id} className="flex flex-col gap-3 py-3 sm:flex-row sm:items-center sm:justify-between">
                       <div className="min-w-0">
                         <p className="truncate text-sm font-semibold text-slate-900">{document.original_filename || document.category}</p>
-                        <p className="mt-1 text-xs text-slate-500">{document.category} · {formatDate(document.created_at)}</p>
+                        <p className="mt-1 text-xs text-slate-500">
+                          Version {documentVersionById.get(document.id) || 1} · {document.category} · {formatDate(document.created_at)}
+                        </p>
                       </div>
                       <Badge variant={documentStatusVariant(document.status)}>{documentStatusLabel(document.status)}</Badge>
                     </div>
@@ -746,7 +1177,7 @@ export default async function AdminStudentDossierPage({
               description="Le détail opérationnel et les changements de statut restent dans la file Candidatures."
               actions={
                 applications.length ? (
-                  <Link href="/admin/applications" className={buttonClassName("ghost", "min-h-8 px-2.5 py-1 text-xs")}>
+                  <Link href={`/admin/applications?student=${studentId}`} className={buttonClassName("ghost", "min-h-8 px-2.5 py-1 text-xs")}>
                     Ouvrir Candidatures →
                   </Link>
                 ) : undefined
