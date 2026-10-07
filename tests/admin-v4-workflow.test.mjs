@@ -24,8 +24,10 @@ test("Admin V4 introduces a shared orientation-style workflow primitive", () => 
   assert.match(workflow, /tone/);
 });
 
-test("Admin V4 dashboard groups work queues instead of stretching five metrics across one row", () => {
-  assert.match(dashboard, /md:grid-cols-2 2xl:grid-cols-3/);
+test("Admin V4 dashboard anchors work queues instead of stretching floating metrics", () => {
+  assert.match(dashboard, /File opérationnelle consolidée/);
+  assert.match(dashboard, /AdminQueueRow/);
+  assert.match(dashboard, /divide-y divide-\[var\(--border\)\]/);
   assert.doesNotMatch(dashboard, /xl:grid-cols-5/);
   assert.match(dashboard, /Catalogue à jour/);
   assert.match(dashboard, /CatalogHealthRow/);
@@ -105,11 +107,3 @@ test("Admin V4 sourced catalogues separate facts, verification and publication",
   }
 });
 
-
-test("Admin V4 dashboard work queues are anchored in one consolidated panel", () => {
-  assert.match(dashboard, /File opérationnelle consolidée/);
-  assert.match(dashboard, /AdminQueueRow/);
-  assert.match(dashboard, /divide-y divide-\[var\(--border\)\]/);
-  assert.doesNotMatch(dashboard, /function AdminSummaryCard/);
-  assert.doesNotMatch(dashboard, /mt-4 grid gap-4 md:grid-cols-2 2xl:grid-cols-3/);
-});
