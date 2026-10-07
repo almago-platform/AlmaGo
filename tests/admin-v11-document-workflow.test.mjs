@@ -58,3 +58,22 @@ test("Admin V11 dossier keeps prior document versions visible", () => {
 test("Admin V11 dossier priority ignores procedure-generated system steps", () => {
   assert.match(dossier, /isOpenAdminAction\(item\.status\) && item\.template_id === null/);
 });
+
+test("Admin V11 document queue shows only the latest version per student and category", () => {
+  const page = read("src/app/admin/documents/page.tsx");
+  assert.match(page, /latestByStudentCategory/);
+  assert.match(page, /student_id}:\$\{document\.category/);
+  assert.match(page, /Versions actuelles|version actuelle/);
+});
+
+test("Admin V11 separates staff decisions from documents waiting on the student", () => {
+  const dashboard = read("src/app/admin/page.tsx");
+  const people = read("src/app/admin/people/page.tsx");
+  const documents = read("src/components/admin/AdminDocumentsPanel.tsx");
+
+  assert.match(dashboard, /\["pending", "reviewed"\]/);
+  assert.match(people, /attentionDocumentStatuses = new Set\(\["pending", "reviewed"\]\)/);
+  assert.match(documents, /needsDecision/);
+  assert.match(documents, /waitingStudentCount/);
+  assert.match(documents, /attend.*l’étudiant/);
+});
