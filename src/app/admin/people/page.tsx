@@ -560,26 +560,34 @@ export default async function AdminPeoplePage({
       />
 
       <AdminWorkspaceSummary
-        eyebrow="Portefeuille"
-        title="Suivi des personnes"
-        description="Le statut commercial classe la personne ; les files métier et les actions enregistrées indiquent ce qui reste à faire."
+        eyebrow="Cockpit quotidien"
+        title="Portefeuille équipe"
+        description="Attribuez chaque dossier à un conseiller et traitez d’abord les dates vérifiées ou les cibles internes qui approchent."
         metrics={[
-          { label: "Personnes", value: counts.all },
-          { label: "Candidats", value: counts.candidate, tone: counts.candidate ? "brand" : "neutral" },
-          { label: "Étudiants", value: counts.student, tone: counts.student ? "success" : "neutral" },
-          { label: "À surveiller", value: attentionCount, tone: attentionCount ? "warning" : "neutral" },
+          { label: "En retard", value: workCounts.overdue, tone: workCounts.overdue ? "warning" : "neutral" },
+          { label: "Aujourd’hui", value: workCounts.today, tone: workCounts.today ? "brand" : "neutral" },
+          { label: "7 jours", value: workCounts.week, tone: workCounts.week ? "brand" : "neutral" },
+          { label: "Non attribués", value: workCounts.unassigned, tone: workCounts.unassigned ? "warning" : "success" },
         ]}
+        action={
+          <Link
+            href={peopleHref({ work: "mine", advisor: "" })}
+            className={buttonClassName("secondary", "min-h-9 px-3 py-1.5 text-xs")}
+          >
+            Mes dossiers · {workCounts.mine}
+          </Link>
+        }
       />
 
       <section className="mb-5 overflow-hidden rounded-[var(--radius-panel)] border border-[var(--border)] bg-white">
-        <div className="flex flex-col gap-4 border-b border-[var(--border)] p-4 sm:p-5 lg:flex-row lg:items-end lg:justify-between">
+        <div className="grid gap-5 border-b border-[var(--border)] p-4 sm:p-5 xl:grid-cols-2">
           <div>
-            <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Listes</p>
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Segments</p>
             <div className="mt-3 flex flex-wrap gap-2">
               {(Object.keys(viewLabels) as PersonView[]).map((item) => (
                 <Link
                   key={item}
-                  href={`/admin/people?view=${item}`}
+                  href={peopleHref({ view: item })}
                   className={
                     item === view
                       ? "rounded-full border border-[var(--brand-border)] bg-[var(--brand-soft)] px-3 py-1.5 text-xs font-bold text-[var(--brand-strong)]"
@@ -592,99 +600,170 @@ export default async function AdminPeoplePage({
             </div>
           </div>
 
-          <form method="get" className="flex w-full gap-2 lg:max-w-xl">
-            <input type="hidden" name="view" value={view} />
-            <label className="sr-only" htmlFor="people-search">Rechercher une personne</label>
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Travail</p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {(Object.keys(workLabels) as WorkView[]).map((item) => (
+                <Link
+                  key={item}
+                  href={peopleHref({
+                    work: item,
+                    advisor: item === "mine" || item === "unassigned" ? "" : selectedAdvisor,
+                  })}
+                  className={
+                    item === work
+                      ? "rounded-full border border-[var(--brand-border)] bg-[var(--brand-soft)] px-3 py-1.5 text-xs font-bold text-[var(--brand-strong)]"
+                      : "rounded-full border border-[var(--border)] bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 hover:border-[var(--brand-border)] hover:text-[var(--brand)]"
+                  }
+                >
+                  {workLabels[item]} · {workCounts[item]}
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <form method="get" className="grid gap-3 border-b border-[var(--border)] p-4 sm:p-5 lg:grid-cols-[minmax(0,1fr)_16rem_auto]">
+          <input type="hidden" name="view" value={view} />
+          <input type="hidden" name="work" value={work} />
+
+          <label className="text-sm font-semibold text-slate-700">
+            Recherche
             <input
-              id="people-search"
               name="q"
               type="search"
               defaultValue={params.q || ""}
-              placeholder="Nom, e-mail, étape ou prochaine action"
-              className="field bg-white"
+              placeholder="Nom, e-mail, étape, conseiller ou prochaine action"
+              className="field mt-2 bg-white"
             />
+          </label>
+
+          <label className="text-sm font-semibold text-slate-700">
+            Conseiller
+            <select name="advisor" defaultValue={selectedAdvisor} className="field mt-2 bg-white">
+              <option value="">Tous les conseillers</option>
+              {advisorOptions.map((advisor) => (
+                <option key={advisor.id} value={advisor.id}>{advisor.name}</option>
+              ))}
+            </select>
+          </label>
+
+          <div className="flex items-end gap-2">
             <button className={buttonClassName("secondary", "shrink-0 px-4")} type="submit">
-              Rechercher
+              Appliquer
             </button>
-          </form>
-        </div>
+            <Link href="/admin/people" className={buttonClassName("ghost", "shrink-0 px-3")}>
+              Réinitialiser
+            </Link>
+          </div>
+        </form>
 
         <div className="border-b border-[var(--border)] bg-[var(--surface-subtle)] px-4 py-3 text-xs text-slate-600 sm:px-5">
           {filtered.length} personne{filtered.length > 1 ? "s" : ""} affichée{filtered.length > 1 ? "s" : ""}
           {" · "}
-          {campusActionCount} dossier{campusActionCount > 1 ? "s" : ""} avec une prochaine action Campus identifiée
+          {attentionCount} dossier{attentionCount > 1 ? "s" : ""} à surveiller
+          {" · "}
+          {campusActionCount} prochaine{campusActionCount > 1 ? "s" : ""} action{campusActionCount > 1 ? "s" : ""} Campus
         </div>
 
         {filtered.length ? (
           <div className="divide-y divide-[var(--border)]">
-            {filtered.map((person) => (
-              <article
-                key={person.key}
-                className="grid gap-4 px-4 py-5 transition-colors hover:bg-[var(--surface-subtle)] sm:px-5 xl:grid-cols-[minmax(14rem,1.25fr)_10rem_10rem_minmax(15rem,1fr)_9rem_auto] xl:items-center"
-              >
-                <div className="min-w-0">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <Badge variant={segmentBadgeVariant[person.segment]}>
-                      {adminPersonSegmentLabels[person.segment]}
-                    </Badge>
-                    {person.needsAttention ? <Badge variant="warning">Attention</Badge> : null}
+            {filtered.map((person) => {
+              const overdue = Boolean(person.dueDate && person.dueDate < today);
+              const dueToday = person.dueDate === today;
+              return (
+                <article
+                  key={person.key}
+                  className="grid gap-4 px-4 py-5 transition-colors hover:bg-[var(--surface-subtle)] sm:px-5 2xl:grid-cols-[minmax(13rem,1.15fr)_10rem_9rem_9rem_minmax(14rem,1fr)_9rem_auto] 2xl:items-center"
+                >
+                  <div className="min-w-0">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <Badge variant={segmentBadgeVariant[person.segment]}>
+                        {adminPersonSegmentLabels[person.segment]}
+                      </Badge>
+                      {overdue ? <Badge variant="error">En retard</Badge> : null}
+                      {!overdue && dueToday ? <Badge variant="warning">Aujourd’hui</Badge> : null}
+                      {!overdue && !dueToday && person.needsAttention ? <Badge variant="warning">Attention</Badge> : null}
+                    </div>
+                    <h2 className="mt-2 truncate text-base font-bold text-slate-950">{person.name}</h2>
+                    <p className="mt-1 truncate text-xs text-slate-600"><bdi dir="auto">{person.email}</bdi></p>
                   </div>
-                  <h2 className="mt-2 truncate text-base font-bold text-slate-950">{person.name}</h2>
-                  <p className="mt-1 truncate text-xs text-slate-600"><bdi dir="auto">{person.email}</bdi></p>
-                </div>
 
-                <div>
-                  <p className="text-[0.68rem] font-bold uppercase tracking-[0.1em] text-[var(--muted)]">Étape</p>
-                  <p className="mt-1 text-sm font-semibold text-slate-900">{person.stage}</p>
-                  <p className="mt-1 text-xs text-slate-500">{person.orientationCount} orientation{person.orientationCount > 1 ? "s" : ""}</p>
-                </div>
+                  <div>
+                    <p className="text-[0.68rem] font-bold uppercase tracking-[0.1em] text-[var(--muted)]">Conseiller</p>
+                    <p className={`mt-1 text-sm font-semibold ${person.assignedAdminName ? "text-slate-900" : "text-amber-800"}`}>
+                      {person.assignedAdminName || "Non attribué"}
+                    </p>
+                  </div>
 
-                <div>
-                  <p className="text-[0.68rem] font-bold uppercase tracking-[0.1em] text-[var(--muted)]">À traiter</p>
-                  <p className="mt-1 text-sm font-semibold text-slate-900">
-                    {person.pendingDocuments} doc. · {person.activeApplications} cand.
-                  </p>
-                  <p className="mt-1 text-xs text-slate-500">{person.openActions} action{person.openActions > 1 ? "s" : ""} ouverte{person.openActions > 1 ? "s" : ""}</p>
-                </div>
+                  <div>
+                    <p className="text-[0.68rem] font-bold uppercase tracking-[0.1em] text-[var(--muted)]">Étape</p>
+                    <p className="mt-1 text-sm font-semibold text-slate-900">{person.stage}</p>
+                    <p className="mt-1 text-xs text-slate-500">{person.orientationCount} orientation{person.orientationCount > 1 ? "s" : ""}</p>
+                  </div>
 
-                <div className="min-w-0">
-                  <p className="text-[0.68rem] font-bold uppercase tracking-[0.1em] text-[var(--muted)]">Prochaine action</p>
-                  <p className="mt-1 text-sm font-semibold leading-5 text-slate-900">{person.nextAction}</p>
-                  <p className="mt-1 text-xs text-slate-500">Responsable · {person.nextActionOwner}</p>
-                </div>
+                  <div>
+                    <p className="text-[0.68rem] font-bold uppercase tracking-[0.1em] text-[var(--muted)]">À traiter</p>
+                    <p className="mt-1 text-sm font-semibold text-slate-900">
+                      {person.pendingDocuments} doc. · {person.activeApplications} cand.
+                    </p>
+                    <p className="mt-1 text-xs text-slate-500">{person.openActions} action{person.openActions > 1 ? "s" : ""}</p>
+                  </div>
 
-                <div>
-                  <p className="text-[0.68rem] font-bold uppercase tracking-[0.1em] text-[var(--muted)]">Échéance</p>
-                  <p className={`mt-1 text-sm font-semibold ${isOverdue(person.dueDate) ? "text-red-700" : "text-slate-900"}`}>
-                    {formatDate(person.dueDate)}
-                  </p>
-                  {isOverdue(person.dueDate) ? <p className="mt-1 text-xs font-bold text-red-700">Dépassée</p> : null}
-                </div>
+                  <div className="min-w-0">
+                    <p className="text-[0.68rem] font-bold uppercase tracking-[0.1em] text-[var(--muted)]">Prochaine action</p>
+                    <p className="mt-1 text-sm font-semibold leading-5 text-slate-900">{person.nextAction}</p>
+                    <p className="mt-1 text-xs text-slate-500">Responsable · {person.nextActionOwner}</p>
+                  </div>
 
-                <div className="flex xl:justify-end">
-                  {person.userId ? (
-                    <Link
-                      href={`/admin/dossiers/${person.userId}`}
-                      className={buttonClassName("secondary", "w-full whitespace-nowrap px-4 xl:w-auto")}
-                    >
-                      Dossier 360°
-                    </Link>
-                  ) : (
-                    <Link
-                      href="/admin/prospects"
-                      className={buttonClassName("ghost", "w-full whitespace-nowrap px-3 xl:w-auto")}
-                    >
-                      Ouvrir Prospects
-                    </Link>
-                  )}
-                </div>
-              </article>
-            ))}
+                  <div>
+                    <p className="text-[0.68rem] font-bold uppercase tracking-[0.1em] text-[var(--muted)]">Date clé</p>
+                    {person.dueDate ? (
+                      <>
+                        <p className={`mt-1 text-sm font-semibold ${overdue ? "text-red-700" : "text-slate-900"}`}>
+                          {formatDate(person.dueDate)}
+                        </p>
+                        <p className="mt-1 text-[11px] font-semibold text-slate-500">
+                          {person.dueKind === "official" ? "Officielle vérifiée" : "Cible interne"}
+                        </p>
+                      </>
+                    ) : person.hasUnverifiedDeadline ? (
+                      <>
+                        <p className="mt-1 text-sm font-semibold text-amber-800">À vérifier</p>
+                        <p className="mt-1 text-[11px] text-slate-500">Source/date non vérifiée</p>
+                      </>
+                    ) : (
+                      <p className="mt-1 text-sm font-semibold text-slate-500">—</p>
+                    )}
+                  </div>
+
+                  <div className="flex 2xl:justify-end">
+                    {person.userId ? (
+                      <Link
+                        href={`/admin/dossiers/${person.userId}`}
+                        className={buttonClassName("secondary", "w-full whitespace-nowrap px-4 2xl:w-auto")}
+                      >
+                        Dossier 360°
+                      </Link>
+                    ) : (
+                      <Link
+                        href="/admin/prospects"
+                        className={buttonClassName("ghost", "w-full whitespace-nowrap px-3 2xl:w-auto")}
+                      >
+                        Ouvrir Prospects
+                      </Link>
+                    )}
+                  </div>
+                </article>
+              );
+            })}
           </div>
         ) : (
           <div className="p-8 text-center">
-            <h2 className="text-lg font-bold text-slate-950">Aucune personne dans cette vue</h2>
-            <p className="mt-2 text-sm text-slate-600">Modifiez la liste ou la recherche. Aucune donnée n’a été supprimée.</p>
+            <h2 className="text-lg font-bold text-slate-950">Aucun dossier dans cette vue</h2>
+            <p className="mt-2 text-sm text-slate-600">
+              Modifiez les filtres, le conseiller ou la recherche. Aucune donnée n’a été supprimée.
+            </p>
           </div>
         )}
       </section>
