@@ -469,7 +469,7 @@ export default async function AdminEntry() {
             Compteurs cumulatifs uniquement pour les candidatures encore à déposer. Une date non vérifiée reste hors de ces alertes.
           </p>
         </div>
-        <div className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+        <div className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           <DailySignalCard
             href="/admin/people?work=official_overdue"
             label="Dépassées"
