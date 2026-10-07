@@ -76,7 +76,11 @@ export function AdminStudentProjectPanel({
           budget_range: budgetRange,
         }),
       });
-      const payload = await response.json().catch(() => ({})) as { error?: string; changed_fields?: string[] };
+      const payload = await response.json().catch(() => ({})) as {
+        error?: string;
+        changed_fields?: string[];
+        procedure_project_synced?: boolean;
+      };
 
       if (!response.ok) {
         setNotice({ tone: "error", text: payload.error || "Impossible d’enregistrer le projet étudiant." });
@@ -88,7 +92,9 @@ export function AdminStudentProjectPanel({
         tone: "success",
         text: payload.changed_fields?.length
           ? "Projet étudiant mis à jour et ajouté à l’historique du dossier."
-          : "Aucune modification à enregistrer.",
+          : payload.procedure_project_synced
+            ? "Le projet de procédure a été resynchronisé avec la fiche de travail."
+            : "Aucune modification à enregistrer.",
       });
       setBusy(false);
       router.refresh();
