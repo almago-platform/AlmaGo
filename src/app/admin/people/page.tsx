@@ -15,6 +15,7 @@ import {
   isOpenAdminAction,
   type AdminPersonSegment,
 } from "@/lib/admin/people";
+import { applicationRouteRisk } from "@/lib/admin/application-risk";
 import { isActiveApplication } from "@/lib/application-workflow";
 import { customerLifecycleStatusLabel } from "@/lib/phase2/access";
 import { createClient } from "@/lib/supabase/server";
@@ -60,6 +61,7 @@ type ApplicationRow = {
   deadline_source_url: string | null;
   deadline_verified_at: string | null;
   deadline_cycle: string | null;
+  application_method: string | null;
   next_action: string | null;
   created_at: string;
 };
@@ -102,7 +104,7 @@ type CaseNoteRow = {
 };
 
 type PersonView = "all" | AdminPersonSegment;
-type WorkView = "all" | "blocked" | "waiting_campus" | "waiting_student" | "waiting_external" | "overdue" | "today" | "week" | "messages" | "no_action" | "stale" | "unassigned" | "mine";
+type WorkView = "all" | "blocked" | "waiting_campus" | "waiting_student" | "waiting_external" | "deadline_verify" | "application_risk" | "overdue" | "today" | "week" | "messages" | "no_action" | "stale" | "unassigned" | "mine";
 
 type PersonRecord = {
   key: string;
@@ -126,6 +128,7 @@ type PersonRecord = {
   dueDate: string | null;
   dueKind: "official" | "internal" | null;
   hasUnverifiedDeadline: boolean;
+  applicationRouteRisks: number;
   assignedAdminId: string | null;
   assignedAdminName: string | null;
   lastContactAt: string | null;
@@ -137,7 +140,7 @@ type PersonRecord = {
 };
 
 const validViews = new Set<PersonView>(["all", "prospect", "candidate", "student", "archived"]);
-const validWorkViews = new Set<WorkView>(["all", "blocked", "waiting_campus", "waiting_student", "waiting_external", "overdue", "today", "week", "messages", "no_action", "stale", "unassigned", "mine"]);
+const validWorkViews = new Set<WorkView>(["all", "blocked", "waiting_campus", "waiting_student", "waiting_external", "deadline_verify", "application_risk", "overdue", "today", "week", "messages", "no_action", "stale", "unassigned", "mine"]);
 
 const viewLabels: Record<PersonView, string> = {
   all: "Tous",
@@ -153,6 +156,8 @@ const workLabels: Record<WorkView, string> = {
   waiting_campus: "Attend Campus",
   waiting_student: "Attend étudiant",
   waiting_external: "Attend externe",
+  deadline_verify: "Dates à vérifier",
+  application_risk: "VPD / uni-assist à risque",
   overdue: "En retard",
   today: "Aujourd’hui",
   week: "7 prochains jours",
@@ -309,7 +314,7 @@ export default async function AdminPeoplePage({
         ? supabase.from("documents").select("student_id,status").in("student_id", userIds)
         : Promise.resolve({ data: [], error: null }),
       userIds.length
-        ? supabase.from("applications").select("id,student_id,status,deadline,deadline_kind,deadline_source_url,deadline_verified_at,deadline_cycle,next_action,created_at").in("student_id", userIds)
+        ? supabase.from("applications").select("id,student_id,status,deadline,deadline_kind,deadline_source_url,deadline_verified_at,deadline_cycle,application_method,next_action,created_at").in("student_id", userIds)
         : Promise.resolve({ data: [], error: null }),
       userIds.length
         ? supabase.from("student_checklist_items").select("id,student_id,title,description,status,owner,due_date,template_id,requires_student_action,student_action_reason,deadline_kind,official_source_url,official_source_verified_at,deadline_cycle,created_at").in("student_id", userIds)
@@ -473,6 +478,15 @@ export default async function AdminPeoplePage({
     const hasUnverifiedDeadline =
       humanOpenActions.some((item) => Boolean(item.due_date) && !actionDeadlineIsVerified(item))
       || activeApplications.some((item) => Boolean(item.deadline) && !applicationDeadlineIsVerified(item));
+    const applicationRouteRisks = activeApplications.filter((item) =>
+      Boolean(applicationRouteRisk({
+        status: item.status,
+        application_method: item.application_method,
+        deadline: item.deadline,
+        deadline_kind: item.deadline_kind,
+        deadlineTrusted: applicationDeadlineIsVerified(item),
+      }, today))
+    ).length;
 
     const dueDate = nearestDate?.date || null;
     const dueKind = nearestDate?.kind || null;
@@ -506,6 +520,7 @@ export default async function AdminPeoplePage({
       dueDate,
       dueKind,
       hasUnverifiedDeadline,
+      applicationRouteRisks,
       assignedAdminId: assignment?.assigned_admin_id || null,
       assignedAdminName: assignment?.assigned_admin_id
         ? advisorNameById.get(assignment.assigned_admin_id) || "Conseiller Campus"
@@ -517,6 +532,7 @@ export default async function AdminPeoplePage({
       needsAttention: needsAttention
         || blockedActions > 0
         || waitingOnCampus > 0
+        || applicationRouteRisks > 0
         || unreadMessages > 0
         || (segment !== "archived" && !hasExplicitNextAction),
       updatedAt: intake?.updated_at || prospect?.updated_at || access?.status_changed_at || "",
@@ -548,6 +564,7 @@ export default async function AdminPeoplePage({
       dueDate: null,
       dueKind: null,
       hasUnverifiedDeadline: false,
+      applicationRouteRisks: 0,
       assignedAdminId: null,
       assignedAdminName: null,
       lastContactAt: null,
@@ -592,6 +609,8 @@ export default async function AdminPeoplePage({
     waiting_campus: operationalRecords.filter((item) => item.waitingOnCampus > 0).length,
     waiting_student: operationalRecords.filter((item) => item.waitingOnStudent > 0).length,
     waiting_external: operationalRecords.filter((item) => item.waitingOnExternal > 0).length,
+    deadline_verify: operationalRecords.filter((item) => item.hasUnverifiedDeadline).length,
+    application_risk: operationalRecords.filter((item) => item.applicationRouteRisks > 0).length,
     overdue: operationalRecords.filter((item) => Boolean(item.dueDate && item.dueDate < today)).length,
     today: operationalRecords.filter((item) => item.dueDate === today).length,
     week: operationalRecords.filter((item) => Boolean(item.dueDate && item.dueDate >= today && item.dueDate <= weekEnd)).length,
@@ -615,6 +634,8 @@ export default async function AdminPeoplePage({
     if (work === "waiting_campus" && (!item.userId || item.segment === "archived" || item.waitingOnCampus < 1)) return false;
     if (work === "waiting_student" && (!item.userId || item.segment === "archived" || item.waitingOnStudent < 1)) return false;
     if (work === "waiting_external" && (!item.userId || item.segment === "archived" || item.waitingOnExternal < 1)) return false;
+    if (work === "deadline_verify" && (!item.userId || item.segment === "archived" || !item.hasUnverifiedDeadline)) return false;
+    if (work === "application_risk" && (!item.userId || item.segment === "archived" || item.applicationRouteRisks < 1)) return false;
     if (work === "overdue" && !(item.dueDate && item.dueDate < today)) return false;
     if (work === "today" && item.dueDate !== today) return false;
     if (work === "week" && !(item.dueDate && item.dueDate >= today && item.dueDate <= weekEnd)) return false;
@@ -798,6 +819,8 @@ export default async function AdminPeoplePage({
                       {person.waitingOnCampus > 0 ? <Badge variant="warning">Attend Campus · {person.waitingOnCampus}</Badge> : null}
                       {person.waitingOnStudent > 0 ? <Badge variant="info">Attend étudiant · {person.waitingOnStudent}</Badge> : null}
                       {person.waitingOnExternal > 0 ? <Badge variant="neutral">Attend externe · {person.waitingOnExternal}</Badge> : null}
+                      {person.hasUnverifiedDeadline ? <Badge variant="warning">Source/date non vérifiée</Badge> : null}
+                      {person.applicationRouteRisks > 0 ? <Badge variant="warning">VPD / uni-assist à risque · {person.applicationRouteRisks}</Badge> : null}
                       {overdue ? <Badge variant="error">En retard</Badge> : null}
                       {!overdue && dueToday ? <Badge variant="warning">Aujourd’hui</Badge> : null}
                       {!overdue && !dueToday && person.needsAttention ? <Badge variant="warning">Attention</Badge> : null}
