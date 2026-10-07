@@ -8,9 +8,7 @@ const migration = readFileSync(
 );
 const config = readFileSync("src/lib/phase2/config.ts", "utf8");
 const payment = readFileSync("src/lib/phase2/payment.ts", "utf8");
-const devAdapter = readFileSync("src/lib/phase2/payment-dev-adapter.ts", "utf8");
 const purchaseRoute = readFileSync("src/app/api/phase2/purchases/route.ts", "utf8");
-const devRoute = readFileSync("src/app/api/phase2/payments/dev-confirm/route.ts", "utf8");
 const adminRoute = readFileSync("src/app/api/admin/payments/activate/route.ts", "utf8");
 const manualAdminRoute = readFileSync("src/app/api/admin/payments/manual-confirm/route.ts", "utf8");
 const adminPage = readFileSync("src/app/admin/payments/page.tsx", "utf8");
@@ -156,18 +154,6 @@ test("browser and service-role direct writes are replaced by service-only state-
   }
 });
 
-test("development payment confirmation is impossible in production and default-off", () => {
-  assert.match(config, /isPhase2DevPaymentAdapterEnabled/);
-  assert.match(config, /env\.NODE_ENV === "production"/);
-  assert.match(config, /isPhase2PaymentOrchestrationEnabled/);
-  assert.match(envExample, /ALMAGO_PHASE2_PAYMENT_ORCHESTRATION_ENABLED=false/);
-  assert.match(envExample, /ALMAGO_PHASE2_DEV_PAYMENT_ADAPTER_ENABLED=false/);
-  assert.match(devRoute, /isPhase2DevPaymentAdapterEnabled\(\)/);
-  assert.match(devAdapter, /DEV_PROVIDER = "almago_dev"/);
-  assert.match(devAdapter, /getPurchasePaymentContext\(userId, purchaseId\)/);
-  assert.match(devAdapter, /processNormalizedPaymentEvent/);
-  assert.doesNotMatch(devRoute, /amountMinor|currency|providerTransactionId/);
-});
 
 test("admin manual payment confirmation is authenticated, server-priced and audited", () => {
   assert.match(manualAdminRoute, /getAdminUser\(\)/);

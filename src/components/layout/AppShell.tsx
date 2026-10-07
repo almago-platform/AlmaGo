@@ -83,12 +83,10 @@ export function AppShell({
   role,
   children,
   displayName,
-  partnerPrelaunch = false,
 }: Readonly<{
   role: AppShellRole;
   children: ReactNode;
   displayName?: string | null;
-  partnerPrelaunch?: boolean;
 }>) {
   const pathname = usePathname();
   const router = useRouter();
@@ -105,15 +103,7 @@ export function AppShell({
     label: shell.groups[groupIndex],
     items: indexes.map((index) => localizedStudentItems[index]),
   }));
-  const partnerDemoItem: NavItem = {
-    label: "Démo partenaires",
-    href: "/admin/partner-demo",
-    icon: icons.orientation,
-    helper: "E-mail & paiement sandbox",
-  };
-  const currentAdminItems = partnerPrelaunch
-    ? [...adminItems, partnerDemoItem]
-    : adminItems;
+  const currentAdminItems = adminItems;
   const adminGroups = [
     {
       label: "Pilotage",
@@ -140,9 +130,6 @@ export function AppShell({
         ["/admin/universities", "/admin/programs", "/admin/language-courses", "/admin/finance-insurance"].includes(item.href),
       ),
     },
-    ...(partnerPrelaunch
-      ? [{ label: "Pré-lancement", items: currentAdminItems.filter((item) => item.href === "/admin/partner-demo") }]
-      : []),
   ];
   const items = role === "admin" ? currentAdminItems : localizedStudentItems;
   const currentItem = items.find((item) => isActive(pathname, item.href)) || items[0];
