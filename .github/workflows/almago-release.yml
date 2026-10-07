@@ -28,6 +28,10 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+
+      - name: Production dependency audit
+        run: npm audit --omit=dev --audit-level=high
+
       - run: npm test
       - run: npx tsc --noEmit
       - run: npm run lint
