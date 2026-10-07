@@ -2,6 +2,15 @@ name: AlmaGo Merged Branch Cleanup
 
 on:
   workflow_dispatch:
+    inputs:
+      mode:
+        description: "Preview eligible merged branches or delete them"
+        required: true
+        default: dry-run
+        type: choice
+        options:
+          - dry-run
+          - delete
 
 permissions:
   contents: write
@@ -16,15 +25,19 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: Delete merged branches safely
+      - name: Inspect and optionally delete merged branches safely
         uses: actions/github-script@v9
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const owner = context.repo.owner;
             const repo = context.repo.repo;
+            const requestedMode = "${{ inputs.mode }}";
+            const execute = requestedMode === "delete";
+
             const { data: repository } = await github.rest.repos.get({ owner, repo });
             const defaultBranch = repository.default_branch || "main";
+            const protectedPrefixes = ["archive/", "backup/"];
 
             const openPulls = await github.paginate(github.rest.pulls.list, {
               owner, repo, state: "open", per_page: 100,
@@ -34,35 +47,98 @@ jobs:
                 .filter(pr => pr.head.repo?.full_name === `${owner}/${repo}`)
                 .map(pr => pr.head.ref),
             );
+            const openBases = new Set(
+              openPulls
+                .filter(pr => pr.base.repo?.full_name === `${owner}/${repo}`)
+                .map(pr => pr.base.ref),
+            );
 
             const closedPulls = await github.paginate(github.rest.pulls.list, {
               owner, repo, state: "closed", base: defaultBranch, per_page: 100,
             });
 
-            const mergedHeads = [...new Set(
-              closedPulls
-                .filter(pr => Boolean(pr.merged_at) && pr.head.repo?.full_name === `${owner}/${repo}`)
-                .map(pr => pr.head.ref),
-            )].sort();
+            const mergedHeadShas = new Map();
+            for (const pr of closedPulls) {
+              if (!pr.merged_at || pr.head.repo?.full_name !== `${owner}/${repo}`) continue;
+              const branch = pr.head.ref;
+              const shas = mergedHeadShas.get(branch) || new Set();
+              shas.add(pr.head.sha);
+              mergedHeadShas.set(branch, shas);
+            }
 
+            const planned = [];
             const deleted = [];
             const skipped = [];
-            for (const branch of mergedHeads) {
-              if (branch === defaultBranch || openHeads.has(branch)) {
-                skipped.push(branch);
+
+            for (const branch of [...mergedHeadShas.keys()].sort()) {
+              if (
+                branch === defaultBranch ||
+                protectedPrefixes.some(prefix => branch.startsWith(prefix)) ||
+                openHeads.has(branch) ||
+                openBases.has(branch)
+              ) {
+                skipped.push({ branch, reason: "protected-or-active" });
                 continue;
               }
+
+              let currentRef;
               try {
-                await github.rest.git.getRef({ owner, repo, ref: `heads/${branch}` });
+                currentRef = await github.rest.git.getRef({
+                  owner,
+                  repo,
+                  ref: `heads/${branch}`,
+                });
               } catch (error) {
-                if (error.status === 404) continue;
+                if (error.status === 404) {
+                  skipped.push({ branch, reason: "already-absent" });
+                  continue;
+                }
                 throw error;
               }
-              await github.rest.git.deleteRef({ owner, repo, ref: `heads/${branch}` });
-              deleted.push(branch);
+
+              const currentSha = currentRef.data.object.sha;
+              const knownMergedShas = mergedHeadShas.get(branch);
+              if (!knownMergedShas?.has(currentSha)) {
+                skipped.push({ branch, reason: "tip-moved-after-merge" });
+                continue;
+              }
+
+              planned.push({ branch, sha: currentSha });
+              if (!execute) continue;
+
+              // Re-read immediately before deletion so the decision fails closed if
+              // another actor updates the branch between planning and execution.
+              const { data: freshRef } = await github.rest.git.getRef({
+                owner,
+                repo,
+                ref: `heads/${branch}`,
+              });
+              const freshSha = freshRef.object.sha;
+              if (freshSha !== currentSha || !knownMergedShas.has(freshSha)) {
+                skipped.push({ branch, reason: "tip-changed-before-delete" });
+                continue;
+              }
+
+              await github.rest.git.deleteRef({
+                owner,
+                repo,
+                ref: `heads/${branch}`,
+              });
+              deleted.push({ branch, sha: freshSha });
             }
+
+            const format = entries =>
+              entries.length
+                ? entries.map(entry => `- \`${entry.branch}\`${entry.sha ? ` @ \`${entry.sha}\`` : ""}${entry.reason ? ` — ${entry.reason}` : ""}`).join("\n")
+                : "- none";
 
             await core.summary
               .addHeading("AlmaGo merged branch cleanup")
-              .addRaw(`Deleted: ${deleted.length}\n\nSkipped active/protected: ${skipped.length}\n`)
+              .addRaw(`Mode: **${requestedMode}**\n\n`)
+              .addHeading(`Eligible (${planned.length})`, 2)
+              .addRaw(`${format(planned)}\n\n`)
+              .addHeading(`Deleted (${deleted.length})`, 2)
+              .addRaw(`${format(deleted)}\n\n`)
+              .addHeading(`Skipped (${skipped.length})`, 2)
+              .addRaw(`${format(skipped)}\n`)
               .write();
