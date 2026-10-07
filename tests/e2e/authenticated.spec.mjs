@@ -44,10 +44,10 @@ test.describe("authenticated role journeys", () => {
   });
 
   test("admin AAL2 passes page and API authorization", async ({ page }) => {
-    test.skip(
-      !adminTotpSecret,
-      "Admin AAL2 E2E requires the dedicated test TOTP secret.",
-    );
+    expect(
+      adminTotpSecret,
+      "Admin AAL2 E2E requires ALMAGO_E2E_ADMIN_TOTP_SECRET. Release evidence must fail closed rather than skip MFA.",
+    ).toBeTruthy();
 
     await loginWithRedactedPassword(page, adminEmail, adminPassword, "admin-challenge");
     await completeAdminMfaChallenge(page, adminTotpSecret);
