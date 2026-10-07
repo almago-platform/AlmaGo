@@ -75,3 +75,16 @@ test("Admin V11 dashboard lists only assigned human actions as personal work", (
   assert.match(dashboard, /\/admin\/dossiers\/\$\{item\.student_id\}#actions/);
   assert.match(dashboard, /Les étapes système restent hors de cette liste/);
 });
+
+test("Admin V11 promotes explicitly blocked procedure cases into a dedicated work queue", () => {
+  assert.match(dashboard, /blockedCaseIds/);
+  assert.match(dashboard, /blockedCases/);
+  assert.match(dashboard, /Dossiers bloqués/);
+  assert.match(dashboard, /\/admin\/people\?work=blocked/);
+
+  assert.match(people, /type WorkView = "all" \| "blocked"/);
+  assert.match(people, /blockedActions/);
+  assert.match(people, /work === "blocked"/);
+  assert.match(people, /blocked: "Bloqués"/);
+  assert.match(people, /Bloqué · \{person\.blockedActions\}/);
+});
