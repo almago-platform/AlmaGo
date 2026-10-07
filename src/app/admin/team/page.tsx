@@ -4,7 +4,10 @@ import { AdminLoadError } from "@/components/admin/AdminLoadError";
 import { AdminWorkspaceSummary } from "@/components/admin/AdminWorkspaceSummary";
 import { Badge } from "@/components/ui/Badge";
 import { buttonClassName } from "@/components/ui/Button";
-import { applicationRouteRisk } from "@/lib/admin/application-risk";
+import {
+  applicationOfficialDeadlineUrgency,
+  applicationRouteRisk,
+} from "@/lib/admin/application-risk";
 import { isOpenAdminAction } from "@/lib/admin/people";
 import { isActiveApplication } from "@/lib/application-workflow";
 import { createClient } from "@/lib/supabase/server";
@@ -236,6 +239,8 @@ export default async function AdminTeamPage() {
 
   const unverifiedDeadlineStudentIds = new Set<string>();
   const applicationRiskStudentIds = new Set<string>();
+  const officialOverdueStudentIds = new Set<string>();
+  const officialD7StudentIds = new Set<string>();
   for (const action of (actionsResult.data || []) as ActionRow[]) {
     if (!operationalIds.has(action.student_id)) continue;
     if (!isOpenAdminAction(action.status) || action.template_id !== null) continue;
@@ -257,6 +262,18 @@ export default async function AdminTeamPage() {
       deadlineTrusted: trusted,
     }, today)) {
       applicationRiskStudentIds.add(application.student_id);
+    }
+
+    const officialUrgency = applicationOfficialDeadlineUrgency({
+      status: application.status,
+      deadline: application.deadline,
+      deadline_kind: application.deadline_kind,
+      deadlineTrusted: trusted,
+    }, today);
+    if (officialUrgency?.kind === "overdue") {
+      officialOverdueStudentIds.add(application.student_id);
+    } else if (officialUrgency && officialUrgency.daysRemaining <= 7) {
+      officialD7StudentIds.add(application.student_id);
     }
   }
 
@@ -363,7 +380,7 @@ export default async function AdminTeamPage() {
         ]}
       />
 
-      <section className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3" aria-label="États d’attente et risques de l’équipe">
+      <section className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4" aria-label="États d’attente, deadlines et risques de l’équipe">
         <TeamStateCard
           href="/admin/people?work=blocked"
           label="Bloqués"
@@ -405,6 +422,20 @@ export default async function AdminTeamPage() {
           value={applicationRiskStudentIds.size}
           detail="Cible interne D-70 ou D-56 atteinte avant soumission"
           tone={applicationRiskStudentIds.size ? "warning" : "success"}
+        />
+        <TeamStateCard
+          href="/admin/people?work=official_overdue"
+          label="Deadlines dépassées"
+          value={officialOverdueStudentIds.size}
+          detail="Deadline officielle vérifiée dépassée avant soumission"
+          tone={officialOverdueStudentIds.size ? "error" : "success"}
+        />
+        <TeamStateCard
+          href="/admin/people?work=official_7"
+          label="Deadline ≤ 7 j"
+          value={officialD7StudentIds.size}
+          detail="Dossier à J-7 ou moins d’une deadline officielle vérifiée"
+          tone={officialD7StudentIds.size ? "warning" : "success"}
         />
       </section>
 
