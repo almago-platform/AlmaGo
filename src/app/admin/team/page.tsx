@@ -25,7 +25,9 @@ type AssignmentRow = {
 type ActionRow = {
   student_id: string;
   status: string;
+  owner: string | null;
   due_date: string | null;
+  template_id: string | null;
   deadline_kind: string | null;
   official_source_url: string | null;
   official_source_verified_at: string | null;
@@ -114,7 +116,7 @@ export default async function AdminTeamPage() {
     supabase.from("student_case_assignments").select("student_id,assigned_admin_id").limit(1000),
     supabase
       .from("student_checklist_items")
-      .select("student_id,status,due_date,deadline_kind,official_source_url,official_source_verified_at,deadline_cycle")
+      .select("student_id,status,owner,due_date,template_id,deadline_kind,official_source_url,official_source_verified_at,deadline_cycle")
       .limit(5000),
     supabase
       .from("applications")
@@ -242,7 +244,9 @@ export default async function AdminTeamPage() {
 
     workload.assigned += 1;
 
-    const openActions = (actionsByStudent.get(studentId) || []).filter((item) => isOpenAdminAction(item.status));
+    const openActions = (actionsByStudent.get(studentId) || []).filter((item) =>
+      isOpenAdminAction(item.status) && item.template_id === null
+    );
     const activeApplications = (applicationsByStudent.get(studentId) || []).filter((item) => isActiveApplication(item.status));
 
     const hasExplicitNextAction = openActions.length > 0
