@@ -11,8 +11,8 @@ const copy = {
   fr: {
     eyebrow: "Communication dossier",
     title: "Messages avec Campus Allemagne",
-    description: "Retrouvez ici les messages visibles liés à votre dossier et répondez directement à votre conseiller.",
-    note: "Les décisions officielles des universités, ambassades et autorités restent communiquées par leurs propres canaux.",
+    description: "Retrouvez ici les messages visibles liés à votre dossier, répondez directement à votre conseiller et joignez un document ou une image si nécessaire.",
+    note: "Les pièces jointes envoyées ici restent des éléments de conversation et ne remplacent pas automatiquement les documents demandés dans « Mes documents ». Les décisions officielles restent communiquées par leurs propres canaux.",
   },
   ar: {
     eyebrow: "التواصل حول الملف",
@@ -44,7 +44,7 @@ export default async function StudentMessagesPage() {
 
   const { data, error } = await supabase
     .from("student_dossier_messages")
-    .select("id,sender_role,body,student_read_at,admin_read_at,created_at")
+    .select("id,sender_role,body,student_read_at,admin_read_at,created_at,attachment_name,attachment_mime_type,attachment_size_bytes")
     .eq("student_id", user.id)
     .order("created_at", { ascending: true })
     .limit(200);
