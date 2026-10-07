@@ -121,6 +121,11 @@ export default async function AdminEntry() {
     (recentContactsResult.data || []).map((item) => item.student_id),
   );
   const explicitActionIds = new Set<string>();
+  const blockedCaseIds = new Set(
+    (actionsResult.data || [])
+      .filter((item) => item.status === "blocked")
+      .map((item) => item.student_id),
+  );
   const humanActions = (actionsResult.data || []).filter((item) =>
     isOpenAdminAction(item.status) && item.template_id === null
   );
@@ -150,6 +155,7 @@ export default async function AdminEntry() {
   }
 
   const operationalList = [...operationalIds];
+  const blockedCases = operationalList.filter((id) => blockedCaseIds.has(id)).length;
   const unassignedCases = operationalList.filter((id) => !assignedIds.has(id)).length;
   const staleContactCases = operationalList.filter((id) => !contactedRecentlyIds.has(id)).length;
   const missingNextActionCases = operationalList.filter((id) => !explicitActionIds.has(id)).length;
@@ -187,8 +193,18 @@ export default async function AdminEntry() {
     return Boolean(due && due >= today && due <= weekEnd);
   }).length;
 
-  const priority = studentQuestions > 0
+  const priority = blockedCases > 0
     ? {
+        badge: "Dossiers bloqués",
+        title: blockedCases > 1
+          ? `${blockedCases} dossiers ont un blocage explicite`
+          : "1 dossier a un blocage explicite",
+        description: "Une étape de procédure est marquée comme bloquée. Ouvrez le dossier 360° pour voir le responsable, la raison et l’action de résolution.",
+        href: "/admin/people?work=blocked",
+        action: "Traiter les blocages",
+      }
+    : studentQuestions > 0
+      ? {
         badge: "Réponse étudiant reçue",
         title: studentQuestions > 1
           ? `${studentQuestions} étudiants attendent une réponse de Campus Allemagne`
@@ -394,7 +410,7 @@ export default async function AdminEntry() {
         <Card className="pc-card relative overflow-hidden">
           <div aria-hidden="true" className="absolute inset-y-0 left-0 w-1 bg-[var(--brand)]" />
           <div className="pl-2 sm:pl-3">
-            <Badge variant={studentQuestions > 0 || documents > 0 ? "warning" : intakeAttention > 0 || applications > 0 ? "info" : staleCatalogue > 0 ? "warning" : "success"}>{priority.badge}</Badge>
+            <Badge variant={blockedCases > 0 ? "error" : studentQuestions > 0 || documents > 0 ? "warning" : intakeAttention > 0 || applications > 0 ? "info" : staleCatalogue > 0 ? "warning" : "success"}>{priority.badge}</Badge>
             <p className="mt-5 text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">À traiter maintenant</p>
             <h2 className="mt-2 max-w-3xl text-2xl font-semibold tracking-[-0.03em] text-slate-950 sm:text-3xl">
               {priority.title}
