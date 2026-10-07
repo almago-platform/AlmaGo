@@ -514,6 +514,12 @@ export default async function AdminStudentDossierPage({
     return rightDate - leftDate;
   });
 
+  const documentVersionById = new Map<string, number>();
+  for (const category of [...new Set(documents.map((item) => item.category))]) {
+    const versions = documents.filter((item) => item.category === category).slice().reverse();
+    versions.forEach((item, index) => documentVersionById.set(item.id, index + 1));
+  }
+
   const documentDefinitions = [
     { category: "passport", title: "Passeport", optional: answers.bacStatus === "preparing" },
     { category: "baccalaureate", title: "Baccalauréat", optional: answers.bacStatus === "preparing" },
@@ -718,7 +724,7 @@ export default async function AdminStudentDossierPage({
                     title={definition.title}
                     status={status}
                     description={document?.original_filename || (definition.optional ? "Non requis à ce stade." : "Aucun fichier enregistré.")}
-                    metadata={document ? `Ajouté le ${formatDate(document.created_at)}` : undefined}
+                    metadata={document ? `Version ${documentVersionById.get(document.id) || 1} · ajoutée le ${formatDate(document.created_at)}` : undefined}
                     note={document?.admin_comment || undefined}
                   />
                 );
@@ -735,7 +741,9 @@ export default async function AdminStudentDossierPage({
                     <div key={document.id} className="flex flex-col gap-3 py-3 sm:flex-row sm:items-center sm:justify-between">
                       <div className="min-w-0">
                         <p className="truncate text-sm font-semibold text-slate-900">{document.original_filename || document.category}</p>
-                        <p className="mt-1 text-xs text-slate-500">{document.category} · {formatDate(document.created_at)}</p>
+                        <p className="mt-1 text-xs text-slate-500">
+                          Version {documentVersionById.get(document.id) || 1} · {document.category} · {formatDate(document.created_at)}
+                        </p>
                       </div>
                       <Badge variant={documentStatusVariant(document.status)}>{documentStatusLabel(document.status)}</Badge>
                     </div>
