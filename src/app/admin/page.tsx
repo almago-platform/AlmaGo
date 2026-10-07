@@ -185,43 +185,61 @@ export default async function AdminEntry() {
           description="Les volumes ci-dessous ouvrent directement la file concernée."
         />
 
-        <div className="mt-4 grid gap-4 md:grid-cols-2 2xl:grid-cols-3">
-          <AdminSummaryCard
-            href="/admin/intake"
-            title="Dossiers Campus"
-            value={intakeAttention}
-            detail={studentQuestions ? `${studentQuestions} réponse${studentQuestions > 1 ? "s" : ""} étudiant à traiter` : "Décisions et validations en attente"}
-            tone={studentQuestions ? "warning" : intakeAttention ? "info" : "neutral"}
-          />
-          <AdminSummaryCard
-            href="/admin/documents"
-            title="Documents à traiter"
-            value={documents}
-            detail={documents ? "Vérification ou remplacement en attente" : "Aucune pièce en attente"}
-            tone={documents ? "warning" : "neutral"}
-          />
-          <AdminSummaryCard
-            href="/admin/applications"
-            title="Candidatures actives"
-            value={applications}
-            detail="Dossiers encore en suivi"
-            tone={applications ? "info" : "neutral"}
-          />
-          <AdminSummaryCard
-            href="/admin/orientation"
-            title="Orientations publiées"
-            value={orientations}
-            detail="Recommandations actives enregistrées"
-            tone="neutral"
-          />
-          <AdminSummaryCard
-            href="/admin/universities"
-            title="Catalogue actif"
-            value={catalogue}
-            detail={`${universityCount || 0} université${(universityCount || 0) > 1 ? "s" : ""} · ${programCount || 0} programme${(programCount || 0) > 1 ? "s" : ""}`}
-            tone="neutral"
-          />
-        </div>
+        <Card className="mt-4 overflow-hidden p-0 shadow-none">
+          <div className="flex flex-col gap-3 border-b border-[var(--border)] px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+            <div>
+              <p className="text-sm font-bold text-slate-950">File opérationnelle consolidée</p>
+              <p className="mt-1 text-xs leading-5 text-slate-600">
+                Une seule surface pour lire les volumes, repérer les files actives et ouvrir directement le bon espace.
+              </p>
+            </div>
+            <Badge variant={documents || studentQuestions || intakeAttention ? "warning" : applications ? "info" : "success"}>
+              {documents || studentQuestions || intakeAttention
+                ? "Attention requise"
+                : applications
+                  ? "Suivi en cours"
+                  : "Files à jour"}
+            </Badge>
+          </div>
+
+          <div className="divide-y divide-[var(--border)]">
+            <AdminQueueRow
+              href="/admin/intake"
+              title="Dossiers Campus"
+              value={intakeAttention}
+              detail={studentQuestions ? `${studentQuestions} réponse${studentQuestions > 1 ? "s" : ""} étudiant à traiter` : "Décisions et validations en attente"}
+              tone={studentQuestions ? "warning" : intakeAttention ? "info" : "neutral"}
+            />
+            <AdminQueueRow
+              href="/admin/documents"
+              title="Documents à traiter"
+              value={documents}
+              detail={documents ? "Vérification ou remplacement en attente" : "Aucune pièce en attente"}
+              tone={documents ? "warning" : "neutral"}
+            />
+            <AdminQueueRow
+              href="/admin/applications"
+              title="Candidatures actives"
+              value={applications}
+              detail="Dossiers encore en suivi"
+              tone={applications ? "info" : "neutral"}
+            />
+            <AdminQueueRow
+              href="/admin/orientation"
+              title="Orientations publiées"
+              value={orientations}
+              detail="Recommandations actives enregistrées"
+              tone="neutral"
+            />
+            <AdminQueueRow
+              href="/admin/universities"
+              title="Catalogue actif"
+              value={catalogue}
+              detail={`${universityCount || 0} université${(universityCount || 0) > 1 ? "s" : ""} · ${programCount || 0} programme${(programCount || 0) > 1 ? "s" : ""}`}
+              tone="neutral"
+            />
+          </div>
+        </Card>
       </section>
 
       <section className="mt-6" aria-labelledby="catalogue-health-title">
@@ -258,7 +276,7 @@ export default async function AdminEntry() {
   );
 }
 
-function AdminSummaryCard({
+function AdminQueueRow({
   href,
   title,
   value,
@@ -278,29 +296,45 @@ function AdminSummaryCard({
         : "En cours"
       : "À jour";
 
+  const accentClass =
+    value > 0 && tone === "warning"
+      ? "bg-amber-400"
+      : value > 0 && tone === "info"
+        ? "bg-blue-400"
+        : value > 0
+          ? "bg-slate-300"
+          : "bg-emerald-300";
+
   return (
     <Link
       href={href}
       aria-label={`Ouvrir ${title}`}
-      className="pc-card-interactive professional-hover group min-h-[10rem] p-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] focus-visible:ring-offset-2 sm:p-5"
+      className="group relative grid min-h-[5.75rem] grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-4 px-4 py-4 transition-colors hover:bg-[var(--surface-subtle)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--brand)] sm:px-5 lg:grid-cols-[0.3rem_5.5rem_minmax(0,1fr)_10rem_2.5rem] lg:gap-5"
     >
-      <div className="flex items-start justify-between gap-4">
-        <Badge variant={value > 0 ? (tone === "warning" ? "warning" : "info") : "success"}>
-          {status}
-        </Badge>
-        <span
-          aria-hidden="true"
-          className="grid h-8 w-8 place-items-center rounded-[var(--radius-control)] bg-[var(--brand-soft)] text-sm font-bold text-[var(--brand)]"
-        >
-          →
-        </span>
+      <span aria-hidden="true" className={`hidden h-10 w-1 rounded-full lg:block ${accentClass}`} />
+
+      <div className="flex min-w-[4rem] items-baseline gap-2 lg:block">
+        <p className="text-3xl font-semibold tracking-tight text-slate-950">{value}</p>
+        <span className="text-xs font-semibold text-slate-500 lg:hidden">{status}</span>
       </div>
 
-      <div className="mt-4 flex items-end gap-3">
-        <p className="text-3xl font-semibold tracking-tight text-slate-950">{value}</p>
-        <h3 className="pb-1 text-sm font-bold leading-5 text-slate-800">{title}</h3>
+      <div className="min-w-0">
+        <h3 className="text-sm font-bold text-slate-950">{title}</h3>
+        <p className="mt-1 text-sm leading-5 text-slate-600 [overflow-wrap:anywhere]">{detail}</p>
       </div>
-      <p className="mt-2 text-sm leading-6 text-slate-600">{detail}</p>
+
+      <div className="hidden justify-self-start lg:block">
+        <Badge variant={value > 0 ? (tone === "warning" ? "warning" : tone === "info" ? "info" : "neutral") : "success"}>
+          {status}
+        </Badge>
+      </div>
+
+      <span
+        aria-hidden="true"
+        className="grid h-9 w-9 place-items-center rounded-[var(--radius-control)] border border-[var(--border)] bg-white text-sm font-bold text-[var(--brand)] transition-transform group-hover:translate-x-0.5"
+      >
+        →
+      </span>
     </Link>
   );
 }
