@@ -11,6 +11,7 @@ import { AdminCaseOwnerPanel, type AdminAdvisorOption } from "@/components/admin
 import { AdminCaseJournalPanel, type AdminCaseNoteItem } from "@/components/admin/AdminCaseJournalPanel";
 import { AdminDocumentRequirementsPanel, type AdminDocumentRequirementItem } from "@/components/admin/AdminDocumentRequirementsPanel";
 import { AdminStudentProjectPanel } from "@/components/admin/AdminStudentProjectPanel";
+import { AdminRecommendationApplicationAction } from "@/components/admin/AdminRecommendationApplicationAction";
 import { DossierMessageThread, type DossierMessageItem } from "@/components/product/DossierMessageThread";
 import { Badge } from "@/components/ui/Badge";
 import { DataList } from "@/components/ui/DataList";
@@ -42,6 +43,7 @@ import { createClient } from "@/lib/supabase/server";
 
 type ApplicationRow = {
   id: string;
+  program_id: string;
   status: string;
   intake: string | null;
   deadline: string | null;
@@ -72,6 +74,7 @@ type DocumentRowData = {
 
 type ProgramRecommendationRow = {
   id: string;
+  program_id: string;
   status: string;
   note: string | null;
   created_at: string;
@@ -239,13 +242,13 @@ export default async function AdminStudentDossierPage({
       .order("created_at", { ascending: true }),
     supabase
       .from("program_recommendations")
-      .select("id,status,note,created_at,programs(name,degree_level,field,universities(name,city))")
+      .select("id,program_id,status,note,created_at,programs(name,degree_level,field,universities(name,city))")
       .eq("student_id", studentId)
       .eq("is_archived", false)
       .order("created_at", { ascending: false }),
     supabase
       .from("applications")
-      .select("id,status,intake,deadline,next_action,result,created_at,programs(name,universities(name,city)),application_events(id,event_type,message,visible_to_student,created_at)")
+      .select("id,program_id,status,intake,deadline,next_action,result,created_at,programs(name,universities(name,city)),application_events(id,event_type,message,visible_to_student,created_at)")
       .eq("student_id", studentId)
       .order("deadline", { ascending: true, nullsFirst: false }),
     supabase
@@ -595,6 +598,8 @@ export default async function AdminStudentDossierPage({
     { category: "language_certificate", title: "Certificat de langue", optional: true },
   ];
 
+  const applicationProgramIds = new Set(applications.map((item) => item.program_id));
+
   const purchaseAmount = purchase
     ? formatMinorCurrency(purchase.amount_minor, purchase.currency, "fr-FR")
     : null;
@@ -756,6 +761,10 @@ export default async function AdminStudentDossierPage({
                           {recommendation.note ? (
                             <p className="mt-2 text-sm leading-6 text-slate-700">{recommendation.note}</p>
                           ) : null}
+                          <AdminRecommendationApplicationAction
+                            recommendationId={recommendation.id}
+                            hasApplication={applicationProgramIds.has(recommendation.program_id)}
+                          />
                         </div>
                         <Badge variant={recommendationTone(recommendation.status)}>
                           {recommendationStatusLabels[recommendation.status] || recommendation.status}
