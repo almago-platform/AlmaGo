@@ -5,6 +5,7 @@ import test from "node:test";
 const read = (path) => readFileSync(path, "utf8");
 
 const auth = read("src/lib/auth/access.ts");
+const entitlement = read("src/lib/auth/entitlement.ts");
 const phase2Access = read("src/lib/phase2/access.ts");
 const studentLayout = read("src/app/student/layout.tsx");
 const prospectLayout = read("src/app/prospect/layout.tsx");
@@ -18,17 +19,18 @@ const documentView = read("src/app/api/documents/[id]/view/route.ts");
 
 test("P2.5 keeps technical role and commercial client access separate", () => {
   assert.match(auth, /getTechnicalStudentUser/);
-  assert.match(auth, /isPhase2AccessEnabled/);
+  assert.match(auth, /hasClientLifecycleEntitlement/);
   assert.match(auth, /from\("customer_access"\)/);
-  assert.match(auth, /client_active/);
-  assert.match(auth, /client_completed/);
+  assert.match(entitlement, /client_active/);
+  assert.match(entitlement, /client_completed/);
   assert.match(phase2Access, /getTechnicalStudentUser/);
+  assert.doesNotMatch(auth, /isPhase2AccessEnabled|isFreeValidationPilotEnabled/);
   assert.doesNotMatch(auth, /user_metadata|raw_user_meta_data/);
 });
 
 test("Phase 1 student space redirects a free prospect before rendering client pages", () => {
   assert.match(studentLayout, /getPhase2StudentAccess/);
-  assert.match(studentLayout, /access\.phase2Enabled && !access\.canUseClientFeatures/);
+  assert.match(studentLayout, /if \(!access\.canUseClientFeatures\)/);
   assert.match(studentLayout, /redirect\("\/prospect"\)/);
 });
 

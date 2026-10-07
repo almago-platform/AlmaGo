@@ -1,4 +1,5 @@
 import { getTechnicalStudentUser } from "@/lib/auth/access";
+import { hasClientLifecycleEntitlement } from "@/lib/auth/entitlement";
 import { isPhase2AccessEnabled } from "@/lib/phase2/config";
 
 export const customerLifecycleStatuses = [
@@ -26,13 +27,8 @@ export function customerLifecycleStatusLabel(status: string | null | undefined) 
   return customerLifecycleStatusLabels[status as CustomerLifecycleStatus] || status;
 }
 
-const clientStatuses = new Set<CustomerLifecycleStatus>([
-  "client_active",
-  "client_completed",
-]);
-
 export function canUseClientFeatures(status: CustomerLifecycleStatus | null) {
-  return status !== null && clientStatuses.has(status);
+  return hasClientLifecycleEntitlement(status);
 }
 
 export async function getPhase2StudentAccess() {

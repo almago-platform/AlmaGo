@@ -26,7 +26,7 @@ export default async function StudentLayout({
     redirect("/unauthorized");
   }
 
-  if (access.phase2Enabled && !access.canUseClientFeatures) {
+  if (!access.canUseClientFeatures) {
     redirect("/prospect");
   }
 

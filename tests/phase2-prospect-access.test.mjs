@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { join } from "node:path";
 import test from "node:test";
+import { hasClientLifecycleEntitlement } from "../src/lib/auth/entitlement.ts";
 import { isPhase2AccessEnabled } from "../src/lib/phase2/config.ts";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
@@ -13,7 +14,22 @@ const access = read("src/lib/phase2/access.ts");
 test("Phase 2 feature flag is disabled by default", () => {
   assert.equal(isPhase2AccessEnabled({}), false);
   assert.equal(isPhase2AccessEnabled({ ALMAGO_PHASE2_ENABLED: "false" }), false);
+  assert.equal(isPhase2AccessEnabled({ ALMAGO_PHASE2_ENABLED: "malformed" }), false);
   assert.equal(isPhase2AccessEnabled({ ALMAGO_PHASE2_ENABLED: "true" }), true);
+});
+
+test("client entitlement is independent from feature flag state", () => {
+  for (const status of [
+    null,
+    "prospect_account",
+    "qualified_prospect",
+    "payment_pending",
+    "paid_pending_validation",
+  ]) {
+    assert.equal(hasClientLifecycleEntitlement(status), false, String(status));
+  }
+  assert.equal(hasClientLifecycleEntitlement("client_active"), true);
+  assert.equal(hasClientLifecycleEntitlement("client_completed"), true);
 });
 
 test("Phase 2 commercial lifecycle stays separate from technical roles", () => {

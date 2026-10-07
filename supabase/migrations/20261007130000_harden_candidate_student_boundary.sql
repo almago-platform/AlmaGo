@@ -29,7 +29,10 @@ $$;
 revoke all on function private.has_student_client_access() from public, anon;
 grant execute on function private.has_student_client_access() to authenticated, service_role;
 
--- Client-only student-domain policies. Admin access is intentionally preserved.\n-- Shared pre-dossier resources (documents, Storage, student_intake_cases and student_projects)\n-- deliberately keep their owner-scoped policies because prospects legitimately use them.
+-- Client-only student-domain policies. Admin access is intentionally preserved.
+-- Shared pre-dossier resources (documents, Storage, student_intake_cases and
+-- student_projects) deliberately keep their owner-scoped policies because
+-- prospects legitimately use them.
 drop policy if exists "academic evidence own or admin read" on public.academic_evidence;
 create policy "academic evidence own or admin read"
   on public.academic_evidence for select to authenticated

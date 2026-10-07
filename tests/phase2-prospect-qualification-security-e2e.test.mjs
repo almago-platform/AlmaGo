@@ -7,6 +7,7 @@ const read = (path) => readFileSync(path, "utf8");
 const qualification = read("src/lib/phase2/qualification.ts");
 const access = read("src/lib/phase2/access.ts");
 const authAccess = read("src/lib/auth/access.ts");
+const entitlement = read("src/lib/auth/entitlement.ts");
 const studentLayout = read("src/app/student/layout.tsx");
 const prospectLayout = read("src/app/prospect/layout.tsx");
 const prospectUpdate = read("src/app/api/prospect/orientation/route.ts");
@@ -145,24 +146,13 @@ test("P2.7 human review can promote only prospect_account to qualified_prospect"
 });
 
 test("qualified_prospect remains outside every Phase 1 client entitlement boundary", () => {
-  assert.match(
-    access,
-    /const clientStatuses = new Set<CustomerLifecycleStatus>\(\[[\s\S]*"client_active"[\s\S]*"client_completed"[\s\S]*\]\)/,
-  );
-  assert.doesNotMatch(
-    access.match(/const clientStatuses = new Set<CustomerLifecycleStatus>\([\s\S]*?\);/)?.[0] ?? "",
-    /qualified_prospect/,
-  );
-  assert.match(
-    authAccess,
-    /const clientStatuses = new Set\(\["client_active", "client_completed"\]\)/,
-  );
-  assert.doesNotMatch(
-    authAccess.match(/const clientStatuses = new Set\([^;]+;/)?.[0] ?? "",
-    /qualified_prospect/,
-  );
+  assert.match(access, /hasClientLifecycleEntitlement\(status\)/);
+  assert.match(authAccess, /hasClientLifecycleEntitlement\(access\?\.status\)/);
+  assert.match(entitlement, /client_active/);
+  assert.match(entitlement, /client_completed/);
+  assert.doesNotMatch(entitlement, /qualified_prospect/);
 
-  assert.match(studentLayout, /if \(access\.phase2Enabled && !access\.canUseClientFeatures\)/);
+  assert.match(studentLayout, /if \(!access\.canUseClientFeatures\)/);
   assert.match(studentLayout, /redirect\("\/prospect"\)/);
   assert.match(prospectLayout, /if \(!access\.phase2Enabled \|\| access\.canUseClientFeatures\)/);
   assert.match(prospectLayout, /redirect\("\/student"\)/);
