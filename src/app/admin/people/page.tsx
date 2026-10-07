@@ -99,7 +99,7 @@ type CaseNoteRow = {
 };
 
 type PersonView = "all" | AdminPersonSegment;
-type WorkView = "all" | "overdue" | "today" | "week" | "no_action" | "stale" | "unassigned" | "mine";
+type WorkView = "all" | "overdue" | "today" | "week" | "messages" | "no_action" | "stale" | "unassigned" | "mine";
 
 type PersonRecord = {
   key: string;
@@ -123,13 +123,14 @@ type PersonRecord = {
   assignedAdminName: string | null;
   lastContactAt: string | null;
   lastContactKind: string | null;
+  unreadMessages: number;
   hasExplicitNextAction: boolean;
   needsAttention: boolean;
   updatedAt: string;
 };
 
 const validViews = new Set<PersonView>(["all", "prospect", "candidate", "student", "archived"]);
-const validWorkViews = new Set<WorkView>(["all", "overdue", "today", "week", "no_action", "stale", "unassigned", "mine"]);
+const validWorkViews = new Set<WorkView>(["all", "overdue", "today", "week", "messages", "no_action", "stale", "unassigned", "mine"]);
 
 const viewLabels: Record<PersonView, string> = {
   all: "Tous",
@@ -144,6 +145,7 @@ const workLabels: Record<WorkView, string> = {
   overdue: "En retard",
   today: "Aujourd’hui",
   week: "7 prochains jours",
+  messages: "Réponses non lues",
   no_action: "Sans prochaine action",
   stale: "Sans contact 14 j",
   unassigned: "Non attribués",
@@ -284,7 +286,7 @@ export default async function AdminPeoplePage({
   const prospectIds = prospects.map((item) => item.id);
   const profileIds = [...new Set([...userIds, ...adminIds])];
 
-  const [profilesResult, intakeResult, documentsResult, applicationsResult, actionsResult, orientationsResult, assignmentsResult, caseNotesResult] =
+  const [profilesResult, intakeResult, documentsResult, applicationsResult, actionsResult, orientationsResult, assignmentsResult, caseNotesResult, messagesResult] =
     await Promise.all([
       profileIds.length
         ? supabase.from("profiles").select("id,first_name,last_name,full_name").in("id", profileIds)
@@ -310,6 +312,9 @@ export default async function AdminPeoplePage({
       userIds.length
         ? supabase.from("student_case_notes").select("student_id,kind,occurred_at").in("student_id", userIds).neq("kind", "internal_note").order("occurred_at", { ascending: false }).limit(3000)
         : Promise.resolve({ data: [], error: null }),
+      userIds.length
+        ? supabase.from("student_dossier_messages").select("student_id").in("student_id", userIds).eq("sender_role", "student").is("admin_read_at", null).limit(3000)
+        : Promise.resolve({ data: [], error: null }),
     ]);
 
   const fatalError =
@@ -323,7 +328,8 @@ export default async function AdminPeoplePage({
     || actionsResult.error
     || orientationsResult.error
     || assignmentsResult.error
-    || caseNotesResult.error;
+    || caseNotesResult.error
+    || messagesResult.error;
 
   if (fatalError) {
     return (
@@ -345,6 +351,10 @@ export default async function AdminPeoplePage({
   const orientations = (orientationsResult.data || []) as OrientationRow[];
   const assignments = (assignmentsResult.data || []) as AssignmentRow[];
   const caseNotes = (caseNotesResult.data || []) as CaseNoteRow[];
+  const unreadMessagesByUser = new Map<string, number>();
+  for (const item of messagesResult.data || []) {
+    unreadMessagesByUser.set(item.student_id, (unreadMessagesByUser.get(item.student_id) || 0) + 1);
+  }
 
   const profileByUser = new Map(profiles.map((item) => [item.id, item]));
   const accessByUser = new Map(accessRows.map((item) => [item.user_id, item]));
@@ -397,6 +407,7 @@ export default async function AdminPeoplePage({
     const intake = intakeByUser.get(userId);
     const assignment = assignmentByUser.get(userId);
     const latestContact = latestContactByUser.get(userId);
+    const unreadMessages = unreadMessagesByUser.get(userId) || 0;
     const personDocuments = docsByUser.get(userId) || [];
     const personApplications = applicationsByUser.get(userId) || [];
     const activeApplications = personApplications.filter((item) => isActiveApplication(item.status)).sort(compareApplications);
@@ -476,8 +487,9 @@ export default async function AdminPeoplePage({
         : null,
       lastContactAt: latestContact?.occurred_at || null,
       lastContactKind: latestContact?.kind || null,
+      unreadMessages,
       hasExplicitNextAction,
-      needsAttention: needsAttention || (segment !== "archived" && !hasExplicitNextAction),
+      needsAttention: needsAttention || unreadMessages > 0 || (segment !== "archived" && !hasExplicitNextAction),
       updatedAt: intake?.updated_at || prospect?.updated_at || access?.status_changed_at || "",
     };
   });
@@ -507,6 +519,7 @@ export default async function AdminPeoplePage({
       assignedAdminName: null,
       lastContactAt: null,
       lastContactKind: null,
+      unreadMessages: 0,
       hasExplicitNextAction: false,
       needsAttention: false,
       updatedAt: prospect.updated_at,
@@ -545,6 +558,7 @@ export default async function AdminPeoplePage({
     overdue: operationalRecords.filter((item) => Boolean(item.dueDate && item.dueDate < today)).length,
     today: operationalRecords.filter((item) => item.dueDate === today).length,
     week: operationalRecords.filter((item) => Boolean(item.dueDate && item.dueDate >= today && item.dueDate <= weekEnd)).length,
+    messages: operationalRecords.filter((item) => item.unreadMessages > 0).length,
     no_action: operationalRecords.filter((item) => !item.hasExplicitNextAction).length,
     stale: operationalRecords.filter((item) => {
       const contactDate = dateKey(item.lastContactAt);
@@ -563,6 +577,7 @@ export default async function AdminPeoplePage({
     if (work === "overdue" && !(item.dueDate && item.dueDate < today)) return false;
     if (work === "today" && item.dueDate !== today) return false;
     if (work === "week" && !(item.dueDate && item.dueDate >= today && item.dueDate <= weekEnd)) return false;
+    if (work === "messages" && (!item.userId || item.segment === "archived" || item.unreadMessages < 1)) return false;
     if (work === "no_action" && (!item.userId || item.segment === "archived" || item.hasExplicitNextAction)) return false;
     if (work === "stale") {
       const contactDate = dateKey(item.lastContactAt);
@@ -741,6 +756,7 @@ export default async function AdminPeoplePage({
                       {overdue ? <Badge variant="error">En retard</Badge> : null}
                       {!overdue && dueToday ? <Badge variant="warning">Aujourd’hui</Badge> : null}
                       {!overdue && !dueToday && person.needsAttention ? <Badge variant="warning">Attention</Badge> : null}
+                      {person.unreadMessages ? <Badge variant="info">{person.unreadMessages} réponse{person.unreadMessages > 1 ? "s" : ""}</Badge> : null}
                       {!person.hasExplicitNextAction && person.userId && person.segment !== "archived" ? <Badge variant="neutral">Sans action</Badge> : null}
                     </div>
                     <h2 className="mt-2 truncate text-base font-bold text-slate-950">{person.name}</h2>
