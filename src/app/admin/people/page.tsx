@@ -323,9 +323,23 @@ export default async function AdminPeoplePage({
   const profileByUser = new Map(profiles.map((item) => [item.id, item]));
   const accessByUser = new Map(accessRows.map((item) => [item.user_id, item]));
   const intakeByUser = new Map(intakes.map((item) => [item.student_id, item]));
+  const assignmentByUser = new Map(assignments.map((item) => [item.student_id, item]));
   const prospectByUser = new Map(
     prospects.flatMap((item) => item.user_id ? [[item.user_id, item] as const] : []),
   );
+
+  const advisorOptions = adminIds
+    .map((id, index) => {
+      const profile = profileByUser.get(id);
+      const split = [profile?.first_name, profile?.last_name].filter(Boolean).join(" ").trim();
+      return {
+        id,
+        name: split || profile?.full_name?.trim() || `Conseiller Campus ${index + 1}`,
+      };
+    })
+    .sort((left, right) => left.name.localeCompare(right.name, "fr"));
+  const advisorNameById = new Map(advisorOptions.map((item) => [item.id, item.name]));
+  const selectedAdvisor = advisorFilter && advisorNameById.has(advisorFilter) ? advisorFilter : "";
 
   const docsByUser = new Map<string, DocumentRow[]>();
   for (const item of documents) docsByUser.set(item.student_id, [...(docsByUser.get(item.student_id) || []), item]);
@@ -341,11 +355,15 @@ export default async function AdminPeoplePage({
     orientationCountByProspect.set(item.prospect_id, (orientationCountByProspect.get(item.prospect_id) || 0) + 1);
   }
 
+  const today = new Date().toISOString().slice(0, 10);
+  const weekEnd = shiftDateKey(today, 7);
+
   const records: PersonRecord[] = userIds.map((userId) => {
     const profile = profileByUser.get(userId);
     const prospect = prospectByUser.get(userId);
     const access = accessByUser.get(userId);
     const intake = intakeByUser.get(userId);
+    const assignment = assignmentByUser.get(userId);
     const personDocuments = docsByUser.get(userId) || [];
     const personApplications = applicationsByUser.get(userId) || [];
     const activeApplications = personApplications.filter((item) => isActiveApplication(item.status)).sort(compareApplications);
@@ -368,11 +386,37 @@ export default async function AdminPeoplePage({
         : fallback.waiting
           ? "En attente"
           : "Campus Allemagne";
-    const dueDate = recordedAction?.due_date || applicationAction?.deadline || null;
+
+    const datedActions = openActions.flatMap((item) => {
+      const date = dateKey(item.due_date);
+      if (!date || !actionDeadlineIsVerified(item)) return [];
+      const official = item.deadline_kind === "official_hard_deadline"
+        || item.deadline_kind === "official_external_date";
+      return [{ date, kind: official ? "official" as const : "internal" as const }];
+    });
+    const datedApplications = activeApplications.flatMap((item) => {
+      const date = dateKey(item.deadline);
+      if (!date || !applicationDeadlineIsVerified(item)) return [];
+      const official = item.deadline_kind === "official_hard_deadline"
+        || item.deadline_kind === "official_external_date";
+      return [{ date, kind: official ? "official" as const : "internal" as const }];
+    });
+    const dateCandidates = [...datedActions, ...datedApplications]
+      .sort((left, right) => left.date.localeCompare(right.date));
+    const nearestDate = dateCandidates[0] || null;
+    const hasUnverifiedDeadline =
+      openActions.some((item) => Boolean(item.due_date) && !actionDeadlineIsVerified(item))
+      || activeApplications.some((item) => Boolean(item.deadline) && !applicationDeadlineIsVerified(item));
+
+    const dueDate = nearestDate?.date || null;
+    const dueKind = nearestDate?.kind || null;
     const campusActions = openActions.filter((item) => item.owner === "almago" || item.owner === "joint").length;
-    const needsAttention = pendingDocuments > 0
+    const needsAttention = segment !== "archived" && (
+      pendingDocuments > 0
       || campusActions > 0
-      || activeApplications.some((item) => isOverdue(item.deadline));
+      || Boolean(dueDate && dueDate < today)
+      || hasUnverifiedDeadline
+    );
 
     return {
       key: userId,
@@ -390,6 +434,12 @@ export default async function AdminPeoplePage({
       nextAction,
       nextActionOwner,
       dueDate,
+      dueKind,
+      hasUnverifiedDeadline,
+      assignedAdminId: assignment?.assigned_admin_id || null,
+      assignedAdminName: assignment?.assigned_admin_id
+        ? advisorNameById.get(assignment.assigned_admin_id) || "Conseiller Campus"
+        : null,
       needsAttention,
       updatedAt: intake?.updated_at || prospect?.updated_at || access?.status_changed_at || "",
     };
@@ -414,13 +464,30 @@ export default async function AdminPeoplePage({
       nextAction: "Lier le prospect à un compte vérifié pour ouvrir son dossier 360°",
       nextActionOwner: "Prospect",
       dueDate: null,
+      dueKind: null,
+      hasUnverifiedDeadline: false,
+      assignedAdminId: null,
+      assignedAdminName: null,
       needsAttention: false,
       updatedAt: prospect.updated_at,
     });
   }
 
   records.sort((left, right) => {
-    if (left.needsAttention !== right.needsAttention) return left.needsAttention ? -1 : 1;
+    const leftRank = left.dueDate && left.dueDate < today ? 0
+      : left.dueDate === today ? 1
+        : left.needsAttention ? 2
+          : 3;
+    const rightRank = right.dueDate && right.dueDate < today ? 0
+      : right.dueDate === today ? 1
+        : right.needsAttention ? 2
+          : 3;
+    if (leftRank !== rightRank) return leftRank - rightRank;
+    if (left.dueDate && right.dueDate && left.dueDate !== right.dueDate) {
+      return left.dueDate.localeCompare(right.dueDate);
+    }
+    if (left.dueDate && !right.dueDate) return -1;
+    if (!left.dueDate && right.dueDate) return 1;
     return right.updatedAt.localeCompare(left.updatedAt);
   });
 
@@ -432,20 +499,57 @@ export default async function AdminPeoplePage({
     archived: records.filter((item) => item.segment === "archived").length,
   };
 
+  const operationalRecords = records.filter((item) => item.userId && item.segment !== "archived");
+  const workCounts: Record<WorkView, number> = {
+    all: operationalRecords.length,
+    overdue: operationalRecords.filter((item) => Boolean(item.dueDate && item.dueDate < today)).length,
+    today: operationalRecords.filter((item) => item.dueDate === today).length,
+    week: operationalRecords.filter((item) => Boolean(item.dueDate && item.dueDate >= today && item.dueDate <= weekEnd)).length,
+    unassigned: operationalRecords.filter((item) => !item.assignedAdminId).length,
+    mine: currentAdmin
+      ? operationalRecords.filter((item) => item.assignedAdminId === currentAdmin.id).length
+      : 0,
+  };
+
   const filtered = records.filter((item) => {
     if (view !== "all" && item.segment !== view) return false;
+    if (selectedAdvisor && item.assignedAdminId !== selectedAdvisor) return false;
+
+    if (work === "overdue" && !(item.dueDate && item.dueDate < today)) return false;
+    if (work === "today" && item.dueDate !== today) return false;
+    if (work === "week" && !(item.dueDate && item.dueDate >= today && item.dueDate <= weekEnd)) return false;
+    if (work === "unassigned" && (!item.userId || item.segment === "archived" || item.assignedAdminId)) return false;
+    if (work === "mine" && (!currentAdmin || item.assignedAdminId !== currentAdmin.id)) return false;
+
     if (!search) return true;
     return [
       item.name,
       item.email,
       item.stage,
       item.nextAction,
+      item.assignedAdminName || "",
       item.accessStatus ? customerLifecycleStatusLabel(item.accessStatus) : "",
     ].some((value) => value.toLocaleLowerCase("fr").includes(search));
   });
 
-  const attentionCount = records.filter((item) => item.needsAttention).length;
-  const campusActionCount = records.filter((item) => item.nextActionOwner === "Campus Allemagne").length;
+  const attentionCount = operationalRecords.filter((item) => item.needsAttention).length;
+  const campusActionCount = operationalRecords.filter((item) => item.nextActionOwner === "Campus Allemagne").length;
+
+  const peopleHref = (overrides: Partial<{ view: PersonView; work: WorkView; advisor: string; q: string }>) => {
+    const query = new URLSearchParams();
+    const nextView = overrides.view ?? view;
+    const nextWork = overrides.work ?? work;
+    const nextAdvisor = overrides.advisor ?? selectedAdvisor;
+    const nextQuery = overrides.q ?? (params.q || "");
+
+    if (nextView !== "all") query.set("view", nextView);
+    if (nextWork !== "all") query.set("work", nextWork);
+    if (nextAdvisor) query.set("advisor", nextAdvisor);
+    if (nextQuery.trim()) query.set("q", nextQuery.trim());
+
+    const serialized = query.toString();
+    return serialized ? `/admin/people?${serialized}` : "/admin/people";
+  };
 
   return (
     <main className="mx-auto w-full max-w-[92rem] px-4 py-5 sm:px-6 sm:py-6 xl:px-8">
