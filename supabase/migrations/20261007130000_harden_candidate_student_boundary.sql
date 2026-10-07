@@ -29,7 +29,7 @@ $$;
 revoke all on function private.has_student_client_access() from public, anon;
 grant execute on function private.has_student_client_access() to authenticated, service_role;
 
--- Student-domain reads. Admin access is intentionally preserved.
+-- Client-only student-domain policies. Admin access is intentionally preserved.\n-- Shared pre-dossier resources (documents, Storage, student_intake_cases and student_projects)\n-- deliberately keep their owner-scoped policies because prospects legitimately use them.
 drop policy if exists "academic evidence own or admin read" on public.academic_evidence;
 create policy "academic evidence own or admin read"
   on public.academic_evidence for select to authenticated
@@ -126,42 +126,6 @@ create policy "applications controlled insert"
     )
   );
 
-drop policy if exists "documents student or admin read" on public.documents;
-create policy "documents student or admin read"
-  on public.documents for select to authenticated
-  using (
-    (student_id = (select auth.uid()) and (select private.has_student_client_access()))
-    or (select public.is_admin())
-  );
-
-drop policy if exists "documents student insert" on public.documents;
-create policy "documents student insert"
-  on public.documents for insert to authenticated
-  with check (
-    (select private.has_student_client_access())
-    and student_id = (select auth.uid())
-    and uploaded_by = (select auth.uid())
-    and status = 'pending'::public.document_status
-    and size_bytes <= 10485760
-    and mime_type = any (array['application/pdf','image/jpeg','image/png'])
-  );
-
-drop policy if exists "documents student allowed delete" on public.documents;
-create policy "documents student allowed delete"
-  on public.documents for delete to authenticated
-  using (
-    (select public.is_admin())
-    or (
-      (select private.has_student_client_access())
-      and student_id = (select auth.uid())
-      and status = any (array[
-        'pending'::public.document_status,
-        'rejected'::public.document_status,
-        'replace_required'::public.document_status
-      ])
-    )
-  );
-
 drop policy if exists "recommendations student active or admin read" on public.program_recommendations;
 create policy "recommendations student active or admin read"
   on public.program_recommendations for select to authenticated
@@ -230,14 +194,6 @@ create policy "student history own or admin read"
     or (select public.is_admin())
   );
 
-drop policy if exists "student intake own or admin read" on public.student_intake_cases;
-create policy "student intake own or admin read"
-  on public.student_intake_cases for select to authenticated
-  using (
-    (student_id = (select auth.uid()) and (select private.has_student_client_access()))
-    or (select public.is_admin())
-  );
-
 drop policy if exists "language course selection own or admin read" on public.student_language_course_selections;
 create policy "language course selection own or admin read"
   on public.student_language_course_selections for select to authenticated
@@ -289,74 +245,6 @@ create policy "student procedures own or admin read"
   using (
     (student_id = (select auth.uid()) and (select private.has_student_client_access()))
     or (select public.is_admin())
-  );
-
-drop policy if exists "student projects own or admin read" on public.student_projects;
-create policy "student projects own or admin read"
-  on public.student_projects for select to authenticated
-  using (
-    (student_id = (select auth.uid()) and (select private.has_student_client_access()))
-    or (select public.is_admin())
-  );
-
-drop policy if exists "student projects combined insert" on public.student_projects;
-create policy "student projects combined insert"
-  on public.student_projects for insert to authenticated
-  with check (
-    (select public.is_admin())
-    or (
-      student_id = (select auth.uid())
-      and (select private.has_student_client_access())
-    )
-  );
-
-drop policy if exists "student projects combined update" on public.student_projects;
-create policy "student projects combined update"
-  on public.student_projects for update to authenticated
-  using (
-    (select public.is_admin())
-    or (
-      student_id = (select auth.uid())
-      and (select private.has_student_client_access())
-    )
-  )
-  with check (
-    (select public.is_admin())
-    or (
-      student_id = (select auth.uid())
-      and (select private.has_student_client_access())
-    )
-  );
-
--- Storage is a separate RLS boundary: a prospect must not gain student-document
--- access merely by knowing its own UID-based object prefix.
-drop policy if exists "document objects own folder" on storage.objects;
-create policy "document objects own folder"
-  on storage.objects for select to authenticated
-  using (
-    bucket_id = 'student-documents'
-    and (storage.foldername(name))[1] = (select auth.uid())::text
-    and (select private.has_student_client_access())
-  );
-
-drop policy if exists "document objects own upload" on storage.objects;
-create policy "document objects own upload"
-  on storage.objects for insert to authenticated
-  with check (
-    bucket_id = 'student-documents'
-    and (storage.foldername(name))[1] = (select auth.uid())::text
-    and (select private.has_student_client_access())
-  );
-
--- The existing delete helper validates the matching documents row/status; require
--- active client entitlement as an additional outer gate.
-drop policy if exists "document objects own allowed delete" on storage.objects;
-create policy "document objects own allowed delete"
-  on storage.objects for delete to authenticated
-  using (
-    bucket_id = 'student-documents'
-    and (select private.has_student_client_access())
-    and public.can_delete_own_document_object(name)
   );
 
 -- Profiles are shared by prospect and client flows, so their owner policy stays available.
