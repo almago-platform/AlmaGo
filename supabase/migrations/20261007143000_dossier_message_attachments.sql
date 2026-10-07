@@ -158,3 +158,106 @@ $$;
 
 revoke all on function private.validate_student_dossier_message()
   from public, anon, authenticated;
+
+
+create or replace function private.notify_student_dossier_message()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  assigned_admin uuid;
+begin
+  if new.sender_role = 'admin' then
+    insert into public.notifications (user_id, type, title, body, metadata)
+    values (
+      new.student_id,
+      'student_dossier_message',
+      'Nouveau message Campus Allemagne',
+      case
+        when new.attachment_storage_path is not null
+          then 'Campus Allemagne vous a envoyé un nouveau message avec une pièce jointe.'
+        else 'Campus Allemagne vous a envoyé un nouveau message.'
+      end,
+      jsonb_build_object(
+        'student_id', new.student_id,
+        'message_id', new.id,
+        'has_attachment', new.attachment_storage_path is not null,
+        'dedupe_key', 'student-dossier-message:' || new.id::text
+      )
+    )
+    on conflict do nothing;
+  else
+    select assigned_admin_id
+      into assigned_admin
+      from public.student_case_assignments
+     where student_id = new.student_id;
+
+    if assigned_admin is not null then
+      insert into public.notifications (user_id, type, title, body, metadata)
+      values (
+        assigned_admin,
+        'admin_student_message',
+        'Nouvelle réponse dossier',
+        case
+          when new.attachment_storage_path is not null
+            then 'Un candidat ou étudiant vous a envoyé un message avec une pièce jointe.'
+          else 'Un candidat ou étudiant vous a répondu dans son dossier.'
+        end,
+        jsonb_build_object(
+          'student_id', new.student_id,
+          'message_id', new.id,
+          'has_attachment', new.attachment_storage_path is not null,
+          'dedupe_key', 'admin-student-message:' || new.id::text || ':' || assigned_admin::text
+        )
+      )
+      on conflict do nothing;
+    else
+      insert into public.notifications (user_id, type, title, body, metadata)
+      select
+        roles.user_id,
+        'admin_student_message',
+        'Nouvelle réponse dossier',
+        case
+          when new.attachment_storage_path is not null
+            then 'Un candidat ou étudiant sans conseiller attribué a envoyé un message avec une pièce jointe.'
+          else 'Un candidat ou étudiant sans conseiller attribué a répondu dans son dossier.'
+        end,
+        jsonb_build_object(
+          'student_id', new.student_id,
+          'message_id', new.id,
+          'has_attachment', new.attachment_storage_path is not null,
+          'dedupe_key', 'admin-student-message:' || new.id::text || ':' || roles.user_id::text
+        )
+      from public.user_roles roles
+      where roles.role = 'admin'
+      on conflict do nothing;
+    end if;
+  end if;
+
+  insert into public.technical_logs (
+    actor_id,
+    event_name,
+    entity_type,
+    entity_id,
+    metadata
+  )
+  values (
+    auth.uid(),
+    'student_dossier_message_created',
+    'student',
+    new.student_id,
+    jsonb_build_object(
+      'message_id', new.id,
+      'sender_role', new.sender_role,
+      'has_attachment', new.attachment_storage_path is not null
+    )
+  );
+
+  return new;
+end;
+$$;
+
+revoke all on function private.notify_student_dossier_message()
+  from public, anon, authenticated;
