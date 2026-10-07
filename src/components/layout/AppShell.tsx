@@ -58,6 +58,7 @@ const studentGroupIndexes = [
 const adminItems: NavItem[] = [
   { label: "Vue d’ensemble", href: "/admin", icon: icons.dashboard, helper: "Priorités de l’équipe" },
   { label: "Personnes", href: "/admin/people", icon: icons.profile, helper: "Prospects, candidats et étudiants" },
+  { label: "Prospects", href: "/admin/prospects", icon: icons.orientation, helper: "Qualification des projets" },
   { label: "Dossiers Campus", href: "/admin/intake", icon: icons.checklist, helper: "Décisions et parcours" },
   { label: "Documents", href: "/admin/documents", icon: icons.documents, helper: "Pièces à vérifier" },
   { label: "Candidatures", href: "/admin/applications", icon: icons.applications, helper: "Dossiers et échéances" },
@@ -113,7 +114,12 @@ export function AppShell({
     : adminItems;
   const adminGroups = [
     { label: "Pilotage", items: currentAdminItems.filter((item) => item.href === "/admin") },
-    { label: "Personnes", items: currentAdminItems.filter((item) => item.href === "/admin/people") },
+    {
+      label: "Personnes",
+      items: currentAdminItems.filter((item) =>
+        ["/admin/people", "/admin/prospects"].includes(item.href),
+      ),
+    },
     {
       label: "Files de travail",
       items: currentAdminItems.filter((item) =>
