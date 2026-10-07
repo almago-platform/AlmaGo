@@ -9,6 +9,7 @@ import { PremiumSectionHeader } from "@/components/product/PremiumSectionHeader"
 import { catalogVerificationCutoff } from "@/lib/catalog-freshness";
 import {
   adminActionDateIsTrusted,
+  applicationDateIsOperationalWorkDate,
   applicationDateIsTrusted,
   applicationOfficialDeadlineUrgency,
   applicationRouteRisk,
@@ -175,7 +176,7 @@ export default async function AdminEntry() {
     if (actionDeadlineIsTrusted(item)) registerDue(item.student_id, item.due_date);
   }
   for (const item of applicationRowsResult.data || []) {
-    if (isActiveApplication(item.status) && applicationDeadlineIsTrusted(item)) {
+    if (applicationDateIsOperationalWorkDate(item)) {
       registerDue(item.student_id, item.deadline);
     }
   }
