@@ -56,6 +56,10 @@ type ApplicationRow = {
   student_id: string;
   status: string;
   deadline: string | null;
+  deadline_kind: string | null;
+  deadline_source_url: string | null;
+  deadline_verified_at: string | null;
+  deadline_cycle: string | null;
   next_action: string | null;
   created_at: string;
 };
@@ -68,6 +72,7 @@ type ActionRow = {
   status: string;
   owner: string | null;
   due_date: string | null;
+  deadline_kind: string | null;
   created_at: string;
 };
 
@@ -77,7 +82,15 @@ type OrientationRow = {
   created_at: string;
 };
 
+type AssignmentRow = {
+  student_id: string;
+  assigned_admin_id: string | null;
+  assigned_at: string;
+  updated_at: string;
+};
+
 type PersonView = "all" | AdminPersonSegment;
+type WorkView = "all" | "overdue" | "today" | "week" | "unassigned" | "mine";
 
 type PersonRecord = {
   key: string;
@@ -95,11 +108,16 @@ type PersonRecord = {
   nextAction: string;
   nextActionOwner: string;
   dueDate: string | null;
+  dueKind: "official" | "internal" | null;
+  hasUnverifiedDeadline: boolean;
+  assignedAdminId: string | null;
+  assignedAdminName: string | null;
   needsAttention: boolean;
   updatedAt: string;
 };
 
 const validViews = new Set<PersonView>(["all", "prospect", "candidate", "student", "archived"]);
+const validWorkViews = new Set<WorkView>(["all", "overdue", "today", "week", "unassigned", "mine"]);
 
 const viewLabels: Record<PersonView, string> = {
   all: "Tous",
@@ -107,6 +125,15 @@ const viewLabels: Record<PersonView, string> = {
   candidate: "Candidats",
   student: "Étudiants",
   archived: "Terminés",
+};
+
+const workLabels: Record<WorkView, string> = {
+  all: "Tous les dossiers",
+  overdue: "En retard",
+  today: "Aujourd’hui",
+  week: "7 prochains jours",
+  unassigned: "Non attribués",
+  mine: "Mes dossiers",
 };
 
 const segmentBadgeVariant: Record<AdminPersonSegment, "neutral" | "info" | "success" | "warning"> = {
@@ -145,15 +172,34 @@ function compareApplications(left: ApplicationRow, right: ApplicationRow) {
 
 function formatDate(value: string | null) {
   if (!value) return "—";
-  const timestamp = Date.parse(value);
+  const timestamp = Date.parse(value + (value.length === 10 ? "T12:00:00Z" : ""));
   if (!Number.isFinite(timestamp)) return "—";
-  return new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium" }).format(new Date(timestamp));
+  return new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium", timeZone: "UTC" }).format(new Date(timestamp));
 }
 
-function isOverdue(value: string | null) {
-  if (!value) return false;
-  const due = Date.parse(value + (value.length === 10 ? "T23:59:59Z" : ""));
-  return Number.isFinite(due) && due < Date.now();
+function dateKey(value: string | null) {
+  if (!value) return null;
+  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return value;
+  const timestamp = Date.parse(value);
+  return Number.isFinite(timestamp) ? new Date(timestamp).toISOString().slice(0, 10) : null;
+}
+
+function shiftDateKey(value: string, days: number) {
+  const [year, month, day] = value.split("-").map(Number);
+  const date = new Date(Date.UTC(year, month - 1, day + days));
+  return date.toISOString().slice(0, 10);
+}
+
+function applicationDeadlineIsVerified(application: ApplicationRow) {
+  if (!application.deadline) return false;
+  if (application.deadline_kind === "internal_target" || application.deadline_kind === "source_review_date") {
+    return true;
+  }
+  return Boolean(
+    application.deadline_source_url
+    && application.deadline_verified_at
+    && application.deadline_cycle,
+  );
 }
 
 export const dynamic = "force-dynamic";
