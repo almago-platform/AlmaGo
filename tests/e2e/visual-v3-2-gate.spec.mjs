@@ -27,6 +27,7 @@ async function expectNonceCsp(page, response, label) {
   const nonce = matches[0][1];
 
   expect(csp).not.toContain("'unsafe-eval'");
+  expect(csp).toContain("report-uri /api/security/csp-report");
   expect(response?.headers()["content-security-policy"]).toBeUndefined();
 
   const renderedNonces = await page.locator("script").evaluateAll((scripts) =>
