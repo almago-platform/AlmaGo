@@ -1,9 +1,10 @@
 "use client";
 
-import { useMemo, useState, type ReactNode } from "react";
+import { useMemo, useState } from "react";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { AdminWorkflowSection } from "@/components/admin/AdminWorkflowSection";
 import { universityTypes } from "@/lib/phase4";
 
 type University = {
@@ -214,8 +215,8 @@ export function AdminUniversitiesPanel({ universities }: { universities: Univers
             )}
           </div>
 
-          <div className="grid gap-4 lg:grid-cols-2">
-            <FormSection title="Identité et localisation">
+          <div className="space-y-3">
+            <AdminWorkflowSection step="A" title="Identité et localisation" description="Nom, ville et région de l’établissement." defaultOpen>
               <label className="block text-sm font-medium text-slate-700">
                 Nom de l’université
                 <input
@@ -247,9 +248,9 @@ export function AdminUniversitiesPanel({ universities }: { universities: Univers
                   />
                 </label>
               </div>
-            </FormSection>
+            </AdminWorkflowSection>
 
-            <FormSection title="Type et publication">
+            <AdminWorkflowSection step="B" title="Type et état AlmaGo" description="Type d’établissement, statut public et activation dans le catalogue.">
               <label className="block text-sm font-medium text-slate-700">
                 Type d’établissement
                 <select
@@ -274,9 +275,9 @@ export function AdminUniversitiesPanel({ universities }: { universities: Univers
                   onChange={(checked) => change("is_active", checked)}
                 />
               </div>
-            </FormSection>
+            </AdminWorkflowSection>
 
-            <FormSection title="Liens officiels">
+            <AdminWorkflowSection step="C" title="Sources officielles" description="Site institutionnel et identité visuelle de référence.">
               <label className="block text-sm font-medium text-slate-700">
                 Site officiel
                 <input
@@ -295,9 +296,9 @@ export function AdminUniversitiesPanel({ universities }: { universities: Univers
                   className="field"
                 />
               </label>
-            </FormSection>
+            </AdminWorkflowSection>
 
-            <FormSection title="Description et finances">
+            <AdminWorkflowSection step="D" title="Description et informations financières" description="Conservez uniquement des informations factuelles et vérifiées.">
               <label className="block text-sm font-medium text-slate-700">
                 Description courte
                 <textarea
@@ -316,7 +317,7 @@ export function AdminUniversitiesPanel({ universities }: { universities: Univers
                   className="field min-h-24 resize-y"
                 />
               </label>
-            </FormSection>
+            </AdminWorkflowSection>
           </div>
 
           <div className="mt-5 flex flex-col gap-3 border-t border-[var(--border)] pt-5 sm:flex-row sm:items-center sm:justify-between">
@@ -460,21 +461,6 @@ export function AdminUniversitiesPanel({ universities }: { universities: Univers
         )}
       </section>
     </div>
-  );
-}
-
-function FormSection({
-  title,
-  children,
-}: {
-  title: string;
-  children: ReactNode;
-}) {
-  return (
-    <section className="min-w-0 overflow-hidden rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface-muted)]/35 p-4">
-      <h3 className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">{title}</h3>
-      <div className="mt-4 space-y-3">{children}</div>
-    </section>
   );
 }
 
