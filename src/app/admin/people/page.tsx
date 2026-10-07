@@ -19,6 +19,7 @@ import {
   applicationOfficialDeadlineUrgency,
   applicationOfficialDeadlineUrgencyLabel,
   applicationRouteRisk,
+  campusTodayDateKey,
   type ApplicationOfficialDeadlineUrgency,
 } from "@/lib/admin/application-risk";
 import { isActiveApplication } from "@/lib/application-workflow";
@@ -464,7 +465,7 @@ export default async function AdminPeoplePage({
     if (!latestContactByUser.has(item.student_id)) latestContactByUser.set(item.student_id, item);
   }
 
-  const today = new Date().toISOString().slice(0, 10);
+  const today = campusTodayDateKey();
   const weekEnd = shiftDateKey(today, 7);
   const staleContactCutoff = shiftDateKey(today, -14);
 
