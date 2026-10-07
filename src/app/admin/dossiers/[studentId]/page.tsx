@@ -24,6 +24,10 @@ import {
   isActiveApplication,
   type KnownApplicationStatus,
 } from "@/lib/application-workflow";
+import {
+  applicationRouteRisk,
+  applicationRouteRiskLabel,
+} from "@/lib/admin/application-risk";
 import { campusRouteLabel } from "@/lib/campus-intake";
 import { recommendationStatusLabels } from "@/lib/phase4";
 import { formatMinorCurrency } from "@/lib/money";
@@ -53,6 +57,7 @@ type ApplicationRow = {
   deadline_source_url: string | null;
   deadline_verified_at: string | null;
   deadline_cycle: string | null;
+  application_method: string | null;
   next_action: string | null;
   result: string | null;
   created_at: string;
@@ -273,7 +278,7 @@ export default async function AdminStudentDossierPage({
       .order("created_at", { ascending: false }),
     supabase
       .from("applications")
-      .select("id,program_id,status,intake,deadline,deadline_kind,deadline_source_url,deadline_verified_at,deadline_cycle,next_action,result,created_at,programs(name,universities(name,city)),application_events(id,event_type,message,visible_to_student,created_at)")
+      .select("id,program_id,status,intake,deadline,deadline_kind,deadline_source_url,deadline_verified_at,deadline_cycle,application_method,next_action,result,created_at,programs(name,universities(name,city)),application_events(id,event_type,message,visible_to_student,created_at)")
       .eq("student_id", studentId)
       .order("deadline", { ascending: true, nullsFirst: false }),
     supabase
@@ -571,11 +576,13 @@ export default async function AdminStudentDossierPage({
     });
   }
 
+  const todayKey = new Date().toISOString().slice(0, 10);
   for (const application of applications) {
     if (!isActiveApplication(application.status)) continue;
     const programName = firstProgram(application)?.name || "Candidature";
+    const trustedApplicationDeadline = applicationDeadlineIsTrusted(application);
 
-    if (application.deadline && !applicationDeadlineIsTrusted(application)) {
+    if (application.deadline && !trustedApplicationDeadline) {
       addBlocker({
         id: `application-deadline:${application.id}`,
         kind: "Deadline à vérifier",
@@ -585,6 +592,27 @@ export default async function AdminStudentDossierPage({
         severity: "critical",
         href: `/admin/applications?student=${studentId}`,
         actionLabel: "Vérifier la deadline",
+      });
+    }
+
+    const routeRisk = applicationRouteRisk({
+      status: application.status,
+      application_method: application.application_method,
+      deadline: application.deadline,
+      deadline_kind: application.deadline_kind,
+      deadlineTrusted: trustedApplicationDeadline,
+    }, todayKey);
+
+    if (routeRisk) {
+      addBlocker({
+        id: `application-route-risk:${application.id}`,
+        kind: applicationRouteRiskLabel(routeRisk.kind),
+        title: programName,
+        reason: `La cible interne D-${routeRisk.leadDays} est atteinte ou dépassée avant soumission. Elle sert à sécuriser la préparation du dossier et ne remplace pas la deadline officielle.`,
+        owner: "almago",
+        severity: "warning",
+        href: `/admin/applications?student=${studentId}`,
+        actionLabel: "Accélérer la préparation",
       });
     }
 
