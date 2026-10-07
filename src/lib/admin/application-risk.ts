@@ -65,6 +65,21 @@ export function adminActionDateIsTrusted(
   return evaluation.status === "open" || evaluation.status === "closed";
 }
 
+export function applicationDateIsOperationalWorkDate(
+  application: ApplicationDeadlineTruthInput & { status: string },
+  now: Date = new Date(),
+) {
+  if (!isActiveApplication(application.status)) return false;
+  if (!applicationDateIsTrusted(application, now)) return false;
+  if (
+    application.deadline_kind === "official_hard_deadline"
+    && isSubmittedApplicationStatus(application.status)
+  ) {
+    return false;
+  }
+  return true;
+}
+
 export type ApplicationRouteRiskKind = "uni_assist" | "vpd_then_direct";
 
 export type ApplicationRouteRisk = {
