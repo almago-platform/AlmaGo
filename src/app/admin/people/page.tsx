@@ -100,7 +100,7 @@ type CaseNoteRow = {
 };
 
 type PersonView = "all" | AdminPersonSegment;
-type WorkView = "all" | "overdue" | "today" | "week" | "messages" | "no_action" | "stale" | "unassigned" | "mine";
+type WorkView = "all" | "blocked" | "overdue" | "today" | "week" | "messages" | "no_action" | "stale" | "unassigned" | "mine";
 
 type PersonRecord = {
   key: string;
@@ -115,6 +115,7 @@ type PersonRecord = {
   pendingDocuments: number;
   activeApplications: number;
   openActions: number;
+  blockedActions: number;
   nextAction: string;
   nextActionOwner: string;
   dueDate: string | null;
@@ -131,7 +132,7 @@ type PersonRecord = {
 };
 
 const validViews = new Set<PersonView>(["all", "prospect", "candidate", "student", "archived"]);
-const validWorkViews = new Set<WorkView>(["all", "overdue", "today", "week", "messages", "no_action", "stale", "unassigned", "mine"]);
+const validWorkViews = new Set<WorkView>(["all", "blocked", "overdue", "today", "week", "messages", "no_action", "stale", "unassigned", "mine"]);
 
 const viewLabels: Record<PersonView, string> = {
   all: "Tous",
@@ -143,6 +144,7 @@ const viewLabels: Record<PersonView, string> = {
 
 const workLabels: Record<WorkView, string> = {
   all: "Tous les dossiers",
+  blocked: "Bloqués",
   overdue: "En retard",
   today: "Aujourd’hui",
   week: "7 prochains jours",
@@ -412,7 +414,9 @@ export default async function AdminPeoplePage({
     const personDocuments = docsByUser.get(userId) || [];
     const personApplications = applicationsByUser.get(userId) || [];
     const activeApplications = personApplications.filter((item) => isActiveApplication(item.status)).sort(compareApplications);
-    const openActions = (actionsByUser.get(userId) || []).filter((item) => isOpenAdminAction(item.status)).sort(compareDue);
+    const personActions = actionsByUser.get(userId) || [];
+    const openActions = personActions.filter((item) => isOpenAdminAction(item.status)).sort(compareDue);
+    const blockedActions = personActions.filter((item) => item.status === "blocked").length;
     const humanOpenActions = openActions.filter((item) => item.template_id === null);
     const pendingDocuments = personDocuments.filter((item) => attentionDocumentStatuses.has(item.status)).length;
     const segment = classifyAdminPerson(access?.status, Boolean(intake));
@@ -478,6 +482,7 @@ export default async function AdminPeoplePage({
       pendingDocuments,
       activeApplications: activeApplications.length,
       openActions: humanOpenActions.length,
+      blockedActions,
       nextAction,
       nextActionOwner,
       dueDate,
@@ -491,7 +496,7 @@ export default async function AdminPeoplePage({
       lastContactKind: latestContact?.kind || null,
       unreadMessages,
       hasExplicitNextAction,
-      needsAttention: needsAttention || unreadMessages > 0 || (segment !== "archived" && !hasExplicitNextAction),
+      needsAttention: needsAttention || blockedActions > 0 || unreadMessages > 0 || (segment !== "archived" && !hasExplicitNextAction),
       updatedAt: intake?.updated_at || prospect?.updated_at || access?.status_changed_at || "",
     };
   });
@@ -512,6 +517,7 @@ export default async function AdminPeoplePage({
       pendingDocuments: 0,
       activeApplications: 0,
       openActions: 0,
+      blockedActions: 0,
       nextAction: "Lier le prospect à un compte vérifié pour ouvrir son dossier 360°",
       nextActionOwner: "Prospect",
       dueDate: null,
@@ -557,6 +563,7 @@ export default async function AdminPeoplePage({
   const operationalRecords = records.filter((item) => item.userId && item.segment !== "archived");
   const workCounts: Record<WorkView, number> = {
     all: records.length,
+    blocked: operationalRecords.filter((item) => item.blockedActions > 0).length,
     overdue: operationalRecords.filter((item) => Boolean(item.dueDate && item.dueDate < today)).length,
     today: operationalRecords.filter((item) => item.dueDate === today).length,
     week: operationalRecords.filter((item) => Boolean(item.dueDate && item.dueDate >= today && item.dueDate <= weekEnd)).length,
@@ -576,6 +583,7 @@ export default async function AdminPeoplePage({
     if (view !== "all" && item.segment !== view) return false;
     if (selectedAdvisor && item.assignedAdminId !== selectedAdvisor) return false;
 
+    if (work === "blocked" && (!item.userId || item.segment === "archived" || item.blockedActions < 1)) return false;
     if (work === "overdue" && !(item.dueDate && item.dueDate < today)) return false;
     if (work === "today" && item.dueDate !== today) return false;
     if (work === "week" && !(item.dueDate && item.dueDate >= today && item.dueDate <= weekEnd)) return false;
@@ -755,6 +763,7 @@ export default async function AdminPeoplePage({
                       <Badge variant={segmentBadgeVariant[person.segment]}>
                         {adminPersonSegmentLabels[person.segment]}
                       </Badge>
+                      {person.blockedActions > 0 ? <Badge variant="error">Bloqué · {person.blockedActions}</Badge> : null}
                       {overdue ? <Badge variant="error">En retard</Badge> : null}
                       {!overdue && dueToday ? <Badge variant="warning">Aujourd’hui</Badge> : null}
                       {!overdue && !dueToday && person.needsAttention ? <Badge variant="warning">Attention</Badge> : null}
