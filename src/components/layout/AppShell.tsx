@@ -209,7 +209,9 @@ export function AppShell({
                       {group.label} · {group.items.length}
                     </summary>
                   ) : (
-                    <p className="mb-1.5 px-3 text-[9px] font-bold uppercase tracking-[0.16em] text-[var(--muted)]">{group.label}</p>
+                    <summary className="mb-1.5 cursor-pointer rounded-[var(--radius-control)] px-3 py-2 text-[11px] font-bold uppercase tracking-[0.12em] text-white/80 hover:bg-white/10 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
+                      {group.label}
+                    </summary>
                   )}
                   <div className={group.secondary ? "mt-2 space-y-1 border-l border-[var(--border)] pl-2" : "space-y-1"}>
                     {group.items.map((item) => {
