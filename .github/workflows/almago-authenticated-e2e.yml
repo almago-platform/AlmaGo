@@ -6,15 +6,15 @@ on:
       target:
         description: "Authenticated E2E target"
         required: false
-        default: render
+        default: vps
         type: choice
-        options: [render, local]
+        options: [vps, local]
   workflow_call:
     inputs:
       target:
         description: "Authenticated E2E target"
         required: false
-        default: render
+        default: vps
         type: string
 
 permissions:
@@ -34,7 +34,7 @@ jobs:
       NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
       ALMAGO_E2E_STUDENT_EMAIL: ${{ vars.ALMAGO_E2E_STUDENT_EMAIL || 'phase3.student.c@almago.test' }}
       ALMAGO_E2E_STUDENT_PASSWORD: ${{ secrets.ALMAGO_E2E_STUDENT_PASSWORD }}
-      ALMAGO_E2E_TARGET: ${{ inputs.target || 'render' }}
+      ALMAGO_E2E_TARGET: ${{ inputs.target || 'vps' }}
       CI: "true"
     steps:
       - uses: actions/checkout@v7
@@ -51,8 +51,8 @@ jobs:
             if [ -z "${!name}" ]; then echo "::error::$name is required"; exit 1; fi
           done
 
-      - name: Require A38 human gate before Render evidence
-        if: env.ALMAGO_E2E_TARGET == 'render'
+      - name: Require A38 human gate before VPS evidence
+        if: env.ALMAGO_E2E_TARGET == 'vps'
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
@@ -66,7 +66,7 @@ jobs:
               jq -r '.state'
           )"
           if [ "$state" != "closed" ]; then
-            echo "::error::A38 (#66) must be genuinely closed before final Render authenticated evidence."
+            echo "::error::A38 (#66) must be genuinely closed before final VPS authenticated evidence."
             exit 1
           fi
 
@@ -78,10 +78,13 @@ jobs:
       - name: Configure target
         shell: bash
         run: |
-          if [ "$ALMAGO_E2E_TARGET" = "render" ]; then
-            echo "ALMAGO_BASE_URL=${{ vars.ALMAGO_PRODUCTION_URL || 'https://almago-dev.onrender.com' }}" >> "$GITHUB_ENV"
-          else
+          if [ "$ALMAGO_E2E_TARGET" = "vps" ]; then
+            echo "ALMAGO_BASE_URL=https://campusallemagne.tn" >> "$GITHUB_ENV"
+          elif [ "$ALMAGO_E2E_TARGET" = "local" ]; then
             echo "ALMAGO_BASE_URL=http://127.0.0.1:3000" >> "$GITHUB_ENV"
+          else
+            echo "::error::Unsupported E2E target: $ALMAGO_E2E_TARGET"
+            exit 1
           fi
 
       - name: Build and start local target
@@ -97,16 +100,21 @@ jobs:
           cat /tmp/almago-e2e.log
           exit 1
 
-      - name: Verify exact Render revision
-        if: env.ALMAGO_E2E_TARGET == 'render'
+      - name: Verify exact VPS revision
+        if: env.ALMAGO_E2E_TARGET == 'vps'
         shell: bash
         run: |
+          current_main="$(git ls-remote origin refs/heads/main | awk '{print $1}')"
+          if [ "$current_main" != "$GITHUB_SHA" ]; then
+            echo "::error::main changed before authenticated VPS evidence"
+            exit 1
+          fi
           expected="${GITHUB_SHA:0:12}"
           health="$(curl --fail --silent --show-error --max-time 10 "$ALMAGO_BASE_URL/api/health")"
           revision="$(printf '%s' "$health" | jq -r '.revision // empty')"
           branch="$(printf '%s' "$health" | jq -r '.branch // empty')"
-          if [ "$revision" != "$expected" ] || [ "$branch" != "main" ]; then
-            echo "::error::Authenticated E2E requires exact Render revision $expected on main; got ${revision:-none} on ${branch:-none}."
+          if [ "$revision" != "$expected" ]; then
+            echo "::error::Authenticated E2E requires exact VPS revision $expected on main; got ${revision:-none}."
             exit 1
           fi
           printf '%s\n' "$health"
@@ -117,8 +125,8 @@ jobs:
       - name: Student quality
         run: npx playwright test tests/e2e/student-space-quality.spec.mjs
 
-      - name: Revalidate exact main and Render after authenticated evidence
-        if: env.ALMAGO_E2E_TARGET == 'render'
+      - name: Revalidate exact main and VPS after authenticated evidence
+        if: env.ALMAGO_E2E_TARGET == 'vps'
         shell: bash
         run: |
           current_main="$(git ls-remote origin refs/heads/main | awk '{print $1}')"
@@ -132,12 +140,12 @@ jobs:
           revision="$(printf '%s' "$health" | jq -r '.revision // empty')"
           branch="$(printf '%s' "$health" | jq -r '.branch // empty')"
           if [ "$revision" != "$expected" ] || [ "$branch" != "main" ]; then
-            echo "::error::Render drifted during authenticated E2E. Expected $expected on main; got ${revision:-none} on ${branch:-none}."
+            echo "::error::VPS drifted during authenticated E2E. Expected $expected on main; got ${revision:-none} on ${branch:-none}."
             exit 1
           fi
 
       - name: Require exact-SHA human admin AAL2 evidence
-        if: env.ALMAGO_E2E_TARGET == 'render'
+        if: env.ALMAGO_E2E_TARGET == 'vps'
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
@@ -159,12 +167,12 @@ jobs:
           )"
           if [ "$approved" -lt 1 ]; then
             echo "::error::Missing exact-SHA human admin AAL2 evidence on issue #84."
-            echo "::error::After manually verifying the sole real admin on this exact Render SHA, add this marker to issue #84: $marker"
+            echo "::error::After manually verifying the sole real admin on this exact VPS SHA, add this marker to issue #84: $marker"
             exit 1
           fi
 
       - name: Revalidate A38 human gate after authenticated evidence
-        if: env.ALMAGO_E2E_TARGET == 'render'
+        if: env.ALMAGO_E2E_TARGET == 'vps'
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
