@@ -74,6 +74,11 @@ test("displayed stage is an operational cue, never a synthetic visa verdict", ()
   assert.equal(firstKnownMilestone(standard), "orientation");
   assert.equal(firstKnownMilestone({ ...standard, intakeStatus: "campus_review" }), "qualification");
   assert.equal(firstKnownMilestone({ ...standard, applications: 1 }), "academic_application");
+  assert.equal(firstKnownMilestone({ ...standard, applications: 1 }, "submitted"), "visa_preparation");
+  assert.equal(firstKnownMilestone({ ...standard, applications: 1 }, "approved"), "departure");
+  assert.notEqual(firstKnownMilestone(standard, null), "arrival");
+  assert.match(recommendedOperatorAction(standard, "approved"), /départ/);
+  assert.match(recommendedOperatorAction(standard, "refused"), /décision consulaire/);
   assert.ok(!page.includes('visaStatus: "approved"'));
   assert.match(page, /Visa : aucune étape officiellement justifiée enregistrée/);
 });
