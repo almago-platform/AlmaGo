@@ -42,7 +42,7 @@ test("admin document queue paginates mounted cards while maintaining full-queue 
 
 test("admin document performance logs are opt-in and redact identifying values", () => {
   assert.match(adminPage, /ALMAGO_ADMIN_DOCUMENT_PERF_LOG_ENABLED/);
-  assert.match(adminPage, /visibleDocuments: documents\.length/);
+  assert.match(adminPage, /logAdminDocumentPerformance\(startedAt, queryMs, documents\.length/);
   assert.match(adminPage, /documentStatusById\.get\(/);
   assert.doesNotMatch(adminPage, /console\.info\([^;]*(?:original_filename|student_id|storage_path|signedUrl)/);
 });
