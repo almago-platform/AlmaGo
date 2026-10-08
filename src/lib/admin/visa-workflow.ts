@@ -62,9 +62,13 @@ export function normalizeVisaSourceUrl(value: unknown): string | null {
 export function validVisaSourceDate(value: unknown, now: Date = new Date()): boolean {
   if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
   const timestamp = Date.parse(value + "T12:00:00Z");
-  const upper = now.getTime() + 24 * 60 * 60 * 1000;
+  const localParts = new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Europe/Berlin", year: "numeric", month: "2-digit", day: "2-digit",
+  }).formatToParts(now);
+  const part = (key: string) => localParts.find((item) => item.type === key)?.value || "";
+  const today = `${part("year")}-${part("month")}-${part("day")}`;
   return Number.isFinite(timestamp)
-    && timestamp <= upper
+    && value <= today
     && timestamp >= now.getTime() - 365 * 24 * 60 * 60 * 1000
     && new Date(timestamp).toISOString().slice(0, 10) === value;
 }
