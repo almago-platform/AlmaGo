@@ -12,6 +12,8 @@ const studentLetters = read("src/components/student/StudentApplicationLetters.ts
 const studentPanel = read("src/components/student/StudentApplicationsPanel.tsx");
 const studentDelete = read("src/app/api/student/documents/[id]/route.ts");
 const prospectDelete = read("src/app/api/prospect/documents/[id]/route.ts");
+const studentDocumentsPage = read("src/app/student/documents/page.tsx");
+const studentDocumentsPanel = read("src/components/student/DocumentsPanel.tsx");
 
 test("UX-5b: a university letter is bound to the same student's existing application and document", () => {
   assert.match(migration, /create unique index if not exists applications_id_student_unique/);
@@ -55,6 +57,8 @@ test("UX-5b: students cannot delete a Campus-uploaded pending admission document
   assert.match(migration, /and uploaded_by = \(select auth\.uid\(\)\)/);
   assert.match(studentDelete, /document\.uploaded_by !== user\.id/);
   assert.match(prospectDelete, /document\.uploaded_by !== user\.id/);
+  assert.match(studentDocumentsPage, /currentUserId=\{user\.id\}/);
+  assert.match(studentDocumentsPanel, /document\.uploaded_by === currentUserId/);
 });
 
 test("UX-5b: the admin has a short evidence form and the student sees PDFs on their own application", () => {
