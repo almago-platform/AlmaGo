@@ -30,8 +30,8 @@ test("summary never invents an assignment, last contact, successful admission or
   assert.match(brief, /!counselor/);
   assert.match(brief, /ne garantit pas l’admission ni l’obtention du visa/);
   assert.match(brief, /action\.waiting/);
-  assert.match(brief, /"En attente"/);
-  assert.match(brief, /"Aucun événement enregistré dans l’historique."/);
+  assert.match(brief, />En attente<\/Badge>/);
+  assert.match(brief, />Aucun événement enregistré dans l’historique\.<\/p>/);
   assert.match(dossier, /prospect\?\.email/);
   assert.match(dossier, /"Personne sans nom enregistré"/);
 });
