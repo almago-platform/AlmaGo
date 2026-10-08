@@ -3,19 +3,22 @@ import { readFileSync } from "node:fs";
 import test from "node:test";
 
 const page = readFileSync("src/app/page.tsx", "utf8");
-const copy = readFileSync("src/content/native-copy.ts", "utf8");
+const native = readFileSync("src/content/native-copy.ts", "utf8");
+const preview = readFileSync("src/components/public/HomeExperiencePreview.tsx", "utf8");
 
-test("homepage exposes the interactive product preview in the public journey", () => {
-  assert.match(page, /HomeProductPreview/);
-  assert.ok(page.indexOf("<HomeProductPreview />") < page.indexOf("<HomeJourneySection"));
-  assert.doesNotMatch(page, /<HomePhotoBand/);
-  assert.match(page, /photo=\{copy\.home\.photo\}/);
+test("V4.2 replaces the stale mock dashboard with a two-level product explanation", () => {
+  assert.match(page, /<HomeExperiencePreview/);
+  assert.doesNotMatch(page, /<HomeProductPreview/);
+  assert.ok(page.indexOf("<HomeJourneySection") < page.indexOf("<HomeExperiencePreview"));
+  assert.match(preview, /role="tablist"/);
+  assert.match(preview, /role="tabpanel"/);
+  assert.match(preview, /aria-selected=\{selected\}/);
+  assert.match(preview, /handleTabKeys/);
 });
 
-test("French homepage states the AlmaGo value and next action clearly", () => {
-  assert.match(copy, /title1: "Vos études"/);
-  assert.match(copy, /title3: "étape par étape\."/);
-  assert.match(copy, /Comparez les programmes, préparez vos documents et suivez votre projet depuis un seul espace\./);
-  assert.match(copy, /primary: "Commencer mon projet"/);
-  assert.match(copy, /secondary: "Découvrir comment ça marche"/);
+test("French homepage keeps the approved clear hero and free orientation CTA", () => {
+  assert.match(native, /title1: "Vos études"/);
+  assert.match(native, /title3: "étape par étape\."/);
+  assert.match(native, /Comparez les programmes, préparez vos documents et suivez votre projet depuis un seul espace\./);
+  assert.match(native, /orientationPrimary: "Faire mon orientation gratuite"/);
 });
