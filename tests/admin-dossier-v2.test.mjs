@@ -19,7 +19,7 @@ test("admin dossier V2 is a single 360-degree read context", () => {
     "AdminCounselorBrief",
     "DocumentRow",
     "DataList",
-    "ActivityTimeline",
+    "AdminDossierHistory",
   ]) {
     assert.ok(dossierPage.includes(primitive));
   }
