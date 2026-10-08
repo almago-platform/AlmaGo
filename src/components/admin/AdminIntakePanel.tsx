@@ -174,6 +174,24 @@ export function AdminIntakePanel({
         </div>
       </section>
 
+      <nav aria-label="Étapes du parcours Campus" className="grid gap-2 rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-3 sm:grid-cols-3 lg:grid-cols-6">
+        {[
+          ["Orientation", "/admin/orientation"],
+          ["Offre", "/admin/intake"],
+          ["Paiement", "/admin/payments"],
+          ["Dossier", "/admin/documents"],
+          ["Candidatures", "/admin/applications"],
+          ["Visa", "/admin/accompagnement"],
+        ].map(([label, href], index) => (
+          <Link key={label} href={href} className="flex items-center gap-2 rounded-lg p-2 text-xs font-bold text-slate-700 hover:bg-[var(--surface-subtle)]">
+            <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full border border-[var(--brand-border)] bg-[var(--brand-soft)] text-[var(--brand-strong)]">{index + 1}</span>
+            {label}
+          </Link>
+        ))}
+      </nav>
+
+      <p className="text-xs leading-5 text-slate-600">Les étapes sont des liens de navigation : seule une preuve enregistrée peut confirmer une candidature, un paiement ou un visa.</p>
+
       {cases.map((item) => {
         const preBac = item.orientation.bacStatus === "preparing";
         const academicReady = ["passport", "baccalaureate", "transcripts"].every(
@@ -200,10 +218,16 @@ export function AdminIntakePanel({
           && offers.length > 0;
 
         return (
-          <article
-            key={item.studentId}
-            className="pc-panel p-5 sm:p-6"
-          >
+          <details key={item.studentId} open={item.status === "campus_review" || item.status === "student_question" || item.status === "paid_pending_validation"} className="group overflow-hidden rounded-[var(--radius-panel)] border border-[var(--border)] bg-white">
+            <summary className="grid cursor-pointer list-item gap-3 p-4 hover:bg-[var(--surface-subtle)] sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] sm:items-center sm:px-5">
+              <span className="min-w-0">
+                <span className="block truncate text-base font-bold text-slate-950">{item.name || "Étudiant"}</span>
+                <span className="mt-1 block truncate text-xs text-slate-600">{item.email || item.studentId}</span>
+              </span>
+              <span className="text-xs font-semibold text-slate-700">{labelForStatus(item.status)}</span>
+              <span className="text-xs font-bold text-[var(--brand-strong)]">Examiner →</span>
+            </summary>
+          <article className="border-t border-[var(--border)] p-5 sm:p-6">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
                 <p className="text-[0.68rem] font-bold uppercase tracking-[0.15em] text-[var(--brand)]">
