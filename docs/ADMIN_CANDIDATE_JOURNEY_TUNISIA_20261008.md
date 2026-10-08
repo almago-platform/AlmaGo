@@ -88,7 +88,7 @@ Le nouveau point d'entrée /admin/accompagnement propose une **première lecture
 - Générer une checklist *persistante* liée à la bonne mission, au cycle et aux justificatifs précis du candidat.
 - Reconstituer la progression des **visiteurs anonymes** dépourvus de prospect identifiable ou assurer un suivi sans consentement.
 - Automatiser des soumissions sur sites externes, conserver des secrets d'accès consulaires ou garantir une réponse d'université/ambassade.
-- Résoudre le décalage des 9 routes de procédure existantes : l'activation payante reste à corriger pour 4 parcours.
+- Quatre modèles supplémentaires existent dans les 9 modèles de procédure, mais les **5 routes sélectionnables** dans l'interface `src/lib/campus-intake.ts` sont bien les 5 actuellement mappées par l'activation de paiement. Ne pas activer les quatre autres sans définir leurs règles commerciales et d'admission.
 
 ## Nouveau suivi visa avec preuves (version de travail, migration non déployée)
 
@@ -111,6 +111,8 @@ Un objet `visa_cases` et son journal `visa_case_events` ont désormais été ajo
 ### P0 recommandé après ce pilote
 
 Créer un `visa_case` **réel et audité** lié à un utilisateur, avec motif légal, pays de résidence, mission compétente, checklist source/version/date de vérification, statut neutre `not_started | collecting | ready_for_review | submitted | appointment | awaiting_decision | approved | refused`, justificatifs datés et contrôles explicites. Les transitions « submitted/approved/refused » exigeraient une preuve et l'autorisation du candidat. Tester RLS, accès admin MFA, séparation pièces privées, traçabilité et non-divulgation.
+
+À la suite d’un visa réellement documenté comme accordé, la page `/admin/visa/[studentId]` offre maintenant **six actions de départ/arrivée** : vérification du visa, logement et itinéraire, assurance et originaux, arrivée réelle, Anmeldung/inscription/séjour et clôture du relais. Elles sont créées uniquement par l’admin et enregistrées via l’API d’actions existante, avec historique et visibilité conforme aux droits de l’étudiant. Aucune action n'est créée automatiquement en passant un statut visa à « accordé ».
 
 Créer une **action humaine par blocage** dans l'actuel `student_checklist_items`, plutôt que dupliquer une application CRM : « justificatif de cours manquant », « traduction du diplôme », « assurance à vérifier », « renvoi demandé ». Chaque action a responsable, échéance **interne ou officielle explicitement sourcée**, preuve et état.
 
