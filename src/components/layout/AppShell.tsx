@@ -22,6 +22,7 @@ const iconClass = "h-5 w-5 shrink-0";
 
 const icons = {
   dashboard: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={iconClass} aria-hidden="true"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z" /></svg>,
+  messages: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={iconClass} aria-hidden="true"><path d="M4 5.5h16v11H9l-5 4v-15Z" /><path d="M8 10h8M8 13h5" /></svg>,
   profile: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={iconClass} aria-hidden="true"><circle cx="12" cy="8" r="4" /><path d="M4.5 20c.8-4 3.2-6 7.5-6s6.7 2 7.5 6" /></svg>,
   documents: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={iconClass} aria-hidden="true"><path d="M6 3h8l4 4v14H6z" /><path d="M14 3v5h5M9 13h6M9 17h6" /></svg>,
   orientation: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={iconClass} aria-hidden="true"><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z" /><path d="m15.5 8.5-2.2 4.8-4.8 2.2 2.2-4.8 4.8-2.2Z" /></svg>,
@@ -91,18 +92,34 @@ export function AppShell({
   const pathname = usePathname();
   const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { copy, direction } = useLocale();
+  const { copy, direction, locale } = useLocale();
   const shell = copy.shell;
   const shellHomeAria = role === "student" ? copy.common.homeAria : "Accueil AlmaGo";
-  const localizedStudentItems = studentItems.map((item, index) => ({
+  const localizedStudentBaseItems = studentItems.map((item, index) => ({
     ...item,
     label: shell.items[index][0],
     helper: shell.items[index][1],
   }));
+  const messageNavCopy = {
+    fr: ["Messages", "Écrire à Campus Allemagne"],
+    ar: ["الرسائل", "التواصل مع Campus Allemagne"],
+    en: ["Messages", "Contact Campus Allemagne"],
+    de: ["Nachrichten", "Campus Allemagne kontaktieren"],
+  } as const;
+  const localizedStudentItems: NavItem[] = [
+    ...localizedStudentBaseItems,
+    {
+      label: messageNavCopy[locale][0],
+      href: "/student/messages",
+      icon: icons.messages,
+      helper: messageNavCopy[locale][1],
+    },
+  ];
   const studentGroups = studentGroupIndexes.map((indexes, groupIndex) => ({
     label: shell.groups[groupIndex],
     items: indexes.map((index) => localizedStudentItems[index]),
   }));
+  studentGroups[0]?.items.push(localizedStudentItems[11]);
   const currentAdminItems = adminItems;
   const adminGroups = [
     {

@@ -313,7 +313,7 @@ export default async function AdminStudentDossierPage({
       .limit(50),
     supabase
       .from("student_dossier_messages")
-      .select("id,sender_role,body,student_read_at,admin_read_at,created_at")
+      .select("id,sender_role,body,student_read_at,admin_read_at,created_at,attachment_name,attachment_mime_type,attachment_size_bytes")
       .eq("student_id", studentId)
       .order("created_at", { ascending: true })
       .limit(200),
@@ -960,8 +960,11 @@ export default async function AdminStudentDossierPage({
           messages={dossierMessages}
           endpoint={"/api/admin/dossiers/" + studentId + "/messages"}
           viewerRole="admin"
-          title="Messages avec l’étudiant"
-          description="Ce fil est visible par l’étudiant. Utilisez le Journal interne pour les informations réservées à l’équipe."
+          title={personSegment === "candidate" || personSegment === "prospect"
+            ? "Messages avec le candidat"
+            : "Messages avec l’étudiant"}
+          description="Ce fil est visible par la personne dans son espace. Les pièces jointes restent dans la conversation et ne remplacent pas automatiquement les documents officiels du dossier."
+          participantLabel={personSegment === "candidate" || personSegment === "prospect" ? "Candidat" : "Étudiant"}
         />
       </div>
 

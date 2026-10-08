@@ -63,7 +63,7 @@ test("Admin V10 dossier 360 separates student-visible messages from internal not
   assert.match(dossier, /from\("student_dossier_messages"\)/);
   assert.match(dossier, /#messages/);
   assert.match(dossier, /Messages avec l’étudiant/);
-  assert.match(thread, /Message visible par l’étudiant/);
+  assert.match(thread, /Message visible par le candidat ou l’étudiant/);
   assert.match(thread, /Utilisez le Journal interne/);
 });
 

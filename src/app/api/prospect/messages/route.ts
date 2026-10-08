@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { getAdminUser } from "@/lib/auth/access";
 import {
   hasAllowedMessageAttachmentSignature,
   isSafeMessageAttachment,
@@ -8,33 +7,19 @@ import {
   messageAttachmentStoragePath,
   parseDossierMessageRequest,
 } from "@/lib/dossier-message-attachments";
+import { getPhase2StudentAccess } from "@/lib/phase2/access";
 
-const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+function prospectMessagingAllowed(access: Awaited<ReturnType<typeof getPhase2StudentAccess>>) {
+  return access.isStudent && access.phase2Enabled && !access.canUseClientFeatures;
+}
 
-export async function POST(
-  request: Request,
-  { params }: { params: Promise<{ studentId: string }> },
-) {
-  const { supabase, user, isAdmin } = await getAdminUser();
+export async function POST(request: Request) {
+  const access = await getPhase2StudentAccess();
+  const { supabase, user } = access;
+
   if (!user) return NextResponse.json({ error: "Non authentifié." }, { status: 401 });
-  if (!isAdmin) return NextResponse.json({ error: "Accès non autorisé." }, { status: 403 });
-
-  const { studentId } = await params;
-  if (!UUID_RE.test(studentId)) {
-    return NextResponse.json({ error: "Dossier invalide." }, { status: 400 });
-  }
-
-  const { data: profile, error: profileError } = await supabase
-    .from("profiles")
-    .select("id")
-    .eq("id", studentId)
-    .maybeSingle();
-
-  if (profileError) {
-    return NextResponse.json({ error: "Impossible de vérifier le dossier." }, { status: 500 });
-  }
-  if (!profile) {
-    return NextResponse.json({ error: "Candidat ou étudiant introuvable." }, { status: 404 });
+  if (!prospectMessagingAllowed(access)) {
+    return NextResponse.json({ error: "Accès non autorisé." }, { status: 403 });
   }
 
   const { message, file } = await parseDossierMessageRequest(request);
@@ -59,7 +44,7 @@ export async function POST(
 
   const id = crypto.randomUUID();
   const attachmentStoragePath = file
-    ? messageAttachmentStoragePath(studentId, id, file.name)
+    ? messageAttachmentStoragePath(user.id, id, file.name)
     : null;
 
   if (file && attachmentStoragePath) {
@@ -82,9 +67,9 @@ export async function POST(
     .from("student_dossier_messages")
     .insert({
       id,
-      student_id: studentId,
+      student_id: user.id,
       sender_id: user.id,
-      sender_role: "admin",
+      sender_role: "student",
       body: message,
       attachment_storage_path: attachmentStoragePath,
       attachment_name: file?.name || null,
@@ -99,7 +84,7 @@ export async function POST(
       await supabase.storage.from(messageAttachmentBucket).remove([attachmentStoragePath]);
     }
     return NextResponse.json(
-      { error: "Impossible d’envoyer le message dans l’espace de la personne." },
+      { error: "Impossible d’envoyer votre message." },
       { status: 500 },
     );
   }
@@ -111,17 +96,13 @@ export async function POST(
   });
 }
 
-export async function PATCH(
-  request: Request,
-  { params }: { params: Promise<{ studentId: string }> },
-) {
-  const { supabase, user, isAdmin } = await getAdminUser();
-  if (!user) return NextResponse.json({ error: "Non authentifié." }, { status: 401 });
-  if (!isAdmin) return NextResponse.json({ error: "Accès non autorisé." }, { status: 403 });
+export async function PATCH(request: Request) {
+  const access = await getPhase2StudentAccess();
+  const { supabase, user } = access;
 
-  const { studentId } = await params;
-  if (!UUID_RE.test(studentId)) {
-    return NextResponse.json({ error: "Dossier invalide." }, { status: 400 });
+  if (!user) return NextResponse.json({ error: "Non authentifié." }, { status: 401 });
+  if (!prospectMessagingAllowed(access)) {
+    return NextResponse.json({ error: "Accès non autorisé." }, { status: 403 });
   }
 
   const body = await request.json().catch(() => null) as { operation?: unknown } | null;
@@ -132,15 +113,15 @@ export async function PATCH(
   const readAt = new Date().toISOString();
   const { data, error } = await supabase
     .from("student_dossier_messages")
-    .update({ admin_read_at: readAt })
-    .eq("student_id", studentId)
-    .eq("sender_role", "student")
-    .is("admin_read_at", null)
+    .update({ student_read_at: readAt })
+    .eq("student_id", user.id)
+    .eq("sender_role", "admin")
+    .is("student_read_at", null)
     .select("id");
 
   if (error) {
     return NextResponse.json(
-      { error: "Impossible de marquer les réponses comme lues." },
+      { error: "Impossible de mettre à jour vos messages." },
       { status: 500 },
     );
   }

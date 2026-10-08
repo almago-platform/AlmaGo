@@ -11,26 +11,26 @@ const copy = {
   fr: {
     eyebrow: "Communication dossier",
     title: "Messages avec Campus Allemagne",
-    description: "Retrouvez ici les messages visibles liés à votre dossier et répondez directement à votre conseiller.",
-    note: "Les décisions officielles des universités, ambassades et autorités restent communiquées par leurs propres canaux.",
+    description: "Retrouvez ici les messages visibles liés à votre dossier, répondez directement à votre conseiller et joignez un document ou une image si nécessaire.",
+    note: "Les pièces jointes envoyées ici restent des éléments de conversation et ne remplacent pas automatiquement les documents demandés dans « Mes documents ». Les décisions officielles restent communiquées par leurs propres canaux.",
   },
   ar: {
     eyebrow: "التواصل حول الملف",
     title: "الرسائل مع Campus Allemagne",
-    description: "ستجد هنا الرسائل المرتبطة بملفك ويمكنك الرد مباشرة على مستشارك.",
-    note: "تبقى القرارات الرسمية للجامعات والسفارات والسلطات عبر قنواتها الرسمية الخاصة.",
+    description: "ستجد هنا الرسائل المرتبطة بملفك ويمكنك الرد مباشرة على مستشارك وإرفاق وثيقة أو صورة عند الحاجة.",
+    note: "المرفقات المرسلة هنا تبقى ضمن المحادثة ولا تُعتبر تلقائيًا بديلاً عن الوثائق المطلوبة في قسم «مستنداتي». وتبقى القرارات الرسمية عبر قنوات الجهات المختصة.",
   },
   en: {
     eyebrow: "Dossier communication",
     title: "Messages with Campus Allemagne",
-    description: "See the messages linked to your dossier and reply directly to your adviser.",
-    note: "Official decisions from universities, embassies and authorities remain communicated through their own official channels.",
+    description: "See the messages linked to your dossier, reply directly to your adviser and attach a document or image when needed.",
+    note: "Attachments sent here remain conversation items and do not automatically replace documents requested in “My documents”. Official decisions remain on the competent organisations’ own channels.",
   },
   de: {
     eyebrow: "Dossier-Kommunikation",
     title: "Nachrichten mit Campus Allemagne",
-    description: "Hier finden Sie Nachrichten zu Ihrem Dossier und können Ihrem Berater direkt antworten.",
-    note: "Offizielle Entscheidungen von Hochschulen, Botschaften und Behörden werden weiterhin über deren eigene offizielle Kanäle mitgeteilt.",
+    description: "Hier finden Sie Nachrichten zu Ihrem Dossier, können Ihrem Berater direkt antworten und bei Bedarf ein Dokument oder Bild anhängen.",
+    note: "Anhänge in diesem Chat bleiben Kommunikationsinhalte und ersetzen nicht automatisch angeforderte Unterlagen unter „Meine Dokumente“. Offizielle Entscheidungen bleiben auf den Kanälen der zuständigen Stellen.",
   },
 } as const;
 
@@ -44,7 +44,7 @@ export default async function StudentMessagesPage() {
 
   const { data, error } = await supabase
     .from("student_dossier_messages")
-    .select("id,sender_role,body,student_read_at,admin_read_at,created_at")
+    .select("id,sender_role,body,student_read_at,admin_read_at,created_at,attachment_name,attachment_mime_type,attachment_size_bytes")
     .eq("student_id", user.id)
     .order("created_at", { ascending: true })
     .limit(200);
