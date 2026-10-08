@@ -170,6 +170,7 @@ export type CaseOperationalEvidence = {
   currentProcedures: number;
   pendingDocuments: number;
   unreadStudentMessages: number;
+  officialDeadlineRisk?: "overdue" | "within_7" | null;
 };
 
 export function firstKnownMilestone(e: CaseOperationalEvidence): CandidateJourneyPhase {
@@ -182,6 +183,8 @@ export function firstKnownMilestone(e: CaseOperationalEvidence): CandidateJourne
 }
 
 export function recommendedOperatorAction(e: CaseOperationalEvidence): string {
+  if (e.officialDeadlineRisk === "overdue") return "Escalader une deadline universitaire officielle vérifiée dépassée";
+  if (e.officialDeadlineRisk === "within_7") return "Sécuriser le dépôt avant la deadline universitaire officielle vérifiée";
   if (e.unreadStudentMessages > 0) return "Répondre aux messages reçus";
   if (e.pendingDocuments > 0) return "Vérifier les documents reçus";
   if (e.currentProcedures > 0 && e.applications === 0) return "Vérifier la procédure et préparer la première candidature";
