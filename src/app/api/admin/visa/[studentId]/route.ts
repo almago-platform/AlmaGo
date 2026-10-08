@@ -86,7 +86,7 @@ export async function POST(
   if (!body) return bad("Données invalides.");
 
   const validated = visaFields(body);
-  if ("error" in validated) return bad(validated.error);
+  if ("error" in validated) return bad(validated.error ?? "Données de visa invalides.");
   const { data: person, error: profileError } = await supabase
     .from("profiles").select("id").eq("id", studentId).maybeSingle();
   if (profileError) return bad("Impossible de vérifier l’existence du candidat.", 500);
@@ -123,7 +123,7 @@ export async function PATCH(
     || typeof body.version !== "number" || !Number.isSafeInteger(body.version) || body.version < 1) return bad("Statut ou version invalide.");
 
   const validated = visaFields(body);
-  if ("error" in validated) return bad(validated.error);
+  if ("error" in validated) return bad(validated.error ?? "Données de visa invalides.");
   const { data: current, error: loadError } = await supabase
     .from("visa_cases")
     .select("student_id,status,version,evidence_document_id,track,residence_country,mission")
