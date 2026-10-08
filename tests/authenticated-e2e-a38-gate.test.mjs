@@ -69,3 +69,29 @@ test("A38 cannot be reopened during authenticated Render evidence", () => {
   assert.match(finalGate, /\[ "\$state" != "closed" \]/);
   assert.match(finalGate, /discard this run/);
 });
+
+
+test("human admin AAL2 evidence is exact-SHA and ordered inside the Render gate", () => {
+  const revalidateMain = authenticatedWorkflow.indexOf(
+    "- name: Revalidate exact main and Render after authenticated evidence",
+  );
+  const adminEvidence = authenticatedWorkflow.indexOf(
+    "- name: Require exact-SHA human admin AAL2 evidence",
+  );
+  const revalidateA38 = authenticatedWorkflow.indexOf(
+    "- name: Revalidate A38 human gate after authenticated evidence",
+  );
+
+  assert.ok(revalidateMain !== -1);
+  assert.ok(adminEvidence > revalidateMain);
+  assert.ok(revalidateA38 > adminEvidence);
+
+  const gate = authenticatedWorkflow.slice(adminEvidence, revalidateA38);
+  assert.match(gate, /if: env\.ALMAGO_E2E_TARGET == 'render'/);
+  assert.match(gate, /issues\/84\/comments\?per_page=100/);
+  assert.match(gate, /almago-a43-admin-human-approved:sha=\$GITHUB_SHA/);
+  assert.match(gate, /author_association/);
+  assert.match(gate, /OWNER/);
+  assert.match(gate, /MEMBER/);
+  assert.match(gate, /COLLABORATOR/);
+});
