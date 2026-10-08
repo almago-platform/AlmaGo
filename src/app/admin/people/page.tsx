@@ -818,8 +818,8 @@ export default async function AdminPeoplePage({
     <main className="mx-auto w-full max-w-[92rem] px-4 py-5 sm:px-6 sm:py-6 xl:px-8">
       <AdminPageHeader
         section="Personnes"
-        title="Prospects, candidats et étudiants"
-        description="Une seule liste pour retrouver une personne, comprendre son étape actuelle et ouvrir son dossier 360°."
+        title="Personnes"
+        description="Retrouvez une personne et ouvrez uniquement les informations dont vous avez besoin."
       />
 
       <AdminWorkspaceSummary
@@ -867,8 +867,8 @@ export default async function AdminPeoplePage({
             </div>
           </div>
 
-          <div>
-            <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Travail</p>
+          <details className="min-w-0" open={work !== "all" ? true : undefined}>
+            <summary className="cursor-pointer text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Affiner par travail ou échéance</summary>
             <div className="mt-3 flex flex-wrap gap-2">
               {(Object.keys(workLabels) as WorkView[]).map((item) => (
                 <Link
@@ -887,7 +887,7 @@ export default async function AdminPeoplePage({
                 </Link>
               ))}
             </div>
-          </div>
+          </details>
         </div>
 
         <form method="get" className={`grid gap-3 border-b border-[var(--border)] p-4 sm:p-5 ${soloAdmin ? "lg:grid-cols-[minmax(0,1fr)_auto]" : "lg:grid-cols-[minmax(0,1fr)_16rem_auto]"}`}>
@@ -926,7 +926,7 @@ export default async function AdminPeoplePage({
         </form>
 
         <div className="border-b border-[var(--border)] bg-[var(--surface-subtle)] px-4 py-3 text-xs text-slate-600 sm:px-5">
-          {filtered.length} personne{filtered.length > 1 ? "s" : ""} affichée{filtered.length > 1 ? "s" : ""}
+          Sélectionnez une ligne pour voir les détails et les liens vers le Dossier 360°. · {filtered.length} personne{filtered.length > 1 ? "s" : ""} affichée{filtered.length > 1 ? "s" : ""}
           {" · "}
           {attentionCount} dossier{attentionCount > 1 ? "s" : ""} à surveiller
           {" · "}
@@ -945,10 +945,19 @@ export default async function AdminPeoplePage({
                 && (!lastContactDate || lastContactDate < staleContactCutoff),
               );
               return (
-                <article
-                  key={person.key}
-                  className="grid gap-4 px-4 py-5 transition-colors hover:bg-[var(--surface-subtle)] sm:px-5 2xl:grid-cols-[minmax(13rem,1.15fr)_10rem_9rem_9rem_minmax(14rem,1fr)_9rem_auto] 2xl:items-center"
-                >
+                <details key={person.key} className="group border-l-[3px] border-l-transparent open:border-l-[var(--brand)] open:bg-[var(--surface-subtle)]">
+                  <summary className="grid cursor-pointer list-item gap-2 px-4 py-4 transition-colors hover:bg-[var(--surface-subtle)] sm:grid-cols-[minmax(0,1.3fr)_8rem_minmax(0,1fr)_6.5rem] sm:items-center sm:px-5">
+                    <span className="min-w-0">
+                      <span className="block truncate text-sm font-bold text-slate-950">{person.name}</span>
+                      <span className="mt-1 block truncate text-xs text-slate-600"><bdi dir="auto">{person.email}</bdi></span>
+                    </span>
+                    <span><Badge variant={segmentBadgeVariant[person.segment]}>{adminPersonSegmentLabels[person.segment]}</Badge></span>
+                    <span className="min-w-0 text-xs text-slate-700 sm:truncate">{person.nextAction}</span>
+                    <span className={`text-xs font-bold ${overdue ? "text-red-700" : dueToday ? "text-amber-800" : "text-slate-600"}`}>
+                      {person.dueDate ? formatDate(person.dueDate) : person.hasUnverifiedDeadline ? "Date à vérifier" : "Voir le dossier"}
+                    </span>
+                  </summary>
+                <article className="grid gap-4 border-t border-[var(--border)] bg-white px-4 py-5 sm:px-5 2xl:grid-cols-[minmax(13rem,1.15fr)_10rem_9rem_9rem_minmax(14rem,1fr)_9rem_auto] 2xl:items-center">
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
                       <Badge variant={segmentBadgeVariant[person.segment]}>
@@ -1074,6 +1083,7 @@ export default async function AdminPeoplePage({
                     )}
                   </div>
                 </article>
+                </details>
               );
             })}
           </div>
