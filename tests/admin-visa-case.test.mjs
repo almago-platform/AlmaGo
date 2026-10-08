@@ -11,6 +11,7 @@ const route = readFileSync("src/app/api/admin/visa/[studentId]/route.ts","utf8")
 const page = readFileSync("src/app/admin/visa/[studentId]/page.tsx","utf8");
 const client = readFileSync("src/components/admin/AdminVisaCasePanel.tsx","utf8");
 const queue = readFileSync("src/app/admin/accompagnement/page.tsx","utf8");
+const departure = readFileSync("src/components/admin/AdminDeparturePanel.tsx", "utf8");
 
 test("seven visa statuses with limited transitions", () => {
   assert.deepEqual(visaStatuses, [
@@ -93,4 +94,18 @@ test("candidate entry links to evidenced visa UI, never invents a visa", () => {
   assert.match(client,/Cela ne dépose aucune demande auprès de l’ambassade/);
   assert.match(client,/router\.refresh\(\)/);
   assert.doesNotMatch(client,/service_role|\.insert\(/);
+});
+
+test("departure is opt-in only after an evidenced approved case", () => {
+  assert.match(page,/visaApproved=\{visaCase\?\.status === "approved"\}/);
+  assert.match(page,/from\("student_checklist_items"\)/);
+  assert.match(departure,/if \(busy \|\| !visaApproved \|\| taskByTitle\.has\(task\.title\)\) return/);
+  assert.match(departure,/window\.confirm/);
+  assert.match(departure,/\/api\/admin\/dossiers/);
+  assert.match(departure,/method: "POST"/);
+  assert.match(departure,/owner: task\.owner/);
+  assert.match(departure,/Confirmer l’entrée en Allemagne/);
+  assert.match(departure,/Anmeldung/);
+  assert.match(departure,/Clôture · Faire le point/);
+  assert.doesNotMatch(departure,/service_role|supabase\.from/);
 });
