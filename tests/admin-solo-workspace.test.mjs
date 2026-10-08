@@ -33,3 +33,9 @@ test("solo people workspace retains open unassigned cases and hides team-only fi
   assert.match(people, /soloAdmin \? "Mon portefeuille" : "Portefeuille équipe"/);
   assert.match(people, /\{!soloAdmin \? <label/);
 });
+
+test("the consolidated queue makes pending orientation reviews visible without publishing them", () => {
+  assert.match(overview, /from\("orientation_human_reviews"\).*\.eq\("review_status", "pending"\)/);
+  assert.match(overview, /title="Audits d’orientation en attente"/);
+  assert.match(overview, /aucune recommandation étudiant n’est publiée par cette revue/);
+});
