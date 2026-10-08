@@ -15,6 +15,11 @@ import {
   type CaseOperationalEvidence,
 } from "@/lib/admin/candidate-journey";
 import { createClient } from "@/lib/supabase/server";
+import {
+  applicationDateIsTrusted,
+  applicationOfficialDeadlineUrgency,
+  campusTodayDateKey,
+} from "@/lib/admin/application-risk";
 
 export const dynamic = "force-dynamic";
 
@@ -35,15 +40,17 @@ type CaseView = {
 };
 
 function caseOrder(item: CaseView) {
-  if (item.evidence.unreadStudentMessages > 0) return 0;
-  if (item.evidence.pendingDocuments > 0) return 1;
-  if (item.evidence.intakeStatus === "paid_pending_validation") return 2;
-  if (item.evidence.intakeStatus === "student_question") return 3;
-  if (item.evidence.applications > 0) return 4;
-  if (item.evidence.currentProcedures > 0) return 5;
-  if (item.evidence.intakeStatus) return 6;
-  if (item.evidence.orientationCount > 0) return 7;
-  return 8;
+  if (item.evidence.officialDeadlineRisk === "overdue") return 0;
+  if (item.evidence.officialDeadlineRisk === "within_7") return 1;
+  if (item.evidence.unreadStudentMessages > 0) return 2;
+  if (item.evidence.pendingDocuments > 0) return 3;
+  if (item.evidence.intakeStatus === "paid_pending_validation") return 4;
+  if (item.evidence.intakeStatus === "student_question") return 5;
+  if (item.evidence.applications > 0) return 6;
+  if (item.evidence.currentProcedures > 0) return 7;
+  if (item.evidence.intakeStatus) return 8;
+  if (item.evidence.orientationCount > 0) return 9;
+  return 10;
 }
 
 export default async function AdminCandidateJourneyPage({
@@ -72,7 +79,7 @@ export default async function AdminCandidateJourneyPage({
     supabase.from("customer_access").select("user_id,status").limit(1000),
     supabase.from("profiles").select("id,first_name,last_name,full_name").limit(1000),
     supabase.from("program_recommendations").select("student_id").eq("is_archived", false).limit(1000),
-    supabase.from("applications").select("student_id").limit(1000),
+    supabase.from("applications").select("student_id,status,deadline,deadline_kind,deadline_source_url,deadline_verified_at,deadline_cycle").limit(1000),
     supabase.from("student_procedures").select("student_id").eq("is_current", true).limit(1000),
     supabase.from("documents").select("student_id,status").in("status", ["pending", "reviewed"]).limit(3000),
     supabase.from("student_dossier_messages").select("student_id").eq("sender_role", "student").is("admin_read_at", null).limit(3000),
@@ -114,6 +121,21 @@ export default async function AdminCandidateJourneyPage({
   }
   const recommendationCount = countBy(recommendationsResult.data || []);
   const applicationCount = countBy(applicationsResult.data || []);
+  const today = campusTodayDateKey();
+  const officialRiskByStudent = new Map<string, "overdue" | "within_7">();
+  for (const application of applicationsResult.data || []) {
+    if (!applicationDateIsTrusted(application)) continue;
+    const urgency = applicationOfficialDeadlineUrgency(
+      { status: application.status, deadline: application.deadline, deadline_kind: application.deadline_kind, deadlineTrusted: true },
+      today,
+    );
+    if (!urgency || !["overdue", "d3", "d7"].includes(urgency.kind)) continue;
+    if (urgency.kind === "overdue") {
+      officialRiskByStudent.set(application.student_id, "overdue");
+    } else if (!officialRiskByStudent.has(application.student_id)) {
+      officialRiskByStudent.set(application.student_id, "within_7");
+    }
+  }
   const procedureCount = countBy(proceduresResult.data || []);
   const pendingDocumentCount = countBy(documentsResult.data || []);
   const unreadMessageCount = countBy(messagesResult.data || []);
@@ -145,6 +167,7 @@ export default async function AdminCandidateJourneyPage({
         currentProcedures: userId ? procedureCount.get(userId) || 0 : 0,
         pendingDocuments: userId ? pendingDocumentCount.get(userId) || 0 : 0,
         unreadStudentMessages: userId ? unreadMessageCount.get(userId) || 0 : 0,
+        officialDeadlineRisk: userId ? officialRiskByStudent.get(userId) || null : null,
       },
       updatedAt: intake?.updated_at || prospect.updated_at,
     });
@@ -168,6 +191,7 @@ export default async function AdminCandidateJourneyPage({
         currentProcedures: procedureCount.get(intake.student_id) || 0,
         pendingDocuments: pendingDocumentCount.get(intake.student_id) || 0,
         unreadStudentMessages: unreadMessageCount.get(intake.student_id) || 0,
+        officialDeadlineRisk: officialRiskByStudent.get(intake.student_id) || null,
       },
       updatedAt: intake.updated_at,
     });
@@ -177,7 +201,7 @@ export default async function AdminCandidateJourneyPage({
     .filter((item) => !search || [item.name, item.email, item.route || ""].some((part) => part.toLocaleLowerCase("fr").includes(search)))
     .sort((a, b) => caseOrder(a) - caseOrder(b) || b.updatedAt.localeCompare(a.updatedAt));
   const queueCount = candidates.filter((item) =>
-    item.evidence.unreadStudentMessages > 0 ||
+    Boolean(item.evidence.officialDeadlineRisk) || item.evidence.unreadStudentMessages > 0 ||
     item.evidence.pendingDocuments > 0 ||
     item.evidence.intakeStatus === "student_question" ||
     item.evidence.intakeStatus === "paid_pending_validation"
@@ -205,7 +229,7 @@ export default async function AdminCandidateJourneyPage({
         <p className="mt-2 text-sm text-slate-600">
           {candidates.length} prospect{candidates.length > 1 ? "s" : ""} ou candidat{candidates.length > 1 ? "s" : ""} repéré{candidates.length > 1 ? "s" : ""} ·
           {" "}{queueCount} avec réponse, document ou validation à traiter en priorité.
-          Les phases affichées sont des repères de navigation, pas des preuves d’admission ou de visa.
+          Les deadlines urgentes ne sont signalées qu’après validation de leur source et de leur cycle ; les phases ne prouvent ni admission ni visa.
         </p>
         {(prospectsResult.data || []).length >= 250 ? (
           <p className="mt-2 text-xs font-semibold text-amber-800">Affichage limité aux 250 derniers prospects : utilisez les files métier pour retrouver les enregistrements plus anciens.</p>
@@ -231,6 +255,7 @@ export default async function AdminCandidateJourneyPage({
                     <Badge variant={item.customerStatus === "client_completed" ? "neutral" : item.evidence.unreadStudentMessages || item.evidence.pendingDocuments ? "warning" : "info"}>
                       {item.customerStatus === "client_completed" ? "Accompagnement terminé" : item.customerStatus === "client_active" ? "Client actif" : item.userId ? "Compte lié" : "Prospect sans compte lié"}
                     </Badge>
+                    {item.evidence.officialDeadlineRisk ? <Badge variant="error">{item.evidence.officialDeadlineRisk === "overdue" ? "Deadline officielle dépassée" : "Deadline officielle sous 7 jours"}</Badge> : null}
                     {item.evidence.unreadStudentMessages ? <Badge variant="warning">{item.evidence.unreadStudentMessages} message(s) non lu(s)</Badge> : null}
                     {item.evidence.pendingDocuments ? <Badge variant="warning">{item.evidence.pendingDocuments} document(s) à revoir</Badge> : null}
                   </div>
