@@ -798,6 +798,23 @@ export default async function AdminStudentDossierPage({
       programName: firstProgram(application)?.name || null,
       application_events: application.application_events,
     })),
+    legacyFallback: {
+      orientation: orientation?.created_at ? {
+        id: orientation.id,
+        createdAt: orientation.created_at,
+        detail: projectFacts.length ? projectFacts.join(" · ") : "Projet enregistré dans AlmaGo.",
+      } : null,
+      studentResponse: intake?.student_responded_at ? {
+        createdAt: intake.student_responded_at,
+        detail: intake.student_response_note || "Réponse enregistrée depuis l’espace Prospect.",
+      } : null,
+      purchase: purchase?.created_at ? {
+        id: purchase.id,
+        createdAt: purchase.created_at,
+        detail: (offerName(purchase.offer_snapshot) || "Offre Campus Allemagne")
+          + " · " + purchaseStatusLabel(purchase.status),
+      } : null,
+    },
   });
 
   const documentVersionById = new Map<string, number>();
