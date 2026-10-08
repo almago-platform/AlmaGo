@@ -31,11 +31,11 @@ Les valeurs d’événements doivent rester dans les catégories explicitement a
 Avant d’activer un fournisseur externe :
 
 1. valider la base légale et la notice de confidentialité ;
-2. conserver les secrets uniquement côté serveur dans **Render environment variables and GitHub Actions secrets** ;
+2. conserver les secrets uniquement côté serveur dans **VPS environment variables and GitHub Actions secrets** ;
 3. définir la rétention ;
 4. désactiver la capture automatique non revue (session replay, profils, payloads réseau, URLs complètes) ;
 5. tester avec des données synthétiques ;
 6. inspecter les payloads réellement envoyés ;
 7. surveiller les erreurs de livraison.
 
-Les logs Render/Supabase restent des logs opérationnels et ne remplacent pas ce contrat de télémétrie produit.
+Les logs Nginx/Next.js du VPS et Supabase restent des logs opérationnels et ne remplacent pas ce contrat de télémétrie produit.
