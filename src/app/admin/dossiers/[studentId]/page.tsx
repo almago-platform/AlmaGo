@@ -1167,6 +1167,7 @@ export default async function AdminStudentDossierPage({
               }
             />
 
+            {personSegment === "student" ? (
             <AdminAdmissionPdfForm
               studentId={studentId}
               applications={applications.map((application) => {
@@ -1180,6 +1181,7 @@ export default async function AdminStudentDossierPage({
                 };
               })}
             />
+            ) : null}
 
             {applications.length ? (
               <div className="mt-5 divide-y divide-[var(--border)] border-y border-[var(--border)]">
