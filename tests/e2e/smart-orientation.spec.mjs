@@ -440,6 +440,7 @@ test.describe("Smart Orientation Partner-Ready rehearsal", () => {
         .filter({ hasText: immediateReviewPrefix })
         .first();
       await expect(reviewCard).toBeVisible();
+      await reviewCard.getByText(/Afficher les preuves détaillées \(A–D\)/).click();
       await expect(reviewCard.getByText(/A — candidats découverts/)).toBeVisible();
       await expect(reviewCard.getByText(/B — faits vérifiés/)).toBeVisible();
       await expect(reviewCard.getByText(/C — shortlist déterministe/)).toBeVisible();
@@ -450,6 +451,7 @@ test.describe("Smart Orientation Partner-Ready rehearsal", () => {
       );
       await reviewCard.getByRole("button", { name: "Demander correction" }).click();
       await adminPage.waitForLoadState("networkidle");
+      await adminPage.goto("/admin/orientation?reviewStatus=all", { waitUntil: "networkidle" });
 
       const updatedReviewCard = adminPage
         .locator("article")
