@@ -478,7 +478,8 @@ export default async function AdminStudentDossierPage({
   const name =
     [profile?.first_name, profile?.last_name].filter(Boolean).join(" ")
     || profile?.full_name
-    || "Étudiant";
+    || prospect?.email
+    || "Personne sans nom enregistré";
   const email = prospect?.email || "Adresse non enregistrée";
   const personSegment = classifyAdminPerson(access?.status, Boolean(intake));
   const currentStage = adminDossierStageIndex(intake?.status, applications.length > 0);
@@ -880,8 +881,6 @@ export default async function AdminStudentDossierPage({
         eyebrow={`${adminPersonSegmentLabels[personSegment]} · dossier 360°`}
         title={name}
         description="Une seule vue pour comprendre la personne, ses orientations, ses pièces, ses candidatures, ses actions et la suite du parcours."
-        status={adminDossierStatusLabel(intake?.status)}
-        statusVariant={adminDossierStatusVariant(intake?.status)}
         facts={[
           { label: "Adresse e-mail", value: <bdi dir="auto">{email}</bdi> },
           { label: "Parcours proposé", value: campusRouteLabel(intake?.proposed_route_key) },
