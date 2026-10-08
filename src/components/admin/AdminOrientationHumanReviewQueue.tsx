@@ -429,17 +429,9 @@ export function AdminOrientationHumanReviewQueue({
                       {verificationProgrammes.length ? verificationProgrammes.map((item: any) => {
                         const verification = item.verification || {};
                         const candidate = verification.candidate || {};
-                        const selectable = verification.overallStatus !== "unknown";
                         return (
                           <div key={item.candidateKey} className="rounded-lg border border-[var(--border)] bg-white p-3">
-                            <label className="flex items-start gap-3">
-                              <input
-                                type="checkbox"
-                                className="mt-1"
-                                checked={selected.includes(item.candidateKey)}
-                                disabled={!selectable || (selected.length >= 4 && !selected.includes(item.candidateKey))}
-                                onChange={() => toggleCandidate(review.id, item.candidateKey)}
-                              />
+                            <div className="flex flex-wrap items-start justify-between gap-2">
                               <span className="min-w-0">
                                 <span className="block text-sm font-bold">{candidate.programme || "Programme"}</span>
                                 <span className="block text-xs text-slate-600">
@@ -449,7 +441,8 @@ export function AdminOrientationHumanReviewQueue({
                                   <strong>{verificationStatusLabels[verification.overallStatus] || verification.overallStatus || "inconnu"}</strong>
                                 </span>
                               </span>
-                            </label>
+                              <Badge variant={selected.includes(item.candidateKey) ? "info" : "neutral"}>{selected.includes(item.candidateKey) ? "Retenu dans la sélection" : "Non retenu"}</Badge>
+                            </div>
                             {Array.isArray(verification.facts) ? (
                               <dl className="mt-3 grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
                                 {verification.facts.filter((fact: any) => fact.status !== "unknown").map((fact: any) => (
