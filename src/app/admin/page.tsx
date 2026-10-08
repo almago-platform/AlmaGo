@@ -444,6 +444,30 @@ export default async function AdminEntry() {
         }
       />
 
+      <section aria-labelledby="person-lookup-title" className="mb-5 rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-4 shadow-sm sm:p-5">
+        <div className="flex flex-wrap items-end justify-between gap-2">
+          <div>
+            <h2 id="person-lookup-title" className="text-lg font-semibold text-slate-950">Retrouver un étudiant ou un prospect</h2>
+            <p className="mt-1 text-sm text-slate-600">Recherchez d’abord la personne ; son Dossier 360° rassemble l’historique et les actions.</p>
+          </div>
+          <Link href="/admin/people" className="text-sm font-semibold text-[var(--brand-strong)] hover:underline">Tous les dossiers →</Link>
+        </div>
+        <form method="get" action="/admin/people" role="search" className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center">
+          <label htmlFor="admin-global-person-search" className="sr-only">Nom ou adresse e-mail de la personne</label>
+          <input
+            id="admin-global-person-search"
+            name="q"
+            type="search"
+            autoComplete="off"
+            className="field min-h-11 min-w-0 flex-1 bg-white"
+            placeholder="Nom ou adresse e-mail du candidat"
+          />
+          <button type="submit" className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-[var(--radius-control)] bg-[var(--brand)] px-6 text-sm font-bold text-white hover:bg-[var(--brand-strong)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brand)]">
+            Rechercher
+          </button>
+        </form>
+      </section>
+
       <section aria-label="Priorité opérationnelle" className="mb-5 grid gap-3 lg:grid-cols-[minmax(0,1.5fr)_minmax(17rem,0.7fr)]">
         <Card className="pc-card relative overflow-hidden">
           <div aria-hidden="true" className="absolute inset-y-0 left-0 w-1 bg-[var(--brand)]" />
