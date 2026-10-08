@@ -37,6 +37,6 @@ Il vérifie :
 
 **AlmaGo Release Gate** s’exécute uniquement depuis `main`.
 
-Il rejoue tests, typecheck, lint et build puis vérifie que le runtime Render sert exactement le SHA courant avant les smoke tests publics.
+Il rejoue tests, typecheck, lint et build puis vérifie que le runtime du VPS sert exactement le SHA courant avant les smoke tests publics.
 
 Aucun workflow de qualité ne doit modifier les données métier de production, affaiblir RLS/Auth ou contourner une build défaillante.
