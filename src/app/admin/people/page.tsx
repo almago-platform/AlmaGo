@@ -1040,14 +1040,30 @@ export default async function AdminPeoplePage({
                     )}
                   </div>
 
-                  <div className="flex 2xl:justify-end">
+                  <div className="flex min-w-0 flex-col gap-2 2xl:items-end">
                     {person.userId ? (
-                      <Link
-                        href={`/admin/dossiers/${person.userId}`}
-                        className={buttonClassName("secondary", "w-full whitespace-nowrap px-4 2xl:w-auto")}
-                      >
-                        Dossier 360°
-                      </Link>
+                      <>
+                        <Link
+                          href={`/admin/dossiers/${person.userId}`}
+                          className={buttonClassName("secondary", "w-full whitespace-nowrap px-4 2xl:w-auto")}
+                        >
+                          Dossier 360°
+                        </Link>
+                        <nav aria-label={`Accès rapides au dossier de ${person.name}`} className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs font-semibold">
+                          <Link href={`/admin/dossiers/${person.userId}#messages`} className="text-[var(--brand-strong)] hover:underline">
+                            Messages{person.unreadMessages ? ` (${person.unreadMessages})` : ""}
+                          </Link>
+                          <Link href={`/admin/dossiers/${person.userId}#orientation`} className="text-[var(--brand-strong)] hover:underline">
+                            Orientation
+                          </Link>
+                          <Link href={`/admin/dossiers/${person.userId}#actions`} className="text-[var(--brand-strong)] hover:underline">
+                            Actions
+                          </Link>
+                          <Link href={`/admin/dossiers/${person.userId}#history`} className="text-[var(--brand-strong)] hover:underline">
+                            Historique
+                          </Link>
+                        </nav>
+                      </>
                     ) : (
                       <Link
                         href="/admin/prospects"
