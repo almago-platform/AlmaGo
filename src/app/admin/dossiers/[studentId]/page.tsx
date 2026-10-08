@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ActivityTimeline, type ActivityTimelineItem } from "@/components/product/ActivityTimeline";
+import { AdminDossierHistory } from "@/components/admin/AdminDossierHistory";
+import { buildUnifiedDossierHistory } from "@/lib/admin/dossier-history";
 import { DossierHeader } from "@/components/product/DossierHeader";
 import { DocumentRow } from "@/components/product/DocumentRow";
 import { JourneyRail, type JourneyRailStep } from "@/components/product/JourneyRail";
@@ -786,65 +787,17 @@ export default async function AdminStudentDossierPage({
               : undefined,
   }));
 
-  const timeline: ActivityTimelineItem[] = historyRows.map((item) => ({
-    title:
-      item.event_type.includes("document") ? "Documents"
-        : item.event_type.includes("payment") || item.event_type.includes("purchase") ? "Paiement"
-          : item.event_type.includes("application") ? "Candidature"
-            : item.event_type.includes("orientation") || item.event_type.includes("route") ? "Orientation / parcours"
-              : item.event_type.includes("action") ? "Action de suivi"
-                : "Dossier mis à jour",
-    description: item.message,
-    timestamp: formatDate(item.created_at),
-    tone:
-      item.event_type.includes("payment") ? "info"
-        : item.event_type.includes("document") ? "warning"
-          : item.event_type.includes("orientation") || item.event_type.includes("route") ? "brand"
-            : "neutral",
-  }));
-
-  if (!historyRows.length && orientation?.created_at) {
-    timeline.push({
-      title: "Orientation enregistrée",
-      description: projectFacts.length ? projectFacts.join(" · ") : "Projet enregistré dans AlmaGo.",
-      timestamp: formatDate(orientation.created_at),
-      tone: "brand",
-    });
-  }
-  if (!historyRows.length && intake?.student_responded_at) {
-    timeline.push({
-      title: "Réponse de l’étudiant",
-      description: intake.student_response_note || "Une réponse a été envoyée depuis l’espace Prospect.",
-      timestamp: formatDate(intake.student_responded_at),
-      tone: "warning",
-    });
-  }
-  if (!historyRows.length && purchase?.created_at) {
-    timeline.push({
-      title: "Achat créé",
-      description: `${offerName(purchase.offer_snapshot) || "Offre Campus Allemagne"} · ${purchaseStatusLabel(purchase.status)}`,
-      timestamp: formatDate(purchase.created_at),
-      tone: purchase.status === "client_active" ? "success" : "info",
-    });
-  }
-
-  if (!historyRows.length) for (const application of applications) {
-    for (const event of application.application_events || []) {
-      timeline.push({
-        title: event.event_type === "application_status_changed"
-          ? "Statut candidature mis à jour"
-          : "Événement candidature",
-        description: event.message || firstProgram(application)?.name || "Candidature mise à jour.",
-        timestamp: formatDate(event.created_at),
-        tone: event.visible_to_student ? "info" : "neutral",
-      });
-    }
-  }
-
-  timeline.sort((left, right) => {
-    const leftDate = typeof left.timestamp === "string" ? Date.parse(left.timestamp) : 0;
-    const rightDate = typeof right.timestamp === "string" ? Date.parse(right.timestamp) : 0;
-    return rightDate - leftDate;
+  const unifiedHistory = buildUnifiedDossierHistory({
+    history: historyRows,
+    messages: dossierMessages,
+    notes: caseNotes,
+    documents,
+    applications: applications.map((application) => ({
+      id: application.id,
+      created_at: application.created_at,
+      programName: firstProgram(application)?.name || null,
+      application_events: application.application_events,
+    })),
   });
 
   const documentVersionById = new Map<string, number>();
@@ -1272,14 +1225,11 @@ export default async function AdminStudentDossierPage({
           <section id="history" className="pc-card scroll-mt-52 lg:scroll-mt-40 p-5">
             <PremiumSectionHeader
               eyebrow="Historique"
-              title="Activité récente"
-              description="Événements utiles à la continuité du suivi."
+              title="Historique central du dossier"
+              description="Échanges, notes, documents et candidatures réellement enregistrés, avec leurs sources."
             />
             <div className="mt-5">
-              <ActivityTimeline
-                items={timeline.slice(0, 12)}
-                empty="Aucune activité récente n’est disponible pour ce dossier."
-              />
+              <AdminDossierHistory events={unifiedHistory} />
             </div>
           </section>
 
