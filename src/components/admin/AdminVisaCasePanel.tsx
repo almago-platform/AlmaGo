@@ -51,6 +51,7 @@ export function AdminVisaCasePanel({
   const [notice, setNotice] = useState<{ type: "success" | "error"; content: string } | null>(null);
 
   const trackData = TUNISIA_GERMANY_VISA_TRACKS.find((item) => item.key === track);
+  const lockedConsularRoute = Boolean(visaCase && !["collecting", "ready_for_review"].includes(visaCase.status) && status !== "collecting");
   const statuses = visaCase
     ? [visaCase.status, ...visaTransitions[visaCase.status]]
     : (["collecting"] as VisaStatus[]);
@@ -105,20 +106,21 @@ export function AdminVisaCasePanel({
         </Badge>
       </div>
 
+      {lockedConsularRoute ? <p className="mt-3 text-xs font-semibold text-amber-900">Motif, résidence et mission consulaire verrouillés après dépôt. Une correction du parcours exige un nouveau cycle autorisé.</p> : null}
       <form onSubmit={save} className="mt-5 grid gap-4 md:grid-cols-2">
         <label className="text-sm font-semibold text-slate-700">
           Motif exact
-          <select className="field mt-2 bg-white" value={track} onChange={(e) => setTrack(e.target.value)} required>
+          <select className="field mt-2 bg-white" value={track} onChange={(e) => setTrack(e.target.value)} disabled={lockedConsularRoute} required>
             {TUNISIA_GERMANY_VISA_TRACKS.map((item) => <option key={item.key} value={item.key}>{item.title}</option>)}
           </select>
         </label>
         <label className="text-sm font-semibold text-slate-700">
           Pays de résidence habituel
-          <input className="field mt-2 bg-white" value={residenceCountry} onChange={(e) => setResidenceCountry(e.target.value)} maxLength={100} required />
+          <input className="field mt-2 bg-white" value={residenceCountry} onChange={(e) => setResidenceCountry(e.target.value)} disabled={lockedConsularRoute} maxLength={100} required />
         </label>
         <label className="text-sm font-semibold text-slate-700">
           Représentation consulaire compétente
-          <input className="field mt-2 bg-white" value={mission} onChange={(e) => setMission(e.target.value)} maxLength={160} required />
+          <input className="field mt-2 bg-white" value={mission} onChange={(e) => setMission(e.target.value)} disabled={lockedConsularRoute} maxLength={160} required />
         </label>
         <label className="text-sm font-semibold text-slate-700">
           État documenté
