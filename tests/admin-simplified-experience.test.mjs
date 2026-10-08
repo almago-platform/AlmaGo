@@ -15,7 +15,7 @@ test("the daily nav exposes the essential workspaces and keeps all expert tools"
   for (const href of ["/admin/people", "/admin/traitement", "/admin/accompagnement", "/admin/prospects", "/admin/team", "/admin/documents", "/admin/payments", "/admin/applications", "/admin/universities"]) {
     assert.ok(nav.includes('href: "' + href + '"'), "Missing navigation " + href);
   }
-  assert.match(nav, /Tous les outils/);
+  assert.match(nav, /group\.label\} · \{group\.items\.length\}/);
   assert.match(nav, /label: "Personnes"/);
   assert.match(nav, /label: "Files de travail"/);
   assert.match(nav, /label: "Catalogue Allemagne"/);
