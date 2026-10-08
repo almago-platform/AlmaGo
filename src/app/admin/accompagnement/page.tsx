@@ -252,7 +252,7 @@ export default async function AdminCandidateJourneyPage({
           {filtered.length === 0 ? (
             <p className="py-4 text-sm text-slate-600">Aucun dossier correspondant dans la sélection chargée.</p>
           ) : filtered.map((item) => {
-            const phase = firstKnownMilestone(item.evidence);
+            const phase = firstKnownMilestone(item.evidence, item.visaStatus);
             const phaseLabel = CANDIDATE_JOURNEY.find((step) => step.id === phase)?.title || "Orientation";
             const href = item.userId ? `/admin/dossiers/${item.userId}` : "/admin/prospects";
             return (
@@ -270,7 +270,7 @@ export default async function AdminCandidateJourneyPage({
                   <h3 className="mt-2 break-words text-base font-semibold text-slate-950">{item.name}</h3>
                   {item.email ? <p className="break-words text-xs text-slate-500"><bdi dir="auto">{item.email}</bdi></p> : null}
                   <p className="mt-1 text-xs text-slate-500">Repère : {phaseLabel} · {item.evidence.orientationCount} orientation(s) · {item.evidence.recommendations} recommandation(s) · {item.evidence.applications} candidature(s)</p>
-                  <p className="mt-1 text-sm font-medium text-slate-700">À faire : {recommendedOperatorAction(item.evidence)}</p>
+                  <p className="mt-1 text-sm font-medium text-slate-700">À faire : {recommendedOperatorAction(item.evidence, item.visaStatus)}</p>
                   <p className="mt-1 text-xs text-amber-800">{visaResult.error ? "Visa : suivi non déployé ou indisponible." : item.visaStatus && isVisaStatus(item.visaStatus) ? "Visa : état interne historisé et soumis à preuve documentaire." : "Visa : aucune étape officiellement justifiée enregistrée."}</p>
                 </div>
                 <div className="flex shrink-0 flex-wrap items-center gap-2">
