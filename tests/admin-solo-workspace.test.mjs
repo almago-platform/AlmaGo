@@ -56,3 +56,11 @@ test("solo quick completion uses the existing audited admin action route", () =>
   assert.match(quick, /router\.refresh\(\)/);
   assert.doesNotMatch(quick, /createPrivilegedSupabaseClient|service_role|\.from\(/);
 });
+
+test("every linked student row exposes orientation, messaging, actions and recorded activity", () => {
+  assert.match(people, /aria-label=\{`Accès rapides au dossier de \$\{person\.name\}`\}/);
+  for (const anchor of ["#messages", "#orientation", "#actions", "#history"]) {
+    assert.ok(people.includes(`/admin/dossiers/\${person.userId}${anchor}`), `missing ${anchor} shortcut`);
+  }
+  assert.match(people, /person\.unreadMessages/);
+});
