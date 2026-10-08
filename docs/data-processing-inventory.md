@@ -201,7 +201,7 @@ Actuellement le code montre l’utilisation de :
 - Supabase PostgreSQL ;
 - Supabase Storage ;
 - Render pour l’hébergement/déploiement canonique actuel ;
-- une intégration Vercel reste visible/connectée au dépôt ; son rôle technique éventuel et tout traitement de données associé doivent être confirmés avant la notice finale.
+- une intégration GitHub/Vercel reste connectée pour des signaux de preview/commentaires ; le déploiement Vercel est désactivé et Vercel n’est pas le runtime canonique. Tout traitement résiduel lié à cette intégration doit être confirmé avant la notice finale.
 
 Localisation technique vérifiée le **2 octobre 2026** :
 - projet Supabase AlmaGo : région technique `eu-west-1` ;
@@ -278,7 +278,7 @@ Avant toute ouverture commerciale réelle, les conditions applicables, prix publ
 
 ## 14. Décisions encore nécessaires pour A38
 
-Déjà confirmés par le propriétaire et repris dans `docs/A38_OWNER_CONFIRMATION.md` :
+Déjà consignés dans les Issues #66 (A38) et #22 (OWNER ACTIONS) :
 - identité de l’exploitant prévu et forme actuelle ;
 - e-mail public de contact ;
 - statut pré-lancement / orientation gratuite ;
