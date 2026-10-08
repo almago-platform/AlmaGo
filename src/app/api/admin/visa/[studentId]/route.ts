@@ -48,7 +48,7 @@ function visaFields(body: JsonBody) {
       residence_country: residenceCountry,
       mission,
       official_source_url: source,
-      source_verified_at: sourceDay + "T12:00:00Z",
+      source_verified_at: sourceDay + "T00:00:00Z",
       note: note || null,
     },
   } as const;
@@ -120,7 +120,7 @@ export async function PATCH(
   if (!UUID_RE.test(studentId)) return bad("Dossier invalide.");
   const body = readBody(await request.json().catch(() => null));
   if (!body || !isVisaStatus(body.status)
-    || !Number.isSafeInteger(body.version) || Number(body.version) < 1) return bad("Statut ou version invalide.");
+    || typeof body.version !== "number" || !Number.isSafeInteger(body.version) || body.version < 1) return bad("Statut ou version invalide.");
 
   const validated = visaFields(body);
   if ("error" in validated) return bad(validated.error);
