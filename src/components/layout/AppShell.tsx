@@ -127,19 +127,34 @@ export function AppShell({
     {
       label: "Votre quotidien",
       items: currentAdminItems.filter((item) =>
-        ["/admin", "/admin/people", "/admin/traitement", "/admin/accompagnement", "/admin/prospects"].includes(item.href),
+        ["/admin", "/admin/traitement", "/admin/accompagnement"].includes(item.href),
       ),
       secondary: false,
     },
     {
-      label: "Tous les outils",
+      label: "Personnes",
       items: currentAdminItems.filter((item) =>
-        !["/admin", "/admin/people", "/admin/traitement", "/admin/accompagnement", "/admin/prospects"].includes(item.href),
+        ["/admin/people", "/admin/prospects"].includes(item.href),
+      ),
+      secondary: false,
+    },
+    {
+      label: "Files de travail",
+      items: currentAdminItems.filter((item) =>
+        ["/admin/inbox", "/admin/intake", "/admin/documents", "/admin/applications", "/admin/orientation", "/admin/payments"].includes(item.href),
       ),
       secondary: true,
     },
+    { label: "Commercial", items: currentAdminItems.filter((item) => item.href === "/admin/offers"), secondary: true },
+    {
+      label: "Catalogue Allemagne",
+      items: currentAdminItems.filter((item) =>
+        ["/admin/universities", "/admin/programs", "/admin/language-courses", "/admin/finance-insurance"].includes(item.href),
+      ),
+      secondary: true,
+    },
+    { label: "Équipe", items: currentAdminItems.filter((item) => item.href === "/admin/team"), secondary: true },
   ];
-  const advancedAdminActive = adminGroups[1].items.some((item) => isActive(pathname, item.href));
   const items = role === "admin" ? currentAdminItems : localizedStudentItems;
   const currentItem = items.find((item) => isActive(pathname, item.href)) || items[0];
   const studentName = displayName?.trim() || shell.studentNameFallback;
@@ -188,10 +203,10 @@ export function AppShell({
           {role === "admin" ? (
             <div className="space-y-4">
               {adminGroups.map((group) => (
-                <details key={group.label} open={group.secondary ? (advancedAdminActive ? true : undefined) : true} className="group">
+                <details key={group.label} open={group.secondary ? (group.items.some((item) => isActive(pathname, item.href)) ? true : undefined) : true} className="group">
                   {group.secondary ? (
                     <summary className="cursor-pointer list-item rounded-[var(--radius-control)] px-3 py-2 text-xs font-semibold text-[var(--foreground)] hover:bg-[var(--surface-subtle)]">
-                      Tous les outils · {group.items.length} modules
+                      {group.label} · {group.items.length}
                     </summary>
                   ) : (
                     <p className="mb-1.5 px-3 text-[9px] font-bold uppercase tracking-[0.16em] text-[var(--muted)]">{group.label}</p>
@@ -394,7 +409,7 @@ export function AppShell({
                   </div>
 
                   <nav className="grid gap-2 sm:grid-cols-2" aria-label="Navigation administration mobile">
-                    {[...adminGroups[0].items, ...adminGroups[1].items].map((item) => {
+                    {currentAdminItems.map((item) => {
                       const active = isActive(pathname, item.href);
                       return (
                         <Link
@@ -433,7 +448,7 @@ export function AppShell({
                 </p>
               </div>
               <div className="text-[var(--foreground-soft)]">
-                Espace administration
+                Espace équipe
               </div>
             </div>
           </>
