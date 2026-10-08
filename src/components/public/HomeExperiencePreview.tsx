@@ -91,7 +91,7 @@ export function HomeExperiencePreview({
                     <HomeIcon name={index === 0 ? "compass" : "folder"} />
                   </span>
                 </div>
-                <div className={s.v42FeatureGrid}>
+                <div className={s.v42FeatureGrid} data-tier={index === 0 ? "free" : "client"}>
                   {localItems.map(([title, detail], itemIndex) => (
                     <article className={s.v42Feature} key={title}>
                       <span className={s.v42FeatureIcon} aria-hidden="true">
