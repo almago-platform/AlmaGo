@@ -22,12 +22,12 @@ export async function DELETE(
   const { id } = await params;
   const { data: document } = await supabase
     .from("documents")
-    .select("id,storage_path,status,category")
+    .select("id,storage_path,status,category,uploaded_by")
     .eq("id", id)
     .eq("student_id", user.id)
     .maybeSingle();
 
-  if (!document || !allowedStarterCategories.has(document.category)) {
+  if (!document || document.uploaded_by !== user.id || !allowedStarterCategories.has(document.category)) {
     return NextResponse.json({ error: "Document introuvable." }, { status: 404 });
   }
 

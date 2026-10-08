@@ -7,8 +7,9 @@ export async function DELETE(_: Request, { params }: { params: Promise<{ id: str
   if (!user) return NextResponse.json({ error: "Non authentifié." }, { status: 401 });
   if (!isStudent) return NextResponse.json({ error: "Accès étudiant requis." }, { status: 403 });
   const { id } = await params;
-  const { data: document } = await supabase.from("documents").select("id,storage_path,status").eq("id", id).maybeSingle();
+  const { data: document } = await supabase.from("documents").select("id,storage_path,status,uploaded_by").eq("id", id).maybeSingle();
   if (!document) return NextResponse.json({ error: "Document introuvable." }, { status: 404 });
+  if (document.uploaded_by !== user.id) return NextResponse.json({ error: "Ce document a été transmis par Campus Allemagne et ne peut pas être supprimé ici." }, { status: 403 });
   if (!removableDocumentStatuses.includes(document.status as (typeof removableDocumentStatuses)[number])) return NextResponse.json({ error: "Ce document ne peut plus être supprimé." }, { status: 403 });
   const { error: storageError } = await supabase.storage.from("student-documents").remove([document.storage_path]);
   if (storageError) return NextResponse.json({ error: "Impossible de supprimer le fichier." }, { status: 500 });

@@ -28,6 +28,12 @@ export default async function StudentApplicationsPage() {
   }
 
   const applications = data || [];
+  const { data: admissionDocuments, error: admissionDocumentsError } = applications.length
+    ? await supabase
+        .from("academic_evidence")
+        .select("id,application_id,document_id,evidence_type,verification_status")
+        .in("application_id", applications.map((application) => application.id))
+    : { data: [], error: null };
   const activeCount = applications.filter((application) => isActiveApplication(application.status)).length;
   const submittedCount = applications.filter((application) =>
     Boolean(application.submitted_at) || isSubmittedApplicationStatus(application.status),
@@ -71,7 +77,7 @@ export default async function StudentApplicationsPage() {
         points={[...t.page.guidancePoints]}
       />
 
-      <StudentApplicationsPanel applications={applications} />
+      <StudentApplicationsPanel applications={applications} admissionDocuments={admissionDocuments || []} admissionDocumentsUnavailable={Boolean(admissionDocumentsError)} />
     </StudentPageFrame>
   );
 }

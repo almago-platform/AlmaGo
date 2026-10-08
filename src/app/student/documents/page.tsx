@@ -40,7 +40,7 @@ export default async function StudentDocumentsPage() {
   const [documentsResult, historyResult, evidenceResult, requirementsResult] = await Promise.all([
     supabase
       .from("documents")
-      .select("id,category,original_filename,size_bytes,status,admin_comment,created_at")
+      .select("id,category,original_filename,size_bytes,status,admin_comment,created_at,uploaded_by")
       .order("created_at", { ascending: false }),
     supabase
       .from("student_history")
@@ -114,6 +114,7 @@ export default async function StudentDocumentsPage() {
       />
 
       <DocumentsPanel
+        currentUserId={user.id}
         documents={documentsResult.data || []}
         history={historyResult.data || []}
         historyLoadError={Boolean(historyResult.error)}

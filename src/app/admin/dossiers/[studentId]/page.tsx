@@ -8,6 +8,7 @@ import { JourneyRail, type JourneyRailStep } from "@/components/product/JourneyR
 import { AdminCounselorBrief } from "@/components/admin/AdminCounselorBrief";
 import { AdminDossierNavigation } from "@/components/admin/AdminDossierNavigation";
 import { AdminDossierQuickHandoff } from "@/components/admin/AdminDossierQuickHandoff";
+import { AdminAdmissionPdfForm } from "@/components/admin/AdminAdmissionPdfForm";
 import { AdminDossierDisclosure } from "@/components/admin/AdminDossierDisclosure";
 import { AdminLoadError } from "@/components/admin/AdminLoadError";
 import { AdminDossierActionsPanel, type AdminDossierActionItem } from "@/components/admin/AdminDossierActionsPanel";
@@ -1165,6 +1166,22 @@ export default async function AdminStudentDossierPage({
                 ) : undefined
               }
             />
+
+            {personSegment === "student" ? (
+            <AdminAdmissionPdfForm
+              studentId={studentId}
+              applications={applications.map((application) => {
+                const program = firstProgram(application);
+                const university = program?.universities;
+                const universityValue = Array.isArray(university) ? university[0] ?? null : university;
+                return {
+                  id: application.id,
+                  label: `${universityValue?.name || "Université à confirmer"} · ${program?.name || "Programme"}`,
+                  institution: universityValue?.name || "",
+                };
+              })}
+            />
+            ) : null}
 
             {applications.length ? (
               <div className="mt-5 divide-y divide-[var(--border)] border-y border-[var(--border)]">
