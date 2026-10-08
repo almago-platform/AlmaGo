@@ -94,6 +94,16 @@ begin
       raise exception 'visa_case_immutable_identity_or_invalid_version';
     end if;
 
+    if old.status not in ('collecting','ready_for_review')
+      and new.status <> 'collecting'
+      and (
+        new.track is distinct from old.track
+        or new.residence_country is distinct from old.residence_country
+        or new.mission is distinct from old.mission
+      ) then
+      raise exception 'visa_case_consular_route_locked_after_submission';
+    end if;
+
     if new.status is distinct from old.status and not (
       (old.status = 'collecting' and new.status = 'ready_for_review')
       or (old.status = 'ready_for_review' and new.status in ('collecting','submitted'))
