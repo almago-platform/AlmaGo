@@ -4,12 +4,11 @@ import s from "./Homepage.module.css";
 
 type QuickCopy = ReturnType<typeof getNativeCopy>["home"]["quick"];
 
-const meta: Array<{ href: string; icon: HomeIconName }> = [
-  { href: "#programmes", icon: "book" },
-  { href: "#parcours", icon: "route" },
-  { href: "#documents", icon: "document" },
-  { href: "#depart", icon: "globe" },
-  { href: "#faq", icon: "question" },
+// A concise navigation choice; the full six-step route is shown below.
+const shortcuts: ReadonlyArray<{ index: number; href: string; icon: HomeIconName }> = [
+  { index: 1, href: "#parcours", icon: "route" },
+  { index: 0, href: "#programmes", icon: "book" },
+  { index: 4, href: "#faq", icon: "question" },
 ];
 
 export function HomeQuickAccess({ quick }: { quick: QuickCopy }) {
@@ -17,16 +16,19 @@ export function HomeQuickAccess({ quick }: { quick: QuickCopy }) {
     <section className={s.quick} aria-label={quick.aria}>
       <div className={`${s.container} ${s.quickImmersive}`}>
         <nav aria-label={quick.navAria} className={s.quickLinks}>
-          {quick.items.map(([title, detail], index) => (
-            <a href={meta[index].href} key={title}>
-              <HomeIcon name={meta[index].icon} />
-              <span className={s.quickCopy}>
-                <strong>{title}</strong>
-                <small>{detail}</small>
-              </span>
-              <HomeIcon name="arrow" className={s.quickArrow} />
-            </a>
-          ))}
+          {shortcuts.map(({ index, href, icon }) => {
+            const [title, detail] = quick.items[index];
+            return (
+              <a href={href} key={href}>
+                <HomeIcon name={icon} />
+                <span className={s.quickCopy}>
+                  <strong>{title}</strong>
+                  <small>{detail}</small>
+                </span>
+                <HomeIcon name="arrow" className={s.quickArrow} />
+              </a>
+            );
+          })}
         </nav>
       </div>
     </section>
