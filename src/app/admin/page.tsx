@@ -444,25 +444,27 @@ export default async function AdminEntry() {
         }
       />
 
-      <section aria-label="Priorité opérationnelle" className="grid gap-4 lg:grid-cols-[minmax(0,1.5fr)_minmax(17rem,0.7fr)]">
+      <section aria-label="Priorité opérationnelle" className="mb-5 grid gap-3 lg:grid-cols-[minmax(0,1.5fr)_minmax(17rem,0.7fr)]">
         <Card className="pc-card relative overflow-hidden">
           <div aria-hidden="true" className="absolute inset-y-0 left-0 w-1 bg-[var(--brand)]" />
           <div className="pl-2 sm:pl-3">
             <Badge variant={blockedCases > 0 ? "error" : studentQuestions > 0 || documents > 0 ? "warning" : intakeAttention > 0 || applications > 0 ? "info" : staleCatalogue > 0 ? "warning" : "success"}>{priority.badge}</Badge>
-            <p className="mt-5 text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">À traiter maintenant</p>
+            <p className="mt-3 text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">À traiter maintenant</p>
             <h2 className="mt-2 max-w-3xl text-2xl font-semibold tracking-[-0.03em] text-slate-950 sm:text-3xl">
               {priority.title}
             </h2>
-            <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-600">{priority.description}</p>
-            <div className="mt-6">
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">{priority.description}</p>
+            <div className="mt-4">
               <ButtonLink href={priority.href}>{priority.action}</ButtonLink>
             </div>
           </div>
         </Card>
 
-        <Card className="pc-soft-strip bg-[var(--premium-cream)] shadow-none">
-          <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-700">Ordre de traitement</p>
-          <ol className="mt-5 space-y-4 text-sm leading-6 text-slate-600">
+        <details className="self-start rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--premium-cream)] p-4 sm:p-5">
+          <summary className="cursor-pointer text-sm font-bold text-slate-900 hover:text-[var(--brand-strong)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brand)]">
+            Ordre de traitement · afficher les 3 priorités
+          </summary>
+          <ol className="mt-4 space-y-3 text-sm leading-6 text-slate-600">
             <li className="flex gap-3">
               <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-[var(--brand)] text-xs font-bold text-white">1</span>
               <span><strong className="text-slate-950">Réponses & dossiers</strong><br />Traiter d’abord les étudiants qui attendent une réponse.</span>
@@ -476,7 +478,7 @@ export default async function AdminEntry() {
               <span><strong className="text-slate-950">Catalogue</strong><br />Maintenir universités et programmes fiables.</span>
             </li>
           </ol>
-        </Card>
+        </details>
       </section>
 
       <section aria-label="Accès rapides" className="mb-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
