@@ -213,15 +213,16 @@ export default async function AdminCandidateJourneyPage({
     item.evidence.intakeStatus === "student_question" ||
     item.evidence.intakeStatus === "paid_pending_validation"
   ).length;
-  const year = new Date().getUTCFullYear();
+  const phaseCounts = new Map(CANDIDATE_JOURNEY.map((step) => [step.id, candidates.filter((item) => firstKnownMilestone(item.evidence, item.visaStatus) === step.id).length]));
+  const year = Number(campusTodayDateKey().slice(0, 4));
   const referenceCurrent = sourceIsValidForYear(VISA_FINANCIAL_REFERENCE_YEAR, year);
 
   return (
     <main className="mx-auto w-full max-w-[92rem] space-y-6 px-4 py-6 sm:px-6 xl:px-8">
       <AdminPageHeader
         section="Opérations"
-        title="Accompagnement de A à Z"
-        description="Le bureau du gestionnaire unique : retrouver une orientation, traiter la personne, suivre les candidatures, vérifier la voie visa et préparer le départ."
+        title="Accompagnement A à Z"
+        description="Une seule vue du premier contact au suivi d’arrivée. Les étapes correspondent à des données enregistrées, jamais à des admissions ou visas supposés."
         actions={
           <>
             <Link href="/admin/prospects" className={buttonClassName("secondary", "px-4")}>Prospects</Link>
@@ -230,6 +231,19 @@ export default async function AdminCandidateJourneyPage({
           </>
         }
       />
+
+      <nav aria-label="Étapes de l’accompagnement" className="grid gap-2 sm:grid-cols-3 xl:grid-cols-6">
+        {CANDIDATE_JOURNEY.map((step, index) => (
+          <Link key={step.id} href={step.where} className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-3 transition-colors hover:border-[var(--brand-border)]">
+            <span className="flex items-center justify-between gap-2">
+              <span className="grid h-7 w-7 place-items-center rounded-full bg-[var(--brand-soft)] text-xs font-bold text-[var(--brand-strong)]">{index + 1}</span>
+              <span className="text-lg font-bold tabular-nums text-slate-900">{phaseCounts.get(step.id) || 0}</span>
+            </span>
+            <span className="mt-2 block text-xs font-bold text-slate-950">{step.title.replace(/^\\d+\\. /, "")}</span>
+            <span className="mt-1 block text-[11px] text-slate-600">Repère de dossier, non preuve</span>
+          </Link>
+        ))}
+      </nav>
 
       <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-5 sm:p-6">
         <h2 className="text-xl font-semibold text-slate-950">Ma file de prise en charge</h2>
@@ -256,7 +270,16 @@ export default async function AdminCandidateJourneyPage({
             const phaseLabel = CANDIDATE_JOURNEY.find((step) => step.id === phase)?.title || "Orientation";
             const href = item.userId ? `/admin/dossiers/${item.userId}` : "/admin/prospects";
             return (
-              <article key={item.key} className="flex flex-col gap-3 py-4 lg:flex-row lg:items-center lg:justify-between">
+              <details key={item.key} className="group border-b border-[var(--border)] last:border-b-0">
+                <summary className="grid cursor-pointer list-item gap-2 py-4 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] sm:items-center">
+                  <span className="min-w-0">
+                    <span className="block truncate text-sm font-bold text-slate-950">{item.name}</span>
+                    <span className="mt-1 block truncate text-xs text-slate-600">{phaseLabel}</span>
+                  </span>
+                  <span className="text-xs leading-5 text-slate-700">{recommendedOperatorAction(item.evidence, item.visaStatus)}</span>
+                  <span className="text-xs font-bold text-[var(--brand-strong)]">Ouvrir →</span>
+                </summary>
+              <article className="flex flex-col gap-3 border-t border-[var(--border)] bg-[var(--surface-subtle)] px-3 py-4 lg:flex-row lg:items-center lg:justify-between">
                 <div className="min-w-0">
                   <div className="flex flex-wrap gap-2">
                     <Badge variant={item.customerStatus === "client_completed" ? "neutral" : item.evidence.unreadStudentMessages || item.evidence.pendingDocuments ? "warning" : "info"}>
@@ -280,12 +303,15 @@ export default async function AdminCandidateJourneyPage({
                   {item.userId ? <Link href={`/admin/visa/${item.userId}`} className={buttonClassName("secondary", "px-4")}>Suivi visa →</Link> : null}
                 </div>
               </article>
+              </details>
             );
           })}
         </div>
       </section>
 
-      <section aria-labelledby="journey-steps">
+      <details className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-5" aria-label="Méthode complète de traitement">
+        <summary className="cursor-pointer text-sm font-bold text-slate-950">Consulter les six procédures détaillées et les preuves attendues</summary>
+      <section className="mt-4" aria-labelledby="journey-steps">
         <h2 id="journey-steps" className="text-xl font-semibold text-slate-950">Ma méthode de traitement</h2>
         <p className="mt-2 text-sm text-slate-600">Chaque étape possède un responsable et une preuve de clôture. Les données et décisions officielles restent dans les modules métier.</p>
         <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
@@ -300,8 +326,11 @@ export default async function AdminCandidateJourneyPage({
           ))}
         </div>
       </section>
+      </details>
 
-      <section aria-labelledby="visa-guide-title" className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-5 sm:p-6">
+      <details className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-5" aria-label="Référentiel visa depuis la Tunisie">
+        <summary className="cursor-pointer text-sm font-bold text-slate-950">Référentiel visa et checklists officielles · consultation experte</summary>
+      <section className="mt-4" aria-labelledby="visa-guide-title" className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-5 sm:p-6">
         <h2 id="visa-guide-title" className="text-xl font-semibold text-slate-950">Visa : référentiel vérifié pour une demande depuis la Tunisie</h2>
         <p className="mt-2 text-sm leading-6 text-slate-700">
           Ces trois voies sont distinctes et ne sont pas attribuées automatiquement à un candidat.
@@ -355,6 +384,7 @@ export default async function AdminCandidateJourneyPage({
           traitements et décisions ne sont ni générés ni garantis par ce tableau.
         </p>
       </section>
+      </details>
     </main>
   );
 }
