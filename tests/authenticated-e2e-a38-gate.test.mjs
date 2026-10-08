@@ -13,15 +13,15 @@ const releaseWorkflow = await readFile(
   "utf8",
 );
 
-test("Render authenticated evidence fails closed until A38 is closed", () => {
+test("VPS authenticated evidence fails closed until A38 is closed", () => {
   assert.match(authenticatedWorkflow, /issues:\s*read/);
   assert.match(
     authenticatedWorkflow,
-    /Require A38 human gate before Render evidence/,
+    /Require A38 human gate before VPS evidence/,
   );
   assert.match(
     authenticatedWorkflow,
-    /if: env\.ALMAGO_E2E_TARGET == 'render'/,
+    /if: env\.ALMAGO_E2E_TARGET == 'vps'/,
   );
   assert.match(
     authenticatedWorkflow,
@@ -31,16 +31,16 @@ test("Render authenticated evidence fails closed until A38 is closed", () => {
   assert.match(authenticatedWorkflow, /\[ "\$state" != "closed" \]/);
   assert.match(
     authenticatedWorkflow,
-    /A38 \(#66\) must be genuinely closed before final Render authenticated evidence/,
+    /A38 \(#66\) must be genuinely closed before final VPS authenticated evidence/,
   );
 });
 
 test("local authenticated tests remain available before A38", () => {
   const gate = authenticatedWorkflow.match(
-    /- name: Require A38 human gate before Render evidence[\s\S]*?(?=\n\s*- name: Install browser tools)/,
+    /- name: Require A38 human gate before VPS evidence[\s\S]*?(?=\n\s*- name: Install browser tools)/,
   )?.[0] || "";
 
-  assert.match(gate, /if: env\.ALMAGO_E2E_TARGET == 'render'/);
+  assert.match(gate, /if: env\.ALMAGO_E2E_TARGET == 'vps'/);
   assert.doesNotMatch(gate, /== 'local'/);
 });
 
@@ -52,9 +52,9 @@ test("the release caller grants the reusable A43 workflow issue-read permission"
   );
 });
 
-test("A38 cannot be reopened during authenticated Render evidence", () => {
+test("A38 cannot be reopened during authenticated VPS evidence", () => {
   const revalidateMain = authenticatedWorkflow.indexOf(
-    "- name: Revalidate exact main and Render after authenticated evidence",
+    "- name: Revalidate exact main and VPS after authenticated evidence",
   );
   const revalidateA38 = authenticatedWorkflow.indexOf(
     "- name: Revalidate A38 human gate after authenticated evidence",
@@ -63,7 +63,7 @@ test("A38 cannot be reopened during authenticated Render evidence", () => {
   assert.ok(revalidateA38 > revalidateMain);
 
   const finalGate = authenticatedWorkflow.slice(revalidateA38);
-  assert.match(finalGate, /if: env\.ALMAGO_E2E_TARGET == 'render'/);
+  assert.match(finalGate, /if: env\.ALMAGO_E2E_TARGET == 'vps'/);
   assert.match(finalGate, /api\.github\.com\/repos\/\$GITHUB_REPOSITORY\/issues\/66/);
   assert.match(finalGate, /jq -r '\.state'/);
   assert.match(finalGate, /\[ "\$state" != "closed" \]/);
@@ -71,9 +71,9 @@ test("A38 cannot be reopened during authenticated Render evidence", () => {
 });
 
 
-test("human admin AAL2 evidence is exact-SHA and ordered inside the Render gate", () => {
+test("human admin AAL2 evidence is exact-SHA and ordered inside the VPS gate", () => {
   const revalidateMain = authenticatedWorkflow.indexOf(
-    "- name: Revalidate exact main and Render after authenticated evidence",
+    "- name: Revalidate exact main and VPS after authenticated evidence",
   );
   const adminEvidence = authenticatedWorkflow.indexOf(
     "- name: Require exact-SHA human admin AAL2 evidence",
@@ -87,7 +87,7 @@ test("human admin AAL2 evidence is exact-SHA and ordered inside the Render gate"
   assert.ok(revalidateA38 > adminEvidence);
 
   const gate = authenticatedWorkflow.slice(adminEvidence, revalidateA38);
-  assert.match(gate, /if: env\.ALMAGO_E2E_TARGET == 'render'/);
+  assert.match(gate, /if: env\.ALMAGO_E2E_TARGET == 'vps'/);
   assert.match(gate, /issues\/84\/comments\?per_page=100/);
   assert.match(gate, /almago-a43-admin-human-approved:sha=\$GITHUB_SHA/);
   assert.match(gate, /author_association/);

@@ -8,8 +8,8 @@ export function GET() {
     {
       status: "ok",
       service: "almago",
-      revision: process.env.RENDER_GIT_COMMIT?.slice(0, 12) || null,
-      branch: process.env.RENDER_GIT_BRANCH || null,
+      revision: process.env.ALMAGO_BUILD_COMMIT?.slice(0, 12) || null,
+      branch: process.env.ALMAGO_BUILD_BRANCH || null,
       exposureMode: getRuntimeExposureMode(),
     },
     {

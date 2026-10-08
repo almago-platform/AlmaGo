@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
-      PRODUCTION_URL: ${{ vars.ALMAGO_PRODUCTION_URL || 'https://almago-dev.onrender.com' }}
+      PRODUCTION_URL: https://campusallemagne.tn
       NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
       NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
     steps:
@@ -39,21 +39,25 @@ jobs:
       - run: npm run build
       - run: git diff --check
 
-      - name: Verify exact Render revision
+      - name: Verify exact VPS revision
         shell: bash
         run: |
+          current_main="$(git ls-remote origin refs/heads/main | awk '{print $1}')"
+          if [ "$current_main" != "$GITHUB_SHA" ]; then
+            echo "::error::main changed before the VPS release check"
+            exit 1
+          fi
           expected="${GITHUB_SHA:0:12}"
           for i in {1..60}; do
             health="$(curl --fail --silent --show-error --max-time 10 "$PRODUCTION_URL/api/health" 2>/dev/null || true)"
             revision="$(printf '%s' "$health" | jq -r '.revision // empty' 2>/dev/null || true)"
-            branch="$(printf '%s' "$health" | jq -r '.branch // empty' 2>/dev/null || true)"
-            if [ "$revision" = "$expected" ] && [ "$branch" = "main" ]; then
+            if [ "$revision" = "$expected" ]; then
               echo "$health"
               exit 0
             fi
             sleep 5
           done
-          echo "::error::Production does not serve exact main revision $expected"
+          echo "::error::VPS does not serve exact main revision $expected"
           exit 1
 
       - name: Public smoke checks
@@ -69,5 +73,5 @@ jobs:
     needs: release-gate
     uses: ./.github/workflows/almago-authenticated-e2e.yml
     with:
-      target: render
+      target: vps
     secrets: inherit

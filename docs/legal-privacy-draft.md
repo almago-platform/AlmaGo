@@ -61,7 +61,8 @@ Finalités correspondant au produit actuel :
 Actuellement visibles dans le projet :
 
 - **Supabase** — Auth, PostgreSQL et Storage ; région technique du projet vérifiée le 02/10/2026 : `eu-west-1` ;
-- **Render** — hébergement/déploiement canonique de l’application ; région vérifiée le 02/10/2026 : **Frankfurt**.
+- **VPS Ubuntu (Nginx + Next.js)** — hébergement actuel de l’application ; fournisseur d’hébergement, région et contrat de sous-traitance **à confirmer** avant publication ;
+- **Render** — ancien hébergement, service `almago-dev` suspendu le 08/10/2026 ; vérifier les durées de rétention des données historiques.
 
 Une intégration Vercel reste liée au dépôt pour des usages de développement/preview historiques ou futurs. Son éventuel rôle de traitement de données en production ne doit être décrit qu’après vérification contractuelle et technique.
 

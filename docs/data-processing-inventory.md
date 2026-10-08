@@ -200,12 +200,14 @@ Actuellement le code montre l’utilisation de :
 - Supabase Auth ;
 - Supabase PostgreSQL ;
 - Supabase Storage ;
-- Render pour l’hébergement/déploiement canonique actuel ;
+- VPS Ubuntu (Nginx + Next.js) pour l’hébergement/déploiement canonique actuel ;
+- ancien service Render `almago-dev` suspendu le 08/10/2026 (non canonique) ;
 - une intégration GitHub/Vercel reste connectée pour des signaux de preview/commentaires ; le déploiement Vercel est désactivé et Vercel n’est pas le runtime canonique. Tout traitement résiduel lié à cette intégration doit être confirmé avant la notice finale.
 
 Localisation technique vérifiée le **2 octobre 2026** :
 - projet Supabase AlmaGo : région technique `eu-west-1` ;
-- service Render canonique `almago-dev` : région **Frankfurt**.
+- ancien service Render `almago-dev` (désormais suspendu) : région **Frankfurt** ;
+- fournisseur et région du VPS Ubuntu : **à confirmer** avant publication de la notice finale.
 
 Ces localisations sont des faits techniques, pas une qualification juridique. Toute collecte réelle destinée à un responsable établi en Tunisie doit faire l’objet de la vérification des formalités INPDP applicables aux traitements/transferts internationaux avant activation.
 
