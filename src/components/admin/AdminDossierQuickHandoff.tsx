@@ -61,7 +61,7 @@ export function AdminDossierQuickHandoff({ canExchange }: { canExchange: boolean
               </a>
             ) : (
               <p className="mt-2 text-xs font-semibold text-slate-600">
-                Messagerie disponible après création du compte lié.
+                Fonction disponible après liaison du compte de la personne.
               </p>
             )}
           </div>
