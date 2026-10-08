@@ -17,6 +17,7 @@ import {
 } from "@/lib/admin/application-risk";
 import { isActiveApplication } from "@/lib/application-workflow";
 import { isHumanAdminAction } from "@/lib/admin/people";
+import { belongsToAdminPortfolio, isSoloAdmin } from "@/lib/admin/solo-workspace";
 
 export const dynamic = "force-dynamic";
 
@@ -53,6 +54,7 @@ export default async function AdminEntry() {
     { count: staleFinanceCount, error: staleFinanceError },
     { count: dueFinanceCount, error: dueFinanceError },
     unreadNotificationsResult,
+    adminRolesResult,
     accessRowsResult,
     intakeRowsResult,
     assignmentsResult,
@@ -76,6 +78,7 @@ export default async function AdminEntry() {
     currentAdmin
       ? supabase.from("notifications").select("id", { count: "exact", head: true }).eq("user_id", currentAdmin.id).is("read_at", null)
       : Promise.resolve({ count: 0, error: null }),
+    supabase.from("user_roles").select("user_id").eq("role", "admin"),
     supabase.from("customer_access").select("user_id,status").limit(1000),
     supabase.from("student_intake_cases").select("student_id,status").limit(1000),
     supabase.from("student_case_assignments").select("student_id,assigned_admin_id").limit(1000),
@@ -90,7 +93,7 @@ export default async function AdminEntry() {
     universitiesError || programsError || applicationsError || documentsError
     || intakeAttentionError || studentQuestionError || orientationError
     || staleLanguageError || dueLanguageError || staleFinanceError || dueFinanceError
-    || unreadNotificationsResult.error || accessRowsResult.error || intakeRowsResult.error
+    || unreadNotificationsResult.error || adminRolesResult.error || accessRowsResult.error || intakeRowsResult.error
     || assignmentsResult.error || recentContactsResult.error || actionsResult.error || applicationRowsResult.error
     || currentProceduresResult.error || requirementSignalsResult.error
   ) {
@@ -116,6 +119,7 @@ export default async function AdminEntry() {
   const dueCatalogue = dueLanguage + dueFinance;
 
   const unreadNotifications = unreadNotificationsResult.count || 0;
+  const soloAdmin = isSoloAdmin(adminRolesResult.data?.map((item) => item.user_id) || [], currentAdmin?.id ?? null);
   const operationalIds = new Set<string>();
   for (const item of accessRowsResult.data || []) {
     if (item.status !== "client_completed") operationalIds.add(item.user_id);
@@ -270,11 +274,11 @@ export default async function AdminEntry() {
   const staleContactCases = operationalList.filter((id) => !contactedRecentlyIds.has(id)).length;
   const missingNextActionCases = operationalList.filter((id) => !explicitActionIds.has(id)).length;
   const myCases = currentAdmin
-    ? operationalList.filter((id) => assignmentByStudent.get(id) === currentAdmin.id).length
+    ? operationalList.filter((id) => belongsToAdminPortfolio(assignmentByStudent.get(id), currentAdmin.id, soloAdmin)).length
     : 0;
   const myHumanActions = currentAdmin
     ? humanCampusActions
-        .filter((item) => assignmentByStudent.get(item.student_id) === currentAdmin.id)
+        .filter((item) => belongsToAdminPortfolio(assignmentByStudent.get(item.student_id), currentAdmin.id, soloAdmin))
         .sort((left, right) => {
           const leftDate = actionDeadlineIsTrusted(left) ? dateKey(left.due_date) : null;
           const rightDate = actionDeadlineIsTrusted(right) ? dateKey(right.due_date) : null;
@@ -407,23 +411,121 @@ export default async function AdminEntry() {
     <main className="mx-auto w-full max-w-[92rem] px-4 py-6 sm:px-6 sm:py-7 xl:px-8">
       <AdminPageHeader
         section="Pilotage"
-        title="Vue d’ensemble"
-        description="Voyez d’abord ce qui demande l’attention de l’équipe, puis ouvrez directement la bonne file de travail."
+        title={soloAdmin ? "Mon bureau" : "Vue d’ensemble"}
+        description={soloAdmin
+          ? "Un seul endroit pour traiter vos dossiers, même sans attribution formelle, et décider quoi faire ensuite."
+          : "Voyez d’abord ce qui demande l’attention de l’équipe, puis ouvrez directement la bonne file de travail."}
         actions={
           <>
             <ButtonLink href="/admin/people">Ouvrir Personnes</ButtonLink>
-            <ButtonLink href="/admin/team" variant="secondary">Voir l’équipe</ButtonLink>
+            {!soloAdmin ? <ButtonLink href="/admin/team" variant="secondary">Voir l’équipe</ButtonLink> : null}
             <ButtonLink href="/admin/intake" variant="secondary">Dossiers Campus</ButtonLink>
             <ButtonLink href="/admin/documents" variant="secondary">Traiter les documents</ButtonLink>
           </>
         }
       />
 
+      <section aria-label="Priorité opérationnelle" className="grid gap-4 lg:grid-cols-[minmax(0,1.5fr)_minmax(17rem,0.7fr)]">
+        <Card className="pc-card relative overflow-hidden">
+          <div aria-hidden="true" className="absolute inset-y-0 left-0 w-1 bg-[var(--brand)]" />
+          <div className="pl-2 sm:pl-3">
+            <Badge variant={blockedCases > 0 ? "error" : studentQuestions > 0 || documents > 0 ? "warning" : intakeAttention > 0 || applications > 0 ? "info" : staleCatalogue > 0 ? "warning" : "success"}>{priority.badge}</Badge>
+            <p className="mt-5 text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">À traiter maintenant</p>
+            <h2 className="mt-2 max-w-3xl text-2xl font-semibold tracking-[-0.03em] text-slate-950 sm:text-3xl">
+              {priority.title}
+            </h2>
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-600">{priority.description}</p>
+            <div className="mt-6">
+              <ButtonLink href={priority.href}>{priority.action}</ButtonLink>
+            </div>
+          </div>
+        </Card>
+
+        <Card className="pc-soft-strip bg-[var(--premium-cream)] shadow-none">
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-700">Ordre de traitement</p>
+          <ol className="mt-5 space-y-4 text-sm leading-6 text-slate-600">
+            <li className="flex gap-3">
+              <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-[var(--brand)] text-xs font-bold text-white">1</span>
+              <span><strong className="text-slate-950">Réponses & dossiers</strong><br />Traiter d’abord les étudiants qui attendent une réponse.</span>
+            </li>
+            <li className="flex gap-3">
+              <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-[var(--brand-soft)] text-xs font-bold text-[var(--brand)]">2</span>
+              <span><strong className="text-slate-950">Documents & candidatures</strong><br />Lever les blocages et mettre à jour les statuts.</span>
+            </li>
+            <li className="flex gap-3">
+              <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-slate-100 text-xs font-bold text-slate-600">3</span>
+              <span><strong className="text-slate-950">Catalogue</strong><br />Maintenir universités et programmes fiables.</span>
+            </li>
+          </ol>
+        </Card>
+      </section>
+
+      <section className="mb-6" aria-labelledby="my-actions-title">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Mon travail</p>
+            <h2 id="my-actions-title" className="mt-1 text-xl font-semibold tracking-[-0.025em] text-slate-950">
+              Mes prochaines actions
+            </h2>
+            <p className="mt-1 text-sm leading-6 text-slate-600">
+              {soloAdmin
+                ? "Vos actions humaines ouvertes, y compris dans les dossiers non attribués. Les étapes automatiques restent hors de cette liste."
+                : "Seulement les actions humaines des dossiers qui vous sont attribués. Les étapes système restent hors de cette liste."}
+            </p>
+          </div>
+          <ButtonLink href="/admin/people?work=mine" variant="secondary">Voir mon portefeuille</ButtonLink>
+        </div>
+
+        <Card className="mt-4 overflow-hidden p-0 shadow-none">
+          {myHumanActions.length ? (
+            <div className="divide-y divide-[var(--border)]">
+              {myHumanActions.slice(0, 5).map((item) => {
+                const profile = taskProfileByStudent.get(item.student_id);
+                const name = [profile?.first_name, profile?.last_name].filter(Boolean).join(" ").trim()
+                  || profile?.full_name?.trim()
+                  || "Dossier étudiant";
+                const due = actionDeadlineIsTrusted(item) ? dateKey(item.due_date) : null;
+                const overdue = Boolean(due && due < today);
+                const dueToday = due === today;
+                return (
+                  <Link
+                    key={item.id}
+                    href={`/admin/dossiers/${item.student_id}#actions`}
+                    className="group grid gap-3 px-4 py-4 transition-colors hover:bg-[var(--surface-subtle)] sm:grid-cols-[minmax(0,1fr)_11rem_auto] sm:items-center sm:px-5"
+                  >
+                    <div className="min-w-0">
+                      <p className="text-sm font-bold text-slate-950">{item.title}</p>
+                      <p className="mt-1 text-xs text-slate-600">{name}</p>
+                    </div>
+                    <div>
+                      <p className="text-[0.68rem] font-bold uppercase tracking-[0.1em] text-slate-600">Cible interne</p>
+                      <p className={`mt-1 text-sm font-semibold ${overdue ? "text-red-700" : dueToday ? "text-amber-800" : "text-slate-900"}`}>
+                        {due ? formatDashboardDate(due) : "Sans date"}
+                      </p>
+                    </div>
+                    <span className="text-xs font-bold text-[var(--brand)] group-hover:underline">Ouvrir →</span>
+                  </Link>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="px-4 py-5 sm:px-5">
+              <p className="text-sm font-bold text-slate-950">Aucune action humaine ouverte dans votre portefeuille.</p>
+              <p className="mt-1 text-sm leading-5 text-slate-600">
+                Les étapes automatiques de procédure ne sont pas comptées comme du travail conseiller.
+              </p>
+            </div>
+          )}
+        </Card>
+      </section>
+
       <section aria-labelledby="daily-cockpit-title" className="mb-6">
         <PremiumSectionHeader
           eyebrow="Cockpit quotidien"
-          title={<span id="daily-cockpit-title">Ce que l’équipe doit traiter maintenant</span>}
-          description="Les premières cartes montrent la charge datée et votre portefeuille. Les suivantes signalent les dossiers qui risquent de disparaître du radar."
+          title={<span id="daily-cockpit-title">Tous vos repères de suivi</span>}
+          description={soloAdmin
+            ? "Les chiffres servent de contrôle après votre priorité et vos prochaines actions. Les dossiers non attribués font partie de votre portefeuille."
+            : "Les premières cartes montrent la charge datée et votre portefeuille. Les suivantes signalent les dossiers qui risquent de disparaître du radar."}
         />
 
         <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
@@ -600,98 +702,6 @@ export default async function AdminEntry() {
             statusLabel={applicationRiskCases ? "À accélérer" : "À jour"}
           />
         </div>
-      </section>
-
-      <section className="mb-6" aria-labelledby="my-actions-title">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Mon travail</p>
-            <h2 id="my-actions-title" className="mt-1 text-xl font-semibold tracking-[-0.025em] text-slate-950">
-              Mes prochaines actions
-            </h2>
-            <p className="mt-1 text-sm leading-6 text-slate-600">
-              Seulement les actions humaines des dossiers qui vous sont attribués. Les étapes système restent hors de cette liste.
-            </p>
-          </div>
-          <ButtonLink href="/admin/people?work=mine" variant="secondary">Voir mon portefeuille</ButtonLink>
-        </div>
-
-        <Card className="mt-4 overflow-hidden p-0 shadow-none">
-          {myHumanActions.length ? (
-            <div className="divide-y divide-[var(--border)]">
-              {myHumanActions.slice(0, 5).map((item) => {
-                const profile = taskProfileByStudent.get(item.student_id);
-                const name = [profile?.first_name, profile?.last_name].filter(Boolean).join(" ").trim()
-                  || profile?.full_name?.trim()
-                  || "Dossier étudiant";
-                const due = actionDeadlineIsTrusted(item) ? dateKey(item.due_date) : null;
-                const overdue = Boolean(due && due < today);
-                const dueToday = due === today;
-                return (
-                  <Link
-                    key={item.id}
-                    href={`/admin/dossiers/${item.student_id}#actions`}
-                    className="group grid gap-3 px-4 py-4 transition-colors hover:bg-[var(--surface-subtle)] sm:grid-cols-[minmax(0,1fr)_11rem_auto] sm:items-center sm:px-5"
-                  >
-                    <div className="min-w-0">
-                      <p className="text-sm font-bold text-slate-950">{item.title}</p>
-                      <p className="mt-1 text-xs text-slate-600">{name}</p>
-                    </div>
-                    <div>
-                      <p className="text-[0.68rem] font-bold uppercase tracking-[0.1em] text-slate-600">Cible interne</p>
-                      <p className={`mt-1 text-sm font-semibold ${overdue ? "text-red-700" : dueToday ? "text-amber-800" : "text-slate-900"}`}>
-                        {due ? formatDashboardDate(due) : "Sans date"}
-                      </p>
-                    </div>
-                    <span className="text-xs font-bold text-[var(--brand)] group-hover:underline">Ouvrir →</span>
-                  </Link>
-                );
-              })}
-            </div>
-          ) : (
-            <div className="px-4 py-5 sm:px-5">
-              <p className="text-sm font-bold text-slate-950">Aucune action humaine ouverte dans votre portefeuille.</p>
-              <p className="mt-1 text-sm leading-5 text-slate-600">
-                Les étapes automatiques de procédure ne sont pas comptées comme du travail conseiller.
-              </p>
-            </div>
-          )}
-        </Card>
-      </section>
-
-      <section aria-label="Priorité opérationnelle" className="grid gap-4 lg:grid-cols-[minmax(0,1.5fr)_minmax(17rem,0.7fr)]">
-        <Card className="pc-card relative overflow-hidden">
-          <div aria-hidden="true" className="absolute inset-y-0 left-0 w-1 bg-[var(--brand)]" />
-          <div className="pl-2 sm:pl-3">
-            <Badge variant={blockedCases > 0 ? "error" : studentQuestions > 0 || documents > 0 ? "warning" : intakeAttention > 0 || applications > 0 ? "info" : staleCatalogue > 0 ? "warning" : "success"}>{priority.badge}</Badge>
-            <p className="mt-5 text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">À traiter maintenant</p>
-            <h2 className="mt-2 max-w-3xl text-2xl font-semibold tracking-[-0.03em] text-slate-950 sm:text-3xl">
-              {priority.title}
-            </h2>
-            <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-600">{priority.description}</p>
-            <div className="mt-6">
-              <ButtonLink href={priority.href}>{priority.action}</ButtonLink>
-            </div>
-          </div>
-        </Card>
-
-        <Card className="pc-soft-strip bg-[var(--premium-cream)] shadow-none">
-          <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-700">Ordre de traitement</p>
-          <ol className="mt-5 space-y-4 text-sm leading-6 text-slate-600">
-            <li className="flex gap-3">
-              <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-[var(--brand)] text-xs font-bold text-white">1</span>
-              <span><strong className="text-slate-950">Réponses & dossiers</strong><br />Traiter d’abord les étudiants qui attendent une réponse.</span>
-            </li>
-            <li className="flex gap-3">
-              <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-[var(--brand-soft)] text-xs font-bold text-[var(--brand)]">2</span>
-              <span><strong className="text-slate-950">Documents & candidatures</strong><br />Lever les blocages et mettre à jour les statuts.</span>
-            </li>
-            <li className="flex gap-3">
-              <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-slate-100 text-xs font-bold text-slate-600">3</span>
-              <span><strong className="text-slate-950">Catalogue</strong><br />Maintenir universités et programmes fiables.</span>
-            </li>
-          </ol>
-        </Card>
       </section>
 
       <section className="mt-6" aria-labelledby="admin-overview-title">
