@@ -28,7 +28,7 @@ test("summary never invents an assignment, last contact, successful admission or
   assert.match(brief, /counselor \|\| "Non attribué"/);
   assert.match(brief, /lastContact \|\| "Aucun contact enregistré"/);
   assert.match(brief, /!counselor/);
-  assert.match(brief, /!.*garantit pas l’admission ni l’obtention du visa/);
+  assert.match(brief, /ne garantit pas l’admission ni l’obtention du visa/);
   assert.match(brief, /action\.waiting/);
   assert.match(brief, /"En attente"/);
   assert.match(brief, /"Aucun événement enregistré dans l’historique."/);
