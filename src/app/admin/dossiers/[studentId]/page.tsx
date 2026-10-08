@@ -56,6 +56,7 @@ import {
 } from "@/lib/admin/student-dossier";
 import { adminActionOwnerLabel, adminActionWaiting, adminPersonSegmentLabels, classifyAdminPerson, isHumanAdminAction, isOpenAdminAction } from "@/lib/admin/people";
 import { createClient } from "@/lib/supabase/server";
+import { assessAcademicEvidence, type AcademicEvidenceRecord } from "@/lib/academic-evidence";
 
 type ApplicationRow = {
   id: string;
@@ -103,6 +104,17 @@ type ProgramRecommendationRow = {
     | { name: string | null; degree_level: string | null; field: string | null; universities: { name: string | null; city: string | null } | null }
     | Array<{ name: string | null; degree_level: string | null; field: string | null; universities: { name: string | null; city: string | null } | null }>
     | null;
+};
+
+type LinkedAdmissionEvidence = {
+  application_id: string | null;
+  evidence_type: "definitive_admission" | "conditional_admission";
+  institution: string | null;
+  evidence_date: string | null;
+  origin: AcademicEvidenceRecord["origin"];
+  verification_status: AcademicEvidenceRecord["verification_status"];
+  document_id: string | null;
+  verified_at: string | null;
 };
 
 type DocumentRequirementRow = AdminDocumentRequirementItem & {
@@ -233,6 +245,7 @@ export default async function AdminStudentDossierPage({
     adminRolesResult,
     caseNotesResult,
     messagesResult,
+    linkedEvidenceResult,
   ] = await Promise.all([
     supabase
       .from("profiles")
@@ -323,6 +336,12 @@ export default async function AdminStudentDossierPage({
       .eq("student_id", studentId)
       .order("created_at", { ascending: true })
       .limit(200),
+    supabase
+      .from("academic_evidence")
+      .select("application_id,evidence_type,institution,evidence_date,origin,verification_status,document_id,verified_at")
+      .eq("student_id", studentId)
+      .not("application_id", "is", null)
+      .in("evidence_type", ["definitive_admission", "conditional_admission"]),
   ]);
 
   const profile = profileResult.data;
@@ -495,7 +514,12 @@ export default async function AdminStudentDossierPage({
       latestDocumentByCategory.set(item.category, item);
     }
   }
-  const latestOperationalDocuments = [...latestDocumentByCategory.values()];
+  // Admissions are application-specific: multiple letters must not be hidden
+  // by the "latest file per category" rule used for routine documents.
+  const latestOperationalDocuments = [
+    ...latestDocumentByCategory.values().filter((item) => item.category !== "admission"),
+    ...documents.filter((item) => item.category === "admission"),
+  ];
   const documentsAwaitingDecision = latestOperationalDocuments.filter((item) =>
     item.status === "pending" || item.status === "reviewed"
   );
@@ -833,6 +857,30 @@ export default async function AdminStudentDossierPage({
   ];
 
   const applicationProgramIds = new Set(applications.map((item) => item.program_id));
+  const applicationIds = new Set(applications.map((application) => application.id));
+  const documentStatusById = new Map(documents.map((item) => [item.id, item.status]));
+  const linkedEvidence = ((linkedEvidenceResult.data || []) as LinkedAdmissionEvidence[])
+    .filter((item) => Boolean(item.application_id && applicationIds.has(item.application_id)));
+  const admissionAssessment = linkedEvidence.map((item) => assessAcademicEvidence({
+    type: item.evidence_type,
+    institution: item.institution,
+    evidence_date: item.evidence_date,
+    origin: item.origin,
+    verification_status: item.verification_status,
+    document_id: item.document_id,
+    document_status: item.document_id ? documentStatusById.get(item.document_id) || null : null,
+    verified_at: item.verified_at,
+  }));
+  const admissionFollowUp = {
+    available: !linkedEvidenceResult.error,
+    total: linkedEvidence.length,
+    accepted: admissionAssessment.filter((result) => result.status === "accepted").length,
+    toReview: admissionAssessment.filter((result) =>
+      result.status === "needs_review" || result.status === "incomplete").length,
+    replace: admissionAssessment.filter((result) => result.status === "replace_required").length,
+    canAdd: personSegment === "student" && applications.length > 0,
+  };
+
   const nextVerifiedApplicationDeadline = applications
     .filter((application) =>
       isActiveApplication(application.status)
@@ -895,7 +943,18 @@ export default async function AdminStudentDossierPage({
         applications: applications.length,
       }} />
 
-      <AdminDossierQuickHandoff canExchange={Boolean(profile)} />
+      <AdminDossierQuickHandoff
+        canExchange={Boolean(profile)}
+        admission={admissionFollowUp}
+        requestedDocuments={studentDocumentRequests.map((item) => item.label)}
+        documentsToReview={documentsAwaitingDecision.length}
+        unreadStudentMessages={unreadStudentMessages}
+        deadline={nextVerifiedApplicationDeadline?.deadline ? {
+          label: firstProgram(nextVerifiedApplicationDeadline)?.name || "Programme à confirmer",
+          date: nextVerifiedApplicationDeadline.deadline,
+          href: `/admin/applications?student=${studentId}`,
+        } : null}
+      />
 
       <section id="overview" className="scroll-mt-52 lg:scroll-mt-40 space-y-3">
         <PremiumSectionHeader
