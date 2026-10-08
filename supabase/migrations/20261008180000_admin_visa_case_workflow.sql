@@ -128,6 +128,13 @@ begin
     raise exception 'visa_case_transition_requires_approved_evidence';
   end if;
 
+  if tg_op = 'UPDATE'
+    and new.status is distinct from old.status
+    and new.status in ('submitted','appointment','approved','refused')
+    and new.evidence_document_id is not distinct from old.evidence_document_id then
+    raise exception 'visa_case_new_stage_requires_new_documentary_proof';
+  end if;
+
   new.updated_at := now();
   return new;
 end
