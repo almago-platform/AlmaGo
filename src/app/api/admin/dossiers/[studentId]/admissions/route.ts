@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getAdminUser } from "@/lib/auth/access";
+import { hasClientLifecycleEntitlement } from "@/lib/auth/entitlement";
 import { hasAllowedDocumentSignature, maxDocumentBytes, safeFilename } from "@/lib/documents";
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -55,16 +56,24 @@ export async function POST(
     return NextResponse.json({ error: "Ajoutez un PDF valide de 10 MiB maximum." }, { status: 400 });
   }
 
-  const [{ data: profile, error: profileError }, { data: application, error: appError }] = await Promise.all([
+  const [
+    { data: profile, error: profileError },
+    { data: application, error: appError },
+    { data: access, error: accessError },
+  ] = await Promise.all([
     supabase.from("profiles").select("id").eq("id", studentId).maybeSingle(),
     supabase.from("applications").select("id,student_id")
       .eq("id", applicationId).eq("student_id", studentId).maybeSingle(),
+    supabase.from("customer_access").select("status").eq("user_id", studentId).maybeSingle(),
   ]);
-  if (profileError || appError) {
+  if (profileError || appError || accessError) {
     return NextResponse.json({ error: "Impossible de vérifier le dossier et sa candidature." }, { status: 500 });
   }
   if (!profile || !application) {
     return NextResponse.json({ error: "La candidature n’appartient pas à ce dossier." }, { status: 404 });
+  }
+  if (!hasClientLifecycleEntitlement(access?.status)) {
+    return NextResponse.json({ error: "La personne doit disposer de l’accès étudiant pour recevoir ce PDF dans ses candidatures." }, { status: 409 });
   }
 
   const documentId = crypto.randomUUID();
