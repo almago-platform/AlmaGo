@@ -124,10 +124,17 @@ export default async function AdminEntry() {
   const unreadNotifications = unreadNotificationsResult.count || 0;
   const soloAdmin = isSoloAdmin(adminRolesResult.data?.map((item) => item.user_id) || [], currentAdmin?.id ?? null);
   const operationalIds = new Set<string>();
+  const completedIds = new Set(
+    (accessRowsResult.data || [])
+      .filter((item) => item.status === "client_completed")
+      .map((item) => item.user_id),
+  );
   for (const item of accessRowsResult.data || []) {
-    if (item.status !== "client_completed") operationalIds.add(item.user_id);
+    if (!completedIds.has(item.user_id)) operationalIds.add(item.user_id);
   }
-  for (const item of intakeRowsResult.data || []) operationalIds.add(item.student_id);
+  for (const item of intakeRowsResult.data || []) {
+    if (!completedIds.has(item.student_id)) operationalIds.add(item.student_id);
+  }
 
   const assignmentByStudent = new Map(
     (assignmentsResult.data || []).map((item) => [item.student_id, item.assigned_admin_id]),
@@ -281,7 +288,7 @@ export default async function AdminEntry() {
     : 0;
   const myHumanActions = currentAdmin
     ? humanCampusActions
-        .filter((item) => belongsToAdminPortfolio(assignmentByStudent.get(item.student_id), currentAdmin.id, soloAdmin))
+        .filter((item) => operationalIds.has(item.student_id) && belongsToAdminPortfolio(assignmentByStudent.get(item.student_id), currentAdmin.id, soloAdmin))
         .sort((left, right) => {
           const leftDate = actionDeadlineIsTrusted(left) ? dateKey(left.due_date) : null;
           const rightDate = actionDeadlineIsTrusted(right) ? dateKey(right.due_date) : null;
