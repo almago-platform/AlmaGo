@@ -7,7 +7,7 @@ AlmaGo est une application Next.js pour l’accompagnement de candidats et étud
 - Next.js App Router + TypeScript
 - React
 - Supabase Auth, PostgreSQL et Storage privé
-- Render comme runtime canonique
+- VPS Ubuntu (Nginx + Next.js) comme runtime canonique
 - GitHub Actions pour CI, qualité navigateur, E2E authentifiés et release
 
 ## Développement local
@@ -55,14 +55,14 @@ La CI exécute aussi les tests d’autorisation Supabase locaux et les contrôle
 
 ## Déploiement
 
-`main` est déployée automatiquement sur Render. Le runtime doit exposer `/api/health` avec la branche et la révision de déploiement, sans secret.
+`main` est déployée sur le VPS Ubuntu via le service `almago-autodeploy.timer` (configuration système hors dépôt). Le runtime doit exposer `/api/health` avec la branche et la révision de déploiement, sans secret.
 
-Le workflow **AlmaGo Release Gate** vérifie le build et confirme que Render sert exactement la révision `main` attendue avant une release.
+Le workflow **AlmaGo Release Gate** vérifie le build et confirme que `https://campusallemagne.tn` sert exactement le commit `main` attendu avant une release. La révision publiée est intégrée lors du build Next.js depuis Git.
 
 Voir :
 
 - `docs/release-checklist.md`
-- `docs/render-runbook.md`
+- `docs/vps-runbook.md`
 - `docs/quality-gates.md`
 - `docs/authenticated-e2e.md`
 - `docs/observability.md`
