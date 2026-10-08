@@ -79,14 +79,14 @@ end;
 $$;
 
 create function pg_temp.admission_delete_doc(target_id uuid)
-returns bigint language plpgsql security invoker set search_path = '' as $
+returns bigint language plpgsql security invoker set search_path = '' as $admission_fn$
 declare deleted_count bigint;
 begin
   delete from public.documents where id = target_id;
   get diagnostics deleted_count = row_count;
   return deleted_count;
 end;
-$;
+$admission_fn$;
 
 -- Admin role without second-factor assurance cannot add files on behalf of students.
 select pg_temp.admission_actor('90000000-0000-4000-8000-000000000003', 'aal1');
