@@ -31,5 +31,5 @@ test("solo dashboard leads with actionable priority and tasks before statistics"
 test("solo people workspace retains open unassigned cases and hides team-only filter", () => {
   assert.match(people, /work === "mine" && \(!item\.userId \|\| item\.segment === "archived"/);
   assert.match(people, /soloAdmin \? "Mon portefeuille" : "Portefeuille équipe"/);
-  assert.match(people, /!soloAdmin \? \(/);
+  assert.match(people, /\{!soloAdmin \? <label/);
 });
