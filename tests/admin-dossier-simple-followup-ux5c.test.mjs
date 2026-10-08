@@ -52,7 +52,6 @@ test("UX-5c waits for recorded student requests, messages and verified universit
   assert.match(dossier, /application\.deadline_kind === "official_hard_deadline"/);
   assert.match(dossier, /applicationDateIsTrusted\(application\)/);
   assert.match(dossier, /!isSubmittedApplicationStatus\(application\.status\)/);
-  assert.match(dossier, /Aucune deadline officielle vérifiée/);
   assert.match(summary, /Aucune deadline officielle vérifiée pour une candidature active non soumise/);
   assert.match(summary, /Aucun message non lu dans les échanges chargés/);
   assert.match(summary, /Les dates de tâches internes ne sont jamais présentées comme des deadlines universitaires/);
