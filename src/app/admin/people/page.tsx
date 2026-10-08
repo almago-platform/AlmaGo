@@ -996,7 +996,7 @@ export default async function AdminPeoplePage({
                     <p className={`mt-1 text-sm font-semibold ${person.assignedAdminName ? "text-slate-900" : "text-amber-800"}`}>
                       {person.assignedAdminName || (soloAdmin ? "Vous · sans attribution formelle" : "Non attribué")}
                     </p>
-                    <p className={`mt-1 text-[11px] font-semibold ${staleContact ? "text-amber-800" : "text-slate-500"}`}>
+                    <p className={`mt-1 text-[11px] font-semibold ${staleContact ? "text-amber-800" : "text-slate-600"}`}>
                       {person.lastContactAt
                         ? `${contactKindLabel(person.lastContactKind)} · ${formatDate(person.lastContactAt)}`
                         : "Aucun contact journalisé"}
@@ -1006,7 +1006,7 @@ export default async function AdminPeoplePage({
                   <div>
                     <p className="text-[0.68rem] font-bold uppercase tracking-[0.1em] text-[var(--muted)]">Étape</p>
                     <p className="mt-1 text-sm font-semibold text-slate-900">{person.stage}</p>
-                    <p className="mt-1 text-xs text-slate-500">{person.orientationCount} orientation{person.orientationCount > 1 ? "s" : ""}</p>
+                    <p className="mt-1 text-xs text-slate-600">{person.orientationCount} orientation{person.orientationCount > 1 ? "s" : ""}</p>
                   </div>
 
                   <div>
@@ -1014,7 +1014,7 @@ export default async function AdminPeoplePage({
                     <p className="mt-1 text-sm font-semibold text-slate-900">
                       {person.pendingDocuments} doc. · {person.activeApplications} cand.
                     </p>
-                    <p className="mt-1 text-xs text-slate-500">
+                    <p className="mt-1 text-xs text-slate-600">
                       {person.replacementDocuments
                         ? `${person.replacementDocuments} remplacement${person.replacementDocuments > 1 ? "s" : ""} · `
                         : ""}
@@ -1025,7 +1025,7 @@ export default async function AdminPeoplePage({
                   <div className="min-w-0">
                     <p className="text-[0.68rem] font-bold uppercase tracking-[0.1em] text-[var(--muted)]">Prochaine action</p>
                     <p className="mt-1 text-sm font-semibold leading-5 text-slate-900">{person.nextAction}</p>
-                    <p className="mt-1 text-xs text-slate-500">Responsable · {person.nextActionOwner}</p>
+                    <p className="mt-1 text-xs text-slate-600">Responsable · {person.nextActionOwner}</p>
                   </div>
 
                   <div>
@@ -1035,17 +1035,17 @@ export default async function AdminPeoplePage({
                         <p className={`mt-1 text-sm font-semibold ${overdue ? "text-red-700" : "text-slate-900"}`}>
                           {formatDate(person.dueDate)}
                         </p>
-                        <p className="mt-1 text-[11px] font-semibold text-slate-500">
+                        <p className="mt-1 text-[11px] font-semibold text-slate-600">
                           {person.dueKind === "official" ? "Officielle vérifiée" : "Cible interne"}
                         </p>
                       </>
                     ) : person.hasUnverifiedDeadline ? (
                       <>
                         <p className="mt-1 text-sm font-semibold text-amber-800">À vérifier</p>
-                        <p className="mt-1 text-[11px] text-slate-500">Source/date non vérifiée</p>
+                        <p className="mt-1 text-[11px] text-slate-600">Source/date non vérifiée</p>
                       </>
                     ) : (
-                      <p className="mt-1 text-sm font-semibold text-slate-500">—</p>
+                      <p className="mt-1 text-sm font-semibold text-slate-600">—</p>
                     )}
                   </div>
 
@@ -1097,7 +1097,7 @@ export default async function AdminPeoplePage({
         )}
       </section>
 
-      <p className="text-xs leading-5 text-slate-500">
+      <p className="text-xs leading-5 text-slate-600">
         « Candidat » correspond ici à une personne qualifiée, engagée dans le parcours Campus ou en phase de paiement. « Étudiant » correspond à un accès client actif. Les personnes terminées restent consultables sans être mélangées aux files actives.
       </p>
     </main>
