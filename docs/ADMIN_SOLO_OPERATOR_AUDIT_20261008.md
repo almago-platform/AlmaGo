@@ -69,8 +69,9 @@ Les validations de deadline des candidatures sont une logique séparée.
    action » au lieu d'exiger des attributions artificielles.
 4. Les audits humains Orientation V4 en attente remontent désormais dans le cockpit et la file prioritaire quand aucune urgence dossier ne précède cette revue. Ils ne publient rien automatiquement.
 5. Une action humaine visible dans « Mes prochaines actions » peut être marquée terminée depuis le bureau, après confirmation, via l'API existante et son historique. La réouverture reste possible dans Dossier 360.
-6. Aucun changement RLS, Auth, table, journal, paiement ou workflow.
-7. En mode équipe, l'ancienne logique d'attribution est conservée.
+6. Chaque personne disposant d'un dossier actif a des accès directs à Messages (avec indicateur de réponses non lues), Orientation, Actions et Historique depuis la liste Personnes, sans écrire une donnée.
+7. Aucun changement RLS, Auth, table, journal, paiement ou workflow.
+8. En mode équipe, l'ancienne logique d'attribution est conservée.
 
 ## Prochaine évolution recommandée (non livrée ici)
 
