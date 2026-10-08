@@ -2,12 +2,14 @@ import { cookies } from "next/headers";
 import { HomeHeader } from "@/components/public/HomeHeader";
 import { HomeHero } from "@/components/public/HomeHero";
 import { HomeQuickAccess } from "@/components/public/HomeQuickAccess";
-import { HomeProductPreview } from "@/components/public/HomeProductPreview";
+import { HomeAboutSection } from "@/components/public/HomeAboutSection";
+import { HomeExperiencePreview } from "@/components/public/HomeExperiencePreview";
+import { HomeServicesSection } from "@/components/public/HomeServicesSection";
 import { HomeJourneySection } from "@/components/public/HomeJourneySection";
-import { HomeTrustSection } from "@/components/public/HomeTrustSection";
 import { HomeFaqSection } from "@/components/public/HomeFaqSection";
 import { HomeFinalCta, HomeFooter } from "@/components/public/HomeClosing";
 import { getNativeCopy } from "@/content/native-copy";
+import { homepageV42Copy } from "@/content/homepage-v42-copy";
 import { rebrandCopy } from "@/lib/brand";
 import { LOCALE_COOKIE, normalizeLocale } from "@/lib/i18n";
 import { isPhase2AccessEnabled } from "@/lib/phase2/config";
@@ -17,6 +19,7 @@ export default async function Home() {
   const store = await cookies();
   const locale = normalizeLocale(store.get(LOCALE_COOKIE)?.value);
   const copy = rebrandCopy(getNativeCopy(locale));
+  const v42 = homepageV42Copy[locale];
   const phase2Enabled = isPhase2AccessEnabled();
 
   return (
@@ -32,19 +35,20 @@ export default async function Home() {
           primaryLabel={phase2Enabled ? copy.home.hero.orientationPrimary : copy.home.hero.primary}
         />
         <HomeQuickAccess quick={copy.home.quick} />
-        <HomeProductPreview />
+        <HomeAboutSection copy={v42.about} />
         <HomeJourneySection
           journey={copy.home.journey}
           photo={copy.home.photo}
           primaryHref={phase2Enabled ? "/orientation" : "/signup"}
           primaryLabel={phase2Enabled ? copy.home.hero.orientationPrimary : copy.home.journey.cta}
         />
-        <HomeTrustSection
-          tools={copy.home.tools}
-          primaryHref={phase2Enabled ? "/orientation" : "/signup"}
-          primaryLabel={phase2Enabled ? copy.home.hero.orientationPrimary : undefined}
+        <HomeExperiencePreview
+          copy={v42.experience}
+          freeHref={phase2Enabled ? "/orientation" : "/signup"}
+          rtl={locale === "ar"}
         />
-        <HomeFaqSection faq={copy.home.faq} />
+        <HomeServicesSection copy={v42.services} orientationHref={phase2Enabled ? "/orientation" : "/signup"} />
+        <HomeFaqSection faq={copy.home.faq} extraQuestions={v42.faqExtra} />
         <HomeFinalCta
           closing={copy.home.closing}
           primaryHref={phase2Enabled ? "/orientation" : "/signup"}
@@ -53,6 +57,7 @@ export default async function Home() {
       </main>
       <HomeFooter
         footer={copy.home.footer}
+        brandFooter={v42.footer}
         homeAria={copy.common.homeAria}
         phase2Enabled={phase2Enabled}
         orientationLabel={copy.home.nav.orientation}
