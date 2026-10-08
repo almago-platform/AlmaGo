@@ -2,6 +2,12 @@ import type { ReactNode } from "react";
 
 const paths = {
   arrow: <path d="M4 12h15m-6-6 6 6-6 6" />,
+  compass: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="m15.5 8.5-2.5 4.5-4.5 2.5 2.5-4.5Z" />
+    </>
+  ),
   external: (
     <>
       <path d="M14 4h6v6m0-6L9 15" />
