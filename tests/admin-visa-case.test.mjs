@@ -71,6 +71,13 @@ test("server route checks admin MFA locks and rejected foreign evidence", () => 
   assert.doesNotMatch(route,/service_role|createAdminClient/);
 });
 
+test("visa purpose and competent mission are frozen after submission", () => {
+  assert.match(migration,/visa_case_consular_route_locked_after_submission/);
+  assert.match(route,/validated\.data\.track !== current\.track/);
+  assert.match(route,/validated\.data\.mission !== current\.mission/);
+  assert.match(client,/lockedConsularRoute/);
+});
+
 test("consular source dates URLs and credentials are checked", () => {
   const now = new Date("2026-10-08T09:00:00Z");
   assert.equal(validVisaSourceDate("2026-10-08",now),true);
