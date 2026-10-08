@@ -39,6 +39,7 @@ create policy "documents admin admission insert"
   for insert to authenticated
   with check (
     (select public.is_admin())
+    and (select auth.jwt() ->> 'aal') = 'aal2'
     and uploaded_by = (select auth.uid())
     and category = 'admission'
     and mime_type = 'application/pdf'
@@ -87,6 +88,7 @@ create policy "document objects admin admission upload"
   with check (
     bucket_id = 'student-documents'
     and (select public.is_admin())
+    and (select auth.jwt() ->> 'aal') = 'aal2'
     and (storage.foldername(name))[2] = 'admissions'
     and (storage.foldername(name))[1] ~* '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
   );
@@ -98,5 +100,6 @@ create policy "document objects admin admission cleanup"
   using (
     bucket_id = 'student-documents'
     and (select public.is_admin())
+    and (select auth.jwt() ->> 'aal') = 'aal2'
     and (storage.foldername(name))[2] = 'admissions'
   );
