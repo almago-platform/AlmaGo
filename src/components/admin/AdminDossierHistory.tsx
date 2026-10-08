@@ -52,7 +52,7 @@ export function AdminDossierHistory({ events }: { events: UnifiedDossierEvent[] 
         Messages, notes, documents et candidatures enregistrés, classés par date réelle.
         Les notes du journal restent internes à Campus Allemagne. Les dates saisies a posteriori sont signalées.
       </p>
-      <div className="grid gap-3 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-3 sm:grid-cols-3">
+      <div className="grid gap-3 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-3">
         <label className="text-xs font-semibold text-slate-700">
           Type d’événement
           <select
