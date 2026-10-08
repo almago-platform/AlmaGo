@@ -7,6 +7,7 @@ const migration = read("supabase/migrations/20261008175900_admin_application_adm
 const upload = read("src/app/api/admin/dossiers/[studentId]/admissions/route.ts");
 const form = read("src/components/admin/AdminAdmissionPdfForm.tsx");
 const admin = read("src/app/admin/dossiers/[studentId]/page.tsx");
+const adminDocuments = read("src/app/admin/documents/page.tsx");
 const studentPage = read("src/app/student/applications/page.tsx");
 const studentLetters = read("src/components/student/StudentApplicationLetters.tsx");
 const studentPanel = read("src/components/student/StudentApplicationsPanel.tsx");
@@ -71,6 +72,8 @@ test("UX-5b: the admin has a short evidence form and the student sees PDFs on th
   assert.match(form, /fetch\(`\/api\/admin\/dossiers\/\$\{studentId\}\/admissions`/);
   assert.match(form, /Vérification humaine encore nécessaire/);
   assert.match(admin, /<AdminAdmissionPdfForm/);
+  assert.match(adminDocuments, /document\.category === "admission"/);
+  assert.match(adminDocuments, /admission:\$\{document\.id\}/);
   assert.match(studentPage, /\.from\("academic_evidence"\)/);
   assert.match(studentPage, /\.in\("application_id", applications\.map\(\(application\) => application\.id\)\)/);
   assert.match(studentPanel, /<StudentApplicationLetters/);
