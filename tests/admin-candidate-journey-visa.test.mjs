@@ -61,6 +61,15 @@ test("operational action logic prioritizes unanswered people before documents or
   assert.match(recommendedOperatorAction(standard), /orientation automatique/);
 });
 
+test("only officially verified deadlines may reorder the candidate work queue", () => {
+  assert.match(page, /applicationDateIsTrusted\(application\)/);
+  assert.match(page, /applicationOfficialDeadlineUrgency\(/);
+  assert.match(page, /officialRiskByStudent/);
+  assert.match(page, /officialDeadlineRisk === "overdue"/);
+  assert.match(recommendedOperatorAction({ ...standard, officialDeadlineRisk: "overdue" }), /deadline universitaire officielle vérifiée/);
+  assert.match(recommendedOperatorAction({ ...standard, officialDeadlineRisk: "within_7" }), /avant la deadline/);
+});
+
 test("displayed stage is an operational cue, never a synthetic visa verdict", () => {
   assert.equal(firstKnownMilestone(standard), "orientation");
   assert.equal(firstKnownMilestone({ ...standard, intakeStatus: "campus_review" }), "qualification");
