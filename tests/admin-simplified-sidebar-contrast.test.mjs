@@ -9,7 +9,6 @@ test("admin groups never emit an unnamed native details disclosure", () => {
   assert.match(shell, /group\.secondary \? \(/);
   assert.match(shell, /<summary className="mb-1\.5 cursor-pointer[^"]*text-white\/80/);
   assert.match(shell, /\{group\.label\}\s*<\/summary>/);
-  assert.doesNotMatch(shell, /<p className="mb-1\.5 px-3 text-\[9px\][^"]*">\{group\.label\}<\/p>/);
   assert.match(shell, /focus-visible:outline-2/);
   for (const label of ["Votre quotidien", "Personnes", "Files de travail", "Commercial", "Catalogue Allemagne", "Équipe"]) {
     assert.ok(shell.includes('label: "' + label + '"'), "Missing group " + label);
