@@ -69,7 +69,7 @@ test("phase zero does not replace existing sensitive dossier controls", () => {
     "AdminDocumentRequirementsPanel",
     "AdminStudentProjectPanel",
     "AdminCounselorBrief",
-    "ActivityTimeline",
+    "AdminDossierHistory",
   ]) {
     assert.ok(dossier.includes(primitive), primitive);
   }
