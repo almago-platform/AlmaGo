@@ -243,3 +243,38 @@ test("V4.2 preview explains free versus accompanied access in French and Arabic"
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   expect(overflow, "V4.2 preview must not cause horizontal overflow").toBeLessThanOrEqual(1);
 });
+
+
+test("V4.3 moves service choices up and keeps a balanced free preview plus six real anchors", async ({ page }, testInfo) => {
+  test.skip(!["desktop-chromium", "mobile-chromium"].includes(testInfo.project.name),
+    "Service order and compact journey need one desktop and one mobile check.");
+
+  await page.goto("/", { waitUntil: "networkidle" });
+  const ids = ["apropos", "services", "espace", "parcours", "faq"];
+  const positions = await page.evaluate((ids) =>
+    ids.map((id) => {
+      const element = document.getElementById(id);
+      return element ? element.getBoundingClientRect().top + window.scrollY : -1;
+    }), ids);
+  expect(positions.every((position) => position >= 0)).toBe(true);
+  for (let i = 1; i < positions.length; i++) {
+    expect(positions[i], ids[i] + " should appear after " + ids[i-1]).toBeGreaterThan(positions[i-1]);
+  }
+
+  await expect(page.locator("#parcours section[aria-labelledby^='journey-phase-']")).toHaveCount(3);
+  await expect(page.locator("#parcours li[id]")).toHaveCount(6);
+  for (const anchor of ["projet", "documents", "programmes", "candidatures", "depart", "suivi"]) {
+    await expect(page.locator("#" + anchor)).toHaveCount(1);
+  }
+
+  const freePanel = page.locator("#v42-panel-0");
+  await expect(freePanel.locator("article")).toHaveCount(3);
+  if (testInfo.project.name === "desktop-chromium") {
+    const boxes = await freePanel.locator("article").evaluateAll((items) =>
+      items.map((item) => item.getBoundingClientRect().top));
+    expect(Math.max(...boxes) - Math.min(...boxes), "free cards should occupy one balanced row").toBeLessThanOrEqual(2);
+  }
+
+  const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+  expect(overflow).toBeLessThanOrEqual(1);
+});
