@@ -105,6 +105,12 @@ export function AdminDocumentsPanel({
   const [evidenceEdits, setEvidenceEdits] = useState<Record<string, EvidenceEdit>>({});
   const [notice, setNotice] = useState<Notice | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
+  // Limit mounted cards and form fields; keep global queue counts unchanged.
+  const [page, setPage] = useState(1);
+  const pageSize = 25;
+  const totalPages = Math.max(1, Math.ceil(documents.length / pageSize));
+  const currentPage = Math.min(page, totalPages);
+  const visibleDocuments = documents.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
   const reviewCount = documents.filter((document) => ["pending", "reviewed"].includes(document.status)).length;
   const waitingStudentCount = documents.filter((document) => ["replace_required", "rejected"].includes(document.status)).length;
@@ -312,6 +318,23 @@ export function AdminDocumentsPanel({
         </p>
       )}
 
+      {documents.length > pageSize ? (
+        <nav aria-label="Pagination des documents" className="flex flex-wrap items-center justify-between gap-3 rounded-[var(--radius-control)] border border-[var(--border)] bg-white p-3">
+          <p className="text-sm text-[var(--foreground-soft)]" aria-live="polite">
+            Documents {(currentPage - 1) * pageSize + 1}–{Math.min(currentPage * pageSize, documents.length)} sur {documents.length}
+          </p>
+          <div className="flex items-center gap-2">
+            <Button variant="secondary" disabled={currentPage === 1} onClick={() => setPage((value) => Math.max(1, value - 1))}>
+              Précédents
+            </Button>
+            <span className="text-sm" aria-label={`Page ${currentPage} sur ${totalPages}`}>{currentPage} / {totalPages}</span>
+            <Button variant="secondary" disabled={currentPage === totalPages} onClick={() => setPage((value) => Math.min(totalPages, value + 1))}>
+              Suivants
+            </Button>
+          </div>
+        </nav>
+      ) : null}
+
       {documents.length === 0 ? (
         <PremiumEmptyState
           eyebrow="File documentaire"
@@ -321,7 +344,7 @@ export function AdminDocumentsPanel({
         />
       ) : (
         <section className="space-y-5" aria-label="Documents et preuves académiques">
-          {documents.map((document, index) => {
+          {visibleDocuments.map((document, index) => {
             const profile = Array.isArray(document.profiles) ? document.profiles[0] : document.profiles;
             const studentName = [profile?.first_name, profile?.last_name].filter(Boolean).join(" ") || "Étudiant";
             const isReplacement = document.status === "replace_required";
@@ -357,7 +380,7 @@ export function AdminDocumentsPanel({
                               ? "Document approuvé"
                               : "À vérifier"}
                       </Badge>
-                      <span className="text-xs font-semibold text-[var(--muted)]">File #{index + 1}</span>
+                      <span className="text-xs font-semibold text-[var(--muted)]">File #{(currentPage - 1) * pageSize + index + 1}</span>
                     </div>
 
                     <p className="mt-3 text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">
