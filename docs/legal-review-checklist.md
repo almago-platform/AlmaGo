@@ -73,11 +73,11 @@ Ces documents décrivent le schéma et la frontière technique actuelle, mais ne
 
 ## 5. Informations encore attendues du propriétaire
 
-Utiliser **un seul formulaire** : `docs/A38_OWNER_CONFIRMATION.md`.
+Utiliser comme source de vérité opérationnelle l’Issue **#66 (A38)** et la checklist **#22 (OWNER ACTIONS)**.
 
 Le dépôt fournit déjà les catégories de données, les sous-traitants techniques visibles et le fait qu’aucun analytics n’est actif. Le fournisseur analytics futur appartient à A44 et n’est **plus une condition préalable A38**.
 
-Le statut pré-lancement/gratuit, la configuration d’offres TND de test, la politique de conservation et la procédure de suppression sont déjà confirmés dans le formulaire propriétaire.
+Le statut pré-lancement/gratuit, la configuration d’offres TND de test, la politique de conservation et la procédure de suppression déjà décidés sont consignés dans #66/#22.
 
 A38 attend encore uniquement :
 - l’adresse publique finale et les informations d’immatriculation/fiscales réellement applicables ;
