@@ -4,8 +4,9 @@ import type { Locale } from "@/lib/i18n";
  * separated: public orientation, free prospect space and activated client area. */
 export type HomepageV42Copy = {
   nav: { about: string; journey: string; services: string; faq: string; contact: string };
+  journeyPhases: readonly [string, string, string];
   about: {
-    eyebrow: string; title: string; intro: string; missionLabel: string; mission: string;
+    eyebrow: string; title: string; intro: string; missionLabel: string; mission: string; contactLabel: string;
     valuesTitle: string; values: readonly (readonly [string, string])[]; independence: string;
   };
   experience: {
@@ -27,12 +28,14 @@ export type HomepageV42Copy = {
 export const homepageV42Copy: Record<Locale, HomepageV42Copy> = {
   fr: {
     nav: { about: "À propos", journey: "Le parcours", services: "Nos services", faq: "Questions", contact: "Contact" },
+    journeyPhases: ["S’orienter", "Choisir et candidater", "Préparer la suite"],
     about: {
       eyebrow: "À propos de Campus Allemagne",
       title: "Votre projet d’études mérite plus que des informations éparpillées.",
       intro: "Campus Allemagne est une plateforme indépendante d’information, d’orientation et d’accompagnement pour les personnes qui souhaitent étudier en Allemagne. Notre objectif : vous aider à comprendre vos possibilités et à préparer chaque étape avec clarté.",
       missionLabel: "Notre mission",
       mission: "Rendre les démarches d’études en Allemagne plus simples à comprendre, sans confondre conseils, accompagnement et décisions officielles.",
+      contactLabel: "Une question ? Contactez-nous",
       valuesTitle: "Ce qui fait notre différence",
       values: [
         ["Une orientation selon votre profil", "Vos études, vos langues et vos objectifs guident les pistes proposées."],
@@ -88,12 +91,14 @@ export const homepageV42Copy: Record<Locale, HomepageV42Copy> = {
   },
   ar: {
     nav: { about: "من نحن", journey: "مراحل الدراسة", services: "خدماتنا", faq: "الأسئلة", contact: "اتصل بنا" },
+    journeyPhases: ["تحديد الهدف", "اختيار التخصص والتقديم", "الاستعداد والمتابعة"],
     about: {
       eyebrow: "من نحن — Campus Allemagne",
       title: "مشروع دراستك يستحق أكثر من معلومات متفرقة.",
       intro: "Campus Allemagne منصة مستقلة للمعلومات والتوجيه والمرافقة للراغبين في الدراسة في ألمانيا. هدفنا مساعدتك على فهم الخيارات المتاحة والاستعداد لكل مرحلة بوضوح.",
       missionLabel: "مهمتنا",
       mission: "تبسيط خطوات الدراسة في ألمانيا، مع توضيح الفرق بين النصيحة والمرافقة والقرارات الرسمية.",
+      contactLabel: "لديك سؤال؟ تواصل معنا",
       valuesTitle: "ما الذي يميز طريقتنا؟",
       values: [
         ["توجيه حسب وضعك", "نأخذ دراستك ومستواك اللغوي وأهدافك في الاعتبار عند عرض الخيارات."],
@@ -146,12 +151,14 @@ export const homepageV42Copy: Record<Locale, HomepageV42Copy> = {
   },
   en: {
     nav: { about: "About us", journey: "The journey", services: "Services", faq: "Questions", contact: "Contact" },
+    journeyPhases: ["Explore your options", "Choose and apply", "Prepare and follow up"],
     about: {
       eyebrow: "About Campus Allemagne",
       title: "Your study plans deserve more than scattered information.",
       intro: "Campus Allemagne is an independent information, guidance and support platform for people planning to study in Germany. Our goal is to make your options and next steps easier to understand.",
       missionLabel: "Our mission",
       mission: "Make the journey towards studying in Germany clearer, while distinguishing guidance and support from official decisions.",
+      contactLabel: "Questions? Contact us",
       valuesTitle: "What makes our approach different",
       values: [
         ["Guidance based on your profile", "Your education, languages and goals shape the options to explore."],
@@ -204,12 +211,14 @@ export const homepageV42Copy: Record<Locale, HomepageV42Copy> = {
   },
   de: {
     nav: { about: "Über uns", journey: "Der Weg", services: "Leistungen", faq: "Fragen", contact: "Kontakt" },
+    journeyPhases: ["Orientieren", "Auswählen und bewerben", "Vorbereiten und begleiten"],
     about: {
       eyebrow: "Über Campus Allemagne",
       title: "Dein Studienvorhaben verdient mehr als verstreute Informationen.",
       intro: "Campus Allemagne ist eine unabhängige Plattform für Information, Orientierung und Begleitung auf dem Weg zu einem Studium in Deutschland. Wir helfen dabei, Möglichkeiten und nächste Schritte besser zu verstehen.",
       missionLabel: "Unsere Aufgabe",
       mission: "Den Weg zum Studium in Deutschland verständlicher machen und dabei Beratung, Begleitung und behördliche Entscheidungen klar unterscheiden.",
+      contactLabel: "Fragen? Kontakt aufnehmen",
       valuesTitle: "Was unseren Ansatz auszeichnet",
       values: [
         ["Orientierung für dein Profil", "Ausbildung, Sprachkenntnisse und Ziele bestimmen die Studienoptionen, die du erkunden kannst."],

@@ -9,7 +9,7 @@ const preview = readFileSync("src/components/public/HomeExperiencePreview.tsx", 
 test("V4.2 replaces the stale mock dashboard with a two-level product explanation", () => {
   assert.match(page, /<HomeExperiencePreview/);
   assert.doesNotMatch(page, /<HomeProductPreview/);
-  assert.ok(page.indexOf("<HomeJourneySection") < page.indexOf("<HomeExperiencePreview"));
+  assert.ok(page.indexOf("<HomeExperiencePreview") < page.indexOf("<HomeJourneySection"));
   assert.match(preview, /role="tablist"/);
   assert.match(preview, /role="tabpanel"/);
   assert.match(preview, /aria-selected=\{selected\}/);

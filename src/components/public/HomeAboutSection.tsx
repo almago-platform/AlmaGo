@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { HomepageV42Copy } from "@/content/homepage-v42-copy";
 import { HomeIcon } from "./HomeIcons";
 import s from "./Homepage.module.css";
@@ -14,6 +15,10 @@ export function HomeAboutSection({ copy }: { copy: HomepageV42Copy["about"] }) {
             <p className={s.v42Eyebrow}>{copy.eyebrow}</p>
             <h2 id="v42-about-title" className={s.v42Heading}>{copy.title}</h2>
             <p className={s.v42Intro}>{copy.intro}</p>
+            <div className={s.v43AboutContact}>
+              <Link href="/contact">{copy.contactLabel}<HomeIcon name="arrow" /></Link>
+              <a href="mailto:contact@campus-allemagne.info">contact@campus-allemagne.info</a>
+            </div>
           </div>
           <aside className={s.v42Mission}>
             <span className={s.v42MissionIcon} aria-hidden="true"><HomeIcon name="compass" /></span>

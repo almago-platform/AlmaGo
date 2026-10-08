@@ -132,7 +132,7 @@ const fr = {
       tagline: "Votre dossier d’études, étape par étape.",
       independent: "Plateforme indépendante",
       columns: [
-        ["Parcours", [["Les six étapes", "#parcours"], ["Outils utiles", "#outils"], ["Questions fréquentes", "#faq"]]],
+        ["Parcours", [["Les six étapes", "#parcours"], ["Questions fréquentes", "#faq"]]],
         ["Préparer", [["Mon espace", "/login"], ["Comparer les programmes", "#programmes"], ["Créer mon dossier", "/signup"]]],
         ["Repères", [["Contact", "/contact"], ["Mentions légales", "/legal/imprint"], ["Confidentialité", "/legal/privacy"], ["Conditions d’utilisation", "/legal/terms"], ["Se connecter", "/login"], ["uni-assist · source externe", "https://www.uni-assist.de/en/"]]],
       ],
@@ -381,7 +381,7 @@ const ar = {
       tagline: "رتّب طريقك إلى الدراسة في ألمانيا، خطوة بخطوة.",
       independent: "منصة مستقلة",
       columns: [
-        ["المسار", [["الخطوات الست", "#parcours"], ["أدوات مفيدة", "#outils"], ["الأسئلة الشائعة", "#faq"]]],
+        ["المسار", [["الخطوات الست", "#parcours"], ["الأسئلة الشائعة", "#faq"]]],
         ["التحضير", [["ملفي", "/login"], ["مقارنة البرامج", "#programmes"], ["أنشئ ملفك", "/signup"]]],
         ["روابط مفيدة", [["تواصل معنا", "/contact"], ["المعلومات القانونية", "/legal/imprint"], ["الخصوصية", "/legal/privacy"], ["شروط الاستخدام", "/legal/terms"], ["تسجيل الدخول", "/login"], ["uni-assist · مصدر خارجي", "https://www.uni-assist.de/en/"]]],
       ],
@@ -630,7 +630,7 @@ const en = {
       tagline: "A clearer path to studying in Germany.",
       independent: "Independent platform",
       columns: [
-        ["Journey", [["The six steps", "#parcours"], ["Useful tools", "#outils"], ["Common questions", "#faq"]]],
+        ["Journey", [["The six steps", "#parcours"], ["Common questions", "#faq"]]],
         ["Prepare", [["My workspace", "/login"], ["Compare programmes", "#programmes"], ["Get started", "/signup"]]],
         ["Useful links", [["Contact", "/contact"], ["Legal notice", "/legal/imprint"], ["Privacy", "/legal/privacy"], ["Terms of use", "/legal/terms"], ["Sign in", "/login"], ["uni-assist · external source", "https://www.uni-assist.de/en/"]]],
       ],
@@ -879,7 +879,7 @@ const de = {
       tagline: "Ein klarerer Weg zum Studium in Deutschland.",
       independent: "Unabhängige Plattform",
       columns: [
-        ["Mein Weg", [["Die sechs Schritte", "#parcours"], ["Hilfreiche Tools", "#outils"], ["Häufige Fragen", "#faq"]]],
+        ["Mein Weg", [["Die sechs Schritte", "#parcours"], ["Häufige Fragen", "#faq"]]],
         ["Vorbereiten", [["Mein Bereich", "/login"], ["Studiengänge vergleichen", "#programmes"], ["Jetzt starten", "/signup"]]],
         ["Hilfreiche Links", [["Kontakt", "/contact"], ["Impressum", "/legal/imprint"], ["Datenschutz", "/legal/privacy"], ["Nutzungsbedingungen", "/legal/terms"], ["Anmelden", "/login"], ["uni-assist · externe Quelle", "https://www.uni-assist.de/en/"]]],
       ],

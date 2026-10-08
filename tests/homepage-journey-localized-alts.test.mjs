@@ -7,12 +7,10 @@ const read = (path) => readFileSync(path, "utf8");
 const journey = read("src/components/public/HomeJourneySection.tsx");
 const copy = read("src/content/native-copy.ts");
 
-test("journey images use locale-owned alternative text instead of hard-coded English", () => {
-  assert.match(journey, /alt=\{journey\.imageAlts\[index\]\}/);
-  assert.doesNotMatch(
-    journey,
-    /Students reviewing documents outside a university building|Documents and a pen on a desk/,
-  );
+test("compact journey removes six redundant photographs while keeping the six localized steps", () => {
+  assert.doesNotMatch(journey, /<Image|images\.pexels\.com/);
+  assert.match(journey, /journey\.steps\.slice\(groupIndex \* 2, groupIndex \* 2 \+ 2\)/);
+  assert.match(journey, /id=\{stepIds\[index\]\}/);
 });
 
 test("journey image descriptions exist in all four supported languages", () => {
