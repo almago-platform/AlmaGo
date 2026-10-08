@@ -227,6 +227,9 @@ test("V4.2 preview explains free versus accompanied access in French and Arabic"
   await client.press("ArrowLeft");
   await expect(free).toHaveAttribute("aria-selected", "true");
 
+  if (await page.locator("header select:visible").count() === 0) {
+    await page.locator('header button[aria-controls="home-mobile-menu"]').click();
+  }
   const switcher = page.locator("header select:visible").first();
   await switcher.selectOption("ar");
   await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
