@@ -24,6 +24,7 @@ type StudentDocument = {
   status: string;
   admin_comment: string | null;
   created_at: string;
+  uploaded_by: string;
 };
 
 type HistoryEvent = { id: string; message: string; created_at: string };
@@ -83,12 +84,14 @@ function formatEvidenceDate(value: string | null, copy: (typeof studentDocuments
 }
 
 export function DocumentsPanel({
+  currentUserId,
   documents,
   history,
   historyLoadError = false,
   evidence,
   evidenceLoadError = false,
 }: {
+  currentUserId: string;
   documents: StudentDocument[];
   history: HistoryEvent[];
   historyLoadError?: boolean;
@@ -549,7 +552,7 @@ export function DocumentsPanel({
                     >
                       {t.list.open}
                     </a>
-                    {removableDocumentStatuses.includes(
+                    {document.uploaded_by === currentUserId && removableDocumentStatuses.includes(
                       document.status as (typeof removableDocumentStatuses)[number],
                     ) && (
                       <Button
