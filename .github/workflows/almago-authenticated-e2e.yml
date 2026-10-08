@@ -112,7 +112,6 @@ jobs:
           expected="${GITHUB_SHA:0:12}"
           health="$(curl --fail --silent --show-error --max-time 10 "$ALMAGO_BASE_URL/api/health")"
           revision="$(printf '%s' "$health" | jq -r '.revision // empty')"
-          branch="$(printf '%s' "$health" | jq -r '.branch // empty')"
           if [ "$revision" != "$expected" ]; then
             echo "::error::Authenticated E2E requires exact VPS revision $expected on main; got ${revision:-none}."
             exit 1
@@ -138,7 +137,6 @@ jobs:
           expected="${GITHUB_SHA:0:12}"
           health="$(curl --fail --silent --show-error --max-time 10 "$ALMAGO_BASE_URL/api/health")"
           revision="$(printf '%s' "$health" | jq -r '.revision // empty')"
-          branch="$(printf '%s' "$health" | jq -r '.branch // empty')"
           if [ "$revision" != "$expected" ] || [ "$branch" != "main" ]; then
             echo "::error::VPS drifted during authenticated E2E. Expected $expected on main; got ${revision:-none} on ${branch:-none}."
             exit 1
