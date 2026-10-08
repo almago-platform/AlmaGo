@@ -49,6 +49,7 @@ export default async function AdminEntry() {
     { count: intakeAttentionCount, error: intakeAttentionError },
     { count: studentQuestionCount, error: studentQuestionError },
     { count: orientationCount, error: orientationError },
+    { count: pendingOrientationReviewsCount, error: orientationReviewsError },
     { count: staleLanguageCount, error: staleLanguageError },
     { count: dueLanguageCount, error: dueLanguageError },
     { count: staleFinanceCount, error: staleFinanceError },
@@ -71,6 +72,7 @@ export default async function AdminEntry() {
     supabase.from("student_intake_cases").select("student_id", { count: "exact", head: true }).in("status", ["student_question", "campus_review", "paid_pending_validation"]),
     supabase.from("student_intake_cases").select("student_id", { count: "exact", head: true }).eq("status", "student_question"),
     supabase.from("program_recommendations").select("id", { count: "exact", head: true }).eq("is_archived", false),
+    supabase.from("orientation_human_reviews").select("id", { count: "exact", head: true }).eq("review_status", "pending"),
     supabase.from("language_courses").select("id", { count: "exact", head: true }).eq("is_active", true).lte("verified_at", staleCutoff),
     supabase.from("language_courses").select("id", { count: "exact", head: true }).eq("is_active", true).gt("verified_at", staleCutoff).lte("verified_at", dueSoonCutoff),
     supabase.from("finance_insurance_catalog").select("id", { count: "exact", head: true }).eq("is_active", true).lte("verified_at", staleCutoff),
@@ -91,7 +93,7 @@ export default async function AdminEntry() {
 
   if (
     universitiesError || programsError || applicationsError || documentsError
-    || intakeAttentionError || studentQuestionError || orientationError
+    || intakeAttentionError || studentQuestionError || orientationError || orientationReviewsError
     || staleLanguageError || dueLanguageError || staleFinanceError || dueFinanceError
     || unreadNotificationsResult.error || adminRolesResult.error || accessRowsResult.error || intakeRowsResult.error
     || assignmentsResult.error || recentContactsResult.error || actionsResult.error || applicationRowsResult.error
@@ -110,6 +112,7 @@ export default async function AdminEntry() {
   const studentQuestions = studentQuestionCount || 0;
   const applications = applicationCount || 0;
   const orientations = orientationCount || 0;
+  const pendingOrientationReviews = pendingOrientationReviewsCount || 0;
   const catalogue = (universityCount || 0) + (programCount || 0);
   const staleLanguage = staleLanguageCount || 0;
   const dueLanguage = dueLanguageCount || 0;
@@ -391,6 +394,14 @@ export default async function AdminEntry() {
               href: "/admin/applications",
               action: "Suivre les candidatures",
             }
+          : pendingOrientationReviews > 0
+            ? {
+                badge: "Audits d’orientation",
+                title: `${pendingOrientationReviews} orientation${pendingOrientationReviews > 1 ? "s" : ""} à auditer`,
+                description: "Les résultats automatiques ont déjà été remis. Il reste à effectuer le contrôle qualité humain ; aucune recommandation étudiant n’est publiée par cette revue.",
+                href: "/admin/orientation",
+                action: "Examiner les orientations",
+              }
           : staleCatalogue > 0
             ? {
                 badge: "Catalogue à revalider",
@@ -752,10 +763,10 @@ export default async function AdminEntry() {
             />
             <AdminQueueRow
               href="/admin/orientation"
-              title="Orientations publiées"
-              value={orientations}
-              detail="Recommandations actives enregistrées"
-              tone="neutral"
+              title="Audits d’orientation en attente"
+              value={pendingOrientationReviews}
+              detail={`${orientations} recommandation${orientations > 1 ? "s" : ""} publiée${orientations > 1 ? "s" : ""} · revue humaine distincte`}
+              tone={pendingOrientationReviews ? "warning" : "neutral"}
             />
             <AdminQueueRow
               href="/admin/universities"
