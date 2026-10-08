@@ -6,21 +6,23 @@ import { BrandLogo } from "@/components/brand/BrandLogo";
 import { LanguageSwitcher } from "@/components/i18n/LanguageSwitcher";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { HomeIcon } from "./HomeIcons";
+import { homepageV42Copy } from "@/content/homepage-v42-copy";
 import s from "./Homepage.module.css";
 
 export function HomeHeader({ phase2Enabled = false }: { phase2Enabled?: boolean }) {
   const [open, setOpen] = useState(false);
   const toggle = useRef<HTMLButtonElement>(null);
-  const { copy } = useLocale();
+  const { copy, locale } = useLocale();
+  const marketingNav = homepageV42Copy[locale].nav;
   const nav = copy.home.nav;
   const primaryHref = phase2Enabled ? "/orientation" : "/signup";
   const primaryLabel = phase2Enabled ? nav.orientation : nav.signup;
   const navigation: Array<readonly [string, string]> = [
-    [nav.journey, "#parcours"],
-    [nav.space, "/login"],
-    [nav.why, "#outils"],
-    [nav.questions, "#faq"],
-    [nav.contact, "/contact"],
+    [marketingNav.about, "#apropos"],
+    [marketingNav.journey, "#parcours"],
+    [marketingNav.services, "#services"],
+    [marketingNav.faq, "#faq"],
+    [marketingNav.contact, "/contact"],
   ];
 
   return (
