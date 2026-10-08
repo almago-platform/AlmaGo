@@ -52,7 +52,7 @@ test("the UX master plan preserves canonical procedure rules and review gates", 
   assert.match(plan, /UX-0/);
   assert.match(plan, /UX-8/);
   assert.match(plan, /RLS/);
-  assert.match(plan, /aucune nouvelle requête Supabase/);
+  assert.match(plan, /pas de nouvelle requête Supabase/i);
   assert.match(plan, /pas de date officielle sans source/i);
   assert.match(plan, /Ne pas tout fusionner d'un coup/);
 });
