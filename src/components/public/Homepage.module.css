@@ -8795,3 +8795,467 @@
     box-shadow: 0 0 0 5px #171c1f;
   }
 }
+
+
+/* Homepage V4.2 | identity, transparent service levels and current product preview */
+.v42About,
+.v42Experience,
+.v42Services {
+  position: relative;
+  isolation: isolate;
+  scroll-margin-top: 96px;
+}
+.v42Anchor {
+  position: absolute;
+  inset-block-start: 0;
+  width: 1px;
+  height: 1px;
+  scroll-margin-top: 96px;
+}
+.v42Eyebrow {
+  margin: 0 0 20px;
+  color: #d9002b;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .15em;
+  line-height: 1.5;
+  text-transform: uppercase;
+}
+.v42Heading {
+  max-width: 17ch;
+  margin: 0;
+  color: #1b2226;
+  font-size: clamp(37px, 4.05vw, 60px);
+  font-weight: 740;
+  letter-spacing: -.052em;
+  line-height: 1.085;
+  text-wrap: balance;
+}
+.v42Intro {
+  max-width: 690px;
+  margin: 24px 0 0;
+  color: #536068;
+  font-size: clamp(15px, 1.2vw, 18px);
+  line-height: 1.8;
+}
+.v42About {
+  padding-block: clamp(66px, 7vw, 105px);
+  background:
+    radial-gradient(circle at 88% 16%, rgba(252, 181, 10, .11), transparent 28%),
+    linear-gradient(180deg, #fffdf9, #f7f4ed);
+}
+.v42AboutMain {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(300px, .75fr);
+  gap: clamp(30px, 5vw, 86px);
+  align-items: center;
+}
+.v42Mission {
+  padding: clamp(28px, 3.5vw, 48px);
+  border: 1px solid rgba(255, 255, 255, .13);
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 96% 0%, rgba(221, 0, 44, .25), transparent 55%),
+    #1b2327;
+  color: #fffdf8;
+  box-shadow: 0 22px 48px -35px rgba(15, 22, 26, .6);
+}
+.v42MissionIcon,
+.v42ValueIcon,
+.v42ServiceIcon,
+.v42FeatureIcon,
+.v42PanelSymbol {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+}
+.v42MissionIcon {
+  width: 58px;
+  height: 58px;
+  margin-bottom: 36px;
+  border: 1px solid rgba(255, 203, 82, .35);
+  border-radius: 18px;
+  background: rgba(252, 181, 10, .11);
+  color: #ffc547;
+}
+.v42MissionIcon svg { width: 30px; height: 30px; }
+.v42MissionLabel {
+  margin: 0 0 15px;
+  color: #ffc547;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+}
+.v42MissionText {
+  margin: 0;
+  font-size: clamp(19px, 1.7vw, 25px);
+  font-weight: 570;
+  line-height: 1.48;
+}
+.v42ValuesHeading {
+  margin: clamp(48px, 5vw, 72px) 0 22px;
+  color: #21292d;
+  font-size: clamp(24px, 2.45vw, 34px);
+  font-weight: 720;
+  letter-spacing: -.035em;
+}
+.v42Values {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+.v42ValueCard {
+  min-width: 0;
+  padding: 28px 25px;
+  border: 1px solid #e5e0d7;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, .91);
+  box-shadow: 0 14px 32px -28px rgba(25, 29, 31, .45);
+}
+.v42ValueIcon {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 22px;
+  border-radius: 14px;
+  background: #fcebef;
+  color: #d9002b;
+}
+.v42ValueIcon svg { width: 24px; height: 24px; }
+.v42ValueCard h4 {
+  margin: 0 0 9px;
+  color: #20262a;
+  font-size: 17px;
+  font-weight: 730;
+  line-height: 1.35;
+}
+.v42ValueCard p {
+  margin: 0;
+  color: #5b646a;
+  font-size: 14px;
+  line-height: 1.67;
+}
+.v42Independent {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  max-width: 940px;
+  margin: 25px 0 0;
+  color: #5e6467;
+  font-size: 12.5px;
+  line-height: 1.7;
+}
+.v42Independent svg { flex: 0 0 19px; color: #d9002b; }
+.v42Experience {
+  padding-block: clamp(70px, 8vw, 105px);
+  background:
+    radial-gradient(circle at 90% 2%, rgba(219, 0, 43, .18), transparent 28%),
+    linear-gradient(160deg, #1b2226, #151b1f);
+}
+.v42ExperienceHeading {
+  max-width: 800px;
+  margin-bottom: clamp(28px, 4vw, 44px);
+}
+.v42Experience .v42Eyebrow { color: #ffc247; }
+.v42Experience .v42Heading {
+  max-width: 22ch;
+  color: #fffdf8;
+}
+.v42Experience .v42Intro { color: rgba(255, 253, 248, .78); }
+.v42ExperienceShell {
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, .16);
+  border-radius: 25px;
+  background: #fcfaf6;
+  box-shadow: 0 32px 65px -36px rgba(0, 0, 0, .7);
+}
+.v42ExperienceTop {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px 24px;
+  padding: 20px 28px;
+  background: #242b2f;
+  color: #fffdf8;
+}
+.v42Tablist {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.v42Tablist button {
+  min-height: 44px;
+  padding: 10px 19px;
+  border: 1px solid rgba(255, 255, 255, .22);
+  border-radius: 999px;
+  background: transparent;
+  color: #f2ede5;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+  transition: background .18s ease, color .18s ease, border-color .18s ease;
+}
+.v42Tablist button[aria-selected="true"] {
+  border-color: #ffd065;
+  background: #ffd065;
+  color: #172026;
+}
+.v42Tablist button:hover:not([aria-selected="true"]) {
+  background: rgba(255,255,255,.12);
+}
+.v42Tablist button:focus-visible,
+.v42ExperiencePanel:focus-visible,
+.v42PanelAction:focus-visible,
+.v42ServiceAction:focus-visible {
+  outline: 3px solid #ffc547;
+  outline-offset: 3px;
+}
+.v42Fiction {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 7px;
+  max-width: 360px;
+  color: rgba(255, 253, 248, .77);
+  font-size: 11px;
+  line-height: 1.5;
+}
+.v42Fiction svg { width: 15px; height: 15px; flex: 0 0 15px; }
+.v42ExperiencePanel {
+  padding: clamp(24px, 4vw, 46px);
+  color: #20272a;
+}
+.v42ExperiencePanel[hidden] { display: none; }
+.v42ExperiencePanelHead {
+  display: flex;
+  justify-content: space-between;
+  gap: 22px;
+  align-items: flex-start;
+  margin-bottom: 27px;
+}
+.v42PanelKicker {
+  margin: 0 0 10px;
+  color: #c4002c;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+.v42ExperiencePanelHead h3 {
+  margin: 0;
+  font-size: clamp(26px, 3vw, 37px);
+  line-height: 1.15;
+  font-weight: 740;
+  letter-spacing: -.035em;
+}
+.v42ExperiencePanelHead p:not(.v42PanelKicker) {
+  max-width: 670px;
+  margin: 12px 0 0;
+  color: #677078;
+  font-size: 15px;
+  line-height: 1.65;
+}
+.v42PanelSymbol {
+  width: 60px;
+  height: 60px;
+  border-radius: 18px;
+  background: #f8e8eb;
+  color: #cc002d;
+}
+.v42PanelSymbol svg { width: 30px; height: 30px; }
+.v42FeatureGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+.v42Feature {
+  display: grid;
+  grid-template-columns: 46px minmax(0, 1fr);
+  column-gap: 15px;
+  align-content: start;
+  padding: 22px;
+  border: 1px solid #e6e0d6;
+  border-radius: 15px;
+  background: #fffdf9;
+}
+.v42FeatureIcon {
+  grid-row: span 2;
+  width: 42px;
+  height: 42px;
+  border-radius: 13px;
+  background: #fff0d4;
+  color: #9d6200;
+}
+.v42Feature h4 {
+  margin: 0 0 6px;
+  color: #20282c;
+  font-size: 16px;
+  line-height: 1.35;
+  font-weight: 750;
+}
+.v42Feature p {
+  margin: 0;
+  color: #5f686e;
+  font-size: 13px;
+  line-height: 1.65;
+}
+.v42PanelFoot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  margin-top: 26px;
+  padding-top: 23px;
+  border-top: 1px solid #e5dfd4;
+}
+.v42PanelFoot p {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  max-width: 640px;
+  margin: 0;
+  color: #60696f;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.v42PanelFoot p svg { flex: 0 0 18px; width: 18px; }
+.v42PanelAction {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  gap: 13px;
+  padding: 11px 19px;
+  border-radius: 10px;
+  background: #dc002d;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 750;
+  text-decoration: none;
+  transition: background .2s ease;
+}
+.v42PanelAction:hover { background: #b60027; color: #fff; }
+.v42Services {
+  padding-block: clamp(68px, 7vw, 100px);
+  background: linear-gradient(180deg, #f8f4eb, #fffdf8);
+}
+.v42ServicesHeading {
+  max-width: 800px;
+  margin-bottom: 38px;
+}
+.v42ServiceGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+.v42ServiceCard {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-height: 310px;
+  padding: 31px 27px 27px;
+  border: 1px solid #e7e0d7;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 16px 32px -29px rgba(25, 29, 31, .4);
+}
+.v42ServiceCard:first-child {
+  border-color: #f1bcc5;
+  background: linear-gradient(155deg, #fff8f8, #fff);
+}
+.v42ServiceTag {
+  margin-bottom: 25px;
+  color: #ad0025;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .09em;
+  line-height: 1.5;
+}
+.v42ServiceIcon {
+  width: 47px;
+  height: 47px;
+  margin-bottom: 17px;
+  border-radius: 14px;
+  background: #fbe8ed;
+  color: #d5002c;
+}
+.v42ServiceIcon svg { width: 25px; height: 25px; }
+.v42ServiceCard h3 {
+  margin: 0 0 10px;
+  color: #1c2428;
+  font-size: 23px;
+  font-weight: 730;
+  letter-spacing: -.025em;
+  line-height: 1.24;
+}
+.v42ServiceCard > p {
+  margin: 0 0 30px;
+  color: #5c6870;
+  font-size: 14px;
+  line-height: 1.7;
+}
+.v42ServiceAction {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  margin-top: auto;
+  padding-bottom: 2px;
+  border-bottom: 1px solid #cc002a;
+  color: #bb0029;
+  font-size: 13px;
+  font-weight: 760;
+  text-decoration: none;
+}
+.v42ServiceAction:hover { color: #8f001d; }
+.v42ServiceNote {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 24px 0 0;
+  color: #5c666c;
+  font-size: 12px;
+  line-height: 1.65;
+}
+.v42ServiceNote svg { width: 19px; height: 19px; flex: 0 0 19px; color: #bf0029; }
+:global(html[dir="rtl"]) .v42PanelAction svg,
+:global(html[dir="rtl"]) .v42ServiceAction svg { transform: scaleX(-1); }
+@media (max-width: 1050px) {
+  .v42AboutMain { grid-template-columns: 1fr; }
+  .v42Mission { max-width: 760px; }
+}
+@media (max-width: 899px) {
+  .v42Values { grid-template-columns: 1fr; }
+  .v42ValueCard { display: grid; grid-template-columns: 50px minmax(0, 1fr); column-gap: 18px; }
+  .v42ValueIcon { grid-row: span 2; margin: 0; }
+  .v42ServiceGrid { grid-template-columns: 1fr; }
+  .v42ServiceCard { min-height: 0; }
+  .v42ServiceCard > p { margin-bottom: 16px; }
+  .v42ServiceTag { margin-bottom: 15px; }
+}
+@media (max-width: 599px) {
+  .v42About, .v42Experience, .v42Services { padding-block: 56px; }
+  .v42Heading { max-width: none; font-size: clamp(33px, 9vw, 43px); }
+  .v42Intro { margin-top: 16px; font-size: 14.5px; line-height: 1.7; }
+  .v42Mission { border-radius: 18px; padding: 25px; }
+  .v42MissionIcon { margin-bottom: 22px; }
+  .v42ValueCard { padding: 22px 19px; }
+  .v42ValueCard h4 { font-size: 16px; }
+  .v42ValueCard p { font-size: 13px; }
+  .v42ExperienceTop { padding: 18px; }
+  .v42Tablist { width: 100%; }
+  .v42Tablist button { flex: 1 1 auto; padding-inline: 11px; }
+  .v42ExperiencePanel { padding: 22px 17px; }
+  .v42ExperiencePanelHead h3 { font-size: 27px; }
+  .v42PanelSymbol { width: 43px; height: 43px; }
+  .v42PanelSymbol svg { width: 22px; height: 22px; }
+  .v42FeatureGrid { grid-template-columns: 1fr; }
+  .v42Feature { padding: 17px; grid-template-columns: 39px minmax(0, 1fr); gap: 10px; }
+  .v42FeatureIcon { width: 35px; height: 35px; }
+  .v42PanelAction { width: 100%; }
+  .v42ServiceCard { padding: 26px 23px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .v42Tablist button, .v42PanelAction { transition: none; }
+}

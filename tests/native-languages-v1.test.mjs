@@ -131,7 +131,7 @@ test("Arabic Native Polish V2 uses Arabic typography instead of Latin tracking",
 
 test("Arabic public copy is written as direct native guidance", () => {
   assert.match(copy, /طريقك إلى الدراسة في ألمانيا/);
-  assert.match(copy, /قارن البرامج، رتّب مستنداتك/);
+  assert.match(copy, /ابدأ بتوجيه مجاني، اكتشف الخيارات المتاحة/);
   assert.match(copy, /ست خطوات/);
   assert.match(copy, /اختر نقطة البداية المناسبة لك/);
   assert.match(copy, /أنشئ ملفك/);

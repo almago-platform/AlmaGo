@@ -3,8 +3,9 @@ import { HomeIcon } from "./HomeIcons";
 import s from "./Homepage.module.css";
 
 type FaqCopy = ReturnType<typeof getNativeCopy>["home"]["faq"];
+type ExtraQuestions = readonly (readonly [string, string])[];
 
-export function HomeFaqSection({ faq }: { faq: FaqCopy }) {
+export function HomeFaqSection({ faq, extraQuestions = [] }: { faq: FaqCopy; extraQuestions?: ExtraQuestions }) {
   return (
     <section id="faq" className={`${s.section} ${s.faq}`} aria-labelledby="faq-title">
       <div className={`${s.container} ${s.faqGrid}`}>
@@ -22,7 +23,7 @@ export function HomeFaqSection({ faq }: { faq: FaqCopy }) {
           </a>
         </div>
         <div className={s.faqList}>
-          {faq.items.map(([question, answer], index) => (
+          {[...extraQuestions, ...faq.items].map(([question, answer], index) => (
             <details key={question} open={index === 0}>
               <summary>
                 <span>{question}</span>

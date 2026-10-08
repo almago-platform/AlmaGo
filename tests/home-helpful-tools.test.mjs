@@ -2,52 +2,34 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
 
-const section = readFileSync("src/components/public/HomeTrustSection.tsx", "utf8");
-const header = readFileSync("src/components/public/HomeHeader.tsx", "utf8");
-const nativeCopy = readFileSync("src/content/native-copy.ts", "utf8");
-const icons = readFileSync("src/components/public/HomeIcons.tsx", "utf8");
-const css = readFileSync("src/components/public/Homepage.module.css", "utf8");
+const read = (path) => readFileSync(path, "utf8");
+const page = read("src/app/page.tsx");
+const header = read("src/components/public/HomeHeader.tsx");
+const about = read("src/components/public/HomeAboutSection.tsx");
+const services = read("src/components/public/HomeServicesSection.tsx");
+const copy = read("src/content/homepage-v42-copy.ts");
+const css = read("src/components/public/Homepage.module.css");
 
-test("homepage keeps three helpful tools in the localized content source", () => {
-  assert.ok(nativeCopy.includes('eyebrow: "Pour avancer"'));
-  assert.ok(nativeCopy.includes('"Voir par où commencer"'));
-  assert.ok(nativeCopy.includes('"Comparer les programmes"'));
-  assert.ok(nativeCopy.includes('"Vérifier une information"'));
-  assert.ok(!section.includes("Des sources visibles"));
-  assert.ok(section.includes("tools.items.map"));
+test("V4.2 presents who we are, what is different and what is offered", () => {
+  assert.match(page, /<HomeAboutSection/);
+  assert.match(page, /<HomeServicesSection/);
+  assert.match(about, /copy\.mission/);
+  assert.match(about, /copy\.values\.map/);
+  assert.match(services, /copy\.options\.map/);
 });
 
-test("helpful tools use dedicated large visual icons", () => {
-  assert.ok(icons.includes("certificate:"));
-  assert.ok(icons.includes("university:"));
-  assert.ok(icons.includes("globe:"));
-  assert.ok(css.includes(".helpfulToolIcon {"));
-  assert.ok(css.includes("width: 150px"));
-  assert.ok(css.includes(".helpfulToolIcon svg {"));
-  assert.ok(css.includes("width: 78px"));
+test("navigation links to actual V4.2 destinations, including mobile", () => {
+  assert.match(header, /\[marketingNav\.about, "#apropos"\]/);
+  assert.match(header, /\[marketingNav\.services, "#services"\]/);
+  assert.match(header, /\[marketingNav\.contact, "\/contact"\]/);
+  assert.match(about, /id="apropos"/);
+  assert.match(services, /id="services"/);
+  assert.equal((header.match(/navigation\.map/g) || []).length, 2);
 });
 
-test("navigation targets the localized helpful-tools section", () => {
-  assert.ok(header.includes('[nav.why, "#outils"]'));
-  assert.ok(nativeCopy.includes('why: "Pourquoi AlmaGo"'));
-  assert.ok(!header.includes("Voir les outils utiles"));
-  assert.ok(section.includes('id="outils"'));
-});
-
-test("helpful tools retain mobile stacked cards", () => {
-  assert.ok(css.includes("@media (max-width: 599px)"));
-  assert.ok(css.includes(".helpfulToolsGrid {"));
-  assert.ok(css.includes("grid-template-columns: 1fr"));
-  assert.ok(css.includes(".helpfulToolCard:focus-visible"));
-});
-
-
-test("premium helpful tools create a clear visual hierarchy", () => {
-  assert.match(section, /className=\{s\.helpfulToolIndex\}/);
-  assert.match(css, /Homepage tools \+ FAQ V2/);
-  assert.match(css, /\.helpfulToolCard:first-child/);
-  assert.match(css, /\.helpfulToolIndex/);
-  assert.match(css, /\.helpfulToolCard:hover/);
-  assert.match(css, /\.helpfulToolCard:nth-child\(2\)::before/);
-  assert.match(css, /@media \(max-width: 767px\)[\s\S]*\.helpfulToolCard[\s\S]*grid-template-columns:\s*62px minmax\(0, 1fr\)/);
+test("new cards support responsive layouts and the brand copy is localized", () => {
+  assert.match(css, /\.v42Values\s*\{[\s\S]*grid-template-columns: repeat\(3, minmax\(0, 1fr\)\)/);
+  assert.match(css, /\.v42ServiceGrid\s*\{[\s\S]*grid-template-columns: repeat\(3, minmax\(0, 1fr\)\)/);
+  assert.match(css, /@media \(max-width: 899px\)[\s\S]*\.v42ServiceGrid\s*\{ grid-template-columns: 1fr/);
+  for (const locale of ["fr", "ar", "en", "de"]) assert.match(copy, new RegExp("^  " + locale + ": \\{", "m"));
 });

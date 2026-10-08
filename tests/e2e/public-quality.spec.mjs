@@ -126,7 +126,7 @@ test("native language switch persists and Arabic renders RTL without overflow", 
   expect(rtlOverflow, "Arabic homepage must not overflow horizontally").toBeLessThanOrEqual(1);
 
   const heroCopy = page.getByRole("heading", { name: /خطّط لدراستك/ }).locator("..");
-  const heroDossier = page.locator('aside[aria-label="مثال على ملف Campus Allemagne"]');
+  const heroDossier = page.locator('aside[aria-label="مثال على مسارك في Campus Allemagne"]');
   await expect(heroDossier).toBeVisible();
   const [heroCopyBox, heroDossierBox] = await Promise.all([
     heroCopy.boundingBox(),
@@ -209,4 +209,37 @@ test("homepage smoke covers all four locales", async ({ page }, testInfo) => {
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
     expect(overflow, `homepage must not overflow in ${locale}`).toBeLessThanOrEqual(1);
   }
+});
+
+test("V4.2 preview explains free versus accompanied access in French and Arabic", async ({ page }, testInfo) => {
+  test.skip(
+    !["desktop-chromium", "mobile-chromium"].includes(testInfo.project.name),
+    "Check the new interactive explanation at representative desktop and mobile widths.",
+  );
+
+  await page.goto("/", { waitUntil: "networkidle" });
+  const free = page.getByRole("tab", { name: "Compte gratuit" });
+  const client = page.getByRole("tab", { name: "Accompagnement" });
+  await expect(free).toHaveAttribute("aria-selected", "true");
+  await client.click();
+  await expect(client).toHaveAttribute("aria-selected", "true");
+  await expect(page.getByRole("heading", { name: "Votre dossier, plus loin." })).toBeVisible();
+  await client.press("ArrowLeft");
+  await expect(free).toHaveAttribute("aria-selected", "true");
+
+  if (await page.locator("header select:visible").count() === 0) {
+    await page.locator('header button[aria-controls="home-mobile-menu"]').click();
+  }
+  const switcher = page.locator("header select:visible").first();
+  await switcher.selectOption("ar");
+  await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
+  const arabicFree = page.getByRole("tab", { name: "الحساب المجاني" });
+  const arabicClient = page.getByRole("tab", { name: "المرافقة" });
+  await expect(arabicFree).toHaveAttribute("aria-selected", "true");
+  await arabicFree.press("ArrowLeft");
+  await expect(arabicClient).toHaveAttribute("aria-selected", "true");
+  await expect(page.getByRole("heading", { name: "متابعة أشمل لملفك." })).toBeVisible();
+
+  const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+  expect(overflow, "V4.2 preview must not cause horizontal overflow").toBeLessThanOrEqual(1);
 });

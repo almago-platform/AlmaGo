@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { BrandLogo } from "@/components/brand/BrandLogo";
 import type { getNativeCopy } from "@/content/native-copy";
+import type { HomepageV42Copy } from "@/content/homepage-v42-copy";
 import { HomeIcon } from "./HomeIcons";
 import s from "./Homepage.module.css";
 
@@ -51,11 +52,13 @@ export function HomeFinalCta({
 
 export function HomeFooter({
   footer,
+  brandFooter,
   homeAria,
   phase2Enabled = false,
   orientationLabel,
 }: {
   footer: FooterCopy;
+  brandFooter?: HomepageV42Copy["footer"];
   homeAria: string;
   phase2Enabled?: boolean;
   orientationLabel?: string;
@@ -68,15 +71,16 @@ export function HomeFooter({
             <Link href="/" className={`${s.logo} ${s.footerLogoLink}`} aria-label={homeAria}>
               <BrandLogo className={s.footerLogoImage} />
             </Link>
-            <p>{footer.tagline}</p>
+            <p>{brandFooter?.tagline ?? footer.tagline}</p>
             <span className={s.footerIndependence}>{footer.independent}</span>
           </div>
 
-          {footer.columns.map(([title, links]) => (
+          {footer.columns.map(([title, links], index) => (
             <FooterColumn
               key={title}
               title={title}
               links={links}
+              extraLinks={index === 0 && brandFooter ? [[brandFooter.about, "#apropos"], [brandFooter.services, "#services"]] : []}
               phase2Enabled={phase2Enabled}
               orientationLabel={orientationLabel}
             />
@@ -103,11 +107,13 @@ export function HomeFooter({
 function FooterColumn({
   title,
   links,
+  extraLinks = [],
   phase2Enabled,
   orientationLabel,
 }: {
   title: string;
   links: readonly (readonly [string, string])[];
+  extraLinks?: readonly (readonly [string, string])[];
   phase2Enabled: boolean;
   orientationLabel?: string;
 }) {
@@ -115,7 +121,7 @@ function FooterColumn({
     <nav aria-label={title}>
       <h2>{title}</h2>
       <ul>
-        {links.map(([label, href]) => {
+        {[...extraLinks, ...links].map(([label, href]) => {
           const orientationLink = phase2Enabled && href === "/signup";
           const resolvedHref = orientationLink ? "/orientation" : href;
           const resolvedLabel = orientationLink && orientationLabel ? orientationLabel : label;
