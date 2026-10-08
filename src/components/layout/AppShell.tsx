@@ -57,7 +57,9 @@ const studentGroupIndexes = [
 ] as const;
 
 const adminItems: NavItem[] = [
-  { label: "Vue d’ensemble", href: "/admin", icon: icons.dashboard, helper: "Priorités de l’équipe" },
+  { label: "Mon bureau", href: "/admin", icon: icons.dashboard, helper: "Décider quoi faire maintenant" },
+  { label: "Centre de traitement", href: "/admin/traitement", icon: icons.documents, helper: "Messages, documents, candidatures" },
+  { label: "Accompagnement A à Z", href: "/admin/accompagnement", icon: icons.checklist, helper: "Du premier contact à l’arrivée" },
   { label: "Boîte de réception", href: "/admin/inbox", icon: icons.documents, helper: "Événements à traiter" },
   { label: "Équipe", href: "/admin/team", icon: icons.profile, helper: "Charge et attribution" },
   { label: "Personnes", href: "/admin/people", icon: icons.profile, helper: "Prospects, candidats et étudiants" },
@@ -123,30 +125,35 @@ export function AppShell({
   const currentAdminItems = adminItems;
   const adminGroups = [
     {
-      label: "Pilotage",
+      label: "Votre quotidien",
       items: currentAdminItems.filter((item) =>
-        ["/admin", "/admin/inbox", "/admin/team"].includes(item.href),
+        ["/admin", "/admin/traitement", "/admin/accompagnement"].includes(item.href),
       ),
+      secondary: false,
     },
     {
       label: "Personnes",
       items: currentAdminItems.filter((item) =>
         ["/admin/people", "/admin/prospects"].includes(item.href),
       ),
+      secondary: false,
     },
     {
       label: "Files de travail",
       items: currentAdminItems.filter((item) =>
-        ["/admin/intake", "/admin/documents", "/admin/applications", "/admin/orientation", "/admin/payments"].includes(item.href),
+        ["/admin/inbox", "/admin/intake", "/admin/documents", "/admin/applications", "/admin/orientation", "/admin/payments"].includes(item.href),
       ),
+      secondary: true,
     },
-    { label: "Commercial", items: currentAdminItems.filter((item) => item.href === "/admin/offers") },
+    { label: "Commercial", items: currentAdminItems.filter((item) => item.href === "/admin/offers"), secondary: true },
     {
       label: "Catalogue Allemagne",
       items: currentAdminItems.filter((item) =>
         ["/admin/universities", "/admin/programs", "/admin/language-courses", "/admin/finance-insurance"].includes(item.href),
       ),
+      secondary: true,
     },
+    { label: "Équipe", items: currentAdminItems.filter((item) => item.href === "/admin/team"), secondary: true },
   ];
   const items = role === "admin" ? currentAdminItems : localizedStudentItems;
   const currentItem = items.find((item) => isActive(pathname, item.href)) || items[0];
@@ -196,9 +203,15 @@ export function AppShell({
           {role === "admin" ? (
             <div className="space-y-4">
               {adminGroups.map((group) => (
-                <div key={group.label}>
-                  <p className="mb-1.5 px-3 text-[9px] font-bold uppercase tracking-[0.16em] text-[var(--muted)]">{group.label}</p>
-                  <div className="space-y-1">
+                <details key={group.label} open={group.secondary ? (group.items.some((item) => isActive(pathname, item.href)) ? true : undefined) : true} className="group">
+                  {group.secondary ? (
+                    <summary className="cursor-pointer list-item rounded-[var(--radius-control)] px-3 py-2 text-xs font-semibold text-[var(--foreground)] hover:bg-[var(--surface-subtle)]">
+                      {group.label} · {group.items.length}
+                    </summary>
+                  ) : (
+                    <p className="mb-1.5 px-3 text-[9px] font-bold uppercase tracking-[0.16em] text-[var(--muted)]">{group.label}</p>
+                  )}
+                  <div className={group.secondary ? "mt-2 space-y-1 border-l border-[var(--border)] pl-2" : "space-y-1"}>
                     {group.items.map((item) => {
                       const active = isActive(pathname, item.href);
                       return (
@@ -218,7 +231,7 @@ export function AppShell({
                       );
                     })}
                   </div>
-                </div>
+                </details>
               ))}
             </div>
           ) : (
@@ -392,7 +405,7 @@ export function AppShell({
                 <div id="admin-mobile-menu" className="max-h-[calc(100svh-4rem)] overflow-y-auto overscroll-contain border-t border-[var(--border)] bg-[var(--surface-subtle)] px-3 py-4 min-[360px]:px-4">
                   <div className="mb-4 rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--brand-soft)]/65 p-3.5">
                     <p className="text-xs font-bold text-[var(--foreground)]">Espace administration</p>
-                    <p className="mt-1 text-xs leading-5 text-[var(--muted)]">Choisissez la file de travail ou la partie du catalogue à gérer.</p>
+                    <p className="mt-1 text-xs leading-5 text-[var(--muted)]">Vos tâches essentielles d’abord. Les autres modules restent accessibles.</p>
                   </div>
 
                   <nav className="grid gap-2 sm:grid-cols-2" aria-label="Navigation administration mobile">

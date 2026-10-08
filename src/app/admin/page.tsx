@@ -479,6 +479,24 @@ export default async function AdminEntry() {
         </Card>
       </section>
 
+      <section aria-label="Accès rapides" className="mb-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        {[
+          { title: "Mes dossiers", number: myCases, href: "/admin/people?work=mine", detail: "Personnes à accompagner" },
+          { title: "À décider", number: intakeAttention, href: "/admin/intake", detail: "Parcours ou validation Campus" },
+          { title: "Sans prochaine action", number: missingNextActionCases, href: "/admin/people?work=no_action", detail: "Planifier le suivi" },
+          { title: "Documents à vérifier", number: documents, href: "/admin/documents", detail: "Pièces en attente" },
+        ].map((signal) => (
+          <Link key={signal.href} href={signal.href} className="group rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-4 transition-colors hover:border-[var(--brand-border)] hover:shadow-sm">
+            <p className="text-xs font-bold text-slate-600">{signal.title}</p>
+            <div className="mt-2 flex items-center justify-between gap-3">
+              <strong className="text-3xl font-bold tabular-nums text-slate-950">{signal.number}</strong>
+              <span className="text-sm font-bold text-[var(--brand)]" aria-hidden="true">→</span>
+            </div>
+            <p className="mt-1 text-xs text-slate-600">{signal.detail}</p>
+          </Link>
+        ))}
+      </section>
+
       <section className="mb-6" aria-labelledby="my-actions-title">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
@@ -590,6 +608,9 @@ export default async function AdminEntry() {
           />
         </div>
 
+        <details className="mt-5 rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-4 sm:p-5">
+          <summary className="cursor-pointer text-sm font-bold text-slate-950">Voir tous les indicateurs détaillés, dates officielles et exceptions</summary>
+          <p className="mt-2 text-xs leading-5 text-slate-600">Ces chiffres servent à auditer les dossiers, pas à créer des échéances ou des preuves absentes.</p>
         <div className="mt-5">
           <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Deadlines officielles vérifiées</p>
           <p className="mt-1 text-sm leading-6 text-slate-600">
@@ -727,13 +748,14 @@ export default async function AdminEntry() {
             statusLabel={applicationRiskCases ? "À accélérer" : "À jour"}
           />
         </div>
+        </details>
       </section>
 
       <section className="mt-6" aria-labelledby="admin-overview-title">
         <PremiumSectionHeader
           eyebrow="Files de travail"
-          title={<span id="admin-overview-title">À traiter par l’équipe</span>}
-          description="Les volumes ci-dessous ouvrent directement la file concernée."
+          title={<span id="admin-overview-title">Files de traitement</span>}
+          description="Ouvrez le centre de traitement, ou accédez à une file spécifique."
         />
 
         <Card className="mt-4 overflow-hidden p-0 shadow-none">
