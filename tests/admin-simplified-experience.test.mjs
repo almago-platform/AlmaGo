@@ -16,7 +16,9 @@ test("the daily nav exposes the essential workspaces and keeps all expert tools"
     assert.ok(nav.includes('href: "' + href + '"'), "Missing navigation " + href);
   }
   assert.match(nav, /Tous les outils/);
-  assert.match(nav, /adminGroups\[0\]\.items/);
+  assert.match(nav, /label: "Personnes"/);
+  assert.match(nav, /label: "Files de travail"/);
+  assert.match(nav, /label: "Catalogue Allemagne"/);
   assert.match(nav, /Espace administration/);
 });
 
