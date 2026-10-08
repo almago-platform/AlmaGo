@@ -34,7 +34,7 @@ test("primary navigator counters derive from recorded data and do not invent tas
 test("long sections are disclosed by task while already existing operational screens remain mounted", () => {
   assert.equal((dossier.match(/<AdminDossierDisclosure/g) || []).length, 4);
   assert.equal((dossier.match(/<\/AdminDossierDisclosure>/g) || []).length, 4);
-  assert.match(dossier, /targetIds=\{\["messages", "journal"\]\}/);
+  assert.match(dossier, /targetIds=\{\["messages", "journal", "send-dossier-message"\]\}/);
   assert.match(dossier, /initiallyOpen=\{unreadStudentMessages > 0\}/);
   assert.match(dossier, /targetIds=\{\["project", "orientation"\]\}/);
   assert.match(dossier, /targetIds=\{\["commercial"\]\}/);
