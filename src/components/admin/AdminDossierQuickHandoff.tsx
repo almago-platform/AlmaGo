@@ -20,6 +20,14 @@ type CaseFollowUp = {
   deadline: VerifiedDeadline;
 };
 
+function displayDeadlineDate(value: string) {
+  if (!/^\\d{4}-\\d{2}-\\d{2}$/.test(value)) return value;
+  const instant = new Date(value + "T00:00:00Z");
+  return new Intl.DateTimeFormat("fr-FR", {
+    day: "numeric", month: "short", year: "numeric", timeZone: "UTC",
+  }).format(instant);
+}
+
 function countLabel(count: number, single: string, plural: string) {
   return `${count} ${count === 1 ? single : plural}`;
 }
@@ -36,7 +44,7 @@ export function AdminDossierQuickHandoff({
   const mainAdmission = !admission.available
     ? "Preuves d’admission momentanément indisponibles"
     : admission.total === 0
-      ? "Aucune lettre officielle liée à une candidature"
+      ? "Aucune preuve d’admission liée à une candidature"
       : admission.replace > 0
         ? countLabel(admission.replace, "preuve à remplacer", "preuves à remplacer")
         : admission.toReview > 0
@@ -61,7 +69,7 @@ export function AdminDossierQuickHandoff({
           <p className="mt-2 text-sm font-bold leading-5 text-slate-950">{mainAdmission}</p>
           {admission.available && admission.total > 0 ? (
             <p className="mt-1 text-xs leading-5 text-slate-600">
-              {admission.total} lettre{admission.total > 1 ? "s" : ""} liée{admission.total > 1 ? "s" : ""}
+              {admission.total} preuve{admission.total > 1 ? "s" : ""} liée{admission.total > 1 ? "s" : ""} à une candidature
               {admission.accepted > 0 ? ` · ${admission.accepted} preuve(s) vérifiée(s)` : ""}
             </p>
           ) : null}
@@ -118,7 +126,7 @@ export function AdminDossierQuickHandoff({
           <h3 className="text-xs font-semibold text-slate-700">Deadline universitaire</h3>
           {deadline ? (
             <>
-              <p className="mt-2 text-sm font-bold leading-5 text-slate-950">{deadline.date}</p>
+              <p className="mt-2 text-sm font-bold leading-5 text-slate-950">{displayDeadlineDate(deadline.date)}</p>
               <p className="mt-1 text-xs leading-5 text-slate-600">{deadline.label} · deadline officielle vérifiée</p>
             </>
           ) : (
