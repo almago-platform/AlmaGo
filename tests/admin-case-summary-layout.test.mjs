@@ -32,7 +32,7 @@ test("intake keeps operational safeguards and payment counter legible", () => {
   assert.match(intake, /const canPropose =/);
   assert.match(intake, /commercialLocked/);
   assert.match(intake, /preBacRouteAllowed/);
-  assert.match(intake, /Dossier 360°/);
+  assert.match(intake, /Ouvrir le dossier 360°/);
 });
 
 test("dashboard retains alerts and source checks behind discoverable progressive disclosure", () => {
