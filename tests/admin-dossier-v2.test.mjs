@@ -16,7 +16,7 @@ test("admin dossier V2 is a single 360-degree read context", () => {
   for (const primitive of [
     "DossierHeader",
     "JourneyRail",
-    "NextActionPanel",
+    "AdminCounselorBrief",
     "DocumentRow",
     "DataList",
     "ActivityTimeline",
@@ -68,7 +68,7 @@ test("admin dossier exposes one real next action and waits when Campus has nothi
   assert.ok(dossierModel.includes("Attendre la réponse de l’étudiant"));
   assert.ok(dossierModel.includes("Attendre la réception du paiement"));
   assert.ok(dossierModel.includes("waiting: true"));
-  assert.ok(dossierPage.includes('eyebrow="Action Campus prioritaire"'));
+  assert.ok(dossierPage.includes('action={nextAction}'));
 });
 
 test("intake cases open the dossier 360 directly", () => {
