@@ -368,7 +368,7 @@ export function AdminDocumentRequirementsPanel({
                 <div className="lg:text-right">
                   {linked ? (
                     <a
-                      href={`/api/documents/${linked.id}/view`}
+                      href={`/api/admin/documents/${linked.id}/view`}
                       target="_blank"
                       rel="noreferrer"
                       className="text-sm font-bold text-[var(--brand)] hover:underline"
