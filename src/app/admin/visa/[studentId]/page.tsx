@@ -31,7 +31,7 @@ export default async function AdminVisaStudentPage({
       .select("student_id,track,residence_country,mission,status,official_source_url,source_verified_at,evidence_document_id,note,version,updated_at")
       .eq("student_id", studentId).maybeSingle(),
     supabase.from("visa_case_events")
-      .select("id,from_status,to_status,track,version,evidence_document_id,note,created_at")
+      .select("id,from_status,to_status,track,residence_country,mission,official_source_url,source_verified_at,version,evidence_document_id,note,created_at")
       .eq("student_id", studentId).order("created_at", { ascending: false }).limit(40),
     supabase.from("documents")
       .select("id,original_filename,created_at")
@@ -68,6 +68,10 @@ export default async function AdminVisaStudentPage({
     from_status: string | null;
     to_status: string;
     track: string;
+    residence_country: string;
+    mission: string;
+    official_source_url: string;
+    source_verified_at: string;
     version: number;
     evidence_document_id: string | null;
     note: string | null;
@@ -121,7 +125,11 @@ export default async function AdminVisaStudentPage({
               </div>
               <p className="mt-2 text-xs text-slate-600">
                 {new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium", timeStyle: "short", timeZone: "Europe/Berlin" }).format(new Date(item.created_at))}
+                {" · "}{item.mission} · {item.residence_country}
               </p>
+              <a href={item.official_source_url} target="_blank" rel="noopener noreferrer" className="mt-1 inline-block break-all text-xs font-semibold text-[var(--brand-strong)] underline">
+                Source consulaire vérifiée le {item.source_verified_at.slice(0, 10)} ↗
+              </a>
               {item.evidence_document_id ? (
                 <p className="mt-1 text-xs font-semibold text-slate-700">
                   Justificatif : {docById.get(item.evidence_document_id) || "Ancienne preuve enregistrée dans le dossier"}
