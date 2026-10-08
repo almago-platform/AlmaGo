@@ -168,7 +168,7 @@ export function AdminIntakePanel({
             </div>
             <div className="rounded-[var(--radius-control)] bg-emerald-50 px-3 py-2">
               <p className="text-lg font-bold text-emerald-900">{paymentValidationCount}</p>
-              <p className="text-[11px] font-semibold text-emerald-800">Paiements</p>
+              <p className="whitespace-nowrap text-[11px] font-semibold text-emerald-800">Paiement</p>
             </div>
           </div>
         </div>
@@ -219,13 +219,14 @@ export function AdminIntakePanel({
 
         return (
           <details key={item.studentId} open={item.status === "campus_review" || item.status === "student_question" || item.status === "paid_pending_validation"} className="group overflow-hidden rounded-[var(--radius-panel)] border border-[var(--border)] bg-white">
-            <summary className="grid cursor-pointer list-item gap-3 p-4 hover:bg-[var(--surface-subtle)] sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] sm:items-center sm:px-5">
-              <span className="min-w-0">
+            <summary className="flex cursor-pointer list-none flex-wrap items-center gap-x-4 gap-y-2 p-3 hover:bg-[var(--surface-subtle)] focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--brand)] sm:px-5 [&::-webkit-details-marker]:hidden">
+              <span aria-hidden="true" className="shrink-0 text-sm text-slate-700 transition-transform group-open:rotate-90">▸</span>
+              <span className="min-w-0 grow basis-[15rem]">
                 <span className="block truncate text-base font-bold text-slate-950">{item.name || "Étudiant"}</span>
                 <span className="mt-1 block truncate text-xs text-slate-600">{item.email || item.studentId}</span>
               </span>
-              <span className="text-xs font-semibold text-slate-700">{labelForStatus(item.status)}</span>
-              <span className="text-xs font-bold text-[var(--brand-strong)]">Examiner →</span>
+              <span className="min-w-0 text-xs font-semibold leading-5 text-slate-700">{labelForStatus(item.status)}</span>
+              <span className="shrink-0 whitespace-nowrap text-xs font-bold text-[var(--brand-strong)]"><span className="group-open:hidden">Examiner →</span><span className="hidden group-open:inline">Réduire ↑</span></span>
             </summary>
           <article className="border-t border-[var(--border)] p-5 sm:p-6">
             <div className="flex flex-wrap items-start justify-between gap-4">
