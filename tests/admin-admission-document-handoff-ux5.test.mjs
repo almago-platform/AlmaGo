@@ -13,7 +13,7 @@ const studentDocuments = read("src/app/student/documents/page.tsx");
 const privateAttachment = read("src/app/api/dossier-messages/[messageId]/attachment/route.ts");
 
 test("UX-5 starts from the real dossier with three direct links and no new records", () => {
-  assert.match(page, /<AdminDossierQuickHandoff canExchange=\{Boolean\(profile\)\} \/>/);
+  assert.match(page, /<AdminDossierQuickHandoff[\s\S]*?canExchange=\{Boolean\(profile\)\}/);
   assert.match(shortcuts, /Envoyer un PDF à l’étudiant/);
   assert.match(shortcuts, /Demander ses documents/);
   assert.match(shortcuts, /Suivre la candidature/);
