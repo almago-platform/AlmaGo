@@ -462,6 +462,7 @@ export function AdminIntakePanel({
               </section>
             )}
           </article>
+          </details>
         );
       })}
     </div>
