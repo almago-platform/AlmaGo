@@ -52,6 +52,7 @@ export function AdminDeparturePanel({
 }) {
   const router = useRouter();
   const [busy, setBusy] = useState<string | null>(null);
+  const [dueDates, setDueDates] = useState<Record<string, string>>({});
   const [notice, setNotice] = useState<string | null>(null);
   const taskByTitle = new Map(existing.map((item) => [item.title, item]));
 
@@ -68,7 +69,7 @@ export function AdminDeparturePanel({
           title: task.title,
           description: task.description,
           owner: task.owner,
-          due_date: "",
+          due_date: dueDates[task.title] || "",
         }),
       });
       const result = await response.json().catch(() => ({})) as { error?: string };
@@ -88,7 +89,7 @@ export function AdminDeparturePanel({
     <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-5 sm:p-6">
       <h2 className="text-xl font-semibold text-slate-950">Départ et arrivée · suivi opérationnel</h2>
       <p className="mt-2 text-sm leading-6 text-slate-700">
-        Ces tâches utilisent le suivi humain du Dossier 360° et son historique. Elles ne sont jamais créées automatiquement à la suite d’un simple changement d’état visa.
+        Ces tâches utilisent le suivi humain du Dossier 360° et son historique. Elles ne sont jamais créées automatiquement à la suite d’un simple changement d’état visa. La date choisie pour chaque action est une cible interne, jamais une deadline officielle.
       </p>
       {!visaApproved ? (
         <p className="mt-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm font-semibold text-amber-900">
@@ -110,16 +111,29 @@ export function AdminDeparturePanel({
                 <h3 className="mt-2 text-sm font-semibold text-slate-950">{task.title}</h3>
                 <p className="mt-1 text-xs leading-5 text-slate-600">{task.description}</p>
               </div>
-              <Button type="button" variant="secondary" disabled={!visaApproved || Boolean(found) || Boolean(busy)} onClick={() => add(task)}>
-                {busy === task.title ? "Création…" : found ? "Dans le dossier" : "Ajouter au suivi"}
-              </Button>
+              <div className="flex shrink-0 flex-col gap-2">
+                {!found && visaApproved ? (
+                  <label className="text-xs font-semibold text-slate-700">
+                    Cible interne facultative
+                    <input
+                      type="date"
+                      className="field mt-1 bg-white"
+                      value={dueDates[task.title] || ""}
+                      onChange={(event) => setDueDates((old) => ({ ...old, [task.title]: event.target.value }))}
+                    />
+                  </label>
+                ) : null}
+                <Button type="button" variant="secondary" disabled={!visaApproved || Boolean(found) || Boolean(busy)} onClick={() => add(task)}>
+                  {busy === task.title ? "Création…" : found ? "Dans le dossier" : "Ajouter au suivi"}
+                </Button>
+              </div>
             </article>
           );
         })}
       </div>
       {notice ? <p role="alert" className="mt-3 text-sm font-semibold text-red-700">{notice}</p> : null}
       <Link href={`/admin/dossiers/${studentId}#actions`} className="mt-4 inline-block text-sm font-semibold text-[var(--brand-strong)] underline">
-        Consulter, dater et terminer les actions dans Dossier 360° →
+        Consulter et terminer les actions dans Dossier 360° →
       </Link>
     </section>
   );
