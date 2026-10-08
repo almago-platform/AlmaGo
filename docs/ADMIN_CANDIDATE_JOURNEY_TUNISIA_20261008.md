@@ -90,6 +90,24 @@ Le nouveau point d'entrée /admin/accompagnement propose une **première lecture
 - Automatiser des soumissions sur sites externes, conserver des secrets d'accès consulaires ou garantir une réponse d'université/ambassade.
 - Résoudre le décalage des 9 routes de procédure existantes : l'activation payante reste à corriger pour 4 parcours.
 
+## Nouveau suivi visa avec preuves (version de travail, migration non déployée)
+
+Un objet `visa_cases` et son journal `visa_case_events` ont désormais été ajoutés **dans la PR**, pas encore dans la base de production.
+
+- Chaque personne a au plus un dossier visa interne actif, identifié par `student_id`.
+- L'administrateur avec rôle confirmé et MFA AAL2 seul peut lire ou modifier les tables.
+- L'état initial est `collecting`, jamais « visa demandé » par simple présence d'une candidature.
+- États suivants : `ready_for_review`, `submitted`, `appointment`, `awaiting_decision`, `approved`, `refused`. Les transitions sont contrôlées par le serveur **et** par le SGBD.
+- Pour un dépôt, un rendez-vous et une décision finale, chaque passage exige **un nouveau document de catégorie « Autre » déjà approuvé, appartenant au candidat**. Le document précédent ne peut pas être réutilisé comme preuve d'une nouvelle décision.
+- `awaiting_decision` peut réutiliser le justificatif de dépôt/rendez-vous : c'est une étape de suivi, pas une preuve que la décision existe.
+- La représentation compétente, le motif et la source officielle (HTTPS, datée) restent explicitement modifiables, avec nouvelle version.
+- La table des événements est en écriture **exclusivement par trigger**. La version (entier croissant) prévient les écrasements concurrents ; les anciennes versions restent consultables.
+- Pour garder les pièces dans le système existant, l'étudiant doit les déposer comme document « Autre » et l'admin doit les approuver dans Documents. **Aucun fichier consulaire n'est stocké dans un service externe supplémentaire.**
+- La nouvelle UI protégée `/admin/visa/[studentId]` est accessible depuis `/admin/accompagnement`. Si la migration est absente, l'écran montre une indisponibilité sans simuler des résultats.
+- **Aucun visa réel n'a été créé ni aucune décision inventée.**
+
+**Validation nécessaire avant production :** CI, compilation, tests SQL RLS avec un admin AAL2, un admin sans MFA, un étudiant, un autre étudiant, et une pièce approuvée du mauvais candidat. Vérifier l'inviolabilité des événements et un faux retour en arrière. Puis appliquer la migration dans l'ordre du dépôt sur un environnement de test, contrôler les privilèges et relancer la recette bout en bout avant tout déploiement.
+
 ### P0 recommandé après ce pilote
 
 Créer un `visa_case` **réel et audité** lié à un utilisateur, avec motif légal, pays de résidence, mission compétente, checklist source/version/date de vérification, statut neutre `not_started | collecting | ready_for_review | submitted | appointment | awaiting_decision | approved | refused`, justificatifs datés et contrôles explicites. Les transitions « submitted/approved/refused » exigeraient une preuve et l'autorisation du candidat. Tester RLS, accès admin MFA, séparation pièces privées, traçabilité et non-divulgation.
