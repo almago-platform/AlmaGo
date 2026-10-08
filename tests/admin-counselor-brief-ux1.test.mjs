@@ -51,7 +51,7 @@ test("the only featured official deadline is a verified not-submitted applicatio
 });
 
 test("same dossier and authoritative operational controls remain open and editable", () => {
-  for(const component of ["AdminDossierActionsPanel","AdminDossierBlockersPanel","AdminCaseOwnerPanel","AdminCaseJournalPanel","DossierMessageThread","AdminDocumentRequirementsPanel","AdminStudentProjectPanel","ActivityTimeline"]) {
+  for(const component of ["AdminDossierActionsPanel","AdminDossierBlockersPanel","AdminCaseOwnerPanel","AdminCaseJournalPanel","DossierMessageThread","AdminDocumentRequirementsPanel","AdminStudentProjectPanel","AdminDossierHistory"]) {
     assert.ok(dossier.includes(component), component);
   }
   for(const anchor of ['id="assignment"','id="overview"','id="history"','id="messages"','id="actions"','id="documents"','id="applications"']) {
