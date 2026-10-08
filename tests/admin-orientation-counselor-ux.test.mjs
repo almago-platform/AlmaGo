@@ -33,6 +33,8 @@ test("a single selection panel retains verification facts and safe backend const
   assert.match(queue, /verification\.overallStatus !== "unknown"/);
   assert.match(queue, /\["teaching_language", "german_language_requirement", "english_language_requirement"/);
   assert.match(queue, /sourceUrl/);
+  assert.match(queue, /possibleGermanGap/);
+  assert.match(queue, /compatibilité linguistique avant toute validation/);
   assert.match(queue, /Le contrôle des informations publiées ne garantit pas l’admission personnelle/);
   assert.equal((queue.match(/type="checkbox"/g) || []).length, 1);
   assert.match(api, /approvedSelection\.length < 1 \|\| approvedSelection\.length > 4/);
