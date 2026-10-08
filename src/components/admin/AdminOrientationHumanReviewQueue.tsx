@@ -205,7 +205,7 @@ export function AdminOrientationHumanReviewQueue({
         </Card>
       ) : (
         <div className="space-y-5">
-          {reviews.map((review) => {
+          {reviews.map((review, index) => {
             const bundle = review.bundle || {};
             const profile = review.profile || bundle.profile || {};
             const discoveryCandidates = Array.isArray(bundle.discovery?.candidates)
@@ -253,6 +253,152 @@ export function AdminOrientationHumanReviewQueue({
                   </div>
                 </div>
 
+                <details open={index === 0 && review.review_status === "pending"} className="group mt-4 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)]/35 p-3">
+                  <summary className="cursor-pointer list-none text-sm font-bold text-[var(--brand-strong)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brand)] [&::-webkit-details-marker]:hidden">
+                    <span aria-hidden="true" className="mr-2 inline-block transition-transform group-open:rotate-90">▸</span>
+                    {review.review_status === "pending" ? "Examiner et décider" : "Consulter la décision"} · {selected.length} programme(s) présélectionné(s)
+                  </summary>
+
+                <section aria-label="Sélection des pistes à valider en interne" className="mt-5 rounded-[var(--radius-control)] border border-[var(--border)] bg-white p-4">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                      <h4 className="text-base font-bold text-slate-950">1. Choisir les programmes à examiner</h4>
+                      <p className="mt-1 text-sm leading-6 text-slate-600">
+                        Sélectionnez jusqu’à 4 programmes. Si une exigence est incertaine, vérifiez la source officielle avant de valider la revue.
+                      </p>
+                    </div>
+                    <Badge variant={selected.length ? "info" : "warning"}>{selected.length}/4 retenu{selected.length > 1 ? "s" : ""}</Badge>
+                  </div>
+                  <div className="mt-4 grid gap-3 xl:grid-cols-2">
+                    {verificationProgrammes.length ? verificationProgrammes.map((item: any) => {
+                      const verification = item.verification || {};
+                      const candidate = verification.candidate || {};
+                      const selectable = verification.overallStatus !== "unknown";
+                      const facts = Array.isArray(verification.facts) ? verification.facts : [];
+                      const focusFields = ["teaching_language", "german_language_requirement", "english_language_requirement", "winter_deadline", "summer_deadline", "application_route"];
+                      const criticalFacts = focusFields
+                        .map((field) => facts.find((fact: any) => fact.field === field && fact.status !== "unknown"))
+                        .filter(Boolean)
+                        .slice(0, 4);
+                      const toCheck = facts.filter((fact: any) => fact.status === "needs_review");
+                      const selection = selectionItems.find((entry: any) => entry.candidateKey === item.candidateKey);
+                      const unresolved = Array.isArray(selection?.missingFacts) ? selection.missingFacts.length : 0;
+                      const warnings = Array.isArray(selection?.warnings) ? selection.warnings.length : 0;
+                      const germanRequirement = facts.find((fact: any) => fact.field === "german_language_requirement" && fact.status === "verified");
+                      const germanRequirementText = germanRequirement ? factValue(germanRequirement.value) : "";
+                      const possibleGermanGap = ["none", "a0", "aucun"].includes(String(profile.germanLevel || "").trim().toLowerCase())
+                        && Boolean(germanRequirementText)
+                        && !/(no german|not required|aucun|sans allemand)/i.test(germanRequirementText);
+                      const needsAttention = verification.overallStatus !== "verified" || toCheck.length > 0 || unresolved > 0 || warnings > 0 || possibleGermanGap;
+                      return (
+                        <div key={item.candidateKey} className={`rounded-[var(--radius-control)] border p-3 ${selected.includes(item.candidateKey) ? "border-[var(--brand-border)] bg-[var(--brand-soft)]/20" : "border-[var(--border)] bg-white"}`}>
+                          <label className="flex cursor-pointer items-start gap-3">
+                            <input
+                              type="checkbox"
+                              className="mt-1 h-4 w-4 shrink-0"
+                              checked={selected.includes(item.candidateKey)}
+                              disabled={!selectable || (selected.length >= 4 && !selected.includes(item.candidateKey))}
+                              onChange={() => toggleCandidate(review.id, item.candidateKey)}
+                            />
+                            <span className="min-w-0 flex-1">
+                              <span className="block break-words text-sm font-bold text-slate-950">{candidate.programme || "Programme sans titre"}</span>
+                              <span className="mt-0.5 block text-xs text-slate-700">{candidate.institution || "Établissement à confirmer"}{candidate.city ? ` · ${candidate.city}` : ""}</span>
+                            </span>
+                          </label>
+                          <div className="mt-3 flex flex-wrap items-center gap-2">
+                            <Badge variant={!selectable ? "warning" : needsAttention ? "warning" : "success"}>
+                              {!selectable ? "Preuves insuffisantes" : needsAttention ? "Points à vérifier" : "Faits vérifiés"}
+                            </Badge>
+                            {needsAttention ? <span className="text-xs text-amber-900">Vérifiez les exigences signalées et les sources</span> : null}
+                          </div>
+                          {possibleGermanGap ? (
+                            <p className="mt-2 rounded-lg bg-amber-50 p-2 text-xs font-semibold leading-5 text-amber-950">
+                              Profil : aucun allemand déclaré ; ce programme indique « {germanRequirementText} ». Vérifiez la compatibilité linguistique avant toute validation.
+                            </p>
+                          ) : null}
+                          {criticalFacts.length ? (
+                            <dl className="mt-3 grid gap-2 sm:grid-cols-2">
+                              {criticalFacts.map((fact: any) => (
+                                <div key={fact.field} className="min-w-0 text-xs leading-5">
+                                  <dt className="font-semibold text-slate-800">{verificationFieldLabels[fact.field] || fact.field}</dt>
+                                  <dd className="break-words text-slate-700">{factValue(fact.value)}{fact.status !== "verified" ? " · à vérifier" : ""}</dd>
+                                </div>
+                              ))}
+                            </dl>
+                          ) : <p className="mt-3 text-xs text-amber-900">Aucune exigence de langue ou date exploitable : vérifiez les sources avant décision.</p>}
+                        </div>
+                      );
+                    }) : <p className="text-sm text-amber-900">Aucun programme vérifié à sélectionner. Demandez une correction plutôt que de confirmer.</p>}
+                  </div>
+                  <p className="mt-3 text-xs leading-5 text-slate-600">
+                    Le contrôle des informations publiées ne garantit pas l’admission personnelle du candidat. Consultez les sources détaillées si une exigence reste incertaine.
+                  </p>
+                </section>
+
+                <section className="mt-5 rounded-[var(--radius-control)] border border-slate-300 bg-slate-50 p-4">
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                      <p className="text-sm font-bold text-slate-950">2. Prendre une décision</p>
+                      <p className="mt-1 text-xs leading-5 text-slate-600">
+                        {selected.length} piste{selected.length > 1 ? "s" : ""} retenue{selected.length > 1 ? "s" : ""} dans la sélection. Maximum 4.
+                      </p>
+                    </div>
+                    {review.reviewed_at ? (
+                      <p className="text-xs text-[var(--muted)]">Dernière décision : {formatDate(review.reviewed_at)}</p>
+                    ) : null}
+                  </div>
+
+                  <label className="mt-4 block text-sm font-semibold text-slate-800">
+                    Note interne (obligatoire pour demander une correction ou rejeter)
+                    <textarea
+                      value={notes[review.id] || ""}
+                      onChange={(event) => setNotes((current) => ({ ...current, [review.id]: event.target.value }))}
+                      maxLength={2000}
+                      placeholder="Précisez une exigence manquante, une source à confirmer ou une raison de rejet."
+                      className="field min-h-24 resize-y"
+                    />
+                  </label>
+
+                  {message[review.id] ? (
+                    <p role="alert" className="mt-3 text-sm font-semibold text-red-700">{message[review.id]}</p>
+                  ) : null}
+
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    <Button
+                      type="button"
+                      disabled={busy === review.id || selected.length < 1}
+                      onClick={() => decide(review, "approved")}
+                    >
+                      Confirmer après audit
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      disabled={busy === review.id || !(notes[review.id] || "").trim()}
+                      onClick={() => decide(review, "changes_requested")}
+                    >
+                      Demander correction
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      disabled={busy === review.id || !(notes[review.id] || "").trim()}
+                      onClick={() => decide(review, "rejected")}
+                    >
+                      Rejeter cette revue
+                    </Button>
+                  </div>
+
+                  <p className="mt-3 text-xs font-semibold leading-5 text-amber-900">
+                    Une validation F reste un acte interne. Pour rendre une recommandation visible à l’étudiant,
+                    utilisez ensuite le workflow de publication manuel ci-dessous, qui vérifie le programme publié.
+                  </p>
+                </section>
+                <details className="mt-4 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4">
+                  <summary className="cursor-pointer text-sm font-bold text-slate-900 focus-visible:outline-2 focus-visible:outline-[var(--brand)]">
+                    Afficher les preuves détaillées (A–D) · sources, classement et texte généré
+                  </summary>
+                  <div className="mt-4">
                 <div className="mt-5 grid gap-3">
                   <details className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4">
                     <summary className="cursor-pointer text-sm font-bold">
@@ -285,7 +431,7 @@ export function AdminOrientationHumanReviewQueue({
                     </div>
                   </details>
 
-                  <details open className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4">
+                  <details className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4">
                     <summary className="cursor-pointer text-sm font-bold">
                       B — faits vérifiés ({verificationProgrammes.length})
                     </summary>
@@ -293,17 +439,9 @@ export function AdminOrientationHumanReviewQueue({
                       {verificationProgrammes.length ? verificationProgrammes.map((item: any) => {
                         const verification = item.verification || {};
                         const candidate = verification.candidate || {};
-                        const selectable = verification.overallStatus !== "unknown";
                         return (
                           <div key={item.candidateKey} className="rounded-lg border border-[var(--border)] bg-white p-3">
-                            <label className="flex items-start gap-3">
-                              <input
-                                type="checkbox"
-                                className="mt-1"
-                                checked={selected.includes(item.candidateKey)}
-                                disabled={!selectable || (selected.length >= 4 && !selected.includes(item.candidateKey))}
-                                onChange={() => toggleCandidate(review.id, item.candidateKey)}
-                              />
+                            <div className="flex flex-wrap items-start justify-between gap-2">
                               <span className="min-w-0">
                                 <span className="block text-sm font-bold">{candidate.programme || "Programme"}</span>
                                 <span className="block text-xs text-slate-600">
@@ -313,7 +451,8 @@ export function AdminOrientationHumanReviewQueue({
                                   <strong>{verificationStatusLabels[verification.overallStatus] || verification.overallStatus || "inconnu"}</strong>
                                 </span>
                               </span>
-                            </label>
+                              <Badge variant={selected.includes(item.candidateKey) ? "info" : "neutral"}>{selected.includes(item.candidateKey) ? "Retenu dans la sélection" : "Non retenu"}</Badge>
+                            </div>
                             {Array.isArray(verification.facts) ? (
                               <dl className="mt-3 grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
                                 {verification.facts.filter((fact: any) => fact.status !== "unknown").map((fact: any) => (
@@ -393,65 +532,10 @@ export function AdminOrientationHumanReviewQueue({
                   </section>
                 </div>
 
-                <section className="mt-5 rounded-[var(--radius-control)] border border-slate-300 bg-slate-50 p-4">
-                  <div className="flex flex-wrap items-center justify-between gap-3">
-                    <div>
-                      <p className="text-sm font-bold text-slate-950">Conclusion d’audit conseiller</p>
-                      <p className="mt-1 text-xs leading-5 text-slate-600">
-                        {selected.length} piste{selected.length > 1 ? "s" : ""} retenue{selected.length > 1 ? "s" : ""} parmi les programmes passés par B. Maximum 4.
-                      </p>
-                    </div>
-                    {review.reviewed_at ? (
-                      <p className="text-xs text-[var(--muted)]">Dernière décision : {formatDate(review.reviewed_at)}</p>
-                    ) : null}
+
                   </div>
-
-                  <label className="mt-4 block text-sm font-semibold text-slate-800">
-                    Note interne
-                    <textarea
-                      value={notes[review.id] || ""}
-                      onChange={(event) => setNotes((current) => ({ ...current, [review.id]: event.target.value }))}
-                      maxLength={2000}
-                      placeholder="Expliquez une correction, un rejet ou un point à revérifier."
-                      className="field min-h-24 resize-y"
-                    />
-                  </label>
-
-                  {message[review.id] ? (
-                    <p role="alert" className="mt-3 text-sm font-semibold text-red-700">{message[review.id]}</p>
-                  ) : null}
-
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    <Button
-                      type="button"
-                      disabled={busy === review.id || selected.length < 1}
-                      onClick={() => decide(review, "approved")}
-                    >
-                      Confirmer après audit
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      disabled={busy === review.id}
-                      onClick={() => decide(review, "changes_requested")}
-                    >
-                      Demander correction
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      disabled={busy === review.id}
-                      onClick={() => decide(review, "rejected")}
-                    >
-                      Rejeter cette revue
-                    </Button>
-                  </div>
-
-                  <p className="mt-3 text-xs font-semibold leading-5 text-amber-900">
-                    Une validation F reste un acte interne. Pour rendre une recommandation visible à l’étudiant,
-                    utilisez ensuite le workflow de publication manuel ci-dessous, qui vérifie le programme publié.
-                  </p>
-                </section>
+                </details>
+                </details>
               </Card>
             );
           })}

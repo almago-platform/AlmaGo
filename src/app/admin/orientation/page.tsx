@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { AdminOrientationPanel } from "@/components/admin/AdminOrientationPanel";
 import { AdminOrientationHumanReviewQueue } from "@/components/admin/AdminOrientationHumanReviewQueue";
 import { AdminLoadError } from "@/components/admin/AdminLoadError";
@@ -9,16 +10,30 @@ export const dynamic = "force-dynamic";
 export default async function AdminOrientationPage({
   searchParams,
 }: {
-  searchParams: Promise<{ student?: string }>;
+  searchParams: Promise<{ student?: string; reviewStatus?: string; reviewPage?: string }>;
 }) {
   const params = await searchParams;
   const requestedStudentId = (params.student || "").trim();
+  const showAllReviews = params.reviewStatus === "all";
+  const requestedPage = Number(params.reviewPage || "1");
+  const reviewPage = Number.isSafeInteger(requestedPage) && requestedPage > 0 && requestedPage <= 1000
+    ? requestedPage
+    : 1;
+  const pageSize = 10;
+  const offset = (reviewPage - 1) * pageSize;
   const supabase = await createClient();
+  const reviewQuery = supabase
+    .from("orientation_human_reviews")
+    .select("id,orientation_id,pipeline_status,selected_count,review_status,approved_selection,counselor_note,reviewed_at,created_at,profile,bundle", { count: "exact" });
+  const scopedReviews = showAllReviews
+    ? reviewQuery
+    : reviewQuery.eq("review_status", "pending");
+
   const [
     { data: students, error: studentsError },
     { data: programs, error: programsError },
     { data: recommendations, error: recommendationsError },
-    { data: reviewData, error: reviewsError },
+    { data: reviewData, error: reviewsError, count: reviewCount },
   ] = await Promise.all([
     supabase
       .from("profiles")
@@ -33,11 +48,9 @@ export default async function AdminOrientationPage({
       .from("program_recommendations")
       .select("id,student_id,program_id,status,note,is_archived")
       .order("created_at", { ascending: false }),
-    supabase
-      .from("orientation_human_reviews")
-      .select("id,orientation_id,pipeline_status,selected_count,review_status,approved_selection,counselor_note,reviewed_at,created_at,profile,bundle")
+    scopedReviews
       .order("created_at", { ascending: false })
-      .limit(40),
+      .range(offset, offset + pageSize - 1),
   ]);
 
   if (studentsError || programsError || recommendationsError) {
@@ -113,10 +126,28 @@ export default async function AdminOrientationPage({
         title="Orientation"
         description="Préparez une recommandation à partir du profil enregistré, documentez les éléments vérifiés et gardez explicite la frontière entre orientation et décision d’admission."
       />
+      <nav aria-label="Filtrer les audits d’orientation" className="mb-4 flex flex-wrap items-center gap-2">
+        <Link href="/admin/orientation?reviewStatus=pending" aria-current={!showAllReviews ? "page" : undefined} className={`rounded-full border px-4 py-2 text-sm font-semibold ${!showAllReviews ? "border-[var(--brand-border)] bg-[var(--brand-soft)] text-[var(--brand-strong)]" : "border-[var(--border)] bg-white text-slate-700"}`}>
+          À traiter
+        </Link>
+        <Link href="/admin/orientation?reviewStatus=all" aria-current={showAllReviews ? "page" : undefined} className={`rounded-full border px-4 py-2 text-sm font-semibold ${showAllReviews ? "border-[var(--brand-border)] bg-[var(--brand-soft)] text-[var(--brand-strong)]" : "border-[var(--border)] bg-white text-slate-700"}`}>
+          Tous les audits
+        </Link>
+        <span className="text-sm text-slate-600">{reviewCount ?? "—"} dossier(s) · 10 par page</span>
+      </nav>
       <AdminOrientationHumanReviewQueue
         reviews={humanReviews}
         available={!reviewsError}
       />
+      {!reviewsError && (reviewCount || 0) > pageSize ? (
+        <nav aria-label="Pages des audits" className="mb-8 flex flex-wrap items-center justify-between gap-3 rounded-[var(--radius-control)] border border-[var(--border)] bg-white p-3">
+          <span className="text-sm text-slate-700">Page {reviewPage} sur {Math.ceil((reviewCount || 0) / pageSize)}</span>
+          <div className="flex flex-wrap items-center gap-2">
+            {reviewPage > 1 ? <Link className="rounded-lg border border-[var(--border)] px-4 py-2 text-sm font-semibold" href={`/admin/orientation?reviewStatus=${showAllReviews ? "all" : "pending"}&reviewPage=${reviewPage - 1}`}>← Précédents</Link> : null}
+            {offset + pageSize < (reviewCount || 0) ? <Link className="rounded-lg border border-[var(--border)] px-4 py-2 text-sm font-semibold" href={`/admin/orientation?reviewStatus=${showAllReviews ? "all" : "pending"}&reviewPage=${reviewPage + 1}`}>Suivants →</Link> : null}
+          </div>
+        </nav>
+      ) : null}
       <AdminOrientationPanel
         students={students || []}
         programs={programs || []}
