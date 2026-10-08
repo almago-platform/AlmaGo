@@ -271,13 +271,14 @@ export default async function AdminCandidateJourneyPage({
             const href = item.userId ? `/admin/dossiers/${item.userId}` : "/admin/prospects";
             return (
               <details key={item.key} className="group border-b border-[var(--border)] last:border-b-0">
-                <summary className="grid cursor-pointer list-item gap-2 py-4 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] sm:items-center">
-                  <span className="min-w-0">
+                <summary className="flex cursor-pointer list-none flex-wrap items-center gap-x-4 gap-y-2 py-3 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--brand)] [&::-webkit-details-marker]:hidden">
+                  <span aria-hidden="true" className="shrink-0 text-sm text-slate-700 transition-transform group-open:rotate-90">▸</span>
+                  <span className="min-w-0 grow basis-[12rem]">
                     <span className="block truncate text-sm font-bold text-slate-950">{item.name}</span>
                     <span className="mt-1 block truncate text-xs text-slate-600">{phaseLabel}</span>
                   </span>
-                  <span className="text-xs leading-5 text-slate-700">{recommendedOperatorAction(item.evidence, item.visaStatus)}</span>
-                  <span className="text-xs font-bold text-[var(--brand-strong)]">Ouvrir →</span>
+                  <span className="min-w-0 grow basis-[16rem] text-xs leading-5 text-slate-700">{recommendedOperatorAction(item.evidence, item.visaStatus)}</span>
+                  <span className="shrink-0 whitespace-nowrap text-xs font-bold text-[var(--brand-strong)]"><span className="group-open:hidden">Voir les détails →</span><span className="hidden group-open:inline">Réduire ↑</span></span>
                 </summary>
               <article className="flex flex-col gap-3 border-t border-[var(--border)] bg-[var(--surface-subtle)] px-3 py-4 lg:flex-row lg:items-center lg:justify-between">
                 <div className="min-w-0">
