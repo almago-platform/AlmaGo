@@ -45,6 +45,7 @@ test("UX-5b: only MFA-protected admins may upload private PDF without asserting 
   assert.match(migration, /and category = 'admission'/);
   assert.match(migration, /and mime_type = 'application\/pdf'/);
   assert.match(migration, /document objects admin admission upload/);
+  assert.equal((migration.match(/\(select auth\.jwt\(\) ->> 'aal'\) = 'aal2'/g) || []).length, 3);
   assert.match(migration, /bucket_id = 'student-documents'/);
 });
 
