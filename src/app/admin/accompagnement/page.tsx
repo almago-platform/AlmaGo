@@ -239,7 +239,7 @@ export default async function AdminCandidateJourneyPage({
               <span className="grid h-7 w-7 place-items-center rounded-full bg-[var(--brand-soft)] text-xs font-bold text-[var(--brand-strong)]">{index + 1}</span>
               <span className="text-lg font-bold tabular-nums text-slate-900">{phaseCounts.get(step.id) || 0}</span>
             </span>
-            <span className="mt-2 block text-xs font-bold text-slate-950">{step.title.replace(/^\\d+\\. /, "")}</span>
+            <span className="mt-2 block text-xs font-bold text-slate-950">{step.title.replace(/^\d+\. /, "")}</span>
             <span className="mt-1 block text-[11px] text-slate-600">Repère de dossier, non preuve</span>
           </Link>
         ))}
