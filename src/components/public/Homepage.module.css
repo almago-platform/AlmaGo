@@ -8688,3 +8688,110 @@
     border-right-width: 9px;
   }
 }
+
+
+/* Homepage V4.1 Premium: one student journey, calmer hierarchy and legible detail. */
+.quickLinks {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  max-width: 1060px;
+  margin-inline: auto;
+  gap: 14px;
+}
+.quickLinks a {
+  min-height: 82px;
+  padding-block: 14px;
+}
+.journey.section {
+  padding-block: clamp(58px, 6vw, 84px);
+}
+.journey .sectionHeading {
+  gap: clamp(28px, 4vw, 56px);
+}
+.journeyIntro {
+  width: min(100%, 410px);
+  justify-self: end;
+  padding-top: 16px;
+}
+.journeyIntro p:first-child {
+  margin: 0;
+  color: rgba(247, 244, 236, 0.9);
+  font-size: 15px;
+  line-height: 1.65;
+}
+.journeyContext {
+  margin-top: 18px;
+  padding-inline-start: 15px;
+  border-inline-start: 2px solid var(--accent);
+  color: rgba(247, 244, 236, 0.7);
+  font-size: 13px;
+  line-height: 1.75;
+}
+/* This is an overview, not an actual student progress meter. */
+.journeyRail::before {
+  background: rgba(255, 255, 255, 0.24);
+}
+.journeyRailStep:last-child > span {
+  border-color: rgba(252, 181, 10, 0.7);
+  background: #1c2124;
+  color: var(--accent);
+  box-shadow: 0 0 0 6px #1a2023;
+}
+.journeyRailStep:last-child small {
+  color: rgba(247, 244, 236, 0.66);
+}
+.journey .stepCard:last-child {
+  border-color: rgba(255, 255, 255, .12);
+  background: linear-gradient(180deg, #252b2f 0%, #21272a 100%);
+}
+.journey .stepCard:last-child .stepIndex {
+  border-color: rgba(252, 181, 10, 0.72);
+  background: rgba(28, 33, 36, 0.84);
+  color: var(--accent);
+  box-shadow: none;
+}
+.journey .stepCard p {
+  font-size: 13.5px;
+  line-height: 1.65;
+}
+.journey .stepTopline span {
+  font-size: 10px;
+}
+.footerBottom p,
+.photoCredit {
+  font-size: .75rem;
+  line-height: 1.65;
+}
+@media (min-width: 1200px) {
+  .hero { min-height: 650px; }
+  .heroImmersiveInner { min-height: 650px; padding-block: 52px; }
+  .hero .heroCopy { width: min(630px, 54%); max-width: 630px; }
+  .hero h1 {
+    font-size: clamp(52px, 4.35vw, 66px);
+    line-height: 1.055;
+    letter-spacing: -0.044em;
+  }
+  .hero .heroDossier { width: min(368px, 31vw); bottom: 34px; }
+  .headerInner { min-height: 74px; }
+}
+@media (min-width: 900px) and (max-width: 1199px) {
+  .quickLinks { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .hero h1 { font-size: clamp(44px, 5.2vw, 57px); }
+}
+@media (min-width: 768px) and (max-width: 899px) {
+  .quickLinks { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .quickLinks a { padding-inline: 12px 28px; }
+}
+@media (max-width: 899px) {
+  .journeyIntro { justify-self: start; padding-top: 0; }
+}
+@media (max-width: 767px) {
+  .quickLinks { grid-template-columns: 1fr; gap: 9px; }
+  .quickLinks a { min-height: 66px; }
+  .journey .sectionHeading { gap: 16px; }
+  .journeyIntro { width: 100%; }
+  .journeyIntro p:first-child { font-size: 14px; }
+  .journeyContext { margin-top: 12px; font-size: 13px; }
+  .journey .stepCard:last-child .stepIndex {
+    box-shadow: 0 0 0 5px #171c1f;
+  }
+}
