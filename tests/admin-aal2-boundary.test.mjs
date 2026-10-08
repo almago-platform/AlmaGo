@@ -58,16 +58,24 @@ test("every sensitive custom admin route uses the canonical AAL2 guard", () => {
   }
 });
 
-test("authenticated admin browser evidence preserves the AAL2 boundary", () => {
-  assert.match(authenticatedE2e, /admin-challenge/);
-  assert.match(authenticatedE2e, /pathname\)\.toBe\("\/mfa"\)/);
-  assert.match(authenticatedE2e, /deniedApi\.status\(\)\)\.toBe\(403\)/);
+test("admin browser evidence never requires the sole real admin credentials in CI", () => {
+  assert.match(authenticatedE2e, /optional disposable admin AAL1 fixture is challenged/);
+  assert.match(authenticatedE2e, /optional disposable admin AAL2 fixture passes authorization/);
   assert.match(authenticatedE2e, /completeAdminMfaChallenge/);
-  assert.match(authenticatedE2e, /fail closed rather than skip MFA/);
 
   assert.match(adminQualityE2e, /admin-challenge/);
   assert.match(adminQualityE2e, /completeAdminMfaChallenge/);
-  assert.match(authenticatedWorkflow, /ALMAGO_E2E_ADMIN_TOTP_SECRET/);
+
+  assert.doesNotMatch(authenticatedWorkflow, /ALMAGO_E2E_ADMIN_EMAIL/);
+  assert.doesNotMatch(authenticatedWorkflow, /ALMAGO_E2E_ADMIN_PASSWORD/);
+  assert.doesNotMatch(authenticatedWorkflow, /ALMAGO_E2E_ADMIN_TOTP_SECRET/);
+  assert.match(authenticatedWorkflow, /Require exact-SHA human admin AAL2 evidence/);
+  assert.match(
+    authenticatedWorkflow,
+    /almago-a43-admin-human-approved:sha=\$GITHUB_SHA/,
+  );
+  assert.match(authenticatedWorkflow, /author_association/);
+  assert.match(authenticatedWorkflow, /issues\/84\/comments/);
   assert.match(authenticatedWorkflow, /workflow_call/);
   assert.match(releaseWorkflow, /almago-authenticated-e2e\.yml/);
 });
