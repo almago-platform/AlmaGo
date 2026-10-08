@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/Card";
 import { PremiumEmptyState } from "@/components/product/PremiumEmptyState";
 import { PremiumSectionHeader } from "@/components/product/PremiumSectionHeader";
 import { useLocale } from "@/components/i18n/LocaleProvider";
+import { StudentApplicationLetters, type LinkedAdmissionLetter } from "@/components/student/StudentApplicationLetters";
 import { studentApplicationsCopy } from "@/content/student-applications-copy";
 import { studentApplicationsWorkspaceCopy } from "@/content/student-applications-workspace-copy";
 import {
@@ -164,9 +165,13 @@ function ApplicationStepper({
 
 export function StudentApplicationsPanel({
   applications,
+  admissionDocuments = [],
+  admissionDocumentsUnavailable = false,
   loadError,
 }: {
   applications: any[];
+  admissionDocuments?: LinkedAdmissionLetter[];
+  admissionDocumentsUnavailable?: boolean;
   loadError?: string;
 }) {
   const { locale, direction } = useLocale();
@@ -482,6 +487,11 @@ export function StudentApplicationsPanel({
                   </div>
 
                   <ApplicationStepper status={application.status} copy={t} direction={direction} />
+                   <StudentApplicationLetters
+                     applicationId={application.id}
+                     letters={admissionDocuments}
+                     unavailable={admissionDocumentsUnavailable}
+                   />
 
                   <section
                     aria-label={t.nextAction}
