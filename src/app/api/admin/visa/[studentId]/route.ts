@@ -126,7 +126,7 @@ export async function PATCH(
   if ("error" in validated) return bad(validated.error);
   const { data: current, error: loadError } = await supabase
     .from("visa_cases")
-    .select("student_id,status,version,evidence_document_id")
+    .select("student_id,status,version,evidence_document_id,track,residence_country,mission")
     .eq("student_id", studentId)
     .maybeSingle();
   if (loadError) return bad("Suivi visa indisponible. La migration est-elle installée ?", 503);
@@ -134,6 +134,15 @@ export async function PATCH(
   if (current.version !== body.version) return bad("Ce dossier a changé depuis votre lecture. Rechargez.", 409);
 
   const target: VisaStatus = body.status;
+  if (
+    !["collecting", "ready_for_review"].includes(current.status)
+    && target !== "collecting"
+    && (
+      validated.data.track !== current.track
+      || validated.data.residence_country !== current.residence_country
+      || validated.data.mission !== current.mission
+    )
+  ) return bad("Le motif et la représentation sont verrouillés après dépôt. Rouvrez un nouveau cycle si nécessaire.", 409);
   if (!isVisaStatus(current.status) || !canTransitionVisa(current.status, target)) {
     return bad("Transition refusée : suivez les étapes et conservez les preuves.", 409);
   }
