@@ -892,29 +892,43 @@ export default async function AdminStudentDossierPage({
 
       <nav
         aria-label="Navigation du dossier"
-        className="pc-card flex flex-wrap gap-1.5 p-2"
+        className="pc-card flex flex-wrap items-center gap-2 p-3"
       >
+        <span className="w-full px-2 text-xs font-bold uppercase tracking-[0.1em] text-slate-700 sm:w-auto sm:me-2">Fiche conseiller</span>
         {[
-          ["#overview", "Synthèse"],
-          ["#blockers", "Blocages"],
-          ["#actions", "Actions"],
+          ["#overview", "Résumé"],
+          ["#history", "Historique"],
           ["#messages", "Messages"],
-          ["#journal", "Journal interne"],
-          ["#project", "Projet"],
-          ["#orientation", "Orientation"],
+          ["#actions", "Actions"],
           ["#documents", "Documents"],
           ["#applications", "Candidatures"],
-          ["#commercial", "Offre & paiement"],
-          ["#history", "Historique"],
         ].map(([href, label]) => (
           <a
             key={href}
             href={href}
-            className="rounded-[var(--radius-control)] px-3 py-2 text-xs font-bold text-slate-600 transition-colors hover:bg-[var(--surface-subtle)] hover:text-[var(--brand)]"
+            className="inline-flex min-h-10 items-center rounded-[var(--radius-control)] border border-[var(--border)] bg-white px-3 py-2 text-xs font-bold text-slate-800 transition-colors hover:border-[var(--brand-border)] hover:text-[var(--brand-strong)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brand)]"
           >
             {label}
           </a>
         ))}
+        <details className="min-w-0 grow basis-full rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] sm:basis-auto">
+          <summary className="cursor-pointer px-3 py-2.5 text-xs font-bold text-slate-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brand)]">
+            Autres étapes et outils
+          </summary>
+          <div className="flex flex-wrap gap-2 border-t border-[var(--border)] p-2">
+            {[
+              ["#blockers", "Blocages"],
+              ["#journal", "Journal interne"],
+              ["#project", "Projet"],
+              ["#orientation", "Orientation"],
+              ["#commercial", "Offre & paiement"],
+            ].map(([href, label]) => (
+              <a key={href} href={href} className="inline-flex min-h-10 items-center rounded-lg bg-white px-3 py-2 text-xs font-semibold text-slate-800 hover:text-[var(--brand-strong)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brand)]">
+                {label}
+              </a>
+            ))}
+          </div>
+        </details>
       </nav>
 
       <section id="overview" className="scroll-mt-24 space-y-3">
