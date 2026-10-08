@@ -29,6 +29,10 @@ create table public.visa_case_events (
   from_status text null,
   to_status text not null,
   track text not null,
+  residence_country text not null,
+  mission text not null,
+  official_source_url text not null,
+  source_verified_at timestamptz not null,
   version integer not null,
   evidence_document_id uuid null references public.documents(id) on delete restrict,
   note text null,
@@ -170,11 +174,14 @@ begin
     raise exception 'visa_case_audit_admin_mfa_required';
   end if;
   insert into public.visa_case_events(
-    student_id,from_status,to_status,track,version,evidence_document_id,note,actor_id
+    student_id,from_status,to_status,track,residence_country,mission,
+    official_source_url,source_verified_at,version,evidence_document_id,note,actor_id
   ) values (
     new.student_id,
     case when tg_op = 'INSERT' then null else old.status end,
-    new.status,new.track,new.version,new.evidence_document_id,new.note,auth.uid()
+    new.status,new.track,new.residence_country,new.mission,
+    new.official_source_url,new.source_verified_at,new.version,
+    new.evidence_document_id,new.note,auth.uid()
   );
   return new;
 end
