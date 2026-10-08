@@ -111,6 +111,8 @@ test("departure is opt-in only after an evidenced approved case", () => {
   assert.match(departure,/\/api\/admin\/dossiers/);
   assert.match(departure,/method: "POST"/);
   assert.match(departure,/owner: task\.owner/);
+  assert.match(departure,/due_date: dueDates\[task\.title\]/);
+  assert.match(departure,/Cible interne facultative/);
   assert.match(departure,/Confirmer l’entrée en Allemagne/);
   assert.match(departure,/Anmeldung/);
   assert.match(departure,/Clôture · Faire le point/);
