@@ -242,7 +242,7 @@ export function DossierMessageThread({
         )}
       </div>
 
-      <form onSubmit={send} className="border-t border-[var(--border)] p-4 sm:p-5">
+      <form id="send-dossier-message" onSubmit={send} className="scroll-mt-52 border-t border-[var(--border)] p-4 sm:p-5 lg:scroll-mt-40">
         <label className="text-sm font-semibold text-slate-700">
           {viewerRole === "admin" ? "Message visible par le candidat ou l’étudiant" : "Répondre à Campus Allemagne"}
           <textarea
