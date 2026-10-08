@@ -67,7 +67,9 @@ export default async function AdminDocumentsPage() {
   const allDocuments = documentsResult.data || [];
   const latestByStudentCategory = new Map<string, (typeof allDocuments)[number]>();
   for (const document of allDocuments) {
-    const key = `${document.student_id}:${document.category}`;
+    const key = document.category === "admission"
+      ? `admission:${document.id}`
+      : `${document.student_id}:${document.category}`;
     if (!latestByStudentCategory.has(key)) latestByStudentCategory.set(key, document);
   }
   const rawDocuments = [...latestByStudentCategory.values()].sort((left, right) => {
