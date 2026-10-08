@@ -20,7 +20,7 @@ test("UX-5 starts from the real dossier with three direct links and no new recor
   for (const anchor of ["#send-dossier-message", "#request-document", "#applications"]) {
     assert.ok(shortcuts.includes(anchor), anchor);
   }
-  assert.match(shortcuts, /Messagerie disponible après création du compte lié/);
+  assert.match(shortcuts, /Fonction disponible après liaison du compte de la personne/);
   assert.match(shortcuts, /il ne valide pas à lui seul/);
   assert.doesNotMatch(shortcuts, /fetch\(|supabase|service_role/);
 });
