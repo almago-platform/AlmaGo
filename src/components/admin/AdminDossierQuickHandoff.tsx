@@ -1,5 +1,3 @@
-import Link from "next/link";
-
 type QuickStep = {
   number: string;
   title: string;
@@ -54,7 +52,7 @@ export function AdminDossierQuickHandoff({ canExchange }: { canExchange: boolean
               <h3 className="text-sm font-bold leading-5 text-slate-950">{step.title}</h3>
             </div>
             <p className="mt-2 text-xs leading-5 text-slate-700">{step.detail}</p>
-            {step.number !== "1" || canExchange ? (
+            {canExchange || step.number === "3" ? (
               <a
                 href={step.href}
                 className="mt-2 inline-flex min-h-10 items-center rounded-[var(--radius-control)] px-1 py-2 text-xs font-bold text-[var(--brand-strong)] underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brand)]"
@@ -74,11 +72,8 @@ export function AdminDossierQuickHandoff({ canExchange }: { canExchange: boolean
         une admission. L’état officiel de la candidature et ses preuves se vérifient séparément.
       </p>
       <p className="mt-2 text-xs text-slate-600">
-        L’étudiant retrouvera vos pièces jointes dans{" "}
-        <Link href="/student/messages" className="font-semibold text-[var(--brand-strong)] underline underline-offset-2">
-          son espace Messages
-        </Link>
-        {" "}et déposera les documents demandés depuis son propre espace Documents.
+        Le destinataire retrouvera vos pièces jointes dans ses Messages et pourra déposer les documents demandés
+        dans son espace Documents lorsqu’il y a accès.
       </p>
     </section>
   );
