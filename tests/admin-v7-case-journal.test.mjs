@@ -8,6 +8,7 @@ const migration = read("supabase/migrations/20261007053500_admin_case_journal.sq
 const route = read("src/app/api/admin/dossiers/[studentId]/notes/route.ts");
 const panel = read("src/components/admin/AdminCaseJournalPanel.tsx");
 const dossier = read("src/app/admin/dossiers/[studentId]/page.tsx");
+const navigation = read("src/components/admin/AdminDossierNavigation.tsx");
 const people = read("src/app/admin/people/page.tsx");
 
 test("Admin V7 adds an internal-only immutable case journal", () => {
@@ -31,7 +32,7 @@ test("Admin V7 journal API is admin-only and never writes student_history", () =
 test("Admin V7 dossier 360 exposes a clearly internal journal", () => {
   assert.match(dossier, /AdminCaseJournalPanel/);
   assert.match(dossier, /from\("student_case_notes"\)/);
-  assert.match(dossier, /#journal/);
+  assert.match(navigation, /#journal/);
   assert.match(panel, /Journal interne/);
   assert.match(panel, /Ce journal n’est jamais montré à l’étudiant/);
   assert.match(panel, /Les notes sont conservées comme historique interne immuable/);
