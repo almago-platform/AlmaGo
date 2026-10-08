@@ -15,6 +15,7 @@ import {
   type CaseOperationalEvidence,
 } from "@/lib/admin/candidate-journey";
 import { createClient } from "@/lib/supabase/server";
+import { isVisaStatus, visaStatusLabels } from "@/lib/admin/visa-workflow";
 import {
   applicationDateIsTrusted,
   applicationOfficialDeadlineUrgency,
@@ -35,6 +36,7 @@ type CaseView = {
   email: string;
   route: string | null;
   customerStatus: string | null;
+  visaStatus: string | null;
   evidence: CaseOperationalEvidence;
   updatedAt: string;
 };
@@ -72,6 +74,7 @@ export default async function AdminCandidateJourneyPage({
     proceduresResult,
     documentsResult,
     messagesResult,
+    visaResult,
   ] = await Promise.all([
     supabase.from("prospects").select("id,user_id,email,updated_at").order("updated_at", { ascending: false }).limit(250),
     supabase.from("orientations").select("prospect_id").limit(3000),
@@ -83,6 +86,7 @@ export default async function AdminCandidateJourneyPage({
     supabase.from("student_procedures").select("student_id").eq("is_current", true).limit(1000),
     supabase.from("documents").select("student_id,status").in("status", ["pending", "reviewed"]).limit(3000),
     supabase.from("student_dossier_messages").select("student_id").eq("sender_role", "student").is("admin_read_at", null).limit(3000),
+    supabase.from("visa_cases").select("student_id,status").limit(1000),
   ]);
 
   const errors = [
@@ -142,6 +146,7 @@ export default async function AdminCandidateJourneyPage({
   const profileById = new Map((profilesResult.data || []).map((p) => [p.id, p]));
   const intakeById = new Map((intakeResult.data || []).map((c) => [c.student_id, c]));
   const accessById = new Map((accessResult.data || []).map((a) => [a.user_id, a.status]));
+  const visaStatusById = new Map((visaResult.data || []).map((v) => [v.student_id, v.status]));
 
   const seenUsers = new Set<string>();
   const candidates: CaseView[] = [];
@@ -158,6 +163,7 @@ export default async function AdminCandidateJourneyPage({
       email: prospect.email,
       route: intake?.proposed_route_key || null,
       customerStatus: userId ? accessById.get(userId) || null : null,
+      visaStatus: userId ? visaStatusById.get(userId) || null : null,
       evidence: {
         hasAccount: Boolean(userId),
         orientationCount: orientationCountByProspect.get(prospect.id) || 0,
@@ -182,6 +188,7 @@ export default async function AdminCandidateJourneyPage({
       email: "",
       route: intake.proposed_route_key,
       customerStatus: accessById.get(intake.student_id) || null,
+      visaStatus: visaStatusById.get(intake.student_id) || null,
       evidence: {
         hasAccount: true,
         orientationCount: 0,
@@ -258,16 +265,20 @@ export default async function AdminCandidateJourneyPage({
                     {item.evidence.officialDeadlineRisk ? <Badge variant="error">{item.evidence.officialDeadlineRisk === "overdue" ? "Deadline officielle dépassée" : "Deadline officielle sous 7 jours"}</Badge> : null}
                     {item.evidence.unreadStudentMessages ? <Badge variant="warning">{item.evidence.unreadStudentMessages} message(s) non lu(s)</Badge> : null}
                     {item.evidence.pendingDocuments ? <Badge variant="warning">{item.evidence.pendingDocuments} document(s) à revoir</Badge> : null}
+                    {item.visaStatus && isVisaStatus(item.visaStatus) ? <Badge variant={item.visaStatus === "approved" ? "success" : "info"}>{visaStatusLabels[item.visaStatus]}</Badge> : null}
                   </div>
                   <h3 className="mt-2 break-words text-base font-semibold text-slate-950">{item.name}</h3>
                   {item.email ? <p className="break-words text-xs text-slate-500"><bdi dir="auto">{item.email}</bdi></p> : null}
                   <p className="mt-1 text-xs text-slate-500">Repère : {phaseLabel} · {item.evidence.orientationCount} orientation(s) · {item.evidence.recommendations} recommandation(s) · {item.evidence.applications} candidature(s)</p>
                   <p className="mt-1 text-sm font-medium text-slate-700">À faire : {recommendedOperatorAction(item.evidence)}</p>
-                  <p className="mt-1 text-xs text-amber-800">Visa : aucun statut de dépôt ou de décision vérifié dans cette vue.</p>
+                  <p className="mt-1 text-xs text-amber-800">{visaResult.error ? "Visa : suivi non déployé ou indisponible." : item.visaStatus && isVisaStatus(item.visaStatus) ? "Visa : état interne historisé et soumis à preuve documentaire." : "Visa : aucune étape officiellement justifiée enregistrée."}</p>
                 </div>
-                <Link href={href} className={buttonClassName("secondary", "shrink-0 px-4")}>
-                  {item.userId ? "Ouvrir le dossier 360°" : "Ouvrir Prospects"} →
-                </Link>
+                <div className="flex shrink-0 flex-wrap items-center gap-2">
+                  <Link href={href} className={buttonClassName("secondary", "px-4")}>
+                    {item.userId ? "Dossier 360°" : "Ouvrir Prospects"} →
+                  </Link>
+                  {item.userId ? <Link href={`/admin/visa/${item.userId}`} className={buttonClassName("secondary", "px-4")}>Suivi visa →</Link> : null}
+                </div>
               </article>
             );
           })}
