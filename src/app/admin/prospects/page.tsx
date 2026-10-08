@@ -330,7 +330,7 @@ export default async function AdminProspectsPage({
       <AdminPageHeader
         section="Prospects"
         title="Prospects"
-        description="Priorisez les demandes, vérifiez le consentement puis qualifiez chaque projet en conservant les règles métier."
+        description="Priorisez les demandes, vérifiez le consentement et qualifiez chaque projet. Ces signaux aident à décider ; ils ne décident pas automatiquement si le marché est validé."
       />
 
       <section className="mb-6 rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-4 sm:p-5" aria-label="Résumé de la file prospects">
