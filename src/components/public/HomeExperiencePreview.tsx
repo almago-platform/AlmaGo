@@ -21,7 +21,6 @@ export function HomeExperiencePreview({
   const [active, setActive] = useState<"free" | "client">("free");
   const refs = useRef<(HTMLButtonElement | null)[]>([]);
   const tabs = [copy.freeTab, copy.clientTab] as const;
-  const isFree = active === "free";
 
   function handleTabKeys(event: KeyboardEvent<HTMLButtonElement>, index: number) {
     const forward = rtl ? "ArrowLeft" : "ArrowRight";
@@ -37,8 +36,6 @@ export function HomeExperiencePreview({
     refs.current[target]?.focus();
   }
 
-  const items = isFree ? copy.freeItems : copy.clientItems;
-  const icons = isFree ? freeIcons : clientIcons;
 
   return (
     <section id="espace" className={s.v42Experience} aria-labelledby="v42-experience-title">
