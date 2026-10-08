@@ -42,6 +42,12 @@ export type UnifiedDossierInput = {
   notes: Note[];
   documents: Document[];
   applications: Application[];
+  // Preserve factual legacy events shown when the dedicated history is empty.
+  legacyFallback?: {
+    orientation?: { id: string; createdAt: string; detail: string | null } | null;
+    studentResponse?: { createdAt: string; detail: string | null } | null;
+    purchase?: { id: string; createdAt: string; detail: string | null } | null;
+  };
 };
 
 const noteLabels: Record<string, string> = {
@@ -197,6 +203,34 @@ export function buildUnifiedDossierHistory(input: UnifiedDossierInput): UnifiedD
           ? "Événement de candidature" : "Événement interne de candidature",
         currentStatus: null,
         href: "#applications",
+      });
+    }
+  }
+
+  if (!input.history.length && input.legacyFallback) {
+    const { orientation, studentResponse, purchase } = input.legacyFallback;
+    if (orientation?.createdAt) {
+      add({
+        id: "orientation:" + orientation.id, category: "suivi",
+        title: "Orientation enregistrée", detail: orientation.detail,
+        occurredAt: orientation.createdAt, recordedAt: null, actor: null,
+        source: "Orientation du dossier", currentStatus: null, href: "#orientation",
+      });
+    }
+    if (studentResponse?.createdAt) {
+      add({
+        id: "intake-response:" + studentResponse.createdAt, category: "suivi",
+        title: "Réponse de l’étudiant enregistrée", detail: studentResponse.detail,
+        occurredAt: studentResponse.createdAt, recordedAt: null, actor: "Étudiant",
+        source: "Réponse du dossier", currentStatus: null, href: "#overview",
+      });
+    }
+    if (purchase?.createdAt) {
+      add({
+        id: "purchase:" + purchase.id, category: "suivi",
+        title: "Achat créé", detail: purchase.detail,
+        occurredAt: purchase.createdAt, recordedAt: null, actor: null,
+        source: "Achat enregistré", currentStatus: null, href: "#commercial",
       });
     }
   }
