@@ -24,6 +24,8 @@ test("UX-5b: a university letter is bound to the same student's existing applica
   assert.match(upload, /application_id: applicationId/);
   assert.match(upload, /document_id: documentId/);
   assert.match(upload, /from\("academic_evidence"\)/);
+  assert.match(upload, /hasClientLifecycleEntitlement\(access\?\.status\)/);
+  assert.match(admin, /personSegment === "student"/);
 });
 
 test("UX-5b: only MFA-protected admins may upload private PDF without asserting admission", () => {
