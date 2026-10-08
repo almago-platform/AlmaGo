@@ -68,6 +68,31 @@ export function AdminDossierActionsPanel({
     [actions],
   );
 
+
+  // UX-4: routine system steps must not masquerade as work for the counselor.
+  const humanOpen = useMemo(
+    () => active.filter((item) => !isSystemManagedAdminAction(item)),
+    [active],
+  );
+  const campusWork = useMemo(() => humanOpen.filter((item) =>
+    !["waiting_student", "waiting_external"].includes(item.status)
+    && item.owner !== "student"
+    && item.owner !== "external"
+  ).sort((left, right) => {
+    const priority = (item: AdminDossierActionItem) =>
+      item.status === "blocked" ? 0
+        : isOverdue(item.due_date) ? 1
+          : item.status === "in_progress" ? 2
+            : item.status === "ready" || item.status === "waiting_almago" ? 3 : 4;
+    return priority(left) - priority(right)
+      || (left.due_date || "9999-12-31").localeCompare(right.due_date || "9999-12-31")
+      || left.title.localeCompare(right.title, "fr");
+  }), [humanOpen]);
+  const waitingOnOthers = humanOpen.filter((item) => !campusWork.some((work) => work.id === item.id));
+  const systemSteps = active.filter((item) => isSystemManagedAdminAction(item));
+  const priorityWork = campusWork.slice(0, 3);
+  const extraWork = campusWork.slice(3);
+
   async function createAction(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setBusy("create");
@@ -125,42 +150,11 @@ export function AdminDossierActionsPanel({
     router.refresh();
   }
 
-  return (
-    <section className="pc-panel p-5 sm:p-6" aria-labelledby="dossier-actions-title">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Suivi opérationnel</p>
-          <h2 id="dossier-actions-title" className="mt-2 text-xl font-semibold tracking-[-0.025em] text-slate-950">
-            Prochaines actions
-          </h2>
-          <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
-            Enregistrez les actions qui doivent rester visibles pour l’équipe. Une date saisie ici est une cible interne Campus Allemagne, jamais une échéance officielle.
-          </p>
-        </div>
-        <Badge variant={active.length ? "warning" : "success"}>
-          {active.length ? `${active.length} ouverte${active.length > 1 ? "s" : ""}` : "À jour"}
-        </Badge>
-      </div>
 
-      {notice ? (
-        <p
-          role={notice.tone === "error" ? "alert" : "status"}
-          className={`mt-4 rounded-[var(--radius-control)] border p-3 text-sm font-semibold ${
-            notice.tone === "error"
-              ? "border-red-200 bg-red-50 text-red-800"
-              : "border-emerald-200 bg-emerald-50 text-emerald-800"
-          }`}
-        >
-          {notice.text}
-        </p>
-      ) : null}
-
-      {active.length ? (
-        <div className="mt-5 divide-y divide-[var(--border)] border-y border-[var(--border)]">
-          {active.map((item) => {
-            const due = formatDate(item.due_date);
-            const overdue = isOverdue(item.due_date);
-            return (
+  function renderActionRow(item: AdminDossierActionItem) {
+    const due = formatDate(item.due_date);
+    const overdue = isOverdue(item.due_date);
+    return (
               <article key={item.id} className="grid gap-4 py-4 lg:grid-cols-[minmax(0,1fr)_11rem_10rem_auto] lg:items-center">
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
@@ -212,17 +206,110 @@ export function AdminDossierActionsPanel({
                   )}
                 </div>
               </article>
-            );
-          })}
+    );
+  }
+
+  return (
+    <section className="pc-panel p-5 sm:p-6" aria-labelledby="dossier-actions-title">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Suivi opérationnel</p>
+          <h2 id="dossier-actions-title" className="mt-2 text-xl font-semibold tracking-[-0.025em] text-slate-950">
+            Prochaines actions
+          </h2>
+          <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
+            D’abord vos actions. Ensuite les attentes et les étapes automatiques. Les deadlines universitaires vérifiées restent dans Candidatures.
+          </p>
+        </div>
+        <Badge variant={active.length ? "warning" : "success"}>
+          {active.length ? `${active.length} étape${active.length > 1 ? "s" : ""} ouverte${active.length > 1 ? "s" : ""}` : "À jour"}
+        </Badge>
+      </div>
+
+      {notice ? (
+        <p
+          role={notice.tone === "error" ? "alert" : "status"}
+          className={`mt-4 rounded-[var(--radius-control)] border p-3 text-sm font-semibold ${
+            notice.tone === "error"
+              ? "border-red-200 bg-red-50 text-red-800"
+              : "border-emerald-200 bg-emerald-50 text-emerald-800"
+          }`}
+        >
+          {notice.text}
+        </p>
+      ) : null}
+
+      <div className="mt-5 grid gap-2 sm:grid-cols-3" aria-label="Répartition des actions enregistrées">
+        <div className="rounded-[var(--radius-control)] border border-[var(--border)] bg-white p-3">
+          <p className="text-xs font-semibold text-slate-600">À traiter par Campus</p>
+          <p className="mt-1 text-xl font-bold text-slate-950">{campusWork.length}</p>
+        </div>
+        <div className="rounded-[var(--radius-control)] border border-[var(--border)] bg-white p-3">
+          <p className="text-xs font-semibold text-slate-600">En attente d’un tiers</p>
+          <p className="mt-1 text-xl font-bold text-slate-950">{waitingOnOthers.length}</p>
+        </div>
+        <div className="rounded-[var(--radius-control)] border border-[var(--border)] bg-white p-3">
+          <p className="text-xs font-semibold text-slate-600">Étapes automatiques</p>
+          <p className="mt-1 text-xl font-bold text-slate-950">{systemSteps.length}</p>
+        </div>
+      </div>
+
+      {campusWork.length ? (
+        <div className="mt-5">
+          <h3 className="text-base font-bold text-slate-950">Ce que Campus doit traiter maintenant</h3>
+          <p className="mt-1 text-xs leading-5 text-slate-600">
+            Les trois premières actions humaines sont mises en avant. Les dates indiquées ici sont des cibles internes, pas des deadlines officielles.
+          </p>
+          <div className="mt-3 divide-y divide-[var(--border)] border-y border-[var(--border)]">
+            {priorityWork.map(renderActionRow)}
+          </div>
+          {extraWork.length ? (
+            <details className="mt-3 rounded-[var(--radius-control)] border border-[var(--border)] bg-white p-3">
+              <summary className="min-h-10 cursor-pointer py-2 text-sm font-semibold text-[var(--brand-strong)] focus-visible:outline-2 focus-visible:outline-offset-2">
+                Voir les {extraWork.length} autres actions Campus
+              </summary>
+              <div className="divide-y divide-[var(--border)] border-t border-[var(--border)]">
+                {extraWork.map(renderActionRow)}
+              </div>
+            </details>
+          ) : null}
         </div>
       ) : (
-        <div className="mt-5 rounded-[var(--radius-control)] border border-emerald-200 bg-emerald-50/50 p-4">
-          <p className="text-sm font-bold text-emerald-900">Aucune action ouverte enregistrée.</p>
-          <p className="mt-1 text-sm leading-5 text-emerald-800">
-            Les files métier restent la source de vérité pour les documents, candidatures, paiements et décisions.
+        <div className="mt-5 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4">
+          <p className="text-sm font-bold text-slate-950">Aucune action manuelle Campus à traiter dans cette liste.</p>
+          <p className="mt-1 text-xs leading-5 text-slate-600">
+            Vérifiez aussi les messages, documents et blocages du dossier. Des étapes peuvent être gérées par la procédure ou attendre un tiers.
           </p>
         </div>
       )}
+
+      {waitingOnOthers.length ? (
+        <details className="mt-4 rounded-[var(--radius-control)] border border-[var(--border)] bg-white p-3">
+          <summary className="min-h-10 cursor-pointer py-2 text-sm font-bold text-slate-950 focus-visible:outline-2 focus-visible:outline-offset-2">
+            En attente d’un étudiant ou d’un organisme · {waitingOnOthers.length}
+          </summary>
+          <p className="mt-1 text-xs leading-5 text-slate-600">
+            Ces actions sont enregistrées, mais ne sont pas présentées comme des décisions Campus à prendre maintenant.
+          </p>
+          <div className="mt-3 divide-y divide-[var(--border)] border-t border-[var(--border)]">
+            {waitingOnOthers.map(renderActionRow)}
+          </div>
+        </details>
+      ) : null}
+
+      {systemSteps.length ? (
+        <details className="mt-4 rounded-[var(--radius-control)] border border-[var(--border)] bg-white p-3">
+          <summary className="min-h-10 cursor-pointer py-2 text-sm font-bold text-slate-950 focus-visible:outline-2 focus-visible:outline-offset-2">
+            Étapes pilotées par la procédure · {systemSteps.length}
+          </summary>
+          <p className="mt-1 text-xs leading-5 text-slate-600">
+            Ces étapes sont synchronisées automatiquement. Leur suivi reste disponible, mais elles ne se valident pas manuellement ici.
+          </p>
+          <div className="mt-3 divide-y divide-[var(--border)] border-t border-[var(--border)]">
+            {systemSteps.map(renderActionRow)}
+          </div>
+        </details>
+      ) : null}
 
       <details className="mt-5 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4">
         <summary className="cursor-pointer text-sm font-bold text-slate-950">Ajouter une action de suivi</summary>
