@@ -75,7 +75,7 @@ test("displayed stage is an operational cue, never a synthetic visa verdict", ()
   assert.equal(firstKnownMilestone({ ...standard, intakeStatus: "campus_review" }), "qualification");
   assert.equal(firstKnownMilestone({ ...standard, applications: 1 }), "academic_application");
   assert.ok(!page.includes('visaStatus: "approved"'));
-  assert.match(page, /Visa : aucun statut de dépôt ou de décision vérifié/);
+  assert.match(page, /Visa : aucune étape officiellement justifiée enregistrée/);
 });
 
 test("financial reference must be revisited on another calendar year", () => {
