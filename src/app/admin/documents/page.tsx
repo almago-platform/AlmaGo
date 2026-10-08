@@ -9,7 +9,8 @@ import {
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminDocumentsPage() {
+// Measurement belongs to the server-side data loader, not React rendering.
+async function loadDocumentData() {
   const supabase = await createClient();
   const startedAt = performance.now();
   const [documentsResult, evidenceResult] = await Promise.all([
@@ -25,6 +26,26 @@ export default async function AdminDocumentsPage() {
   ]);
 
   const queryMs = Math.round(performance.now() - startedAt);
+  return { supabase, documentsResult, evidenceResult, queryMs, startedAt };
+}
+
+function logAdminDocumentPerformance(
+  startedAt: number,
+  queryMs: number,
+  visibleDocuments: number,
+  evidenceRows: number,
+) {
+  if (process.env.ALMAGO_ADMIN_DOCUMENT_PERF_LOG_ENABLED !== "true") return;
+  console.info("[almago:admin-documents:performance]", JSON.stringify({
+    queriesMs: queryMs,
+    totalMs: Math.round(performance.now() - startedAt),
+    visibleDocuments,
+    evidenceRows,
+  }));
+}
+
+export default async function AdminDocumentsPage() {
+  const { supabase, documentsResult, evidenceResult, queryMs, startedAt } = await loadDocumentData();
 
   if (documentsResult.error) {
     return (
@@ -69,15 +90,8 @@ export default async function AdminDocumentsPage() {
   }));
   const documentStatusById = new Map(rawDocuments.map((document) => [document.id, document.status]));
 
-  // Opt-in diagnostics contain only timings and aggregate counts, never filenames or personal data.
-  if (process.env.ALMAGO_ADMIN_DOCUMENT_PERF_LOG_ENABLED === "true") {
-    console.info("[almago:admin-documents:performance]", JSON.stringify({
-      queriesMs: queryMs,
-      totalMs: Math.round(performance.now() - startedAt),
-      visibleDocuments: documents.length,
-      evidenceRows: (evidenceResult.data || []).length,
-    }));
-  }
+  // Emit only aggregate counts and timing data; no filenames, student IDs or paths.
+  logAdminDocumentPerformance(startedAt, queryMs, documents.length, (evidenceResult.data || []).length);
 
   return (
     <main className="mx-auto w-full max-w-[92rem] px-4 py-5 sm:px-6 sm:py-6 xl:px-8">
