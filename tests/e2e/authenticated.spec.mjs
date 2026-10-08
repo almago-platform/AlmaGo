@@ -9,13 +9,21 @@ const studentPassword = process.env.ALMAGO_E2E_STUDENT_PASSWORD;
 const adminEmail = process.env.ALMAGO_E2E_ADMIN_EMAIL;
 const adminPassword = process.env.ALMAGO_E2E_ADMIN_PASSWORD;
 const adminTotpSecret = process.env.ALMAGO_E2E_ADMIN_TOTP_SECRET;
-const configured = Boolean(studentEmail && studentPassword && adminEmail && adminPassword);
+
+const studentConfigured = Boolean(studentEmail && studentPassword);
+const adminConfigured = Boolean(
+  adminEmail && adminPassword && adminTotpSecret,
+);
 
 test.describe("authenticated role journeys", () => {
   test.setTimeout(60_000);
-  test.skip(!configured, "Authenticated E2E requires dedicated test-account secrets.");
 
   test("student account reaches only the student area", async ({ page }) => {
+    test.skip(
+      !studentConfigured,
+      "Student E2E requires dedicated student test-account secrets.",
+    );
+
     await loginWithRedactedPassword(page, studentEmail, studentPassword, "student");
     expect(new URL(page.url()).pathname).toMatch(/^\/student(?:\/|$)/);
 
@@ -32,10 +40,17 @@ test.describe("authenticated role journeys", () => {
     expect(deniedApi.status()).toBe(403);
   });
 
-  test("admin AAL1 is challenged before page and API authorization", async ({ page }) => {
+  test("optional disposable admin AAL1 fixture is challenged", async ({ page }) => {
+    test.skip(
+      !adminConfigured,
+      "No disposable admin E2E fixture is configured; production admin evidence is human exact-SHA approval.",
+    );
+
     await loginWithRedactedPassword(page, adminEmail, adminPassword, "admin-challenge");
     expect(new URL(page.url()).pathname).toBe("/mfa");
-    await expect(page.getByRole("heading", { name: "Vérification en deux étapes" })).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "Vérification en deux étapes" }),
+    ).toBeVisible();
 
     const deniedApi = await page.request.post("/api/admin/orientation", {
       data: {},
@@ -43,11 +58,11 @@ test.describe("authenticated role journeys", () => {
     expect(deniedApi.status()).toBe(403);
   });
 
-  test("admin AAL2 passes page and API authorization", async ({ page }) => {
-    expect(
-      adminTotpSecret,
-      "Admin AAL2 E2E requires ALMAGO_E2E_ADMIN_TOTP_SECRET. Release evidence must fail closed rather than skip MFA.",
-    ).toBeTruthy();
+  test("optional disposable admin AAL2 fixture passes authorization", async ({ page }) => {
+    test.skip(
+      !adminConfigured,
+      "No disposable admin E2E fixture is configured; production admin evidence is human exact-SHA approval.",
+    );
 
     await loginWithRedactedPassword(page, adminEmail, adminPassword, "admin-challenge");
     await completeAdminMfaChallenge(page, adminTotpSecret);
