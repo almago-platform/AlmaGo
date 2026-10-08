@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 
@@ -14,6 +14,28 @@ export function AdminAdmissionPdfForm({
   applications: ApplicationChoice[];
 }) {
   const router = useRouter();
+  const detailsRef = useRef<HTMLDetailsElement>(null);
+
+  useEffect(() => {
+    function reveal() {
+      if (window.location.hash !== "#admission-pdf" || !detailsRef.current) return;
+      detailsRef.current.open = true;
+      window.requestAnimationFrame(() => detailsRef.current?.scrollIntoView({ block: "start" }));
+    }
+    function handleLink(event: MouseEvent) {
+      if (!(event.target instanceof Element)) return;
+      if (event.target.closest('a[href="#admission-pdf"]') && detailsRef.current) {
+        detailsRef.current.open = true;
+      }
+    }
+    reveal();
+    window.addEventListener("hashchange", reveal);
+    document.addEventListener("click", handleLink);
+    return () => {
+      window.removeEventListener("hashchange", reveal);
+      document.removeEventListener("click", handleLink);
+    };
+  }, []);
   const [applicationId, setApplicationId] = useState(applications[0]?.id || "");
   const [institution, setInstitution] = useState(applications[0]?.institution || "");
   const [evidenceType, setEvidenceType] = useState("definitive_admission");
@@ -74,7 +96,7 @@ export function AdminAdmissionPdfForm({
   }
 
   return (
-    <details id="admission-pdf" className="mb-5 scroll-mt-52 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4 lg:scroll-mt-40">
+    <details id="admission-pdf" ref={detailsRef} className="mb-5 scroll-mt-52 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4 lg:scroll-mt-40">
       <summary className="min-h-9 cursor-pointer text-sm font-bold text-slate-950">
         Ajouter une lettre universitaire (PDF)
       </summary>
