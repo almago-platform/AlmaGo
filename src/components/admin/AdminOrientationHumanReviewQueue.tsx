@@ -205,7 +205,7 @@ export function AdminOrientationHumanReviewQueue({
         </Card>
       ) : (
         <div className="space-y-5">
-          {reviews.map((review) => {
+          {reviews.map((review, index) => {
             const bundle = review.bundle || {};
             const profile = review.profile || bundle.profile || {};
             const discoveryCandidates = Array.isArray(bundle.discovery?.candidates)
@@ -252,6 +252,12 @@ export function AdminOrientationHumanReviewQueue({
                     <p>Rentrée : <strong>{profile.targetIntakeSeason || "—"} {profile.targetIntakeYear || ""}</strong></p>
                   </div>
                 </div>
+
+                <details open={index === 0 && review.review_status === "pending"} className="group mt-4 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)]/35 p-3">
+                  <summary className="cursor-pointer list-none text-sm font-bold text-[var(--brand-strong)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brand)] [&::-webkit-details-marker]:hidden">
+                    <span aria-hidden="true" className="mr-2 inline-block transition-transform group-open:rotate-90">▸</span>
+                    {review.review_status === "pending" ? "Examiner et décider" : "Consulter la décision"} · {selected.length} programme(s) présélectionné(s)
+                  </summary>
 
                 <section aria-label="Choisir les programmes à recommander" className="mt-5 rounded-[var(--radius-control)] border border-[var(--border)] bg-white p-4">
                   <div className="flex flex-wrap items-start justify-between gap-3">
@@ -525,6 +531,7 @@ export function AdminOrientationHumanReviewQueue({
 
 
                   </div>
+                </details>
                 </details>
               </Card>
             );
