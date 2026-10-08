@@ -517,7 +517,7 @@ export default async function AdminStudentDossierPage({
   // Admissions are application-specific: multiple letters must not be hidden
   // by the "latest file per category" rule used for routine documents.
   const latestOperationalDocuments = [
-    ...latestDocumentByCategory.values().filter((item) => item.category !== "admission"),
+    ...[...latestDocumentByCategory.values()].filter((item) => item.category !== "admission"),
     ...documents.filter((item) => item.category === "admission"),
   ];
   const documentsAwaitingDecision = latestOperationalDocuments.filter((item) =>
