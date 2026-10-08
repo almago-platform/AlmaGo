@@ -10,6 +10,7 @@ import {
   type VisaDocumentOption,
 } from "@/components/admin/AdminVisaCasePanel";
 import { visaStatusLabels, isVisaStatus } from "@/lib/admin/visa-workflow";
+import { AdminDeparturePanel } from "@/components/admin/AdminDeparturePanel";
 import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -24,7 +25,7 @@ export default async function AdminVisaStudentPage({
   const { studentId } = await params;
   if (!UUID_RE.test(studentId)) notFound();
   const supabase = await createClient();
-  const [profileResult, caseResult, historyResult, documentsResult] = await Promise.all([
+  const [profileResult, caseResult, historyResult, documentsResult, tasksResult] = await Promise.all([
     supabase.from("profiles").select("id,first_name,last_name,full_name").eq("id", studentId).maybeSingle(),
     supabase.from("visa_cases")
       .select("student_id,track,residence_country,mission,status,official_source_url,source_verified_at,evidence_document_id,note,version,updated_at")
@@ -36,11 +37,16 @@ export default async function AdminVisaStudentPage({
       .select("id,original_filename,created_at")
       .eq("student_id", studentId).eq("category", "other").eq("status", "approved")
       .order("created_at", { ascending: false }).limit(100),
+    supabase.from("student_checklist_items")
+      .select("title,status")
+      .eq("student_id", studentId)
+      .is("template_id", null).is("procedure_step_template_id", null)
+      .order("created_at", { ascending: false }).limit(300),
   ]);
 
   if (!profileResult.data && !profileResult.error) notFound();
 
-  if (profileResult.error || caseResult.error || historyResult.error || documentsResult.error) {
+  if (profileResult.error || caseResult.error || historyResult.error || documentsResult.error || tasksResult.error) {
     return (
       <main className="mx-auto w-full max-w-[92rem] px-4 py-6 sm:px-6 xl:px-8">
         <AdminPageHeader section="Dossiers" title="Suivi visa" description="Dossier consulaire réservé à l'administrateur." />
@@ -91,6 +97,11 @@ export default async function AdminVisaStudentPage({
       </div>
 
       <AdminVisaCasePanel studentId={studentId} visaCase={visaCase} documents={documents} />
+      <AdminDeparturePanel
+        studentId={studentId}
+        visaApproved={visaCase?.status === "approved"}
+        existing={(tasksResult.data || []).map((task) => ({ title: task.title, status: task.status }))}
+      />
 
       <section className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-5 sm:p-6">
         <div className="flex flex-wrap items-center justify-between gap-2">
