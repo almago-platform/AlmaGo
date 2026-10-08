@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import test from "node:test";
 
 const read = (path) => readFileSync(path, "utf8");
-const migration = read("supabase/migrations/20261008210000_admin_application_admission_evidence.sql");
+const migration = read("supabase/migrations/20261008175900_admin_application_admission_evidence.sql");
 const upload = read("src/app/api/admin/dossiers/[studentId]/admissions/route.ts");
 const form = read("src/components/admin/AdminAdmissionPdfForm.tsx");
 const admin = read("src/app/admin/dossiers/[studentId]/page.tsx");
