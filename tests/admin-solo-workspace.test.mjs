@@ -39,3 +39,9 @@ test("the consolidated queue makes pending orientation reviews visible without p
   assert.match(overview, /title="Audits d’orientation en attente"/);
   assert.match(overview, /aucune recommandation étudiant n’est publiée par cette revue/);
 });
+
+test("solo dashboard never mixes completed client dossiers into the active queue", () => {
+  assert.match(overview, /const completedIds = new Set\(/);
+  assert.match(overview, /if \(!completedIds\.has\(item\.student_id\)\) operationalIds\.add/);
+  assert.match(overview, /operationalIds\.has\(item\.student_id\) && belongsToAdminPortfolio/);
+});
