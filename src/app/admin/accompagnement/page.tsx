@@ -330,7 +330,7 @@ export default async function AdminCandidateJourneyPage({
 
       <details className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-5" aria-label="Référentiel visa depuis la Tunisie">
         <summary className="cursor-pointer text-sm font-bold text-slate-950">Référentiel visa et checklists officielles · consultation experte</summary>
-      <section className="mt-4" aria-labelledby="visa-guide-title" className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-5 sm:p-6">
+      <section className="mt-4" aria-labelledby="visa-guide-title">
         <h2 id="visa-guide-title" className="text-xl font-semibold text-slate-950">Visa : référentiel vérifié pour une demande depuis la Tunisie</h2>
         <p className="mt-2 text-sm leading-6 text-slate-700">
           Ces trois voies sont distinctes et ne sont pas attribuées automatiquement à un candidat.
