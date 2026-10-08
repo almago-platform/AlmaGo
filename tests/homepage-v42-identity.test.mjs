@@ -11,7 +11,7 @@ const css = read("src/components/public/Homepage.module.css");
 const legal = read("src/content/legal-content.ts");
 
 test("V4.2 public story flows from identity to journey to experience to services and FAQ", () => {
-  const sections = ["<HomeHero", "<HomeAboutSection", "<HomeJourneySection", "<HomeExperiencePreview", "<HomeServicesSection", "<HomeFaqSection"];
+  const sections = ["<HomeHero", "<HomeAboutSection", "<HomeServicesSection", "<HomeExperiencePreview", "<HomeJourneySection", "<HomeFaqSection"];
   for (let i = 1; i < sections.length; i++) {
     assert.ok(page.indexOf(sections[i - 1]) < page.indexOf(sections[i]), `Expected ${sections[i]} after ${sections[i - 1]}`);
   }
