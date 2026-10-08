@@ -430,7 +430,7 @@ export default async function AdminEntry() {
     <main className="mx-auto w-full max-w-[92rem] px-4 py-6 sm:px-6 sm:py-7 xl:px-8">
       <AdminPageHeader
         section="Pilotage"
-        title={soloAdmin ? "Mon bureau" : "Tableau de bord"}
+        title={soloAdmin ? "Mon bureau" : "Vue d’ensemble"}
         description={soloAdmin
           ? "Un seul endroit pour traiter vos dossiers, même sans attribution formelle, et décider quoi faire ensuite."
           : "Voyez d’abord ce qui demande l’attention de l’équipe, puis ouvrez directement la bonne file de travail."}
@@ -492,7 +492,7 @@ export default async function AdminEntry() {
               <strong className="text-3xl font-bold tabular-nums text-slate-950">{signal.number}</strong>
               <span className="text-sm font-bold text-[var(--brand)]" aria-hidden="true">→</span>
             </div>
-            <p className="mt-1 text-xs text-slate-500">{signal.detail}</p>
+            <p className="mt-1 text-xs text-slate-600">{signal.detail}</p>
           </Link>
         ))}
       </section>
