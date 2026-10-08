@@ -451,8 +451,9 @@ export default async function AdminProspectsPage({
 
             return (
               <details key={prospect.id} className="group overflow-hidden rounded-[var(--radius-panel)] border border-[var(--border)] bg-white open:border-[var(--brand-border)]">
-                <summary className="grid cursor-pointer list-item gap-3 p-4 hover:bg-[var(--surface-subtle)] sm:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)_auto] sm:items-center sm:px-5">
-                  <span className="min-w-0">
+                <summary className="flex cursor-pointer list-none flex-wrap items-center gap-x-4 gap-y-2 p-3 hover:bg-[var(--surface-subtle)] focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--brand)] sm:px-5 [&::-webkit-details-marker]:hidden">
+                  <span aria-hidden="true" className="shrink-0 text-sm text-slate-700 transition-transform group-open:rotate-90">▸</span>
+                  <span className="min-w-0 grow basis-[15rem]">
                     <span className="block truncate text-sm font-bold text-slate-950"><bdi dir="auto">{prospect.email}</bdi></span>
                     <span className="mt-1 block text-xs text-slate-600">{answers.targetDegree || "Diplôme à préciser"} · {answers.targetField || "Domaine à compléter"}</span>
                   </span>
@@ -462,7 +463,7 @@ export default async function AdminProspectsPage({
                       {qualification ? qualificationLabels[qualification.state] ?? qualification.state : "Qualification non persistée"}
                     </span>
                   </span>
-                  <span className="text-xs font-bold text-[var(--brand-strong)]">Examiner →</span>
+                  <span className="shrink-0 whitespace-nowrap text-xs font-bold text-[var(--brand-strong)]"><span className="group-open:hidden">Examiner →</span><span className="hidden group-open:inline">Réduire ↑</span></span>
                 </summary>
               <article className="border-t border-[var(--border)] p-5 sm:p-6">
                 <div className="flex flex-wrap items-start justify-between gap-4">
