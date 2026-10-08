@@ -4,6 +4,7 @@ import { HomeIcon } from "./HomeIcons";
 import s from "./Homepage.module.css";
 
 type JourneyCopy = ReturnType<typeof getNativeCopy>["home"]["journey"];
+type PhotoCopy = ReturnType<typeof getNativeCopy>["home"]["photo"];
 
 const images = [
   "https://images.pexels.com/photos/7973208/pexels-photo-7973208.jpeg?auto=compress&cs=tinysrgb&w=1200",
@@ -18,10 +19,12 @@ const stepIds = ["projet", "documents", "programmes", "candidatures", "depart", 
 
 export function HomeJourneySection({
   journey,
+  photo,
   primaryHref = "/signup",
   primaryLabel,
 }: {
   journey: JourneyCopy;
+  photo: PhotoCopy;
   primaryHref?: string;
   primaryLabel?: string;
 }) {
@@ -37,7 +40,10 @@ export function HomeJourneySection({
               <em>{journey.title2}</em>
             </h2>
           </div>
-          <p>{journey.intro}</p>
+          <div className={s.journeyIntro}>
+            <p>{journey.intro}</p>
+            <p className={s.journeyContext}>{photo.text}</p>
+          </div>
         </div>
         <div className={s.journeyRail} aria-hidden="true">
           {journey.steps.map(([title], index) => (
