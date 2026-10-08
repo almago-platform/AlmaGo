@@ -364,7 +364,7 @@ export function AdminOrientationHumanReviewQueue({
                     <Button
                       type="button"
                       variant="secondary"
-                      disabled={busy === review.id}
+                      disabled={busy === review.id || !(notes[review.id] || "").trim()}
                       onClick={() => decide(review, "changes_requested")}
                     >
                       Demander correction
@@ -372,7 +372,7 @@ export function AdminOrientationHumanReviewQueue({
                     <Button
                       type="button"
                       variant="secondary"
-                      disabled={busy === review.id}
+                      disabled={busy === review.id || !(notes[review.id] || "").trim()}
                       onClick={() => decide(review, "rejected")}
                     >
                       Rejeter cette revue
