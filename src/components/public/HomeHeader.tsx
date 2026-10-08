@@ -16,7 +16,6 @@ export function HomeHeader({ phase2Enabled = false }: { phase2Enabled?: boolean 
   const primaryHref = phase2Enabled ? "/orientation" : "/signup";
   const primaryLabel = phase2Enabled ? nav.orientation : nav.signup;
   const navigation: Array<readonly [string, string]> = [
-    ...(phase2Enabled ? [[nav.orientation, "/orientation"] as const] : []),
     [nav.journey, "#parcours"],
     [nav.space, "/login"],
     [nav.why, "#outils"],

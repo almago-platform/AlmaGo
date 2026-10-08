@@ -9,9 +9,10 @@ const nativeCopy = readFileSync("src/content/native-copy.ts", "utf8");
 test("homepage quick access targets the relevant journey steps", () => {
   assert.match(quick, /href: "#programmes"/);
   assert.match(quick, /href: "#parcours"/);
-  assert.match(quick, /href: "#documents"/);
-  assert.match(quick, /href: "#depart"/);
   assert.match(quick, /href: "#faq"/);
+  assert.doesNotMatch(quick, /href: "#documents"/);
+  assert.doesNotMatch(quick, /href: "#depart"/);
+  assert.match(quick, /shortcuts\.map/);
 
   assert.match(
     journey,
