@@ -21,7 +21,7 @@ type CaseFollowUp = {
 };
 
 function displayDeadlineDate(value: string) {
-  if (!/^\\d{4}-\\d{2}-\\d{2}$/.test(value)) return value;
+  if (!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(value)) return value;
   const instant = new Date(value + "T00:00:00Z");
   return new Intl.DateTimeFormat("fr-FR", {
     day: "numeric", month: "short", year: "numeric", timeZone: "UTC",
