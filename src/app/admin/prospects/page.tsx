@@ -329,8 +329,8 @@ export default async function AdminProspectsPage({
     <main className="mx-auto w-full max-w-[92rem] px-4 py-5 sm:px-6 sm:py-6 xl:px-8">
       <AdminPageHeader
         section="Prospects"
-        title="À traiter en priorité"
-        description="Smart Orientation organise la priorité et Free Validation mesure la demande réelle. Les chiffres montrent des actions observées ; ils ne décident pas automatiquement si le marché est validé."
+        title="Prospects"
+        description="Priorisez les demandes, vérifiez le consentement puis qualifiez chaque projet en conservant les règles métier."
       />
 
       <section className="mb-6 rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-4 sm:p-5" aria-label="Résumé de la file prospects">
@@ -433,7 +433,7 @@ export default async function AdminProspectsPage({
           </p>
         </section>
       ) : (
-        <div className="grid gap-4">
+        <div className="grid gap-2">
           {filteredQueue.map((item) => {
             const {
               prospect,
@@ -450,10 +450,21 @@ export default async function AdminProspectsPage({
               && accessStatus === "prospect_account";
 
             return (
-              <article
-                key={prospect.id}
-                className="rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-5 sm:p-6"
-              >
+              <details key={prospect.id} className="group overflow-hidden rounded-[var(--radius-panel)] border border-[var(--border)] bg-white open:border-[var(--brand-border)]">
+                <summary className="grid cursor-pointer list-item gap-3 p-4 hover:bg-[var(--surface-subtle)] sm:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)_auto] sm:items-center sm:px-5">
+                  <span className="min-w-0">
+                    <span className="block truncate text-sm font-bold text-slate-950"><bdi dir="auto">{prospect.email}</bdi></span>
+                    <span className="mt-1 block text-xs text-slate-600">{answers.targetDegree || "Diplôme à préciser"} · {answers.targetField || "Domaine à compléter"}</span>
+                  </span>
+                  <span className="flex flex-wrap gap-2">
+                    <span className={`rounded-full border px-2.5 py-1 text-xs font-bold ${priorityBadgeClass(smartPriority.state)}`}>{priorityLabels[smartPriority.state]}</span>
+                    <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-700">
+                      {qualification ? qualificationLabels[qualification.state] ?? qualification.state : "Qualification non persistée"}
+                    </span>
+                  </span>
+                  <span className="text-xs font-bold text-[var(--brand-strong)]">Examiner →</span>
+                </summary>
+              <article className="border-t border-[var(--border)] p-5 sm:p-6">
                 <div className="flex flex-wrap items-start justify-between gap-4">
                   <div className="min-w-0">
                     <p className="text-sm font-bold text-slate-950">
@@ -626,6 +637,7 @@ export default async function AdminProspectsPage({
                   </AdminWorkflowSection>
                 </div>
               </article>
+              </details>
             );
           })}
         </div>
