@@ -6,11 +6,12 @@ const read = (path) => readFileSync(path, "utf8");
 
 const dossier = read("src/app/admin/dossiers/[studentId]/page.tsx");
 const blockers = read("src/components/admin/AdminDossierBlockersPanel.tsx");
+const navigation = read("src/components/admin/AdminDossierNavigation.tsx");
 
 test("Admin V11 Dossier 360 exposes explicit blockers with owner, reason and resolution CTA", () => {
   assert.match(dossier, /AdminDossierBlockersPanel/);
   assert.match(dossier, /id="blockers"/);
-  assert.match(dossier, /\["#blockers", "Blocages"\]/);
+  assert.match(navigation, /href: "#blockers", label: "Blocages"/);
   assert.match(blockers, /Ce qui empêche ou ralentit la suite/);
   assert.match(blockers, /Responsable/);
   assert.match(blockers, /actionLabel/);

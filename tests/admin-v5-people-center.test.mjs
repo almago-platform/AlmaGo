@@ -7,6 +7,7 @@ const read = (path) => readFileSync(path, "utf8");
 const peoplePage = read("src/app/admin/people/page.tsx");
 const peopleModel = read("src/lib/admin/people.ts");
 const dossier = read("src/app/admin/dossiers/[studentId]/page.tsx");
+const navigation = read("src/components/admin/AdminDossierNavigation.tsx");
 const actionPanel = read("src/components/admin/AdminDossierActionsPanel.tsx");
 const actionRoute = read("src/app/api/admin/dossiers/[studentId]/actions/route.ts");
 const shell = read("src/components/layout/AppShell.tsx");
@@ -64,11 +65,11 @@ test("Admin V5 dossier 360 exposes full person context and auditable action hist
   assert.match(dossier, /AdminDossierActionsPanel/);
   assert.match(dossier, /from\("student_history"\)/);
   assert.match(dossier, /from\("student_checklist_items"\)/);
-  assert.match(dossier, /#orientation/);
-  assert.match(dossier, /#documents/);
-  assert.match(dossier, /#applications/);
-  assert.match(dossier, /#commercial/);
-  assert.match(dossier, /#history/);
+  assert.match(navigation, /#orientation/);
+  assert.match(navigation, /#documents/);
+  assert.match(navigation, /#applications/);
+  assert.match(navigation, /#commercial/);
+  assert.match(navigation, /#history/);
 });
 
 test("Admin V5 makes People a primary navigation group and keeps work queues separate", () => {

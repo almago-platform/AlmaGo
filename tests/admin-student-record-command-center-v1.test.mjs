@@ -20,9 +20,12 @@ test("admin home searches the existing secured people directory, no new endpoint
   assert.match(people, /href=\{\x60\/admin\/dossiers\/\$\{person\.userId\}\x60\}/);
 });
 
-test("dossier navigates primarily by person task and keeps all deep links", () => {
-  assert.match(dossier, /aria-label="Navigation du dossier"/);
-  assert.match(dossier, /Fiche conseiller/);
+const navigation = readFileSync("src/components/admin/AdminDossierNavigation.tsx", "utf8");
+
+test("dossier navigation keeps person-focused deep links and advanced tools", () => {
+  assert.match(dossier, /<AdminDossierNavigation counts=/);
+  assert.match(navigation, /aria-label="Navigation du dossier"/);
+  assert.match(navigation, /Fiche conseiller · accès rapide/);
   for (const [href, label] of [
     ["#overview", "Résumé"],
     ["#history", "Historique"],
@@ -34,13 +37,13 @@ test("dossier navigates primarily by person task and keeps all deep links", () =
     ["#journal", "Journal interne"],
     ["#project", "Projet"],
     ["#orientation", "Orientation"],
-    ["#commercial", "Offre & paiement"],
+    ["#commercial", "Offre et paiement"],
   ]) {
-    assert.ok(dossier.includes('["' + href + '", "' + label + '"]'), href);
+    assert.ok(navigation.includes('href: "' + href + '", label: "' + label + '"'), href);
   }
-  assert.match(dossier, /Autres étapes et outils/);
-  assert.match(dossier, /<details className=/);
-  assert.match(dossier, /focus-visible:outline-2/);
+  assert.match(navigation, /Autres étapes et outils/);
+  assert.match(navigation, /overflow-x-auto/);
+  assert.match(navigation, /focus-visible:outline-2/);
   for (const anchor of ["overview", "history", "messages", "actions", "documents", "applications"]) {
     assert.ok(dossier.includes('id="' + anchor + '"'));
   }
