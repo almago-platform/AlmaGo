@@ -173,8 +173,10 @@ export type CaseOperationalEvidence = {
   officialDeadlineRisk?: "overdue" | "within_7" | null;
 };
 
-export function firstKnownMilestone(e: CaseOperationalEvidence): CandidateJourneyPhase {
+export function firstKnownMilestone(e: CaseOperationalEvidence, visaStatus?: string | null): CandidateJourneyPhase {
   // This is only a navigation cue, not a proof that any stage is completed.
+  if (visaStatus === "approved") return "departure";
+  if (visaStatus && ["collecting","ready_for_review","submitted","appointment","awaiting_decision","refused"].includes(visaStatus)) return "visa_preparation";
   if (e.applications > 0) return "academic_application";
   if (e.currentProcedures > 0) return "qualification";
   if (e.intakeStatus) return "qualification";
@@ -182,11 +184,14 @@ export function firstKnownMilestone(e: CaseOperationalEvidence): CandidateJourne
   return "orientation";
 }
 
-export function recommendedOperatorAction(e: CaseOperationalEvidence): string {
+export function recommendedOperatorAction(e: CaseOperationalEvidence, visaStatus?: string | null): string {
   if (e.officialDeadlineRisk === "overdue") return "Escalader une deadline universitaire officielle vérifiée dépassée";
   if (e.officialDeadlineRisk === "within_7") return "Sécuriser le dépôt avant la deadline universitaire officielle vérifiée";
   if (e.unreadStudentMessages > 0) return "Répondre aux messages reçus";
   if (e.pendingDocuments > 0) return "Vérifier les documents reçus";
+  if (visaStatus === "approved") return "Organiser le départ et confirmer les démarches d’arrivée";
+  if (visaStatus === "refused") return "Relire la décision consulaire et étudier les options avec le candidat";
+  if (visaStatus && ["submitted", "appointment", "awaiting_decision"].includes(visaStatus)) return "Suivre la représentation consulaire sans annoncer de décision";
   if (e.currentProcedures > 0 && e.applications === 0) return "Vérifier la procédure et préparer la première candidature";
   if (e.applications > 0) return "Vérifier les échéances et les preuves de dépôt des candidatures";
   if (e.intakeStatus === "paid_pending_validation") return "Vérifier le paiement et valider selon la procédure interne";
