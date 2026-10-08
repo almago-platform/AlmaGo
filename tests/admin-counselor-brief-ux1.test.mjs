@@ -10,7 +10,7 @@ test("the first visible dossier summary answers who, where, who acts, and what h
   assert.match(dossier, /import \{ AdminCounselorBrief \} from/);
   const position = dossier.indexOf("      <AdminCounselorBrief\n");
   assert.ok(position > dossier.indexOf("      <DossierHeader\n"));
-  assert.ok(position < dossier.indexOf('aria-label="Navigation du dossier"'));
+  assert.ok(position < dossier.indexOf("      <AdminDossierNavigation counts="));
   assert.match(dossier, /segment=\{adminPersonSegmentLabels\[personSegment\]\}/);
   assert.match(dossier, /status=\{adminDossierStatusLabel\(intake\?\.status\)\}/);
   assert.match(dossier, /counselor=\{assignedAdminName\}/);
