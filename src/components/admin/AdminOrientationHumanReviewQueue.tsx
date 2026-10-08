@@ -284,7 +284,12 @@ export function AdminOrientationHumanReviewQueue({
                       const selection = selectionItems.find((entry: any) => entry.candidateKey === item.candidateKey);
                       const unresolved = Array.isArray(selection?.missingFacts) ? selection.missingFacts.length : 0;
                       const warnings = Array.isArray(selection?.warnings) ? selection.warnings.length : 0;
-                      const needsAttention = verification.overallStatus !== "verified" || toCheck.length > 0 || unresolved > 0 || warnings > 0;
+                      const germanRequirement = facts.find((fact: any) => fact.field === "german_language_requirement" && fact.status === "verified");
+                      const germanRequirementText = germanRequirement ? factValue(germanRequirement.value) : "";
+                      const possibleGermanGap = ["none", "a0", "aucun"].includes(String(profile.germanLevel || "").trim().toLowerCase())
+                        && Boolean(germanRequirementText)
+                        && !/(no german|not required|aucun|sans allemand)/i.test(germanRequirementText);
+                      const needsAttention = verification.overallStatus !== "verified" || toCheck.length > 0 || unresolved > 0 || warnings > 0 || possibleGermanGap;
                       return (
                         <div key={item.candidateKey} className={`rounded-[var(--radius-control)] border p-3 ${selected.includes(item.candidateKey) ? "border-[var(--brand-border)] bg-[var(--brand-soft)]/20" : "border-[var(--border)] bg-white"}`}>
                           <label className="flex cursor-pointer items-start gap-3">
@@ -306,6 +311,11 @@ export function AdminOrientationHumanReviewQueue({
                             </Badge>
                             {needsAttention ? <span className="text-xs text-amber-900">Vérifiez les exigences signalées et les sources</span> : null}
                           </div>
+                          {possibleGermanGap ? (
+                            <p className="mt-2 rounded-lg bg-amber-50 p-2 text-xs font-semibold leading-5 text-amber-950">
+                              Profil : aucun allemand déclaré ; ce programme indique « {germanRequirementText} ». Vérifiez la compatibilité linguistique avant toute validation.
+                            </p>
+                          ) : null}
                           {criticalFacts.length ? (
                             <dl className="mt-3 grid gap-2 sm:grid-cols-2">
                               {criticalFacts.map((fact: any) => (
