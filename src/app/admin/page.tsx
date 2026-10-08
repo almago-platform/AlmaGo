@@ -17,6 +17,7 @@ import {
 } from "@/lib/admin/application-risk";
 import { isActiveApplication } from "@/lib/application-workflow";
 import { isHumanAdminAction } from "@/lib/admin/people";
+import { AdminQuickActionCompleteButton } from "@/components/admin/AdminQuickActionCompleteButton";
 import { belongsToAdminPortfolio, isSoloAdmin } from "@/lib/admin/solo-workspace";
 
 export const dynamic = "force-dynamic";
@@ -506,10 +507,10 @@ export default async function AdminEntry() {
                 const overdue = Boolean(due && due < today);
                 const dueToday = due === today;
                 return (
-                  <Link
-                    key={item.id}
+                  <div key={item.id} className="flex flex-col sm:flex-row sm:items-center">
+                    <Link
                     href={`/admin/dossiers/${item.student_id}#actions`}
-                    className="group grid gap-3 px-4 py-4 transition-colors hover:bg-[var(--surface-subtle)] sm:grid-cols-[minmax(0,1fr)_11rem_auto] sm:items-center sm:px-5"
+                    className="group grid min-w-0 flex-1 gap-3 px-4 py-4 transition-colors hover:bg-[var(--surface-subtle)] sm:grid-cols-[minmax(0,1fr)_11rem_auto] sm:items-center sm:px-5"
                   >
                     <div className="min-w-0">
                       <p className="text-sm font-bold text-slate-950">{item.title}</p>
@@ -522,7 +523,13 @@ export default async function AdminEntry() {
                       </p>
                     </div>
                     <span className="text-xs font-bold text-[var(--brand)] group-hover:underline">Ouvrir →</span>
-                  </Link>
+                    </Link>
+                    {soloAdmin ? (
+                      <div className="px-4 pb-4 sm:py-3 sm:pr-5 sm:pl-0">
+                        <AdminQuickActionCompleteButton studentId={item.student_id} actionId={item.id} />
+                      </div>
+                    ) : null}
+                  </div>
                 );
               })}
             </div>
