@@ -564,7 +564,11 @@ export default async function AdminEntry() {
         </Card>
       </section>
 
-      <section aria-labelledby="daily-cockpit-title" className="mb-6">
+      <details className="my-5 rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-4 sm:p-5">
+        <summary className="cursor-pointer text-sm font-bold text-slate-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brand)]">
+          Suivi des échéances · {overdueCases} en retard · {todayCases} aujourd’hui · {weekCases} dans les 7 jours
+        </summary>
+      <section aria-labelledby="daily-cockpit-title" className="mt-4">
         <PremiumSectionHeader
           eyebrow="Cockpit quotidien"
           title={<span id="daily-cockpit-title">Tous vos repères de suivi</span>}
@@ -752,8 +756,13 @@ export default async function AdminEntry() {
         </div>
         </details>
       </section>
+      </details>
 
-      <section className="mt-6" aria-labelledby="admin-overview-title">
+      <details className="mt-5 rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-4 sm:p-5">
+        <summary className="cursor-pointer text-sm font-bold text-slate-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brand)]">
+          Files spécialisées · {intakeAttention} dossier(s) Campus · {pendingOrientationReviews} revue(s) d’orientation
+        </summary>
+      <section className="mt-4" aria-labelledby="admin-overview-title">
         <PremiumSectionHeader
           eyebrow="Files de travail"
           title={<span id="admin-overview-title">Files de traitement</span>}
@@ -816,8 +825,13 @@ export default async function AdminEntry() {
           </div>
         </Card>
       </section>
+      </details>
 
-      <section className="mt-6" aria-labelledby="catalogue-health-title">
+      <details className="mt-5 rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-4 sm:p-5">
+        <summary className="cursor-pointer text-sm font-bold text-slate-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brand)]">
+          Révalidations du catalogue · {staleCatalogue} expirée(s) · {dueCatalogue} à planifier
+        </summary>
+      <section className="mt-4" aria-labelledby="catalogue-health-title">
         <PremiumSectionHeader
           eyebrow="Fraîcheur des sources"
           title={<span id="catalogue-health-title">Révalidations du catalogue Allemagne</span>}
@@ -847,6 +861,7 @@ export default async function AdminEntry() {
           </div>
         </Card>
       </section>
+      </details>
     </main>
   );
 }
