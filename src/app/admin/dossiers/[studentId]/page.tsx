@@ -4,7 +4,7 @@ import { ActivityTimeline, type ActivityTimelineItem } from "@/components/produc
 import { DossierHeader } from "@/components/product/DossierHeader";
 import { DocumentRow } from "@/components/product/DocumentRow";
 import { JourneyRail, type JourneyRailStep } from "@/components/product/JourneyRail";
-import { NextActionPanel } from "@/components/product/NextActionPanel";
+import { AdminCounselorBrief } from "@/components/admin/AdminCounselorBrief";
 import { AdminLoadError } from "@/components/admin/AdminLoadError";
 import { AdminDossierActionsPanel, type AdminDossierActionItem } from "@/components/admin/AdminDossierActionsPanel";
 import { AdminDossierBlockersPanel, type AdminDossierBlocker } from "@/components/admin/AdminDossierBlockersPanel";
@@ -22,6 +22,7 @@ import { buttonClassName } from "@/components/ui/Button";
 import {
   applicationStatusLabels,
   isActiveApplication,
+  isSubmittedApplicationStatus,
   type KnownApplicationStatus,
 } from "@/lib/application-workflow";
 import {
@@ -857,6 +858,14 @@ export default async function AdminStudentDossierPage({
   ];
 
   const applicationProgramIds = new Set(applications.map((item) => item.program_id));
+  const nextVerifiedApplicationDeadline = applications
+    .filter((application) =>
+      isActiveApplication(application.status)
+      && !isSubmittedApplicationStatus(application.status)
+      && application.deadline_kind === "official_hard_deadline"
+      && applicationDateIsTrusted(application)
+      && Boolean(application.deadline))
+    .sort((left, right) => (left.deadline || "").localeCompare(right.deadline || ""))[0] ?? null;
 
   const purchaseAmount = purchase
     ? formatMinorCurrency(purchase.amount_minor, purchase.currency, "fr-FR")
@@ -874,11 +883,8 @@ export default async function AdminStudentDossierPage({
         status={adminDossierStatusLabel(intake?.status)}
         statusVariant={adminDossierStatusVariant(intake?.status)}
         facts={[
-          { label: "Contact", value: <bdi dir="auto">{email}</bdi> },
-          { label: "Accès", value: customerAccessLabel(access?.status) },
-          { label: "Parcours", value: campusRouteLabel(intake?.proposed_route_key) },
-          { label: "Dernier contact", value: latestContact ? formatDate(latestContact.occurred_at) : "Aucun contact journalisé" },
-          { label: "Dernière mise à jour", value: formatDate(intake?.updated_at || prospect?.updated_at) },
+          { label: "Adresse e-mail", value: <bdi dir="auto">{email}</bdi> },
+          { label: "Parcours proposé", value: campusRouteLabel(intake?.proposed_route_key) },
         ]}
         actions={
           <Link
@@ -888,6 +894,25 @@ export default async function AdminStudentDossierPage({
             Retour aux personnes
           </Link>
         }
+      />
+
+      <AdminCounselorBrief
+        segment={adminPersonSegmentLabels[personSegment]}
+        status={adminDossierStatusLabel(intake?.status)}
+        statusVariant={adminDossierStatusVariant(intake?.status)}
+        counselor={assignedAdminName}
+        lastContact={latestContact ? formatDate(latestContact.occurred_at) : null}
+        action={nextAction}
+        blockers={blockers.map(({ title, reason, href, severity }) => ({ title, reason, href, severity }))}
+        nextDeadline={nextVerifiedApplicationDeadline?.deadline ? {
+          label: firstProgram(nextVerifiedApplicationDeadline)?.name || "Programme à confirmer",
+          date: formatDate(nextVerifiedApplicationDeadline.deadline),
+          href: `/admin/applications?student=${studentId}`,
+        } : null}
+        lastEvent={historyRows[0] ? {
+          text: historyRows[0].message,
+          date: formatDate(historyRows[0].created_at),
+        } : null}
       />
 
       <nav
@@ -940,26 +965,7 @@ export default async function AdminStudentDossierPage({
         <JourneyRail steps={lifecycleSteps} ariaLabel="Progression du dossier étudiant" />
       </section>
 
-      <NextActionPanel
-        eyebrow="Action Campus prioritaire"
-        title={nextAction.title}
-        description={nextAction.description}
-        waiting={nextAction.waiting}
-        action={
-          nextAction.href ? (
-            <Link
-              href={nextAction.href}
-              className={
-                nextAction.waiting
-                  ? "inline-flex min-h-11 items-center justify-center rounded-[var(--radius-control)] border border-[var(--border-strong)] bg-[var(--surface)] px-5 text-sm font-semibold text-[var(--foreground)]"
-                  : "inline-flex min-h-11 items-center justify-center rounded-[var(--radius-control)] bg-white px-5 text-sm font-semibold text-[var(--foreground)]"
-              }
-            >
-              Ouvrir la file concernée
-            </Link>
-          ) : undefined
-        }
-      />
+
 
       <div id="blockers" className="scroll-mt-24">
         <AdminDossierBlockersPanel blockers={blockers} />
@@ -1251,12 +1257,14 @@ export default async function AdminStudentDossierPage({
         </div>
 
         <aside className="space-y-7">
-          <AdminCaseOwnerPanel
+          <div id="assignment" className="scroll-mt-24">
+            <AdminCaseOwnerPanel
             studentId={studentId}
             advisors={advisorOptions}
             assignedAdminId={assignment?.assigned_admin_id || null}
             assignedAdminName={assignedAdminName}
-          />
+            />
+          </div>
 
           <section className="pc-card p-5">
             <PremiumSectionHeader eyebrow="Synthèse" title="Repères du dossier" />
