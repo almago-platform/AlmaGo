@@ -34,9 +34,6 @@ jobs:
       NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
       ALMAGO_E2E_STUDENT_EMAIL: ${{ vars.ALMAGO_E2E_STUDENT_EMAIL || 'phase3.student.c@almago.test' }}
       ALMAGO_E2E_STUDENT_PASSWORD: ${{ secrets.ALMAGO_E2E_STUDENT_PASSWORD }}
-      ALMAGO_E2E_ADMIN_EMAIL: ${{ vars.ALMAGO_E2E_ADMIN_EMAIL || 'phase3.admin.b@almago.test' }}
-      ALMAGO_E2E_ADMIN_PASSWORD: ${{ secrets.ALMAGO_E2E_ADMIN_PASSWORD }}
-      ALMAGO_E2E_ADMIN_TOTP_SECRET: ${{ secrets.ALMAGO_E2E_ADMIN_TOTP_SECRET }}
       ALMAGO_E2E_TARGET: ${{ inputs.target || 'render' }}
       CI: "true"
     steps:
@@ -47,10 +44,10 @@ jobs:
           cache: npm
       - run: npm ci
 
-      - name: Require E2E configuration
+      - name: Require student E2E configuration
         shell: bash
         run: |
-          for name in NEXT_PUBLIC_SUPABASE_URL NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ALMAGO_E2E_STUDENT_EMAIL ALMAGO_E2E_STUDENT_PASSWORD ALMAGO_E2E_ADMIN_EMAIL ALMAGO_E2E_ADMIN_PASSWORD ALMAGO_E2E_ADMIN_TOTP_SECRET; do
+          for name in NEXT_PUBLIC_SUPABASE_URL NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ALMAGO_E2E_STUDENT_EMAIL ALMAGO_E2E_STUDENT_PASSWORD; do
             if [ -z "${!name}" ]; then echo "::error::$name is required"; exit 1; fi
           done
 
@@ -114,14 +111,11 @@ jobs:
           fi
           printf '%s\n' "$health"
 
-      - name: Student/admin isolation
+      - name: Student authentication and admin isolation
         run: npx playwright test tests/e2e/authenticated.spec.mjs --project=desktop-chromium
 
       - name: Student quality
         run: npx playwright test tests/e2e/student-space-quality.spec.mjs
-
-      - name: Admin quality
-        run: npx playwright test tests/e2e/admin-space-quality.spec.mjs
 
       - name: Revalidate exact main and Render after authenticated evidence
         if: env.ALMAGO_E2E_TARGET == 'render'
@@ -139,6 +133,33 @@ jobs:
           branch="$(printf '%s' "$health" | jq -r '.branch // empty')"
           if [ "$revision" != "$expected" ] || [ "$branch" != "main" ]; then
             echo "::error::Render drifted during authenticated E2E. Expected $expected on main; got ${revision:-none} on ${branch:-none}."
+            exit 1
+          fi
+
+      - name: Require exact-SHA human admin AAL2 evidence
+        if: env.ALMAGO_E2E_TARGET == 'render'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          marker="<!-- almago-a43-admin-human-approved:sha=$GITHUB_SHA -->"
+          comments="$(
+            curl --fail --silent --show-error \
+              -H "Authorization: Bearer $GH_TOKEN" \
+              -H "Accept: application/vnd.github+json" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              "https://api.github.com/repos/$GITHUB_REPOSITORY/issues/84/comments?per_page=100"
+          )"
+          approved="$(
+            printf '%s' "$comments" |
+              jq --arg marker "$marker" '[.[] | select(
+                (.author_association == "OWNER" or .author_association == "MEMBER" or .author_association == "COLLABORATOR")
+                and (.body | contains($marker))
+              )] | length'
+          )"
+          if [ "$approved" -lt 1 ]; then
+            echo "::error::Missing exact-SHA human admin AAL2 evidence on issue #84."
+            echo "::error::After manually verifying the sole real admin on this exact Render SHA, add this marker to issue #84: $marker"
             exit 1
           fi
 
