@@ -78,6 +78,16 @@ exception when insufficient_privilege or raise_exception then
 end;
 $$;
 
+create function pg_temp.admission_delete_doc(target_id uuid)
+returns bigint language plpgsql security invoker set search_path = '' as $
+declare deleted_count bigint;
+begin
+  delete from public.documents where id = target_id;
+  get diagnostics deleted_count = row_count;
+  return deleted_count;
+end;
+$;
+
 -- Admin role without second-factor assurance cannot add files on behalf of students.
 select pg_temp.admission_actor('90000000-0000-4000-8000-000000000003', 'aal1');
 set local role authenticated;
@@ -191,11 +201,7 @@ select is(
   false, 'student A cannot delete an admin-uploaded PDF object'
 );
 select is(
-  (with deleted as (
-    delete from public.documents
-    where id = '94000000-0000-4000-8000-000000000001'
-    returning id
-  ) select count(*) from deleted),
+  pg_temp.admission_delete_doc('94000000-0000-4000-8000-000000000001'),
   0::bigint, 'student A cannot remove an admin-uploaded PDF metadata row'
 );
 reset role;
