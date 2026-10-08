@@ -76,6 +76,23 @@ test("UX-3 does not manufacture admission, visa, status history or activity from
   assert.doesNotMatch(model, /visa (approuvé|obtenu)|admission garantie/i);
 });
 
+test("UX-3 retains only factual legacy activity when no system history exists", () => {
+  const input = fixture();
+  input.history = [];
+  input.legacyFallback = {
+    orientation: { id: "ori-1", createdAt: "2026-10-01T10:00:00Z", detail: "Projet enregistré" },
+    studentResponse: { createdAt: "2026-10-02T10:00:00Z", detail: "Réponse reçue" },
+    purchase: { id: "buy-1", createdAt: "2026-10-03T10:00:00Z", detail: "Achat enregistré" },
+  };
+  const result = buildUnifiedDossierHistory(input);
+  assert.ok(result.some((event) => event.id === "orientation:ori-1" && event.href === "#orientation"));
+  assert.ok(result.some((event) => event.id.startsWith("intake-response:") && event.actor === "Étudiant"));
+  assert.ok(result.some((event) => event.id === "purchase:buy-1" && event.href === "#commercial"));
+  input.history = [{ id: "h1", event_type: "orientation_created", message: "Réel", created_at: "2026-10-01T10:00:00Z" }];
+  assert.ok(buildUnifiedDossierHistory(input).every((event) => !event.id.startsWith("orientation:")
+    && !event.id.startsWith("purchase:") && !event.id.startsWith("intake-response:")));
+});
+
 test("UX-3 filters and pagination remain local, accessible, and return to original dossier anchors", () => {
   assert.match(dossier, /buildUnifiedDossierHistory\(\{/);
   assert.match(dossier, /<AdminDossierHistory events=\{unifiedHistory\} \/>/);
