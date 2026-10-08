@@ -67,7 +67,8 @@ Les validations de deadline des candidatures sont une logique séparée.
 3. Le mode solo s'affiche sous « Mon bureau » et « Mon portefeuille », supprime les
    contrôles de conseiller inutiles dans la recherche et fait remonter « Sans prochaine
    action » au lieu d'exiger des attributions artificielles.
-4. Les audits humains Orientation V4 en attente remontent désormais dans le cockpit et la file prioritaire quand aucune urgence dossier ne précède cette revue. Ils ne publient rien automatiquement.\n5. Aucun changement RLS, Auth, table, journal, paiement ou workflow.
+4. Les audits humains Orientation V4 en attente remontent désormais dans le cockpit et la file prioritaire quand aucune urgence dossier ne précède cette revue. Ils ne publient rien automatiquement.
+5. Aucun changement RLS, Auth, table, journal, paiement ou workflow.
 6. En mode équipe, l'ancienne logique d'attribution est conservée.
 
 ## Prochaine évolution recommandée (non livrée ici)
