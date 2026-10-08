@@ -49,7 +49,7 @@ test("long sections are disclosed by task while already existing operational scr
     "AdminCaseOwnerPanel",
     "AdminCounselorBrief",
     "AdminRecommendationApplicationAction",
-    "ActivityTimeline",
+    "AdminDossierHistory",
   ]) {
     assert.ok(dossier.includes("<" + component), component);
   }
