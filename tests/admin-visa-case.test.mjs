@@ -54,6 +54,8 @@ test("MFA RLS and append-only audit are enforced by SQL", () => {
   assert.match(migration,/aal2/);
   assert.match(migration,/create trigger visa_cases_guard/);
   assert.match(migration,/create trigger visa_cases_audit/);
+  assert.match(migration,/new\.official_source_url,new\.source_verified_at,new\.version/);
+  assert.match(migration,/new\.residence_country,new\.mission/);
   assert.match(migration,/unique\(student_id,version\)/);
   assert.match(migration,/security definer\s+set search_path = ''/);
   assert.match(migration,/revoke all on function private\.audit_visa_case\(\)/);
