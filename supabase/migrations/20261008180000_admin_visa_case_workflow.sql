@@ -80,8 +80,8 @@ begin
     raise exception 'visa_case_admin_mfa_required';
   end if;
 
-  if new.source_verified_at > now()
-    or new.source_verified_at < now() - interval '1 year'
+  if (new.source_verified_at at time zone 'UTC')::date > (now() at time zone 'Europe/Berlin')::date
+    or (new.source_verified_at at time zone 'UTC')::date < (now() at time zone 'Europe/Berlin')::date - 365
   then
     raise exception 'visa_source_verification_invalid';
   end if;
