@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -132,6 +132,33 @@ export function AdminDocumentRequirementsPanel({
   documents: LinkedDocument[];
 }) {
   const router = useRouter();
+  const requestDetailsRef = useRef<HTMLDetailsElement>(null);
+
+  useEffect(() => {
+    function reveal() {
+      if (window.location.hash !== "#request-document") return;
+      const details = requestDetailsRef.current;
+      if (!details) return;
+      details.open = true;
+      window.requestAnimationFrame(() => details.scrollIntoView({ block: "start" }));
+    }
+
+    function revealOnClick(event: MouseEvent) {
+      if (!(event.target instanceof Element)) return;
+      if (event.target.closest('a[href="#request-document"]')) {
+        if (requestDetailsRef.current) requestDetailsRef.current.open = true;
+      }
+    }
+
+    reveal();
+    window.addEventListener("hashchange", reveal);
+    document.addEventListener("click", revealOnClick);
+    return () => {
+      window.removeEventListener("hashchange", reveal);
+      document.removeEventListener("click", revealOnClick);
+    };
+  }, []);
+
   const [category, setCategory] = useState("other");
   const [label, setLabel] = useState("");
   const [reason, setReason] = useState("");
@@ -483,7 +510,7 @@ export function AdminDocumentRequirementsPanel({
         </div>
       )}
 
-      <details className="mt-4 rounded-[var(--radius-control)] border border-[var(--border)] bg-white p-4">
+      <details id="request-document" ref={requestDetailsRef} className="mt-4 scroll-mt-52 rounded-[var(--radius-control)] border border-[var(--border)] bg-white p-4 lg:scroll-mt-40">
         <summary className="cursor-pointer text-sm font-bold text-slate-950">Demander un document supplémentaire</summary>
         <form onSubmit={submit} className="mt-4 grid gap-4">
           <div className="grid gap-4 lg:grid-cols-2">
