@@ -43,7 +43,8 @@ test("Admin V8 people cockpit detects dossiers without an explicit next action",
 });
 
 test("Admin V8 dashboard surfaces cross-workflow risks before file-level queues", () => {
-  assert.match(dashboard, /Ce que l’équipe doit traiter maintenant/);
+  assert.match(dashboard, /Priorité opérationnelle/);
+  assert.match(dashboard, /Tous vos repères de suivi/);
   assert.match(dashboard, /Boîte de réception/);
   assert.match(dashboard, /Sans prochaine action/);
   assert.match(dashboard, /Non attribués/);
