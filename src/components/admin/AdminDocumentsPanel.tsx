@@ -379,7 +379,7 @@ export function AdminDocumentsPanel({
                       Dossier 360°
                     </Link>
                     <a
-                      href={`/api/documents/${document.id}/view`}
+                      href={`/api/admin/documents/${document.id}/view`}
                       aria-label={`Ouvrir ${document.original_filename} dans un nouvel onglet`}
                       target="_blank"
                       rel="noreferrer"
