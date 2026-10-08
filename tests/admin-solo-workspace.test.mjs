@@ -5,6 +5,7 @@ import test from "node:test";
 const helper = readFileSync("src/lib/admin/solo-workspace.ts", "utf8");
 const overview = readFileSync("src/app/admin/page.tsx", "utf8");
 const people = readFileSync("src/app/admin/people/page.tsx", "utf8");
+const quick = readFileSync("src/components/admin/AdminQuickActionCompleteButton.tsx", "utf8");
 
 test("solo mode requires exactly one administrator and the active admin identity", () => {
   assert.match(helper, /adminIds\.length === 1 && adminIds\[0\] === currentAdminId/);
@@ -44,4 +45,14 @@ test("solo dashboard never mixes completed client dossiers into the active queue
   assert.match(overview, /const completedIds = new Set\(/);
   assert.match(overview, /if \(!completedIds\.has\(item\.student_id\)\) operationalIds\.add/);
   assert.match(overview, /operationalIds\.has\(item\.student_id\) && belongsToAdminPortfolio/);
+});
+
+test("solo quick completion uses the existing audited admin action route", () => {
+  assert.match(overview, /<AdminQuickActionCompleteButton studentId=\{item\.student_id\} actionId=\{item\.id\}/);
+  assert.match(quick, /fetch\(`\/api\/admin\/dossiers\/\$\{studentId\}\/actions`/);
+  assert.match(quick, /method: "PATCH"/);
+  assert.match(quick, /operation: "complete"/);
+  assert.match(quick, /window\.confirm\(/);
+  assert.match(quick, /router\.refresh\(\)/);
+  assert.doesNotMatch(quick, /createPrivilegedSupabaseClient|service_role|\.from\(/);
 });
