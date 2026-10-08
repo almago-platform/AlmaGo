@@ -22,6 +22,7 @@ const iconClass = "h-5 w-5 shrink-0";
 
 const icons = {
   dashboard: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={iconClass} aria-hidden="true"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z" /></svg>,
+  messages: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={iconClass} aria-hidden="true"><path d="M4 5.5h16v11H9l-5 4v-15Z" /><path d="M8 10h8M8 13h5" /></svg>,
   profile: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={iconClass} aria-hidden="true"><circle cx="12" cy="8" r="4" /><path d="M4.5 20c.8-4 3.2-6 7.5-6s6.7 2 7.5 6" /></svg>,
   documents: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={iconClass} aria-hidden="true"><path d="M6 3h8l4 4v14H6z" /><path d="M14 3v5h5M9 13h6M9 17h6" /></svg>,
   orientation: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={iconClass} aria-hidden="true"><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z" /><path d="m15.5 8.5-2.2 4.8-4.8 2.2 2.2-4.8 4.8-2.2Z" /></svg>,
@@ -30,7 +31,6 @@ const icons = {
   applications: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={iconClass} aria-hidden="true"><path d="M5 5h14v16H5z" /><path d="M9 3h6v4H9zM8 11h8M8 15h8" /></svg>,
   universities: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={iconClass} aria-hidden="true"><path d="m3 9 9-5 9 5-9 5-9-5Z" /><path d="M6 12v5c3 2 9 2 12 0v-5M21 10v6" /></svg>,
   programs: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={iconClass} aria-hidden="true"><path d="M4 5h16v14H4z" /><path d="M8 9h8M8 13h5" /></svg>,
-  messages: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={iconClass} aria-hidden="true"><path d="M4 5.5h16v11H9l-5 4v-15Z" /><path d="M8 10h8M8 13h5" /></svg>,
   menu: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={iconClass} aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" /></svg>,
   close: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={iconClass} aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg>,
 };
@@ -84,12 +84,10 @@ export function AppShell({
   role,
   children,
   displayName,
-  partnerPrelaunch = false,
 }: Readonly<{
   role: AppShellRole;
   children: ReactNode;
   displayName?: string | null;
-  partnerPrelaunch?: boolean;
 }>) {
   const pathname = usePathname();
   const router = useRouter();
@@ -122,15 +120,7 @@ export function AppShell({
     items: indexes.map((index) => localizedStudentItems[index]),
   }));
   studentGroups[0]?.items.push(localizedStudentItems[11]);
-  const partnerDemoItem: NavItem = {
-    label: "Démo partenaires",
-    href: "/admin/partner-demo",
-    icon: icons.orientation,
-    helper: "E-mail & paiement sandbox",
-  };
-  const currentAdminItems = partnerPrelaunch
-    ? [...adminItems, partnerDemoItem]
-    : adminItems;
+  const currentAdminItems = adminItems;
   const adminGroups = [
     {
       label: "Pilotage",
@@ -157,9 +147,6 @@ export function AppShell({
         ["/admin/universities", "/admin/programs", "/admin/language-courses", "/admin/finance-insurance"].includes(item.href),
       ),
     },
-    ...(partnerPrelaunch
-      ? [{ label: "Pré-lancement", items: currentAdminItems.filter((item) => item.href === "/admin/partner-demo") }]
-      : []),
   ];
   const items = role === "admin" ? currentAdminItems : localizedStudentItems;
   const currentItem = items.find((item) => isActive(pathname, item.href)) || items[0];

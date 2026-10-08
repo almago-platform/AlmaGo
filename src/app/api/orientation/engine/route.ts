@@ -21,10 +21,20 @@ import {
 } from "@/lib/orientation-engine/result/service";
 import { buildOrientationCanonicalShortlist } from "@/lib/orientation-engine/result/canonical";
 import type { OrientationPublicPersonalizedResult } from "@/lib/orientation-engine/result/types";
+import {
+  acquireRequestConcurrency,
+  concurrencyLimitedResponse,
+  enforceRequestRateLimit,
+  PUBLIC_ABUSE_POLICIES,
+} from "@/lib/security/abuse";
 
 const MAX_BODY_BYTES = 24_000;
 
 export async function POST(request: Request) {
+  const policy = PUBLIC_ABUSE_POLICIES.orientationEngine;
+  const limited = enforceRequestRateLimit(request, policy);
+  if (limited) return limited;
+
   const contentLength = Number(request.headers.get("content-length") || "0");
   if (contentLength > MAX_BODY_BYTES) {
     return NextResponse.json({ error: "Payload too large." }, { status: 413 });
@@ -48,6 +58,9 @@ export async function POST(request: Request) {
   if (!profile) {
     return NextResponse.json({ error: "Invalid orientation profile." }, { status: 400 });
   }
+
+  const lease = acquireRequestConcurrency(policy.route, 2);
+  if (!lease) return concurrencyLimitedResponse(policy.route);
 
   try {
     const catalogue = await loadVerifiedProgrammeCatalogue();
@@ -184,5 +197,7 @@ export async function POST(request: Request) {
       { error: "Orientation engine is temporarily unavailable." },
       { status: 503 },
     );
+  } finally {
+    lease.release();
   }
 }

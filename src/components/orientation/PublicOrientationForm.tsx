@@ -565,15 +565,15 @@ export function PublicOrientationForm({
       <a className="skip-link orientation-print-hide" href="#orientation-main">{copy.header.skip}</a>
 
       <header className="orientation-print-hide border-b border-[var(--border)] bg-[var(--surface)]">
-        <div className="mx-auto flex min-h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
+        <div className="mx-auto flex min-h-16 max-w-6xl items-center justify-between gap-2 px-4 sm:gap-4 sm:px-6">
           <Link href="/" aria-label={copy.header.home} className="inline-flex items-center">
-            <BrandLogo className="h-9 w-auto" priority />
+            <BrandLogo className="h-7 w-auto sm:h-9" priority />
           </Link>
           <div className="flex items-center gap-2 sm:gap-4">
             <LanguageSwitcher compact />
             <Link
               href={authenticatedUpdate || authenticatedEntry ? "/prospect" : "/login"}
-              className="text-sm font-semibold text-[var(--foreground)] underline-offset-4 hover:underline"
+              className="whitespace-nowrap text-xs font-semibold text-[var(--foreground)] underline-offset-4 hover:underline sm:text-sm"
             >
               {authenticatedUpdate || authenticatedEntry ? prospectDashboard.shell.area : copy.header.login}
             </Link>

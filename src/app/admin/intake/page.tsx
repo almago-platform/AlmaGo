@@ -1,3 +1,5 @@
+import Link from "next/link";
+import { buttonClassName } from "@/components/ui/Button";
 import { AdminIntakePanel } from "@/components/admin/AdminIntakePanel";
 import { AdminLoadError } from "@/components/admin/AdminLoadError";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
@@ -160,6 +162,7 @@ export default async function AdminIntakePage() {
         section="Dossiers"
         title="Validation du parcours"
         description="Proposez un parcours et une offre. Les réponses étudiantes remontent ici ; l’acceptation ouvre le paiement, puis la phase suivante après validation Campus."
+        actions={<Link href="/admin/accompagnement" className={buttonClassName("secondary", "px-4")}>Accompagnement de A à Z →</Link>}
       />
       <AdminIntakePanel
         cases={cases}

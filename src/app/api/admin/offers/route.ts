@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
+import { getAdminUser } from "@/lib/auth/access";
 import { createPrivilegedSupabaseClient } from "@/lib/supabase/privileged";
-import { createClient } from "@/lib/supabase/server";
 
 const offerCodes = new Set(["bronze", "silver", "gold"]);
 const actions = new Set(["draft", "publish"]);
@@ -20,22 +20,13 @@ function hasForbiddenGuarantee(value: string) {
 }
 
 export async function POST(request: Request) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { user, isAdmin } = await getAdminUser();
 
   if (!user) {
     return NextResponse.json({ error: "Non authentifié." }, { status: 401 });
   }
 
-  const { data: role } = await supabase
-    .from("user_roles")
-    .select("role")
-    .eq("user_id", user.id)
-    .maybeSingle();
-
-  if (role?.role !== "admin") {
+  if (!isAdmin) {
     return NextResponse.json({ error: "Accès administrateur requis." }, { status: 403 });
   }
 

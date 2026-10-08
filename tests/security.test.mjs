@@ -16,9 +16,9 @@ test("admin and student areas keep server-side authentication and role guards", 
   const authAccess = read("src/lib/auth/access.ts");
   const phase2Access = read("src/lib/phase2/access.ts");
 
-  assert.match(adminLayout, /auth\.getUser\(\)/);
-  assert.match(adminLayout, /from\("user_roles"\)/);
-  assert.match(adminLayout, /role\?\.role !== "admin"/);
+  assert.match(adminLayout, /getAdminUser\(\)/);
+  assert.match(adminLayout, /if \(!hasAdminRole\)/);
+  assert.match(adminLayout, /if \(!isAdmin\) redirect\("\/mfa"\)/);
   assert.match(adminLayout, /redirect\("\/unauthorized"\)/);
 
   assert.match(authAccess, /auth\.getUser\(\)/);

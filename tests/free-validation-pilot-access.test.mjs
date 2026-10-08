@@ -75,13 +75,11 @@ test("pilot access events are read-only to users and writable only through bound
   assert.match(migration, /user_id = \(select auth\.uid\(\)\)[\s\S]*public\.is_admin/);
 });
 
-test("student entitlement accepts only the latest explicit grant when the pilot gate is on", () => {
-  assert.match(access, /isFreeValidationPilotEnabled/);
-  assert.match(access, /from\("free_validation_pilot_access_events"\)/);
-  assert.match(access, /order\("created_at", \{ ascending: false \}\)/);
-  assert.match(access, /limit\(1\)/);
-  assert.match(access, /pilotResult\.data\?\.action === "grant"/);
-  assert.match(access, /isClientStudent \|\| isFreePilotStudent/);
+test("pilot grants never become generic student or client entitlement", () => {
+  assert.doesNotMatch(access, /isFreeValidationPilotEnabled/);
+  assert.doesNotMatch(access, /free_validation_pilot_access_events/);
+  assert.doesNotMatch(access, /isFreePilotStudent/);
+  assert.match(access, /hasClientLifecycleEntitlement\(access\?\.status\)/);
 });
 
 test("FVL-4A adds no automatic invitation, payment or document upload action", () => {

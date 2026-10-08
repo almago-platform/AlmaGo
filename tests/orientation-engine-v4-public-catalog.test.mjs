@@ -12,6 +12,10 @@ const readerMigration = readFileSync(
   "supabase/migrations/20261005094500_orientation_public_catalog_reader_rpc.sql",
   "utf8",
 );
+const readerHardeningMigration = readFileSync(
+  "supabase/migrations/20261007204246_restrict_orientation_catalog_rpc_authenticated.sql",
+  "utf8",
+);
 
 test("public Orientation catalogue uses only the publishable Supabase key", () => {
   assert.match(client, /import "server-only"/);
@@ -40,6 +44,11 @@ test("public catalogue reader keeps direct anon base-table access closed", () =>
   assert.match(readerMigration, /set search_path = ''/i);
   assert.match(readerMigration, /revoke all on function public\.read_orientation_program_catalog\(\)[\s\S]*from public, anon, authenticated/i);
   assert.match(readerMigration, /grant execute on function public\.read_orientation_program_catalog\(\)[\s\S]*to anon, authenticated/i);
+  assert.match(
+    readerHardeningMigration,
+    /revoke execute on function public\.read_orientation_program_catalog\(\)[\s\S]*from authenticated/i,
+  );
+  assert.doesNotMatch(readerHardeningMigration, /from anon/i);
   assert.doesNotMatch(readerMigration, /profiles|documents|applications|student_projects|orientations/i);
 });
 

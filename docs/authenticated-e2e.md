@@ -1,62 +1,90 @@
-# Authenticated E2E
+# AlmaGo — Authenticated E2E
 
-The authenticated suite uses dedicated test identities only and must never rely on real student data.
+La preuve authentifiée distingue désormais deux catégories :
 
-It verifies:
+- **étudiant** : compte de test dédié, automatisé sur Render ;
+- **admin réel unique** : validation humaine AAL2 liée au SHA exact déployé.
 
-- a student can authenticate and enter the student area;
-- a student is redirected away from `/admin`;
-- an admin test account passes the server-side admin role guard;
-- the authenticated Student Space quality matrix passes;
-- the authenticated Admin Space quality matrix passes.
+Cette séparation évite de conserver des comptes admin permanents uniquement pour les tests et interdit d’utiliser les identifiants personnels de l’administrateur réel dans GitHub Actions.
 
-## Configuration
+## Couverture automatisée
 
-Non-sensitive test emails are repository variables with safe defaults:
+Le workflow vérifie automatiquement :
 
-- student: `phase3.student.c@almago.test`
-- admin: `phase3.admin.b@almago.test`
+- connexion du compte étudiant de test ;
+- accès à l’espace étudiant ;
+- interdiction d’accès étudiant à l’administration ;
+- refus des API admin pour l’étudiant ;
+- qualité responsive/accessibilité de l’espace étudiant ;
+- correspondance exacte entre le SHA GitHub et le SHA Render.
 
-Sensitive values remain GitHub Actions Secrets:
+La frontière admin reste couverte automatiquement par les tests applicatifs et les tests RLS/pgTAP :
 
-- `ALMAGO_E2E_STUDENT_PASSWORD`
-- `ALMAGO_E2E_ADMIN_PASSWORD`
+- admin AAL1 = refus ;
+- admin AAL2 = autorisé ;
+- rôle admin lu depuis la source immutable ;
+- routes admin sensibles protégées par le garde canonique.
 
-The public Supabase URL and publishable key are already handled as repository secrets/configuration.
+## Preuve admin en production
 
-There is **no** `ALMAGO_AUTH_E2E_ENABLED` activation variable in the current workflow.
+AlmaGo ne conserve qu’un seul admin réel. Ses mots de passe, cookies et secrets TOTP ne doivent jamais être placés dans GitHub Actions.
 
-## Targets
+Pour une exécution Render finale, A43 exige donc une validation humaine sur l’issue #84, liée au SHA exact :
 
-`AlmaGo Authenticated E2E` supports:
+`<!-- almago-a43-admin-human-approved:sha=<FULL_MAIN_SHA> -->`
 
-- `local` — regression mode using a locally built server inside GitHub Actions;
-- `render` — release-evidence mode against the canonical `https://almago-dev.onrender.com` runtime.
+Ce marqueur ne doit être ajouté qu’après avoir vérifié manuellement sur le SHA Render exact :
 
-Render mode:
+1. connexion de l’admin réel ;
+2. challenge MFA/TOTP ;
+3. arrivée dans l’espace admin avec une session AAL2 ;
+4. accès normal au cockpit admin ;
+5. absence d’accès admin tant que la session reste AAL1.
 
-1. wakes/checks `/api/health`;
-2. requires `revision` to match the first 12 characters of the workflow SHA;
-3. requires `branch == main`;
-4. runs student/admin isolation journeys;
-5. runs the Student/Admin responsive-accessibility matrices;
-6. checks Render again immediately before A43 closure;
-7. re-reads current `main` and refuses closure if it moved.
+Le workflow accepte uniquement une preuve publiée par un auteur GitHub avec une association `OWNER`, `MEMBER` ou `COLLABORATOR`.
 
-During Partner-Ready Calm Mode, A43 rehearsals are **explicit** rather than triggered by every relevant push to `main`. Use manual dispatch with the default `render` target when canonical runtime evidence is needed. This proves the exact deployed SHA and the authenticated matrices, but A43 remains open while A38 is incomplete.
+Chaque nouveau SHA de `main` exige une nouvelle preuve. Une preuve ancienne ne peut pas valider un déploiement différent.
 
-Manual dispatch keeps the explicit `render/local` choice. The narrowly scoped owner probe/comment flow keeps the local fallback.
+## Compte admin E2E jetable facultatif
 
-A successful local run is useful regression evidence but **cannot close A43**. A successful Render rehearsal before A38 is also not the final release proof; it must be replayed on the final release candidate after A38.
+Les tests Playwright conservent les scénarios admin AAL1/AAL2 pour le développement ou un environnement de test isolé.
 
-## A43 closure
+Ils ne s’exécutent que si un futur compte admin de test **jetable** est explicitement configuré avec :
 
-A43 can close only when:
+- `ALMAGO_E2E_ADMIN_EMAIL`;
+- `ALMAGO_E2E_ADMIN_PASSWORD`;
+- `ALMAGO_E2E_ADMIN_TOTP_SECRET`.
 
-- the workflow ran from exact `main`;
-- target is `render`;
-- Render still serves the tested exact SHA;
-- A38 is already complete;
-- dedicated student/admin journeys and quality matrices passed.
+Ces variables ne sont plus requises par le workflow Render canonique.
 
-No password or protected key should ever be written to an Issue, commit, artifact name, screenshot or chat.
+Ne jamais utiliser le compte admin personnel pour cette configuration.
+
+## Configuration requise par le workflow canonique
+
+Variables non sensibles :
+
+- `ALMAGO_E2E_STUDENT_EMAIL`.
+
+Secrets :
+
+- `ALMAGO_E2E_STUDENT_PASSWORD`;
+- configuration Supabase publique utilisée par l’application.
+
+Aucun mot de passe, seed TOTP, token ou cookie ne doit apparaître dans un log, commentaire, artifact ou screenshot.
+
+## Exécution
+
+Le workflow **AlmaGo Authenticated E2E** peut être lancé manuellement et peut aussi être appelé par le **AlmaGo Release Gate**.
+
+Cibles :
+
+- `local` : serveur Next.js construit dans GitHub Actions ;
+- `render` : runtime canonique configuré par `ALMAGO_PRODUCTION_URL`, avec fallback vers le service Render actuel.
+
+Une exécution locale vérifie les régressions. Une exécution Render exige en plus :
+
+- A38 réellement fermé ;
+- SHA Render exact ;
+- parcours étudiant automatisé réussi ;
+- preuve humaine admin AAL2 exacte-SHA ;
+- revalidation de A38 après les preuves.

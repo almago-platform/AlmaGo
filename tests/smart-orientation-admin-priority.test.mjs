@@ -69,9 +69,9 @@ test("SO-4 provides server-side filters for priority, Bac, contact and field", (
 });
 
 test("admin priority queue remains protected by the existing server-side admin layout", () => {
-  assert.match(layout, /supabase\.auth\.getUser\(\)/);
-  assert.match(layout, /from\("user_roles"\)/);
-  assert.match(layout, /role\?\.role !== "admin"/);
+  assert.match(layout, /getAdminUser\(\)/);
+  assert.match(layout, /if \(!hasAdminRole\)/);
+  assert.match(layout, /if \(!isAdmin\) redirect\("\/mfa"\)/);
   assert.match(layout, /redirect\("\/unauthorized"\)/);
 });
 

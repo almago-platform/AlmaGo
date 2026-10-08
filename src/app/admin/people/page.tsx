@@ -27,6 +27,7 @@ import {
   type ApplicationOfficialDeadlineUrgency,
 } from "@/lib/admin/application-risk";
 import { isActiveApplication } from "@/lib/application-workflow";
+import { belongsToAdminPortfolio, isSoloAdmin } from "@/lib/admin/solo-workspace";
 import { customerLifecycleStatusLabel } from "@/lib/phase2/access";
 import { createClient } from "@/lib/supabase/server";
 
@@ -353,6 +354,7 @@ export default async function AdminPeoplePage({
   const prospects = (prospectsResult.data || []) as ProspectRow[];
   const accessRows = (accessResult.data || []) as AccessRow[];
   const adminIds = (adminRolesResult.data || []).map((item) => item.user_id);
+  const soloAdmin = isSoloAdmin(adminIds, currentAdmin?.id ?? null);
 
   const userIds = [...new Set([
     ...prospects.flatMap((item) => item.user_id ? [item.user_id] : []),
@@ -471,7 +473,7 @@ export default async function AdminPeoplePage({
     })
     .sort((left, right) => left.name.localeCompare(right.name, "fr"));
   const advisorNameById = new Map(advisorOptions.map((item) => [item.id, item.name]));
-  const selectedAdvisor = advisorFilter && advisorNameById.has(advisorFilter) ? advisorFilter : "";
+  const selectedAdvisor = !soloAdmin && advisorFilter && advisorNameById.has(advisorFilter) ? advisorFilter : "";
 
   const docsByUser = new Map<string, DocumentRow[]>();
   for (const item of documents) docsByUser.set(item.student_id, [...(docsByUser.get(item.student_id) || []), item]);
@@ -749,7 +751,7 @@ export default async function AdminPeoplePage({
     }).length,
     unassigned: operationalRecords.filter((item) => !item.assignedAdminId).length,
     mine: currentAdmin
-      ? operationalRecords.filter((item) => item.assignedAdminId === currentAdmin.id).length
+      ? operationalRecords.filter((item) => belongsToAdminPortfolio(item.assignedAdminId, currentAdmin.id, soloAdmin)).length
       : 0,
   };
 
@@ -779,7 +781,7 @@ export default async function AdminPeoplePage({
       if (!item.userId || item.segment === "archived" || (contactDate && contactDate >= staleContactCutoff)) return false;
     }
     if (work === "unassigned" && (!item.userId || item.segment === "archived" || item.assignedAdminId)) return false;
-    if (work === "mine" && (!currentAdmin || item.assignedAdminId !== currentAdmin.id)) return false;
+    if (work === "mine" && (!item.userId || item.segment === "archived" || !belongsToAdminPortfolio(item.assignedAdminId, currentAdmin?.id, soloAdmin))) return false;
 
     if (!search) return true;
     return [
@@ -822,13 +824,17 @@ export default async function AdminPeoplePage({
 
       <AdminWorkspaceSummary
         eyebrow="Cockpit quotidien"
-        title="Portefeuille équipe"
-        description="Attribuez chaque dossier à un conseiller et traitez d’abord les dates vérifiées ou les cibles internes qui approchent."
+        title={soloAdmin ? "Mon portefeuille" : "Portefeuille équipe"}
+        description={soloAdmin
+          ? "Tous les dossiers actifs sont dans votre vue, même sans conseiller attribué. Aucune attribution n’est changée automatiquement."
+          : "Attribuez chaque dossier à un conseiller et traitez d’abord les dates vérifiées ou les cibles internes qui approchent."}
         metrics={[
           { label: "En retard", value: workCounts.overdue, tone: workCounts.overdue ? "warning" : "neutral" },
           { label: "Aujourd’hui", value: workCounts.today, tone: workCounts.today ? "brand" : "neutral" },
           { label: "7 jours", value: workCounts.week, tone: workCounts.week ? "brand" : "neutral" },
-          { label: "Non attribués", value: workCounts.unassigned, tone: workCounts.unassigned ? "warning" : "success" },
+          soloAdmin
+            ? { label: "Sans prochaine action", value: workCounts.no_action, tone: workCounts.no_action ? "warning" : "success" }
+            : { label: "Non attribués", value: workCounts.unassigned, tone: workCounts.unassigned ? "warning" : "success" },
         ]}
         action={
           <Link
@@ -884,7 +890,7 @@ export default async function AdminPeoplePage({
           </div>
         </div>
 
-        <form method="get" className="grid gap-3 border-b border-[var(--border)] p-4 sm:p-5 lg:grid-cols-[minmax(0,1fr)_16rem_auto]">
+        <form method="get" className={`grid gap-3 border-b border-[var(--border)] p-4 sm:p-5 ${soloAdmin ? "lg:grid-cols-[minmax(0,1fr)_auto]" : "lg:grid-cols-[minmax(0,1fr)_16rem_auto]"}`}>
           <input type="hidden" name="view" value={view} />
           <input type="hidden" name="work" value={work} />
 
@@ -899,7 +905,7 @@ export default async function AdminPeoplePage({
             />
           </label>
 
-          <label className="text-sm font-semibold text-slate-700">
+          {!soloAdmin ? <label className="text-sm font-semibold text-slate-700">
             Conseiller
             <select name="advisor" defaultValue={selectedAdvisor} className="field mt-2 bg-white">
               <option value="">Tous les conseillers</option>
@@ -907,7 +913,7 @@ export default async function AdminPeoplePage({
                 <option key={advisor.id} value={advisor.id}>{advisor.name}</option>
               ))}
             </select>
-          </label>
+          </label> : null}
 
           <div className="flex items-end gap-2">
             <button className={buttonClassName("secondary", "shrink-0 px-4")} type="submit">
@@ -979,7 +985,7 @@ export default async function AdminPeoplePage({
                   <div>
                     <p className="text-[0.68rem] font-bold uppercase tracking-[0.1em] text-[var(--muted)]">Conseiller</p>
                     <p className={`mt-1 text-sm font-semibold ${person.assignedAdminName ? "text-slate-900" : "text-amber-800"}`}>
-                      {person.assignedAdminName || "Non attribué"}
+                      {person.assignedAdminName || (soloAdmin ? "Vous · sans attribution formelle" : "Non attribué")}
                     </p>
                     <p className={`mt-1 text-[11px] font-semibold ${staleContact ? "text-amber-800" : "text-slate-500"}`}>
                       {person.lastContactAt
@@ -1034,14 +1040,30 @@ export default async function AdminPeoplePage({
                     )}
                   </div>
 
-                  <div className="flex 2xl:justify-end">
+                  <div className="flex min-w-0 flex-col gap-2 2xl:items-end">
                     {person.userId ? (
-                      <Link
-                        href={`/admin/dossiers/${person.userId}`}
-                        className={buttonClassName("secondary", "w-full whitespace-nowrap px-4 2xl:w-auto")}
-                      >
-                        Dossier 360°
-                      </Link>
+                      <>
+                        <Link
+                          href={`/admin/dossiers/${person.userId}`}
+                          className={buttonClassName("secondary", "w-full whitespace-nowrap px-4 2xl:w-auto")}
+                        >
+                          Dossier 360°
+                        </Link>
+                        <nav aria-label={`Accès rapides au dossier de ${person.name}`} className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs font-semibold">
+                          <Link href={`/admin/dossiers/${person.userId}#messages`} className="text-[var(--brand-strong)] hover:underline">
+                            Messages{person.unreadMessages ? ` (${person.unreadMessages})` : ""}
+                          </Link>
+                          <Link href={`/admin/dossiers/${person.userId}#orientation`} className="text-[var(--brand-strong)] hover:underline">
+                            Orientation
+                          </Link>
+                          <Link href={`/admin/dossiers/${person.userId}#actions`} className="text-[var(--brand-strong)] hover:underline">
+                            Actions
+                          </Link>
+                          <Link href={`/admin/dossiers/${person.userId}#history`} className="text-[var(--brand-strong)] hover:underline">
+                            Historique
+                          </Link>
+                        </nav>
+                      </>
                     ) : (
                       <Link
                         href="/admin/prospects"

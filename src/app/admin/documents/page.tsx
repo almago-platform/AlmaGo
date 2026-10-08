@@ -9,8 +9,10 @@ import {
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminDocumentsPage() {
+// Measurement belongs to the server-side data loader, not React rendering.
+async function loadDocumentData() {
   const supabase = await createClient();
+  const startedAt = performance.now();
   const [documentsResult, evidenceResult] = await Promise.all([
     supabase
       .from("documents")
@@ -22,6 +24,28 @@ export default async function AdminDocumentsPage() {
       .select("id,student_id,evidence_type,institution,evidence_date,origin,verification_status,document_id,verified_at,created_at,updated_at")
       .order("updated_at", { ascending: false }),
   ]);
+
+  const queryMs = Math.round(performance.now() - startedAt);
+  return { supabase, documentsResult, evidenceResult, queryMs, startedAt };
+}
+
+function logAdminDocumentPerformance(
+  startedAt: number,
+  queryMs: number,
+  visibleDocuments: number,
+  evidenceRows: number,
+) {
+  if (process.env.ALMAGO_ADMIN_DOCUMENT_PERF_LOG_ENABLED !== "true") return;
+  console.info("[almago:admin-documents:performance]", JSON.stringify({
+    queriesMs: queryMs,
+    totalMs: Math.round(performance.now() - startedAt),
+    visibleDocuments,
+    evidenceRows,
+  }));
+}
+
+export default async function AdminDocumentsPage() {
+  const { supabase, documentsResult, evidenceResult, queryMs, startedAt } = await loadDocumentData();
 
   if (documentsResult.error) {
     return (
@@ -64,6 +88,10 @@ export default async function AdminDocumentsPage() {
     ...document,
     profiles: profileById.get(document.student_id) || null,
   }));
+  const documentStatusById = new Map(rawDocuments.map((document) => [document.id, document.status]));
+
+  // Emit only aggregate counts and timing data; no filenames, student IDs or paths.
+  logAdminDocumentPerformance(startedAt, queryMs, documents.length, (evidenceResult.data || []).length);
 
   return (
     <main className="mx-auto w-full max-w-[92rem] px-4 py-5 sm:px-6 sm:py-6 xl:px-8">
@@ -75,10 +103,9 @@ export default async function AdminDocumentsPage() {
       <AdminDocumentsPanel
         documents={documents}
         evidence={(evidenceResult.data || []).map((row) => {
-          const document = rawDocuments.find((item) => item.id === row.document_id);
           return toAdminAcademicEvidenceView({
             ...row,
-            document_status: document?.status || null,
+            document_status: documentStatusById.get(row.document_id || "") || null,
           } as AcademicEvidenceStoreRow);
         })}
         evidenceLoadError={Boolean(evidenceResult.error || profilesResult.error)}

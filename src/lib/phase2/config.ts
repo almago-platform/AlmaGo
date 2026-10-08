@@ -61,12 +61,3 @@ export function isPhase2PaymentOrchestrationEnabled(
   return raw ? ENABLED_VALUES.has(raw) : false;
 }
 
-export function isPhase2DevPaymentAdapterEnabled(
-  env: Record<string, string | undefined> = process.env,
-) {
-  if (env.NODE_ENV === "production" || !isPhase2PaymentOrchestrationEnabled(env)) {
-    return false;
-  }
-  const raw = env.ALMAGO_PHASE2_DEV_PAYMENT_ADAPTER_ENABLED?.trim().toLowerCase();
-  return raw ? ENABLED_VALUES.has(raw) : false;
-}

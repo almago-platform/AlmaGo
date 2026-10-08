@@ -72,11 +72,12 @@ test("Admin V11 keeps dashboard counts linked to existing People work queues", (
   assert.match(people, /work === "mine"/);
 });
 
-test("Admin V11 dashboard lists only assigned human actions as personal work", () => {
+test("Admin V11 dashboard lists assigned actions and in solo mode includes unassigned actions", () => {
   assert.match(dashboard, /Mes prochaines actions/);
   assert.match(dashboard, /myHumanActions/);
   assert.match(dashboard, /isHumanAdminAction\(item\)/);
-  assert.match(dashboard, /assignmentByStudent\.get\(item\.student_id\) === currentAdmin\.id/);
+  assert.match(dashboard, /belongsToAdminPortfolio\(assignmentByStudent\.get\(item\.student_id\), currentAdmin\.id, soloAdmin\)/);
+  assert.match(dashboard, /Les étapes système restent hors de cette liste/);
   assert.match(dashboard, /\/admin\/dossiers\/\$\{item\.student_id\}#actions/);
   assert.match(dashboard, /Les étapes système restent hors de cette liste/);
 });

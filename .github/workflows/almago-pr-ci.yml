@@ -1,100 +1,66 @@
 name: AlmaGo PR CI
 
-
 on:
   pull_request:
+    branches: [main]
     types: [opened, synchronize, reopened, ready_for_review]
-  repository_dispatch:
-    types: [almago_ci_verify]
-
 
 permissions:
-  contents: write
-  issues: write
-  pull-requests: write
-
+  contents: read
 
 concurrency:
-  group: almago-pr-ci-${{ github.event.pull_request.number || github.event.client_payload.pull_number }}
+  group: almago-pr-ci-${{ github.event.pull_request.number }}
   cancel-in-progress: true
-
 
 jobs:
   verify:
-    if: >-
-      (
-        github.event_name == 'repository_dispatch' &&
-        github.event.action == 'almago_ci_verify' &&
-        github.event.client_payload.pull_number != null &&
-        github.event.client_payload.head_sha != null
-      ) ||
-      (
-        github.event_name == 'pull_request' &&
-        github.event.pull_request.draft == false
-      )
+    if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
-    timeout-minutes: 15
-    env:
-      PR_NUMBER: ${{ github.event.pull_request.number || github.event.client_payload.pull_number }}
-      EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.event.client_payload.head_sha }}
-
+    timeout-minutes: 30
     steps:
-      - name: Revalidate exact PR head
-        id: pr
-        uses: actions/github-script@v9
+      - uses: actions/checkout@v7
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const pullNumber = Number(process.env.PR_NUMBER);
-            const expectedHead = String(process.env.EXPECTED_HEAD || "");
-            if (!pullNumber || !expectedHead) {
-              core.setFailed("CI verification requires a PR number and expected HEAD.");
-              return;
-            }
-            const { data: pr } = await github.rest.pulls.get({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              pull_number: pullNumber,
-            });
-            if (pr.state !== "open" || pr.head.sha !== expectedHead) {
-              core.setFailed("Stale CI handoff: expected " + expectedHead + ", actual " + pr.head.sha + ".");
-              return;
-            }
-            core.setOutput("head_sha", pr.head.sha);
-
-      - name: Checkout PR
-        uses: actions/checkout@v7
-        with:
-          ref: ${{ steps.pr.outputs.head_sha }}
+          ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
 
-
-      - name: Setup Node
-        uses: actions/setup-node@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
 
+      - run: npm ci
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Production dependency audit
+        run: npm audit --omit=dev --audit-level=high
 
+      - name: Setup isolated Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: 2.120.0
 
-      - name: Tests
-        run: npm test --if-present
+      - name: Start isolated Supabase test stack
+        run: supabase start
 
-      - name: Validate workflow YAML syntax
+      - name: Database authorization tests
+        run: supabase test db
+
+      - name: PostgREST and Storage authorization tests
         shell: bash
         run: |
-          ruby -e 'require "yaml"; Dir[".github/workflows/*.{yml,yaml}"].sort.each { |file| YAML.parse_file(file); puts "valid yaml: #{file}" }'
+          eval "$(supabase status -o env)"
+          SUPABASE_URL="$API_URL" \
+          SUPABASE_ANON_KEY="$ANON_KEY" \
+          SUPABASE_SERVICE_ROLE_KEY="$SERVICE_ROLE_KEY" \
+          node tests/security/local-supabase-idor.mjs
+
+      - name: Application tests
+        run: npm test
 
       - name: Typecheck
         run: npx tsc --noEmit
 
-
       - name: Lint
         run: npm run lint
-
 
       - name: Build
         env:
@@ -102,75 +68,8 @@ jobs:
           NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
         run: npm run build
 
+      - name: Workflow syntax
+        run: ruby -e 'require "yaml"; Dir[".github/workflows/*.{yml,yaml}"].sort.each { |file| YAML.parse_file(file) }'
 
       - name: Diff check
         run: git diff --check
-
-
-
-
-      - name: Publish verified review checkpoint
-        if: success()
-        uses: actions/github-script@v9
-        env:
-          VERIFIED_HEAD: ${{ steps.pr.outputs.head_sha }}
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const head = process.env.VERIFIED_HEAD;
-            const marker = `<!-- almago-pr-ci:verified-head=${head} -->`;
-            const comments = await github.paginate(github.rest.issues.listComments, {
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-              per_page: 100,
-            });
-
-            if (comments.some((comment) => comment.body?.includes(marker))) {
-              core.info("Verified checkpoint already published for " + head + ".");
-            } else {
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: context.issue.number,
-                body: [
-                  "ALMAGO REVIEW REQUEST",
-                  "",
-                  "REMOTE HEAD: " + head,
-                  "SOURCE: AlmaGo PR CI",
-                  marker,
-                  "",
-                  "Canonical remote checks passed: tests, TypeScript, lint, build and git diff --check.",
-                ].join("\n"),
-              });
-            }
-
-            // Gemini Supervisor is temporarily disabled during Partner-Ready.
-            // Canonical CI remains authoritative; external AI availability is not a blocking gate.
-            core.info("Gemini Supervisor handoff is temporarily disabled during Partner-Ready.");
-
-      - name: Publish CI failure handoff
-        if: failure()
-        uses: actions/github-script@v9
-        env:
-          FAILED_HEAD: ${{ steps.pr.outputs.head_sha }}
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const head = process.env.FAILED_HEAD;
-            const marker = `<!-- almago-pr-ci:failed-head=${head};run=${context.runId} -->`;
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-              body: [
-                "CI: FAILED",
-                "",
-                `HEAD: ${head}`,
-                marker,
-                "",
-                "Le workflow canonique AlmaGo PR CI a échoué. Consulte les checks de ce HEAD et corrige uniquement les causes d’échec.",
-                "",
-                "@codex address that feedback",
-              ].join("\n"),
-            });

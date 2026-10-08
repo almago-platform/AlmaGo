@@ -16,6 +16,7 @@ const orientationFreshnessHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  poweredByHeader: false,
   async headers() {
     return [
       {
