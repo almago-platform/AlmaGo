@@ -259,12 +259,12 @@ export function AdminOrientationHumanReviewQueue({
                     {review.review_status === "pending" ? "Examiner et décider" : "Consulter la décision"} · {selected.length} programme(s) présélectionné(s)
                   </summary>
 
-                <section aria-label="Choisir les programmes à recommander" className="mt-5 rounded-[var(--radius-control)] border border-[var(--border)] bg-white p-4">
+                <section aria-label="Sélection des pistes à valider en interne" className="mt-5 rounded-[var(--radius-control)] border border-[var(--border)] bg-white p-4">
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
-                      <h4 className="text-base font-bold text-slate-950">1. Vérifier les programmes retenus</h4>
+                      <h4 className="text-base font-bold text-slate-950">1. Choisir les programmes à examiner</h4>
                       <p className="mt-1 text-sm leading-6 text-slate-600">
-                        Cochez jusqu’à 4 programmes. Les informations marquées « à vérifier » demandent un contrôle humain avant de confirmer.
+                        Sélectionnez jusqu’à 4 programmes. Si une exigence est incertaine, vérifiez la source officielle avant de valider la revue.
                       </p>
                     </div>
                     <Badge variant={selected.length ? "info" : "warning"}>{selected.length}/4 retenu{selected.length > 1 ? "s" : ""}</Badge>
@@ -304,7 +304,7 @@ export function AdminOrientationHumanReviewQueue({
                             <Badge variant={!selectable ? "warning" : needsAttention ? "warning" : "success"}>
                               {!selectable ? "Preuves insuffisantes" : needsAttention ? "Points à vérifier" : "Faits vérifiés"}
                             </Badge>
-                            {needsAttention ? <span className="text-xs text-amber-900">{warnings + unresolved + toCheck.length} point(s) à contrôler</span> : null}
+                            {needsAttention ? <span className="text-xs text-amber-900">Vérifiez les exigences signalées et les sources</span> : null}
                           </div>
                           {criticalFacts.length ? (
                             <dl className="mt-3 grid gap-2 sm:grid-cols-2">
@@ -339,12 +339,12 @@ export function AdminOrientationHumanReviewQueue({
                   </div>
 
                   <label className="mt-4 block text-sm font-semibold text-slate-800">
-                    Note interne
+                    Note interne (obligatoire pour demander une correction ou rejeter)
                     <textarea
                       value={notes[review.id] || ""}
                       onChange={(event) => setNotes((current) => ({ ...current, [review.id]: event.target.value }))}
                       maxLength={2000}
-                      placeholder="Expliquez une correction, un rejet ou un point à revérifier."
+                      placeholder="Précisez une exigence manquante, une source à confirmer ou une raison de rejet."
                       className="field min-h-24 resize-y"
                     />
                   </label>
