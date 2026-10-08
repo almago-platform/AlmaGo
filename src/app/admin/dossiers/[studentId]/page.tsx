@@ -7,6 +7,7 @@ import { DocumentRow } from "@/components/product/DocumentRow";
 import { JourneyRail, type JourneyRailStep } from "@/components/product/JourneyRail";
 import { AdminCounselorBrief } from "@/components/admin/AdminCounselorBrief";
 import { AdminDossierNavigation } from "@/components/admin/AdminDossierNavigation";
+import { AdminDossierQuickHandoff } from "@/components/admin/AdminDossierQuickHandoff";
 import { AdminDossierDisclosure } from "@/components/admin/AdminDossierDisclosure";
 import { AdminLoadError } from "@/components/admin/AdminLoadError";
 import { AdminDossierActionsPanel, type AdminDossierActionItem } from "@/components/admin/AdminDossierActionsPanel";
@@ -893,6 +894,8 @@ export default async function AdminStudentDossierPage({
         applications: applications.length,
       }} />
 
+      <AdminDossierQuickHandoff canExchange={Boolean(profile)} />
+
       <section id="overview" className="scroll-mt-52 lg:scroll-mt-40 space-y-3">
         <PremiumSectionHeader
           eyebrow="Cycle du dossier"
@@ -915,7 +918,7 @@ export default async function AdminStudentDossierPage({
       <AdminDossierDisclosure
         title="Échanges et suivi de contact"
         description="Messages visibles par la personne et journal interne réservé à Campus Allemagne."
-        targetIds={["messages", "journal"]}
+        targetIds={["messages", "journal", "send-dossier-message"]}
         initiallyOpen={unreadStudentMessages > 0}
       >
       <div id="messages" className="scroll-mt-52 lg:scroll-mt-40">
@@ -1152,7 +1155,7 @@ export default async function AdminStudentDossierPage({
           <section id="applications" className="pc-panel scroll-mt-52 lg:scroll-mt-40 p-5 sm:p-6">
             <PremiumSectionHeader
               eyebrow="Candidatures"
-              title={applications.length ? `${applications.length} candidature${applications.length > 1 ? "s" : ""} rattachée${applications.length > 1 ? "s" : ""}` : "Aucune candidature enregistrée"}
+              title={applications.length ? `${applications.length} candidature${applications.length > 1 ? "s" : ""} rattachée${applications.length > 1 ? "s" : ""}` : "Candidatures"}
               description="Le détail opérationnel et les changements de statut restent dans la file Candidatures."
               actions={
                 applications.length ? (
