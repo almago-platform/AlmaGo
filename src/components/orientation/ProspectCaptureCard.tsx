@@ -234,7 +234,6 @@ export function ProspectCaptureCard({
             <button
               type="button"
               onClick={() => void submit(undefined, true)}
-              disabled={status === "saving"}
               className="mt-3 rounded-[var(--radius-control)] bg-[var(--brand)] px-4 py-2 font-semibold text-white disabled:opacity-50"
             >
               {copy.automaticEmailRetry}
