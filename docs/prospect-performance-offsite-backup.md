@@ -75,6 +75,21 @@ controlled executable path and run it under the dedicated account with the
 protected environment, **not** through a web route. Nothing in this repo
 automatically installs or executes the script.
 
+### Prepared systemd units (not installed)
+
+The repository also provides `ops/systemd/almago-offsite-backup.service` and
+`ops/systemd/almago-offsite-backup.timer`. After a restore drill, an authorized
+VPS operator can install the backup script and these units, create the protected
+`/etc/almago/backup.env`, and then enable the timer. The service runs as the
+dedicated `almago-backup` user (not the web application) and limits filesystem
+writes. The timer is daily with a randomized start window. Check that
+`/usr/local/sbin/almago-offsite-backup` exists, all credential/config files are
+readable by that service account only, and the host has enough temporary disk.
+Verify successful execution with `systemctl status`, journal logs (without
+secrets or filenames), `restic snapshots`, and a restore test.
+
+**Committing these files neither schedules nor executes a backup.**
+
 ### Schedule and lifecycle
 
 - First, manually prove a successful snapshot and check remote `restic snapshots`.
