@@ -327,11 +327,13 @@ export async function POST(request: Request) {
       attachments = [];
     }
 
+    const brandLogoUrl = new URL("/brand/campus-allemagne-logo-approved.png", baseUrl).toString();
     const emailContent = buildOrientationProspectEmail({
       locale,
       diagnostic,
       orientationReportUrl,
       candidateReportUrl,
+      brandLogoUrl,
       signupUrl: signupUrl.toString(),
       interestUrl,
       attachmentsIncluded: attachments.length === 2,

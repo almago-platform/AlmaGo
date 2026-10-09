@@ -127,6 +127,7 @@ export function buildOrientationProspectEmail({
   diagnostic,
   orientationReportUrl,
   candidateReportUrl,
+  brandLogoUrl,
   signupUrl,
   interestUrl,
   attachmentsIncluded = false,
@@ -135,6 +136,7 @@ export function buildOrientationProspectEmail({
   diagnostic: PublicOrientationDiagnostic;
   orientationReportUrl: string;
   candidateReportUrl: string;
+  brandLogoUrl: string;
   signupUrl: string;
   interestUrl?: string | null;
   attachmentsIncluded?: boolean;
@@ -193,7 +195,7 @@ export function buildOrientationProspectEmail({
   <body style="margin:0;background:#f7f8fc;color:#182442;font-family:Arial,sans-serif">
     <div style="max-width:640px;margin:0 auto;padding:32px 20px">
       <div style="background:#ffffff;border:1px solid #dfe3ec;border-radius:16px;padding:28px">
-        <p style="margin:0 0 18px;font-size:14px;font-weight:700;color:#2349c9">Campus Allemagne</p>
+        <p style="margin:0 0 18px"><img src="${escapeHtml(brandLogoUrl)}" alt="Campus Allemagne" width="220" height="57" style="display:block;width:220px;max-width:100%;height:auto;border:0;outline:none;text-decoration:none" /></p>
         <p style="margin:0 0 10px;line-height:1.6">${escapeHtml(copy.greeting)}</p>
         <p style="margin:0 0 10px;line-height:1.6;font-weight:700">${escapeHtml(copy.intro)}</p>
         <p style="margin:0 0 22px;line-height:1.6">${escapeHtml(copy.preparation)}</p>
