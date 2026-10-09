@@ -30,6 +30,7 @@ export function ProspectCaptureCard({
   emailDeliveryEnabled = false,
   accountLinkingEnabled = false,
   automaticEmailConsent = false,
+  includedEmailDelivery = false,
   claimAutoEmailAttempt,
   acquisitionContext = null,
 }: {
@@ -40,6 +41,7 @@ export function ProspectCaptureCard({
   emailDeliveryEnabled?: boolean;
   accountLinkingEnabled?: boolean;
   automaticEmailConsent?: boolean;
+  includedEmailDelivery?: boolean;
   claimAutoEmailAttempt?: () => boolean;
   acquisitionContext?: AcquisitionContext | null;
 }) {
@@ -56,11 +58,12 @@ export function ProspectCaptureCard({
   const autoStarted = useRef(false);
   const submitting = useRef(false);
   const persistentCaptureAllowed = identity ? isAdultPublicOrientationIdentity(identity) : false;
+  const autoEmailRequested = (includedEmailDelivery || automaticEmailConsent) && emailDeliveryEnabled && persistentCaptureAllowed;
 
   const submit = useCallback(async (event?: React.FormEvent<HTMLFormElement>, automated = false) => {
     event?.preventDefault();
     if (submitting.current) return;
-    if (automated && !(automaticEmailConsent && emailDeliveryEnabled && persistentCaptureAllowed)) return;
+    if (automated && !autoEmailRequested) return;
     if (!automated && !privacyAcknowledged) return;
     const normalized = email.trim().toLowerCase();
 
@@ -85,8 +88,14 @@ export function ProspectCaptureCard({
           ...(identity
             ? { identity: { ...identity, email: normalized } }
             : {}),
-          privacyAcknowledged: true,
-          ...(automated ? { deliveryMode: "automatic", emailDeliveryConsent: true } : {}),
+          // For an included service, notice is presented before starting; this
+          // does not assert that a separate checkbox consent was obtained.
+          privacyAcknowledged: automated && includedEmailDelivery ? false : true,
+          ...(automated
+            ? includedEmailDelivery
+              ? { deliveryMode: "included", emailNoticeShown: true }
+              : { deliveryMode: "automatic", emailDeliveryConsent: true }
+            : {}),
           contactConsent: false,
           ...(reviewId ? { reviewId } : {}),
           ...(acquisitionContext ? { acquisition: acquisitionContext } : {}),
@@ -131,11 +140,11 @@ export function ProspectCaptureCard({
     }
   }, [
     email, locale, answers, identity, privacyAcknowledged, reviewId, acquisitionContext,
-    emailDeliveryEnabled, accountLinkingEnabled, automaticEmailConsent, persistentCaptureAllowed, copy,
+    emailDeliveryEnabled, accountLinkingEnabled, includedEmailDelivery, autoEmailRequested, copy,
   ]);
 
   useEffect(() => {
-    if (!automaticEmailConsent || !emailDeliveryEnabled || !persistentCaptureAllowed || autoStarted.current) return;
+    if (!autoEmailRequested || autoStarted.current) return;
     autoStarted.current = true;
     if (!claimAutoEmailAttempt?.()) {
       // A previous mount already started sending. React state is updated
@@ -148,7 +157,7 @@ export function ProspectCaptureCard({
     queueMicrotask(() => {
       void submit(undefined, true);
     });
-  }, [automaticEmailConsent, emailDeliveryEnabled, persistentCaptureAllowed, claimAutoEmailAttempt, submit, copy.automaticEmailAlreadyRequested]);
+  }, [autoEmailRequested, claimAutoEmailAttempt, submit, copy.automaticEmailAlreadyRequested]);
 
   async function submitInterest() {
     if (!interestToken || interestStatus === "saving" || interestStatus === "success") return;
@@ -231,7 +240,7 @@ export function ProspectCaptureCard({
         </div>
       ) : null}
 
-      {automaticEmailConsent && emailDeliveryEnabled ? (
+      {autoEmailRequested ? (
         <div className="mt-5 rounded-[var(--radius-control)] border border-[var(--info-border)] bg-[var(--info-soft)] p-4 text-sm leading-6">
           <p role={status === "error" ? "alert" : "status"}>
             {previouslyRequested
@@ -312,7 +321,7 @@ export function ProspectCaptureCard({
       </form>
       )}
 
-      {message && !(automaticEmailConsent && emailDeliveryEnabled) ? (
+      {message && !autoEmailRequested ? (
         <p
           id="orientation-capture-message"
           role={status === "error" ? "alert" : "status"}
