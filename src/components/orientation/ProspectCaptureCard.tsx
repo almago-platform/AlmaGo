@@ -46,6 +46,7 @@ export function ProspectCaptureCard({
   const [status, setStatus] = useState<"idle" | "saving" | "success" | "error">("idle");
   const [message, setMessage] = useState("");
   const [interestToken, setInterestToken] = useState<string | null>(null);
+  const [signupPath, setSignupPath] = useState<string | null>(null);
   const [interestStatus, setInterestStatus] = useState<"idle" | "saving" | "success" | "error">("idle");
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {
@@ -91,12 +92,16 @@ export function ProspectCaptureCard({
           : null,
       );
 
-      if (
-        accountLinkingEnabled
+      const verifiedSignupPath = accountLinkingEnabled
         && typeof payload.signupPath === "string"
         && payload.signupPath.startsWith("/signup?orientation_token=")
-      ) {
-        window.location.assign(payload.signupPath);
+          ? payload.signupPath
+          : null;
+      setSignupPath(verifiedSignupPath);
+
+      // The email request is complete: a free account is always a separate choice.
+      if (!emailDeliveryEnabled && verifiedSignupPath) {
+        window.location.assign(verifiedSignupPath);
         return;
       }
 
@@ -150,33 +155,35 @@ export function ProspectCaptureCard({
     );
   }
 
-  const submitLabel = accountLinkingEnabled
-    ? copy.continueSubmit
-    : emailDeliveryEnabled
-      ? copy.emailSubmit
-      : copy.submit;
-  const pendingLabel = accountLinkingEnabled
-    ? copy.continueSaving
-    : emailDeliveryEnabled
-      ? copy.sendingEmail
-      : copy.sending;
-  const eyebrow = accountLinkingEnabled ? copy.continueEyebrow : copy.eyebrow;
-  const title = accountLinkingEnabled ? copy.continueTitle : copy.title;
-  const textCopy = accountLinkingEnabled ? copy.continueText : copy.text;
-  const privacyLabel = accountLinkingEnabled
-    ? copy.continuePrivacyLabel
-    : copy.privacyLabel;
+  const submitLabel = emailDeliveryEnabled
+    ? copy.emailSubmit
+    : accountLinkingEnabled ? copy.continueSubmit : copy.submit;
+  const pendingLabel = emailDeliveryEnabled
+    ? copy.sendingEmail
+    : accountLinkingEnabled ? copy.continueSaving : copy.sending;
+  const eyebrow = emailDeliveryEnabled
+    ? copy.emailEyebrow
+    : accountLinkingEnabled ? copy.continueEyebrow : copy.eyebrow;
+  const title = emailDeliveryEnabled
+    ? copy.emailTitle
+    : accountLinkingEnabled ? copy.continueTitle : copy.title;
+  const textCopy = emailDeliveryEnabled
+    ? copy.emailText
+    : accountLinkingEnabled ? copy.continueText : copy.text;
+  const privacyLabel = emailDeliveryEnabled
+    ? copy.emailPrivacyLabel
+    : accountLinkingEnabled ? copy.continuePrivacyLabel : copy.privacyLabel;
 
   return (
     <section
       id="orientation-prospect-capture"
       className={`orientation-print-hide mt-8 scroll-mt-6 rounded-[var(--radius-lg)] border p-5 sm:p-6 ${
-        accountLinkingEnabled
+        accountLinkingEnabled && !emailDeliveryEnabled
           ? "border-[var(--brand-border)] bg-[var(--surface)]"
           : "border-[var(--border)] bg-[var(--surface-subtle)]"
       }`}
     >
-      {accountLinkingEnabled ? (
+      {accountLinkingEnabled && !emailDeliveryEnabled ? (
         <div className="mb-5 flex items-center gap-3 rounded-[var(--radius-control)] border border-[var(--success-border)] bg-[var(--success-soft)] px-4 py-3 text-sm">
           <span
             className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--success)] font-bold text-white"
@@ -191,7 +198,7 @@ export function ProspectCaptureCard({
       <h3 className="mt-2 text-xl font-bold">{title}</h3>
       <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">{textCopy}</p>
 
-      {accountLinkingEnabled ? (
+      {accountLinkingEnabled && !emailDeliveryEnabled ? (
         <div className="mt-4 rounded-[var(--radius-control)] border border-[var(--warning-border)] bg-[var(--warning-soft)] px-4 py-3 text-xs leading-5 text-[var(--foreground-soft)]">
           <strong className="text-[var(--foreground)]">{copy.continueBoundary}</strong>
         </div>
@@ -250,7 +257,7 @@ export function ProspectCaptureCard({
           type="submit"
           disabled={!privacyAcknowledged || status === "saving" || status === "success"}
           className={
-            accountLinkingEnabled
+            accountLinkingEnabled && !emailDeliveryEnabled
               ? "w-full rounded-[var(--radius-control)] bg-[var(--brand)] px-5 py-3 text-sm font-bold text-white shadow-[var(--shadow-card)] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
               : "rounded-[var(--radius-control)] bg-[var(--brand)] px-5 py-2.5 text-sm font-bold text-white disabled:cursor-not-allowed disabled:opacity-50"
           }
@@ -266,6 +273,15 @@ export function ProspectCaptureCard({
           className="mt-4 text-sm font-medium"
         >
           {message}
+        </p>
+      ) : null}
+
+      {status === "success" && emailDeliveryEnabled && signupPath ? (
+        <p className="mt-4 text-sm leading-6 text-[var(--muted)]">
+          {copy.emailOptionalAccount}{" "}
+          <Link href={signupPath} className="font-semibold underline underline-offset-4">
+            {copy.continueSubmit}
+          </Link>
         </p>
       ) : null}
 
