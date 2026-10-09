@@ -19,7 +19,7 @@ test("dossier overview presents the real priority action before background facts
 });
 
 test("follow-up cards remain linked and readable without creating business actions", () => {
-  assert.match(handoff, /sm:grid-cols-2/);
+  assert.match(handoff, /md:grid-cols-2/);
   assert.doesNotMatch(handoff, /xl:grid-cols-4/);
   assert.match(handoff, /text-sm font-semibold text-\[var\(--brand-strong\)\] underline/);
   for (const anchor of ["#applications", "#documents", "#messages", "#admission-pdf", "#request-document"]) {

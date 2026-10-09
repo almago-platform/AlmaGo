@@ -900,6 +900,7 @@ export default async function AdminStudentDossierPage({
   return (
     <main className="mx-auto w-full max-w-[92rem] space-y-7 px-4 py-5 sm:px-6 sm:py-6 xl:px-8">
       <DossierHeader
+        compact
         eyebrow={`${adminPersonSegmentLabels[personSegment]} · dossier 360°`}
         title={name}
         description="Toutes les informations du dossier, les actions à faire et l’historique au même endroit."

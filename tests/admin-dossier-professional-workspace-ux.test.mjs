@@ -10,6 +10,7 @@ const disclosure = readFileSync("src/components/admin/AdminDossierDisclosure.tsx
 
 test("all detailed dossier modules remain available at full content width", () => {
   assert.match(page, /className="min-w-0 space-y-6"/);
+  assert.match(page, /<DossierHeader\s+compact/);
   assert.doesNotMatch(page, /xl:grid-cols-\[minmax\(0,1\.35fr\)_minmax\(19rem,0\.65fr\)\]/);
   for (const key of ["AdminCounselorBrief", "AdminDossierQuickHandoff", "AdminDossierBlockersPanel",
     "AdminDossierActionsPanel", "AdminStudentProjectPanel", "AdminDocumentRequirementsPanel",

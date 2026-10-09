@@ -25,7 +25,7 @@ const navigation = readFileSync("src/components/admin/AdminDossierNavigation.tsx
 test("dossier navigation keeps person-focused deep links and advanced tools", () => {
   assert.match(dossier, /<AdminDossierNavigation counts=/);
   assert.match(navigation, /aria-label="Navigation du dossier"/);
-  assert.match(navigation, /Fiche conseiller · accès rapide/);
+  assert.match(navigation, /Dossier 360°/);
   for (const [href, label] of [
     ["#overview", "Résumé"],
     ["#history", "Historique"],
@@ -41,7 +41,7 @@ test("dossier navigation keeps person-focused deep links and advanced tools", ()
   ]) {
     assert.ok(navigation.includes('href: "' + href + '", label: "' + label + '"'), href);
   }
-  assert.match(navigation, /Autres étapes et outils/);
+  assert.match(navigation, /Toutes les rubriques/);
   assert.match(navigation, /overflow-x-auto/);
   assert.match(navigation, /focus-visible:outline-2/);
   for (const anchor of ["overview", "history", "messages", "actions", "documents", "applications"]) {

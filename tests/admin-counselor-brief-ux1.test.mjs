@@ -19,7 +19,7 @@ test("the first visible dossier summary answers who, where, who acts, and what h
   assert.match(dossier, /blockers=\{blockers\.map/);
   assert.match(dossier, /lastEvent=\{historyRows\[0\]/);
   assert.match(brief, /L’essentiel de ce dossier/);
-  for (const label of ["Situation enregistrée","Conseiller responsable","Dernier contact journalisé","Action Campus prioritaire","Dernier événement consigné"]) {
+  for (const label of ["Situation enregistrée","Conseiller responsable","Dernier contact journalisé","Action Campus prioritaire","Dernier événement enregistré"]) {
     assert.ok(brief.includes(label), label);
   }
 });
@@ -45,7 +45,7 @@ test("the only featured official deadline is a verified not-submitted applicatio
   assert.match(deadlineRisk, /deadline_source_url/);
   assert.match(deadlineRisk, /deadline_verified_at/);
   assert.match(deadlineRisk, /deadline_cycle/);
-  assert.match(brief, /Échéance officielle vérifiée · candidature/);
+  assert.match(brief, /Date limite vérifiée · candidature/);
   assert.match(brief, /nextDeadline \?/);
   assert.match(brief, /Contrôler la source/);
 });
