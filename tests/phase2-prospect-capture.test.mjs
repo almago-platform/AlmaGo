@@ -168,7 +168,7 @@ test("auto-email triggers once after the result is ready, with a strict adult gu
   assert.match(capture, /void submit\(undefined, true\)/);
   assert.match(capture, /deliveryMode: "automatic", emailDeliveryConsent: true/);
   assert.match(capture, /if \(automated && !autoEmailRequested\) return/);
-  assert.match(capture, /privacyAcknowledged: true/);
+  assert.match(capture, /privacyAcknowledged: automated && includedEmailDelivery \? false : true/);
   assert.match(capture, /contactConsent: false/);
   assert.match(capture, /automaticEmailRetry/);
 });
