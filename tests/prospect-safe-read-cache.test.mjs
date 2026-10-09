@@ -52,6 +52,9 @@ test("off-site backup fails closed and includes actual Storage bytes", () => {
   assert.match(backup, /restic backup --quiet --tag almago --tag supabase/);
   assert.match(backup, /restic snapshots --latest 1 --json/);
   assert.match(backup, /trap cleanup EXIT/);
+  assert.match(backup, /mountpoint -q/);
+  assert.match(backup, /ALMAGO_BACKUP_TMP_DIR/);
+  assert.match(runbook, /LUKS-encrypted volume/);
   assert.doesNotMatch(backup, /rclone sync|pg_restore|restic forget|RESTIC_PASSWORD=/);
   assert.match(runbook, /Status: \*\*implementation prepared in GitHub only\*\*/);
   assert.match(runbook, /NOT ACTIVE/);
