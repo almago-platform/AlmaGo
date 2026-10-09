@@ -48,7 +48,8 @@ test("FVL-2 shows signal source and date rather than inferring demand", () => {
 });
 
 test("FVL-2 does not claim that the market is automatically validated", () => {
-  assert.match(page, /ils ne décident pas automatiquement si le marché est validé/);
+  assert.match(page, /Les décisions restent humaines/);
+  assert.match(page, /ni une admission ni une décision automatique/);
   assert.doesNotMatch(page, /market_score|validation_score|success_probability|market_probability/i);
 });
 
