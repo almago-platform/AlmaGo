@@ -104,7 +104,6 @@ export default async function OrientationPage({
         <PublicOrientationForm
           prospectCaptureEnabled={isPhase2ProspectCaptureEnabled()}
           emailDeliveryEnabled={isPhase2EmailDeliveryEnabled()}
-        includedEmailDeliveryEnabled={isOrientationIncludedEmailEnabled()}
           includedEmailDeliveryEnabled={isOrientationIncludedEmailEnabled()}
           accountLinkingEnabled={false}
           initialIdentity={initialIdentity}
@@ -118,6 +117,7 @@ export default async function OrientationPage({
       <PublicOrientationForm
         prospectCaptureEnabled={isPhase2ProspectCaptureEnabled()}
         emailDeliveryEnabled={isPhase2EmailDeliveryEnabled()}
+        includedEmailDeliveryEnabled={isOrientationIncludedEmailEnabled()}
         accountLinkingEnabled={isPhase2AccountLinkingEnabled()}
         acquisitionContext={acquisitionContext}
       />
