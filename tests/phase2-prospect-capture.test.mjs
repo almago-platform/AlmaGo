@@ -141,3 +141,33 @@ test("transactional email is the primary post-orientation action and account cre
   assert.match(prospectCopy, /Aucun compte n’est nécessaire/);
   assert.match(route, /signupUrl: isPhase2AccountLinkingEnabled\(\) \? signupUrl\.toString\(\) : null/);
 });
+
+
+test("automatic email is optional before orientation and does not survive session hydration", () => {
+  assert.match(form, /name="automaticEmailConsent"/);
+  assert.match(form, /checked=\{automaticEmailConsent\}/);
+  assert.match(form, /setAutomaticEmailConsent\(event\.target\.checked\)/);
+  assert.match(form, /useState\(false\)/);
+  assert.match(form, /isAdultPublicOrientationIdentity\(identity\)/);
+  assert.match(form, /emailDeliveryEnabled && isAdultPublicOrientationIdentity\(identity\)/);
+  assert.match(form, /automaticEmailConsent=\{automaticEmailConsent && isAdultPublicOrientationIdentity\(identity\)\}/);
+  assert.match(form, /claimAutoEmailAttempt=\{claimAutoEmailAttempt\}/);
+  assert.match(form, /setAutomaticEmailConsent\(false\)/);
+  assert.doesNotMatch(form, /JSON\.stringify\(\{ identity, identityComplete, answers, step, automaticEmailConsent/);
+  assert.match(prospectCopy, /Oui, je souhaite recevoir automatiquement mes deux rapports PDF/);
+  assert.match(prospectCopy, /automaticEmailMinorNotice/);
+});
+
+test("auto-email triggers once after the result is ready, with a strict adult guard and no second click", () => {
+  assert.match(form, /!authenticatedUpdate && orientationResultReady[\s\S]*<ProspectCaptureCard/);
+  assert.match(capture, /const autoStarted = useRef\(false\)/);
+  assert.match(capture, /const submitting = useRef\(false\)/);
+  assert.match(capture, /if \(!automaticEmailConsent \|\| !emailDeliveryEnabled \|\| !persistentCaptureAllowed \|\| autoStarted\.current\) return/);
+  assert.match(capture, /claimAutoEmailAttempt\?\.\(\)/);
+  assert.match(capture, /void submit\(undefined, true\)/);
+  assert.match(capture, /deliveryMode: "automatic", emailDeliveryConsent: true/);
+  assert.match(capture, /if \(automated && !\(automaticEmailConsent && emailDeliveryEnabled && persistentCaptureAllowed\)\) return/);
+  assert.match(capture, /privacyAcknowledged: true/);
+  assert.match(capture, /contactConsent: false/);
+  assert.match(capture, /automaticEmailRetry/);
+});
