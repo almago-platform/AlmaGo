@@ -183,7 +183,7 @@ function InboxRow({
             onClick={onRead}
             className="w-full px-3 sm:w-auto"
           >
-            {busy ? "Mise à jour…" : "Marquer lue"}
+            {busy ? "Mise à jour…" : "Marquer comme lue"}
           </Button>
         ) : null}
       </div>

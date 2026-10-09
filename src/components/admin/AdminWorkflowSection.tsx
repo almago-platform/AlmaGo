@@ -39,7 +39,7 @@ export function AdminWorkflowSection({
             {title}
           </p>
           {description ? (
-            <p className="mt-1 max-w-4xl text-xs leading-5 text-slate-600">
+            <p className="mt-1 max-w-4xl text-sm leading-6 text-slate-700">
               {description}
             </p>
           ) : null}
