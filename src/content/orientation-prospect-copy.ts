@@ -28,6 +28,11 @@ export type OrientationProspectCopy = {
     emailText: string;
     emailPrivacyLabel: string;
     emailOptionalAccount: string;
+    automaticEmailConsent: string;
+    automaticEmailMinorNotice: string;
+    automaticEmailPreparing: string;
+    automaticEmailAlreadyRequested: string;
+    automaticEmailRetry: string;
     sendingEmail: string;
     emailSent: string;
     deliveryFailure: string;
@@ -78,6 +83,11 @@ const fr: OrientationProspectCopy = {
     emailText: "Facultatif. Vous recevrez votre orientation personnalisée et votre rapport candidat en pièces jointes. Aucun compte n’est nécessaire.",
     emailPrivacyLabel: "J’ai lu l’information de confidentialité et je demande l’enregistrement et l’envoi de mes rapports à cette adresse e-mail.",
     emailOptionalAccount: "L’e-mail est indépendant de la création de compte. Si vous le souhaitez :",
+    automaticEmailConsent: "Oui, je souhaite recevoir automatiquement mes deux rapports PDF par e-mail dès que mon orientation est prête. J’accepte leur enregistrement et leur envoi à l’adresse indiquée. C’est facultatif et aucun compte n’est créé.",
+    automaticEmailMinorNotice: "Vous pourrez enregistrer votre résultat en PDF. L’envoi par e-mail n’est pas disponible pour les moins de 18 ans pendant ce lancement.",
+    automaticEmailPreparing: "Vous avez demandé l’envoi automatique. Préparation et envoi des deux rapports PDF en cours…",
+    automaticEmailAlreadyRequested: "Une demande d’envoi a déjà été effectuée pendant cette orientation. Vérifiez votre boîte de réception et vos spams.",
+    automaticEmailRetry: "Réessayer l’envoi",
     sendingEmail: "Envoi…",
     emailSent: "Orientation sauvegardée et e-mail envoyé. Aucun compte n’a été créé.",
     deliveryFailure: "Orientation sauvegardée, mais l’e-mail n’a pas pu être envoyé. Vous pouvez toujours enregistrer le rapport en PDF depuis cette page.",
@@ -128,6 +138,11 @@ const ar: OrientationProspectCopy = {
     emailText: "اختياري. ستصلك نتيجة التوجيه الشخصية وتقرير المترشح كمرفقين بالبريد الإلكتروني. لا يلزم إنشاء حساب.",
     emailPrivacyLabel: "قرأت معلومات الخصوصية وأطلب حفظ التقريرين وإرسالهما إلى هذا البريد الإلكتروني.",
     emailOptionalAccount: "لا يتطلب استلام التقريرين إنشاء حساب. إذا أردت المتابعة:",
+    automaticEmailConsent: "نعم، أريد استلام تقريريّ PDF تلقائيًا عبر البريد الإلكتروني عند جاهزية نتيجة التوجيه. أوافق على حفظهما وإرسالهما إلى العنوان المذكور. هذا اختياري ولا يتطلب إنشاء حساب.",
+    automaticEmailMinorNotice: "يمكنك حفظ نتيجتك بصيغة PDF. إرسال التقارير بالبريد الإلكتروني غير متاح لمن هم دون 18 عامًا خلال هذا الإطلاق.",
+    automaticEmailPreparing: "لقد طلبت الإرسال التلقائي. يتم الآن إعداد تقريريّ PDF وإرسالهما…",
+    automaticEmailAlreadyRequested: "تم تقديم طلب إرسال سابقًا خلال هذه الجلسة. تحقق من بريدك الوارد والبريد غير المرغوب فيه.",
+    automaticEmailRetry: "إعادة محاولة الإرسال",
     sendingEmail: "جارٍ الإرسال…",
     emailSent: "تم حفظ التوجيه وإرسال البريد الإلكتروني. لم يتم إنشاء أي حساب.",
     deliveryFailure: "تم حفظ التوجيه، لكن تعذر إرسال البريد الإلكتروني. يمكنك ما زلت حفظ التقرير بصيغة PDF من هذه الصفحة.",
@@ -178,6 +193,11 @@ const en: OrientationProspectCopy = {
     emailText: "Optional. Your personalised orientation and candidate report will be attached to the email. No account required.",
     emailPrivacyLabel: "I have read the privacy information and request that my reports be saved and emailed to this address.",
     emailOptionalAccount: "No account is needed to receive your reports. If you would like to continue:",
+    automaticEmailConsent: "Yes, automatically email both PDF reports to the address above when my orientation is ready. I agree to the reports being saved and sent. This is optional and no account is created.",
+    automaticEmailMinorNotice: "You can save your result as a PDF. Email delivery is not available to people under 18 during this launch.",
+    automaticEmailPreparing: "Automatic email requested. Preparing and sending both PDF reports…",
+    automaticEmailAlreadyRequested: "A delivery request has already been made during this orientation. Check your inbox and spam folder.",
+    automaticEmailRetry: "Retry email delivery",
     sendingEmail: "Sending…",
     emailSent: "Orientation saved and email sent. No account was created.",
     deliveryFailure: "Orientation saved, but the email could not be sent. You can still save the report as a PDF from this page.",
@@ -228,6 +248,11 @@ const de: OrientationProspectCopy = {
     emailText: "Freiwillig. Deine persönliche Orientierung und dein Bewerberbericht werden per E-Mail als Anhänge zugestellt. Kein Konto erforderlich.",
     emailPrivacyLabel: "Ich habe die Datenschutzhinweise gelesen und bitte darum, meine Berichte zu speichern und an diese E-Mail-Adresse zu senden.",
     emailOptionalAccount: "Du brauchst für die Berichte kein Konto. Wenn du weitermachen möchtest:",
+    automaticEmailConsent: "Ja, ich möchte beide PDF-Berichte automatisch per E-Mail erhalten, sobald meine Orientierung fertig ist. Ich stimme ihrer Speicherung und dem Versand an diese Adresse zu. Das ist freiwillig und es wird kein Konto erstellt.",
+    automaticEmailMinorNotice: "Du kannst dein Ergebnis als PDF speichern. Der E-Mail-Versand ist bei diesem Start für unter 18-Jährige nicht verfügbar.",
+    automaticEmailPreparing: "Automatischen Versand angefordert. Beide PDF-Berichte werden vorbereitet und verschickt…",
+    automaticEmailAlreadyRequested: "Während dieser Orientierung wurde bereits ein Versand angefordert. Überprüfe dein Postfach und den Spamordner.",
+    automaticEmailRetry: "E-Mail-Versand erneut versuchen",
     sendingEmail: "Wird gesendet…",
     emailSent: "Orientierung gespeichert und E-Mail gesendet. Es wurde kein Konto erstellt.",
     deliveryFailure: "Orientierung gespeichert, aber die E-Mail konnte nicht gesendet werden. Du kannst den Bericht weiterhin auf dieser Seite als PDF speichern.",
