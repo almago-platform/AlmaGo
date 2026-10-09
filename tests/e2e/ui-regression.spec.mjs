@@ -78,6 +78,22 @@ test.describe("V3.2 bounded public visual regression gate", () => {
         (testInfo.project.name === "mobile-compact-chromium" ||
           testInfo.project.name === "desktop-1280-chromium")
       ) {
+        // Full-page screenshots do not consistently trigger below-the-fold
+        // native lazy images. Scroll and decode every restored journey photo,
+        // so the visual artifact reflects what a visitor sees while browsing.
+        if (target.name === "home") {
+          const photos = page.locator("#parcours ol > li[id] img");
+          await expect(photos).toHaveCount(6);
+          for (let index = 0; index < 6; index++) {
+            const photo = photos.nth(index);
+            await photo.scrollIntoViewIfNeeded();
+            await expect.poll(async () => photo.evaluate((image) => image.complete && image.naturalWidth > 0), {
+              timeout: 20000,
+              message: "All six restored photos must load after scrolling, including on mobile",
+            }).toBe(true);
+          }
+          await page.evaluate(() => window.scrollTo(0, 0));
+        }
         await page.screenshot({
           path: `artifacts/visual-v3-2/${target.name}-${testInfo.project.name}.png`,
           fullPage: true,
