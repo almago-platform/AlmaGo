@@ -30,6 +30,16 @@ export function isPhase2EmailDeliveryEnabled(
   return raw ? ENABLED_VALUES.has(raw) : false;
 }
 
+// Sending as an included orientation service (no separate email CTA) is a
+// distinct opt-in rollout decision. Keep it off until legal/privacy review.
+export function isOrientationIncludedEmailEnabled(
+  env: Record<string, string | undefined> = process.env,
+) {
+  if (!isPhase2EmailDeliveryEnabled(env)) return false;
+  const raw = env.ALMAGO_ORIENTATION_INCLUDED_EMAIL_ENABLED?.trim().toLowerCase();
+  return raw ? ENABLED_VALUES.has(raw) : false;
+}
+
 export function isPhase2AccountLinkingEnabled(
   env: Record<string, string | undefined> = process.env,
 ) {
