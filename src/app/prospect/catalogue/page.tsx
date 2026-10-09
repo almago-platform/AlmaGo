@@ -11,7 +11,6 @@ import { getRequestLocale } from "@/lib/i18n-server";
 import { getPhase2StudentAccess } from "@/lib/phase2/access";
 import { loadVerifiedProgrammeCatalogue } from "@/lib/orientation-engine/catalog";
 import type { OrientationProgrammeRecord } from "@/lib/orientation-engine/types";
-import { enrichProspectCatalogueUniversityMedia } from "@/lib/prospect/catalogue-media";
 import { loadProspectHubState } from "@/lib/prospect/hub";
 import { prospectMedia } from "@/lib/prospect/media";
 import {
@@ -67,14 +66,16 @@ export default async function ProspectCataloguePage({
   if (!access.isStudent) redirect("/unauthorized");
   if (!access.phase2Enabled || access.canUseClientFeatures) redirect("/student");
 
-  const [state, catalogue] = await Promise.all([
-    loadProspectHubState({
-      userId: access.user.id,
-      email: access.user.email,
-      emailConfirmed: Boolean(access.user.email_confirmed_at),
-    }),
-    enrichProspectCatalogueUniversityMedia(rawCatalogue),
-  ]);
+  // Academic information comes only from the verified catalogue. Media already stored
+  // with a university is displayed, while missing photos use the card's visual fallback.
+  // Do not perform external Wikimedia requests or privileged DB writes while rendering
+  // an authenticated user's page: they can block navigation for tens of seconds.
+  const catalogue = rawCatalogue;
+  const state = await loadProspectHubState({
+    userId: access.user.id,
+    email: access.user.email,
+    emailConfirmed: Boolean(access.user.email_confirmed_at),
+  });
 
   const t = prospectHubCopy[locale].catalogue;
   const recommendations = prospectCatalogueRecommendations(state.answers, catalogue);
