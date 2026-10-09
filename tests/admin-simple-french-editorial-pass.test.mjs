@@ -20,7 +20,7 @@ const read = (name) => readFileSync(sources[name], "utf8");
 test("the most common admin page descriptions use direct, simple French", () => {
   for (const [name, phrase] of [
     ["applications", "Suivez les candidatures en cours"],
-    ["documents", "Vérifiez les documents reçus"],
+    ["documents", "Vérifiez la version actuelle de chaque document reçu"],
     ["programs", "Cherchez d’abord une formation"],
     ["universities", "Cherchez d’abord une université"],
     ["language", "Ajoutez uniquement des cours"],
