@@ -137,8 +137,8 @@ export function ProspectCaptureCard({
     if (!automaticEmailConsent || !emailDeliveryEnabled || !persistentCaptureAllowed || autoStarted.current) return;
     autoStarted.current = true;
     if (!claimAutoEmailAttempt?.()) {
-      setStatus("success");
-      setMessage(copy.automaticEmailAlreadyRequested);
+      // Another render of this orientation already started the request.
+      // Never start a second send or synchronously set state inside an effect.
       return;
     }
     void submit(undefined, true);
@@ -228,7 +228,11 @@ export function ProspectCaptureCard({
       {automaticEmailConsent && emailDeliveryEnabled ? (
         <div className="mt-5 rounded-[var(--radius-control)] border border-[var(--info-border)] bg-[var(--info-soft)] p-4 text-sm leading-6">
           <p role={status === "error" ? "alert" : "status"}>
-            {status === "saving" || status === "idle" ? copy.automaticEmailPreparing : message}
+            {status === "saving"
+              ? copy.automaticEmailPreparing
+              : status === "idle" && autoStarted.current
+                ? copy.automaticEmailAlreadyRequested
+                : status === "idle" ? copy.automaticEmailPreparing : message}
           </p>
           {status === "error" || (status === "success" && message === copy.deliveryFailure) ? (
             <button
