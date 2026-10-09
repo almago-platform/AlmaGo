@@ -56,12 +56,14 @@ export function HomeFooter({
   homeAria,
   phase2Enabled = false,
   orientationLabel,
+  hashLinksToHome = false,
 }: {
   footer: FooterCopy;
   brandFooter?: HomepageV42Copy["footer"];
   homeAria: string;
   phase2Enabled?: boolean;
   orientationLabel?: string;
+  hashLinksToHome?: boolean;
 }) {
   return (
     <footer className={s.footer}>
@@ -83,6 +85,7 @@ export function HomeFooter({
               extraLinks={index === 0 && brandFooter ? [[brandFooter.about, "#apropos"], [brandFooter.services, "#services"]] : []}
               phase2Enabled={phase2Enabled}
               orientationLabel={orientationLabel}
+              hashLinksToHome={hashLinksToHome}
             />
           ))}
         </div>
@@ -110,12 +113,14 @@ function FooterColumn({
   extraLinks = [],
   phase2Enabled,
   orientationLabel,
+  hashLinksToHome,
 }: {
   title: string;
   links: readonly (readonly [string, string])[];
   extraLinks?: readonly (readonly [string, string])[];
   phase2Enabled: boolean;
   orientationLabel?: string;
+  hashLinksToHome: boolean;
 }) {
   return (
     <nav aria-label={title}>
@@ -123,7 +128,7 @@ function FooterColumn({
       <ul>
         {[...extraLinks, ...links].map(([label, href]) => {
           const orientationLink = phase2Enabled && href === "/signup";
-          const resolvedHref = orientationLink ? "/orientation" : href;
+          const resolvedHref = orientationLink ? "/orientation" : hashLinksToHome && href.startsWith("#") ? `/${href}` : href;
           const resolvedLabel = orientationLink && orientationLabel ? orientationLabel : label;
 
           return (
