@@ -321,6 +321,17 @@ async function ProspectDashboardRecommendations({
 
   const t = prospectHubCopy[locale].dashboard;
   const catalogueT = prospectHubCopy[locale].catalogue;
+  const recommendationLabels = {
+    projectMatch: catalogueT.projectMatch,
+    preferredCity: catalogueT.preferredCity,
+    requirementCheck: catalogueT.requirementCheck,
+    field: catalogueT.field,
+    german: catalogueT.german,
+    uniAssist: catalogueT.uniAssist,
+    yes: catalogueT.yes,
+    source: catalogueT.source,
+    applyLink: catalogueT.applyLink,
+  };
 
   return (
     <section className="pc-panel pc-premium-card pc-theme-gold p-4 sm:p-5">
@@ -389,17 +400,6 @@ export default async function ProspectDashboardPage() {
       ? v2.waitingValidation
       : v2.waitingReview;
   const facts = state.answers ? orientationProjectFacts(state.answers, locale) : [];
-  const recommendationLabels = {
-    projectMatch: catalogueT.projectMatch,
-    preferredCity: catalogueT.preferredCity,
-    requirementCheck: catalogueT.requirementCheck,
-    field: catalogueT.field,
-    german: catalogueT.german,
-    uniAssist: catalogueT.uniAssist,
-    yes: catalogueT.yes,
-    source: catalogueT.source,
-    applyLink: catalogueT.applyLink,
-  };
 
   return (
     <main className="space-y-5">
