@@ -332,7 +332,7 @@ export async function POST(request: Request) {
       diagnostic,
       orientationReportUrl,
       candidateReportUrl,
-      signupUrl: signupUrl.toString(),
+      signupUrl: isPhase2AccountLinkingEnabled() ? signupUrl.toString() : null,
       interestUrl,
       attachmentsIncluded: attachments.length === 2,
     });
