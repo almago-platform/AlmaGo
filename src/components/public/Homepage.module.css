@@ -1091,6 +1091,10 @@
   font-weight: 600;
 }
 .footer {
+  /* Shared footer also renders on /contact, outside .home: define its tokens
+     locally so link text and the logo's pale backing never lose contrast. */
+  --home-cream: #f7f4ec;
+  --home-ink: #1c2124;
   background: #1c2124;
   color: #f7f4ec;
   padding: 54px 0 22px;
