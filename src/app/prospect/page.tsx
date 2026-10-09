@@ -382,7 +382,11 @@ export default async function ProspectDashboardPage() {
   if (!access.phase2Enabled || access.canUseClientFeatures) redirect("/student");
 
   // Start the catalogue request concurrently, but do not block the core dashboard on it.
-  const cataloguePromise = loadVerifiedProgrammeCatalogue();
+  const cataloguePromise = loadVerifiedProgrammeCatalogue().catch(() => {
+    // The personalised dossier must remain usable if the public catalogue is down.
+    console.warn("Prospect recommendations unavailable: catalogue read failed");
+    return [] as OrientationProgrammeRecord[];
+  });
   const state = await loadProspectHubState({
     userId: access.user.id,
     email: access.user.email,
