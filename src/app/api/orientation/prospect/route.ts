@@ -316,8 +316,6 @@ export async function POST(request: Request) {
       `/orientation/report/${encodeURIComponent(resume.token)}?document=candidate`,
       baseUrl,
     ).toString();
-    const signupUrl = new URL("/signup", baseUrl);
-    signupUrl.searchParams.set("orientation_token", resume.token);
     const interestUrl = contactConsent
       ? new URL(
           `/orientation/continue/${encodeURIComponent(interest.token)}`,
@@ -356,7 +354,6 @@ export async function POST(request: Request) {
       diagnostic,
       orientationReportUrl,
       candidateReportUrl,
-      signupUrl: isPhase2AccountLinkingEnabled() ? signupUrl.toString() : null,
       interestUrl,
       attachmentsIncluded: attachments.length === 2,
     });
