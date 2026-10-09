@@ -108,6 +108,15 @@ La loi 2004-63 contient un régime spécifique pour les données d’un enfant. 
 
 Si les mineurs doivent être inclus dans la collecte persistée, le flux ne doit être conçu qu’après confirmation du processus applicable au tuteur et à l’autorisation du juge de la famille.
 
+### Objectif produit du 9 octobre 2026 — rapport email pour chaque candidat
+
+Le propriétaire souhaite que **toute personne ayant terminé une orientation puisse recevoir les deux PDF par email, sans obligation de créer un compte**. Le travail technique préparatoire découple l'envoi transactionnel de l'ouverture d'un compte et rend l'option d'envoi explicite pour les adultes.
+
+**Ce souhait ne vaut pas levée du gate mineurs ni validation juridique.** Pour les moins de 18 ans, conserver temporairement le parcours non persisté + téléchargement local PDF. Avant d'autoriser la collecte et l'envoi des profils de mineurs, faire confirmer par un professionnel qualifié les conditions applicables au tuteur et, le cas échéant, à l'autorisation du juge de la famille, la notice dédiée et le mécanisme de vérification. Aucune simple case cochée par l'enfant ni suppression du contrôle d'âge côté serveur ne suffit à franchir ce gate. Le projet ne doit pas déclencher d'emails marketing à partir des rapports transactionnels.
+
+Le déploiement public du flux adulte reste lui-même soumis au Gate A (dont traitement de données et transferts internationaux) et aux vérifications de production. Un domaine Resend vérifié ne remplace pas ces vérifications.
+
+
 ## 6. Gate B — pilote documents
 
 Le signal `wants_support` n’ouvre jamais les documents.
