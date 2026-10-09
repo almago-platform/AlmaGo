@@ -19,6 +19,7 @@ import {
   isPhase2AccessEnabled,
   isPhase2AccountLinkingEnabled,
   isPhase2EmailDeliveryEnabled,
+  isOrientationIncludedEmailEnabled,
   isPhase2ProspectCaptureEnabled,
 } from "@/lib/phase2/config";
 
@@ -103,6 +104,8 @@ export default async function OrientationPage({
         <PublicOrientationForm
           prospectCaptureEnabled={isPhase2ProspectCaptureEnabled()}
           emailDeliveryEnabled={isPhase2EmailDeliveryEnabled()}
+        includedEmailDeliveryEnabled={isOrientationIncludedEmailEnabled()}
+          includedEmailDeliveryEnabled={isOrientationIncludedEmailEnabled()}
           accountLinkingEnabled={false}
           initialIdentity={initialIdentity}
           authenticatedEntry
