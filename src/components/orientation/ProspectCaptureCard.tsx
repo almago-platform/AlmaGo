@@ -143,7 +143,11 @@ export function ProspectCaptureCard({
       queueMicrotask(() => setPreviouslyRequested(true));
       return;
     }
-    void submit(undefined, true);
+    // Schedule the network request after the effect; never trigger a
+    // synchronous state update from a React effect body.
+    queueMicrotask(() => {
+      void submit(undefined, true);
+    });
   }, [automaticEmailConsent, emailDeliveryEnabled, persistentCaptureAllowed, claimAutoEmailAttempt, submit, copy.automaticEmailAlreadyRequested]);
 
   async function submitInterest() {
