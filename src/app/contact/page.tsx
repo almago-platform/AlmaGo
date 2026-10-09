@@ -3,6 +3,7 @@ import Link from "next/link";
 import { cookies } from "next/headers";
 import { BrandLogo } from "@/components/brand/BrandLogo";
 import { HomeFooter } from "@/components/public/HomeClosing";
+import { homepageV42Copy } from "@/content/homepage-v42-copy";
 import { getNativeCopy } from "@/content/native-copy";
 import { rebrandCopy } from "@/lib/brand";
 import { LOCALE_COOKIE, normalizeLocale, type Locale } from "@/lib/i18n";
@@ -30,12 +31,12 @@ const contactCopy: Record<
     eyebrow: "Contact",
     title: "Une question ? Écrivez-nous.",
     intro:
-      "Une question sur Campus Allemagne, votre compte ou votre projet d’études ? Contactez-nous directement par e-mail.",
+      "Une question sur vos études en Allemagne ou votre compte ? Écrivez-nous par e-mail.",
     emailLabel: "Adresse de contact",
     cta: "Écrire à Campus Allemagne",
-    safetyTitle: "Pour votre sécurité",
+    safetyTitle: "Protégez vos informations",
     safetyText:
-      "N’envoyez jamais votre mot de passe par e-mail. Pour les documents sensibles, privilégiez votre espace étudiant lorsque cela suffit.",
+      "Ne nous envoyez jamais votre mot de passe par e-mail. Pour vos documents personnels, utilisez votre espace étudiant si cette option est disponible.",
     back: "Retour à l’accueil",
     metaTitle: "Contact",
     metaDescription: "Contactez Campus Allemagne à contact@campus-allemagne.info.",
@@ -162,6 +163,8 @@ export default async function ContactPage() {
 
       <HomeFooter
         footer={copy.home.footer}
+        brandFooter={homepageV42Copy[locale].footer}
+        hashLinksToHome
         homeAria={copy.common.homeAria}
         phase2Enabled={phase2Enabled}
         orientationLabel={copy.home.nav.orientation}
