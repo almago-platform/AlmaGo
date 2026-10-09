@@ -174,7 +174,8 @@ test("French orientation summary keeps the admission boundary in plain language"
 
 test("Phase 2 footer does not bypass orientation through the legacy signup link", () => {
   assert.match(closing, /phase2Enabled && href === "\/signup"/);
-  assert.match(closing, /const resolvedHref = orientationLink \? "\/orientation" : href/);
+  assert.match(closing, /const resolvedHref = orientationLink \? "\/orientation" :/);
+  assert.match(closing, /hashLinksToHome && href\.startsWith\("#"\)/);
   assert.match(closing, /const resolvedLabel = orientationLink && orientationLabel \? orientationLabel : label/);
 });
 
