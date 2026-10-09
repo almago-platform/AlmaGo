@@ -42,7 +42,7 @@ export function AdminWorkspaceSummary({
 
             return (
               <div key={metric.label} className={`${toneClass} min-w-0 p-3 sm:p-4`}>
-                <p className="text-[0.66rem] font-bold uppercase tracking-[0.1em] text-[var(--muted)]">{metric.label}</p>
+                <p className="text-xs font-bold uppercase tracking-[0.06em] text-slate-700">{metric.label}</p>
                 <div className="mt-1 text-2xl font-semibold tracking-tight text-slate-950">{metric.value}</div>
               </div>
             );

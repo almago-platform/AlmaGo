@@ -13,6 +13,8 @@ type Queue = {
   help: string;
   href: string;
   count: number | null;
+  countCaption: string;
+  actionLabel: string;
   kind: "inbox" | "documents" | "applications" | "deadlines";
 };
 
@@ -41,19 +43,19 @@ export default async function AdminProcessingCenterPage({
   const queues: Queue[] = [
     {
       key: "inbox", label: "Messages et événements", help: "Réponses étudiantes, paiements et événements non lus",
-      href: "/admin/inbox", count: inbox.error ? null : inbox.count, kind: "inbox",
+      href: "/admin/inbox", count: inbox.error ? null : inbox.count, countCaption: "non lues", actionLabel: "Lire les notifications", kind: "inbox",
     },
     {
       key: "documents", label: "Documents", help: "Versions à vérifier et décisions documentaires",
-      href: "/admin/documents", count: documents.error ? null : documents.count, kind: "documents",
+      href: "/admin/documents", count: documents.error ? null : documents.count, countCaption: "à vérifier", actionLabel: "Vérifier les documents", kind: "documents",
     },
     {
       key: "applications", label: "Candidatures", help: "Enregistrements à consulter, statuts et dates à contrôler",
-      href: "/admin/applications", count: applications.error ? null : applications.count, kind: "applications",
+      href: "/admin/applications", count: applications.error ? null : applications.count, countCaption: "au total", actionLabel: "Examiner les candidatures", kind: "applications",
     },
     {
       key: "deadlines", label: "Échéances", help: "Dates officielles vérifiées et cibles internes distinctes",
-      href: "/admin/people?work=official_7", count: null, kind: "deadlines",
+      href: "/admin/people?work=official_7", count: null, countCaption: "à consulter", actionLabel: "Voir les dates vérifiées", kind: "deadlines",
     },
   ];
   const active = queues.find((item) => item.key === selected) || queues[0];
@@ -62,8 +64,8 @@ export default async function AdminProcessingCenterPage({
     <main className="mx-auto w-full max-w-[92rem] space-y-5 px-4 py-6 sm:px-6 xl:px-8">
       <AdminPageHeader
         section="Opérations"
-        title="Centre de traitement"
-        description="Quatre files essentielles, une prochaine action claire. Rien n’est marqué comme traité automatiquement."
+        title="Tâches à traiter"
+        description="Retrouvez les notifications, documents, candidatures et dates à contrôler. L’ouverture d’une file ne termine aucune action."
         actions={<Link href="/admin/people" className={buttonClassName("secondary", "px-4")}>Retrouver un dossier</Link>}
       />
 
@@ -74,9 +76,16 @@ export default async function AdminProcessingCenterPage({
             className={`min-w-0 rounded-xl border bg-white p-4 transition-colors hover:border-[var(--brand-border)] ${selected === item.key ? "border-[var(--brand)] shadow-sm" : "border-[var(--border)]"}`}>
             <div className="flex items-center justify-between gap-2">
               <span className="text-sm font-bold text-slate-950">{item.label}</span>
-              {item.count !== null ? <span className="text-2xl font-semibold tabular-nums text-slate-950">{item.count}</span> : <span className="text-sm font-semibold text-slate-500">Suivi</span>}
+              <span className="text-right">
+                {item.count !== null ? (
+                  <span className="block text-2xl font-semibold tabular-nums text-slate-950">{item.count}</span>
+                ) : (
+                  <span className="block text-sm font-semibold text-slate-700">{item.kind === "deadlines" ? "À voir" : "Indisponible"}</span>
+                )}
+                <span className="block text-xs text-slate-700">{item.countCaption}</span>
+              </span>
             </div>
-            <p className="mt-2 text-xs leading-5 text-slate-600">{item.help}</p>
+            <p className="mt-2 text-sm leading-6 text-slate-700">{item.help}</p>
           </Link>
         ))}
       </nav>
@@ -88,22 +97,22 @@ export default async function AdminProcessingCenterPage({
             <h2 id="processing-active-title" className="mt-3 text-xl font-bold text-slate-950">{active.label}</h2>
             <p className="mt-2 text-sm leading-6 text-slate-600">{active.help}.</p>
           </div>
-          <Link href={active.href} className={buttonClassName("primary", "px-5")}>Ouvrir les éléments →</Link>
+          <Link href={active.href} className={buttonClassName("primary", "px-5")}>{active.actionLabel} →</Link>
         </div>
         {active.count === null && active.kind !== "deadlines" ? (
           <p role="alert" className="mt-4 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">Le compteur n’est pas disponible. Ouvrez la file pour examiner son état réel.</p>
         ) : null}
         {active.kind === "deadlines" ? (
-          <p className="mt-4 text-xs font-semibold text-slate-600">Aucun délai n’est déduit automatiquement d’un programme. Consultez les échéances et leurs sources dans la file Personnes.</p>
+          <p className="mt-4 text-sm leading-6 text-slate-700">Aucun délai n’est déduit automatiquement d’un programme. Consultez les échéances et leurs sources dans la file Personnes.</p>
         ) : null}
         <div className="mt-5 grid gap-3 sm:grid-cols-2">
           <Link href="/admin/intake" className="rounded-xl border border-[var(--border)] bg-[var(--surface-subtle)] p-4 hover:border-[var(--brand-border)]">
             <p className="font-semibold text-slate-950">Parcours et offres</p>
-            <p className="mt-1 text-xs leading-5 text-slate-600">Décider du parcours, contrôler l’acceptation et la validation du paiement →</p>
+            <p className="mt-1 text-sm leading-6 text-slate-700">Décider du parcours, contrôler l’acceptation et la validation du paiement →</p>
           </Link>
           <Link href="/admin/accompagnement" className="rounded-xl border border-[var(--border)] bg-[var(--surface-subtle)] p-4 hover:border-[var(--brand-border)]">
             <p className="font-semibold text-slate-950">Accompagnement de A à Z</p>
-            <p className="mt-1 text-xs leading-5 text-slate-600">Retrouver les dossiers par étape, le suivi visa et les actions de départ →</p>
+            <p className="mt-1 text-sm leading-6 text-slate-700">Retrouver les dossiers par étape, le suivi visa et les actions de départ →</p>
           </Link>
         </div>
       </section>
