@@ -49,7 +49,7 @@ export default function ProspectLoading() {
   return (
     <main
       dir={direction}
-      aria-busy="true"
+      aria-busy={!slow}
       aria-live="polite"
       role="status"
       className="min-w-0"
