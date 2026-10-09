@@ -94,7 +94,14 @@ test.describe("V3.2 bounded public visual regression gate", () => {
               message: "All six restored photos must load after scrolling, including on mobile",
             }).toBe(true);
           }
-          await page.evaluate(() => window.scrollTo(0, 0));
+          await page.evaluate(() => {
+            // Some viewports have smooth scrolling; force the screenshot to
+            // begin at the page top after the lazy images have been decoded.
+            document.documentElement.style.scrollBehavior = "auto";
+            if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
+            window.scrollTo(0, 0);
+          });
+          await page.waitForFunction(() => window.scrollY === 0);
         }
         await page.screenshot({
           path: `artifacts/visual-v3-2/${target.name}-${testInfo.project.name}.png`,
