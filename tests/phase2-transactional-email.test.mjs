@@ -117,3 +117,18 @@ test("email delivery can be enabled without forcing account creation", () => {
   assert.match(emailTemplate, /signupUrl: string \| null/);
   assert.match(emailTemplate, /signupUrl \? \[/);
 });
+
+
+test("automatic delivery requires explicit recorded consent and refuses missing PDF attachments", () => {
+  assert.match(route, /automaticDelivery = record\.deliveryMode === "automatic"/);
+  assert.match(route, /emailDeliveryConsent = record\.emailDeliveryConsent === true/);
+  assert.match(route, /automaticDelivery && !emailDeliveryConsent/);
+  assert.match(route, /Explicit automatic email consent is required/);
+  assert.match(route, /email_delivery_mode: "automatic"/);
+  assert.match(route, /email_delivery_consent: true/);
+  assert.match(route, /email_delivery_consent_at: new Date\(\)\.toISOString\(\)/);
+  assert.match(route, /isAdultPublicOrientationIdentity\(identity\)/);
+  assert.match(route, /automaticDelivery && attachments\.length !== 2/);
+  assert.match(route, /saved: true, delivery: "unavailable"/);
+  assert.match(route, /sendTransactionalEmail\(\{/);
+});
