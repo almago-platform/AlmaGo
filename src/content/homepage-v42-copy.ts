@@ -34,7 +34,7 @@ export const homepageV42Copy: Record<Locale, HomepageV42Copy> = {
       title: "Préparez vos études en Allemagne plus facilement.",
       intro: "Campus Allemagne est une plateforme indépendante pour les personnes qui veulent étudier en Allemagne. Nous proposons des informations, une orientation gratuite et, si besoin, un accompagnement proposé séparément.",
       missionLabel: "Notre mission",
-      mission: "Notre mission est de vous aider à comprendre les étapes pour étudier en Allemagne. Nous vous guidons, mais les universités et les autorités prennent les décisions officielles.",
+      mission: "Nous vous aidons à préparer vos études en Allemagne, étape par étape. Les universités décident des admissions et les autorités décident des visas.",
       contactLabel: "Une question ? Contactez-nous",
       valuesTitle: "Ce qui fait notre différence",
       values: [
@@ -49,7 +49,7 @@ export const homepageV42Copy: Record<Locale, HomepageV42Copy> = {
       title: "Un espace pour suivre votre projet.",
       intro: "L’orientation est gratuite. Avec un compte gratuit, retrouvez votre projet et vos possibilités. Un accompagnement plus complet peut être proposé séparément.",
       freeTab: "Compte gratuit", clientTab: "Accompagnement",
-      illustration: "Exemple avec des données inventées : ce n’est pas un vrai dossier étudiant",
+      illustration: "Exemple uniquement — ce n’est pas un vrai dossier",
       freeTitle: "Votre projet prend forme.",
       freeIntro: "Si votre orientation est liée à votre compte, vous pouvez la retrouver plus tard.",
       freeItems: [
@@ -81,7 +81,7 @@ export const homepageV42Copy: Record<Locale, HomepageV42Copy> = {
       note: "Aucun accompagnement payant n’est automatiquement inclus lors de l’inscription. Campus Allemagne ne garantit ni admission ni visa.",
     },
     faqExtra: [
-      ["L’orientation gratuite m’oblige-t-elle à payer ?", "Non. Vous pouvez commencer sans compte et sans payer. Si vous souhaitez plus d’aide, nos services payants sont proposés séparément."],
+      ["Est-ce que je dois payer après l’orientation gratuite ?", "Non. Vous pouvez commencer sans compte et sans payer. Si vous souhaitez plus d’aide, nos services payants sont proposés séparément."],
       ["Qu’est-ce qui change avec un accompagnement ?", "Après étude de votre dossier, vous pouvez accepter une offre d’accompagnement. L’accès aux outils prévus commence après confirmation. Vous connaissez les services et le prix avant de choisir."],
     ],
     footer: {
