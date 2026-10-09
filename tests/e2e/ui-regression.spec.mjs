@@ -55,6 +55,8 @@ function maxCssDuration(value) {
 
 test.describe("V3.2 bounded public visual regression gate", () => {
   test("core public and candidate routes fit the active viewport", async ({ page }, testInfo) => {
+    // This test visits five routes and decodes six lazy photos on preview widths.
+    test.setTimeout(120_000);
     for (const target of publicRoutes) {
       const response = await page.goto(target.path, { waitUntil: "networkidle" });
       expect(response, target.path + " should return a response").not.toBeNull();
