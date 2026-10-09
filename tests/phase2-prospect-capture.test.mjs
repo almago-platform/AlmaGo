@@ -109,7 +109,7 @@ test("orientation continuation saves the result before opening secure account si
   assert.match(capture, /accountLinkingEnabled/);
   assert.match(capture, /copy\.continueSubmit/);
   assert.match(capture, /payload\.signupPath/);
-  assert.match(capture, /window\\.location\\.assign\\(verifiedSignupPath\\)/);
+  assert.match(capture, /window\.location\.assign\(verifiedSignupPath\)/);
   assert.match(capture, /!emailDeliveryEnabled && verifiedSignupPath/);
   assert.match(route, /isPhase2AccountLinkingEnabled/);
   assert.match(route, /\/signup\?orientation_token=/);
