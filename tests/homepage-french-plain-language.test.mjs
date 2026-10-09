@@ -14,7 +14,7 @@ const frenchBrand = branding.slice(branding.indexOf("  fr: {"), branding.indexOf
 test("French homepage copy uses plain-language guidance instead of administrative abstractions", () => {
   assert.match(frenchBrand, /Préparez vos études en Allemagne plus facilement/);
   assert.match(frenchBrand, /Dates importantes/);
-  assert.match(frenchBrand, /données inventées/);
+  assert.match(frenchBrand, /Exemple uniquement — ce n’est pas un vrai dossier/);
   assert.doesNotMatch(frenchBrand, /prestations distinctes|Échéances|organismes compétents|données fictives/);
   assert.match(frenchHome, /Rassemblez vos diplômes/);
   assert.match(frenchHome, /Vérifiez les conditions et les dates sur les sites officiels/);
