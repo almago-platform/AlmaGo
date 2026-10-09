@@ -132,3 +132,14 @@ test("prospect dashboard exposes lifecycle, Prospect action, Campus action and p
   assert.match(prospectPage, /ProspectProgrammeRecommendationCard/);
   assert.doesNotMatch(prospectPage, /orientationVersionSummary/);
 });
+
+test("slow Prospect loading state offers retry and return in every language", () => {
+  assert.match(prospectLoading, /useEffect/);
+  assert.match(prospectLoading, /12_000/);
+  assert.match(prospectLoading, /window\.location\.reload/);
+  assert.match(prospectLoading, /href="\/prospect"/);
+  assert.match(prospectLoading, /role="alert"/);
+  for (const value of ["Réessayer", "إعادة المحاولة", "Try again", "Erneut versuchen"]) {
+    assert.ok(prospectLoading.includes(value));
+  }
+});
