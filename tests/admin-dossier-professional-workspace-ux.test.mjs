@@ -63,3 +63,11 @@ test("visual changes do not invent actions or bypass evidence and commercial gat
   assert.match(page, /available: !linkedEvidenceResult\.error/);
   assert.match(page, /purchaseStatusLabel\(purchase\?\.status\)/);
 });
+
+test("automatic procedure steps never inflate the counselor's action badge", () => {
+  const actions = readFileSync("src/components/admin/AdminDossierActionsPanel.tsx", "utf8");
+  assert.match(actions, /campusWork.length \? "warning" : waitingOnOthers.length \? "info" : "success"/);
+  assert.match(actions, /Aucune action manuelle à traiter/);
+  assert.match(actions, /systemSteps.length/);
+  assert.match(actions, /Étapes pilotées par la procédure/);
+});

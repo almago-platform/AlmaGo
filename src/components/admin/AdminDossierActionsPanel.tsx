@@ -218,11 +218,15 @@ export function AdminDossierActionsPanel({
             Prochaines actions
           </h2>
           <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
-            D’abord vos actions. Ensuite les attentes et les étapes automatiques. Les deadlines universitaires vérifiées restent dans Candidatures.
+            D’abord vos actions. Ensuite les attentes et les étapes automatiques. Les dates limites universitaires vérifiées restent dans Candidatures.
           </p>
         </div>
-        <Badge variant={active.length ? "warning" : "success"}>
-          {active.length ? `${active.length} étape${active.length > 1 ? "s" : ""} ouverte${active.length > 1 ? "s" : ""}` : "À jour"}
+        <Badge variant={campusWork.length ? "warning" : waitingOnOthers.length ? "info" : "success"}>
+          {campusWork.length
+            ? `${campusWork.length} action${campusWork.length > 1 ? "s" : ""} Campus à traiter`
+            : waitingOnOthers.length
+              ? `${waitingOnOthers.length} action${waitingOnOthers.length > 1 ? "s" : ""} en attente d’un tiers`
+              : "Aucune action manuelle à traiter"}
         </Badge>
       </div>
 
