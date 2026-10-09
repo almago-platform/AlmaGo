@@ -100,7 +100,7 @@ export default async function AdminDocumentsPage() {
       <AdminPageHeader
         section="Opérations"
         title="Documents"
-        description="Traitez la version actuelle de chaque pièce. Les anciennes versions restent conservées dans le Dossier 360°."
+        description="Vérifiez les documents reçus. Les anciennes versions restent disponibles dans le dossier de l’étudiant."
       />
       <AdminDocumentsPanel
         documents={documents}

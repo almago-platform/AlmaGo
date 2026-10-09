@@ -37,7 +37,7 @@ export default async function AdminFinanceInsurancePage() {
       <AdminPageHeader
         section="Catalogue Allemagne"
         title="Finance & assurance"
-        description="Publiez uniquement des informations factuelles appuyées par une source officielle. AlmaGo ne classe pas les fournisseurs et ne déduit pas l’éligibilité d’un étudiant."
+        description="Publiez seulement des informations vérifiées sur des sites officiels. Campus Allemagne ne classe pas les fournisseurs et ne décide pas si un étudiant peut obtenir une aide."
       />
       <AdminWorkspaceSummary
         eyebrow="Catalogue finance"

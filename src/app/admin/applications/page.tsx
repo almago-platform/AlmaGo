@@ -52,7 +52,7 @@ export default async function AdminApplicationsPage({
       <AdminPageHeader
         section="Opérations"
         title="Candidatures"
-        description="Traitez les dossiers actifs, surveillez les échéances et gardez clairement identifiés les champs qui alimentent l’espace étudiant."
+        description="Suivez les candidatures en cours, vérifiez les dates importantes et les informations visibles par l’étudiant."
       />
       {profilesResult.error && (
         <p role="status" className="mb-4 rounded-[var(--radius-control)] border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">

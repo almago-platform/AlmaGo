@@ -124,7 +124,7 @@ export default async function AdminOrientationPage({
       <AdminPageHeader
         section="Opérations"
         title="Orientation"
-        description="Préparez une recommandation à partir du profil enregistré, documentez les éléments vérifiés et gardez explicite la frontière entre orientation et décision d’admission."
+        description="Préparez une recommandation avec le profil enregistré et les informations vérifiées. Une recommandation n’est pas une décision d’admission."
       />
       <nav aria-label="Filtrer les audits d’orientation" className="mb-4 flex flex-wrap items-center gap-2">
         <Link href="/admin/orientation?reviewStatus=pending" aria-current={!showAllReviews ? "page" : undefined} className={`rounded-full border px-4 py-2 text-sm font-semibold ${!showAllReviews ? "border-[var(--brand-border)] bg-[var(--brand-soft)] text-[var(--brand-strong)]" : "border-[var(--border)] bg-white text-slate-700"}`}>

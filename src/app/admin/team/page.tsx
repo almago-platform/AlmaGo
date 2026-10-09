@@ -397,7 +397,7 @@ export default async function AdminTeamPage() {
       <AdminPageHeader
         section="Pilotage"
         title="Équipe"
-        description="Voyez qui porte chaque portefeuille, où se concentre la charge et quels dossiers risquent d’être oubliés."
+        description="Voyez qui suit chaque dossier, la charge de chaque conseiller et les personnes qui attendent un suivi."
         actions={
           <>
             <Link href="/admin/people?work=unassigned" className={buttonClassName("secondary", "px-4")}>
