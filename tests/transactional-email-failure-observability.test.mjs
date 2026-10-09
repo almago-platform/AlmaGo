@@ -25,5 +25,6 @@ test("orientation save keeps the provider in delivery metadata without breaking 
 test("account continuation remains independent from email delivery", () => {
   assert.match(route, /const signupPath = isPhase2AccountLinkingEnabled\(\)/);
   assert.match(route, /\/signup\?orientation_token=/);
-  assert.match(route, /signupUrl\.searchParams\.set\("orientation_token", resume\.token\)/);
+  assert.match(route, /\/signup\?orientation_token=/);
+  assert.doesNotMatch(route, /signupUrl/);
 });
