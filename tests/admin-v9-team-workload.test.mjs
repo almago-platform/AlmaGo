@@ -12,7 +12,8 @@ test("Admin V9 adds team workload to Pilotage", () => {
   assert.match(shell, /href: "\/admin\/team"/);
   assert.match(shell, /label: "Équipe"/);
   assert.match(shell, /Charge et attribution/);
-  assert.match(dashboard, /Voir l’équipe/);
+  assert.match(shell, /label: "Administration avancée"/);
+  assert.match(shell, /item\.href === "\/admin\/team"/);
 });
 
 test("Admin V9 team page is built from the existing person workflow rather than a parallel CRM", () => {

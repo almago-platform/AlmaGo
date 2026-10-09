@@ -74,8 +74,8 @@ test("Admin V5 dossier 360 exposes full person context and auditable action hist
 
 test("Admin V5 makes People a primary navigation group and keeps work queues separate", () => {
   assert.match(shell, /href: "\/admin\/people"/);
-  assert.match(shell, /label: "Personnes"/);
-  assert.match(shell, /label: "Files de travail"/);
+  assert.match(shell, /label: "Personnes et dossiers"/);
+  assert.match(shell, /label: "À traiter"/);
   assert.match(shell, /pathname\.startsWith\("\/admin\/dossiers\/"\)/);
 });
 

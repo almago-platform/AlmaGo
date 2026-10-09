@@ -8,7 +8,7 @@ const dashboard = readFileSync("src/app/admin/page.tsx", "utf8");
 const styles = readFileSync("src/app/admin-v3.css", "utf8");
 
 test("each admin route remains present in exactly one navigation group", () => {
-  const definitions = [...shell.matchAll(/\{ label: "[^"]+", href: "(\/admin[^"]+)"/g)]
+  const definitions = [...shell.matchAll(/\{ label: "[^"]+", href: "(\/admin(?:\/[^"]*)?)"/g)]
     .map((match) => match[1]);
   const groups = shell.split("  const adminGroups = [")[1]?.split("  const items = role ===")[0] ?? "";
   const grouped = [...groups.matchAll(/"(\/admin(?:\/[^"]*)?)"/g)].map((match) => match[1]);
