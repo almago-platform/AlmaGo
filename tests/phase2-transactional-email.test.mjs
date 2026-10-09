@@ -98,3 +98,16 @@ test("transactional email is localized and sends both secure PDF report links wi
   assert.match(emailTemplate, /admission.*visa|قبول.*تأشيرة|Zulassungs.*Visum/i);
   assert.doesNotMatch(emailTemplate, /guaranteed admission|admission garantie|visa garanti/i);
 });
+
+test("orientation email uses the approved brand image from the validated HTTPS website origin", () => {
+  const publicLogo = "public/brand/campus-allemagne-logo-approved.png";
+  assert.ok(readFileSync(join(root, publicLogo)).length > 0);
+  assert.match(emailTemplate, /brandLogoUrl: string/);
+  assert.match(emailTemplate, /<img src="\$\{escapeHtml\(brandLogoUrl\)\}"/);
+  assert.match(emailTemplate, /alt="Campus Allemagne"/);
+  assert.match(emailTemplate, /width="220" height="57"/);
+  assert.match(route, /new URL\("\/brand\/campus-allemagne-logo-approved\.png", baseUrl\)/);
+  assert.match(route, /brandLogoUrl,/);
+  // Image URLs must not expose the candidate report's private resume token.
+  assert.doesNotMatch(emailTemplate, /<img[^>]*orientationReportUrl/);
+});
