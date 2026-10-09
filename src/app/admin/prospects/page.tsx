@@ -330,20 +330,20 @@ export default async function AdminProspectsPage({
       <AdminPageHeader
         section="Prospects"
         title="Prospects"
-        description="Priorisez les demandes, vérifiez le consentement et qualifiez chaque projet. Ces signaux aident à décider ; ils ne décident pas automatiquement si le marché est validé."
+        description="Examinez les demandes, vérifiez si la personne accepte d’être contactée et regardez ce qu’il faut faire ensuite. Les décisions restent humaines."
       />
 
       <section className="mb-6 rounded-[var(--radius-panel)] border border-[var(--border)] bg-white p-4 sm:p-5" aria-label="Résumé de la file prospects">
         <div className="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
           <div className="max-w-2xl">
-            <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">File prospects</p>
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Demandes à examiner</p>
             <h2 className="mt-2 text-xl font-semibold tracking-[-0.025em] text-slate-950 sm:text-2xl">
               {urgentCount
                 ? `${urgentCount} prospect${urgentCount > 1 ? "s" : ""} à traiter en priorité`
                 : "Aucune priorité forte détectée"}
             </h2>
             <p className="mt-2 text-sm leading-6 text-slate-600">
-              Les indicateurs décrivent les signaux réellement enregistrés. La décision de qualification reste humaine.
+              Ces chiffres viennent des demandes enregistrées. Vous décidez vous-même si un projet peut avancer.
             </p>
           </div>
 
@@ -460,7 +460,7 @@ export default async function AdminProspectsPage({
                   <span className="flex flex-wrap gap-2">
                     <span className={`rounded-full border px-2.5 py-1 text-xs font-bold ${priorityBadgeClass(smartPriority.state)}`}>{priorityLabels[smartPriority.state]}</span>
                     <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-700">
-                      {qualification ? qualificationLabels[qualification.state] ?? qualification.state : "Qualification non persistée"}
+                      {qualification ? qualificationLabels[qualification.state] ?? qualification.state : "Qualification pas encore enregistrée"}
                     </span>
                   </span>
                   <span className="shrink-0 whitespace-nowrap text-xs font-bold text-[var(--brand-strong)]"><span className="group-open:hidden">Examiner →</span><span className="hidden group-open:inline">Réduire ↑</span></span>
@@ -490,7 +490,7 @@ export default async function AdminProspectsPage({
                     <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-700">
                       {qualification
                         ? qualificationLabels[qualification.state] ?? qualification.state
-                        : "Qualification non persistée"}
+                        : "Qualification pas encore enregistrée"}
                     </span>
                     {prospect.user_id ? (
                       <Link
@@ -506,6 +506,35 @@ export default async function AdminProspectsPage({
                 <p className="mt-3 text-sm leading-6 text-slate-700">
                   {priorityDescriptions[smartPriority.state]}
                 </p>
+
+                <div
+                  aria-label="Situation et prochaine vérification"
+                  className="mt-4 grid gap-3 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4 md:grid-cols-[minmax(0,1.4fr)_minmax(13rem,0.8fr)]"
+                >
+                  <div>
+                    <p className="text-xs font-bold uppercase tracking-wide text-[var(--brand-strong)]">Prochaine vérification</p>
+                    <p className="mt-1 text-sm font-bold leading-6 text-slate-950">
+                      {canReview
+                        ? "Ce projet peut être examiné par Campus Allemagne."
+                        : !orientation
+                          ? "Attendre une orientation enregistrée."
+                          : !qualification
+                            ? "La qualification doit encore être enregistrée."
+                            : "Vérifier les conditions avant la revue humaine."}
+                    </p>
+                    <p className="mt-1 text-xs leading-5 text-slate-700">
+                      Ce repère ne constitue ni une admission ni une décision automatique.
+                    </p>
+                  </div>
+                  <div className="rounded-[var(--radius-control)] border border-[var(--border)] bg-white p-3">
+                    <p className="text-xs font-bold uppercase tracking-wide text-slate-700">Contact commercial</p>
+                    <p className="mt-1 text-sm font-semibold leading-6 text-slate-950">
+                      {prospect.contact_consent
+                        ? "Autorisé selon l’accord enregistré"
+                        : "Non autorisé : ne pas contacter à des fins commerciales"}
+                    </p>
+                  </div>
+                </div>
 
                 <div className="mt-4 space-y-3">
                   <AdminWorkflowSection
@@ -588,7 +617,7 @@ export default async function AdminProspectsPage({
                   <AdminWorkflowSection
                     step="C"
                     title="Orientation et qualification"
-                    description="Consultez la dernière orientation et l’état de qualification persistant."
+                    description="Consultez la dernière orientation et voyez si le projet est prêt à être examiné."
                     defaultOpen={Boolean(orientation)}
                   >
                     {!orientation ? (
@@ -610,7 +639,7 @@ export default async function AdminProspectsPage({
                       </div>
                     ) : (
                       <p className="text-sm text-slate-600">
-                        Cette orientation n’a pas encore de qualification P2.7 persistée.
+                        La qualification de cette orientation n’est pas encore enregistrée.
                       </p>
                     )}
                   </AdminWorkflowSection>
@@ -618,7 +647,7 @@ export default async function AdminProspectsPage({
                   <AdminWorkflowSection
                     step="D"
                     title="Décision de qualification"
-                    description="La revue humaine ne devient disponible que lorsque les conditions de qualification et d’accès le permettent."
+                    description="Vous pouvez examiner le projet lorsque les conditions de qualification et d’accès sont réunies."
                     defaultOpen={canReview}
                     tone={canReview ? "brand" : "neutral"}
                   >
@@ -629,9 +658,9 @@ export default async function AdminProspectsPage({
                       />
                     ) : (
                       <div className="rounded-[var(--radius-control)] border border-[var(--border)] bg-white p-3">
-                        <p className="text-sm font-semibold text-slate-900">Aucune décision manuelle disponible maintenant.</p>
+                        <p className="text-sm font-semibold text-slate-900">Le projet ne peut pas encore être validé ici.</p>
                         <p className="mt-1 text-xs leading-5 text-slate-600">
-                          Le prospect doit atteindre l’état « Prêt pour revue » et conserver un compte prospect avant qu’une revue de qualification puisse être enregistrée ici.
+                          La qualification doit être « Prêt pour revue » et la personne doit avoir un compte prospect. Vous pourrez alors enregistrer une décision.
                         </p>
                       </div>
                     )}
@@ -658,7 +687,7 @@ function ProspectMetric({
 }) {
   return (
     <div className={`bg-white p-3 ${tone === "warning" && value ? "bg-amber-50/70" : tone === "brand" && value ? "bg-[var(--brand-soft)]/55" : ""}`}>
-      <p className="text-[0.65rem] font-bold uppercase tracking-[0.1em] text-[var(--muted)]">{label}</p>
+      <p className="text-xs font-bold uppercase tracking-[0.06em] text-slate-700">{label}</p>
       <p className="mt-1 text-2xl font-semibold tracking-tight text-slate-950">{value}</p>
     </div>
   );

@@ -819,12 +819,12 @@ export default async function AdminPeoplePage({
       <AdminPageHeader
         section="Personnes"
         title="Personnes"
-        description="Retrouvez une personne et ouvrez uniquement les informations dont vous avez besoin."
+        description="Retrouvez une personne, consultez sa prochaine action et ouvrez son dossier."
       />
 
       <AdminWorkspaceSummary
-        eyebrow="Cockpit quotidien"
-        title={soloAdmin ? "Mon portefeuille" : "Portefeuille équipe"}
+        eyebrow="Suivi du jour"
+        title={soloAdmin ? "Mes dossiers" : "Dossiers de l’équipe"}
         description={soloAdmin
           ? "Tous les dossiers actifs sont dans votre vue, même sans conseiller attribué. Aucune attribution n’est changée automatiquement."
           : "Attribuez chaque dossier à un conseiller et traitez d’abord les dates vérifiées ou les cibles internes qui approchent."}
@@ -926,7 +926,7 @@ export default async function AdminPeoplePage({
         </form>
 
         <div className="border-b border-[var(--border)] bg-[var(--surface-subtle)] px-4 py-3 text-xs text-slate-600 sm:px-5">
-          Sélectionnez une ligne pour voir les détails et les liens vers le Dossier 360°. · {filtered.length} personne{filtered.length > 1 ? "s" : ""} affichée{filtered.length > 1 ? "s" : ""}
+          Cliquez sur une personne pour voir son dossier, son statut et ses actions. · {filtered.length} personne{filtered.length > 1 ? "s" : ""} affichée{filtered.length > 1 ? "s" : ""}
           {" · "}
           {attentionCount} dossier{attentionCount > 1 ? "s" : ""} à surveiller
           {" · "}
@@ -952,7 +952,7 @@ export default async function AdminPeoplePage({
                       <span className="mt-1 block truncate text-xs text-slate-600"><bdi dir="auto">{person.email}</bdi></span>
                     </span>
                     <span><Badge variant={segmentBadgeVariant[person.segment]}>{adminPersonSegmentLabels[person.segment]}</Badge></span>
-                    <span className="min-w-0 text-xs text-slate-700 sm:truncate">{person.nextAction}</span>
+                    <span className="min-w-0 text-sm leading-5 text-slate-700 sm:line-clamp-2" title={person.nextAction} aria-label={`Prochaine action : ${person.nextAction}`}>{person.nextAction}</span>
                     <span className={`text-xs font-bold ${overdue ? "text-red-700" : dueToday ? "text-amber-800" : "text-slate-600"}`}>
                       {person.dueDate ? formatDate(person.dueDate) : person.hasUnverifiedDeadline ? "Date à vérifier" : "Voir le dossier"}
                     </span>
