@@ -13,7 +13,7 @@ test("V4.2 explicitly distinguishes independent guidance and paid accompaniment"
   assert.match(copy, /plateforme indépendante/);
   assert.match(copy, /Aucun accompagnement payant n’est automatiquement inclus/);
   assert.match(copy, /ne garantit ni admission ni visa/);
-  assert.match(copy, /L’accès client dépend de la proposition acceptée/);
+  assert.match(copy, /Pour accéder aux services payants, il faut accepter une offre, payer et recevoir une confirmation/);
   assert.match(page, /brandFooter=\{v42\.footer\}/);
   assert.match(closing, /footer\.disclaimer/);
   assert.match(services, /orientationHref/);
