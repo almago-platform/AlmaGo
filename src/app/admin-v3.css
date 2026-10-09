@@ -79,13 +79,13 @@
 
 .admin-shell .admin-shell-sidebar nav > p,
 .admin-shell .admin-shell-sidebar nav > div > div > p {
-  color: rgba(255,255,255,.42) !important;
+  color: rgba(255,255,255,.76) !important;
 }
 
 .admin-shell .admin-shell-sidebar nav a {
-  min-height: 2.55rem;
+  min-height: 2.75rem;
   border-radius: .72rem !important;
-  color: rgba(255,255,255,.7) !important;
+  color: rgba(255,255,255,.88) !important;
   transition:
     background-color 160ms cubic-bezier(.2,.8,.2,1),
     color 160ms cubic-bezier(.2,.8,.2,1),
@@ -342,4 +342,18 @@
   .admin-shell .admin-shell-topbar {
     min-height: 4.25rem !important;
   }
+}
+
+/* Shared admin legibility: visible keyboard focus, stronger sidebar text. */
+.admin-shell .admin-shell-sidebar nav summary { color: rgba(255,255,255,.9); }
+.admin-shell .admin-shell-sidebar nav summary:focus-visible,
+.admin-shell .admin-shell-sidebar nav a:focus-visible {
+  outline: 2px solid #ffd065;
+  outline-offset: 2px;
+}
+.admin-shell .admin-shell-sidebar nav a[aria-current="page"] {
+  box-shadow: inset 3px 0 0 #f4b400, 0 14px 34px -20px rgba(216,6,33,.7);
+}
+.admin-shell .admin-shell-sidebar nav a[aria-current="page"] span span:last-child {
+  color: rgba(255,255,255,.85) !important;
 }

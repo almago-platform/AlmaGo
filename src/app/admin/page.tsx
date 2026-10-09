@@ -436,10 +436,8 @@ export default async function AdminEntry() {
           : "Voyez d’abord ce qui demande l’attention de l’équipe, puis ouvrez directement la bonne file de travail."}
         actions={
           <>
-            <ButtonLink href="/admin/people">Ouvrir Personnes</ButtonLink>
-            {!soloAdmin ? <ButtonLink href="/admin/team" variant="secondary">Voir l’équipe</ButtonLink> : null}
-            <ButtonLink href="/admin/intake" variant="secondary">Dossiers Campus</ButtonLink>
-            <ButtonLink href="/admin/documents" variant="secondary">Traiter les documents</ButtonLink>
+            <ButtonLink href="/admin/people">Retrouver une personne</ButtonLink>
+            <ButtonLink href="/admin/traitement" variant="secondary">Voir les tâches à traiter</ButtonLink>
           </>
         }
       />
