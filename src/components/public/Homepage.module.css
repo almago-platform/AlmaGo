@@ -9490,3 +9490,46 @@
     line-height: 1.7;
   }
 }
+
+
+/* V4.5 micro-polish — accessibility, legibility and section continuity only.
+   Preserve the hero, the V4.2 six-photo grid, existing breakpoints and identity. */
+
+/* The legacy color token rules colored the open FAQ icon red on a red circle. */
+.home .faqList details[open] summary svg {
+  color: #fffdf8;
+  background-color: var(--home-red);
+}
+
+/* One visible keyboard focus ring, not a red border + shadow + outer ring. */
+.home .headerActions select:focus-visible {
+  border-color: var(--border-strong);
+  outline: 3px solid var(--home-red);
+  outline-offset: 3px;
+  box-shadow: none;
+}
+.home .headerActions select:focus:not(:focus-visible) {
+  border-color: var(--border-strong);
+  box-shadow: none;
+}
+
+/* Preserve the 6 original image cards; make their captions easier to scan. */
+.journey .journeyRailStep small {
+  color: rgba(247, 244, 236, 0.87);
+  font-size: 12px;
+  line-height: 1.4;
+}
+.journey .stepTopline span {
+  font-size: 10.5px;
+  letter-spacing: 0.07em;
+}
+.journey .stepCard p {
+  color: rgba(247, 244, 236, 0.9);
+  font-size: 14px;
+  line-height: 1.6;
+}
+.v42Fiction { font-size: 12px; }
+
+/* Light section boundaries without changing the dark/light visual rhythm. */
+.v42About { border-bottom: 1px solid #e7e0d7; }
+.v42Services { border-top: 1px solid #e7e0d7; }
