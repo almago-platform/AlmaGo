@@ -48,6 +48,7 @@ export function ProspectCaptureCard({
   const [email, setEmail] = useState(initialEmail);
   const [privacyAcknowledged, setPrivacyAcknowledged] = useState(false);
   const [status, setStatus] = useState<"idle" | "saving" | "success" | "error">("idle");
+  const [previouslyRequested, setPreviouslyRequested] = useState(false);
   const [message, setMessage] = useState("");
   const [interestToken, setInterestToken] = useState<string | null>(null);
   const [signupPath, setSignupPath] = useState<string | null>(null);
@@ -137,8 +138,9 @@ export function ProspectCaptureCard({
     if (!automaticEmailConsent || !emailDeliveryEnabled || !persistentCaptureAllowed || autoStarted.current) return;
     autoStarted.current = true;
     if (!claimAutoEmailAttempt?.()) {
-      // Another render of this orientation already started the request.
-      // Never start a second send or synchronously set state inside an effect.
+      // A previous mount already started sending. React state is updated
+      // asynchronously to avoid cascading synchronous effect renders.
+      queueMicrotask(() => setPreviouslyRequested(true));
       return;
     }
     void submit(undefined, true);
@@ -228,11 +230,9 @@ export function ProspectCaptureCard({
       {automaticEmailConsent && emailDeliveryEnabled ? (
         <div className="mt-5 rounded-[var(--radius-control)] border border-[var(--info-border)] bg-[var(--info-soft)] p-4 text-sm leading-6">
           <p role={status === "error" ? "alert" : "status"}>
-            {status === "saving"
-              ? copy.automaticEmailPreparing
-              : status === "idle" && autoStarted.current
-                ? copy.automaticEmailAlreadyRequested
-                : status === "idle" ? copy.automaticEmailPreparing : message}
+            {previouslyRequested
+              ? copy.automaticEmailAlreadyRequested
+              : status === "saving" || status === "idle" ? copy.automaticEmailPreparing : message}
           </p>
           {status === "error" || (status === "success" && message === copy.deliveryFailure) ? (
             <button
