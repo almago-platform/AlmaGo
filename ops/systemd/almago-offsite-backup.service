@@ -17,4 +17,4 @@ PrivateTmp=true
 ProtectSystem=strict
 ProtectHome=true
 StateDirectory=almago-backup
-ReadWritePaths=/var/tmp /var/lib/almago-backup
+ReadWritePaths=/mnt/almago-backup-secure /var/lib/almago-backup
