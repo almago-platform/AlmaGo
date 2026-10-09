@@ -109,7 +109,8 @@ test("orientation continuation saves the result before opening secure account si
   assert.match(capture, /accountLinkingEnabled/);
   assert.match(capture, /copy\.continueSubmit/);
   assert.match(capture, /payload\.signupPath/);
-  assert.match(capture, /window\.location\.assign\(payload\.signupPath\)/);
+  assert.match(capture, /window\\.location\\.assign\\(verifiedSignupPath\\)/);
+  assert.match(capture, /!emailDeliveryEnabled && verifiedSignupPath/);
   assert.match(route, /isPhase2AccountLinkingEnabled/);
   assert.match(route, /\/signup\?orientation_token=/);
   assert.match(route, /signupPath/);
@@ -127,4 +128,16 @@ test("prospect email capture is mobile-friendly and accessibly validates without
   assert.match(capture, /id="orientation-capture-message"/);
   assert.match(capture, /name="privacyAcknowledged"/);
   assert.match(capture, /rel="noopener noreferrer"/);
+});
+
+
+test("transactional email is the primary post-orientation action and account creation stays optional", () => {
+  assert.match(capture, /const submitLabel = emailDeliveryEnabled/);
+  assert.match(capture, /copy\.emailTitle/);
+  assert.match(capture, /copy\.emailPrivacyLabel/);
+  assert.match(capture, /setSignupPath\(verifiedSignupPath\)/);
+  assert.match(capture, /status === "success" && emailDeliveryEnabled && signupPath/);
+  assert.match(prospectCopy, /Recevoir mes deux rapports par e-mail/);
+  assert.match(prospectCopy, /Aucun compte n’est nécessaire/);
+  assert.match(route, /signupUrl: isPhase2AccountLinkingEnabled\(\) \? signupUrl\.toString\(\) : null/);
 });
