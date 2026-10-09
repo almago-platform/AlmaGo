@@ -32,6 +32,6 @@ test("simple French still clearly distinguishes free access, activated paid acce
 test("visual polish does not replace the six original photographs or claim completed user research", () => {
   assert.equal((journey.match(/https:\/\/images\.pexels\.com\/photos/g) || []).length, 6);
   assert.match(css, /V4\.4 final polish — visual rhythm only/);
-  assert.match(audit, /n'est \*\*pas un audit de tout le site\*\*/);
+  assert.match(audit, /n'est pas un audit de tout le site/);
   assert.match(audit, /pas encore réalisée/);
 });
