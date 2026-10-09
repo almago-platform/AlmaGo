@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { join } from "node:path";
 import test from "node:test";
-import { isPhase2EmailDeliveryEnabled } from "../src/lib/phase2/config.ts";
+import { isPhase2EmailDeliveryEnabled, isOrientationIncludedEmailEnabled } from "../src/lib/phase2/config.ts";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 const read = (path) => readFileSync(join(root, path), "utf8");
@@ -128,7 +128,7 @@ test("automatic delivery requires explicit recorded consent and refuses missing 
   assert.match(route, /email_delivery_consent: true/);
   assert.match(route, /email_delivery_consent_at: new Date\(\)\.toISOString\(\)/);
   assert.match(route, /isAdultPublicOrientationIdentity\(identity\)/);
-  assert.match(route, /automaticDelivery && attachments\.length !== 2/);
+  assert.match(route, /\(automaticDelivery \|\| includedDelivery\) && attachments\.length !== 2/);
   assert.match(route, /saved: true, delivery: "unavailable"/);
   assert.match(route, /sendTransactionalEmail\(\{/);
 });
@@ -143,4 +143,30 @@ test("emailed PDF reports never include an account sign-up CTA or orientation ac
   assert.match(emailTemplate, /attachmentsIncluded/);
   // The account-link token remains available only to the on-site confirmation UI.
   assert.match(route, /signupPath \},/);
+});
+
+test("automatic included emails are default-off and never bypass legal rollout, minor, or PDF safety gates", () => {
+  const flags = {
+    ALMAGO_PARTNER_PRELAUNCH_MODE: "false",
+    ALMAGO_PHASE2_ENABLED: "true",
+    ALMAGO_PHASE2_PROSPECT_CAPTURE_ENABLED: "true",
+    ALMAGO_PHASE2_EMAIL_DELIVERY_ENABLED: "true",
+    ALMAGO_ORIENTATION_INCLUDED_EMAIL_ENABLED: "true",
+  };
+
+  assert.equal(isOrientationIncludedEmailEnabled(flags), true);
+  assert.equal(isOrientationIncludedEmailEnabled({ ...flags, ALMAGO_ORIENTATION_INCLUDED_EMAIL_ENABLED: "false" }), false);
+  assert.equal(isOrientationIncludedEmailEnabled({ ...flags, ALMAGO_PHASE2_EMAIL_DELIVERY_ENABLED: "false" }), false);
+  assert.equal(isOrientationIncludedEmailEnabled({ ...flags, ALMAGO_PHASE2_PROSPECT_CAPTURE_ENABLED: "false" }), false);
+  assert.equal(isOrientationIncludedEmailEnabled({ ...flags, ALMAGO_PARTNER_PRELAUNCH_MODE: "true" }), false);
+  assert.match(env, /ALMAGO_ORIENTATION_INCLUDED_EMAIL_ENABLED=false/);
+  assert.match(route, /includedDelivery = record\.deliveryMode === "included"/);
+  assert.match(route, /emailNoticeShown = record\.emailNoticeShown === true/);
+  assert.match(route, /includedDelivery && \(!isOrientationIncludedEmailEnabled\(\) \|\| !emailNoticeShown\)/);
+  assert.match(route, /Persistent orientation capture is limited to adults/);
+  assert.match(route, /privacy_acknowledged: privacyAcknowledged/);
+  assert.match(route, /email_delivery_mode: "included"/);
+  assert.match(route, /email_notice_shown: true/);
+  assert.match(route, /\(automaticDelivery \|\| includedDelivery\) && attachments\.length !== 2/);
+  assert.doesNotMatch(emailTemplate, /signupUrl|accountCta|accountNote/);
 });
