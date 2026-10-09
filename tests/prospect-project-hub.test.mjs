@@ -103,7 +103,7 @@ test("qualification upload replaces the raw browser file-control copy with a gui
 test("shared hub loader keeps orientation recovery, qualification and intake in one server boundary", () => {
   assert.match(hub, /findRecoverableOrientationForAccount/);
   assert.match(hub, /prospect_qualifications/);
-  assert.match(hub, /loadProspectIntakeState/);
+  assert.match(hub, /loadProspectIntakeData/);
   assert.match(hub, /buildProspectRoadmap/);
 });
 
