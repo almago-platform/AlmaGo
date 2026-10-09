@@ -48,25 +48,9 @@ export function AdminCounselorBrief({
         <Badge variant="neutral">{segment}</Badge>
       </div>
 
-      <dl className="mt-4 grid gap-2 sm:grid-cols-3" aria-label="Repères du candidat">
-        <div className="min-w-0 rounded-[var(--radius-control)] bg-[var(--surface-subtle)] p-3">
-          <dt className="text-xs font-semibold text-slate-600">Situation enregistrée</dt>
-          <dd className="mt-1"><Badge variant={statusVariant}>{status}</Badge></dd>
-        </div>
-        <div className="min-w-0 rounded-[var(--radius-control)] bg-[var(--surface-subtle)] p-3">
-          <dt className="text-xs font-semibold text-slate-600">Conseiller responsable</dt>
-          <dd className="mt-1 break-words text-sm font-bold text-slate-950">{counselor || "Non attribué"}</dd>
-          {!counselor ? <dd className="mt-1 text-xs text-slate-600">Le dossier reste visible pour l’équipe.</dd> : null}
-          <dd className="mt-1"><a href="#assignment" className="text-xs font-semibold text-[var(--brand-strong)] hover:underline">Gérer l’attribution →</a></dd>
-        </div>
-        <div className="min-w-0 rounded-[var(--radius-control)] bg-[var(--surface-subtle)] p-3">
-          <dt className="text-xs font-semibold text-slate-600">Dernier contact journalisé</dt>
-          <dd className="mt-1 text-sm font-bold text-slate-950">{lastContact || "Aucun contact enregistré"}</dd>
-          <dd className="mt-1"><a href="#journal" className="text-xs font-semibold text-[var(--brand-strong)] hover:underline">Ouvrir le journal →</a></dd>
-        </div>
-      </dl>
 
-      <div className="mt-3 grid min-w-0 gap-3 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,0.9fr)]">
+
+      <div className="mt-4 grid min-w-0 gap-3 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,0.9fr)]">
         <div className={action.waiting
           ? "rounded-[var(--radius-control)] border border-[var(--warning-border)] bg-[var(--warning-soft)] p-4"
           : "rounded-[var(--radius-control)] bg-[var(--premium-ink)] p-4 text-white"}>
@@ -105,8 +89,8 @@ export function AdminCounselorBrief({
           {leadBlocker ? (
             <div className="mt-3 border-t border-[var(--border)] pt-3">
               <p className="text-sm font-bold text-slate-950">{leadBlocker.title}</p>
-              <p className="mt-1 line-clamp-2 text-xs leading-5 text-slate-700">{leadBlocker.reason}</p>
-              <a href={leadBlocker.href} className="mt-2 inline-flex text-xs font-bold text-[var(--brand-strong)] hover:underline">
+              <p className="mt-1 line-clamp-2 text-sm leading-6 text-slate-700">{leadBlocker.reason}</p>
+              <a href={leadBlocker.href} className="mt-2 inline-flex text-sm font-semibold text-[var(--brand-strong)] hover:underline">
                 Examiner ce point →
               </a>
               {blockers.length > 1 ? (
@@ -138,6 +122,23 @@ export function AdminCounselorBrief({
           </div>
         </aside>
       </div>
+      <dl className="mt-3 grid gap-2 sm:grid-cols-3" aria-label="Repères du candidat">
+        <div className="min-w-0 rounded-[var(--radius-control)] bg-[var(--surface-subtle)] p-3">
+          <dt className="text-xs font-semibold text-slate-600">Situation enregistrée</dt>
+          <dd className="mt-1"><Badge variant={statusVariant}>{status}</Badge></dd>
+        </div>
+        <div className="min-w-0 rounded-[var(--radius-control)] bg-[var(--surface-subtle)] p-3">
+          <dt className="text-xs font-semibold text-slate-600">Conseiller responsable</dt>
+          <dd className="mt-1 break-words text-sm font-bold text-slate-950">{counselor || "Non attribué"}</dd>
+          {!counselor ? <dd className="mt-1 text-xs text-slate-600">Le dossier reste visible pour l’équipe.</dd> : null}
+          <dd className="mt-1"><a href="#assignment" className="text-xs font-semibold text-[var(--brand-strong)] hover:underline">Gérer l’attribution →</a></dd>
+        </div>
+        <div className="min-w-0 rounded-[var(--radius-control)] bg-[var(--surface-subtle)] p-3">
+          <dt className="text-xs font-semibold text-slate-600">Dernier contact journalisé</dt>
+          <dd className="mt-1 text-sm font-bold text-slate-950">{lastContact || "Aucun contact enregistré"}</dd>
+          <dd className="mt-1"><a href="#journal" className="text-xs font-semibold text-[var(--brand-strong)] hover:underline">Ouvrir le journal →</a></dd>
+        </div>
+      </dl>
     </section>
   );
 }
