@@ -110,7 +110,9 @@ Si les mineurs doivent être inclus dans la collecte persistée, le flux ne doit
 
 ### Objectif produit du 9 octobre 2026 — rapport email pour chaque candidat
 
-Le propriétaire souhaite que **toute personne ayant terminé une orientation puisse recevoir les deux PDF par email, sans obligation de créer un compte**. Le travail technique préparatoire découple l'envoi transactionnel de l'ouverture d'un compte et rend l'option d'envoi explicite pour les adultes.
+Le propriétaire souhaite que **toute personne ayant terminé une orientation puisse recevoir les deux PDF par email, sans obligation de créer un compte**. Décision technique du 9 octobre : **envoi automatique uniquement après un accord préalable facultatif, explicite et non précoché** recueilli avant le questionnaire, avec une adresse e-mail renseignée, lorsque le résultat est prêt. Cet accord n'est pas restauré d'une session précédente. Le travail technique découple l'envoi transactionnel de la création d'un compte ; il empêche les demandes automatiques sans consentement et refuse l'envoi automatique si les deux PDF ne sont pas générés.
+
+**Protection contre les doublons (étape actuelle) :** un garde d'interface empêche le déclenchement répété dans la même séance React, mais ce garde ne constitue pas à lui seul une idempotence durable lors de requêtes concurrentes/reprises réseau. Avant activation publique, couvrir le retry serveur et le scénario E2E de concurrence pour garantir une seule notification par demande logique.
 
 **Ce souhait ne vaut pas levée du gate mineurs ni validation juridique.** Pour les moins de 18 ans, conserver temporairement le parcours non persisté + téléchargement local PDF. Avant d'autoriser la collecte et l'envoi des profils de mineurs, faire confirmer par un professionnel qualifié les conditions applicables au tuteur et, le cas échéant, à l'autorisation du juge de la famille, la notice dédiée et le mécanisme de vérification. Aucune simple case cochée par l'enfant ni suppression du contrôle d'âge côté serveur ne suffit à franchir ce gate. Le projet ne doit pas déclencher d'emails marketing à partir des rapports transactionnels.
 
