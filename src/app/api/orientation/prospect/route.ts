@@ -21,6 +21,7 @@ import { createFreeValidationInterestToken } from "@/lib/phase2/free-validation-
 import {
   isPhase2AccountLinkingEnabled,
   isPhase2EmailDeliveryEnabled,
+  isOrientationIncludedEmailEnabled,
   isPhase2ProspectCaptureEnabled,
 } from "@/lib/phase2/config";
 import {
@@ -127,7 +128,9 @@ export async function POST(request: Request) {
   const privacyAcknowledged = record.privacyAcknowledged === true;
   const contactConsent = record.contactConsent === true;
   const automaticDelivery = record.deliveryMode === "automatic";
+  const includedDelivery = record.deliveryMode === "included";
   const emailDeliveryConsent = record.emailDeliveryConsent === true;
+  const emailNoticeShown = record.emailNoticeShown === true;
   const reviewId =
     typeof record.reviewId === "string" && record.reviewId.length <= 64
       ? record.reviewId
@@ -145,7 +148,13 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Explicit automatic email consent is required." }, { status: 400 });
   }
 
-  if (!email || !answers || !privacyAcknowledged) {
+  // Included delivery is a separately gated service request with prominent
+  // advance privacy notice, not an inferred or fabricated consent checkbox.
+  if (includedDelivery && (!isOrientationIncludedEmailEnabled() || !emailNoticeShown)) {
+    return NextResponse.json({ error: "Included email delivery is not available." }, { status: 403 });
+  }
+
+  if (!email || !answers || (!privacyAcknowledged && !includedDelivery)) {
     return NextResponse.json({ error: "Invalid orientation submission." }, { status: 400 });
   }
 
@@ -239,7 +248,12 @@ export async function POST(request: Request) {
           ...(identity ? { identity } : {}),
           locale,
           privacy_notice_version: PRIVACY_NOTICE_VERSION,
-          privacy_acknowledged: true,
+          privacy_acknowledged: privacyAcknowledged,
+          ...(includedDelivery ? {
+            email_delivery_mode: "included",
+            email_notice_shown: true,
+            email_notice_version: PRIVACY_NOTICE_VERSION,
+          } : {}),
           ...(automaticDelivery ? {
             email_delivery_mode: "automatic",
             email_delivery_consent: true,
@@ -338,7 +352,7 @@ export async function POST(request: Request) {
     }
 
     // Do not claim to have emailed two PDFs if attachment generation failed.
-    if (automaticDelivery && attachments.length !== 2) {
+    if ((automaticDelivery || includedDelivery) && attachments.length !== 2) {
       await supabase
         .from("orientations")
         .update({ delivery_attempted_at: new Date().toISOString() })

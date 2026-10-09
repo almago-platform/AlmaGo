@@ -151,7 +151,7 @@ test("automatic email is optional before orientation and does not survive sessio
   assert.match(form, /useState\(false\)/);
   assert.match(form, /isAdultPublicOrientationIdentity\(identity\)/);
   assert.match(form, /emailDeliveryEnabled && isAdultPublicOrientationIdentity\(identity\)/);
-  assert.match(form, /automaticEmailConsent=\{automaticEmailConsent && isAdultPublicOrientationIdentity\(identity\)\}/);
+  assert.match(form, /automaticEmailConsent=\{automaticEmailConsent && !includedEmailDeliveryEnabled && isAdultPublicOrientationIdentity\(identity\)\}/);
   assert.match(form, /claimAutoEmailAttempt=\{claimAutoEmailAttempt\}/);
   assert.match(form, /setAutomaticEmailConsent\(false\)/);
   assert.doesNotMatch(form, /JSON\.stringify\(\{ identity, identityComplete, answers, step, automaticEmailConsent/);
@@ -163,12 +163,12 @@ test("auto-email triggers once after the result is ready, with a strict adult gu
   assert.match(form, /!authenticatedUpdate && orientationResultReady[\s\S]*<ProspectCaptureCard/);
   assert.match(capture, /const autoStarted = useRef\(false\)/);
   assert.match(capture, /const submitting = useRef\(false\)/);
-  assert.match(capture, /if \(!automaticEmailConsent \|\| !emailDeliveryEnabled \|\| !persistentCaptureAllowed \|\| autoStarted\.current\) return/);
+  assert.match(capture, /if \(!autoEmailRequested \|\| autoStarted\.current\) return/);
   assert.match(capture, /claimAutoEmailAttempt\?\.\(\)/);
   assert.match(capture, /void submit\(undefined, true\)/);
   assert.match(capture, /deliveryMode: "automatic", emailDeliveryConsent: true/);
-  assert.match(capture, /if \(automated && !\(automaticEmailConsent && emailDeliveryEnabled && persistentCaptureAllowed\)\) return/);
-  assert.match(capture, /privacyAcknowledged: true/);
+  assert.match(capture, /if \(automated && !autoEmailRequested\) return/);
+  assert.match(capture, /privacyAcknowledged: automated && includedEmailDelivery \? false : true/);
   assert.match(capture, /contactConsent: false/);
   assert.match(capture, /automaticEmailRetry/);
 });
@@ -183,4 +183,21 @@ test("saved orientation offers a prominent on-site account link rather than an i
   assert.match(prospectCopy, /Votre orientation est sauvegardée/);
   assert.match(route, /resume_token_hash: resume\.hash/);
   assert.match(route, /signupPath/);
+});
+
+test("included email mode shows a clear advance notice, with no additional email checkbox or submit button after the result", () => {
+  const page = read("src/app/orientation/page.tsx");
+  assert.match(page, /isOrientationIncludedEmailEnabled/);
+  assert.match(form, /includedEmailDeliveryEnabled/);
+  assert.match(form, /prospectCopy\.capture\.includedEmailNotice/);
+  assert.match(form, /href="\/legal\/privacy"/);
+  assert.match(form, /includedEmailDelivery=\{includedEmailDeliveryEnabled && isAdultPublicOrientationIdentity\(identity\)\}/);
+  assert.match(capture, /const autoEmailRequested = \(includedEmailDelivery \|\| automaticEmailConsent\) && emailDeliveryEnabled && persistentCaptureAllowed/);
+  assert.match(capture, /autoEmailRequested \? \(/);
+  assert.match(capture, /deliveryMode: "included", emailNoticeShown: true/);
+  assert.match(capture, /privacyAcknowledged: automated && includedEmailDelivery \? false : true/);
+  assert.match(capture, /void submit\(undefined, true\)/);
+  assert.match(prospectCopy, /Les deux rapports sont envoyés automatiquement/);
+  assert.match(prospectCopy, /includedEmailMinorNotice|automaticEmailMinorNotice/);
+  assert.match(route, /isAdultPublicOrientationIdentity\(identity\)/);
 });

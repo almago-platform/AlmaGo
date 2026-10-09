@@ -29,6 +29,10 @@ export type OrientationProspectCopy = {
     emailPrivacyLabel: string;
     emailOptionalAccount: string;
     automaticEmailConsent: string;
+    includedEmailNotice: string;
+    includedEmailEyebrow: string;
+    includedEmailTitle: string;
+    includedEmailText: string;
     automaticEmailMinorNotice: string;
     automaticEmailPreparing: string;
     automaticEmailAlreadyRequested: string;
@@ -84,6 +88,10 @@ const fr: OrientationProspectCopy = {
     emailPrivacyLabel: "J’ai lu l’information de confidentialité et je demande l’enregistrement et l’envoi de mes rapports à cette adresse e-mail.",
     emailOptionalAccount: "Votre orientation est sauvegardée. Créez votre compte gratuit avec la même adresse e-mail pour la retrouver dans votre espace Prospect après validation de votre inscription. Cette étape est facultative.",
     automaticEmailConsent: "Oui, je souhaite recevoir automatiquement mes deux rapports PDF par e-mail dès que mon orientation est prête. J’ai lu la notice de confidentialité et j’accepte leur enregistrement et leur envoi à l’adresse indiquée. C’est facultatif et aucun compte n’est créé.",
+    includedEmailNotice: "Pour les candidats majeurs, le service comprend l’enregistrement du résultat et l’envoi automatique de deux rapports PDF à l’adresse indiquée, dès que l’orientation est prête. Aucun compte n’est créé. Ces données servent uniquement à ce service ; aucun e-mail publicitaire n’est envoyé.",
+    includedEmailEyebrow: "Envoi automatique",
+    includedEmailTitle: "Vos deux rapports PDF",
+    includedEmailText: "Votre orientation est prête. Les deux rapports sont envoyés automatiquement à votre adresse e-mail, sans autre démarche.",
     automaticEmailMinorNotice: "Vous pourrez enregistrer votre résultat en PDF. L’envoi par e-mail n’est pas disponible pour les moins de 18 ans pendant ce lancement.",
     automaticEmailPreparing: "Vous avez demandé l’envoi automatique. Préparation et envoi des deux rapports PDF en cours…",
     automaticEmailAlreadyRequested: "Une demande d’envoi a déjà été effectuée pendant cette orientation. Vérifiez votre boîte de réception et vos spams.",
@@ -139,6 +147,10 @@ const ar: OrientationProspectCopy = {
     emailPrivacyLabel: "قرأت معلومات الخصوصية وأطلب حفظ التقريرين وإرسالهما إلى هذا البريد الإلكتروني.",
     emailOptionalAccount: "تم حفظ توجيهك. أنشئ حسابًا مجانيًا بالبريد الإلكتروني نفسه للعثور على توجيهك في مساحة Prospect بعد تأكيد التسجيل. هذه الخطوة اختيارية.",
     automaticEmailConsent: "نعم، أريد استلام تقريريّ PDF تلقائيًا عبر البريد الإلكتروني عند جاهزية نتيجة التوجيه. قرأت إشعار الخصوصية وأوافق على حفظهما وإرسالهما إلى العنوان المذكور. هذا اختياري ولا يتطلب إنشاء حساب.",
+    includedEmailNotice: "بالنسبة للبالغين، تشمل الخدمة حفظ نتيجة التوجيه وإرسال تقريرين بصيغة PDF تلقائيًا إلى عنوان البريد الإلكتروني المقدم عند جاهزية النتيجة. لا يُنشأ حساب، ولا تُرسل رسائل تسويقية.",
+    includedEmailEyebrow: "إرسال تلقائي",
+    includedEmailTitle: "تقريرا التوجيه PDF",
+    includedEmailText: "نتيجة توجيهك جاهزة. سيتم إرسال التقريرين تلقائيًا إلى بريدك الإلكتروني دون أي إجراء إضافي.",
     automaticEmailMinorNotice: "يمكنك حفظ نتيجتك بصيغة PDF. إرسال التقارير بالبريد الإلكتروني غير متاح لمن هم دون 18 عامًا خلال هذا الإطلاق.",
     automaticEmailPreparing: "لقد طلبت الإرسال التلقائي. يتم الآن إعداد تقريريّ PDF وإرسالهما…",
     automaticEmailAlreadyRequested: "تم تقديم طلب إرسال سابقًا خلال هذه الجلسة. تحقق من بريدك الوارد والبريد غير المرغوب فيه.",
@@ -194,6 +206,10 @@ const en: OrientationProspectCopy = {
     emailPrivacyLabel: "I have read the privacy information and request that my reports be saved and emailed to this address.",
     emailOptionalAccount: "Your orientation has been saved. Create a free account with the same email address to find it in your Prospect space after your registration is confirmed. This step is optional.",
     automaticEmailConsent: "Yes, automatically email both PDF reports to the address above when my orientation is ready. I have read the privacy information and agree to the reports being saved and sent. This is optional and no account is created.",
+    includedEmailNotice: "For adults, this service includes saving the orientation result and automatically emailing two PDF reports to the address provided when the result is ready. No account is created and no marketing email is sent.",
+    includedEmailEyebrow: "Automatic delivery",
+    includedEmailTitle: "Your two PDF reports",
+    includedEmailText: "Your orientation is ready. Both reports are emailed automatically to your address without another action.",
     automaticEmailMinorNotice: "You can save your result as a PDF. Email delivery is not available to people under 18 during this launch.",
     automaticEmailPreparing: "Automatic email requested. Preparing and sending both PDF reports…",
     automaticEmailAlreadyRequested: "A delivery request has already been made during this orientation. Check your inbox and spam folder.",
@@ -249,6 +265,10 @@ const de: OrientationProspectCopy = {
     emailPrivacyLabel: "Ich habe die Datenschutzhinweise gelesen und bitte darum, meine Berichte zu speichern und an diese E-Mail-Adresse zu senden.",
     emailOptionalAccount: "Deine Orientierung wurde gespeichert. Erstelle mit derselben E-Mail-Adresse ein kostenloses Konto, um sie nach der Bestätigung der Registrierung im Prospect-Bereich wiederzufinden. Dieser Schritt ist freiwillig.",
     automaticEmailConsent: "Ja, ich möchte beide PDF-Berichte automatisch per E-Mail erhalten, sobald meine Orientierung fertig ist. Ich habe die Datenschutzhinweise gelesen und stimme ihrer Speicherung und dem Versand an diese Adresse zu. Das ist freiwillig und es wird kein Konto erstellt.",
+    includedEmailNotice: "Für Volljährige umfasst dieser Dienst das Speichern der Orientierung und den automatischen Versand zweier PDF-Berichte an die angegebene E-Mail-Adresse, sobald das Ergebnis vorliegt. Es wird kein Konto erstellt und keine Werbung verschickt.",
+    includedEmailEyebrow: "Automatischer Versand",
+    includedEmailTitle: "Deine zwei PDF-Berichte",
+    includedEmailText: "Deine Orientierung ist fertig. Beide Berichte werden ohne weiteren Klick automatisch an deine E-Mail-Adresse geschickt.",
     automaticEmailMinorNotice: "Du kannst dein Ergebnis als PDF speichern. Der E-Mail-Versand ist bei diesem Start für unter 18-Jährige nicht verfügbar.",
     automaticEmailPreparing: "Automatischen Versand angefordert. Beide PDF-Berichte werden vorbereitet und verschickt…",
     automaticEmailAlreadyRequested: "Während dieser Orientierung wurde bereits ein Versand angefordert. Überprüfe dein Postfach und den Spamordner.",

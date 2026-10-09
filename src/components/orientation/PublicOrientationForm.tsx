@@ -62,6 +62,7 @@ function localizedValue(value: string, options: readonly SelectOption[]) {
 export function PublicOrientationForm({
   prospectCaptureEnabled = false,
   emailDeliveryEnabled = false,
+  includedEmailDeliveryEnabled = false,
   accountLinkingEnabled = false,
   initialAnswers = null,
   initialIdentity = null,
@@ -71,6 +72,7 @@ export function PublicOrientationForm({
 }: {
   prospectCaptureEnabled?: boolean;
   emailDeliveryEnabled?: boolean;
+  includedEmailDeliveryEnabled?: boolean;
   accountLinkingEnabled?: boolean;
   initialAnswers?: Answers | null;
   initialIdentity?: PublicOrientationIdentity | null;
@@ -681,7 +683,20 @@ export function PublicOrientationForm({
                   </Link>
                 </div>
 
-                {prospectCaptureEnabled && emailDeliveryEnabled && isAdultPublicOrientationIdentity(identity) ? (
+                {prospectCaptureEnabled && includedEmailDeliveryEnabled && isAdultPublicOrientationIdentity(identity) ? (
+                  <p className="mt-5 rounded-[var(--radius-control)] border border-[var(--info-border)] bg-[var(--info-soft)] px-4 py-3 text-sm leading-6">
+                    {prospectCopy.capture.includedEmailNotice}
+                    {" "}
+                    <Link
+                      href="/legal/privacy"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-semibold underline underline-offset-2"
+                    >
+                      {identityCopy.privacyLink}
+                    </Link>
+                  </p>
+                ) : prospectCaptureEnabled && emailDeliveryEnabled && isAdultPublicOrientationIdentity(identity) ? (
                   <label className="mt-5 flex cursor-pointer items-start gap-3 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4 text-sm leading-6">
                     <input
                       type="checkbox"
@@ -1221,7 +1236,8 @@ export function PublicOrientationForm({
                     reviewId={orientationReviewId}
                     emailDeliveryEnabled={emailDeliveryEnabled}
                     accountLinkingEnabled={accountLinkingEnabled}
-                    automaticEmailConsent={automaticEmailConsent && isAdultPublicOrientationIdentity(identity)}
+                    automaticEmailConsent={automaticEmailConsent && !includedEmailDeliveryEnabled && isAdultPublicOrientationIdentity(identity)}
+                    includedEmailDelivery={includedEmailDeliveryEnabled && isAdultPublicOrientationIdentity(identity)}
                     claimAutoEmailAttempt={claimAutoEmailAttempt}
                     acquisitionContext={acquisitionContext}
                   />

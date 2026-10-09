@@ -114,6 +114,14 @@ Le propriétaire souhaite que **toute personne ayant terminé une orientation pu
 
 **Protection contre les doublons (étape actuelle) :** un garde d'interface empêche le déclenchement répété dans la même séance React, mais ce garde ne constitue pas à lui seul une idempotence durable lors de requêtes concurrentes/reprises réseau. Avant activation publique, couvrir le retry serveur et le scénario E2E de concurrence pour garantir une seule notification par demande logique.
 
+### Variante produit — 9 octobre 2026 : aucun clic d'envoi après orientation
+
+Le propriétaire précise que **les deux PDF doivent être envoyés automatiquement à la fin d'une orientation, sans case ou bouton supplémentaire « Recevoir par e-mail »**. Le champ e-mail obligatoire est renseigné dès l'entrée ; le formulaire présente **avant de commencer**, dans chaque langue, une information explicite sur la sauvegarde des rapports et leur envoi comme partie du service. Le lancement de l'orientation constitue une demande du service décrit, **pas la preuve d'un consentement distinct à l'e-mail**, et il ne doit pas être enregistré comme tel.
+
+Mise en œuvre préparatoire : mode `deliveryMode: "included"`, journalisation de la **présentation de la notice** (`email_notice_shown`), pas de `email_delivery_consent: true` fabriqué, vérification 18+ côté serveur, vérification des deux pièces jointes, pas de création de compte ni d'email marketing. **Nouveau verrou indépendant** : `ALMAGO_ORIENTATION_INCLUDED_EMAIL_ENABLED=false` par défaut. La notice présentée seule n'est pas une validation de la base légale ; ne pas activer ce mode pour le public avant une revue juridique de sa base de traitement, de la notice, des transferts hors Tunisie, de la conservation et des droits des personnes, ainsi que des tests E2E et d'idempotence serveur.
+
+Le mode antérieur avec consentement facultatif ne doit pas être confondu avec le mode inclus. Aucun réglage de production n'est activé par la PR préparatoire.
+
 **Ce souhait ne vaut pas levée du gate mineurs ni validation juridique.** Pour les moins de 18 ans, conserver temporairement le parcours non persisté + téléchargement local PDF. Avant d'autoriser la collecte et l'envoi des profils de mineurs, faire confirmer par un professionnel qualifié les conditions applicables au tuteur et, le cas échéant, à l'autorisation du juge de la famille, la notice dédiée et le mécanisme de vérification. Aucune simple case cochée par l'enfant ni suppression du contrôle d'âge côté serveur ne suffit à franchir ce gate. Le projet ne doit pas déclencher d'emails marketing à partir des rapports transactionnels.
 
 Le déploiement public du flux adulte reste lui-même soumis au Gate A (dont traitement de données et transferts internationaux) et aux vérifications de production. Un domaine Resend vérifié ne remplace pas ces vérifications.
