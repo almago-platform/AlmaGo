@@ -29,7 +29,7 @@ test("public product demonstration correctly separates free and activated-client
   assert.match(demo, /event\.key === "End"/);
   assert.match(demo, /rtl \? "ArrowLeft" : "ArrowRight"/);
   assert.match(copy, /L’inscription gratuite n’active pas automatiquement les services payants/);
-  assert.match(copy, /L’accès client dépend de la proposition acceptée, du paiement et de sa validation/);
+  assert.match(copy, /Pour accéder aux services payants, il faut accepter une offre, payer et recevoir une confirmation/);
 });
 
 test("brand copy is available in French Arabic English and German", () => {

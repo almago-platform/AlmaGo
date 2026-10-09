@@ -9460,3 +9460,33 @@
 @media (prefers-reduced-motion: reduce) {
   .journey .stepCard { transition: none; }
 }
+
+
+/* V4.4 final polish — visual rhythm only.
+   The Hero, the six original photos, the journey rail, colors and anchors
+   are deliberately untouched. */
+.v42About, .v42Services { padding-block: clamp(52px, 5.2vw, 76px); }
+.v42Experience { padding-block: clamp(54px, 5.6vw, 80px); }
+.v42AboutMain { gap: clamp(28px, 4.1vw, 68px); }
+.v42About .v42Intro, .v42Services .v42Intro, .v42Experience .v42Intro {
+  line-height: 1.66;
+}
+.v42ValuesHeading { margin-top: clamp(30px, 3.5vw, 46px); }
+.v42ValueCard { padding: 21px 23px; }
+.v42ServicesHeading { margin-bottom: 28px; }
+.v42ServiceCard { min-height: 264px; padding: 25px 24px; }
+.v42ServiceTag { margin-bottom: 16px; }
+.v42ServiceCard > p { margin-bottom: 18px; line-height: 1.65; }
+.v42ExperienceHeading { margin-bottom: 25px; }
+.v42MissionText { line-height: 1.52; }
+@media (max-width: 899px) {
+  .v42ServiceCard { min-height: 0; }
+}
+@media (max-width: 599px) {
+  .v42About, .v42Services, .v42Experience { padding-block: 49px; }
+  .v42ValueCard { padding: 21px 19px; }
+  .v42ServiceCard { padding: 23px 21px; }
+  .v42About .v42Intro, .v42Services .v42Intro, .v42Experience .v42Intro {
+    line-height: 1.7;
+  }
+}

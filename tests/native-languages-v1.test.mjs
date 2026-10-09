@@ -28,7 +28,7 @@ test("Arabic is a real RTL experience", () => {
 });
 
 test("each language keeps the no-guarantee admission and visa boundary", () => {
-  assert.match(copy, /AlmaGo organise votre préparation\. Les admissions, visas/);
+  assert.match(copy, /AlmaGo vous aide à préparer votre projet\. Les universités décident des admissions et les autorités décident des visas/);
   assert.match(copy, /القبول والتأشيرة والقرارات الرسمية الأخرى/);
   assert.match(copy, /Admission, visa and other official decisions/);
   assert.match(copy, /Über Zulassung, Visum und andere offizielle Fragen/);

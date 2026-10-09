@@ -19,6 +19,6 @@ test("V4.2 replaces the stale mock dashboard with a two-level product explanatio
 test("French homepage keeps the approved clear hero and free orientation CTA", () => {
   assert.match(native, /title1: "Vos études"/);
   assert.match(native, /title3: "étape par étape\."/);
-  assert.match(native, /Commencez par une orientation gratuite, explorez vos options et choisissez la suite adaptée à votre projet\./);
+  assert.match(native, /Commencez par une orientation gratuite\. Découvrez les programmes possibles et choisissez la suite qui vous convient\./);
   assert.match(native, /orientationPrimary: "Faire mon orientation gratuite"/);
 });
