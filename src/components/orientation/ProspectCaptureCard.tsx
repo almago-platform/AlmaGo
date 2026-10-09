@@ -322,15 +322,6 @@ export function ProspectCaptureCard({
         </p>
       ) : null}
 
-      {status === "success" && emailDeliveryEnabled && signupPath ? (
-        <p className="mt-4 text-sm leading-6 text-[var(--muted)]">
-          {copy.emailOptionalAccount}{" "}
-          <Link href={signupPath} className="font-semibold underline underline-offset-4">
-            {copy.continueSubmit}
-          </Link>
-        </p>
-      ) : null}
-
       {status === "success" && interestToken ? (
         <div className="mt-5 rounded-[var(--radius-control)] border border-[var(--brand-border)] bg-[var(--brand-soft)] p-4">
           <p className="eyebrow">{copy.interestEyebrow}</p>
@@ -338,24 +329,38 @@ export function ProspectCaptureCard({
           <p className="mt-2 text-sm leading-6 text-[var(--foreground)]">
             {copy.interestText}
           </p>
-          <button
-            type="button"
-            onClick={submitInterest}
-            disabled={interestStatus === "saving" || interestStatus === "success"}
-            className="mt-4 rounded-[var(--radius-control)] bg-[var(--brand)] px-5 py-2.5 text-sm font-bold text-white disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {interestStatus === "saving" ? copy.interestSaving : copy.interestSubmit}
-          </button>
           {interestStatus === "success" ? (
-            <p role="status" className="mt-3 text-sm font-semibold text-[var(--foreground)]">
+            <p role="status" className="mt-4 rounded-[var(--radius-control)] border border-[var(--success-border)] bg-[var(--success-soft)] px-4 py-3 text-sm font-semibold text-[var(--foreground)]">
               {copy.interestSuccess}
             </p>
-          ) : null}
+          ) : (
+            <button
+              type="button"
+              onClick={submitInterest}
+              disabled={interestStatus === "saving"}
+              className="mt-4 rounded-[var(--radius-control)] bg-[var(--brand)] px-5 py-2.5 text-sm font-bold text-white disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {interestStatus === "saving" ? copy.interestSaving : copy.interestSubmit}
+            </button>
+          )}
           {interestStatus === "error" ? (
             <p role="alert" className="mt-3 text-sm font-semibold text-[var(--danger)]">
               {copy.interestFailure}
             </p>
           ) : null}
+        </div>
+      ) : null}
+
+      {status === "success" && emailDeliveryEnabled && signupPath ? (
+        <div className="mt-5 rounded-[var(--radius-control)] border border-[var(--brand-border)] bg-[var(--surface)] p-4 sm:p-5">
+          <h4 className="text-lg font-bold text-[var(--foreground)]">{copy.continueTitle}</h4>
+          <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{copy.emailOptionalAccount}</p>
+          <Link
+            href={signupPath}
+            className="mt-4 inline-flex min-h-11 items-center justify-center rounded-[var(--radius-control)] bg-[var(--brand)] px-5 py-3 text-center text-sm font-bold text-white hover:bg-[var(--brand-strong)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brand)]"
+          >
+            {copy.continueSubmit}
+          </Link>
         </div>
       ) : null}
     </section>
