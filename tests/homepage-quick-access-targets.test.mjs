@@ -22,7 +22,7 @@ test("homepage quick access targets the relevant journey steps", () => {
 });
 
 test("quick programme link describes the real comparison destination in every locale", () => {
-  assert.match(nativeCopy, /\["Comparer les programmes", "Critères et sources officielles"\]/);
+  assert.match(nativeCopy, /\["Comparer les programmes", "Conditions et sites officiels"\]/);
   assert.match(nativeCopy, /\["قارن البرامج", "الشروط والمصادر الرسمية"\]/);
   assert.match(nativeCopy, /\["Compare programmes", "Requirements and official sources"\]/);
   assert.match(nativeCopy, /\["Studiengänge vergleichen", "Voraussetzungen und offizielle Quellen"\]/);
