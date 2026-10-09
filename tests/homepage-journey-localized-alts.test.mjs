@@ -7,9 +7,11 @@ const read = (path) => readFileSync(path, "utf8");
 const journey = read("src/components/public/HomeJourneySection.tsx");
 const copy = read("src/content/native-copy.ts");
 
-test("compact journey removes six redundant photographs while keeping the six localized steps", () => {
-  assert.doesNotMatch(journey, /<Image|images\.pexels\.com/);
-  assert.match(journey, /journey\.steps\.slice\(groupIndex \* 2, groupIndex \* 2 \+ 2\)/);
+test("six V4.2 photographic cards are restored with locale-owned alternative text", () => {
+  assert.match(journey, /<Image/);
+  assert.equal((journey.match(/https:\/\/images\.pexels\.com\/photos/g) || []).length, 6);
+  assert.match(journey, /alt=\{journey\.imageAlts\[index\]\}/);
+  assert.match(journey, /journey\.steps\.map\(\(\[title, text, detail\], index\)/);
   assert.match(journey, /id=\{stepIds\[index\]\}/);
 });
 

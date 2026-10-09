@@ -9423,3 +9423,40 @@
   .v43PhaseStep p { font-size: 12px; }
   .v43AboutContact { gap: 10px; }
 }
+
+
+/* V4.4: respect the original six-photo journey while polishing its rhythm.
+   Existing V4.2 photographic grids, alt text, RTL and colors remain intact. */
+.journey.section {
+  padding-block: clamp(68px, 6.8vw, 96px);
+}
+.journey .sectionHeading {
+  gap: clamp(24px, 5vw, 76px);
+}
+.journey .journeyRail {
+  margin-top: 36px;
+  margin-bottom: 26px;
+}
+.journey .steps {
+  gap: 20px;
+  margin-top: 28px;
+}
+.journey .stepCard {
+  border-radius: 17px;
+  transition: border-color 180ms ease, box-shadow 180ms ease;
+}
+.journey .stepCard:hover {
+  border-color: rgba(252, 181, 10, .48);
+  box-shadow: 0 22px 46px -33px rgba(0, 0, 0, .78);
+}
+@media (max-width: 899px) {
+  .journey.section { padding-block: 62px; }
+}
+@media (max-width: 767px) {
+  .journey.section { padding-block: 54px; }
+  .journey .steps { margin-top: 25px; }
+  .journey .stepCard { border-radius: 14px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .journey .stepCard { transition: none; }
+}

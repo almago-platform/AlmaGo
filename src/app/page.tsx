@@ -36,18 +36,17 @@ export default async function Home() {
         />
         <HomeQuickAccess quick={copy.home.quick} />
         <HomeAboutSection copy={v42.about} />
+        <HomeJourneySection
+          journey={copy.home.journey}
+          photo={copy.home.photo}
+          primaryHref={phase2Enabled ? "/orientation" : "/signup"}
+          primaryLabel={phase2Enabled ? copy.home.hero.orientationPrimary : copy.home.journey.cta}
+        />
         <HomeServicesSection copy={v42.services} orientationHref={phase2Enabled ? "/orientation" : "/signup"} />
         <HomeExperiencePreview
           copy={v42.experience}
           freeHref={phase2Enabled ? "/orientation" : "/signup"}
           rtl={locale === "ar"}
-        />
-        <HomeJourneySection
-          journey={copy.home.journey}
-          photo={copy.home.photo}
-          phaseLabels={v42.journeyPhases}
-          primaryHref={phase2Enabled ? "/orientation" : "/signup"}
-          primaryLabel={phase2Enabled ? copy.home.hero.orientationPrimary : copy.home.journey.cta}
         />
         <HomeFaqSection faq={copy.home.faq} extraQuestions={v42.faqExtra} />
         <HomeFinalCta

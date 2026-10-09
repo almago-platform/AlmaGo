@@ -12,7 +12,7 @@ test("V4.1 consolidation is preserved as V4.2 expands the brand sections", () =>
   assert.doesNotMatch(page, /<HomePhotoBand/);
   assert.match(page, /photo=\{copy\.home\.photo\}/);
   assert.match(journey, /\{photo\.text\}/);
-  const sections = ["<HomeAboutSection", "<HomeServicesSection", "<HomeExperiencePreview", "<HomeJourneySection", "<HomeFaqSection"];
+  const sections = ["<HomeAboutSection", "<HomeJourneySection", "<HomeServicesSection", "<HomeExperiencePreview", "<HomeFaqSection"];
   for (let i = 1; i < sections.length; i++) {
     assert.ok(page.indexOf(sections[i - 1]) < page.indexOf(sections[i]), sections[i] + " follows previous section");
   }

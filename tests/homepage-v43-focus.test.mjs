@@ -10,16 +10,18 @@ const preview = read("src/components/public/HomeExperiencePreview.tsx");
 const copy = read("src/content/homepage-v42-copy.ts");
 const css = read("src/components/public/Homepage.module.css");
 
-test("V4.3 tells the service story before the preview and preserves six anchored steps", () => {
-  const sequence = ["<HomeHero", "<HomeQuickAccess", "<HomeAboutSection", "<HomeServicesSection", "<HomeExperiencePreview", "<HomeJourneySection", "<HomeFaqSection", "<HomeFinalCta"];
+test("V4.4 restores the six original photographs before the services and preview", () => {
+  const sequence = ["<HomeHero", "<HomeQuickAccess", "<HomeAboutSection", "<HomeJourneySection", "<HomeServicesSection", "<HomeExperiencePreview", "<HomeFaqSection", "<HomeFinalCta"];
   for (let i = 1; i < sequence.length; i++) {
-    assert.ok(page.indexOf(sequence[i-1]) < page.indexOf(sequence[i]), sequence[i] + " follows " + sequence[i-1]);
+    assert.ok(page.indexOf(sequence[i - 1]) < page.indexOf(sequence[i]), sequence[i] + " follows " + sequence[i - 1]);
   }
-  assert.match(page, /phaseLabels=\{v42\.journeyPhases\}/);
+  assert.doesNotMatch(page, /phaseLabels=\{v42\.journeyPhases\}/);
   assert.match(journey, /const stepIds = \["projet", "documents", "programmes", "candidatures", "depart", "suivi"\] as const/);
-  assert.match(journey, /journey\.steps\.slice\(groupIndex \* 2, groupIndex \* 2 \+ 2\)/);
+  assert.match(journey, /journey\.steps\.map\(\(\[title, text, detail\], index\)/);
   assert.match(journey, /id=\{stepIds\[index\]\}/);
-  assert.doesNotMatch(journey, /<Image|images\.pexels\.com/);
+  assert.match(journey, /<Image/);
+  assert.match(journey, /journey\.imageAlts\[index\]/);
+  assert.equal((journey.match(/https:\/\/images\.pexels\.com\/photos/g) || []).length, 6);
 });
 
 test("free-account preview uses an intentionally balanced three-card desktop layout", () => {

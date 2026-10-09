@@ -245,12 +245,12 @@ test("V4.2 preview explains free versus accompanied access in French and Arabic"
 });
 
 
-test("V4.3 moves service choices up and keeps a balanced free preview plus six real anchors", async ({ page }, testInfo) => {
+test("V4.4 restores six original journey photographs at desktop and mobile widths", async ({ page }, testInfo) => {
   test.skip(!["desktop-chromium", "mobile-chromium"].includes(testInfo.project.name),
-    "Service order and compact journey need one desktop and one mobile check.");
+    "Review the human-centered V4.2 journey on desktop and mobile.");
 
   await page.goto("/", { waitUntil: "networkidle" });
-  const ids = ["apropos", "services", "espace", "parcours", "faq"];
+  const ids = ["apropos", "parcours", "services", "espace", "faq"];
   const positions = await page.evaluate((ids) =>
     ids.map((id) => {
       const element = document.getElementById(id);
@@ -258,23 +258,32 @@ test("V4.3 moves service choices up and keeps a balanced free preview plus six r
     }), ids);
   expect(positions.every((position) => position >= 0)).toBe(true);
   for (let i = 1; i < positions.length; i++) {
-    expect(positions[i], ids[i] + " should appear after " + ids[i-1]).toBeGreaterThan(positions[i-1]);
+    expect(positions[i], ids[i] + " should follow " + ids[i - 1]).toBeGreaterThan(positions[i - 1]);
   }
 
-  await expect(page.locator("#parcours section[aria-labelledby^='journey-phase-']")).toHaveCount(3);
-  await expect(page.locator("#parcours li[id]")).toHaveCount(6);
+  const journey = page.locator("#parcours");
+  const steps = journey.locator("ol > li[id]");
+  await expect(steps).toHaveCount(6);
+  await expect(journey.locator("ol > li[id] img")).toHaveCount(6);
+
   for (const anchor of ["projet", "documents", "programmes", "candidatures", "depart", "suivi"]) {
     await expect(page.locator("#" + anchor)).toHaveCount(1);
   }
 
-  const freePanel = page.locator("#v42-panel-0");
-  await expect(freePanel.locator("article")).toHaveCount(3);
+  const photoAlts = await journey.locator("ol > li[id] img").evaluateAll((images) =>
+    images.map((image) => image.getAttribute("alt") || ""));
+  expect(photoAlts.every((alt) => alt.length > 5), "all six images have useful alternative text").toBe(true);
+
   if (testInfo.project.name === "desktop-chromium") {
-    const boxes = await freePanel.locator("article").evaluateAll((items) =>
-      items.map((item) => item.getBoundingClientRect().top));
-    expect(Math.max(...boxes) - Math.min(...boxes), "free cards should occupy one balanced row").toBeLessThanOrEqual(2);
+    const positions = await steps.evaluateAll((items) =>
+      items.map((item) => Math.round(item.getBoundingClientRect().top)));
+    expect(positions.slice(0, 3).every((y) => Math.abs(y - positions[0]) <= 2)).toBe(true);
+    expect(positions.slice(3).every((y) => Math.abs(y - positions[3]) <= 2)).toBe(true);
+    expect(positions[3]).toBeGreaterThan(positions[0]);
   }
 
+  const freePanel = page.locator("#v42-panel-0");
+  await expect(freePanel.locator("article")).toHaveCount(3);
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   expect(overflow).toBeLessThanOrEqual(1);
 });
