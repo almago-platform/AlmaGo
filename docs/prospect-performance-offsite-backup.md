@@ -45,9 +45,15 @@ Prerequisites (an operator must provision these on the Ubuntu VPS):
    for every required bucket, including private `student-documents`. Storage SQL
    metadata is **not** the Storage object bytes. Validate the bucket inventory and
    object count as part of the initial setup.
-4. Dedicated unprivileged `almago-backup` host user, protected credentials,
-   filesystem space for a temporary Postgres dump plus Storage object copies,
-   monitoring and restore-test environment.
+4. Dedicated unprivileged `almago-backup` host user, protected credentials
+   and a **separately mounted protected staging filesystem** at
+   `/mnt/almago-backup-secure`, either tmpfs (RAM; capacity-checked) or a
+   LUKS-encrypted volume whose key lifecycle the operator manages. The script
+   refuses to run if this path is not a mount point. A mount-point check **alone
+   cannot prove encryption**; verify the underlying volume before activation.
+   Ensure sufficient capacity for a full PostgreSQL archive **plus** Storage
+   object bytes. Prevent plaintext staging on the standard VPS filesystem.
+   Prepare monitoring and an isolated restoration environment.
 5. `RESTIC_REPOSITORY` and `RESTIC_PASSWORD_FILE`, protected from application
    users. Set `RESTIC_CACHE_DIR` to a private directory. A **new** repository
    must first be initialized by the operator using `restic init`.
@@ -67,6 +73,7 @@ ALMAGO_STORAGE_SOURCE=supabase-storage:
 RESTIC_REPOSITORY=s3:https://<offsite-endpoint>/<separate-backups-bucket>/almago
 RESTIC_PASSWORD_FILE=/etc/almago/restic-password
 RESTIC_CACHE_DIR=/var/lib/almago-backup/restic-cache
+ALMAGO_BACKUP_TMP_DIR=/mnt/almago-backup-secure
 ```
 
 Credential files should not be readable by `www-data` or the Next.js application.
@@ -84,7 +91,9 @@ VPS operator can install the backup script and these units, create the protected
 dedicated `almago-backup` user (not the web application) and limits filesystem
 writes. The timer is daily with a randomized start window. Check that
 `/usr/local/sbin/almago-offsite-backup` exists, all credential/config files are
-readable by that service account only, and the host has enough temporary disk.
+readable by that service account only, and the host has enough protected
+temporary space. Confirm the separate staging mount is correctly encrypted
+or memory-backed and permissioned before running the service.
 Verify successful execution with `systemctl status`, journal logs (without
 secrets or filenames), `restic snapshots`, and a restore test.
 
