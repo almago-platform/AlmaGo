@@ -36,7 +36,6 @@ export function HomeAboutSection({ copy }: { copy: HomepageV42Copy["about"] }) {
             </article>
           ))}
         </div>
-        <p className={s.v42Independent}><HomeIcon name="source" /> {copy.independence}</p>
       </div>
     </section>
   );
