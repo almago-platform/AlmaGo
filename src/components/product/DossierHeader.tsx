@@ -13,6 +13,7 @@ export function DossierHeader({
   imageSrc,
   imageAlt = "",
   imagePriority = false,
+  compact = false,
 }: {
   eyebrow?: ReactNode;
   title: ReactNode;
@@ -24,6 +25,7 @@ export function DossierHeader({
   imageSrc?: string;
   imageAlt?: string;
   imagePriority?: boolean;
+  compact?: boolean;
 }) {
   const intro = (
     <div className="relative flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
@@ -34,11 +36,15 @@ export function DossierHeader({
           ) : null}
           {status ? <Badge variant={statusVariant}>{status}</Badge> : null}
         </div>
-        <h1 className="mt-2.5 text-[clamp(1.9rem,3.45vw,3.05rem)] font-semibold leading-[1.02] tracking-[-0.05em] text-white">
+        <h1 className={compact
+          ? "mt-2 text-[clamp(1.8rem,2.7vw,2.35rem)] font-semibold leading-tight tracking-[-0.04em] text-white"
+          : "mt-2.5 text-[clamp(1.9rem,3.45vw,3.05rem)] font-semibold leading-[1.02] tracking-[-0.05em] text-white"}>
           {title}
         </h1>
         {description ? (
-          <p className="mt-3 max-w-3xl text-sm leading-6 text-white/66 sm:text-[0.95rem] sm:leading-6">
+          <p className={compact
+            ? "mt-2 max-w-3xl text-sm leading-6 text-white/85"
+            : "mt-3 max-w-3xl text-sm leading-6 text-white/66 sm:text-[0.95rem] sm:leading-6"}>
             {description}
           </p>
         ) : null}
@@ -56,7 +62,7 @@ export function DossierHeader({
       {facts.map((fact, index) => (
         <div
           key={index}
-          className="min-w-0 border-b border-white/10 px-4 py-3.5 last:border-b-0 sm:border-e sm:[&:nth-child(even)]:border-e-0 xl:border-b-0 xl:[&:nth-child(even)]:border-e xl:last:border-e-0"
+          className={`min-w-0 border-b border-white/10 last:border-b-0 sm:border-e sm:[&:nth-child(even)]:border-e-0 xl:border-b-0 xl:[&:nth-child(even)]:border-e xl:last:border-e-0 ${compact ? "px-3 py-2.5" : "px-4 py-3.5"}`}
         >
           <dt className="text-[10px] font-extrabold uppercase tracking-[0.11em] text-white/45">
             {fact.label}
@@ -109,10 +115,10 @@ export function DossierHeader({
   }
 
   return (
-    <header className="pc-hero p-5 sm:p-6 lg:p-7">
+    <header className={compact ? "pc-hero p-4 sm:p-5 lg:p-5" : "pc-hero p-5 sm:p-6 lg:p-7"}>
       <div className="pc-hero-orbit" aria-hidden="true" />
       {intro}
-      {factsBlock ? <div className="mt-5">{factsBlock}</div> : null}
+      {factsBlock ? <div className={compact ? "mt-4" : "mt-5"}>{factsBlock}</div> : null}
     </header>
   );
 }

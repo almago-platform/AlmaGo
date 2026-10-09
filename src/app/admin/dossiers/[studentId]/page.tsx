@@ -900,9 +900,10 @@ export default async function AdminStudentDossierPage({
   return (
     <main className="mx-auto w-full max-w-[92rem] space-y-7 px-4 py-5 sm:px-6 sm:py-6 xl:px-8">
       <DossierHeader
+        compact
         eyebrow={`${adminPersonSegmentLabels[personSegment]} · dossier 360°`}
         title={name}
-        description="Une seule vue pour comprendre la personne, ses orientations, ses pièces, ses candidatures, ses actions et la suite du parcours."
+        description="Toutes les informations du dossier, les actions à faire et l’historique au même endroit."
         facts={[
           { label: "Adresse e-mail", value: <bdi dir="auto">{email}</bdi> },
           { label: "Parcours proposé", value: campusRouteLabel(intake?.proposed_route_key) },
@@ -917,6 +918,7 @@ export default async function AdminStudentDossierPage({
         }
       />
 
+      <div id="overview" className="min-w-0 scroll-mt-28">
       <AdminCounselorBrief
         segment={adminPersonSegmentLabels[personSegment]}
         status={adminDossierStatusLabel(intake?.status)}
@@ -936,6 +938,8 @@ export default async function AdminStudentDossierPage({
         } : null}
       />
 
+      </div>
+
       <AdminDossierNavigation counts={{
         actions: dossierActions.filter((item) => isHumanAdminAction(item)).length,
         messages: unreadStudentMessages,
@@ -943,6 +947,7 @@ export default async function AdminStudentDossierPage({
         applications: applications.length,
       }} />
 
+      <div id="followup" className="min-w-0 scroll-mt-28">
       <AdminDossierQuickHandoff
         canExchange={Boolean(profile)}
         admission={admissionFollowUp}
@@ -956,7 +961,9 @@ export default async function AdminStudentDossierPage({
         } : null}
       />
 
-      <section id="overview" className="scroll-mt-52 lg:scroll-mt-40 space-y-3">
+      </div>
+
+      <section id="progress" className="scroll-mt-28 space-y-3">
         <PremiumSectionHeader
           eyebrow="Cycle du dossier"
           title="Où en est cette personne ?"
@@ -967,11 +974,11 @@ export default async function AdminStudentDossierPage({
 
 
 
-      <div id="blockers" className="scroll-mt-52 lg:scroll-mt-40">
+      <div id="blockers" className="scroll-mt-28">
         <AdminDossierBlockersPanel blockers={blockers} />
       </div>
 
-      <div id="actions" className="scroll-mt-52 lg:scroll-mt-40">
+      <div id="actions" className="scroll-mt-28">
         <AdminDossierActionsPanel studentId={studentId} actions={dossierActions} />
       </div>
 
@@ -981,7 +988,7 @@ export default async function AdminStudentDossierPage({
         targetIds={["messages", "journal", "send-dossier-message"]}
         initiallyOpen={unreadStudentMessages > 0}
       >
-      <div id="messages" className="scroll-mt-52 lg:scroll-mt-40">
+      <div id="messages" className="scroll-mt-28">
         <DossierMessageThread
           messages={dossierMessages}
           endpoint={"/api/admin/dossiers/" + studentId + "/messages"}
@@ -997,14 +1004,15 @@ export default async function AdminStudentDossierPage({
       <AdminCaseJournalPanel studentId={studentId} notes={caseNotes} />
       </AdminDossierDisclosure>
 
-      <div className="grid gap-7 xl:grid-cols-[minmax(0,1.35fr)_minmax(19rem,0.65fr)]">
-        <div className="space-y-7">
+      {/* Chaque rubrique dispose de toute la largeur pour conserver les détails et les formulaires lisibles. */}
+      <div className="min-w-0 space-y-6">
+        <div className="min-w-0 space-y-6">
           <AdminDossierDisclosure
             title="Projet et orientation"
             description="Profil scolaire, préférences et programmes recommandés. À ouvrir pour l’analyse détaillée."
             targetIds={["project", "orientation"]}
           >
-          <div id="project" className="scroll-mt-52 lg:scroll-mt-40">
+          <div id="project" className="scroll-mt-28">
             <AdminStudentProjectPanel
               studentId={studentId}
               project={{
@@ -1020,7 +1028,7 @@ export default async function AdminStudentDossierPage({
             />
           </div>
 
-          <section id="orientation" className="pc-panel scroll-mt-52 lg:scroll-mt-40 p-5 sm:p-6">
+          <section id="orientation" className="pc-panel scroll-mt-28 p-5 sm:p-6">
             <PremiumSectionHeader
               eyebrow="Orientation Campus"
               title={recommendations.length
@@ -1124,7 +1132,7 @@ export default async function AdminStudentDossierPage({
           </section>
           </AdminDossierDisclosure>
 
-          <section id="documents" className="pc-panel scroll-mt-52 lg:scroll-mt-40 p-5 sm:p-6">
+          <section id="documents" className="pc-panel scroll-mt-28 p-5 sm:p-6">
             <PremiumSectionHeader
               eyebrow="Pièces"
               title="Documents du dossier"
@@ -1168,7 +1176,7 @@ export default async function AdminStudentDossierPage({
                   {documents.map((document) => (
                     <div key={document.id} className="flex flex-col gap-3 py-3 sm:flex-row sm:items-center sm:justify-between">
                       <div className="min-w-0">
-                        <p className="truncate text-sm font-semibold text-slate-900">{document.original_filename || document.category}</p>
+                        <p className="break-all text-sm font-semibold text-slate-900">{document.original_filename || document.category}</p>
                         <p className="mt-1 text-xs text-slate-500">
                           Version {documentVersionById.get(document.id) || 1} · {document.category} · {formatDate(document.created_at)}
                         </p>
@@ -1186,7 +1194,7 @@ export default async function AdminStudentDossierPage({
             description="Contrat, proposition commerciale, paiement et réponse enregistrée."
             targetIds={["commercial"]}
           >
-          <section id="commercial" className="pc-panel scroll-mt-52 lg:scroll-mt-40 p-5 sm:p-6">
+          <section id="commercial" className="pc-panel scroll-mt-28 p-5 sm:p-6">
             <PremiumSectionHeader
               eyebrow="Proposition & paiement"
               title="Cadre commercial du dossier"
@@ -1200,7 +1208,7 @@ export default async function AdminStudentDossierPage({
                 { label: "Prix proposé", value: proposedOfferAmount || purchaseAmount || "Non enregistré" },
                 { label: "Paiement", value: purchaseStatusLabel(purchase?.status) },
                 { label: "Accès étudiant", value: customerAccessLabel(access?.status) },
-                { label: "Motif de proposition", value: intake?.proposal_reason || "Aucun motif enregistré" },
+                { label: "Motif de proposition", value: <bdi dir="auto" className="break-words">{intake?.proposal_reason || "Aucun motif enregistré"}</bdi> },
               ]}
             />
             {intake?.student_response_note ? (
@@ -1212,11 +1220,11 @@ export default async function AdminStudentDossierPage({
           </section>
           </AdminDossierDisclosure>
 
-          <section id="applications" className="pc-panel scroll-mt-52 lg:scroll-mt-40 p-5 sm:p-6">
+          <section id="applications" className="pc-panel scroll-mt-28 p-5 sm:p-6">
             <PremiumSectionHeader
               eyebrow="Candidatures"
               title={applications.length ? `${applications.length} candidature${applications.length > 1 ? "s" : ""} rattachée${applications.length > 1 ? "s" : ""}` : "Candidatures"}
-              description="Le détail opérationnel et les changements de statut restent dans la file Candidatures."
+              description="Consultez les candidatures liées à cette personne. Les changements de statut se font dans la file Candidatures."
               actions={
                 applications.length ? (
                   <Link href={`/admin/applications?student=${studentId}`} className={buttonClassName("ghost", "min-h-8 px-2.5 py-1 text-xs")}>
@@ -1260,7 +1268,7 @@ export default async function AdminStudentDossierPage({
                             {universityValue?.city ? ` · ${universityValue.city}` : ""}
                           </p>
                           {application.next_action ? (
-                            <p className="mt-2 text-xs leading-5 text-[var(--foreground-soft)]">
+                            <p className="mt-2 text-sm leading-6 text-slate-700">
                               Prochaine action · {application.next_action}
                             </p>
                           ) : null}
@@ -1291,13 +1299,13 @@ export default async function AdminStudentDossierPage({
           </section>
         </div>
 
-        <aside className="min-w-0 space-y-7">
+        <aside className="min-w-0 space-y-6">
           <AdminDossierDisclosure
             title="Gestion et historique"
             description="Attribution du conseiller, repères du dossier et événements chronologiques."
             targetIds={["assignment", "history"]}
           >
-          <div id="assignment" className="scroll-mt-52 lg:scroll-mt-40">
+          <div id="assignment" className="scroll-mt-28">
             <AdminCaseOwnerPanel
             studentId={studentId}
             advisors={advisorOptions}
@@ -1318,7 +1326,7 @@ export default async function AdminStudentDossierPage({
             </div>
           </section>
 
-          <section id="history" className="pc-card scroll-mt-52 lg:scroll-mt-40 p-5">
+          <section id="history" className="pc-card scroll-mt-28 p-5">
             <PremiumSectionHeader
               eyebrow="Historique"
               title="Historique central du dossier"

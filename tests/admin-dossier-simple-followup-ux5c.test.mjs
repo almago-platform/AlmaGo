@@ -17,7 +17,7 @@ test("UX-5c is a read-only one-screen follow-up of the same person, not a second
     "Admission universitaire",
     "Documents demandés",
     "Messages de l’étudiant",
-    "Deadline universitaire",
+    "Date limite universitaire",
   ]) assert.ok(summary.includes(title), title);
   for (const href of [
     "#applications",
@@ -52,9 +52,9 @@ test("UX-5c waits for recorded student requests, messages and verified universit
   assert.match(dossier, /application\.deadline_kind === "official_hard_deadline"/);
   assert.match(dossier, /applicationDateIsTrusted\(application\)/);
   assert.match(dossier, /!isSubmittedApplicationStatus\(application\.status\)/);
-  assert.match(summary, /Aucune deadline officielle vérifiée pour une candidature active non soumise/);
+  assert.match(summary, /Aucune date limite officielle vérifiée pour une candidature active non soumise/);
   assert.match(summary, /Aucun message non lu dans les échanges chargés/);
-  assert.match(summary, /Les dates de tâches internes ne sont jamais présentées comme des deadlines universitaires/);
+  assert.match(summary, /Les dates de tâches internes ne sont jamais présentées comme des dates limites universitaires/);
 });
 
 test("UX-5c retains multiple distinct admission PDFs and opens the correct existing form", () => {

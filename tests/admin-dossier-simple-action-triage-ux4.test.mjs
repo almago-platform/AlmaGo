@@ -41,7 +41,7 @@ test("UX-4 retains authorized actions, no invented deadlines and no new backend"
   assert.match(panel, /Ajouter une action de suivi/);
   assert.match(panel, /Cible interne facultative/);
   assert.match(panel, /Les échéances officielles restent gérées par les candidatures et les sources vérifiées/);
-  assert.match(panel, /Les deadlines universitaires vérifiées restent dans Candidatures/);
+  assert.match(panel, /Les dates limites universitaires vérifiées restent dans Candidatures/);
   assert.match(api, /getAdminUser/);
   assert.match(api, /pilotée automatiquement et ne peut pas être modifiée ici/);
   assert.match(api, /student_history/);

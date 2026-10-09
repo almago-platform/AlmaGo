@@ -271,7 +271,7 @@ export function AdminDocumentRequirementsPanel({
 
   return (
     <section className="mt-5 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4 sm:p-5" aria-labelledby="document-requirements-title">
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+      <div className="flex min-w-0 flex-col gap-4 2xl:flex-row 2xl:items-start 2xl:justify-between">
         <div>
           <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--brand)]">Exigences documentaires</p>
           <h3 id="document-requirements-title" className="mt-2 text-lg font-semibold text-slate-950">
@@ -281,7 +281,7 @@ export function AdminDocumentRequirementsPanel({
             Une exigence reste distincte du fichier envoyé. Le panneau conserve aussi les opérations internes d’authentification, traduction et légalisation, leur motif et leur source lorsqu’ils sont enregistrés.
           </p>
         </div>
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+        <div className="grid min-w-0 grid-cols-2 gap-2 sm:grid-cols-4 2xl:w-auto">
           <RequirementMetric label="Demandés" value={requested} warning={requested > 0} />
           <RequirementMetric label="À vérifier" value={review} warning={review > 0} />
           <RequirementMetric label="À remplacer" value={replacement} warning={replacement > 0} />
@@ -591,9 +591,9 @@ function RequirementMetric({
   warning?: boolean;
 }) {
   return (
-    <div className="min-w-[6.5rem] rounded-[var(--radius-control)] border border-[var(--border)] bg-white px-3 py-2">
-      <p className="text-[0.65rem] font-bold uppercase tracking-[0.1em] text-slate-500">{label}</p>
-      <p className={`mt-1 text-xl font-semibold ${warning ? "text-amber-800" : "text-slate-950"}`}>{value}</p>
+    <div className="min-w-0 rounded-[var(--radius-control)] border border-[var(--border)] bg-white px-3 py-2">
+      <p className="break-words text-xs font-bold leading-4 text-slate-700">{label}</p>
+      <p className={`mt-1 text-xl font-semibold tabular-nums ${warning ? "text-amber-800" : "text-slate-950"}`}>{value}</p>
     </div>
   );
 }
