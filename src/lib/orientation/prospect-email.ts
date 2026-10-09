@@ -16,8 +16,6 @@ type EmailCopy = {
   candidateReportCta: string;
   reportsNote: string;
   attachmentsNote: string;
-  accountCta: string;
-  accountNote: string;
   interestCta: string;
   interestNote: string;
   closing: string;
@@ -39,8 +37,6 @@ const emailCopy: Record<Locale, EmailCopy> = {
     candidateReportCta: "Voir mon rapport candidat PDF",
     reportsNote: "Vous pouvez consulter et enregistrer ces deux rapports en PDF grâce aux boutons ci-dessous.",
     attachmentsNote: "Les deux rapports sont également joints à cet e-mail au format PDF.",
-    accountCta: "Continuer ma procédure",
-    accountNote: "Créez votre espace étudiant Campus Allemagne pour rattacher cette orientation à votre compte et reprendre votre parcours sans recommencer.",
     interestCta: "Je veux continuer avec Campus Allemagne",
     interestNote: "Cette confirmation exprime votre intérêt pour la prochaine étape ou un futur pilote gratuit. Aucun paiement n’est demandé.",
     closing: "Votre projet commence à prendre forme. Nous avancerons avec vous étape par étape pour préparer la suite de votre dossier.",
@@ -60,8 +56,6 @@ const emailCopy: Record<Locale, EmailCopy> = {
     candidateReportCta: "تقرير المترشح (PDF)",
     reportsNote: "يفتح كل رابط مستندًا آمنًا يمكنك حفظه بصيغة PDF.",
     attachmentsNote: "ستجد أيضًا التقريرين مرفقين بهذا البريد الإلكتروني بصيغة PDF.",
-    accountCta: "إنشاء مساحتي المجانية",
-    accountNote: "إنشاء الحساب اختياري. يظل هذا التوجيه منفصلاً عن أي خدمة مرافقة مدفوعة.",
     interestCta: "أريد المتابعة مع Campus Allemagne",
     interestNote: "هذا التأكيد يعبّر عن اهتمامك بالمرحلة التالية أو ببرنامج تجريبي مجاني مستقبلاً. لا يُطلب أي دفع.",
     closing: "بدأ مشروعك يتضح أكثر. سنواصل معك خطوة بخطوة للتحضير للمرحلة التالية من ملفك.",
@@ -81,8 +75,6 @@ const emailCopy: Record<Locale, EmailCopy> = {
     candidateReportCta: "Candidate report (PDF)",
     reportsNote: "Each link opens a secure document that you can save as a PDF.",
     attachmentsNote: "Both reports are also attached to this email as PDF files.",
-    accountCta: "Create my free space",
-    accountNote: "Creating an account is optional. This orientation remains separate from any paid support service.",
     interestCta: "I want to continue with Campus Allemagne",
     interestNote: "This confirmation expresses interest in the next step or a future free pilot. No payment is requested.",
     closing: "Your project is starting to take shape. We will continue step by step to prepare the next stage of your application.",
@@ -102,8 +94,6 @@ const emailCopy: Record<Locale, EmailCopy> = {
     candidateReportCta: "Bewerberbericht (PDF)",
     reportsNote: "Jeder Link öffnet ein sicheres Dokument, das du als PDF speichern kannst.",
     attachmentsNote: "Beide Berichte sind dieser E-Mail zusätzlich als PDF-Dateien beigefügt.",
-    accountCta: "Kostenlosen Bereich erstellen",
-    accountNote: "Ein Konto ist freiwillig. Diese Orientierung bleibt von einer kostenpflichtigen Begleitung getrennt.",
     interestCta: "Ich möchte mit Campus Allemagne weitermachen",
     interestNote: "Diese Bestätigung zeigt dein Interesse am nächsten Schritt oder an einem zukünftigen kostenlosen Pilot. Es wird keine Zahlung verlangt.",
     closing: "Dein Projekt nimmt Form an. Wir gehen die nächsten Schritte gemeinsam und bereiten die weitere Bearbeitung deines Dossiers vor.",
@@ -127,7 +117,6 @@ export function buildOrientationProspectEmail({
   diagnostic,
   orientationReportUrl,
   candidateReportUrl,
-  signupUrl,
   interestUrl,
   attachmentsIncluded = false,
 }: {
@@ -135,7 +124,6 @@ export function buildOrientationProspectEmail({
   diagnostic: PublicOrientationDiagnostic;
   orientationReportUrl: string;
   candidateReportUrl: string;
-  signupUrl: string | null;
   interestUrl?: string | null;
   attachmentsIncluded?: boolean;
 }) {
@@ -175,10 +163,6 @@ export function buildOrientationProspectEmail({
       copy.reportsNote,
       ...(attachmentsIncluded ? [copy.attachmentsNote] : []),
       "",
-      ...(signupUrl ? [
-        `${copy.accountCta}: ${signupUrl}`,
-        copy.accountNote,
-      ] : []),
       ...(interestUrl
         ? ["", `${copy.interestCta}: ${interestUrl}`, copy.interestNote]
         : []),
@@ -214,10 +198,6 @@ export function buildOrientationProspectEmail({
           <p style="margin:0;font-size:12px;line-height:1.6;color:#546078">${escapeHtml(copy.reportsNote)}</p>
           ${attachmentsIncluded ? `<p style="margin:8px 0 0;font-size:12px;line-height:1.6;font-weight:700;color:#182442">${escapeHtml(copy.attachmentsNote)}</p>` : ""}
         </div>
-        ${signupUrl ? `<p style="margin:0 0 10px">
-          <a href="${escapeHtml(signupUrl)}" style="font-weight:700;color:#2349c9">${escapeHtml(copy.accountCta)}</a>
-        </p>
-        <p style="margin:0 0 22px;font-size:13px;line-height:1.6;color:#546078">${escapeHtml(copy.accountNote)}</p>` : ""}
         ${interestUrl ? `<div style="margin:0 0 22px;padding:18px;border:1px solid #eadbb7;border-radius:12px;background:#fff9eb">
           <p style="margin:0 0 12px"><a href="${escapeHtml(interestUrl)}" style="display:inline-block;background:#182442;color:#ffffff;text-decoration:none;font-weight:700;padding:11px 16px;border-radius:10px">${escapeHtml(copy.interestCta)}</a></p>
           <p style="margin:0;font-size:13px;line-height:1.6;color:#182442">${escapeHtml(copy.interestNote)}</p>
