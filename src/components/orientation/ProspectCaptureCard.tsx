@@ -197,14 +197,17 @@ export function ProspectCaptureCard({
   const pendingLabel = emailDeliveryEnabled
     ? copy.sendingEmail
     : accountLinkingEnabled ? copy.continueSaving : copy.sending;
-  const eyebrow = emailDeliveryEnabled
-    ? copy.emailEyebrow
+  const eyebrow = includedEmailDelivery
+    ? copy.includedEmailEyebrow
+    : emailDeliveryEnabled ? copy.emailEyebrow
     : accountLinkingEnabled ? copy.continueEyebrow : copy.eyebrow;
-  const title = emailDeliveryEnabled
-    ? copy.emailTitle
+  const title = includedEmailDelivery
+    ? copy.includedEmailTitle
+    : emailDeliveryEnabled ? copy.emailTitle
     : accountLinkingEnabled ? copy.continueTitle : copy.title;
-  const textCopy = emailDeliveryEnabled
-    ? copy.emailText
+  const textCopy = includedEmailDelivery
+    ? copy.includedEmailText
+    : emailDeliveryEnabled ? copy.emailText
     : accountLinkingEnabled ? copy.continueText : copy.text;
   const privacyLabel = emailDeliveryEnabled
     ? copy.emailPrivacyLabel
