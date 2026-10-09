@@ -146,3 +146,53 @@ test.describe("V3.2 bounded public visual regression gate", () => {
     expect(maxCssDuration(result.animationDuration)).toBeLessThanOrEqual(0.02);
   });
 });
+
+
+test("contact footer has readable links, an approved logo and working homepage anchors", async ({ page }, testInfo) => {
+  test.skip(
+    !["desktop-1280-chromium", "mobile-compact-chromium"].includes(testInfo.project.name),
+    "Review contact footer on desktop and mobile.",
+  );
+
+  await page.goto("/contact", { waitUntil: "networkidle" });
+  const footer = page.locator("footer");
+  await expect(footer).toBeVisible();
+
+  const colors = await footer.evaluate((element) => {
+    const link = element.querySelector("nav a");
+    const logoBacking = element.querySelector('a:has(img[alt="Campus Allemagne"])');
+    return {
+      footerBackground: getComputedStyle(element).backgroundColor,
+      link: link ? getComputedStyle(link).color : null,
+      logoBacking: logoBacking ? getComputedStyle(logoBacking).backgroundColor : null,
+    };
+  });
+  const contrastRatio = (foreground, background) => {
+    const channels = (color) => (color.match(/[0-9.]+/g) || []).slice(0, 3).map(Number);
+    const luminance = (color) => {
+      const values = channels(color).map(value => {
+        const channel = value / 255;
+        return channel <= 0.04045 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4;
+      });
+      return values[0] * 0.2126 + values[1] * 0.7152 + values[2] * 0.0722;
+    };
+    const first = luminance(foreground);
+    const second = luminance(background);
+    return (Math.max(first, second) + 0.05) / (Math.min(first, second) + 0.05);
+  };
+  expect(colors.link).not.toBeNull();
+  expect(contrastRatio(colors.link, colors.footerBackground)).toBeGreaterThanOrEqual(4.5);
+  expect(colors.logoBacking).toBe("rgb(247, 244, 236)");
+  await expect(footer.locator('img[alt="Campus Allemagne"]')).toBeVisible();
+  expect(await footer.locator('img[alt="Campus Allemagne"]').evaluate(img => img.naturalWidth)).toBeGreaterThan(0);
+
+  await expect(footer.locator('a[href="/#parcours"]')).toHaveCount(1);
+  await expect(footer.locator('a[href="/#faq"]')).toHaveCount(1);
+  await expect(footer.locator('a[href="/#programmes"]')).toHaveCount(1);
+  await expectNoHorizontalOverflow(page, "Contact with shared footer");
+
+  await page.screenshot({
+    path: `artifacts/visual-v3-2/contact-footer-${testInfo.project.name}.png`,
+    fullPage: true,
+  });
+});
