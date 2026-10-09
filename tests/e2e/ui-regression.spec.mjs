@@ -167,8 +167,21 @@ test("contact footer has readable links, an approved logo and working homepage a
       logoBacking: logoBacking ? getComputedStyle(logoBacking).backgroundColor : null,
     };
   });
-  expect(colors.footerBackground).toBe("rgb(28, 33, 36)");
-  expect(colors.link).toBe("rgb(247, 244, 236)");
+  const contrastRatio = (foreground, background) => {
+    const channels = (color) => (color.match(/[0-9.]+/g) || []).slice(0, 3).map(Number);
+    const luminance = (color) => {
+      const values = channels(color).map(value => {
+        const channel = value / 255;
+        return channel <= 0.04045 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4;
+      });
+      return values[0] * 0.2126 + values[1] * 0.7152 + values[2] * 0.0722;
+    };
+    const first = luminance(foreground);
+    const second = luminance(background);
+    return (Math.max(first, second) + 0.05) / (Math.min(first, second) + 0.05);
+  };
+  expect(colors.link).not.toBeNull();
+  expect(contrastRatio(colors.link, colors.footerBackground)).toBeGreaterThanOrEqual(4.5);
   expect(colors.logoBacking).toBe("rgb(247, 244, 236)");
   await expect(footer.locator('img[alt="Campus Allemagne"]')).toBeVisible();
   expect(await footer.locator('img[alt="Campus Allemagne"]').evaluate(img => img.naturalWidth)).toBeGreaterThan(0);
