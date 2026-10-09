@@ -94,7 +94,13 @@ function mapProgramme(row: ProgrammeCatalogRow): OrientationProgrammeRecord {
   };
 }
 
-export async function loadVerifiedProgrammeCatalogue() {
+// Only verified academic catalogue records are cached on the VPS process.
+// No user session, student dossier or commercial status ever enters this cache.
+const CATALOGUE_CACHE_TTL_MS = 60_000;
+let cachedCatalogue: { expiresAt: number; records: OrientationProgrammeRecord[] } | null = null;
+let catalogueInFlight: Promise<OrientationProgrammeRecord[]> | null = null;
+
+async function fetchVerifiedProgrammeCatalogue() {
   const supabase = createPublicCatalogSupabaseClient();
 
   const { data, error } = await supabase.rpc("read_orientation_program_catalog");
@@ -106,4 +112,29 @@ export async function loadVerifiedProgrammeCatalogue() {
   return rows
     .map(mapProgramme)
     .sort((a, b) => a.name.localeCompare(b.name));
+}
+
+
+/**
+ * A bounded process-local read cache for non-personal verified programme records.
+ * Concurrent requests share one fetch. Failed fetches do not poison the cache,
+ * and every caller receives its own copy to prevent cross-request mutations.
+ */
+export async function loadVerifiedProgrammeCatalogue(): Promise<OrientationProgrammeRecord[]> {
+  if (cachedCatalogue && cachedCatalogue.expiresAt > Date.now()) {
+    return structuredClone(cachedCatalogue.records);
+  }
+
+  if (!catalogueInFlight) {
+    catalogueInFlight = fetchVerifiedProgrammeCatalogue()
+      .then((records) => {
+        cachedCatalogue = { records, expiresAt: Date.now() + CATALOGUE_CACHE_TTL_MS };
+        return records;
+      })
+      .finally(() => {
+        catalogueInFlight = null;
+      });
+  }
+
+  return structuredClone(await catalogueInFlight);
 }
