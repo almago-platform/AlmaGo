@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { join } from "node:path";
 import test from "node:test";
+import { isPhase2EmailDeliveryEnabled } from "../src/lib/phase2/config.ts";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 const read = (path) => readFileSync(join(root, path), "utf8");
@@ -97,4 +98,22 @@ test("transactional email is localized and sends both secure PDF report links wi
   assert.match(emailTemplate, /signupUrl/);
   assert.match(emailTemplate, /admission.*visa|قبول.*تأشيرة|Zulassungs.*Visum/i);
   assert.doesNotMatch(emailTemplate, /guaranteed admission|admission garantie|visa garanti/i);
+});
+
+
+test("email delivery can be enabled without forcing account creation", () => {
+  const emailOnly = {
+    ALMAGO_PARTNER_PRELAUNCH_MODE: "false",
+    ALMAGO_PHASE2_ENABLED: "true",
+    ALMAGO_PHASE2_PROSPECT_CAPTURE_ENABLED: "true",
+    ALMAGO_PHASE2_ACCOUNT_LINKING_ENABLED: "false",
+    ALMAGO_PHASE2_EMAIL_DELIVERY_ENABLED: "true",
+  };
+
+  assert.equal(isPhase2EmailDeliveryEnabled(emailOnly), true);
+  assert.equal(isPhase2EmailDeliveryEnabled({ ...emailOnly, ALMAGO_PHASE2_PROSPECT_CAPTURE_ENABLED: "false" }), false);
+  assert.equal(isPhase2EmailDeliveryEnabled({ ...emailOnly, ALMAGO_PARTNER_PRELAUNCH_MODE: "true" }), false);
+  assert.equal(isPhase2EmailDeliveryEnabled({ ...emailOnly, ALMAGO_PHASE2_EMAIL_DELIVERY_ENABLED: "false" }), false);
+  assert.match(emailTemplate, /signupUrl: string \| null/);
+  assert.match(emailTemplate, /signupUrl \? \[/);
 });
