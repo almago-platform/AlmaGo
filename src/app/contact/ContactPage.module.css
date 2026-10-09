@@ -29,7 +29,7 @@
 .container {
   width: min(1180px, calc(100% - 48px));
   margin: 0 auto;
-  min-height: 92px;
+  min-height: 82px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -43,7 +43,7 @@
 
 .logo {
   width: auto;
-  height: 48px;
+  height: 54px;
 }
 
 .backLink {
@@ -59,7 +59,7 @@
 
 .hero {
   position: relative;
-  padding: 84px 24px 96px;
+  padding: clamp(52px, 5.5vw, 72px) 24px clamp(64px, 6vw, 80px);
   background:
     radial-gradient(circle at 88% 12%, rgba(252, 181, 10, 0.22), transparent 34%),
     linear-gradient(135deg, #fff8dc 0%, #f7f4ec 64%);
@@ -96,22 +96,22 @@
 .hero h1 {
   max-width: 760px;
   margin: 0;
-  font-size: clamp(2.5rem, 7vw, 5rem);
-  line-height: 0.98;
+  font-size: clamp(2.65rem, 5.6vw, 4.4rem);
+  line-height: 1.07;
   letter-spacing: -0.05em;
 }
 
 .intro {
   max-width: 720px;
-  margin: 28px 0 0;
+  margin: 24px 0 0;
   color: #555d61;
   font-size: clamp(1.05rem, 2vw, 1.28rem);
   line-height: 1.65;
 }
 
 .contactCard {
-  margin-top: 42px;
-  padding: 30px;
+  margin-top: 32px;
+  padding: 28px;
   display: grid;
   gap: 12px;
   border: 1px solid rgba(28, 33, 36, 0.14);
@@ -168,10 +168,11 @@
 }
 
 .safety {
-  margin-top: 24px;
-  padding: 22px 24px;
+  margin-top: 18px;
+  padding: 20px 24px;
   border-inline-start: 4px solid #fcb50a;
-  background: rgba(255, 255, 255, 0.55);
+  background: rgba(255, 253, 248, 0.76);
+  border-radius: 0 10px 10px 0;
 }
 
 .safety strong {
@@ -200,7 +201,7 @@
   }
 
   .hero {
-    padding: 58px 16px 72px;
+    padding: 48px 16px 60px;
   }
 
   .contactCard {
@@ -212,4 +213,8 @@
     width: 100%;
     justify-content: space-between;
   }
+}
+
+:global(html[dir="rtl"]) .safety {
+  border-radius: 10px 0 0 10px;
 }
