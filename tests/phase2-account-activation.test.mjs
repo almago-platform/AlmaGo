@@ -18,10 +18,11 @@ const config = read("src/lib/phase2/config.ts");
 const env = read(".env.example");
 const report = read("src/app/orientation/report/[token]/page.tsx");
 
-test("P2.4 stays independently disabled by default and email delivery depends on it", () => {
+test("P2.4 account linking remains independently disabled by default and is not required for email delivery", () => {
   assert.match(config, /isPhase2AccountLinkingEnabled/);
   assert.match(config, /ALMAGO_PHASE2_ACCOUNT_LINKING_ENABLED/);
-  assert.match(config, /isPhase2ProspectCaptureEnabled\(env\) \|\| !isPhase2AccountLinkingEnabled\(env\)/);
+  assert.match(config, /if \(!isPhase2ProspectCaptureEnabled\(env\)\) return false/);
+  assert.doesNotMatch(config, /!isPhase2ProspectCaptureEnabled\(env\) \|\| !isPhase2AccountLinkingEnabled\(env\)/);
   assert.match(env, /ALMAGO_PHASE2_ACCOUNT_LINKING_ENABLED=false/);
   assert.match(report, /accountLinkingEnabled \? \(/);
 });

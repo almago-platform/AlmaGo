@@ -30,6 +30,7 @@ import {
   PUBLIC_ORIENTATION_SESSION_KEY as SESSION_KEY,
   createEmptyPublicOrientationAnswers,
   createEmptyPublicOrientationIdentity,
+  isAdultPublicOrientationIdentity,
   isCompletePublicOrientationIdentity,
   restorePublicOrientationAnswers,
   restorePublicOrientationIdentity,
@@ -91,6 +92,14 @@ export function PublicOrientationForm({
   );
   const [identityComplete, setIdentityComplete] = useState(authenticatedUpdate);
   const [identityError, setIdentityError] = useState("");
+  // Intentionally not restored from sessionStorage: an email request must be opted into in this session.
+  const [automaticEmailConsent, setAutomaticEmailConsent] = useState(false);
+  const autoEmailAttempted = useRef(false);
+  const claimAutoEmailAttempt = useCallback(() => {
+    if (autoEmailAttempted.current) return false;
+    autoEmailAttempted.current = true;
+    return true;
+  }, []);
   const [answers, setAnswers] = useState<Answers>(() =>
     initialAnswers
       ? restorePublicOrientationAnswers(initialAnswers)
@@ -390,6 +399,7 @@ export function PublicOrientationForm({
     value: PublicOrientationIdentity[K],
   ) {
     setIdentity((current) => ({ ...current, [key]: value }));
+    if (key === "email" || key === "birthDate") setAutomaticEmailConsent(false);
     setIdentityError("");
   }
 
@@ -410,6 +420,7 @@ export function PublicOrientationForm({
 
     setIdentity(normalized);
     setIdentityError("");
+    autoEmailAttempted.current = false;
     setIdentityComplete(true);
   }
 
@@ -670,6 +681,23 @@ export function PublicOrientationForm({
                   </Link>
                 </div>
 
+                {prospectCaptureEnabled && emailDeliveryEnabled && isAdultPublicOrientationIdentity(identity) ? (
+                  <label className="mt-5 flex cursor-pointer items-start gap-3 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4 text-sm leading-6">
+                    <input
+                      type="checkbox"
+                      name="automaticEmailConsent"
+                      checked={automaticEmailConsent}
+                      onChange={(event) => setAutomaticEmailConsent(event.target.checked)}
+                      className="mt-1"
+                    />
+                    <span>{prospectCopy.capture.automaticEmailConsent}</span>
+                  </label>
+                ) : prospectCaptureEnabled && emailDeliveryEnabled && isCompletePublicOrientationIdentity(identity) ? (
+                  <p className="mt-5 text-sm leading-6 text-[var(--muted)]">
+                    {prospectCopy.capture.automaticEmailMinorNotice}
+                  </p>
+                ) : null}
+
                 {identityError ? (
                   <p
                     role="alert"
@@ -710,6 +738,7 @@ export function PublicOrientationForm({
                 type="button"
                 onClick={() => {
                   setIdentityError("");
+                  setAutomaticEmailConsent(false);
                   setIdentityComplete(false);
                 }}
                 className="mt-3 text-sm font-semibold text-[var(--foreground)] underline decoration-[var(--border-strong)] underline-offset-4 hover:decoration-[var(--foreground)]"
@@ -1192,6 +1221,8 @@ export function PublicOrientationForm({
                     reviewId={orientationReviewId}
                     emailDeliveryEnabled={emailDeliveryEnabled}
                     accountLinkingEnabled={accountLinkingEnabled}
+                    automaticEmailConsent={automaticEmailConsent && isAdultPublicOrientationIdentity(identity)}
+                    claimAutoEmailAttempt={claimAutoEmailAttempt}
                     acquisitionContext={acquisitionContext}
                   />
                 ) : null}

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { orientationProspectCopy } from "@/content/orientation-prospect-copy";
 import {
@@ -29,6 +29,8 @@ export function ProspectCaptureCard({
   reviewId = null,
   emailDeliveryEnabled = false,
   accountLinkingEnabled = false,
+  automaticEmailConsent = false,
+  claimAutoEmailAttempt,
   acquisitionContext = null,
 }: {
   answers: PublicOrientationAnswers;
@@ -37,6 +39,8 @@ export function ProspectCaptureCard({
   reviewId?: string | null;
   emailDeliveryEnabled?: boolean;
   accountLinkingEnabled?: boolean;
+  automaticEmailConsent?: boolean;
+  claimAutoEmailAttempt?: () => boolean;
   acquisitionContext?: AcquisitionContext | null;
 }) {
   const { locale } = useLocale();
@@ -44,12 +48,20 @@ export function ProspectCaptureCard({
   const [email, setEmail] = useState(initialEmail);
   const [privacyAcknowledged, setPrivacyAcknowledged] = useState(false);
   const [status, setStatus] = useState<"idle" | "saving" | "success" | "error">("idle");
+  const [previouslyRequested, setPreviouslyRequested] = useState(false);
   const [message, setMessage] = useState("");
   const [interestToken, setInterestToken] = useState<string | null>(null);
+  const [signupPath, setSignupPath] = useState<string | null>(null);
   const [interestStatus, setInterestStatus] = useState<"idle" | "saving" | "success" | "error">("idle");
+  const autoStarted = useRef(false);
+  const submitting = useRef(false);
+  const persistentCaptureAllowed = identity ? isAdultPublicOrientationIdentity(identity) : false;
 
-  async function submit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  const submit = useCallback(async (event?: React.FormEvent<HTMLFormElement>, automated = false) => {
+    event?.preventDefault();
+    if (submitting.current) return;
+    if (automated && !(automaticEmailConsent && emailDeliveryEnabled && persistentCaptureAllowed)) return;
+    if (!automated && !privacyAcknowledged) return;
     const normalized = email.trim().toLowerCase();
 
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalized)) {
@@ -58,8 +70,7 @@ export function ProspectCaptureCard({
       return;
     }
 
-    if (!privacyAcknowledged) return;
-
+    submitting.current = true;
     setStatus("saving");
     setMessage("");
 
@@ -75,6 +86,7 @@ export function ProspectCaptureCard({
             ? { identity: { ...identity, email: normalized } }
             : {}),
           privacyAcknowledged: true,
+          ...(automated ? { deliveryMode: "automatic", emailDeliveryConsent: true } : {}),
           contactConsent: false,
           ...(reviewId ? { reviewId } : {}),
           ...(acquisitionContext ? { acquisition: acquisitionContext } : {}),
@@ -91,12 +103,16 @@ export function ProspectCaptureCard({
           : null,
       );
 
-      if (
-        accountLinkingEnabled
+      const verifiedSignupPath = accountLinkingEnabled
         && typeof payload.signupPath === "string"
         && payload.signupPath.startsWith("/signup?orientation_token=")
-      ) {
-        window.location.assign(payload.signupPath);
+          ? payload.signupPath
+          : null;
+      setSignupPath(verifiedSignupPath);
+
+      // The email request is complete: a free account is always a separate choice.
+      if (!emailDeliveryEnabled && verifiedSignupPath) {
+        window.location.assign(verifiedSignupPath);
         return;
       }
 
@@ -110,9 +126,29 @@ export function ProspectCaptureCard({
     } catch {
       setStatus("error");
       setMessage(copy.failure);
+    } finally {
+      submitting.current = false;
     }
-  }
+  }, [
+    email, locale, answers, identity, privacyAcknowledged, reviewId, acquisitionContext,
+    emailDeliveryEnabled, accountLinkingEnabled, automaticEmailConsent, persistentCaptureAllowed, copy,
+  ]);
 
+  useEffect(() => {
+    if (!automaticEmailConsent || !emailDeliveryEnabled || !persistentCaptureAllowed || autoStarted.current) return;
+    autoStarted.current = true;
+    if (!claimAutoEmailAttempt?.()) {
+      // A previous mount already started sending. React state is updated
+      // asynchronously to avoid cascading synchronous effect renders.
+      queueMicrotask(() => setPreviouslyRequested(true));
+      return;
+    }
+    // Schedule the network request after the effect; never trigger a
+    // synchronous state update from a React effect body.
+    queueMicrotask(() => {
+      void submit(undefined, true);
+    });
+  }, [automaticEmailConsent, emailDeliveryEnabled, persistentCaptureAllowed, claimAutoEmailAttempt, submit, copy.automaticEmailAlreadyRequested]);
 
   async function submitInterest() {
     if (!interestToken || interestStatus === "saving" || interestStatus === "success") return;
@@ -134,10 +170,6 @@ export function ProspectCaptureCard({
     }
   }
 
-  const persistentCaptureAllowed = identity
-    ? isAdultPublicOrientationIdentity(identity)
-    : false;
-
   if (!persistentCaptureAllowed) {
     return (
       <section id="orientation-prospect-capture" className="orientation-print-hide mt-8 scroll-mt-6 rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface-subtle)] p-5 sm:p-6">
@@ -150,33 +182,35 @@ export function ProspectCaptureCard({
     );
   }
 
-  const submitLabel = accountLinkingEnabled
-    ? copy.continueSubmit
-    : emailDeliveryEnabled
-      ? copy.emailSubmit
-      : copy.submit;
-  const pendingLabel = accountLinkingEnabled
-    ? copy.continueSaving
-    : emailDeliveryEnabled
-      ? copy.sendingEmail
-      : copy.sending;
-  const eyebrow = accountLinkingEnabled ? copy.continueEyebrow : copy.eyebrow;
-  const title = accountLinkingEnabled ? copy.continueTitle : copy.title;
-  const textCopy = accountLinkingEnabled ? copy.continueText : copy.text;
-  const privacyLabel = accountLinkingEnabled
-    ? copy.continuePrivacyLabel
-    : copy.privacyLabel;
+  const submitLabel = emailDeliveryEnabled
+    ? copy.emailSubmit
+    : accountLinkingEnabled ? copy.continueSubmit : copy.submit;
+  const pendingLabel = emailDeliveryEnabled
+    ? copy.sendingEmail
+    : accountLinkingEnabled ? copy.continueSaving : copy.sending;
+  const eyebrow = emailDeliveryEnabled
+    ? copy.emailEyebrow
+    : accountLinkingEnabled ? copy.continueEyebrow : copy.eyebrow;
+  const title = emailDeliveryEnabled
+    ? copy.emailTitle
+    : accountLinkingEnabled ? copy.continueTitle : copy.title;
+  const textCopy = emailDeliveryEnabled
+    ? copy.emailText
+    : accountLinkingEnabled ? copy.continueText : copy.text;
+  const privacyLabel = emailDeliveryEnabled
+    ? copy.emailPrivacyLabel
+    : accountLinkingEnabled ? copy.continuePrivacyLabel : copy.privacyLabel;
 
   return (
     <section
       id="orientation-prospect-capture"
       className={`orientation-print-hide mt-8 scroll-mt-6 rounded-[var(--radius-lg)] border p-5 sm:p-6 ${
-        accountLinkingEnabled
+        accountLinkingEnabled && !emailDeliveryEnabled
           ? "border-[var(--brand-border)] bg-[var(--surface)]"
           : "border-[var(--border)] bg-[var(--surface-subtle)]"
       }`}
     >
-      {accountLinkingEnabled ? (
+      {accountLinkingEnabled && !emailDeliveryEnabled ? (
         <div className="mb-5 flex items-center gap-3 rounded-[var(--radius-control)] border border-[var(--success-border)] bg-[var(--success-soft)] px-4 py-3 text-sm">
           <span
             className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--success)] font-bold text-white"
@@ -191,12 +225,30 @@ export function ProspectCaptureCard({
       <h3 className="mt-2 text-xl font-bold">{title}</h3>
       <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">{textCopy}</p>
 
-      {accountLinkingEnabled ? (
+      {accountLinkingEnabled && !emailDeliveryEnabled ? (
         <div className="mt-4 rounded-[var(--radius-control)] border border-[var(--warning-border)] bg-[var(--warning-soft)] px-4 py-3 text-xs leading-5 text-[var(--foreground-soft)]">
           <strong className="text-[var(--foreground)]">{copy.continueBoundary}</strong>
         </div>
       ) : null}
 
+      {automaticEmailConsent && emailDeliveryEnabled ? (
+        <div className="mt-5 rounded-[var(--radius-control)] border border-[var(--info-border)] bg-[var(--info-soft)] p-4 text-sm leading-6">
+          <p role={status === "error" ? "alert" : "status"}>
+            {previouslyRequested
+              ? copy.automaticEmailAlreadyRequested
+              : status === "saving" || status === "idle" ? copy.automaticEmailPreparing : message}
+          </p>
+          {status === "error" || (status === "success" && message === copy.deliveryFailure) ? (
+            <button
+              type="button"
+              onClick={() => void submit(undefined, true)}
+              className="mt-3 rounded-[var(--radius-control)] bg-[var(--brand)] px-4 py-2 font-semibold text-white disabled:opacity-50"
+            >
+              {copy.automaticEmailRetry}
+            </button>
+          ) : null}
+        </div>
+      ) : (
       <form className="mt-5 space-y-4" onSubmit={submit} noValidate aria-busy={status === "saving"}>
         <label className="block text-sm font-semibold">
           {copy.emailLabel}
@@ -250,7 +302,7 @@ export function ProspectCaptureCard({
           type="submit"
           disabled={!privacyAcknowledged || status === "saving" || status === "success"}
           className={
-            accountLinkingEnabled
+            accountLinkingEnabled && !emailDeliveryEnabled
               ? "w-full rounded-[var(--radius-control)] bg-[var(--brand)] px-5 py-3 text-sm font-bold text-white shadow-[var(--shadow-card)] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
               : "rounded-[var(--radius-control)] bg-[var(--brand)] px-5 py-2.5 text-sm font-bold text-white disabled:cursor-not-allowed disabled:opacity-50"
           }
@@ -258,14 +310,24 @@ export function ProspectCaptureCard({
           {status === "saving" ? pendingLabel : submitLabel}
         </button>
       </form>
+      )}
 
-      {message ? (
+      {message && !(automaticEmailConsent && emailDeliveryEnabled) ? (
         <p
           id="orientation-capture-message"
           role={status === "error" ? "alert" : "status"}
           className="mt-4 text-sm font-medium"
         >
           {message}
+        </p>
+      ) : null}
+
+      {status === "success" && emailDeliveryEnabled && signupPath ? (
+        <p className="mt-4 text-sm leading-6 text-[var(--muted)]">
+          {copy.emailOptionalAccount}{" "}
+          <Link href={signupPath} className="font-semibold underline underline-offset-4">
+            {copy.continueSubmit}
+          </Link>
         </p>
       ) : null}
 

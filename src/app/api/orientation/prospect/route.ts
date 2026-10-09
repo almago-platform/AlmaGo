@@ -126,6 +126,8 @@ export async function POST(request: Request) {
     : null;
   const privacyAcknowledged = record.privacyAcknowledged === true;
   const contactConsent = record.contactConsent === true;
+  const automaticDelivery = record.deliveryMode === "automatic";
+  const emailDeliveryConsent = record.emailDeliveryConsent === true;
   const reviewId =
     typeof record.reviewId === "string" && record.reviewId.length <= 64
       ? record.reviewId
@@ -137,6 +139,11 @@ export async function POST(request: Request) {
   const acquisition = isPhase2AttributionEnabled() && acquisitionRecord
     ? normalizeAcquisitionContext(acquisitionRecord.kind, acquisitionRecord.sourceId)
     : null;
+
+  // An automatic request is only accepted when prior opt-in was recorded explicitly.
+  if (automaticDelivery && !emailDeliveryConsent) {
+    return NextResponse.json({ error: "Explicit automatic email consent is required." }, { status: 400 });
+  }
 
   if (!email || !answers || !privacyAcknowledged) {
     return NextResponse.json({ error: "Invalid orientation submission." }, { status: 400 });
@@ -233,6 +240,11 @@ export async function POST(request: Request) {
           locale,
           privacy_notice_version: PRIVACY_NOTICE_VERSION,
           privacy_acknowledged: true,
+          ...(automaticDelivery ? {
+            email_delivery_mode: "automatic",
+            email_delivery_consent: true,
+            email_delivery_consent_at: new Date().toISOString(),
+          } : {}),
           smart_priority: smartPriority,
           contact_consent: contactConsent,
           contact_consent_version: contactConsent ? CONTACT_CONSENT_VERSION : null,
@@ -327,12 +339,24 @@ export async function POST(request: Request) {
       attachments = [];
     }
 
+    // Do not claim to have emailed two PDFs if attachment generation failed.
+    if (automaticDelivery && attachments.length !== 2) {
+      await supabase
+        .from("orientations")
+        .update({ delivery_attempted_at: new Date().toISOString() })
+        .eq("id", orientation.id);
+      return NextResponse.json(
+        { saved: true, delivery: "unavailable", interestToken: interest.token, signupPath },
+        { status: 201 },
+      );
+    }
+
     const emailContent = buildOrientationProspectEmail({
       locale,
       diagnostic,
       orientationReportUrl,
       candidateReportUrl,
-      signupUrl: signupUrl.toString(),
+      signupUrl: isPhase2AccountLinkingEnabled() ? signupUrl.toString() : null,
       interestUrl,
       attachmentsIncluded: attachments.length === 2,
     });

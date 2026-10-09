@@ -23,7 +23,9 @@ export function isPhase2ProspectCaptureEnabled(
 export function isPhase2EmailDeliveryEnabled(
   env: Record<string, string | undefined> = process.env,
 ) {
-  if (!isPhase2ProspectCaptureEnabled(env) || !isPhase2AccountLinkingEnabled(env)) return false;
+  // Sending an explicitly requested orientation email must not force account creation.
+  // The prospect capture and partner-prelaunch safety gates remain mandatory.
+  if (!isPhase2ProspectCaptureEnabled(env)) return false;
   const raw = env.ALMAGO_PHASE2_EMAIL_DELIVERY_ENABLED?.trim().toLowerCase();
   return raw ? ENABLED_VALUES.has(raw) : false;
 }

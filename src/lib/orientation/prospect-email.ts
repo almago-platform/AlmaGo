@@ -135,7 +135,7 @@ export function buildOrientationProspectEmail({
   diagnostic: PublicOrientationDiagnostic;
   orientationReportUrl: string;
   candidateReportUrl: string;
-  signupUrl: string;
+  signupUrl: string | null;
   interestUrl?: string | null;
   attachmentsIncluded?: boolean;
 }) {
@@ -175,8 +175,10 @@ export function buildOrientationProspectEmail({
       copy.reportsNote,
       ...(attachmentsIncluded ? [copy.attachmentsNote] : []),
       "",
-      `${copy.accountCta}: ${signupUrl}`,
-      copy.accountNote,
+      ...(signupUrl ? [
+        `${copy.accountCta}: ${signupUrl}`,
+        copy.accountNote,
+      ] : []),
       ...(interestUrl
         ? ["", `${copy.interestCta}: ${interestUrl}`, copy.interestNote]
         : []),
@@ -212,10 +214,10 @@ export function buildOrientationProspectEmail({
           <p style="margin:0;font-size:12px;line-height:1.6;color:#546078">${escapeHtml(copy.reportsNote)}</p>
           ${attachmentsIncluded ? `<p style="margin:8px 0 0;font-size:12px;line-height:1.6;font-weight:700;color:#182442">${escapeHtml(copy.attachmentsNote)}</p>` : ""}
         </div>
-        <p style="margin:0 0 10px">
+        ${signupUrl ? `<p style="margin:0 0 10px">
           <a href="${escapeHtml(signupUrl)}" style="font-weight:700;color:#2349c9">${escapeHtml(copy.accountCta)}</a>
         </p>
-        <p style="margin:0 0 22px;font-size:13px;line-height:1.6;color:#546078">${escapeHtml(copy.accountNote)}</p>
+        <p style="margin:0 0 22px;font-size:13px;line-height:1.6;color:#546078">${escapeHtml(copy.accountNote)}</p>` : ""}
         ${interestUrl ? `<div style="margin:0 0 22px;padding:18px;border:1px solid #eadbb7;border-radius:12px;background:#fff9eb">
           <p style="margin:0 0 12px"><a href="${escapeHtml(interestUrl)}" style="display:inline-block;background:#182442;color:#ffffff;text-decoration:none;font-weight:700;padding:11px 16px;border-radius:10px">${escapeHtml(copy.interestCta)}</a></p>
           <p style="margin:0;font-size:13px;line-height:1.6;color:#182442">${escapeHtml(copy.interestNote)}</p>
