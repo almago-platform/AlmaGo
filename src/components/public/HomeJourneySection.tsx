@@ -1,3 +1,4 @@
+import Image from "next/image";
 import type { getNativeCopy } from "@/content/native-copy";
 import { HomeIcon } from "./HomeIcons";
 import s from "./Homepage.module.css";
@@ -5,24 +6,30 @@ import s from "./Homepage.module.css";
 type JourneyCopy = ReturnType<typeof getNativeCopy>["home"]["journey"];
 type PhotoCopy = ReturnType<typeof getNativeCopy>["home"]["photo"];
 
-// Preserve anchors used by the homepage quick links and historical URLs.
+const images = [
+  "https://images.pexels.com/photos/7973208/pexels-photo-7973208.jpeg?auto=compress&cs=tinysrgb&w=1200",
+  "https://images.pexels.com/photos/6207367/pexels-photo-6207367.jpeg?auto=compress&cs=tinysrgb&w=1200",
+  "https://images.pexels.com/photos/31039023/pexels-photo-31039023.jpeg?auto=compress&cs=tinysrgb&w=1200",
+  "https://images.pexels.com/photos/5306450/pexels-photo-5306450.jpeg?auto=compress&cs=tinysrgb&w=1200",
+  "https://images.pexels.com/photos/5940705/pexels-photo-5940705.jpeg?auto=compress&cs=tinysrgb&w=1200",
+  "https://images.pexels.com/photos/7972361/pexels-photo-7972361.jpeg?auto=compress&cs=tinysrgb&w=1200",
+] as const;
+
 const stepIds = ["projet", "documents", "programmes", "candidatures", "depart", "suivi"] as const;
 
 export function HomeJourneySection({
   journey,
   photo,
-  phaseLabels,
   primaryHref = "/signup",
   primaryLabel,
 }: {
   journey: JourneyCopy;
   photo: PhotoCopy;
-  phaseLabels: readonly [string, string, string];
   primaryHref?: string;
   primaryLabel?: string;
 }) {
   return (
-    <section id="parcours" className={`${s.section} ${s.journey} ${s.v43Journey}`} aria-labelledby="journey-title">
+    <section id="parcours" className={`${s.section} ${s.journey}`} aria-labelledby="journey-title">
       <div className={s.container}>
         <div className={s.sectionHeading}>
           <div>
@@ -38,35 +45,52 @@ export function HomeJourneySection({
             <p className={s.journeyContext}>{photo.text}</p>
           </div>
         </div>
-        <div className={s.v43Phases} aria-label={journey.aria}>
-          {phaseLabels.map((phase, groupIndex) => (
-            <section key={phase} className={s.v43Phase} aria-labelledby={`journey-phase-${groupIndex}`}>
-              <div className={s.v43PhaseHeading}>
-                <span className={s.v43PhaseNumber} aria-hidden="true">{String(groupIndex + 1).padStart(2, "0")}</span>
-                <h3 id={`journey-phase-${groupIndex}`}>{phase}</h3>
-              </div>
-              <ol start={groupIndex * 2 + 1} className={s.v43PhaseSteps}>
-                {journey.steps.slice(groupIndex * 2, groupIndex * 2 + 2).map(([title, description], stepIndex) => {
-                  const index = groupIndex * 2 + stepIndex;
-                  return (
-                    <li key={title} id={stepIds[index]} className={s.v43PhaseStep}>
-                      <span className={s.v43StepNumber} aria-hidden="true">
-                        {String(index + 1).padStart(2, "0")}
-                      </span>
-                      <div>
-                        <h4>{title}</h4>
-                        <p>{description}</p>
-                      </div>
-                    </li>
-                  );
-                })}
-              </ol>
-            </section>
+        <div className={s.journeyRail} aria-hidden="true">
+          {journey.steps.map(([title], index) => (
+            <div className={s.journeyRailStep} key={title}>
+              <span>{String(index + 1).padStart(2, "0")}</span>
+              <small>{title}</small>
+            </div>
           ))}
         </div>
+        <ol className={s.steps} aria-label={journey.aria}>
+          {journey.steps.map(([title, text, detail], index) => (
+            <li
+              key={title}
+              id={stepIds[index]}
+              className={s.stepCard}
+              data-step={String(index + 1).padStart(2, "0")}
+            >
+              <span className={s.stepIndex} aria-hidden="true">
+                {String(index + 1).padStart(2, "0")}
+              </span>
+              <div className={s.stepMedia}>
+                <Image
+                  src={images[index]}
+                  alt={journey.imageAlts[index]}
+                  fill
+                  sizes="(min-width: 1200px) 31vw, (min-width: 700px) 48vw, 100vw"
+                />
+              </div>
+              <div className={s.stepBody}>
+                <div className={s.stepTopline}>
+                  <span>{detail}</span>
+                  <HomeIcon name={index === 5 ? "check" : "arrow"} />
+                </div>
+                <h3>{title}</h3>
+                <p>{text}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
         <div className={s.journeyFoot}>
-          <span><HomeIcon name="source" /> {journey.foot}</span>
-          <a href={primaryHref}>{primaryLabel || journey.cta}<HomeIcon name="arrow" /></a>
+          <span>
+            <HomeIcon name="source" /> {journey.foot}
+          </span>
+          <a href={primaryHref}>
+            {primaryLabel || journey.cta}
+            <HomeIcon name="arrow" />
+          </a>
         </div>
       </div>
     </section>
