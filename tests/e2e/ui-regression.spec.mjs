@@ -146,3 +146,40 @@ test.describe("V3.2 bounded public visual regression gate", () => {
     expect(maxCssDuration(result.animationDuration)).toBeLessThanOrEqual(0.02);
   });
 });
+
+
+test("contact footer has readable links, an approved logo and working homepage anchors", async ({ page }, testInfo) => {
+  test.skip(
+    !["desktop-1280-chromium", "mobile-compact-chromium"].includes(testInfo.project.name),
+    "Review contact footer on desktop and mobile.",
+  );
+
+  await page.goto("/contact", { waitUntil: "networkidle" });
+  const footer = page.locator("footer");
+  await expect(footer).toBeVisible();
+
+  const colors = await footer.evaluate((element) => {
+    const link = element.querySelector("nav a");
+    const logoBacking = element.querySelector('a:has(img[alt="Campus Allemagne"])');
+    return {
+      footerBackground: getComputedStyle(element).backgroundColor,
+      link: link ? getComputedStyle(link).color : null,
+      logoBacking: logoBacking ? getComputedStyle(logoBacking).backgroundColor : null,
+    };
+  });
+  expect(colors.footerBackground).toBe("rgb(28, 33, 36)");
+  expect(colors.link).toBe("rgb(247, 244, 236)");
+  expect(colors.logoBacking).toBe("rgb(247, 244, 236)");
+  await expect(footer.locator('img[alt="Campus Allemagne"]')).toBeVisible();
+  expect(await footer.locator('img[alt="Campus Allemagne"]').evaluate(img => img.naturalWidth)).toBeGreaterThan(0);
+
+  await expect(footer.locator('a[href="/#parcours"]')).toHaveCount(1);
+  await expect(footer.locator('a[href="/#faq"]')).toHaveCount(1);
+  await expect(footer.locator('a[href="/#programmes"]')).toHaveCount(1);
+  await expectNoHorizontalOverflow(page, "Contact with shared footer");
+
+  await page.screenshot({
+    path: `artifacts/visual-v3-2/contact-footer-${testInfo.project.name}.png`,
+    fullPage: true,
+  });
+});
