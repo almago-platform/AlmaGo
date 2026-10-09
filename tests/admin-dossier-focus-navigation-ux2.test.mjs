@@ -17,7 +17,7 @@ test("UX-2 shows six primary tasks, with advanced tasks still discoverable", () 
   }
   assert.match(navigation, /aria-label="Rubriques principales"/);
   assert.match(navigation, /aria-current=\{activeHash === href \? "location"/);
-  assert.match(navigation, /sticky top-\[4\.25rem\]/);
+  assert.match(navigation, /xl:sticky xl:top-0/);
   assert.match(navigation, /overflow-x-auto/);
   assert.match(navigation, /focus-visible:outline-2/);
 });

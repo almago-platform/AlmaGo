@@ -69,12 +69,12 @@ export function AdminDossierDisclosure({
         <span aria-hidden="true" className="mt-1 text-sm text-[var(--brand-strong)] transition-transform group-open:rotate-90">▸</span>
         <span className="min-w-0">
           <span className="block text-base font-bold text-slate-950">{title}</span>
-          {description ? <span className="mt-1 block text-xs leading-5 text-slate-600">{description}</span> : null}
+          {description ? <span className="mt-1 block text-sm leading-6 text-slate-700">{description}</span> : null}
         </span>
         <span className="ms-auto shrink-0 text-xs font-semibold text-[var(--brand-strong)] group-open:hidden">Afficher</span>
         <span className="ms-auto hidden shrink-0 text-xs font-semibold text-[var(--brand-strong)] group-open:inline">Réduire</span>
       </summary>
-      <div className="space-y-6 border-t border-[var(--border)] p-3 sm:p-4">{children}</div>
+      <div className="min-w-0 space-y-6 border-t border-[var(--border)] p-3 sm:p-5">{children}</div>
     </details>
   );
 }

@@ -63,7 +63,7 @@ export function AdminDossierQuickHandoff({
         </div>
         <p className="text-xs text-slate-600">Informations enregistrées · aucune décision automatique</p>
       </div>
-      <div className="mt-3 grid gap-3 sm:grid-cols-2">
+      <div className="mt-3 grid min-w-0 gap-3 md:grid-cols-2">
         <div className="min-w-0 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-3">
           <h3 className="text-sm font-semibold text-slate-700">Admission universitaire</h3>
           <p className="mt-2 text-sm font-bold leading-5 text-slate-950">{mainAdmission}</p>
@@ -123,15 +123,15 @@ export function AdminDossierQuickHandoff({
           ) : null}
         </div>
         <div className="min-w-0 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-3">
-          <h3 className="text-sm font-semibold text-slate-700">Deadline universitaire</h3>
+          <h3 className="text-sm font-semibold text-slate-700">Date limite universitaire</h3>
           {deadline ? (
             <>
               <p className="mt-2 text-sm font-bold leading-5 text-slate-950">{displayDeadlineDate(deadline.date)}</p>
-              <p className="mt-1 text-xs leading-5 text-slate-600">{deadline.label} · deadline officielle vérifiée</p>
+              <p className="mt-1 text-xs leading-5 text-slate-600">{deadline.label} · date limite officielle vérifiée</p>
             </>
           ) : (
             <p className="mt-2 text-sm font-bold leading-5 text-slate-950">
-              Aucune deadline officielle vérifiée pour une candidature active non soumise
+              Aucune date limite officielle vérifiée pour une candidature active non soumise
             </p>
           )}
           <Link href={deadline?.href || "#applications"}
@@ -143,7 +143,7 @@ export function AdminDossierQuickHandoff({
       <p className="mt-3 text-sm leading-6 text-slate-700">
         Un PDF envoyé en message reste une pièce jointe privée : il ne valide pas à lui seul
         une admission. Une preuve académique n’est acceptée qu’après vérification du document officiel.
-        Les dates de tâches internes ne sont jamais présentées comme des deadlines universitaires.
+        Les dates de tâches internes ne sont jamais présentées comme des dates limites universitaires.
       </p>
       {!canExchange ? (
         <p className="mt-2 text-xs text-slate-600">Fonction disponible après liaison du compte de la personne : échange direct de pièces et messages.</p>

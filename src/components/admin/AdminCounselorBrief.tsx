@@ -50,7 +50,7 @@ export function AdminCounselorBrief({
 
 
 
-      <div className="mt-4 grid min-w-0 gap-3 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,0.9fr)]">
+      <div className="mt-4 grid min-w-0 items-start gap-3 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
         <div className={action.waiting
           ? "rounded-[var(--radius-control)] border border-[var(--warning-border)] bg-[var(--warning-soft)] p-4"
           : "rounded-[var(--radius-control)] bg-[var(--premium-ink)] p-4 text-white"}>
@@ -89,7 +89,7 @@ export function AdminCounselorBrief({
           {leadBlocker ? (
             <div className="mt-3 border-t border-[var(--border)] pt-3">
               <p className="text-sm font-bold text-slate-950">{leadBlocker.title}</p>
-              <p className="mt-1 line-clamp-2 text-sm leading-6 text-slate-700">{leadBlocker.reason}</p>
+              <p className="mt-1 text-sm leading-6 text-slate-700">{leadBlocker.reason}</p>
               <a href={leadBlocker.href} className="mt-2 inline-flex text-sm font-semibold text-[var(--brand-strong)] hover:underline">
                 Examiner ce point →
               </a>
@@ -104,17 +104,17 @@ export function AdminCounselorBrief({
           )}
           {nextDeadline ? (
             <div className="mt-3 border-t border-[var(--border)] pt-3">
-              <p className="text-xs font-semibold text-slate-600">Échéance officielle vérifiée · candidature</p>
+              <p className="text-xs font-semibold text-slate-600">Date limite vérifiée · candidature</p>
               <p className="mt-1 text-sm font-bold text-slate-950">{nextDeadline.date}</p>
               <p className="mt-1 line-clamp-2 text-xs leading-5 text-slate-700">{nextDeadline.label}</p>
               <Link href={nextDeadline.href} className="mt-1 inline-flex text-xs font-bold text-[var(--brand-strong)] hover:underline">Contrôler la source →</Link>
             </div>
           ) : null}
           <div className="mt-3 border-t border-[var(--border)] pt-3">
-            <p className="text-xs font-semibold text-slate-600">Dernier événement consigné</p>
+            <p className="text-xs font-semibold text-slate-600">Dernier événement enregistré</p>
             {lastEvent ? (
               <>
-                <p className="mt-1 line-clamp-2 text-xs leading-5 text-slate-800">{lastEvent.text}</p>
+                <p className="mt-1 line-clamp-3 break-words text-sm leading-6 text-slate-800">{lastEvent.text}</p>
                 <p className="mt-1 text-xs text-slate-600">{lastEvent.date}</p>
               </>
             ) : <p className="mt-1 text-xs text-slate-600">Aucun événement enregistré dans l’historique.</p>}
