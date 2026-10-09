@@ -123,29 +123,34 @@ export function AppShell({
   }));
   studentGroups[0]?.items.push(localizedStudentItems[11]);
   const currentAdminItems = adminItems;
+  // Daily entry points stay visible; advanced modules keep their stable URLs.
   const adminGroups = [
     {
-      label: "Votre quotidien",
+      label: "Mon bureau",
+      items: currentAdminItems.filter((item) => item.href === "/admin"),
+      secondary: false,
+    },
+    {
+      label: "Personnes et dossiers",
       items: currentAdminItems.filter((item) =>
-        ["/admin", "/admin/traitement", "/admin/accompagnement"].includes(item.href),
+        ["/admin/people", "/admin/prospects", "/admin/accompagnement"].includes(item.href),
       ),
       secondary: false,
     },
     {
-      label: "Personnes",
+      label: "À traiter",
       items: currentAdminItems.filter((item) =>
-        ["/admin/people", "/admin/prospects"].includes(item.href),
-      ),
-      secondary: false,
-    },
-    {
-      label: "Files de travail",
-      items: currentAdminItems.filter((item) =>
-        ["/admin/inbox", "/admin/intake", "/admin/documents", "/admin/applications", "/admin/orientation", "/admin/payments"].includes(item.href),
+        ["/admin/traitement", "/admin/inbox", "/admin/intake", "/admin/documents", "/admin/applications", "/admin/orientation"].includes(item.href),
       ),
       secondary: true,
     },
-    { label: "Commercial", items: currentAdminItems.filter((item) => item.href === "/admin/offers"), secondary: true },
+    {
+      label: "Services et paiements",
+      items: currentAdminItems.filter((item) =>
+        ["/admin/offers", "/admin/payments"].includes(item.href),
+      ),
+      secondary: true,
+    },
     {
       label: "Catalogue Allemagne",
       items: currentAdminItems.filter((item) =>
@@ -153,7 +158,11 @@ export function AppShell({
       ),
       secondary: true,
     },
-    { label: "Équipe", items: currentAdminItems.filter((item) => item.href === "/admin/team"), secondary: true },
+    {
+      label: "Administration avancée",
+      items: currentAdminItems.filter((item) => item.href === "/admin/team"),
+      secondary: true,
+    },
   ];
   const items = role === "admin" ? currentAdminItems : localizedStudentItems;
   const currentItem = items.find((item) => isActive(pathname, item.href)) || items[0];
@@ -225,8 +234,8 @@ export function AppShell({
                         >
                           <span className={`grid h-7 w-7 shrink-0 place-items-center rounded-[var(--radius-control)] ${active ? "text-[var(--accent-strong)]" : "text-[var(--muted)]"}`}>{item.icon}</span>
                           <span className="min-w-0">
-                            <span className="block text-[0.82rem] font-semibold [overflow-wrap:anywhere]">{item.label}</span>
-                            {item.helper && <span className="mt-0.5 block text-[10px] leading-3.5 text-[var(--brand-strong)]">{item.helper}</span>}
+                            <span className="block text-sm font-semibold leading-5 [overflow-wrap:anywhere]">{item.label}</span>
+                            {item.helper && <span className="mt-0.5 block text-[11px] leading-4 text-white/80">{item.helper}</span>}
                           </span>
                           {active && <span aria-hidden="true" className="student-shell-active-edge absolute inset-y-2 start-0 w-0.5 rounded-e-full bg-[var(--accent)]" />}
                         </Link>
