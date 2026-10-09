@@ -67,7 +67,7 @@ export function AdminDossierBlockersPanel({
               </div>
 
               <div>
-                <p className="text-[0.68rem] font-bold uppercase tracking-[0.1em] text-slate-600">Responsable</p>
+                <p className="text-xs font-bold uppercase tracking-[0.08em] text-slate-700">Responsable</p>
                 <p className="mt-1 text-sm font-semibold text-slate-900">{ownerLabel(blocker.owner)}</p>
               </div>
 
@@ -75,7 +75,7 @@ export function AdminDossierBlockersPanel({
                 href={blocker.href}
                 className={buttonClassName(
                   blocker.severity === "critical" ? "primary" : "secondary",
-                  "min-h-9 px-3 py-1.5 text-xs",
+                  "min-h-10 px-3 py-2 text-sm",
                 )}
               >
                 {blocker.actionLabel}
