@@ -96,3 +96,12 @@ test("catalogue filter and sorting copy is available in all four locales", () =>
     assert.ok(copy.includes(expected), `missing copy: ${expected}`);
   }
 });
+
+test("programme pages never block on external image enrichment during navigation", () => {
+  assert.doesNotMatch(page, /enrichProspectCatalogueUniversityMedia/);
+  assert.doesNotMatch(page, /findWikimediaUniversityMedia|createPrivilegedSupabaseClient/);
+  assert.match(page, /const catalogue = rawCatalogue/);
+  assert.match(page, /loadVerifiedProgrammeCatalogue/);
+  assert.match(card, /ProspectUniversityCover/);
+  assert.match(cover, /!imageUrl/);
+});
