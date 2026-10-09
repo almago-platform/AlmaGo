@@ -36,7 +36,7 @@ export default async function AdminLanguageCoursesPage() {
       <AdminPageHeader
         section="Catalogue Allemagne"
         title="Cours de langue"
-        description="Maintenez uniquement des cours sourcés et datés. Les éléments publiés doivent rester distingués entre préparation aux études et séjour linguistique autonome."
+        description="Ajoutez uniquement des cours dont les informations ont été vérifiées et datées. Distinguez les cours pour préparer les études des séjours de langue indépendants."
       />
       <AdminWorkspaceSummary
         eyebrow="Catalogue langue"

@@ -74,7 +74,7 @@ export default async function AdminOffersPage() {
       <AdminPageHeader
         section="Offres"
         title="Bronze, Silver et Gold"
-        description="Créez des versions historisées. Aucun prix ni service n’est publié tant que vous ne cliquez pas explicitement sur « Publier cette version »."
+        description="Préparez vos offres. Leur prix et leurs services ne sont publiés qu’après votre confirmation « Publier cette version »."
       />
 
       <AdminWorkspaceSummary

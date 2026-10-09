@@ -31,7 +31,7 @@ export default async function AdminUniversitiesPage() {
       <AdminPageHeader
         section="Catalogue Allemagne"
         title="Universités"
-        description="Recherchez d’abord l’établissement à maintenir, puis ajoutez ou modifiez uniquement les informations vérifiées."
+        description="Cherchez d’abord une université. Ajoutez ou modifiez uniquement des informations vérifiées."
       />
       <AdminWorkspaceSummary
         eyebrow="Catalogue universités"

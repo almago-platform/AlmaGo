@@ -34,7 +34,7 @@ export default async function AdminProgramsPage() {
       <AdminPageHeader
         section="Catalogue Allemagne"
         title="Programmes"
-        description="Recherchez d’abord une formation existante, puis maintenez uniquement ses critères, échéances et sources vérifiées."
+        description="Cherchez d’abord une formation. Vérifiez ses conditions, ses dates et ses sources avant de modifier la fiche."
       />
       <AdminWorkspaceSummary
         eyebrow="Catalogue programmes"

@@ -157,7 +157,7 @@ export default async function AdminPaymentsPage() {
       <AdminPageHeader
         section="Paiements"
         title="Paiements et activation client"
-        description="Les paiements sont vérifiés manuellement. Confirmez d’abord la réception, puis effectuez la validation finale qui active le client."
+        description="Vérifiez chaque paiement. Confirmez sa réception, puis validez séparément l’activation de l’accès payant."
       />
 
       <section className="mb-6 rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--brand-soft)] p-5">
