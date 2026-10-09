@@ -95,7 +95,7 @@ test("transactional email is localized and sends both secure PDF report links wi
   assert.match(emailTemplate, /candidateReportUrl/);
   assert.match(emailTemplate, /Orientation \(PDF\)|التوجيه \(PDF\)|Orientierung \(PDF\)/);
   assert.match(emailTemplate, /Rapport candidat \(PDF\)|تقرير المترشح \(PDF\)|Candidate report \(PDF\)|Bewerberbericht \(PDF\)/);
-  assert.match(emailTemplate, /signupUrl/);
+  assert.doesNotMatch(emailTemplate, /signupUrl|accountCta|accountNote/);
   assert.match(emailTemplate, /admission.*visa|قبول.*تأشيرة|Zulassungs.*Visum/i);
   assert.doesNotMatch(emailTemplate, /guaranteed admission|admission garantie|visa garanti/i);
 });
@@ -114,8 +114,8 @@ test("email delivery can be enabled without forcing account creation", () => {
   assert.equal(isPhase2EmailDeliveryEnabled({ ...emailOnly, ALMAGO_PHASE2_PROSPECT_CAPTURE_ENABLED: "false" }), false);
   assert.equal(isPhase2EmailDeliveryEnabled({ ...emailOnly, ALMAGO_PARTNER_PRELAUNCH_MODE: "true" }), false);
   assert.equal(isPhase2EmailDeliveryEnabled({ ...emailOnly, ALMAGO_PHASE2_EMAIL_DELIVERY_ENABLED: "false" }), false);
-  assert.match(emailTemplate, /signupUrl: string \| null/);
-  assert.match(emailTemplate, /signupUrl \? \[/);
+  assert.doesNotMatch(emailTemplate, /signupUrl|accountCta|accountNote/);
+  assert.match(route, /const signupPath = isPhase2AccountLinkingEnabled\(\)/);
 });
 
 
@@ -131,4 +131,16 @@ test("automatic delivery requires explicit recorded consent and refuses missing 
   assert.match(route, /automaticDelivery && attachments\.length !== 2/);
   assert.match(route, /saved: true, delivery: "unavailable"/);
   assert.match(route, /sendTransactionalEmail\(\{/);
+});
+
+test("emailed PDF reports never include an account sign-up CTA or orientation account token", () => {
+  assert.doesNotMatch(emailTemplate, /signupUrl|accountCta|accountNote/);
+  assert.doesNotMatch(route, /signupUrl/);
+  assert.match(route, /const signupPath = isPhase2AccountLinkingEnabled\(\)/);
+  assert.match(route, /resume_token_hash: resume\.hash/);
+  assert.match(emailTemplate, /orientationReportUrl/);
+  assert.match(emailTemplate, /candidateReportUrl/);
+  assert.match(emailTemplate, /attachmentsIncluded/);
+  // The account-link token remains available only to the on-site confirmation UI.
+  assert.match(route, /signupPath \},/);
 });
