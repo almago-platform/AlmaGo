@@ -91,7 +91,7 @@ test("direct document viewing requires the same client entitlement as student AP
 test("prospect dashboard has a localized accessible loading state", () => {
   assert.match(prospectLoading, /"use client"/);
   assert.match(prospectLoading, /useLocale\(\)/);
-  assert.match(prospectLoading, /aria-busy="true"/);
+  assert.match(prospectLoading, /aria-busy=\{!slow\}/);
   assert.match(prospectLoading, /role="status"/);
   assert.match(prospectLoading, /aria-live="polite"/);
   assert.match(prospectLoading, /Chargement de votre espace gratuit/);
@@ -131,4 +131,25 @@ test("prospect dashboard exposes lifecycle, Prospect action, Campus action and p
   assert.match(prospectPage, /\/prospect\/catalogue/);
   assert.match(prospectPage, /ProspectProgrammeRecommendationCard/);
   assert.doesNotMatch(prospectPage, /orientationVersionSummary/);
+});
+
+test("slow Prospect loading state offers retry and return in every language", () => {
+  assert.match(prospectLoading, /useEffect/);
+  assert.match(prospectLoading, /12_000/);
+  assert.match(prospectLoading, /window\.location\.reload/);
+  assert.match(prospectLoading, /href="\/prospect"/);
+  assert.match(prospectLoading, /role="alert"/);
+  for (const value of ["Réessayer", "إعادة المحاولة", "Try again", "Erneut versuchen"]) {
+    assert.ok(prospectLoading.includes(value));
+  }
+});
+
+test("Prospect route errors show an accessible four-language retry instead of a blank screen", () => {
+  const error = read("src/app/prospect/error.tsx");
+  assert.match(error, /role="alert"/);
+  assert.match(error, /onClick={reset}/);
+  assert.match(error, /href="\/prospect"/);
+  for (const value of ["Réessayer", "إعادة المحاولة", "Try again", "Erneut versuchen"]) {
+    assert.ok(error.includes(value));
+  }
 });
