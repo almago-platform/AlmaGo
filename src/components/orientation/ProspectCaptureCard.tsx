@@ -16,6 +16,7 @@ import type { AcquisitionContext } from "@/lib/phase2/acquisition";
 type ProspectCaptureResponse = {
   saved?: boolean;
   delivery?: "sent" | "disabled" | "unavailable" | "failed";
+  detailedPdfAttached?: boolean;
   interestToken?: string;
   signupPath?: string | null;
 };
@@ -53,6 +54,7 @@ export function ProspectCaptureCard({
   const [privacyAcknowledged, setPrivacyAcknowledged] = useState(false);
   const [status, setStatus] = useState<"idle" | "saving" | "success" | "error">("idle");
   const [previouslyRequested, setPreviouslyRequested] = useState(false);
+  const [detailedPdfAttached, setDetailedPdfAttached] = useState(false);
   const [message, setMessage] = useState("");
   const [interestToken, setInterestToken] = useState<string | null>(null);
   const [signupPath, setSignupPath] = useState<string | null>(null);
@@ -141,6 +143,7 @@ export function ProspectCaptureCard({
       }
 
       if (payload.delivery === "sent") {
+        setDetailedPdfAttached(payload.detailedPdfAttached === true);
         setMessage(copy.emailSent);
       } else if (emailDeliveryEnabled) {
         setMessage(copy.deliveryFailure);
@@ -230,10 +233,19 @@ export function ProspectCaptureCard({
     : accountLinkingEnabled ? copy.continuePrivacyLabel : copy.privacyLabel;
   const autoEmailSent = autoEmailRequested && status === "success" && message === copy.emailSent;
   const autoEmailFailed = autoEmailRequested && status === "success" && message === copy.deliveryFailure;
+  const detailedSent = autoEmailSent && detailedPdfAttached;
+  const detailedSuccess = {
+    fr: { title: "Vos trois rapports ont été envoyés", text: "Votre résumé d'orientation, votre profil candidat et votre dossier détaillé ont été envoyés par e-mail. Vous pouvez aussi enregistrer une copie ici." },
+    ar: { title: "تم إرسال تقاريرك الثلاثة", text: "أُرسلت التقارير الثلاثة إلى بريدك: التوجيه، وملف المترشح، والملف المفصل. ويمكنك حفظ نسخة هنا أيضًا." },
+    en: { title: "Your three reports have been sent", text: "Your orientation summary, candidate profile and detailed dossier have been emailed. You can save a copy here too." },
+    de: { title: "Deine drei Berichte wurden versendet", text: "Orientierung, Bewerberprofil und ausführliches Dossier wurden per E-Mail verschickt. Hier kannst du zusätzlich eine Kopie speichern." },
+  }[locale];
   const displayTitle = autoEmailSent
-    ? copy.includedEmailSuccessTitle
+    ? detailedSent ? detailedSuccess.title : copy.includedEmailSuccessTitle
     : autoEmailFailed ? copy.includedEmailFailureTitle : title;
-  const displayText = autoEmailSent ? copy.includedEmailSuccessText : textCopy;
+  const displayText = autoEmailSent
+    ? detailedSent ? detailedSuccess.text : copy.includedEmailSuccessText
+    : textCopy;
 
   return (
     <section
