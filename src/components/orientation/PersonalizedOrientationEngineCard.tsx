@@ -806,7 +806,7 @@ export function PersonalizedOrientationEngineCard({
             <details className="mt-5 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface)] p-4">
               <summary className="cursor-pointer text-sm font-bold">{t.details}</summary>
               <div className="mt-4 grid gap-4">
-              {result.engine.recommendations.map((recommendation) => {
+              {fallbackRecommendations.map((recommendation) => {
                 const sources = recommendation.sources.slice(0, 3);
                 const deadlineRule = recommendation.rules.find((rule) =>
                   ["deadline_open", "deadline_to_verify", "deadline_unknown"].includes(rule.code)
