@@ -122,7 +122,7 @@ export function ProspectCaptureCard({
       // In the no-email flow the explicit account CTA also requests support.
       // Record the intent first. On failure, keep the saved orientation and
       // offer the same action again in the unified continuation panel.
-      if (!emailDeliveryEnabled && verifiedSignupPath && interestTokenFromResponse(payload)) {
+      if (!emailDeliveryEnabled && verifiedSignupPath && typeof payload.interestToken === "string" && payload.interestToken.length > 0) {
         try {
           const interestResponse = await fetch("/api/orientation/interest", {
             method: "POST",
