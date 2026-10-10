@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { OrientationRefinementQuestionCard } from "@/components/orientation/OrientationRefinementQuestionCard";
 import { OrientationLetterCard } from "@/components/orientation/OrientationLetterCard";
 import { OrientationPersonalizedWriterCard } from "@/components/orientation/OrientationPersonalizedWriterCard";
+import { OrientationResearchPistesCard } from "@/components/orientation/OrientationResearchPistesCard";
 import type { Locale } from "@/lib/i18n";
 import type { PublicOrientationAnswers } from "@/lib/orientation/public";
 import type { OrientationPublicPersonalizedResult } from "@/lib/orientation-engine/result/types";
@@ -632,6 +633,9 @@ export function PersonalizedOrientationEngineCard({
                 welcome={isBachelorFirstContact ? bacWelcome : null}
               />
             )}
+            {result.shortlist.items.length === 0 && answers.bacStatus !== "no_bac" ? (
+              <OrientationResearchPistesCard answers={answers} locale={locale} />
+            ) : null}
             {!isBachelorFirstContact && onRefineAnswers && result.engine.refinement.nextQuestion ? (
               <OrientationRefinementQuestionCard
                 question={result.engine.refinement.nextQuestion}
