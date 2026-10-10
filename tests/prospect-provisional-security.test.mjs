@@ -12,7 +12,8 @@ const auth = read("src/lib/auth/access.ts");
 const verified = read("src/lib/auth/verified.ts");
 const form = read("src/components/auth/AuthForm.tsx");
 const resend = read("src/components/prospect/ProvisionalEmailVerification.tsx");
-const catalogue = read("src/components/prospect/ProvisionalProgrammeSearch.tsx");
+const catalogue = read("src/app/prospect/catalogue/page.tsx");
+const catalogueCard = read("src/components/prospect/ProspectProgrammeCatalogueCard.tsx");
 const copy = read("src/content/prospect-provisional-copy.ts");
 
 test("public Prospect preview has no authenticated role, user impersonation, or write capability", () => {
@@ -76,8 +77,9 @@ test("resend never reveals email registration status; catalogue comes from publi
   assert.match(resend, /emailRedirectTo/);
   assert.match(resend, /setState\("sent"\)/);
   assert.doesNotMatch(resend, /getUserByEmail|listUsers|isRegistered/);
-  assert.match(catalogue, /useMemo/);
-  assert.match(catalogue, /referrerPolicy="no-referrer"/);
+  assert.match(catalogue, /loadVerifiedProgrammeCatalogue/);
+  assert.match(catalogue, /loadProvisionalProspectHubState\(provisional\)/);
+  assert.match(catalogueCard, /rel="noreferrer"/);
   assert.match(preview, /safeSource\(item\.programmeSourceUrl\)/);
   assert.match(copy, /aucun compte n'est confirmé|Aucun compte n'est considéré comme vérifié/);
   for (const lang of ["fr:", "ar:", "en:", "de:"]) assert.ok(copy.includes(lang));

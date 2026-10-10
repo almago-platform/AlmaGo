@@ -72,7 +72,7 @@ export function ProspectShell({
     { href: "/prospect/proposal", label: t.links.proposal, icon: icons.proposal },
     { href: "/prospect/roadmap", label: t.links.roadmap, icon: icons.roadmap },
   ];
-  const serviceLinks: NavItem[] = provisional ? [] : [
+  const serviceLinks: NavItem[] = [
     { href: "/prospect/solutions", label: t.links.solutions, icon: icons.solutions },
     { href: "/prospect/offers", label: offersCopy.nav || t.links.offers, icon: icons.offers },
     ...(showPayment || pathname.startsWith("/prospect/payment")
@@ -80,9 +80,9 @@ export function ProspectShell({
       : []),
   ];
 
-  const availableJourneyLinks = provisional
-    ? journeyLinks.filter((item) => !["/prospect/messages", "/prospect/proposal"].includes(item.href))
-    : journeyLinks;
+  // One Prospect workspace: pending sessions keep the ORIGINAL navigation.
+  // Page handlers still enforce per-feature authorization server-side.
+  const availableJourneyLinks = journeyLinks;
 
   const activeFor = (href: string) =>
     href === "/prospect"

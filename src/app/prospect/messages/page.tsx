@@ -3,6 +3,7 @@ import { DossierMessageThread, type DossierMessageItem } from "@/components/prod
 import { Badge } from "@/components/ui/Badge";
 import { getRequestLocale } from "@/lib/i18n-server";
 import { getPhase2StudentAccess } from "@/lib/phase2/access";
+import { getProvisionalIdentity } from "@/lib/prospect/provisional-auth";
 
 export const dynamic = "force-dynamic";
 
@@ -39,17 +40,22 @@ export default async function ProspectMessagesPage() {
     getRequestLocale(),
   ]);
 
-  if (!access.user) redirect("/login");
-  if (!access.isStudent) redirect("/unauthorized");
-  if (!access.phase2Enabled || access.canUseClientFeatures) redirect("/student/messages");
+  const provisional = !access.user ? await getProvisionalIdentity() : null;
+  if (!access.user && !provisional) redirect("/login");
+  if (access.user && !access.isStudent) redirect("/unauthorized");
+  if (access.user && (!access.phase2Enabled || access.canUseClientFeatures)) redirect("/student/messages");
 
   const t = copy[locale];
-  const { data, error } = await access.supabase
-    .from("student_dossier_messages")
-    .select("id,sender_role,body,student_read_at,admin_read_at,created_at,attachment_name,attachment_mime_type,attachment_size_bytes")
-    .eq("student_id", access.user.id)
-    .order("created_at", { ascending: true })
-    .limit(200);
+  // Pending identities are not Supabase-authenticated principals. Do not
+  // expose any other student's message thread through a privileged client.
+  const { data, error } = provisional
+    ? { data: [] as DossierMessageItem[], error: null }
+    : await access.supabase
+        .from("student_dossier_messages")
+        .select("id,sender_role,body,student_read_at,admin_read_at,created_at,attachment_name,attachment_mime_type,attachment_size_bytes")
+        .eq("student_id", access.user!.id)
+        .order("created_at", { ascending: true })
+        .limit(200);
 
   const messages = (data || []) as DossierMessageItem[];
   const unread = messages.filter((item) =>
@@ -81,6 +87,7 @@ export default async function ProspectMessagesPage() {
           messages={messages}
           endpoint="/api/prospect/messages"
           viewerRole="student"
+          allowCompose={!provisional}
           title={t.title}
           description={t.description}
         />

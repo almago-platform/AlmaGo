@@ -9,6 +9,8 @@ import { buttonClassName } from "@/components/ui/Button";
 import { prospectHubCopy } from "@/content/prospect-hub-copy";
 import { getRequestLocale } from "@/lib/i18n-server";
 import { getPhase2StudentAccess } from "@/lib/phase2/access";
+import { getProvisionalIdentity } from "@/lib/prospect/provisional-auth";
+import { loadProvisionalProspectHubState } from "@/lib/prospect/provisional-hub";
 import { isPhase2PaymentOrchestrationEnabled } from "@/lib/phase2/config";
 import { loadProspectHubState } from "@/lib/prospect/hub";
 import { formatMinorCurrency } from "@/lib/money";
@@ -34,15 +36,18 @@ export default async function ProspectProposalPage() {
     getRequestLocale(),
   ]);
 
-  if (!access.user) redirect("/login");
-  if (!access.isStudent) redirect("/unauthorized");
-  if (!access.phase2Enabled || access.canUseClientFeatures) redirect("/student");
+  const provisional = !access.user ? await getProvisionalIdentity() : null;
+  if (!access.user && !provisional) redirect("/login");
+  if (access.user && !access.isStudent) redirect("/unauthorized");
+  if (access.user && (!access.phase2Enabled || access.canUseClientFeatures)) redirect("/student");
 
-  const state = await loadProspectHubState({
-    userId: access.user.id,
-    email: access.user.email,
-    emailConfirmed: Boolean(access.user.email_confirmed_at),
-  });
+  const state = provisional
+    ? await loadProvisionalProspectHubState(provisional)
+    : await loadProspectHubState({
+        userId: access.user!.id,
+        email: access.user!.email,
+        emailConfirmed: Boolean(access.user!.email_confirmed_at),
+      });
 
   let proposalOffer: {
     id: string;

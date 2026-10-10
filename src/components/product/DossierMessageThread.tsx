@@ -33,6 +33,7 @@ export function DossierMessageThread({
   title,
   description,
   participantLabel,
+  allowCompose = true,
 }: {
   messages: DossierMessageItem[];
   endpoint: string;
@@ -40,6 +41,7 @@ export function DossierMessageThread({
   title: string;
   description: string;
   participantLabel?: string;
+  allowCompose?: boolean;
 }) {
   const router = useRouter();
   const [draft, setDraft] = useState("");
@@ -242,7 +244,7 @@ export function DossierMessageThread({
         )}
       </div>
 
-      <form id="send-dossier-message" onSubmit={send} className="scroll-mt-52 border-t border-[var(--border)] p-4 sm:p-5 lg:scroll-mt-40">
+      {allowCompose ? <form id="send-dossier-message" onSubmit={send} className="scroll-mt-52 border-t border-[var(--border)] p-4 sm:p-5 lg:scroll-mt-40">
         <label className="text-sm font-semibold text-slate-700">
           {viewerRole === "admin" ? "Message visible par le candidat ou l’étudiant" : "Répondre à Campus Allemagne"}
           <textarea
@@ -298,7 +300,11 @@ export function DossierMessageThread({
             {busy === "send" ? "Envoi…" : "Envoyer"}
           </Button>
         </div>
-      </form>
+      </form> : (
+        <p role="status" className="border-t border-[var(--border)] p-5 text-sm text-slate-700">
+          Confirmez votre adresse e-mail pour commencer la messagerie avec Campus Allemagne.
+        </p>
+      )}
     </section>
   );
 }

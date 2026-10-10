@@ -91,10 +91,12 @@ const payment = read("src/app/prospect/payment/page.tsx");
 test("same ProspectShell and free dashboard are used without Supabase role elevation", () => {
   assert.match(layout, /getProvisionalIdentity\(\)/);
   assert.match(layout, /<ProspectShell displayName=\{candidate\.firstName\} provisional/);
-  assert.match(dashboard, /<ProvisionalProspectDashboard identity=\{temporary\}/);
+  assert.match(dashboard, /loadProvisionalProspectHubState\(temporary\)/);
+  assert.match(dashboard, /<JourneyRail steps=\{lifecycleSteps\}/);
   assert.match(shell, /provisionalExpiresAt/);
   assert.match(shell, /\/api\/provisional-session\/logout/);
-  assert.match(shell, /journeyLinks\.filter/);
+  assert.match(shell, /const availableJourneyLinks = journeyLinks/);
+  assert.match(shell, /const serviceLinks: NavItem\[\] = \[/);
   assert.doesNotMatch(payment, /getProvisionalIdentity/);
 });
 
@@ -201,4 +203,63 @@ test("an expired orientation, confirmed identity or missing feature gate still f
   assert.match(signup, /isProvisionalCandidateEnabled\(\)/);
   assert.match(authFormWithEmailThrottle, /const mailThrottled = signUpError\.code === "over_email_send_rate_limit"/);
   assert.match(authFormWithEmailThrottle, /if \(provisionalAccessEnabled && await tryStartProvisionalAccess\(activationToken\)\) return/);
+});
+
+const pendingHub = read("src/lib/prospect/provisional-hub.ts");
+const orientationPage = read("src/app/prospect/orientation/page.tsx");
+const cataloguePage = read("src/app/prospect/catalogue/page.tsx");
+const roadmapPage = read("src/app/prospect/roadmap/page.tsx");
+const proposalsPage = read("src/app/prospect/proposal/page.tsx");
+const messagesPage = read("src/app/prospect/messages/page.tsx");
+const solutionsPage = read("src/app/prospect/solutions/page.tsx");
+const threadUI = read("src/components/product/DossierMessageThread.tsx");
+
+test("there is exactly one Prospect UI across verified and provisional accounts", () => {
+  for (const source of [dashboard, orientationPage, cataloguePage, roadmapPage]) {
+    assert.match(source, /loadProvisionalProspectHubState\(/);
+    assert.match(source, /loadProspectHubState\(/);
+    assert.match(source, /getProvisionalIdentity\(/);
+    assert.doesNotMatch(source, /<ProvisionalProspect(Dashboard|Orientation|Catalogue)/);
+  }
+  assert.match(proposalsPage, /loadProvisionalProspectHubState\(provisional\)/);
+  assert.match(solutionsPage, /loadProvisionalProspectHubState\(provisional\)/);
+  assert.match(shell, /const availableJourneyLinks = journeyLinks/);
+  assert.match(shell, /const serviceLinks: NavItem\[\] = \[/);
+});
+
+test("temporary hub reads only the cookie-bound orientation and private candidate's documents", () => {
+  assert.match(pendingHub, /\.eq\("id", identity\.orientationId\)/);
+  assert.match(pendingHub, /\.eq\("credential_id", identity\.id\)/);
+  assert.match(pendingHub, /\.eq\("engine_version", "public-orientation-v1"\)/);
+  assert.match(pendingHub, /validDiagnostic\(row\.result\)/);
+  assert.match(pendingHub, /qualification: null/);
+  assert.match(pendingHub, /orientation_acknowledged_at/);
+  assert.match(pendingHub, /status: "starter_documents"/);
+  assert.match(pendingHub, /orientationConfirmed: Boolean\(acknowledgementResult\.data\?\.orientation_acknowledged_at\)/);
+  assert.doesNotMatch(pendingHub, /\.eq\("email"|\.from\("commercial_purchases"|\.from\("student_dossier_messages"/);
+});
+
+test("original Prospect messaging remains visible without fabricating temporary privileges", () => {
+  assert.match(messagesPage, /getProvisionalIdentity\(\)/);
+  assert.match(messagesPage, /allowCompose=\{!provisional\}/);
+  assert.match(threadUI, /allowCompose = true/);
+  assert.match(threadUI, /\{allowCompose \? <form id="send-dossier-message"/);
+  assert.doesNotMatch(payment, /getProvisionalIdentity/);
+});
+
+const confirmOrientation = read("src/app/api/provisional-session/confirm-orientation/route.ts");
+const originalIntake = read("src/components/prospect/IntakeFlowCard.tsx");
+const temporaryOrientationColumn = read("supabase/migrations/20261010200500_provisional_orientation_acknowledgement.sql");
+
+test("original orientation confirmation button works with the candidate's own seven-day credential", () => {
+  assert.match(originalIntake, /provisional \? "\/api\/provisional-session\/confirm-orientation" : "\/api\/intake\/orientation\/confirm"/);
+  assert.match(orientationPage, /provisional=\{Boolean\(provisional\)\}/);
+  assert.match(confirmOrientation, /getProvisionalIdentity\(\)/);
+  assert.match(confirmOrientation, /isTrustedProvisionalMutation\(request\)/);
+  assert.match(confirmOrientation, /\.eq\("id", identity\.id\)/);
+  assert.match(confirmOrientation, /\.eq\("orientation_id", identity\.orientationId\)/);
+  assert.match(confirmOrientation, /\.is\("verified_user_id", null\)/);
+  assert.match(confirmOrientation, /\.gt\("expires_at", new Date\(\)\.toISOString\(\)\)/);
+  assert.match(temporaryOrientationColumn, /add column if not exists orientation_acknowledged_at timestamptz/);
+  assert.doesNotMatch(confirmOrientation, /student_intake_cases|commercial_purchases|customer_access/);
 });

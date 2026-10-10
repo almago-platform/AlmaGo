@@ -98,7 +98,7 @@ function validDiagnosticItem(value: unknown): value is PublicDiagnosticItem {
   );
 }
 
-function validDiagnostic(value: unknown): value is PublicOrientationDiagnostic {
+export function validDiagnostic(value: unknown): value is PublicOrientationDiagnostic {
   if (!value || typeof value !== "object") return false;
   const diagnostic = value as Record<string, unknown>;
 

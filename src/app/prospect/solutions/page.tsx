@@ -13,6 +13,8 @@ import {
 } from "@/lib/finance-insurance";
 import { getRequestLocale } from "@/lib/i18n-server";
 import { getPhase2StudentAccess } from "@/lib/phase2/access";
+import { getProvisionalIdentity } from "@/lib/prospect/provisional-auth";
+import { loadProvisionalProspectHubState } from "@/lib/prospect/provisional-hub";
 import { loadProspectHubState } from "@/lib/prospect/hub";
 
 type LanguageCourse = {
@@ -71,9 +73,10 @@ export default async function ProspectSolutionsPage() {
     getRequestLocale(),
   ]);
 
-  if (!access.user) redirect("/login");
-  if (!access.isStudent) redirect("/unauthorized");
-  if (!access.phase2Enabled || access.canUseClientFeatures) redirect("/student");
+  const provisional = !access.user ? await getProvisionalIdentity() : null;
+  if (!access.user && !provisional) redirect("/login");
+  if (access.user && !access.isStudent) redirect("/unauthorized");
+  if (access.user && (!access.phase2Enabled || access.canUseClientFeatures)) redirect("/student");
 
   const t = prospectHubCopy[locale].solutions;
   const financeCopy = studentFinanceCopy[locale];
@@ -106,11 +109,13 @@ export default async function ProspectSolutionsPage() {
   const [languageResult, financeResult, state] = await Promise.all([
     languagePromise,
     financePromise,
-    loadProspectHubState({
-      userId: access.user.id,
-      email: access.user.email,
-      emailConfirmed: Boolean(access.user.email_confirmed_at),
-    }),
+    provisional
+      ? loadProvisionalProspectHubState(provisional)
+      : loadProspectHubState({
+          userId: access.user!.id,
+          email: access.user!.email,
+          emailConfirmed: Boolean(access.user!.email_confirmed_at),
+        }),
   ]);
 
   const preferredCities = new Set(

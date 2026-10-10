@@ -17,7 +17,7 @@ import { orientationProjectFacts } from "@/lib/prospect/orientation-presentation
 import { prospectCatalogueRecommendations } from "@/lib/prospect/programmes";
 import { prospectMedia } from "@/lib/prospect/media";
 import { getProvisionalIdentity } from "@/lib/prospect/provisional-auth";
-import { ProvisionalProspectDashboard } from "@/components/prospect/ProvisionalProspectDashboard";
+import { loadProvisionalProspectHubState } from "@/lib/prospect/provisional-hub";
 
 function proposalStatus(
   intake: Awaited<ReturnType<typeof loadProspectHubState>>["intake"],
@@ -311,20 +311,19 @@ export default async function ProspectDashboardPage() {
     getRequestLocale(),
   ]);
 
-  if (!access.user) {
-    const temporary = await getProvisionalIdentity();
-    if (temporary) return <ProvisionalProspectDashboard identity={temporary} />;
-    redirect("/login");
-  }
-  if (!access.isStudent) redirect("/unauthorized");
-  if (!access.phase2Enabled || access.canUseClientFeatures) redirect("/student");
+  const temporary = !access.user ? await getProvisionalIdentity() : null;
+  if (!access.user && !temporary) redirect("/login");
+  if (access.user && !access.isStudent) redirect("/unauthorized");
+  if (access.user && (!access.phase2Enabled || access.canUseClientFeatures)) redirect("/student");
 
   const [state, catalogue] = await Promise.all([
-    loadProspectHubState({
-      userId: access.user.id,
-      email: access.user.email,
-      emailConfirmed: Boolean(access.user.email_confirmed_at),
-    }),
+    temporary
+      ? loadProvisionalProspectHubState(temporary)
+      : loadProspectHubState({
+          userId: access.user!.id,
+          email: access.user!.email,
+          emailConfirmed: Boolean(access.user!.email_confirmed_at),
+        }),
     loadVerifiedProgrammeCatalogue(),
   ]);
 

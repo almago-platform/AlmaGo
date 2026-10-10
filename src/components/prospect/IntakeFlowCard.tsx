@@ -40,6 +40,7 @@ export function IntakeFlowCard({
   bacStatus,
   offer,
   paymentEnabled = false,
+  provisional = false,
 }: {
   recovery: Recovery | null;
   orientationId: string | null;
@@ -54,6 +55,7 @@ export function IntakeFlowCard({
   bacStatus?: string | null;
   offer?: ProposalOffer | null;
   paymentEnabled?: boolean;
+  provisional?: boolean;
 }) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
@@ -150,7 +152,10 @@ export function IntakeFlowCard({
           <button
             type="button"
             disabled={busy}
-            onClick={() => post("/api/intake/orientation/confirm", { orientationId })}
+            onClick={() => post(
+              provisional ? "/api/provisional-session/confirm-orientation" : "/api/intake/orientation/confirm",
+              provisional ? undefined : { orientationId },
+            )}
             className="inline-flex min-h-11 items-center rounded-xl bg-[var(--brand)] px-5 text-sm font-bold text-white shadow-[0_12px_28px_-16px_rgba(216,6,33,.85)] transition-all duration-200 hover:-translate-y-px hover:bg-[var(--brand-strong)] disabled:opacity-60 disabled:hover:translate-y-0"
           >
             {busy ? "Validation…" : "Ces informations sont correctes"}
