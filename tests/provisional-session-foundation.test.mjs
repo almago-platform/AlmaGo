@@ -182,3 +182,23 @@ test("provisional sign-out refuses success when server-side revocation fails", (
   assert.match(logout, /if \(!revoked\) \{/);
   assert.match(logout, /status: 503/);
 });
+
+const authFormWithEmailThrottle = read("src/components/auth/AuthForm.tsx");
+
+test("Supabase email-send throttling does not prevent an orientation-scoped temporary session", () => {
+  assert.match(authFormWithEmailThrottle, /signUpError\.code === "over_email_send_rate_limit"/);
+  assert.match(authFormWithEmailThrottle, /mailThrottled && prospectSignup && activationToken && provisionalAccessEnabled/);
+  assert.match(authFormWithEmailThrottle, /await tryStartProvisionalAccess\(activationToken\)/);
+  assert.match(authFormWithEmailThrottle, /router\.replace\("\/prospect"\)/);
+  assert.match(authFormWithEmailThrottle, /if \(!response\?\.ok\) return false/);
+  assert.match(authFormWithEmailThrottle, /setError\(auth\.messages\.signupError\)/);
+  assert.doesNotMatch(authFormWithEmailThrottle, /if \(signUpError\)[\s\S]{0,500}auth\.admin|updateUserById/);
+});
+
+test("an expired orientation, confirmed identity or missing feature gate still fails closed", () => {
+  assert.match(signup, /\.gt\("resume_token_expires_at", new Date\(\)\.toISOString\(\)\)/);
+  assert.match(signup, /normalizeProvisionalEmail\(prospect\?\.email\) !== email \|\| prospect\?\.user_id/);
+  assert.match(signup, /isProvisionalCandidateEnabled\(\)/);
+  assert.match(authFormWithEmailThrottle, /const mailThrottled = signUpError\.code === "over_email_send_rate_limit"/);
+  assert.match(authFormWithEmailThrottle, /if \(provisionalAccessEnabled && await tryStartProvisionalAccess\(activationToken\)\) return/);
+});
