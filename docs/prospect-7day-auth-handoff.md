@@ -22,40 +22,47 @@ The orientation, account and private documents must remain intact after verifica
 - No mutation to existing `auth.users`, RLS policies, paid lifecycle, storage buckets
   or old student/admin accounts.
 
-## NOT READY FOR PUBLIC ACTIVATION
-**Do not set `ALMAGO_PROVISIONAL_AUTH_ENABLED=true`.** The flag remains false
-in `.env.example`, and this PR intentionally does NOT grant the temporary
-principal authenticated access to protected Supabase tables or APIs.
-While the feature is disabled the existing `/prospect-preview` path stays in place.
-Enabling the flag before completing the next steps would redirect temporary
-sessions to `/prospect` without a supported dashboard session.
+## Also implemented behind the same OFF flag
+- Existing `/prospect` layout, orientation, catalogue, roadmap and documents
+  paths now render using the same ProspectShell and shared UI primitives for a
+  validated temporary credential, without allowing access to Supabase
+  `authenticated` or paid roles.
+- Document API routes issue owner-scoped write, read (signed 60-second URL), and
+  delete operations in a dedicated **private** storage bucket. Public, anonymous,
+  and regular authenticated table grants are revoked. PDF/JPEG/PNG signature
+  and 10 MiB checks are preserved.
+- Verified `/api/orientation/claim` and verified account recovery run a
+  retry-safe transfer into the confirmed candidate's normal document rows and
+  storage location, then revoke provisional sessions.
 
-## Required next implementation and review
-1. Define a single /prospect authorization seam that accepts an authenticated
-   Supabase user OR a verified *provisional session*. The two entitlements must
-   never be confused. Reuse the actual ProspectShell/dashboard components.
-2. Build **provisional-only document storage** with strict owner checks using the
-   pending credential ID. NEVER use the shared student-documents bucket or insert
-   into student-owned tables through a service-role client without explicit,
-   tested per-object authorization. Preserve file signature checks, 10 MiB cap,
-   private URLs and 60-second signed downloads.
-3. On Supabase email confirmation and successful atomic orientation claim,
-   verify exact prospect/orientation and email, migrate pending document metadata
-   and private objects to the confirmed user transactionally or with retry-safe
-   reconciliation, mark the credential consumed, revoke all provisional sessions
-   and keep the same /prospect URL. Never infer ownership from email alone.
-4. Add hard server-side blocks for proposal acceptance, messaging attachments
-   requiring identity, payments, Student activation and all other privileged
-   mutations. The **email confirmation is necessary but not sufficient** to
-   activate a commercial entitlement.
-5. Test authenticated existing accounts, same-browser signup, another device,
-   failed passwords and locks, expiry at day 7, logout and revocation, stolen
-   orientation token, repeated signup, email collision with an existing Supabase
-   account, leaked cookie, DB RLS/storage IDOR, delayed confirmation, file migration,
-   admin AAL2 and the existing A43 suite.
-6. Only then run full Supabase-local DB tests, npm test, TypeScript, lint, build,
-   Browser Quality and authenticated E2E; review and explicitly approve a separate
-   rollout. Use the VPS revision gate to verify production.
+## NOT READY FOR PUBLIC ACTIVATION
+**Do not set `ALMAGO_PROVISIONAL_AUTH_ENABLED=true` without signed-off integration tests.**
+The flag is false in `.env.example`; the existing public `/prospect-preview`
+remains unchanged. This work is intentionally being reviewed in a branch.
+Static tests or a passing build are not sufficient to claim the complete
+registration/verification/transfer workflow works on the live Supabase stack.
+
+## Final release requirements
+1. Run **full end-to-end sign-up** with Supabase confirmations enabled: report
+   PDF email → Supabase signUp → temporary session → actual `/prospect` and
+   documents → cross-device login → email confirmation callback → claim →
+   transferred files in the same `/prospect`.
+2. Test existing verified accounts, malicious registration using somebody
+   else's address, already-existing unverified accounts and collisions.
+   Never attach someone else's records to a provisional principal.
+3. Test stolen orientation token, CSRF/Origin, credential guessing/lockout,
+   expired and revoked sessions, two-device logout, HTML/JS disguising as PDFs,
+   IDOR against all document APIs and signed URLs, failed storage writes,
+   retries halfway through migration and late verification at day 8+.
+4. Assert all payment, proposal and Student activation endpoints independently
+   refuse a provisional principal, including API calls made by hand.
+   Email verification remains necessary but not sufficient for paid access.
+5. Validate full local Supabase migrations and pgtap, app tests, TypeScript,
+   ESLint, build, Browser Quality, authenticated E2E and A43 without altering
+   production Auth/RLS settings or existing test accounts.
+6. Security-review the temporary credential design, data retention and
+   password/rate-limit assumptions, then approve a separate production rollout.
+   Never switch the flag on before these gates; use the VPS revision gate.
 
 ## Security invariants
 - A real email typed in a form does not prove inbox control or identity.
