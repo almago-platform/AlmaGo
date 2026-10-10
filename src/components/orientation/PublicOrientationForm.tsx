@@ -125,6 +125,10 @@ export function PublicOrientationForm({
     profileKey: string | null;
     ready: boolean;
   }>({ profileKey: null, ready: false });
+  const [detailedPrintState, setDetailedPrintState] = useState<{
+    profileKey: string | null;
+    ready: boolean;
+  }>({ profileKey: null, ready: false });
   const handleReviewReady = useCallback((reviewId: string | null) => {
     setOrientationReview({ profileKey: reviewProfileKey, reviewId });
   }, [reviewProfileKey]);
@@ -133,6 +137,9 @@ export function PublicOrientationForm({
   }, [reviewProfileKey]);
   const handleResultReady = useCallback((ready: boolean) => {
     setOrientationResultState({ profileKey: reviewProfileKey, ready });
+  }, [reviewProfileKey]);
+  const handleDetailedPrintReady = useCallback((ready: boolean) => {
+    setDetailedPrintState({ profileKey: reviewProfileKey, ready });
   }, [reviewProfileKey]);
   const orientationReviewId =
     orientationReview.profileKey === reviewProfileKey
@@ -145,6 +152,9 @@ export function PublicOrientationForm({
   const orientationResultReady =
     orientationResultState.profileKey === reviewProfileKey
       && orientationResultState.ready;
+  const detailedPrintReady =
+    detailedPrintState.profileKey === reviewProfileKey
+      && detailedPrintState.ready;
 
   const bacTracks = useMemo(() => localizeProfileOptions(locale, tunisianBacTrackOptions), [locale]);
   const diplomas = useMemo(() => localizeProfileOptions(locale, diplomaOptions), [locale]);
@@ -1178,7 +1188,7 @@ export function PublicOrientationForm({
             ) : (
               <div id="orientation-report" className="orientation-print-report">
                 <OrientationOnePagePrintReport answers={answers} locale={locale} personalized={personalizedForPrint} identity={identity} />
-                {personalizedForPrint?.selected.length ? <OrientationDetailedPrintReport answers={answers} locale={locale} personalized={personalizedForPrint} identity={identity} /> : null}
+                {personalizedForPrint?.selected.length ? <OrientationDetailedPrintReport answers={answers} locale={locale} personalized={personalizedForPrint} identity={identity} onReadyChange={handleDetailedPrintReady} /> : null}
                 <div className="orientation-screen-report">
                 <div className="orientation-print-only mb-6 items-center justify-between gap-6 border-b border-slate-300 pb-5">
                   <BrandLogo className="h-10 w-auto" priority />
@@ -1265,9 +1275,13 @@ export function PublicOrientationForm({
                         <button
                           type="button"
                           onClick={() => printOrientationDocument("detailed")}
-                          className="inline-flex min-h-11 items-center justify-center rounded-[var(--radius-control)] bg-[var(--brand)] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[var(--brand-strong)]"
+                          disabled={!detailedPrintReady}
+                          aria-busy={!detailedPrintReady}
+                          className="inline-flex min-h-11 items-center justify-center rounded-[var(--radius-control)] bg-[var(--brand)] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[var(--brand-strong)] disabled:cursor-wait disabled:opacity-60"
                         >
-                          {{ fr: "Télécharger le dossier détaillé (PDF)", ar: "تحميل الملف المفصل (PDF)", en: "Download detailed dossier (PDF)", de: "Ausführliches Dossier herunterladen (PDF)" }[locale]}
+                          {detailedPrintReady
+                            ? { fr: "Enregistrer le dossier détaillé (PDF)", ar: "حفظ الملف المفصل (PDF)", en: "Save detailed dossier (PDF)", de: "Ausführliches Dossier speichern (PDF)" }[locale]
+                            : { fr: "Préparation du dossier détaillé…", ar: "جارٍ إعداد الملف المفصل…", en: "Preparing detailed dossier…", de: "Ausführliches Dossier wird vorbereitet…" }[locale]}
                         </button>
                       ) : null}
                       <button
