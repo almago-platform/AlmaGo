@@ -37,7 +37,9 @@ test("the public media endpoint never inserts universities, enforces strict limi
   assert.doesNotMatch(route, /\.insert\(|\.upsert\(|\.rpc\(/);
   assert.match(route, /enforceRequestRateLimit/);
   assert.match(route, /SUPABASE_SECRET_KEY/);
-  assert.match(route, /if \(!row\) continue/);
+  assert.match(route, /if \(!row\) \{/);
+  assert.match(route, /if \(curated\) items\.push\(\{ \.\.\.requested, media: curated \}\)/);
+  assert.match(route, /if \(!row\) \{[\s\S]*?continue;/);
 });
 
 test("Wikimedia discovery filters logos, insufficient dimensions and unknown licenses", () => {
