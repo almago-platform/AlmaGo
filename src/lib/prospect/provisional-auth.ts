@@ -57,6 +57,9 @@ export async function verifyProvisionalPassword(password: string, stored: string
 
 export async function isTrustedProvisionalMutation(request: Request): Promise<boolean> {
   const origin = request.headers.get("origin");
+  // A proxy-provided host can be spoofed. Production must declare the
+  // canonical origin explicitly before accepting password-bearing requests.
+  if (process.env.NODE_ENV === "production" && !process.env.SITE_URL) return false;
   if (!origin) return false;
   try {
     const trustedOrigin = await getPublicOrigin();
