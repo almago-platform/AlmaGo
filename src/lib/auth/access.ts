@@ -1,6 +1,7 @@
 import { hasClientLifecycleEntitlement } from "@/lib/auth/entitlement";
 import { hasAdminAuthenticatorAssurance } from "@/lib/auth/assurance";
 import { createClient } from "@/lib/supabase/server";
+import { hasVerifiedEmail } from "@/lib/auth/verified";
 
 export async function getAuthenticatedUser() {
   const supabase = await createClient();
@@ -42,6 +43,8 @@ export async function getAdminUser() {
 export async function getTechnicalStudentUser() {
   const { supabase, user } = await getAuthenticatedUser();
   if (!user) return { supabase, user: null, isStudent: false };
+  // A provisional or anonymous session must never be a Student/Client identity.
+  if (!hasVerifiedEmail(user)) return { supabase, user, isStudent: false };
 
   const { data: role } = await supabase
     .from("user_roles")
