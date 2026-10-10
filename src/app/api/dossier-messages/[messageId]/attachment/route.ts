@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getAuthenticatedUser } from "@/lib/auth/access";
+import { hasVerifiedEmail } from "@/lib/auth/verified";
 import { messageAttachmentBucket } from "@/lib/dossier-message-attachments";
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -10,6 +11,7 @@ export async function GET(
 ) {
   const { supabase, user } = await getAuthenticatedUser();
   if (!user) return NextResponse.json({ error: "Non authentifié." }, { status: 401 });
+  if (!hasVerifiedEmail(user)) return NextResponse.json({ error: "Vérifiez votre e-mail." }, { status: 403 });
 
   const { messageId } = await params;
   if (!UUID_RE.test(messageId)) {

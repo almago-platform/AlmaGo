@@ -107,7 +107,12 @@ export function AuthForm({
         });
         if (signUpError) setError(auth.messages.signupError);
         else if (data.session) router.push(activationClaimPath ?? "/student");
-        else {
+        else if (prospectSignup && activationToken) {
+          // An unconfirmed sign-up does not create an Auth session. Offer only
+          // an ephemeral read-only preview, regardless of account existence.
+          setPassword("");
+          router.replace(`/prospect-preview/start?orientation_token=${encodeURIComponent(activationToken)}`);
+        } else {
           // Supabase returns an indistinguishable response for existing accounts.
           // Do not claim an email was sent or another account was created.
           setPassword("");
