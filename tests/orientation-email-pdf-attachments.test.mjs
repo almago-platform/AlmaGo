@@ -49,7 +49,7 @@ test("SMTP sends the same generated PDFs as multipart attachments", () => {
 
 test("prospect save flow attaches both PDFs and keeps secure report links", () => {
   assert.match(route, /buildOrientationEmailPdfAttachments/);
-  assert.match(route, /attachmentsIncluded: attachments\.length === 2/);
+  assert.match(route, /attachmentsIncluded: attachments\.length >= 2/);
   assert.match(route, /attachments,/);
   assert.match(route, /orientationReportUrl/);
   assert.match(route, /candidateReportUrl/);
@@ -60,4 +60,40 @@ test("transactional copy tells the student when PDFs are attached", () => {
   assert.match(copy, /Les deux rapports sont également joints à cet e-mail au format PDF/);
   assert.match(copy, /Both reports are also attached to this email as PDF files/);
   assert.match(copy, /attachmentsIncluded \? \[copy\.attachmentsNote\] : \[\]/);
+});
+
+
+test("detailed server-side PDF includes primary and documented programmes, with bounded Wikimedia photos", () => {
+  const readResearch = readFileSync("src/lib/orientation/email-research-pistes.ts", "utf8");
+  assert.match(pdf, /buildDetailedOrientationEmailPdfAttachment/);
+  assert.match(pdf, /dossier-detaille-campus-allemagne\.pdf/);
+  assert.match(pdf, /input\.personalized\.selected/);
+  assert.match(pdf, /input\.supplemental/);
+  assert.match(pdf, /buildPdf\(layout\.pages, layout\.images\)/);
+  assert.match(pdf, /\/Subtype \/Image/);
+  assert.match(pdf, /\/DCTDecode/);
+  assert.match(pdf, /findCuratedUniversityMedia\(institution, city\)/);
+  assert.match(pdf, /url\.hostname !== "upload\.wikimedia\.org"/);
+  assert.match(pdf, /MAX_IMAGE_BYTES/);
+  assert.match(pdf, /AbortSignal\.timeout\(3500\)/);
+  assert.match(pdf, /layout\.newPage\(\)/);
+  assert.match(readResearch, /orientation_research_programs/);
+  assert.match(readResearch, /chooseDocumentedResearchPistes/);
+  assert.match(readResearch, /filterSupplementalResearchPistes/);
+});
+
+test("automatic email adds a third attachment only when a saved personalized shortlist exists", () => {
+  assert.match(route, /attachments\.length === 2 && personalized\?\.selected\.length/);
+  assert.match(route, /readSupplementalOrientationEmailPistes\(answers, personalized\.selected\)/);
+  assert.match(route, /await buildDetailedOrientationEmailPdfAttachment/);
+  assert.match(route, /if \(detailed\) attachments\.push\(detailed\)/);
+  assert.match(route, /attachments\.length !== 2/);
+  assert.match(route, /detailedPdfAttached: delivery\.status === "sent" && attachments\.length === 3/);
+  assert.match(route, /detailedReportUrl: personalized\?\.selected\.length/);
+  assert.match(copy, /detailedAttachmentIncluded/);
+  assert.match(copy, /detailedReportUrl/);
+  const consent = readFileSync("src/content/orientation-prospect-copy.ts", "utf8");
+  assert.match(consent, /dossier détaillé supplémentaire/);
+  assert.match(consent, /ملف مفصل إضافي/);
+  assert.match(consent, /supplementary detailed dossier/);
 });
