@@ -287,3 +287,185 @@
   .orientation-detail-closing footer { margin-top: 5mm; font-size: 8pt; color: #655d55; }
   .orientation-detail-header, .orientation-detail-chapter { break-inside: avoid !important; }
 }
+
+
+/* PDF fidelity to the validated public Campus Allemagne orientation page. */
+@media print {
+  .orientation-detail-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.65fr);
+    gap: 6mm;
+    align-items: start;
+  }
+
+  .orientation-detail-hero-main { min-width: 0; }
+  .orientation-detail-hero .orientation-detail-opening { font-size: 10.2pt; font-weight: 700; }
+  .orientation-detail-statusline { margin-top: 3mm !important; color: #c5ced6; font-size: 9pt; }
+
+  .orientation-detail-hero-summary {
+    min-width: 0;
+    border: 1px solid #344252;
+    border-top: 1.5mm solid #f6ad16;
+    border-radius: 3mm;
+    padding: 5mm;
+    background: #243144;
+    color: white;
+  }
+
+  .orientation-detail-hero-summary .orientation-detail-eyebrow { color: #ffc247; font-size: 8pt; }
+  .orientation-detail-hero-summary > strong { display: block; margin-top: 3mm; font-size: 14pt; line-height: 1.2; }
+  .orientation-detail-hero-summary p { margin-top: 4mm; font-size: 8.5pt; line-height: 1.35; }
+  .orientation-detail-hero-summary b { color: #fff; }
+  .orientation-detail-profile dl { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+  .orientation-detail-journey { padding: 5mm 0 2mm; }
+  .orientation-detail-journey h2 { margin: 0 0 4mm; font-size: 13pt; }
+  .orientation-detail-journey ol {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 2mm;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .orientation-detail-journey li { text-align: center; min-width: 0; }
+  .orientation-detail-journey li > span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 8mm;
+    width: 8mm;
+    margin: auto;
+    border: 1px solid #d4c6b3;
+    border-radius: 50%;
+    background: #fff;
+    color: #7c7c7c;
+    font-size: 9pt;
+    font-weight: 800;
+  }
+  .orientation-detail-journey li strong {
+    display: block;
+    margin-top: 2mm;
+    font-size: 7.5pt;
+    font-weight: 650;
+  }
+  .orientation-detail-journey li.current > span {
+    background: #d60929;
+    color: #fff;
+    border-color: #d60929;
+  }
+  .orientation-detail-journey li.current strong { color: #c20825; }
+  .orientation-detail-journey li.completed > span { background: #36846e; border-color: #36846e; color: #fff; }
+  .orientation-detail-journey li.completed strong { color: #24664d; }
+
+  .orientation-detail-priority { margin-top: 3mm; }
+  .orientation-detail-responsibilities {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 5mm;
+    padding-top: 4mm;
+    border-top: 1px solid #ddd0c4;
+  }
+  .orientation-detail-responsibilities > div + div { border-inline-start: 1px solid #ddd0c4; padding-inline-start: 4mm; }
+  .orientation-detail-responsibilities span {
+    display: block;
+    color: #b20820;
+    font-size: 8pt;
+    font-weight: 800;
+    margin-bottom: 1.5mm;
+  }
+  .orientation-detail-responsibilities strong,
+  .orientation-detail-responsibilities p { margin: 0; font-size: 9pt; line-height: 1.43; }
+
+  .orientation-detail-city-fallback {
+    margin: 4mm 0 0;
+    padding: 4mm;
+    border: 1px solid #ead2a6;
+    border-radius: 2mm;
+    background: #fff8e9;
+    color: #644b19;
+    font-size: 9pt;
+  }
+  .orientation-detail-city-fallback strong { font-size: 8pt; letter-spacing: 0.03em; }
+  .orientation-detail-city-fallback p { margin: 1mm 0 0; }
+
+  .orientation-detail-featured {
+    background: #132131;
+    color: #fff;
+    border-color: #132131;
+    border-top: 2mm solid #d60929;
+    break-inside: avoid !important;
+  }
+  .orientation-detail-featured .orientation-detail-index { background: #d60929; }
+  .orientation-detail-featured .orientation-detail-option-head h3 { color: #fff; font-size: 19pt; }
+  .orientation-detail-featured .orientation-detail-option-head p { color: #cbd4df; }
+  .orientation-detail-featured .orientation-detail-status {
+    border-color: #cfeddb;
+    background: #e8f4ed;
+    color: #204d37;
+  }
+  .orientation-detail-featured .orientation-detail-why h4,
+  .orientation-detail-featured .orientation-detail-facts h4,
+  .orientation-detail-featured .orientation-detail-sources h4 { color: #ffc247; }
+  .orientation-detail-featured .orientation-detail-facts dl > div { background: #273548; }
+  .orientation-detail-featured .orientation-detail-facts dt { color: #bbc7d3; }
+  .orientation-detail-featured .orientation-detail-facts dd { color: #fff; }
+  .orientation-detail-featured .orientation-detail-sources a,
+  .orientation-detail-featured .orientation-detail-photo a { color: #ffc247; }
+  .orientation-detail-featured .orientation-detail-photo figcaption { color: #d2d9e2; }
+
+  .orientation-detail-research { margin-top: 7mm; }
+  .orientation-detail-research-card {
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) minmax(0, 0.8fr);
+    gap: 5mm;
+    padding: 5mm;
+    margin-bottom: 4mm;
+    border: 1px solid #e1d5c6;
+    border-radius: 3mm;
+    break-inside: avoid !important;
+    background: #fffefa;
+  }
+  .orientation-detail-research-text h3 { margin: 2mm 0 1mm; font-size: 12.5pt; line-height: 1.25; }
+  .orientation-detail-research-text p { margin: 2mm 0; font-size: 9pt; }
+  .orientation-detail-research-text a { color: #c20825; font-weight: 800; overflow-wrap: anywhere; }
+  .orientation-detail-research-photo { margin: 0; min-width: 0; }
+  .orientation-detail-research-photo img {
+    display: block;
+    width: 100%;
+    height: 36mm;
+    object-fit: cover;
+    border-radius: 2mm;
+  }
+  .orientation-detail-research-photo figcaption {
+    margin-top: 1mm;
+    font-size: 7pt;
+    line-height: 1.3;
+    color: #655d55;
+    overflow-wrap: anywhere;
+  }
+  .orientation-detail-research-photo a { display: block; color: #c20825; font-weight: 650; }
+
+  .orientation-detail-follow-up {
+    margin-top: 6mm;
+    padding: 6mm;
+    background: #fff5eb;
+    border-radius: 3mm;
+    break-inside: avoid !important;
+  }
+  .orientation-detail-closing {
+    background: #132131;
+    color: #fff;
+    border-inline-start: 2mm solid #e8ad26;
+  }
+  .orientation-detail-closing aside { border-color: #596675; color: #e5e5e5; }
+  .orientation-detail-closing footer { color: #d5dde4; }
+  .orientation-detail-closing a { background: #e30029; }
+
+  .orientation-print-page .orientation-detailed-print-report dl {
+    break-inside: auto !important;
+  }
+  .orientation-print-page .orientation-detailed-print-report .orientation-detail-roadmap {
+    break-inside: avoid !important;
+  }
+}
