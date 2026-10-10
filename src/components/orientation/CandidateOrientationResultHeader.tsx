@@ -25,23 +25,23 @@ export function CandidateOrientationResultHeader({
   allFacts: readonly (readonly ReactNode[])[];
 }) {
   return (
-    <section className="orientation-print-hide">
-      <div className="flex flex-wrap items-center gap-2 text-xs font-semibold text-[var(--success-strong)]">
-        <span aria-hidden="true">✓</span>
+    <section className="orientation-print-hide orientation-result-hero">
+      <div className="inline-flex flex-wrap items-center gap-2 rounded-full border border-[var(--success-border)] bg-[var(--success-soft)] px-3 py-1.5 text-xs font-semibold text-[var(--success-strong)]">
+        <span aria-hidden="true" className="flex size-4 items-center justify-center rounded-full bg-[var(--success)] text-[10px] text-white">✓</span>
         <span>{completionLabel}</span>
       </div>
 
-      <div className="mt-4 rounded-[var(--radius-lg)] border border-[var(--brand-border)] bg-[var(--surface)] p-5 sm:p-7">
-        <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
-          <div className="min-w-0 max-w-4xl">
+      <div className="mt-4 rounded-[var(--radius-panel)] border border-[var(--brand-border)] bg-[var(--surface)] p-5 shadow-[0_18px_40px_-35px_rgba(19,33,49,0.45)] sm:p-8">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
+          <div className="min-w-0 max-w-[48rem]">
             <p className="text-[0.68rem] font-bold uppercase tracking-[0.14em] text-[var(--brand)]">
               {eyebrow}
             </p>
-            <h1 className="mt-2 text-[2rem] font-semibold leading-[1.08] tracking-[-0.04em] text-[var(--foreground)] sm:text-[2.65rem]">
+            <h1 className="mt-3 text-[clamp(1.95rem,4vw,2.75rem)] font-semibold leading-[1.1] tracking-[-0.04em] text-[var(--foreground)]">
               {title}
             </h1>
             {description ? (
-              <p className="mt-3 max-w-3xl text-sm leading-6 text-[var(--muted)] sm:text-base">
+              <p className="mt-3 max-w-[68ch] text-[15px] leading-7 text-[var(--muted)] sm:text-base">
                 {description}
               </p>
             ) : null}
@@ -49,24 +49,24 @@ export function CandidateOrientationResultHeader({
           <Badge variant={statusVariant}>{statusLabel}</Badge>
         </div>
 
-        <dl className="mt-6 grid overflow-hidden rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] sm:grid-cols-2 xl:grid-cols-4">
+        <dl className="mt-7 grid gap-px overflow-hidden rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--border)] sm:grid-cols-2 xl:grid-cols-4">
           {facts.map((fact, index) => (
             <div
               key={index}
-              className="min-w-0 border-b border-[var(--border)] px-4 py-3 last:border-b-0 sm:border-e sm:[&:nth-child(even)]:border-e-0 xl:border-b-0 xl:[&:nth-child(even)]:border-e xl:last:border-e-0"
+              className="min-w-0 bg-[var(--surface-subtle)] px-4 py-4 sm:px-5"
             >
               <dt className="text-[10px] font-bold uppercase tracking-[0.1em] text-[var(--muted)]">
                 {fact.label}
               </dt>
-              <dd className="m-0 mt-1 text-sm font-semibold leading-5 text-[var(--foreground)] [overflow-wrap:anywhere]">
+              <dd className="m-0 mt-1.5 text-sm font-semibold leading-6 text-[var(--foreground)] [overflow-wrap:anywhere]">
                 <bdi dir="auto">{fact.value}</bdi>
               </dd>
             </div>
           ))}
         </dl>
 
-        <details className="mt-5 border-t border-[var(--border)] pt-4">
-          <summary className="cursor-pointer text-sm font-semibold text-[var(--foreground)]">
+        <details className="group mt-6 border-t border-[var(--border)] pt-5">
+          <summary className="min-h-10 cursor-pointer py-2 text-sm font-semibold text-[var(--foreground)] underline-offset-4 hover:underline">
             {profileDetailsLabel}
           </summary>
           {profileDetailsHelp ? (
