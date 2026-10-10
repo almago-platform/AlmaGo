@@ -24,6 +24,9 @@ export async function POST(request: Request) {
   if (!(await isTrustedProvisionalMutation(request))) {
     return NextResponse.json({ error: "Forbidden." }, { status: 403 });
   }
+  // Apply both a network and an account limit before the costly scrypt check.
+  const ipLimited = enforceRequestRateLimit(request, PUBLIC_ABUSE_POLICIES.orientationAccountMutation);
+  if (ipLimited) return ipLimited;
   if (Number(request.headers.get("content-length") || 0) > 1024) return invalid();
   const body = await request.json().catch(() => null) as Record<string, unknown> | null;
   const email = normalizeProvisionalEmail(body?.email);
