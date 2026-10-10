@@ -1,3 +1,5 @@
+import { researchInstitutionKey } from "@/lib/orientation-engine/result/supplemental";
+
 /** Public-facing, informational-only options from prior official-site research. */
 export type ResearchPiste = {
   institution: string;
@@ -137,9 +139,7 @@ export function chooseDocumentedResearchPistes(
   // Subsequent pass: multiple degree programmes from one institution if needed.
   for (const uniqueUniversity of [true, false]) {
     for (const { entry } of withScore) {
-      const institution = normalize(entry.institution)
-        .replace(/\s*\(fau\)\s*$/, "").replace(/\s*\(.*?\)\s*$/, "");
-      const identity = `${institution}|${normalize(entry.city)}`;
+      const identity = researchInstitutionKey(entry.institution, entry.city);
       const programme = `${identity}|${normalize(entry.programme)}`;
       if (seenProgrammes.has(programme) || (uniqueUniversity && seenUniversities.has(identity))) continue;
       seenProgrammes.add(programme);
@@ -151,7 +151,7 @@ export function chooseDocumentedResearchPistes(
         teachingLanguage: entry.teachingLanguage,
         officialUrl: entry.officialUrl,
       });
-      if (result.length >= Math.min(3, maxItems)) return result;
+      if (result.length >= Math.min(12, Math.max(0, maxItems))) return result;
     }
   }
   return result;
