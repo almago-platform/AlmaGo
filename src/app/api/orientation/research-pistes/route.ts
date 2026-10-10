@@ -99,7 +99,7 @@ export async function POST(request: Request) {
       { items: chooseDocumentedResearchPistes(rows, {
         ...criteria,
         preferredCities: scopes[0]?.cities || [],
-      }, 3, {
+      }, 12, {
         nearbyCities: scopes.find((scope) => scope.tier === "nearby")?.cities || [],
         regionCities: scopes.find((scope) => scope.tier === "land")?.cities || [],
       }) },
