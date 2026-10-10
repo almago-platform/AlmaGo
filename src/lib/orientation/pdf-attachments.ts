@@ -918,7 +918,9 @@ export async function buildDetailedOrientationEmailPdfAttachment(
   const layout = new PdfLayout();
   const content = input.personalized.content;
   const student = nameForPdf(input.identity, input.email);
-  const priority = orientationCandidatePriority(input.answers, input.locale);
+  // The server PDF uses WinAnsi fonts: Arabic readers receive a clearly labelled French
+  // fallback PDF and the email links to their complete Arabic browser report.
+  const priority = orientationCandidatePriority(input.answers, locale);
   const selected = [...input.personalized.selected].sort((a, b) => a.position - b.position).slice(0, 6);
   const supplemental = input.supplemental.slice(0, Math.max(0, 3 - selected.length));
   const entries = [...selected, ...supplemental];
