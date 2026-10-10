@@ -11,7 +11,25 @@ function normalized(value: string | null | undefined) {
     .toLocaleLowerCase("en").replace(/[^a-z0-9]+/g, " ").trim();
 }
 
+export function researchInstitutionKey(institution: string, city: string | null) {
+  const normalizedName = normalized(institution);
+  const normalizedCity = normalized(city);
+  // Joint-degree programmes may include a partner university in their title.
+  // They are not a separate German institution: identify the host campus.
+  const host = normalizedName.replace(/ (?:and|und|et|y) (?:universidad|university|universitat|universite) .+$/, "");
+  if (/^friedrich alexander universitat erlangen nurnberg(?: fau)?$/.test(host)
+    || /^fau erlangen(?: nurnberg)?$/.test(host)) {
+    return "erlangen|friedrich-alexander-universitat";
+  }
+  if (["otto friedrich universitat bamberg", "university of bamberg",
+    "universitat bamberg", "universite de bamberg"].includes(host)) {
+    return "bamberg|otto-friedrich-universitat";
+  }
+  return `${normalizedCity}|${host}`;
+}
+
 function sameInstitution(a: ShortlistIdentity, b: ShortlistIdentity) {
+  if (researchInstitutionKey(a.institution, a.city) === researchInstitutionKey(b.institution, b.city)) return true;
   const left = normalized(a.institution);
   const right = normalized(b.institution);
   if (left === right) return true;

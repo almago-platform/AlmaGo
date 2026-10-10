@@ -59,6 +59,23 @@ const copy = {
   },
 } as const;
 
+function researchTeachingLanguage(value: string | null, locale: Locale) {
+  if (!value) return null;
+  const normalized = value.trim().toLowerCase();
+  const key =
+    ["german", "deutsch", "allemand", "vollständig auf deutsch"].includes(normalized) ? "german"
+    : ["english", "englisch", "anglais"].includes(normalized) ? "english"
+    : ["german and english", "deutsch und englisch"].includes(normalized) ? "german_english"
+    : null;
+  if (!key) return value;
+  const labels: Record<"german" | "english" | "german_english", Record<Locale, string>> = {
+    german: { fr: "Allemand", ar: "الألمانية", en: "German", de: "Deutsch" },
+    english: { fr: "Anglais", ar: "الإنجليزية", en: "English", de: "Englisch" },
+    german_english: { fr: "Allemand et anglais", ar: "الألمانية والإنجليزية", en: "German and English", de: "Deutsch und Englisch" },
+  };
+  return labels[key][locale];
+}
+
 type ApiResponse = { items?: ResearchPiste[] };
 
 export function OrientationResearchPistesCard({
@@ -98,7 +115,7 @@ export function OrientationResearchPistesCard({
       })
       .then((data) => {
         if (controller.signal.aborted) return;
-        setItems(Array.isArray(data.items) ? data.items.slice(0, 3) : []);
+        setItems(Array.isArray(data.items) ? data.items.slice(0, 12) : []);
         setStatus("ready");
       })
       .catch(() => {
@@ -130,7 +147,7 @@ export function OrientationResearchPistesCard({
                 <div className="order-last sm:order-first">
                   <span className="text-[11px] font-bold text-[var(--brand-strong)]">{String(index + existingShortlist.length + 1).padStart(2, "0")} · {t.badge}</span>
                   <h4 className="mt-2 text-base font-semibold leading-6">{item.institution} — {item.programme}</h4>
-                  <p className="mt-1 text-xs text-[var(--muted)]">{[item.city, item.teachingLanguage].filter(Boolean).join(" · ")}</p>
+                  <p className="mt-1 text-xs text-[var(--muted)]">{[item.city, researchTeachingLanguage(item.teachingLanguage, locale)].filter(Boolean).join(" · ")}</p>
                   <p className="mt-3 text-sm leading-6 text-[var(--foreground)]"><strong>{t.why} : </strong>{t.reason(item.city || item.institution, item.programme)}</p>
                   <a className="mt-3 inline-flex min-h-10 items-center text-sm font-semibold text-[var(--brand-strong)] underline underline-offset-4" href={item.officialUrl} target="_blank" rel="noopener noreferrer">{t.source} ↗</a>
                 </div>

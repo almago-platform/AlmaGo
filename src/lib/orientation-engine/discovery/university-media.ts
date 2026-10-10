@@ -140,7 +140,7 @@ async function searchCommonsPhoto(query: string): Promise<UniversityMediaLookup 
       || stripHtml(metadata.UsageTerms?.value);
     const author = stripHtml(metadata.Artist?.value)
       || stripHtml(metadata.Credit?.value);
-    if (!license || !/^(?:CC BY(?:-SA)?(?:\\s|$)|CC0)/i.test(license)) return null;
+    if (!license || !/^(?:CC BY(?:-SA)?(?:\s|$)|CC0)/i.test(license)) return null;
     if (!author && license !== "CC0") return null;
     return {
       coverImageUrl,
@@ -159,7 +159,12 @@ export async function findWikimediaUniversityMedia(
   universityName: string,
   city: string | null,
 ): Promise<UniversityMediaLookup | null> {
+  const shortName = universityName
+    .replace(/\s+\((?:FAU|OTH)\)\s*$/i, "")
+    .replace(/\s+(?:and|und|et)\s+(?:Universidad|University|Universität|Universite)\b.+$/i, "");
   const queries = [
+    [shortName, city, "campus"],
+    [shortName, city],
     [universityName, city],
     [universityName, city, "campus"],
   ]

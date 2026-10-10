@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createPrivilegedSupabaseClient } from "@/lib/supabase/privileged";
 import { findWikimediaUniversityMedia } from "@/lib/orientation-engine/discovery/university-media";
+import { findCuratedUniversityMedia } from "@/lib/orientation-engine/discovery/curated-university-media";
 import { persistUniversityMediaFile } from "@/lib/orientation-engine/discovery/university-storage";
 import type { OrientationUniversityMedia } from "@/lib/orientation-engine/types";
 import {
@@ -97,12 +98,16 @@ export async function POST(request: Request) {
   if (!universities) return NextResponse.json({ error: "Invalid universities" }, { status: 400 });
   if (!universities.length) return NextResponse.json({ items: [] }, { headers: { "Cache-Control": "no-store" } });
 
+  const reviewedFallback = universities.flatMap((requested) => {
+    const media = findCuratedUniversityMedia(requested.institution, requested.city);
+    return media ? [{ ...requested, media }] : [];
+  });
   const lease = acquireRequestConcurrency("orientation_media", 3);
   if (!lease) return concurrencyLimitedResponse("orientation_media");
 
   try {
     if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SECRET_KEY) {
-      return NextResponse.json({ items: [] }, { headers: { "Cache-Control": "no-store" } });
+      return NextResponse.json({ items: reviewedFallback }, { headers: { "Cache-Control": "no-store" } });
     }
     const supabase = createPrivilegedSupabaseClient();
     const { data, error } = await supabase.from("universities")
@@ -115,8 +120,30 @@ export async function POST(request: Request) {
     const items: Array<RequestedUniversity & { media: OrientationUniversityMedia | null }> = [];
     for (const requested of universities) {
       const row = matchingRow(rows, requested);
-      if (!row) continue;
-      if (shouldSearch(row) && budget > 0) {
+      const curated = findCuratedUniversityMedia(requested.institution, requested.city);
+      if (!row) {
+        // A researched university can be documented before its canonical
+        // registry row has been promoted. Use only our reviewed, exact-match
+        // photo seed; never insert arbitrary visitor-provided institutions.
+        if (curated) items.push({ ...requested, media: curated });
+        continue;
+      }
+      if (curated && !licensed(row)) {
+        const checkedAt = new Date().toISOString();
+        const durableUrl = await persistUniversityMediaFile(supabase, row.id, curated);
+        const update = {
+          cover_image_url: durableUrl,
+          cover_image_source_url: curated.coverImageSourceUrl,
+          cover_image_attribution: curated.coverImageAttribution,
+          cover_image_license: curated.coverImageLicense,
+          media_verified_at: checkedAt,
+          updated_at: checkedAt,
+        };
+        const { error: seedError } = await supabase.from("universities")
+          .update(update).eq("id", row.id);
+        if (!seedError) Object.assign(row, update);
+      }
+      if (!curated && shouldSearch(row) && budget > 0) {
         budget -= 1;
         const found = await findWikimediaUniversityMedia(row.name, row.city);
         const checkedAt = new Date().toISOString();
@@ -156,12 +183,12 @@ export async function POST(request: Request) {
           if (!migrationError) row.cover_image_url = storedUrl;
         }
       }
-      items.push({ ...requested, media: toMedia(row) });
+      items.push({ ...requested, media: toMedia(row) || curated });
     }
     return NextResponse.json({ items }, { headers: { "Cache-Control": "no-store" } });
   } catch {
     // Media enrichment is optional: never turn a university orientation into a 503.
-    return NextResponse.json({ items: [] }, { headers: { "Cache-Control": "no-store" } });
+    return NextResponse.json({ items: reviewedFallback }, { headers: { "Cache-Control": "no-store" } });
   } finally {
     lease.release();
   }

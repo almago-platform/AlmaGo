@@ -63,6 +63,18 @@ export function researchFamiliesFor(criteria: ResearchPisteCriteria) {
   return [...(researchPisteFamilies[criteria.targetField] || [])];
 }
 
+function researchInstitutionKey(institution: string, city: string | null) {
+  const name = normalize(institution)
+    .replace(/[^a-z0-9]+/g, " ").trim()
+    .replace(/ (?:and|und|et|y) (?:universidad|university|universitat|universite) .+$/, "");
+  if (/^friedrich alexander universitat erlangen nurnberg(?: fau)?$/.test(name)) {
+    return "erlangen|friedrich-alexander-universitat";
+  }
+  if (["otto friedrich universitat bamberg", "university of bamberg",
+    "universitat bamberg"].includes(name)) return "bamberg|otto-friedrich-universitat";
+  return `${normalize(city)}|${name}`;
+}
+
 function normalize(value: string | null | undefined) {
   return (value || "").trim().normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase().replace(/\s+/g, " ");
 }
@@ -137,9 +149,7 @@ export function chooseDocumentedResearchPistes(
   // Subsequent pass: multiple degree programmes from one institution if needed.
   for (const uniqueUniversity of [true, false]) {
     for (const { entry } of withScore) {
-      const institution = normalize(entry.institution)
-        .replace(/\s*\(fau\)\s*$/, "").replace(/\s*\(.*?\)\s*$/, "");
-      const identity = `${institution}|${normalize(entry.city)}`;
+      const identity = researchInstitutionKey(entry.institution, entry.city);
       const programme = `${identity}|${normalize(entry.programme)}`;
       if (seenProgrammes.has(programme) || (uniqueUniversity && seenUniversities.has(identity))) continue;
       seenProgrammes.add(programme);
@@ -151,7 +161,7 @@ export function chooseDocumentedResearchPistes(
         teachingLanguage: entry.teachingLanguage,
         officialUrl: entry.officialUrl,
       });
-      if (result.length >= Math.min(3, maxItems)) return result;
+      if (result.length >= Math.min(12, Math.max(0, maxItems))) return result;
     }
   }
   return result;

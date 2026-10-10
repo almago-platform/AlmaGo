@@ -99,7 +99,7 @@ const copy = {
     reviewNeeded: "À confirmer",
     source: "Source",
     checked: "Vérifié le",
-    noFacts: "Aucun fait publiable supplémentaire n’est disponible pour cette piste.",
+    noFacts: "Notre équipe complète les informations officielles sur cette formation.",
     germanLabel: "Allemand",
     pathsCount: "pistes",
   },
@@ -180,7 +180,7 @@ const copy = {
     reviewNeeded: "يحتاج إلى تأكيد",
     source: "المصدر",
     checked: "تم التحقق في",
-    noFacts: "لا توجد حقائق إضافية قابلة للعرض لهذا المسار حاليًا.",
+    noFacts: "يعمل فريقنا على استكمال المعلومات الرسمية الخاصة بهذا البرنامج.",
     germanLabel: "الألمانية",
     pathsCount: "مسارات",
   },
@@ -261,7 +261,7 @@ const copy = {
     reviewNeeded: "To confirm",
     source: "Source",
     checked: "Checked on",
-    noFacts: "No additional publishable facts are currently available for this path.",
+    noFacts: "Our team is completing the official information for this programme.",
     germanLabel: "German",
     pathsCount: "paths",
   },
@@ -342,7 +342,7 @@ const copy = {
     reviewNeeded: "Zu bestätigen",
     source: "Quelle",
     checked: "Geprüft am",
-    noFacts: "Für diese Option sind derzeit keine weiteren veröffentlichbaren Fakten verfügbar.",
+    noFacts: "Unser Team ergänzt die offiziellen Informationen zu diesem Studiengang.",
     germanLabel: "Deutsch",
     pathsCount: "Optionen",
   },
@@ -1234,7 +1234,7 @@ export function OrientationPersonalizedWriterCard({
                 </div>
 
                 <aside className="flex flex-col border-t border-white/[0.1] bg-white/[0.05] px-5 py-6 sm:px-7 lg:border-s lg:border-t-0 lg:px-7 lg:py-8">
-                  <p className="text-xs font-bold uppercase tracking-[0.08em] text-[var(--accent)]">{t.confirmed}</p>
+                  <p className="text-xs font-bold uppercase tracking-[0.08em] text-[var(--accent)]">{facts.length ? t.confirmed : t.checking}</p>
                   {facts.length ? (
                     <dl className="mt-3 grid gap-x-5 sm:grid-cols-2 lg:grid-cols-1">
                       {facts.map((fact) => {
