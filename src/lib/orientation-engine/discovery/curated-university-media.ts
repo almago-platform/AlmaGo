@@ -1,4 +1,5 @@
 import type { OrientationUniversityMedia } from "@/lib/orientation-engine/types";
+import type { UniversityMediaLookup } from "@/lib/orientation-engine/discovery/university-media";
 
 /**
  * Small editorial seed list of real buildings/campuses, not student-life stock.
@@ -32,7 +33,7 @@ function normalize(value: string) {
     .toLowerCase().replace(/\s+/g, " ").trim();
 }
 
-export function findCuratedUniversityMedia(name: string, city: string | null): OrientationUniversityMedia | null {
+export function findCuratedUniversityMedia(name: string, city: string | null): (OrientationUniversityMedia & UniversityMediaLookup) | null {
   const location = normalize(city || "");
   const nameKey = normalize(name);
   let key: keyof typeof curated | null = null;
