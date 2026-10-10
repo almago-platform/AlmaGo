@@ -7,6 +7,7 @@ import { OrientationReportActions } from "@/components/orientation/OrientationRe
 import { OrientationRouteCard } from "@/components/orientation/OrientationRouteCard";
 import { OrientationOnePagePrintReport } from "@/components/orientation/OrientationOnePagePrintReport";
 import { OrientationDetailedPrintReport } from "@/components/orientation/OrientationDetailedPrintReport";
+import { OrientationPrintReadinessProvider } from "@/components/orientation/OrientationPrintReadinessProvider";
 import { OrientationCandidatePrintReport } from "@/components/orientation/OrientationCandidatePrintReport";
 import { orientationCopy } from "@/content/orientation-copy";
 import { orientationProspectCopy } from "@/content/orientation-prospect-copy";
@@ -369,6 +370,7 @@ export default async function OrientationReportPage({
       </header>
 
       <main id="orientation-main" className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
+        <OrientationPrintReadinessProvider>
         <article id="orientation-report" className="orientation-print-report">
           {documentMode === "candidate" ? (
             <OrientationCandidatePrintReport
@@ -475,6 +477,7 @@ export default async function OrientationReportPage({
           ) : null}
           </div>
         </article>
+        </OrientationPrintReadinessProvider>
       </main>
     </div>
   );
