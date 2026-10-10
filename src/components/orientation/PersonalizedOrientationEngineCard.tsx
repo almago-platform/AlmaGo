@@ -51,7 +51,7 @@ const copy = {
     ],
     loadingNote: "Cela peut prendre quelques instants. Gardez cette page ouverte pendant la préparation.",
     unavailable: "Votre lettre détaillée est momentanément indisponible. Votre orientation générale reste valable.",
-    details: "Voir les détails vérifiés",
+    details: "Voir les critères et points à vérifier",
     why: "Pourquoi cette option apparaît",
     missing: "À vérifier ou compléter",
     sources: "Sources",
@@ -66,7 +66,7 @@ const copy = {
     },
     actions: "Ce que vous pouvez faire maintenant",
     intake: "Rentrée ciblée",
-    deadline: "Deadline vérifiée",
+    deadline: "Date limite de candidature",
     deadlineUnknown: "à vérifier",
     winter: "hiver",
     summer: "été",
@@ -85,7 +85,7 @@ const copy = {
     ],
     loadingNote: "قد يستغرق ذلك بضع لحظات. أبقِ هذه الصفحة مفتوحة أثناء الإعداد.",
     unavailable: "رسالة التوجيه التفصيلية غير متاحة مؤقتًا. يبقى توجيهك العام صالحًا.",
-    details: "عرض التفاصيل الموثقة",
+    details: "عرض المعايير والنقاط التي يجب التحقق منها",
     why: "لماذا يظهر هذا الخيار",
     missing: "ما يجب التحقق منه أو استكماله",
     sources: "المصادر",
@@ -100,7 +100,7 @@ const copy = {
     },
     actions: "ما يمكنك فعله الآن",
     intake: "موعد الدراسة المستهدف",
-    deadline: "آخر موعد موثّق",
+    deadline: "آخر موعد للتقديم",
     deadlineUnknown: "يجب التحقق منه",
     winter: "الشتاء",
     summer: "الصيف",
@@ -119,7 +119,7 @@ const copy = {
     ],
     loadingNote: "This can take a few moments. Keep this page open while we prepare your result.",
     unavailable: "Your detailed orientation letter is temporarily unavailable. Your general orientation remains valid.",
-    details: "View verified details",
+    details: "View criteria and items to check",
     why: "Why this option appears",
     missing: "To verify or complete",
     sources: "Sources",
@@ -134,7 +134,7 @@ const copy = {
     },
     actions: "What you can do now",
     intake: "Target intake",
-    deadline: "Verified deadline",
+    deadline: "Application deadline",
     deadlineUnknown: "to verify",
     winter: "winter",
     summer: "summer",
@@ -153,7 +153,7 @@ const copy = {
     ],
     loadingNote: "Das kann einige Augenblicke dauern. Lass diese Seite während der Vorbereitung geöffnet.",
     unavailable: "Dein ausführliches Orientierungsschreiben ist vorübergehend nicht verfügbar. Die allgemeine Orientierung bleibt gültig.",
-    details: "Geprüfte Details anzeigen",
+    details: "Kriterien und offene Punkte anzeigen",
     why: "Warum diese Option erscheint",
     missing: "Zu prüfen oder zu ergänzen",
     sources: "Quellen",
@@ -168,7 +168,7 @@ const copy = {
     },
     actions: "Was du jetzt tun kannst",
     intake: "Geplanter Studienstart",
-    deadline: "Geprüfte Frist",
+    deadline: "Bewerbungsfrist",
     deadlineUnknown: "zu prüfen",
     winter: "Winter",
     summer: "Sommer",
@@ -221,7 +221,7 @@ const ruleLabels: Record<Locale, Partial<Record<OrientationRuleCode, string>>> =
   fr: {
     degree_match: "Le niveau du diplôme correspond à votre objectif.",
     field_match: "Le programme correspond à votre domaine ou spécialité.",
-    language_satisfied: "Votre niveau de langue satisfait une exigence connue.",
+    language_satisfied: "Votre niveau déclaré correspond à une exigence linguistique renseignée. Le certificat accepté reste à vérifier.",
     teaching_language_match: "La langue d’enseignement correspond à votre préférence.",
     preferred_city: "L’établissement se trouve dans une ville que vous avez choisie.",
     source_verified: "Le programme dispose d’une source avec date de vérification.",
@@ -250,7 +250,7 @@ const ruleLabels: Record<Locale, Partial<Record<OrientationRuleCode, string>>> =
   ar: {
     degree_match: "مستوى الشهادة يتوافق مع هدفك.",
     field_match: "البرنامج يتوافق مع مجالك أو تخصصك.",
-    language_satisfied: "مستواك اللغوي يحقق شرطًا معروفًا.",
+    language_satisfied: "مستواك اللغوي المصرح به يتوافق مع شرط مسجّل. يجب التأكد من شهادة اللغة المقبولة.",
     teaching_language_match: "لغة الدراسة تتوافق مع تفضيلك.",
     preferred_city: "المؤسسة موجودة في مدينة اخترتها.",
     source_verified: "للبرنامج مصدر مع تاريخ تحقق.",
@@ -279,7 +279,7 @@ const ruleLabels: Record<Locale, Partial<Record<OrientationRuleCode, string>>> =
   en: {
     degree_match: "The degree level matches your objective.",
     field_match: "The programme matches your field or specialisation.",
-    language_satisfied: "Your language level satisfies a known requirement.",
+    language_satisfied: "Your stated language level meets a recorded requirement. The accepted certificate still needs checking.",
     teaching_language_match: "The teaching language matches your preference.",
     preferred_city: "The institution is in a city you selected.",
     source_verified: "The programme has a source with a verification date.",
@@ -308,7 +308,7 @@ const ruleLabels: Record<Locale, Partial<Record<OrientationRuleCode, string>>> =
   de: {
     degree_match: "Das Abschlussniveau passt zu deinem Ziel.",
     field_match: "Der Studiengang passt zu deinem Fach oder Schwerpunkt.",
-    language_satisfied: "Dein Sprachniveau erfüllt eine bekannte Anforderung.",
+    language_satisfied: "Dein angegebenes Sprachniveau erfüllt eine erfasste Anforderung. Das akzeptierte Sprachzertifikat muss noch geprüft werden.",
     teaching_language_match: "Die Unterrichtssprache passt zu deiner Präferenz.",
     preferred_city: "Die Hochschule liegt in einer von dir gewählten Stadt.",
     source_verified: "Der Studiengang hat eine Quelle mit Prüfdatum.",
@@ -715,11 +715,9 @@ export function PersonalizedOrientationEngineCard({
 
             <div className="mt-5 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4">
               <p className="text-sm font-bold">{t.actions}</p>
-              <ol className="mt-2 space-y-2 text-sm leading-6">
-                {result.advisor.priorityActionCodes.map((code, index) => (
-                  <li key={code}>
-                    <strong>{index + 1}.</strong> {actionLabels[locale][code] || code}
-                  </li>
+              <ol className="mt-2 list-decimal space-y-2 ps-6 text-sm leading-6 marker:font-semibold">
+                {result.advisor.priorityActionCodes.map((code) => (
+                  <li key={code} className="ps-1">{actionLabels[locale][code] || code}</li>
                 ))}
               </ol>
             </div>
