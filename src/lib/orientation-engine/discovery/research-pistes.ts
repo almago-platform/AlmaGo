@@ -1,5 +1,3 @@
-import { researchInstitutionKey } from "@/lib/orientation-engine/result/supplemental";
-
 /** Public-facing, informational-only options from prior official-site research. */
 export type ResearchPiste = {
   institution: string;
@@ -63,6 +61,17 @@ export function researchFamiliesFor(criteria: ResearchPisteCriteria) {
     return specialtyFamilies[criteria.scienceSpecialty || ""] || [...researchPisteFamilies.Sciences];
   }
   return [...(researchPisteFamilies[criteria.targetField] || [])];
+}
+
+function researchInstitutionKey(institution: string, city: string | null) {
+  const name = normalize(institution)
+    .replace(/ (?:and|und|et|y) (?:universidad|university|universitat|universite) .+$/, "");
+  if (/^friedrich alexander universitat erlangen nurnberg(?: fau)?$/.test(name)) {
+    return "erlangen|friedrich-alexander-universitat";
+  }
+  if (["otto friedrich universitat bamberg", "university of bamberg",
+    "universitat bamberg"].includes(name)) return "bamberg|otto-friedrich-universitat";
+  return `${normalize(city)}|${name}`;
 }
 
 function normalize(value: string | null | undefined) {
