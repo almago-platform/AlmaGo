@@ -98,7 +98,7 @@ export function OrientationResearchPistesCard({
       })
       .then((data) => {
         if (controller.signal.aborted) return;
-        setItems(Array.isArray(data.items) ? data.items.slice(0, 3) : []);
+        setItems(Array.isArray(data.items) ? data.items.slice(0, 12) : []);
         setStatus("ready");
       })
       .catch(() => {
