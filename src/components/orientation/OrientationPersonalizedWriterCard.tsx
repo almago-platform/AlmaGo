@@ -742,21 +742,29 @@ function summarySignalText(
   if (locale === "ar") {
     return strongCount > 0
       ? `${strongCount} من المسارات تظهر فرص قبول قوية في التقدير الأولي.`
-      : `${total} مسارات تحمل مؤشرات إيجابية نواصل دراستها.`;
+      : total === 1
+        ? "مسار واحد يحمل مؤشرات إيجابية نواصل دراستها."
+        : `${total} مسارات تحمل مؤشرات إيجابية نواصل دراستها.`;
   }
   if (locale === "en") {
     return strongCount > 0
       ? `${strongCount} path${strongCount > 1 ? "s" : ""} stand out with strong admission chances in the initial estimate.`
-      : `${total} paths show positive signals that we are continuing to develop.`;
+      : total === 1
+        ? "1 path shows positive signals that we are continuing to develop."
+        : `${total} paths show positive signals that we are continuing to develop.`;
   }
   if (locale === "de") {
     return strongCount > 0
       ? `${strongCount} Option${strongCount > 1 ? "en" : ""} ${strongCount > 1 ? "fallen" : "fällt"} in der ersten Einschätzung mit guten bis sehr guten Zulassungschancen auf.`
-      : `${total} Optionen zeigen positive Signale, die wir weiter vertiefen.`;
+      : total === 1
+        ? "1 Option zeigt positive Signale, die wir weiter vertiefen."
+        : `${total} Optionen zeigen positive Signale, die wir weiter vertiefen.`;
   }
   return strongCount > 0
     ? `${strongCount} piste${strongCount > 1 ? "s" : ""} ressort${strongCount > 1 ? "ent" : ""} avec de fortes chances d’admission en première estimation.`
-    : `${total} pistes présentent des signaux positifs que nous continuons à approfondir.`;
+    : total === 1
+      ? "1 piste présente des signaux positifs que nous continuons à approfondir."
+      : `${total} pistes présentent des signaux positifs que nous continuons à approfondir.`;
 }
 
 function simpleLanguagePriority(
@@ -1135,7 +1143,7 @@ export function OrientationPersonalizedWriterCard({
             </h4>
           </div>
           <span className="text-xs font-semibold text-[var(--muted)]">
-            {result.selected.length} {t.pathsCount}
+            {result.selected.length} {locale === "fr" && result.selected.length === 1 ? "piste" : t.pathsCount}
           </span>
         </div>
         <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">{t.outlookSectionNote}</p>

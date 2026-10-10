@@ -633,8 +633,12 @@ export function PersonalizedOrientationEngineCard({
                 welcome={isBachelorFirstContact ? bacWelcome : null}
               />
             )}
-            {result.shortlist.items.length === 0 && answers.bacStatus !== "no_bac" ? (
-              <OrientationResearchPistesCard answers={answers} locale={locale} />
+            {result.shortlist.items.length < 3 && answers.bacStatus !== "no_bac" ? (
+              <OrientationResearchPistesCard
+                answers={answers}
+                locale={locale}
+                existingShortlist={result.shortlist.items}
+              />
             ) : null}
             {!isBachelorFirstContact && onRefineAnswers && result.engine.refinement.nextQuestion ? (
               <OrientationRefinementQuestionCard
