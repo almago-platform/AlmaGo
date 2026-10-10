@@ -16,6 +16,8 @@ import { loadProspectHubState } from "@/lib/prospect/hub";
 import { orientationProjectFacts, orientationVersionSummary } from "@/lib/prospect/orientation-presentation";
 import { prospectCatalogueRecommendations } from "@/lib/prospect/programmes";
 import { prospectMedia } from "@/lib/prospect/media";
+import { getProvisionalIdentity } from "@/lib/prospect/provisional-auth";
+import { ProvisionalProspectOrientation } from "@/components/prospect/ProvisionalProspectOrientation";
 
 export const dynamic = "force-dynamic";
 
@@ -25,7 +27,11 @@ export default async function ProspectOrientationPage() {
     getRequestLocale(),
   ]);
 
-  if (!access.user) redirect("/login");
+  if (!access.user) {
+    const provisional = await getProvisionalIdentity();
+    if (provisional) return <ProvisionalProspectOrientation identity={provisional} />;
+    redirect("/login");
+  }
   if (!access.isStudent) redirect("/unauthorized");
   if (!access.phase2Enabled || access.canUseClientFeatures) redirect("/student");
 
