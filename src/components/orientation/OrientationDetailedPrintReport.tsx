@@ -169,25 +169,37 @@ function safeSource(url: string | null): string | null {
 }
 
 export function OrientationDetailedPrintReport({
-  answers, locale, personalized, identity = null,
+  answers, locale, personalized, identity = null, onReadyChange,
 }: {
   answers: PublicOrientationAnswers;
   locale: Locale;
   personalized: OrientationPublicPersonalizedResult;
   identity?: PublicOrientationIdentity | null;
+  onReadyChange?: (ready: boolean) => void;
 }) {
   const t = copy[locale];
   const priority = orientationCandidatePriority(answers, locale);
   const selected = [...personalized.selected].sort((a, b) => a.position - b.position);
-  const dynamicMedia = useOrientationUniversityMedia(selected.filter((option) => !option.universityMedia?.coverImageUrl)
-    .map((option) => ({ institution: option.institution, city: option.city })));
+  const research = useDetailedResearchPistes(answers, selected);
+  const supplemental = research.supplemental;
+  const dynamicMedia = useOrientationUniversityMedia([
+    ...selected.filter((option) => !option.universityMedia?.coverImageUrl)
+      .map((option) => ({ institution: option.institution, city: option.city })),
+    ...supplemental.map((option) => ({ institution: option.institution, city: option.city })),
+  ]);
+  useEffect(() => { onReadyChange?.(research.ready); }, [onReadyChange, research.ready]);
   const content = personalized.content;
   const candidate = [identity?.firstName, identity?.lastName].filter(Boolean).join(" ");
   const prioritized = [
     [t.degree, answers.targetDegree || "—"],
     [t.field, answers.targetField || "—"],
     [t.german, answers.germanLevel || "—"],
+    [locale === "ar" ? "المدينة" : locale === "en" ? "City" : locale === "de" ? "Wunschstadt" : "Ville", answers.preferredCities.join(", ") || "—"],
   ];
+  const selectedCities = new Set(selected.map((option) => (option.city || "").toLocaleLowerCase("en")));
+  const needsCityFallback = answers.preferredCities.length > 0
+    && !answers.preferredCities.some((city) => selectedCities.has(city.toLocaleLowerCase("en")));
+  const currentStep = answers.bacStatus === "preparing" ? 1 : 0;
   return (
     <article className="orientation-detailed-print-report" aria-label={t.eyebrow} dir={locale === "ar" ? "rtl" : "ltr"}>
       <section className="orientation-detail-cover">
@@ -196,10 +208,18 @@ export function OrientationDetailedPrintReport({
           <span>{t.eyebrow}</span>
         </header>
         <div className="orientation-detail-hero">
-          <p className="orientation-detail-eyebrow">Campus Allemagne</p>
-          <h1>{t.title}</h1>
-          <p>{t.subtitle}</p>
-          <p className="orientation-detail-opening">{content.opening}</p>
+          <div className="orientation-detail-hero-main">
+            <p className="orientation-detail-eyebrow">Campus Allemagne</p>
+            <h1>{t.title}</h1>
+            <p className="orientation-detail-opening">{content.opening}</p>
+            <p className="orientation-detail-statusline">{content.projectStatus}</p>
+          </div>
+          <aside className="orientation-detail-hero-summary">
+            <p className="orientation-detail-eyebrow">{t.summary}</p>
+            <strong>{t.summaryLead}</strong>
+            <p>{t.signal}: {selected.length}</p>
+            <p>{t.priority}: <b>{priority?.title || content.mainPriority.title}</b></p>
+          </aside>
         </div>
         <section className="orientation-detail-profile">
           <h2>{t.profile}{candidate ? ": " + candidate : ""}</h2>
@@ -209,22 +229,22 @@ export function OrientationDetailedPrintReport({
             ))}
           </dl>
         </section>
+        <section className="orientation-detail-journey">
+          <h2>{t.journey}</h2>
+          <ol>{t.journeySteps.map((step, index) => (
+            <li className={index === currentStep ? "current" : index < currentStep ? "completed" : ""} key={step}>
+              <span>{index < currentStep ? "✓" : index + 1}</span><strong>{step}</strong>
+            </li>
+          ))}</ol>
+        </section>
         <section className="orientation-detail-priority">
           <p className="orientation-detail-eyebrow">{t.priority}</p>
           <h2>{priority?.title || content.mainPriority.title}</h2>
           <p>{priority?.text || content.mainPriority.text}</p>
-          <strong>{t.next}: {priority?.yourStep || content.mainPriority.nextStep}</strong>
-        </section>
-        <section className="orientation-detail-roadmap">
-          <h2>{t.roadmap}</h2>
-          <ol>
-            {content.roadmap.map((step, index) => (
-              <li key={step.id}>
-                <strong>{String(index + 1).padStart(2, "0")} · {step.label}</strong>
-                <p>{index === 0 && priority ? priority.yourStep : step.text}</p>
-              </li>
-            ))}
-          </ol>
+          <div className="orientation-detail-responsibilities">
+            <div><span>{t.next}</span><strong>{priority?.yourStep || content.mainPriority.nextStep}</strong></div>
+            <div><span>Campus Allemagne</span><p>{content.roadmap[2]?.text || content.campusValue}</p></div>
+          </div>
         </section>
       </section>
 
@@ -233,6 +253,11 @@ export function OrientationDetailedPrintReport({
           <p className="orientation-detail-eyebrow">{t.eyebrow}</p>
           <h2>{t.programmes}</h2>
           <p>{t.programmeIntro}</p>
+          {needsCityFallback ? (
+            <aside className="orientation-detail-city-fallback">
+              <strong>{t.preferredCity}</strong><p>{t.cityFallback}</p>
+            </aside>
+          ) : null}
         </header>
         {selected.map((option, index) => {
           const writer = content.studyOptions.find((item) => item.optionId === option.optionId)
@@ -244,7 +269,7 @@ export function OrientationDetailedPrintReport({
           const references = [...new Set(verifiedFacts.map((fact) => safeSource(fact.sourceUrl)).filter((url): url is string => Boolean(url)))];
           const why = writer?.whyItFits?.split(/première estimation campus allemagne|first campus allemagne estimate|erste einschätzung campus allemagne|تقدير أولي من campus allemagne/i)[0].trim();
           return (
-            <article key={option.optionId} className="orientation-detail-option">
+            <article key={option.optionId} className={"orientation-detail-option" + (index === 0 ? " orientation-detail-featured" : "")}>
               <div className="orientation-detail-option-head">
                 <span className="orientation-detail-index">{String(index + 1).padStart(2, "0")}</span>
                 <div>
