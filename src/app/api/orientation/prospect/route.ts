@@ -417,7 +417,8 @@ export async function POST(request: Request) {
       .eq("id", orientation.id);
 
     return NextResponse.json(
-      { saved: true, delivery: delivery.status, interestToken: interest.token, signupPath },
+      { saved: true, delivery: delivery.status, interestToken: interest.token, signupPath,
+        detailedPdfAttached: delivery.status === "sent" && attachments.length === 3 },
       { status: 201 },
     );
   } catch {
