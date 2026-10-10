@@ -5,6 +5,7 @@ import { OrientationRealPhoto } from "@/components/orientation/OrientationRealPh
 import { useOrientationUniversityMedia, universityPhotoKey } from "@/components/orientation/useOrientationUniversityMedia";
 import type { Locale } from "@/lib/i18n";
 import type { PublicOrientationAnswers } from "@/lib/orientation/public";
+import { orientationCandidatePriority } from "@/lib/orientation-engine/writer/candidate-priority";
 import { buildUniversalOrientationGuidance } from "@/lib/orientation/universal-guidance";
 import type {
   OrientationPublicPersonalizedFact,
@@ -850,6 +851,10 @@ export function OrientationPersonalizedWriterCard({
 }) {
   const t = copy[locale];
   const content = result.content;
+  const candidatePriority = orientationCandidatePriority(answers, locale);
+  const priorityTitle = candidatePriority?.title || content.mainPriority.title;
+  const priorityText = candidatePriority?.text || content.mainPriority.text;
+  const priorityNextStep = candidatePriority?.yourStep || content.mainPriority.nextStep;
   const mediaByUniversity = useOrientationUniversityMedia(
     result.selected.filter((option) => !option.universityMedia?.coverImageUrl)
       .map((option) => ({ institution: option.institution, city: option.city })),
@@ -857,7 +862,7 @@ export function OrientationPersonalizedWriterCard({
   const profileHighlights = buildProfileHighlights(answers, locale);
   const guidance = answers ? buildUniversalOrientationGuidance(answers, locale) : null;
   const roleTexts = [
-    content.roadmap[0]?.text || content.mainPriority.nextStep,
+    candidatePriority?.yourStep || content.roadmap[0]?.text || content.mainPriority.nextStep,
     content.roadmap[2]?.text || content.reassurance,
   ];
   const languageChoices = guidance?.languageChoices.map((choice) => splitGuidanceChoice(choice, locale)) || [];
@@ -974,7 +979,7 @@ export function OrientationPersonalizedWriterCard({
                   {t.summaryAction}
                 </p>
                 <p className="mt-1.5 text-sm font-semibold leading-5 text-white">
-                  {content.mainPriority.title}
+                  {priorityTitle}
                 </p>
               </div>
             </div>
@@ -1065,7 +1070,7 @@ export function OrientationPersonalizedWriterCard({
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--brand-strong)]">{t.priority}</p>
 
-            {content.languagePlan.show && content.languagePlan.nextLevel ? (() => {
+            {!candidatePriority && content.languagePlan.show && content.languagePlan.nextLevel ? (() => {
               const simplePriority = simpleLanguagePriority(
                 locale,
                 content.languagePlan.currentLevel,
@@ -1082,13 +1087,13 @@ export function OrientationPersonalizedWriterCard({
             })() : (
               <>
                 <h4 id="orientation-main-priority-title" className="mt-2 max-w-3xl text-2xl font-semibold tracking-tight sm:text-3xl">
-                  {content.mainPriority.title}
+                  {priorityTitle}
                 </h4>
-                <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">{content.mainPriority.text}</p>
+                <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">{priorityText}</p>
               </>
             )}
 
-            {content.languagePlan.show ? (
+            {content.languagePlan.show && !candidatePriority ? (
               <div className="mt-5 flex flex-wrap items-center gap-2">
                 <span className="text-xs font-semibold text-[var(--muted)]">{t.language}</span>
                 {content.languagePlan.currentLevel ? (
@@ -1106,10 +1111,10 @@ export function OrientationPersonalizedWriterCard({
                 ) : null}
               </div>
             ) : (
-              <p className="mt-5 text-sm font-semibold leading-6">{content.mainPriority.nextStep}</p>
+              <p className="mt-5 text-sm font-semibold leading-6">{priorityNextStep}</p>
             )}
 
-            {content.languagePlan.show && languageChoices.length ? (
+            {content.languagePlan.show && languageChoices.length && !candidatePriority ? (
               <details className="mt-6 border-t border-[var(--border)] pt-4">
                 <summary className="cursor-pointer text-sm font-semibold text-[var(--foreground)]">{t.languagePaths}</summary>
                 <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">{t.languageIntro}</p>
