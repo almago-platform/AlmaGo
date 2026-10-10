@@ -42,6 +42,7 @@ test("orientation avoids admission-probability language", () => {
   assert.ok(!writer.includes("Fortes chances d’admission"));
   assert.ok(!writer.includes("Strong admission chances"));
   assert.ok(!writer.includes("Gute bis sehr gute Zulassungschancen"));
-  assert.ok(writer.includes("Profil compatible avec les critères actuellement vérifiés"));
+  assert.ok(writer.includes("Une formation en lien avec votre projet, à approfondir avec notre équipe"));
+  assert.ok(!writer.includes("Profil compatible avec les critères actuellement vérifiés"));
   assert.ok(writer.includes("Only the university can make an admission decision"));
 });
