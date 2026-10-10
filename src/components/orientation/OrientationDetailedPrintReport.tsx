@@ -316,6 +316,51 @@ export function OrientationDetailedPrintReport({
           );
         })}
       </section>
+      {supplemental.length > 0 ? (
+        <section className="orientation-detail-research">
+          <header className="orientation-detail-chapter">
+            <p className="orientation-detail-eyebrow">{t.researchBadge}</p>
+            <h2>{supplemental.length} · {t.researchHeading}</h2>
+            <p>{t.researchNote}</p>
+          </header>
+          {supplemental.map((item, index) => {
+            const media = licensedPhoto(dynamicMedia[universityPhotoKey(item.institution, item.city)])
+              || licensedPhoto(findCuratedUniversityMedia(item.institution, item.city));
+            const officialUrl = safeSource(item.officialUrl);
+            return (
+              <article className="orientation-detail-research-card" key={item.institution + item.programme + (item.city || "")}>
+                <div className="orientation-detail-research-text">
+                  <span className="orientation-detail-eyebrow">{String(selected.length + index + 1).padStart(2, "0")} · {t.researchBadge}</span>
+                  <h3>{item.institution} — {item.programme}</h3>
+                  <p>{[item.city, item.teachingLanguage].filter(Boolean).join(" · ")}</p>
+                  <p><strong>{t.researchWhy}: </strong>{item.city ? item.city + " · " : ""}{item.programme}</p>
+                  {officialUrl ? <a href={officialUrl} target="_blank" rel="noopener noreferrer">{t.researchSource} ↗</a> : null}
+                </div>
+                {media ? (
+                  <figure className="orientation-detail-research-photo">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={media.coverImageUrl || ""} alt={t.photo + ": " + item.institution} width={600} height={430} loading="eager" />
+                    <figcaption>{media.coverImageAttribution} · {media.coverImageLicense} · {t.cropped} ·
+                      <a href={media.coverImageSourceUrl || "#"} target="_blank" rel="noopener noreferrer">{t.sources}</a>
+                    </figcaption>
+                  </figure>
+                ) : <p className="orientation-detail-photo-missing">{t.missingPhoto}</p>}
+              </article>
+            );
+          })}
+        </section>
+      ) : null}
+      <section className="orientation-detail-roadmap orientation-detail-follow-up">
+        <h2>{t.roadmap}</h2>
+        <ol>
+          {content.roadmap.map((step, index) => (
+            <li key={step.id}>
+              <strong>{String(index + 1).padStart(2, "0")} · {step.label}</strong>
+              <p>{index === 0 && priority ? priority.yourStep : step.text}</p>
+            </li>
+          ))}
+        </ol>
+      </section>
       <section className="orientation-detail-closing">
         <div className="orientation-detail-closing-main">
           <h2>{t.campus}</h2>
