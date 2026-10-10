@@ -1,6 +1,7 @@
 import "server-only";
 
 import { orientationDiagnosticCopy } from "@/content/orientation-diagnostic-copy";
+import { orientationCandidatePriority } from "@/lib/orientation-engine/writer/candidate-priority";
 import type { Locale } from "@/lib/i18n";
 import type {
   PublicOrientationAnswers,
@@ -647,6 +648,7 @@ function buildOrientationPdf(input: {
 
   if (input.personalized && input.locale !== "ar") {
     const content = input.personalized.content;
+    const candidatePriority = orientationCandidatePriority(input.answers, input.locale);
 
     layout.wrapped(content.opening, MARGIN_X, PAGE_WIDTH - MARGIN_X * 2, 10, {
       gapAfter: 7,
@@ -657,15 +659,15 @@ function buildOrientationPdf(input: {
     });
 
     layout.heading(copy.priority, 14);
-    layout.wrapped(content.mainPriority.title, MARGIN_X, PAGE_WIDTH - MARGIN_X * 2, 12, {
+    layout.wrapped(candidatePriority?.title || content.mainPriority.title, MARGIN_X, PAGE_WIDTH - MARGIN_X * 2, 12, {
       bold: true,
       gapAfter: 4,
     });
-    layout.wrapped(content.mainPriority.text, MARGIN_X, PAGE_WIDTH - MARGIN_X * 2, 9.5, {
+    layout.wrapped(candidatePriority?.text || content.mainPriority.text, MARGIN_X, PAGE_WIDTH - MARGIN_X * 2, 9.5, {
       gapAfter: 4,
     });
     layout.wrapped(
-      `${copy.nextStep}: ${content.mainPriority.nextStep}`,
+      `${copy.nextStep}: ${candidatePriority?.yourStep || content.mainPriority.nextStep}`,
       MARGIN_X,
       PAGE_WIDTH - MARGIN_X * 2,
       9.5,
