@@ -13,7 +13,7 @@ const answers = {
   studyIntent: "restart_bachelor",
   targetSpecialization: "",
   targetDegree: "Bachelor",
-  targetField: "Lettres / Langues",
+  targetField: "Lettres/Langues",
   engineeringSpecialty: "",
   scienceSpecialty: "",
   germanLevel: "B2",
