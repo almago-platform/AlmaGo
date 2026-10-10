@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getAuthenticatedUser } from "@/lib/auth/access";
+import { hasVerifiedEmail } from "@/lib/auth/verified";
 import { hashOrientationResumeToken } from "@/lib/orientation/resume-token";
 import { isPhase2AccountLinkingEnabled } from "@/lib/phase2/config";
 import { createPrivilegedSupabaseClient } from "@/lib/supabase/privileged";
@@ -26,6 +27,10 @@ export async function POST(request: Request) {
   const { user } = await getAuthenticatedUser();
   if (!user?.email) {
     return NextResponse.json({ error: "Authentication required." }, { status: 401 });
+  }
+
+  if (!hasVerifiedEmail(user)) {
+    return NextResponse.json({ error: "Confirm your email before linking an orientation." }, { status: 403 });
   }
 
   const accountLimited = enforceRequestRateLimit(
