@@ -5,11 +5,13 @@ import test from "node:test";
 const publicForm = readFileSync("src/components/orientation/PublicOrientationForm.tsx", "utf8");
 const reportPage = readFileSync("src/app/orientation/report/[token]/page.tsx", "utf8");
 
-test("orientation PDF actions keep accessible contrast after the premium footer polish", () => {
+test("orientation PDF actions keep accessible contrast after the secondary toolbar polish", () => {
   assert.match(
     publicForm,
-    /bg-\[var\(--brand\)\][^"]*text-white[^"]*"[^>]*>\s*\{resultActionsCopy\.pdf\}/,
+    /border border-\[var\(--border-strong\)\][^"]*text-\[var\(--foreground\)\]/,
   );
+  assert.match(publicForm, /\{resultActionsCopy\.pdf\}/);
+  assert.match(publicForm, /\{prospectCopy\.report\.printHelp\}/);
   assert.match(
     reportPage,
     /text-xs leading-5 text-\[var\(--foreground\)\]">\{prospectCopy\.report\.printHelp\}/,
