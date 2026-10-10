@@ -159,7 +159,8 @@ test("automatic email is optional before orientation and does not survive sessio
   assert.match(form, /claimAutoEmailAttempt=\{claimAutoEmailAttempt\}/);
   assert.match(form, /setAutomaticEmailConsent\(false\)/);
   assert.doesNotMatch(form, /JSON\.stringify\(\{ identity, identityComplete, answers, step, automaticEmailConsent/);
-  assert.match(prospectCopy, /Oui, je souhaite recevoir automatiquement mes deux rapports PDF/);
+  assert.match(prospectCopy, /Oui, je demande l’envoi automatique de mes deux rapports PDF/);
+  assert.match(prospectCopy, /dossier détaillé supplémentaire/);
   assert.match(prospectCopy, /automaticEmailMinorNotice/);
 });
 
