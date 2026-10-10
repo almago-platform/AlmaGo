@@ -143,8 +143,12 @@ export function AuthForm({
     }
   }
 
-  const title = prospectSignup ? signupCopy.title : auth.titles[mode];
-  const subtitle = prospectSignup ? signupCopy.description : auth.subtitles[mode];
+  const title = signupSubmitted && mode === "signup"
+    ? signupCopy.pendingTitle
+    : prospectSignup ? signupCopy.title : auth.titles[mode];
+  const subtitle = signupSubmitted && mode === "signup"
+    ? signupCopy.existingHint
+    : prospectSignup ? signupCopy.description : auth.subtitles[mode];
   const passwordPadding = "pr-24 text-left";
   const passwordButtonSide = "right-2";
 
@@ -155,7 +159,7 @@ export function AuthForm({
           <BrandLogo className="hidden h-auto w-44 lg:block" />
           {mode === "signup" && (
             <span className="rounded-full border border-[var(--brand-border)] bg-[var(--brand-soft)] px-3 py-1 text-[0.68rem] font-bold uppercase tracking-[0.12em] text-[var(--brand-strong)]">
-              {prospectSignup ? signupCopy.badge : auth.labels.studentAccount}
+              {signupSubmitted ? signupCopy.genericBadge : prospectSignup ? signupCopy.badge : auth.labels.studentAccount}
             </span>
           )}
         </div>
@@ -177,7 +181,7 @@ export function AuthForm({
         <section className="space-y-5 px-5 py-6 sm:px-7" aria-labelledby="signup-next-step-title">
           <div role="status" className="rounded-[var(--radius-control)] border border-[var(--success-border)] bg-[var(--success-soft)] p-4">
             <h2 id="signup-next-step-title" className="text-lg font-bold text-[var(--foreground)]">
-              {prospectSignup ? signupCopy.pendingTitle : signupCopy.genericTitle}
+              {signupCopy.nextStepTitle}
             </h2>
             <p className="mt-2 text-sm leading-6 text-[var(--foreground)]">
               {prospectSignup ? signupCopy.pendingDescription : signupCopy.genericDescription}
