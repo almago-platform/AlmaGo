@@ -4,6 +4,7 @@ import { writeOrientationLetterWithGemini } from "@/lib/orientation-engine/lette
 
 import type { PublicOrientationAnswers } from "@/lib/orientation/public";
 import { hasPreferredCityCatalogueMatch } from "@/lib/orientation-engine/service";
+import { isSupportedCatalogueRecommendation } from "@/lib/orientation-engine/result/canonical";
 import type {
   OrientationEngineResult,
   OrientationLetterOutput,
@@ -273,7 +274,7 @@ export function deterministicLetter(
   const city = preferredCity(profile);
   const hasVerifiedOption =
     profile.bacStatus !== "no_bac"
-    && engineResult.recommendations.length > 0;
+    && engineResult.recommendations.some(isSupportedCatalogueRecommendation);
   const project = degreeAndField(locale, profile);
   const opening = academicOpening(locale, profile);
   const budgetNote = personalBudgetNote(locale, profile.budgetRange);
