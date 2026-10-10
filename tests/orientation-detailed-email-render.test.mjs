@@ -12,6 +12,7 @@ const compiled = ts.transpileModule(source, {
 
 function builder(withPhoto) {
   const exports = {};
+  const stats = { curate: 0, fetch: 0 };
   const curated = {
     coverImageUrl: "https://upload.wikimedia.org/wikipedia/commons/example.jpg",
     coverImageSourceUrl: "https://commons.wikimedia.org/wiki/File:example.jpg",
@@ -21,6 +22,7 @@ function builder(withPhoto) {
   const sandbox = {
     Buffer, URL, AbortSignal, Response, exports, setTimeout, clearTimeout,
     fetch: async () => {
+      stats.fetch += 1;
       if (!withPhoto) throw new Error("offline fixture");
       let readOnce = false;
       return {
@@ -46,13 +48,18 @@ function builder(withPhoto) {
         }),
       };
       if (name.includes("curated-university-media")) return {
-        findCuratedUniversityMedia: (institution) => institution === "University of Bamberg" ? curated : null,
+        findCuratedUniversityMedia: (institution) => {
+          stats.curate += 1;
+          return institution === "University of Bamberg" ? curated : null;
+        },
       };
       throw new Error("Unexpected import: " + name);
     },
   };
   vm.runInNewContext(compiled, sandbox, { filename: "pdf-attachments.ts", timeout: 3000 });
-  return sandbox.exports.buildDetailedOrientationEmailPdfAttachment;
+  const renderer = sandbox.exports.buildDetailedOrientationEmailPdfAttachment;
+  renderer.stats = stats;
+  return renderer;
 }
 
 function input() {
@@ -96,7 +103,10 @@ test("detailed email attachment is a valid multipage binary PDF with no network 
 });
 
 test("licensed Wikimedia image is embedded using JPEG DCT without blocking output", async () => {
-  const pdf = await builder(true)(input());
+  const renderer = builder(true);
+  const pdf = await renderer(input());
+  assert.ok(renderer.stats.curate > 0, "curated calls = " + renderer.stats.curate);
+  assert.equal(renderer.stats.fetch, 1, "photo requests = " + renderer.stats.fetch);
   const bytes = Buffer.from(pdf.contentBase64, "base64");
   assert.match(bytes.toString("latin1"), /\/Subtype \/Image \/Width 8 \/Height 8/);
   assert.match(bytes.toString("latin1"), /\/Filter \/DCTDecode/);
