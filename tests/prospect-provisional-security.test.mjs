@@ -72,7 +72,8 @@ test("signup with no session redirects only to read-only provisional preview", (
 });
 
 test("resend never reveals email registration status; catalogue comes from public programme RPC", () => {
-  assert.match(resend, /auth\.resend\(\{ type: "signup"/);
+  assert.match(resend, /auth\.resend\(\{[\s\S]*type: "signup"/);
+  assert.match(resend, /emailRedirectTo/);
   assert.match(resend, /setState\("sent"\)/);
   assert.doesNotMatch(resend, /getUserByEmail|listUsers|isRegistered/);
   assert.match(catalogue, /useMemo/);
