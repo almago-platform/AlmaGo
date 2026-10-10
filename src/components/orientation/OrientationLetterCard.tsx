@@ -1,6 +1,7 @@
 "use client";
 
 import type { Locale } from "@/lib/i18n";
+import { explainDocumentedProgramme } from "@/lib/orientation-engine/letter/programme-explanations";
 import type { PublicOrientationAnswers } from "@/lib/orientation/public";
 import type {
   OrientationLetterOutput,
@@ -17,7 +18,10 @@ const copy = {
     closing: "Prochaine étape",
     verified: "Piste documentée",
     research: "Piste à vérifier ensemble",
-    verifiedReason: "Cette piste est proche de votre projet. Nous vérifierons ensemble les conditions de langue et de candidature.",
+    why: "Pourquoi cette piste",
+    toCheck: "À vérifier avant de candidater",
+    researchReason: "Cette piste vient d’une recherche exploratoire. Son adéquation à votre profil n’est pas encore confirmée.",
+    researchChecks: ["Vérifier si votre diplôme donne accès à ce programme.", "Vérifier la langue, le certificat demandé et la date limite."],
     alternativeLanguage: (language: string) => `Alternative intéressante en ${language}. Elle diffère de votre préférence actuelle, mais mérite d’être comparée.`,
   },
   ar: {
@@ -28,7 +32,10 @@ const copy = {
     closing: "الخطوة التالية",
     verified: "مسار موثّق بالمصادر",
     research: "مسار نتحقق منه معًا",
-    verifiedReason: "هذا المسار قريب من مشروعك. سنتحقق معك من شروط اللغة والتقديم.",
+    why: "لماذا هذا البرنامج؟",
+    toCheck: "ما يجب التحقق منه قبل التقديم",
+    researchReason: "هذا مسار ظهر أثناء بحث أولي، ولم يتم تأكيد ملاءمته لملفك بعد.",
+    researchChecks: ["التأكد من أن شهادتك تتيح الالتحاق بهذا البرنامج.", "التحقق من لغة الدراسة والشهادة المقبولة وموعد التقديم."],
     alternativeLanguage: (language: string) => `مسار بديل مثير للاهتمام باللغة ${language}. يختلف عن تفضيلك الحالي، لكنه يستحق المقارنة.`,
   },
   en: {
@@ -39,7 +46,10 @@ const copy = {
     closing: "Next step",
     verified: "Documented path",
     research: "Path to verify together",
-    verifiedReason: "This path is close to your project. We will verify the language and application conditions together.",
+    why: "Why this option",
+    toCheck: "Check before applying",
+    researchReason: "This option came from exploratory research. Its fit with your profile has not been confirmed.",
+    researchChecks: ["Check whether your diploma gives access to this programme.", "Check the teaching language, accepted certificate and deadline."],
     alternativeLanguage: (language: string) => `An interesting alternative in ${language}. It differs from your current preference, but is worth comparing.`,
   },
   de: {
@@ -50,7 +60,10 @@ const copy = {
     closing: "Nächster Schritt",
     verified: "Dokumentierte Option",
     research: "Gemeinsam zu prüfende Option",
-    verifiedReason: "Diese Option passt grundsätzlich zu deinem Projekt. Sprache und Bewerbungsbedingungen prüfen wir gemeinsam.",
+    why: "Warum diese Option?",
+    toCheck: "Vor der Bewerbung prüfen",
+    researchReason: "Diese Option stammt aus einer ersten Recherche. Ob sie zu deinem Profil passt, ist noch nicht bestätigt.",
+    researchChecks: ["Prüfen, ob dein Abschluss Zugang zu diesem Studiengang ermöglicht.", "Unterrichtssprache, Zertifikat und Bewerbungsfrist prüfen."],
     alternativeLanguage: (language: string) => `Eine interessante Alternative auf ${language}. Sie weicht von deiner aktuellen Präferenz ab, ist aber einen Vergleich wert.`,
   },
 } as const;
@@ -131,9 +144,7 @@ export function OrientationLetterCard({
     language: recommendation.programme.teachingLanguage,
     source: recommendation.programme.programmeSourceUrl || recommendation.programme.university.websiteUrl,
     badge: t.verified,
-    reason: studyLanguageMismatch(answers, recommendation.programme.teachingLanguage)
-      ? t.alternativeLanguage(languageLabel(locale, recommendation.programme.teachingLanguage))
-      : t.verifiedReason,
+    ...explainDocumentedProgramme(recommendation, answers, locale),
   }));
 
   const seen = new Set(
@@ -155,7 +166,8 @@ export function OrientationLetterCard({
           language: null,
           source: candidate.officialUrl,
           badge: t.research,
-          reason: candidate.reason,
+          reason: t.researchReason,
+          checks: [...t.researchChecks],
         }))
     : [];
 
@@ -221,7 +233,15 @@ export function OrientationLetterCard({
                           .join(" · ")}
                       </p>
                     ) : null}
-                    <p className="mt-3 max-w-[73ch] text-sm leading-6 text-[var(--foreground)]">{piste.reason}</p>
+                    <p className="mt-3 max-w-[73ch] text-sm leading-6 text-[var(--foreground)]">
+                      <span className="font-semibold">{t.why} : </span>{piste.reason}
+                    </p>
+                    <div className="mt-3 max-w-[73ch] rounded-[var(--radius-control)] bg-[var(--surface-subtle)] px-3 py-3">
+                      <p className="text-xs font-semibold text-[var(--foreground)]">{t.toCheck}</p>
+                      <ul className="mt-1 list-disc space-y-1 ps-5 text-sm leading-6 text-[var(--muted)]">
+                        {piste.checks.map((check) => <li key={check}>{check}</li>)}
+                      </ul>
+                    </div>
                     {piste.source ? (
                       <a
                         href={piste.source}
