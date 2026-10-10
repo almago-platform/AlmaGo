@@ -15,6 +15,8 @@ import { CandidateOrientationResultHeader } from "@/components/orientation/Candi
 import { OrientationRouteCard } from "@/components/orientation/OrientationRouteCard";
 import { PersonalizedOrientationEngineCard } from "@/components/orientation/PersonalizedOrientationEngineCard";
 import { OrientationOnePagePrintReport } from "@/components/orientation/OrientationOnePagePrintReport";
+import { OrientationDetailedPrintReport } from "@/components/orientation/OrientationDetailedPrintReport";
+import { printOrientationDocument } from "@/components/orientation/OrientationReportActions";
 import { ProspectOrientationUpdateCard } from "@/components/orientation/ProspectOrientationUpdateCard";
 import { prospectDashboardCopy } from "@/content/prospect-dashboard-copy";
 import { prospectOrientationUpdateCopy } from "@/content/prospect-orientation-update-copy";
@@ -123,6 +125,10 @@ export function PublicOrientationForm({
     profileKey: string | null;
     ready: boolean;
   }>({ profileKey: null, ready: false });
+  const [detailedPrintState, setDetailedPrintState] = useState<{
+    profileKey: string | null;
+    ready: boolean;
+  }>({ profileKey: null, ready: false });
   const handleReviewReady = useCallback((reviewId: string | null) => {
     setOrientationReview({ profileKey: reviewProfileKey, reviewId });
   }, [reviewProfileKey]);
@@ -131,6 +137,9 @@ export function PublicOrientationForm({
   }, [reviewProfileKey]);
   const handleResultReady = useCallback((ready: boolean) => {
     setOrientationResultState({ profileKey: reviewProfileKey, ready });
+  }, [reviewProfileKey]);
+  const handleDetailedPrintReady = useCallback((ready: boolean) => {
+    setDetailedPrintState({ profileKey: reviewProfileKey, ready });
   }, [reviewProfileKey]);
   const orientationReviewId =
     orientationReview.profileKey === reviewProfileKey
@@ -143,6 +152,9 @@ export function PublicOrientationForm({
   const orientationResultReady =
     orientationResultState.profileKey === reviewProfileKey
       && orientationResultState.ready;
+  const detailedPrintReady =
+    detailedPrintState.profileKey === reviewProfileKey
+      && detailedPrintState.ready;
 
   const bacTracks = useMemo(() => localizeProfileOptions(locale, tunisianBacTrackOptions), [locale]);
   const diplomas = useMemo(() => localizeProfileOptions(locale, diplomaOptions), [locale]);
@@ -1176,6 +1188,7 @@ export function PublicOrientationForm({
             ) : (
               <div id="orientation-report" className="orientation-print-report">
                 <OrientationOnePagePrintReport answers={answers} locale={locale} personalized={personalizedForPrint} identity={identity} />
+                {personalizedForPrint?.selected.length ? <OrientationDetailedPrintReport answers={answers} locale={locale} personalized={personalizedForPrint} identity={identity} onReadyChange={handleDetailedPrintReady} /> : null}
                 <div className="orientation-screen-report">
                 <div className="orientation-print-only mb-6 items-center justify-between gap-6 border-b border-slate-300 pb-5">
                   <BrandLogo className="h-10 w-auto" priority />
@@ -1252,12 +1265,25 @@ export function PublicOrientationForm({
                     <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-start sm:gap-x-6 sm:gap-y-2">
                       <button
                         type="button"
-                        onClick={() => window.print()}
+                        onClick={() => printOrientationDocument("summary")}
                         className="inline-flex min-h-11 items-center justify-center gap-2 rounded-[var(--radius-control)] border border-[var(--border-strong)] bg-[var(--surface)] px-4 py-2.5 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--brand)] hover:text-[var(--brand-strong)]"
                       >
                         <svg aria-hidden="true" className="size-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path strokeLinecap="round" strokeLinejoin="round" d="M12 3v12m-4-4 4 4 4-4M4 16v4h16v-4"/></svg>
                         {resultActionsCopy.pdf}
                       </button>
+                      {personalizedForPrint?.selected.length ? (
+                        <button
+                          type="button"
+                          onClick={() => printOrientationDocument("detailed")}
+                          disabled={!detailedPrintReady}
+                          aria-busy={!detailedPrintReady}
+                          className="inline-flex min-h-11 items-center justify-center rounded-[var(--radius-control)] bg-[var(--brand)] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[var(--brand-strong)] disabled:cursor-wait disabled:opacity-60"
+                        >
+                          {detailedPrintReady
+                            ? { fr: "Enregistrer le dossier détaillé (PDF)", ar: "حفظ الملف المفصل (PDF)", en: "Save detailed dossier (PDF)", de: "Ausführliches Dossier speichern (PDF)" }[locale]
+                            : { fr: "Préparation du dossier détaillé…", ar: "جارٍ إعداد الملف المفصل…", en: "Preparing detailed dossier…", de: "Ausführliches Dossier wird vorbereitet…" }[locale]}
+                        </button>
+                      ) : null}
                       <button
                         type="button"
                         onClick={() => setStep(1)}

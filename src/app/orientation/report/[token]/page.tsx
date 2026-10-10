@@ -6,6 +6,8 @@ import { rebrandCopy } from "@/lib/brand";
 import { OrientationReportActions } from "@/components/orientation/OrientationReportActions";
 import { OrientationRouteCard } from "@/components/orientation/OrientationRouteCard";
 import { OrientationOnePagePrintReport } from "@/components/orientation/OrientationOnePagePrintReport";
+import { OrientationDetailedPrintReport } from "@/components/orientation/OrientationDetailedPrintReport";
+import { OrientationPrintReadinessProvider } from "@/components/orientation/OrientationPrintReadinessProvider";
 import { OrientationCandidatePrintReport } from "@/components/orientation/OrientationCandidatePrintReport";
 import { orientationCopy } from "@/content/orientation-copy";
 import { orientationProspectCopy } from "@/content/orientation-prospect-copy";
@@ -103,7 +105,7 @@ export default async function OrientationReportPage({
 
   const { token } = await params;
   const query = await searchParams;
-  const documentMode = query.document === "candidate" ? "candidate" : "orientation";
+  const documentMode = query.document === "candidate" ? "candidate" : query.document === "detailed" ? "detailed" : "orientation";
   const tokenHash = hashOrientationResumeToken(token);
   if (!tokenHash) notFound();
 
@@ -136,12 +138,14 @@ export default async function OrientationReportPage({
         String(linkedReview.id),
       )
     : null;
+  if (documentMode === "detailed" && !personalized?.selected.length) notFound();
 
   const input = data.input && typeof data.input === "object"
     ? data.input as Record<string, unknown>
     : {};
   const locale = normalizeLocale(typeof input.locale === "string" ? input.locale : null);
   const direction = localeDirection(locale);
+  const detailedDocumentLabel = { fr: "Dossier détaillé (PDF)", ar: "الملف المفصل (PDF)", en: "Detailed dossier (PDF)", de: "Ausführliches Dossier (PDF)" }[locale];
   const answers = restorePublicOrientationAnswers(input.answers);
   const identity = restorePublicOrientationIdentity(input.identity);
   const copy = rebrandCopy(orientationCopy[locale]);
@@ -353,7 +357,7 @@ export default async function OrientationReportPage({
   const signupHref = `/signup?orientation_token=${encodeURIComponent(token)}`;
 
   return (
-    <div className="orientation-print-page orientation-color-theme min-h-screen bg-[var(--background)] text-[var(--foreground)]" dir={direction}>
+    <div className={"orientation-print-page orientation-color-theme min-h-screen bg-[var(--background)] text-[var(--foreground)]" + (documentMode === "detailed" ? " orientation-detailed-document" : "")} dir={direction}>
       <header className="orientation-print-hide border-b border-[var(--border)] bg-[var(--surface)]">
         <div className="mx-auto flex min-h-16 max-w-5xl items-center justify-between gap-4 px-4 sm:px-6">
           <Link href="/" className="inline-flex items-center">
@@ -366,6 +370,7 @@ export default async function OrientationReportPage({
       </header>
 
       <main id="orientation-main" className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
+        <OrientationPrintReadinessProvider>
         <article id="orientation-report" className="orientation-print-report">
           {documentMode === "candidate" ? (
             <OrientationCandidatePrintReport
@@ -376,6 +381,8 @@ export default async function OrientationReportPage({
               generatedAt={created}
               sections={candidateSections}
             />
+          ) : documentMode === "detailed" && personalized ? (
+            <OrientationDetailedPrintReport answers={answers} locale={locale} personalized={personalized} identity={identity} />
           ) : (
             <OrientationOnePagePrintReport answers={answers} locale={locale} personalized={personalized} identity={identity} />
           )}
@@ -387,6 +394,11 @@ export default async function OrientationReportPage({
             >
               {candidateCopy.orientationTab}
             </Link>
+            {personalized?.selected.length ? (
+              <Link href={"/orientation/report/" + encodeURIComponent(token) + "?document=detailed"} className={"rounded-[var(--radius-control)] px-4 py-2 text-sm font-bold " + (documentMode === "detailed" ? "bg-[var(--brand)] text-white" : "bg-[var(--surface)] text-[var(--foreground)]")}>
+                {detailedDocumentLabel}
+              </Link>
+            ) : null}
             <Link
               href={`/orientation/report/${encodeURIComponent(token)}?document=candidate`}
               className={`rounded-[var(--radius-control)] px-4 py-2 text-sm font-bold ${documentMode === "candidate" ? "bg-[var(--brand)] text-white" : "bg-[var(--surface)] text-[var(--foreground)]"}`}
@@ -403,12 +415,12 @@ export default async function OrientationReportPage({
           </div>
 
           <div className="mb-6 border-b border-[var(--border)] pb-5">
-            <p className="eyebrow">{documentMode === "candidate" ? candidateCopy.report : prospectCopy.report.label}</p>
+            <p className="eyebrow">{documentMode === "candidate" ? candidateCopy.report : documentMode === "detailed" ? detailedDocumentLabel : prospectCopy.report.label}</p>
             <h1 className="mt-2 text-3xl font-semibold tracking-tight">
-              {documentMode === "candidate" ? candidateCopy.title : prospectCopy.report.title}
+              {documentMode === "candidate" ? candidateCopy.title : documentMode === "detailed" ? detailedDocumentLabel : prospectCopy.report.title}
             </h1>
             <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
-              {documentMode === "candidate" ? candidateCopy.subtitle : prospectCopy.report.subtitle}
+              {documentMode === "candidate" ? candidateCopy.subtitle : documentMode === "detailed" ? personalized?.content.projectStatus : prospectCopy.report.subtitle}
             </p>
             <div className="mt-3 text-xs leading-5 text-[var(--muted)]">
               <p>{resumeCopy.created} <bdi dir="auto">{created}</bdi></p>
@@ -448,7 +460,7 @@ export default async function OrientationReportPage({
           )}
 
           <div className="orientation-print-hide mt-7 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-subtle)] p-4">
-            <OrientationReportActions printLabel={documentMode === "candidate" ? candidateCopy.print : prospectCopy.report.print} />
+            <OrientationReportActions printLabel={documentMode === "candidate" ? candidateCopy.print : documentMode === "detailed" ? detailedDocumentLabel : prospectCopy.report.print} mode={documentMode === "detailed" ? "detailed" : "summary"} />
             <p className="mt-2 text-xs leading-5 text-[var(--foreground)]">{prospectCopy.report.printHelp}</p>
           </div>
 
@@ -465,6 +477,7 @@ export default async function OrientationReportPage({
           ) : null}
           </div>
         </article>
+        </OrientationPrintReadinessProvider>
       </main>
     </div>
   );
