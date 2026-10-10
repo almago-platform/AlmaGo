@@ -9,6 +9,7 @@ import type {
   OrientationPublicPersonalizedResult,
 } from "@/lib/orientation-engine/result/types";
 import { buildUniversalOrientationGuidance } from "@/lib/orientation/universal-guidance";
+import { orientationCandidatePriority } from "@/lib/orientation-engine/writer/candidate-priority";
 import {
   getAcademicAccessConclusion,
   getVerifiedProgrammeSet,
@@ -192,6 +193,7 @@ const premiumLabels = {
     advisor: "Mot du conseiller",
     together: "On reprend ce rapport avec vous.",
     togetherText: "Nous reprenons la shortlist avec vous avant les candidatures et la suite.",
+    continueText: "Pour continuer : campusallemagne.tn/orientation",
     german: "Allemand",
     generated: "Rapport personnalisé",
     student: "Étudiant",
@@ -225,6 +227,7 @@ const premiumLabels = {
     advisor: "كلمة المستشار",
     together: "نراجع هذا التقرير معك.",
     togetherText: "نراجع معك القائمة المختصرة قبل التقديم والخطوات التالية.",
+    continueText: "لمتابعة مشروعك: campusallemagne.tn/orientation",
     german: "الألمانية",
     generated: "تقرير شخصي",
     student: "الطالب",
@@ -258,6 +261,7 @@ const premiumLabels = {
     advisor: "Advisor note",
     together: "We review this report with you.",
     togetherText: "We review the shortlist with you before applications and the next steps.",
+    continueText: "Continue your project: campusallemagne.tn/orientation",
     german: "German",
     generated: "Personalised report",
     student: "Student",
@@ -291,6 +295,7 @@ const premiumLabels = {
     advisor: "Hinweis des Beraters",
     together: "Wir gehen diesen Bericht mit dir durch.",
     togetherText: "Wir prüfen die Shortlist mit dir vor Bewerbungen und den nächsten Schritten.",
+    continueText: "Projekt fortsetzen: campusallemagne.tn/orientation",
     german: "Deutsch",
     generated: "Personalisierter Bericht",
     student: "Studierende Person",
@@ -527,6 +532,7 @@ export function OrientationOnePagePrintReport({
 }) {
   const copy = labels[locale] as (typeof labels)["fr"];
   const guidance = buildUniversalOrientationGuidance(answers, locale);
+  const candidatePriority = orientationCandidatePriority(answers, locale);
   const access = getAcademicAccessConclusion(answers);
   const programmeSet = getVerifiedProgrammeSet(answers);
   const options = programmeSet?.options || [];
@@ -621,13 +627,22 @@ export function OrientationOnePagePrintReport({
       .sort((a, b) => factOrder.indexOf(a.field) - factOrder.indexOf(b.field))
       .slice(0, 4);
     const roadmap = content.roadmap.slice(0, 3);
-    const youText = content.roadmap[0]?.text || content.mainPriority.nextStep;
+    const youText = candidatePriority?.yourStep || content.roadmap[0]?.text || content.mainPriority.nextStep;
     const campusText = content.roadmap[2]?.text || content.campusValue;
     const latestVerified = featuredSelected.facts
       .map((fact) => fact.verifiedAt)
       .filter((value): value is string => Boolean(value))
       .sort()
       .at(-1) || null;
+    const priorityTitle = candidatePriority?.title || content.mainPriority.title;
+    const priorityText = candidatePriority?.text || content.mainPriority.text;
+    const priorityNextStep = candidatePriority?.yourStep || content.mainPriority.nextStep;
+    // The writer can already open with "Bon courage" or "Félicitations".
+    // Keep only one warm greeting on the printed page.
+    const openingAlreadyGreets = /^(bon courage|félicitations|best of luck|congratulations|viel erfolg|herzlichen glückwunsch|بالتوفيق|مبروك)/i.test(content.opening.trim());
+    // An initial research option is not an evidence-based admission probability.
+    const unqualifiedWhy = featuredWriter?.whyItFits || content.projectStatus;
+    const printWhy = unqualifiedWhy.split(/première estimation campus allemagne|first campus allemagne estimate|erste einschätzung campus allemagne|تقدير أولي من campus allemagne/i)[0].trim() || content.projectStatus;
     const profileHighlights = [
       degree,
       field,
@@ -672,7 +687,7 @@ export function OrientationOnePagePrintReport({
           <div className="orientation-pdf-hero-main">
             <p className="orientation-pdf-hero-eyebrow">{premium.heroEyebrow}</p>
             <h1>{premium.heroTitle}</h1>
-            {humanMessage ? <p className="orientation-pdf-hero-opening font-semibold">{humanMessage}</p> : null}
+            {humanMessage && !openingAlreadyGreets ? <p className="orientation-pdf-hero-opening font-semibold">{humanMessage}</p> : null}
             <p className="orientation-pdf-hero-opening">{compactPrintText(content.opening, 320)}</p>
             <p className="orientation-pdf-hero-status">{compactPrintText(content.projectStatus, 260)}</p>
           </div>
@@ -687,9 +702,9 @@ export function OrientationOnePagePrintReport({
         <section className="orientation-pdf-priority">
           <div className="orientation-pdf-priority-main">
             <p className="orientation-pdf-section-label">{premium.priority}</p>
-            <h2>{content.mainPriority.title}</h2>
-            <p>{compactPrintText(content.mainPriority.text, 320)}</p>
-            <strong>{compactPrintText(content.mainPriority.nextStep, 210)}</strong>
+            <h2>{priorityTitle}</h2>
+            <p>{compactPrintText(priorityText, 320)}</p>
+            <strong>{compactPrintText(priorityNextStep, 210)}</strong>
           </div>
           <div className="orientation-pdf-responsibilities">
             <div>
@@ -717,7 +732,7 @@ export function OrientationOnePagePrintReport({
             </div>
             <p className="orientation-pdf-mini-label orientation-pdf-on-dark">{premium.why}</p>
             <p className="orientation-pdf-why">
-              {compactPrintText(featuredWriter?.whyItFits || content.projectStatus, 420)}
+              {compactPrintText(printWhy, 420)}
             </p>
           </div>
           <div className="orientation-pdf-facts">
@@ -740,7 +755,7 @@ export function OrientationOnePagePrintReport({
               <article key={item.id}>
                 <span>{String(index + 1).padStart(2, "0")}</span>
                 <h3>{item.label}</h3>
-                <p>{compactPrintText(item.text, 170)}</p>
+                <p>{compactPrintText(index === 0 && candidatePriority ? candidatePriority.yourStep : item.text, 170)}</p>
               </article>
             ))}
           </div>
@@ -754,6 +769,7 @@ export function OrientationOnePagePrintReport({
           <div>
             <p>{compactPrintText(content.reassurance, 300)}</p>
             <strong>{premium.togetherText}</strong>
+            <a className="orientation-pdf-continue" href="https://campusallemagne.tn/orientation">{premium.continueText}</a>
           </div>
         </section>
 

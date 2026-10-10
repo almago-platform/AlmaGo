@@ -42,7 +42,8 @@ test("P2.3 premium PDF includes student identity and localized verified facts", 
   assert.match(printReport, /premium\.email/);
   assert.match(printReport, /Semestre d’hiver/);
   assert.match(printReport, /Allemand C1 pour les candidats internationaux/);
-  assert.match(printReport, /compactPrintText\(featuredWriter\?\.whyItFits \|\| content\.projectStatus, 420\)/);
+  assert.match(printReport, /compactPrintText\(printWhy, 420\)/);
+  assert.match(printReport, /première estimation campus allemagne/);
 });
 
 test("P2.3 candidate PDF is a separate branded one-page profile report", () => {
