@@ -37,6 +37,10 @@ test("progressive UI preserves a factual letter on provider failures and can ret
   assert.match(form, /onResultReady\?\.\(true\)/);
   assert.match(form, /previewController\.abort\(\)/);
   assert.match(form, /fullController\.abort\(\)/);
+  // Sending PDF before the detailed search settles would give students a
+  // different report from the one displayed after enrichment.
+  assert.match(form, /if \(isFull \|\| fullFailed\) onResultReady\?\.\(true\)/);
+  assert.match(form, /if \(alive && previewReady\) onResultReady\?\.\(true\)/);
 });
 
 test("four languages distinguish basic orientation from optional research", () => {
