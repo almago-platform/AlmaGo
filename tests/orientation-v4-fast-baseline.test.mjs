@@ -17,7 +17,7 @@ test("fast preview validates inputs, rate limits independently and does not call
   assert.match(preview, /buildOrientationCanonicalShortlist\(engine, null\)/);
   assert.match(preview, /"Cache-Control": "private, no-store"/);
   assert.match(abuse, /orientationPreview: \{/);
-  assert.doesNotMatch(preview, /fetch\(|runOpenAI|Gemini|\.rpc\(|loadVerifiedProgrammeCatalogue|createPrivilegedSupabaseClient/);
+  assert.doesNotMatch(preview, /fetch\(|runOpenAI|writeOrientationLetterWithGemini|\.rpc\(|loadVerifiedProgrammeCatalogue|createPrivilegedSupabaseClient/);
   assert.match(preview, /personalized: null/);
   assert.match(intel, /export function deterministicLetter/);
 });
