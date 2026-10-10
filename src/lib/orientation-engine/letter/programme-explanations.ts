@@ -99,7 +99,7 @@ function languageKind(value: string | null): "german" | "english" | "mixed" | "u
   return de && en ? "mixed" : de ? "german" : en ? "english" : "unknown";
 }
 
-function levelGap(recommendation: OrientationProgrammeEvaluation, locale: Locale) {
+function levelGap(recommendation: OrientationProgrammeEvaluation, answers: PublicOrientationAnswers, locale: Locale) {
   const item = recommendation.rules.find((rule) => rule.code === "language_insufficient" && rule.status === "conditional");
   const match = typeof item?.value === "string" ? /^(DE|EN) (A1|A2|B1|B2|C1|C2)$/.exec(item.value) : null;
   if (!match) return null;
@@ -109,7 +109,7 @@ function levelGap(recommendation: OrientationProgrammeEvaluation, locale: Locale
 /** Explains recorded matches and verification work; never decides eligibility. */
 export function explainDocumentedProgramme(
   recommendation: OrientationProgrammeEvaluation,
-  _answers: PublicOrientationAnswers,
+  answers: PublicOrientationAnswers,
   locale: Locale,
 ): { reason: string; checks: string[] } {
   const t = wording[locale];
@@ -129,7 +129,7 @@ export function explainDocumentedProgramme(
     const language = languageName(locale, kind);
     if (hasRule(recommendation, "teaching_language_other", ["conditional"])) {
       reasons.push(t.languageOther(language));
-    } else if (hasRule(recommendation, "teaching_language_match", ["eligible"])) {
+    } else if (answers.studyLanguage !== "À définir" && hasRule(recommendation, "teaching_language_match", ["eligible"])) {
       reasons.push(t.languageMatch(language));
     } else {
       reasons.push(t.taught(language));
@@ -145,7 +145,7 @@ export function explainDocumentedProgramme(
   if (hasRule(recommendation, "academic_access_review", ["conditional", "missing_information", "unknown"])) {
     checks.push(t.academic);
   }
-  const gap = levelGap(recommendation, locale);
+  const gap = levelGap(recommendation, answers, locale);
   if (gap) {
     checks.push(gap);
   } else if (hasRule(recommendation, "language_missing", ["missing_information", "unknown"]) || kind === "unknown") {
