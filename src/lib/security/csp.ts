@@ -34,7 +34,7 @@ export function buildContentSecurityPolicy(
     "form-action 'self'",
     `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'`,
     "style-src 'self' 'unsafe-inline'",
-    "img-src 'self' data: blob: https://images.pexels.com https://images.unsplash.com https://upload.wikimedia.org",
+    "img-src 'self' data: blob: https://images.pexels.com https://images.unsplash.com https://upload.wikimedia.org https://thumb.wikimedia.org",
     "font-src 'self' data:",
     `connect-src 'self' ${supabaseConnectSources(env).join(" ")}`.trim(),
     "worker-src 'self' blob:",

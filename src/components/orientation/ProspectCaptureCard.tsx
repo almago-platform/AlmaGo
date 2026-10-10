@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import { OrientationRealPhoto } from "@/components/orientation/OrientationRealPhoto";
+import { selectStudentLifePhoto } from "@/lib/orientation/media/student-life";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { orientationProspectCopy } from "@/content/orientation-prospect-copy";
@@ -381,6 +383,8 @@ export function ProspectCaptureCard({
       {status === "success" && interestToken ? (
         <section className="relative mt-6 overflow-hidden rounded-[var(--radius-panel)] bg-[var(--foreground)] p-5 text-white shadow-[var(--shadow-card)] sm:p-7" aria-labelledby="orientation-continue-title">
           <div aria-hidden="true" className="absolute inset-y-0 start-0 w-1 bg-[var(--accent)]" />
+          <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(14rem,0.47fr)] lg:items-center lg:gap-7">
+            <div className="min-w-0">
           <p className="text-[11px] font-bold uppercase tracking-[0.13em] text-[#f4cc78]">{signupPath ? copy.continueEyebrow : copy.interestEyebrow}</p>
           <h4 id="orientation-continue-title" className="mt-2 max-w-[54rem] text-balance text-xl font-semibold leading-snug tracking-tight sm:text-[1.55rem]">{signupPath ? copy.continueTitle : copy.interestTitle}</h4>
           <p className="mt-3 max-w-[67ch] text-sm leading-7 text-white/85">
@@ -412,6 +416,14 @@ export function ProspectCaptureCard({
               {copy.interestFailure}
             </p>
           ) : null}
+            </div>
+            <OrientationRealPhoto
+              locale={locale}
+              kind="student-life"
+              lifePhoto={selectStudentLifePhoto(answers)}
+              className="h-44 sm:h-48 lg:h-64"
+            />
+          </div>
         </section>
       ) : null}
 

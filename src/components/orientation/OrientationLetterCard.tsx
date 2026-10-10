@@ -2,6 +2,8 @@
 
 import type { Locale } from "@/lib/i18n";
 import { explainDocumentedProgramme } from "@/lib/orientation-engine/letter/programme-explanations";
+import { OrientationRealPhoto } from "@/components/orientation/OrientationRealPhoto";
+import { useOrientationUniversityMedia, universityPhotoKey } from "@/components/orientation/useOrientationUniversityMedia";
 import type { PublicOrientationAnswers } from "@/lib/orientation/public";
 import type {
   OrientationLetterOutput,
@@ -138,6 +140,7 @@ export function OrientationLetterCard({
     language: recommendation.programme.teachingLanguage,
     source: recommendation.programme.programmeSourceUrl || recommendation.programme.university.websiteUrl,
     badge: t.verified,
+    media: recommendation.programme.university.media,
     ...explainDocumentedProgramme(recommendation, answers, locale),
   }));
 
@@ -160,11 +163,16 @@ export function OrientationLetterCard({
           language: null,
           source: candidate.officialUrl,
           badge: t.research,
+          media: null,
           reason: t.researchReason,
         }))
     : [];
 
   const pistes = [...verifiedPistes, ...researchPistes].slice(0, 3);
+  const mediaByUniversity = useOrientationUniversityMedia(
+    pistes.filter((piste) => !piste.media?.coverImageUrl)
+      .map((piste) => ({ institution: piste.institution, city: piste.city })),
+  );
 
 
   return (
@@ -219,7 +227,8 @@ export function OrientationLetterCard({
                 key={piste.key}
                 className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface)] p-4 transition-colors hover:border-[var(--brand-border)] sm:p-5"
               >
-                <div className="flex min-w-0 items-start gap-3 sm:gap-4">
+                <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_12rem] lg:items-start">
+                  <div className="order-last flex min-w-0 items-start gap-3 sm:gap-4 lg:order-first">
                   <span aria-hidden="true" className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-[var(--surface-subtle)] text-xs font-bold tabular-nums text-[var(--foreground)]">
                     {String(index + 1).padStart(2, "0")}
                   </span>
@@ -252,6 +261,15 @@ export function OrientationLetterCard({
                       </a>
                     ) : null}
                   </div>
+                  </div>
+                  <OrientationRealPhoto
+                    className="order-first h-44 lg:order-last lg:h-44"
+                    universityName={piste.institution}
+                    media={piste.media?.coverImageUrl
+                      ? piste.media
+                      : mediaByUniversity[universityPhotoKey(piste.institution, piste.city)] || null}
+                    locale={locale}
+                  />
                 </div>
               </article>
             ))}
