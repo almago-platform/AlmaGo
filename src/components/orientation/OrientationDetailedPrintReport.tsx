@@ -23,12 +23,12 @@ const copy = {
     verified: "Informations vérifiées", reviewing: "À vérifier avec l'université",
     why: "Pourquoi cette piste", facts: "Repères vérifiés", sources: "Sources des informations",
     missingPhoto: "Photo d'université non disponible avec une licence vérifiée",
-    photo: "Photo de l'université", photoCredit: "Photo",
+    photo: "Photo de l'université", photoCredit: "Photo", cropped: "image recadrée pour la mise en page",
     roadmap: "Vos prochaines étapes", campus: "L'accompagnement Campus Allemagne",
     continue: "Continuer mon projet avec Campus Allemagne", caution: "Important",
     disclaimer: "Ce dossier est une aide à la préparation. Seules les universités décident de l'admission et les autorités compétentes décident du visa. Les conditions et dates doivent être revérifiées avant de candidater.",
     noVerifiedFacts: "Les conditions détaillées restent à vérifier auprès de l'université.",
-    factNames: { degree_level: "Diplôme", teaching_language: "Langue d'enseignement", intake_terms: "Rentrée", application_route: "Candidature", german_language_requirement: "Allemand requis", english_language_requirement: "Anglais requis", tuition_or_semester_fees: "Frais", winter_deadline: "Date limite (hiver)", summer_deadline: "Date limite (été)" },
+    factNames: { programme_exists: "Existence du programme", city: "Ville", accepted_language_certificates: "Certificats acceptés", application_url: "Lien de candidature", studienkolleg_requirement: "Studienkolleg", degree_level: "Diplôme", teaching_language: "Langue d'enseignement", intake_terms: "Rentrée", application_route: "Candidature", german_language_requirement: "Allemand requis", english_language_requirement: "Anglais requis", tuition_or_semester_fees: "Frais", winter_deadline: "Date limite (hiver)", summer_deadline: "Date limite (été)" },
   },
   ar: {
     eyebrow: "ملف توجيه شخصي", title: "مشروعك للدراسة في ألمانيا",
@@ -38,12 +38,12 @@ const copy = {
     programmeIntro: "هذه مسارات ناتجة عن توجيهك ولا تعني ضمان القبول.",
     verified: "معلومات موثقة", reviewing: "يلزم التحقق من الجامعة",
     why: "لماذا هذا المسار", facts: "معلومات موثقة", sources: "مصادر المعلومات",
-    missingPhoto: "لا تتوفر صورة للجامعة بترخيص موثق", photo: "صورة الجامعة", photoCredit: "الصورة",
+    missingPhoto: "لا تتوفر صورة للجامعة بترخيص موثق", photo: "صورة الجامعة", photoCredit: "الصورة", cropped: "تم اقتصاص الصورة لأغراض التنسيق",
     roadmap: "خطواتك القادمة", campus: "مرافقة Campus Allemagne",
     continue: "متابعة مشروعي مع Campus Allemagne", caution: "مهم",
     disclaimer: "هذا الملف يساعد على التحضير، ولا يضمن القبول. الجامعة هي التي تقرر القبول، والجهات المختصة هي التي تقرر التأشيرة. تحقق من الشروط والمواعيد قبل التقديم.",
     noVerifiedFacts: "يجب التحقق من شروط البرنامج لدى الجامعة.",
-    factNames: { degree_level: "الدرجة", teaching_language: "لغة الدراسة", intake_terms: "بداية الدراسة", application_route: "التقديم", german_language_requirement: "الألمانية المطلوبة", english_language_requirement: "الإنجليزية المطلوبة", tuition_or_semester_fees: "الرسوم", winter_deadline: "آخر أجل (شتاء)", summer_deadline: "آخر أجل (صيف)" },
+    factNames: { programme_exists: "وجود البرنامج", city: "المدينة", accepted_language_certificates: "شهادات اللغة المقبولة", application_url: "رابط التقديم", studienkolleg_requirement: "السنة التحضيرية", degree_level: "الدرجة", teaching_language: "لغة الدراسة", intake_terms: "بداية الدراسة", application_route: "التقديم", german_language_requirement: "الألمانية المطلوبة", english_language_requirement: "الإنجليزية المطلوبة", tuition_or_semester_fees: "الرسوم", winter_deadline: "آخر أجل (شتاء)", summer_deadline: "آخر أجل (صيف)" },
   },
   en: {
     eyebrow: "Personalised orientation dossier", title: "Your study project in Germany",
@@ -54,12 +54,12 @@ const copy = {
     verified: "Verified information", reviewing: "University confirmation needed",
     why: "Why this option", facts: "Verified facts", sources: "Information sources",
     missingPhoto: "No university photograph with a verified licence available",
-    photo: "University photograph", photoCredit: "Photo",
+    photo: "University photograph", photoCredit: "Photo", cropped: "image cropped for layout",
     roadmap: "Your next steps", campus: "Campus Allemagne support",
     continue: "Continue with Campus Allemagne", caution: "Important",
     disclaimer: "This dossier helps you prepare; universities decide admissions and the competent authorities decide visas. Recheck conditions and deadlines before applying.",
     noVerifiedFacts: "Detailed conditions still require confirmation with the university.",
-    factNames: { degree_level: "Degree", teaching_language: "Teaching language", intake_terms: "Intake", application_route: "Application", german_language_requirement: "German requirement", english_language_requirement: "English requirement", tuition_or_semester_fees: "Fees", winter_deadline: "Winter deadline", summer_deadline: "Summer deadline" },
+    factNames: { programme_exists: "Programme existence", city: "City", accepted_language_certificates: "Accepted certificates", application_url: "Application link", studienkolleg_requirement: "Studienkolleg", degree_level: "Degree", teaching_language: "Teaching language", intake_terms: "Intake", application_route: "Application", german_language_requirement: "German requirement", english_language_requirement: "English requirement", tuition_or_semester_fees: "Fees", winter_deadline: "Winter deadline", summer_deadline: "Summer deadline" },
   },
   de: {
     eyebrow: "Persönliches Orientierungsdossier", title: "Dein Studienprojekt in Deutschland",
@@ -70,12 +70,12 @@ const copy = {
     verified: "Geprüfte Informationen", reviewing: "Noch mit der Hochschule zu prüfen",
     why: "Warum diese Option", facts: "Geprüfte Fakten", sources: "Informationsquellen",
     missingPhoto: "Kein Hochschulfoto mit geprüfter Lizenz verfügbar",
-    photo: "Hochschulfoto", photoCredit: "Foto",
+    photo: "Hochschulfoto", photoCredit: "Foto", cropped: "Bild für das Layout zugeschnitten",
     roadmap: "Deine nächsten Schritte", campus: "Begleitung durch Campus Allemagne",
     continue: "Projekt mit Campus Allemagne fortsetzen", caution: "Wichtig",
     disclaimer: "Dieses Dossier dient der Vorbereitung. Hochschulen entscheiden über Zulassungen, die zuständigen Behörden über Visa. Bedingungen und Fristen vor einer Bewerbung erneut prüfen.",
     noVerifiedFacts: "Die genauen Voraussetzungen sind noch mit der Hochschule zu klären.",
-    factNames: { degree_level: "Abschluss", teaching_language: "Unterrichtssprache", intake_terms: "Studienbeginn", application_route: "Bewerbung", german_language_requirement: "Deutsch", english_language_requirement: "Englisch", tuition_or_semester_fees: "Gebühren", winter_deadline: "Winterfrist", summer_deadline: "Sommerfrist" },
+    factNames: { programme_exists: "Studiengang vorhanden", city: "Stadt", accepted_language_certificates: "Anerkannte Zertifikate", application_url: "Bewerbungslink", studienkolleg_requirement: "Studienkolleg", degree_level: "Abschluss", teaching_language: "Unterrichtssprache", intake_terms: "Studienbeginn", application_route: "Bewerbung", german_language_requirement: "Deutsch", english_language_requirement: "Englisch", tuition_or_semester_fees: "Gebühren", winter_deadline: "Winterfrist", summer_deadline: "Sommerfrist" },
   },
 } as const;
 
@@ -84,6 +84,12 @@ function licensedPhoto(media: OrientationUniversityMedia | null | undefined): Or
   if (!/^https:\/\//i.test(media.coverImageUrl) || !/^https:\/\//i.test(media.coverImageSourceUrl)) return null;
   if (!/^(?:CC0(?:\s|$)|CC BY(?:-SA)?(?:\s|$))/i.test(media.coverImageLicense)) return null;
   return media;
+}
+
+function licenseHref(license: string): string | null {
+  if (/^CC0(?:\s+1\.0)?$/i.test(license)) return "https://creativecommons.org/publicdomain/zero/1.0/";
+  const match = /^CC BY(-SA)?\s+(2\.0|2\.5|3\.0|4\.0)$/i.exec(license);
+  return match ? "https://creativecommons.org/licenses/by" + (match[1] ? "-sa" : "") + "/" + match[2] + "/" : null;
 }
 
 function safeSource(url: string | null): string | null {
@@ -182,7 +188,7 @@ export function OrientationDetailedPrintReport({
                   {/* The only permitted images have explicit reusable Creative Commons metadata. */}
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={photo.coverImageUrl || ""} alt={t.photo + ": " + option.institution} width={920} height={430} loading="eager" onError={(event) => { event.currentTarget.style.visibility = "hidden"; }} />
-                  <figcaption>{t.photoCredit}: {photo.coverImageAttribution || option.institution} · {photo.coverImageLicense} · <a href={photo.coverImageSourceUrl || "#"} target="_blank" rel="noopener noreferrer">{photo.coverImageSourceUrl}</a></figcaption>
+                  <figcaption>{t.photoCredit}: {photo.coverImageAttribution || option.institution} · {licenseHref(photo.coverImageLicense || "") ? <a href={licenseHref(photo.coverImageLicense || "") || "#"} target="_blank" rel="noopener noreferrer">{photo.coverImageLicense}</a> : photo.coverImageLicense} · {t.cropped} · <a href={photo.coverImageSourceUrl || "#"} target="_blank" rel="noopener noreferrer">{photo.coverImageSourceUrl}</a></figcaption>
                 </figure>
               ) : (
                 <p className="orientation-detail-photo-missing">{t.missingPhoto}</p>
