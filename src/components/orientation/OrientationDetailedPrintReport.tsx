@@ -189,11 +189,42 @@ export function OrientationDetailedPrintReport({
       .map((option) => ({ institution: option.institution, city: option.city })),
     ...supplemental.map((option) => ({ institution: option.institution, city: option.city })),
   ]);
+  const photoUrls = [...selected, ...supplemental].map((option) => {
+    const photo = ("universityMedia" in option ? licensedPhoto(option.universityMedia) : null)
+      || licensedPhoto(dynamicMedia[universityPhotoKey(option.institution, option.city)])
+      || licensedPhoto(findCuratedUniversityMedia(option.institution, option.city));
+    return photo?.coverImageUrl || null;
+  }).filter((url): url is string => Boolean(url));
+  const photoKey = JSON.stringify([...new Set(photoUrls)]);
+  const [loadedPhotoKey, setLoadedPhotoKey] = useState<string | null>(null);
   useEffect(() => {
-    onReadyChange?.(research.ready);
-    setSavedPrintReady(research.ready);
+    let disposed = false;
+    const urls = JSON.parse(photoKey) as string[];
+    void Promise.all(urls.map((url) => new Promise<void>((resolve) => {
+      const image = new window.Image();
+      let settled = false;
+      const finish = () => {
+        if (settled) return;
+        settled = true;
+        window.clearTimeout(timeout);
+        resolve();
+      };
+      const timeout = window.setTimeout(finish, 6000);
+      image.onload = finish;
+      image.onerror = finish;
+      image.src = url;
+      if (image.complete) finish();
+    }))).then(() => {
+      if (!disposed) setLoadedPhotoKey(photoKey);
+    });
+    return () => { disposed = true; };
+  }, [photoKey]);
+  const detailedReady = research.ready && loadedPhotoKey === photoKey;
+  useEffect(() => {
+    onReadyChange?.(detailedReady);
+    setSavedPrintReady(detailedReady);
     return () => setSavedPrintReady(false);
-  }, [onReadyChange, research.ready, setSavedPrintReady]);
+  }, [onReadyChange, detailedReady, setSavedPrintReady]);
   const content = personalized.content;
   const candidate = [identity?.firstName, identity?.lastName].filter(Boolean).join(" ");
   const prioritized = [
