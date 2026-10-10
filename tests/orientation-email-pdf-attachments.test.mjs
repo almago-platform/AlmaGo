@@ -87,7 +87,7 @@ test("automatic email adds a third attachment only when a saved personalized sho
   assert.match(route, /readSupplementalOrientationEmailPistes\(answers, personalized\.selected\)/);
   assert.match(route, /await buildDetailedOrientationEmailPdfAttachment/);
   assert.match(route, /if \(detailed\) attachments\.push\(detailed\)/);
-  assert.match(route, /attachments\.length !== 2/);
+  assert.match(route, /attachments\.length < 2/);
   assert.match(route, /detailedPdfAttached: delivery\.status === "sent" && attachments\.length === 3/);
   assert.match(route, /detailedReportUrl: personalized\?\.selected\.length/);
   assert.match(copy, /detailedAttachmentIncluded/);
