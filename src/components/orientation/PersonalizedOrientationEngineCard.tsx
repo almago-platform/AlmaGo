@@ -62,6 +62,7 @@ const copy = {
     universityUnavailable: "La recherche d’universités n’a pas pu se terminer. Aucune formation ne peut être confirmée pour le moment.",
     universityNone: "Nous n’avons pas trouvé de formation suffisamment vérifiée correspondant à ce domaine dans notre catalogue actuel. Cela ne signifie pas qu’aucune université ne propose ce cursus.",
     universityBroaden: "Supprimer ma préférence de ville et relancer",
+    universityOfficialSearch: "Explorer les formations sur Hochschulkompass",
     universityCaution: "Nous n’affichons pas de formation d’un autre domaine simplement pour remplir la liste. Les conditions d’admission et les sources officielles doivent être vérifiées.",
     details: "Comprendre notre analyse en détail",
     why: "Pourquoi cette option apparaît",
@@ -108,6 +109,7 @@ const copy = {
     universityUnavailable: "تعذّر إكمال البحث عن الجامعات. لا يمكن تأكيد برنامج في الوقت الحالي.",
     universityNone: "لم نجد حتى الآن برنامجًا موثّقًا بما يكفي في هذا التخصص ضمن كتالوجنا الحالي. هذا لا يعني عدم وجود برامج مناسبة في جامعات أخرى.",
     universityBroaden: "حذف تفضيل المدينة وإعادة البحث",
+    universityOfficialSearch: "البحث في الجامعات عبر Hochschulkompass",
     universityCaution: "لا نعرض برنامجًا في تخصص مختلف فقط لملء القائمة. يجب التحقق من شروط القبول والمصادر الرسمية.",
     details: "اكتشف تفاصيل تحليلنا",
     why: "لماذا يظهر هذا الخيار",
@@ -154,6 +156,7 @@ const copy = {
     universityUnavailable: "The university search could not be completed. We cannot confirm a suitable programme yet.",
     universityNone: "No sufficiently verified programme in this field was found in our current catalogue. That does not mean universities do not offer this degree.",
     universityBroaden: "Remove my city preference and search again",
+    universityOfficialSearch: "Explore degrees on Hochschulkompass",
     universityCaution: "We will not suggest unrelated degrees just to fill a list. Official sources and entry requirements must be checked.",
     details: "Explore our detailed analysis",
     why: "Why this option appears",
@@ -200,6 +203,7 @@ const copy = {
     universityUnavailable: "Die Hochschulrecherche konnte nicht abgeschlossen werden. Wir können derzeit keinen Studiengang bestätigen.",
     universityNone: "In unserem derzeitigen Katalog wurde kein ausreichend überprüfter Studiengang in diesem Fach gefunden. Das bedeutet nicht, dass Hochschulen diesen Studiengang nicht anbieten.",
     universityBroaden: "Stadtpräferenz entfernen und erneut suchen",
+    universityOfficialSearch: "Studiengänge im Hochschulkompass suchen",
     universityCaution: "Wir zeigen keine fachfremden Studiengänge, nur um die Liste zu füllen. Offizielle Quellen und Zulassungsvoraussetzungen müssen geprüft werden.",
     details: "Unsere Analyse im Detail ansehen",
     why: "Warum diese Option erscheint",
@@ -774,6 +778,16 @@ export function PersonalizedOrientationEngineCard({
                       </button>
                     ) : null}
                   </div>
+                ) : null}
+                {!requestState.enhancing ? (
+                  <a
+                    href="https://www.hochschulkompass.de/studium/studiengangsuche.html"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-3 inline-flex min-h-11 items-center text-sm font-semibold text-[var(--brand-strong)] underline underline-offset-4"
+                  >
+                    {t.universityOfficialSearch} ↗
+                  </a>
                 ) : null}
                 <p className="mt-4 text-xs leading-6 text-[var(--muted)]">{t.universityCaution}</p>
               </section>
