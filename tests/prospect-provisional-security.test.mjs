@@ -34,7 +34,7 @@ test("preview bearer token is validated and scoped to existing orientation only"
   assert.match(start, /sameSite: "lax"/);
   assert.match(start, /httpOnly: true/);
   assert.match(start, /secure: process\.env\.NODE_ENV === "production"/);
-  assert.match(start, /Referrer-Policy", "no-referrer"/);
+  assert.match(start, /Referrer-Policy"(?::|,) "no-referrer"/);
   assert.match(start, /"private, no-store"/);
   assert.match(cookie, /PROVISIONAL_COOKIE_TTL_SECONDS = 60 \* 60 \* 4/);
   assert.match(cookie, /PROVISIONAL_COOKIE_PATH = "\/prospect-preview"/);
