@@ -16,6 +16,7 @@ const publicOrientation = read("src/lib/orientation/public.ts");
 const prospectCopy = read("src/content/orientation-prospect-copy.ts");
 const env = read(".env.example");
 const css = read("src/app/globals.css");
+const reportActions = read("src/components/orientation/OrientationReportActions.tsx");
 
 test("privileged Supabase access is isolated to a server-only client", () => {
   assert.match(privileged, /import "server-only"/);
@@ -62,7 +63,9 @@ test("prospect capture creates no Auth user and keeps direct anon table access c
 });
 
 test("orientation report can be saved through the browser print-to-PDF path", () => {
-  assert.match(form, /window\.print\(\)/);
+  assert.match(form, /printOrientationDocument\("summary"\)/);
+  assert.match(reportActions, /window\.print\(\)/);
+  assert.match(reportActions, /data-orientation-print-mode/);
   assert.match(form, /orientation-print-report/);
   assert.match(css, /@media print/);
   assert.match(css, /orientation-print-hide/);
@@ -89,7 +92,8 @@ test("public post-orientation save, PDF and account actions stay hidden until th
   assert.match(form, /orientationResultReady/);
   assert.match(form, /onResultReady=\{handleResultReady\}/);
   assert.match(form, /\{!authenticatedUpdate && orientationResultReady \? \([\s\S]*<ProspectCaptureCard/);
-  assert.match(form, /\{!authenticatedUpdate && orientationResultReady \? \([\s\S]*window\.print\(\)/);
+  assert.match(form, /\{!authenticatedUpdate && orientationResultReady \? \([\s\S]*printOrientationDocument\("summary"\)/);
+  assert.match(form, /disabled=\{!detailedPrintReady\}/);
 });
 
 test("continuation card uses one required privacy checkbox and a clear ready state", () => {
