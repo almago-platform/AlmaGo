@@ -13,7 +13,7 @@ const copy = {
   fr: {
     label: "Lettre d’orientation",
     pistes: "Des formations à découvrir pour votre avenir en Allemagne",
-    pisteNote: "Voici des formations en lien avec votre projet. Vous nous confiez vos envies et vos préférences ; si vous choisissez de poursuivre, notre équipe étudiera les conditions et vous accompagnera dans la sélection des candidatures.",
+    pisteNote: "Voici des formations en lien avec votre projet. Vous nous confiez vos envies, vos moyens et vos préférences ; si vous choisissez de poursuivre, notre équipe étudiera les conditions et vous accompagnera dans la sélection des candidatures.",
     source: "Site officiel",
     closing: "Prochaine étape",
     verified: "Formation à découvrir",
@@ -24,7 +24,7 @@ const copy = {
   ar: {
     label: "رسالة التوجيه",
     pistes: "اكتشف برامج دراسية لمستقبلك في ألمانيا",
-    pisteNote: "هذه برامج مرتبطة بمشروعك الدراسي. شاركنا طموحاتك وتفضيلاتك، وإذا اخترت مواصلة الطريق معنا فسيتولى فريقنا دراسة الشروط ومرافقتك في اختيار طلبات التقديم.",
+    pisteNote: "هذه برامج مرتبطة بمشروعك الدراسي. شاركنا طموحاتك وإمكاناتك وتفضيلاتك، وإذا اخترت مواصلة الطريق معنا فسيتولى فريقنا دراسة الشروط ومرافقتك في اختيار طلبات التقديم.",
     source: "الموقع الرسمي",
     closing: "الخطوة القادمة",
     verified: "برنامج يستحق الاستكشاف",
@@ -35,7 +35,7 @@ const copy = {
   en: {
     label: "Orientation letter",
     pistes: "Explore study programmes for your future in Germany",
-    pisteNote: "Here are programmes connected to your study plans. Tell us your goals and preferences; if you choose to continue, our team will review the requirements and guide you through choosing applications.",
+    pisteNote: "Here are programmes connected to your study plans. Tell us your goals, budget and preferences; if you choose to continue, our team will review the requirements and guide you through choosing applications.",
     source: "Official website",
     closing: "Next step",
     verified: "Explore this programme",
@@ -46,7 +46,7 @@ const copy = {
   de: {
     label: "Orientierungsschreiben",
     pistes: "Entdecke Studiengänge für deine Zukunft in Deutschland",
-    pisteNote: "Hier findest du Studiengänge, die zu deinem Vorhaben passen könnten. Teile uns deine Ziele und Wünsche mit. Wenn du mit uns weitermachst, prüft unser Team die Voraussetzungen und begleitet dich bei der Auswahl deiner Bewerbungen.",
+    pisteNote: "Hier findest du Studiengänge, die zu deinem Vorhaben passen könnten. Teile uns deine Ziele, Möglichkeiten und Wünsche mit. Wenn du mit uns weitermachst, prüft unser Team die Voraussetzungen und begleitet dich bei der Auswahl deiner Bewerbungen.",
     source: "Offizielle Website",
     closing: "Nächster Schritt",
     verified: "Studiengang entdecken",
