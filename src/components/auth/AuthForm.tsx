@@ -27,10 +27,12 @@ export function AuthForm({
   initialMode = "login",
   orientationActivation,
   partnerPrelaunch = false,
+  provisionalAccessEnabled = false,
 }: {
   initialMode?: Mode;
   orientationActivation?: OrientationActivation;
   partnerPrelaunch?: boolean;
+  provisionalAccessEnabled?: boolean;
 }) {
   const [mode, setMode] = useState<Mode>(initialMode);
   const [email, setEmail] = useState(orientationActivation?.email ?? "");
@@ -108,8 +110,22 @@ export function AuthForm({
         if (signUpError) setError(auth.messages.signupError);
         else if (data.session) router.push(activationClaimPath ?? "/student");
         else if (prospectSignup && activationToken) {
-          // An unconfirmed sign-up does not create an Auth session. Offer only
-          // an ephemeral read-only preview, regardless of account existence.
+          // Supabase sent the real confirmation email. While the candidate is
+          // unverified, the independent seven-day credential is restricted to
+          // the candidate's OWN submitted orientation; never a verified account.
+          if (provisionalAccessEnabled) {
+            const temporary = await fetch("/api/provisional-session/start", {
+              method: "POST",
+              headers: { "content-type": "application/json" },
+              body: JSON.stringify({ token: activationToken, email, password, firstName, lastName }),
+            }).catch(() => null);
+            if (temporary?.ok) {
+              setPassword("");
+              router.replace("/prospect");
+              return;
+            }
+          }
+          // Fail closed to public read-only discovery on any provisional error.
           setPassword("");
           router.replace(`/prospect-preview/start?orientation_token=${encodeURIComponent(activationToken)}`);
         } else {
@@ -121,7 +137,19 @@ export function AuthForm({
         }
       } else {
         const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
-        if (signInError) setError(auth.messages.invalidLogin);
+        if (signInError && provisionalAccessEnabled) {
+          const temporary = await fetch("/api/provisional-session/login", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({ email, password }),
+          }).catch(() => null);
+          if (temporary?.ok) {
+            setPassword("");
+            router.replace("/prospect");
+            return;
+          }
+          setError(auth.messages.invalidLogin);
+        } else if (signInError) setError(auth.messages.invalidLogin);
         else router.push(activationClaimPath ?? "/student");
       }
     } catch {
