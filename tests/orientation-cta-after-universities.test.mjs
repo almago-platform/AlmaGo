@@ -12,7 +12,9 @@ test("render all documented university cards BEFORE the single human continuatio
   const closing = parent.indexOf("<OrientationHumanClosingCard");
   assert.ok(inParent >= 0 && extras > inParent && closing > extras);
   assert.match(parent, /<OrientationPersonalizedWriterCard[\s\S]*?showClosing=\{false\}/);
-  assert.match(parent, /<OrientationHumanClosingCard[\s\S]*?showCta=\{prospectCaptureEnabled && isBachelorFirstContact\}/);
+  assert.match(parent, /personalized && !isBachelorFirstContact \? \(/);
+  assert.match(parent, /<OrientationHumanClosingCard locale=\{locale\} \/>/);
+  assert.doesNotMatch(parent, /<OrientationHumanClosingCard[\s\S]*?showCta=\{prospectCaptureEnabled && isBachelorFirstContact\}/);
   assert.match(writer, /showClosing = true/);
   assert.match(writer, /\{showClosing \? \([\s\S]*?<OrientationHumanClosingCard/);
   assert.equal((parent.match(/<OrientationHumanClosingCard/g) || []).length, 1);

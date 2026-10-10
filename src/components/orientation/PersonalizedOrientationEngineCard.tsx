@@ -603,12 +603,8 @@ export function PersonalizedOrientationEngineCard({
 
         {state === "ready" && result ? (
           <>
-            {isBachelorFirstContact && bacWelcome && personalized ? (
-              <p className="mb-5 rounded-[var(--radius-control)] border border-[var(--premium-border)] bg-[var(--premium-cream-soft)] px-5 py-4 text-base font-medium leading-7 text-[var(--foreground)]">
-                {bacWelcome}
-              </p>
-            ) : null}
-            {geographicFallback ? (
+            {/* The personalized letter already opens with the Bac encouragement. */}
+            {geographicFallback && !personalized ? (
               <div className="mb-5 rounded-[var(--radius-control)] border border-[var(--warning-border)] bg-[var(--premium-gold-wash)] px-4 py-3.5">
                 <p className="text-sm leading-6 text-[var(--foreground)]">
                   {geographicFallback}
@@ -641,13 +637,10 @@ export function PersonalizedOrientationEngineCard({
                 existingShortlist={result.shortlist.items}
               />
             ) : null}
-            {personalized ? (
+            {/* First-contact candidates see one clear CTA in the Prospect capture section below. */}
+            {personalized && !isBachelorFirstContact ? (
               <div className="mt-5 rounded-[var(--radius-panel)] border border-[var(--premium-border)] bg-[var(--surface)] p-3 sm:p-4">
-                <OrientationHumanClosingCard
-                  locale={locale}
-                  showCta={prospectCaptureEnabled && isBachelorFirstContact}
-                  continueAccount={accountLinkingEnabled && prospectCaptureEnabled && isBachelorFirstContact}
-                />
+                <OrientationHumanClosingCard locale={locale} />
               </div>
             ) : null}
             {!isBachelorFirstContact && onRefineAnswers && result.engine.refinement.nextQuestion ? (
