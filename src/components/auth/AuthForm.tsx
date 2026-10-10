@@ -74,6 +74,22 @@ export function AuthForm({
     ? `/signup?orientation_token=${encodeURIComponent(activationToken)}`
     : "/signup";
 
+  // Supabase may refuse another confirmation email when the address already
+  // has an unverified account. Email throttling must not grant a verified
+  // session or paid rights, but a separately-scoped orientation credential may
+  // still be issued after the server validates its bearer token and ownership.
+  async function tryStartProvisionalAccess(token: string): Promise<boolean> {
+    const response = await fetch("/api/provisional-session/start", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ token, email, password, firstName, lastName }),
+    }).catch(() => null);
+    if (!response?.ok) return false;
+    setPassword("");
+    router.replace("/prospect");
+    return true;
+  }
+
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
@@ -111,24 +127,31 @@ export function AuthForm({
               : {}),
           },
         });
-        if (signUpError) setError(auth.messages.signupError);
-        else if (data.session) router.push(activationClaimPath ?? "/student");
-        else if (prospectSignup && activationToken) {
-          // Supabase sent the real confirmation email. While the candidate is
-          // unverified, the independent seven-day credential is restricted to
-          // the candidate's OWN submitted orientation; never a verified account.
-          if (provisionalAccessEnabled) {
-            const temporary = await fetch("/api/provisional-session/start", {
-              method: "POST",
-              headers: { "content-type": "application/json" },
-              body: JSON.stringify({ token: activationToken, email, password, firstName, lastName }),
-            }).catch(() => null);
-            if (temporary?.ok) {
-              setPassword("");
-              router.replace("/prospect");
-              return;
-            }
+        if (signUpError) {
+          // A confirmation mail was already sent to this pending Supabase
+          // account; the provider is rejecting repeat email attempts. Only
+          // this narrowly-defined mail throttle may use the bearer-token-
+          // scoped provisional route. All other signup errors fail closed.
+          const mailThrottled = signUpError.code === "over_email_send_rate_limit";
+          if (mailThrottled && prospectSignup && activationToken && provisionalAccessEnabled
+            && await tryStartProvisionalAccess(activationToken)) {
+            return;
           }
+          if (mailThrottled) {
+            setError(locale === "fr"
+              ? "Trop de demandes de confirmation. Consultez le dernier e-mail reçu ou réessayez plus tard."
+              : locale === "ar"
+                ? "تم تجاوز حد رسائل التأكيد. تحقق من آخر رسالة أو حاول لاحقًا."
+                : locale === "de"
+                  ? "Zu viele Bestätigungs-E-Mails. Prüfe die letzte Nachricht oder versuche es später."
+                  : "Too many confirmation emails. Check your latest email or try again later.");
+          } else {
+            setError(auth.messages.signupError);
+          }
+        } else if (data.session) router.push(activationClaimPath ?? "/student");
+        else if (prospectSignup && activationToken) {
+          // The credential remains strictly limited to this saved orientation.
+          if (provisionalAccessEnabled && await tryStartProvisionalAccess(activationToken)) return;
           // Fail closed to public read-only discovery on any provisional error.
           setPassword("");
           router.replace(`/prospect-preview/start?orientation_token=${encodeURIComponent(activationToken)}`);
