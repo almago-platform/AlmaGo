@@ -142,14 +142,21 @@ export async function getProvisionalIdentity(): Promise<ProvisionalIdentity | nu
   };
 }
 
-export async function revokeCurrentProvisionalSession() {
+export async function revokeCurrentProvisionalSession(): Promise<boolean> {
   const store = await cookies();
   const token = store.get(COOKIE_NAME)?.value;
   if (token && /^[A-Za-z0-9_-]{43}$/.test(token)) {
-    const supabase = createPrivilegedSupabaseClient();
-    await supabase.from("provisional_candidate_sessions")
-      .update({ revoked_at: new Date().toISOString() })
-      .eq("token_hash", hashProvisionalToken(token));
+    try {
+      const supabase = createPrivilegedSupabaseClient();
+      const { error } = await supabase.from("provisional_candidate_sessions")
+        .update({ revoked_at: new Date().toISOString() })
+        .eq("token_hash", hashProvisionalToken(token));
+      if (error) return false;
+    } catch {
+      // A database outage must not be presented as a completed logout.
+      return false;
+    }
   }
   store.delete(COOKIE_NAME);
+  return true;
 }
