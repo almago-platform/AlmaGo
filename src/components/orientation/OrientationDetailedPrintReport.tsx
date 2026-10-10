@@ -1,5 +1,7 @@
 "use client";
 
+import "./OrientationDetailedPrintReport.css";
+
 import { BrandLogo } from "@/components/brand/BrandLogo";
 import { findCuratedUniversityMedia } from "@/lib/orientation-engine/discovery/curated-university-media";
 import { orientationCandidatePriority } from "@/lib/orientation-engine/writer/candidate-priority";
