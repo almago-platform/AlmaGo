@@ -366,7 +366,7 @@ export async function POST(request: Request) {
     }
 
     // Do not claim to have emailed two PDFs if attachment generation failed.
-    if ((automaticDelivery || includedDelivery) && attachments.length !== 2) {
+    if ((automaticDelivery || includedDelivery) && attachments.length < 2) {
       await supabase
         .from("orientations")
         .update({ delivery_attempted_at: new Date().toISOString() })
