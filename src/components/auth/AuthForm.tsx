@@ -63,6 +63,10 @@ export function AuthForm({
   const activationClaimPath = activationToken
     ? `/orientation/claim/${encodeURIComponent(activationToken)}`
     : null;
+  // Pending accounts may verify after the report token expires. Recover by
+  // their Supabase-verified identity, never a stale bearer token.
+  const emailConfirmationPath = provisionalAccessEnabled && activationClaimPath
+    ? "/orientation/verified-return" : activationClaimPath;
   const loginHref = activationToken
     ? `/login?orientation_token=${encodeURIComponent(activationToken)}`
     : "/login";
@@ -100,9 +104,9 @@ export function AuthForm({
           password,
           options: {
             data: { full_name: `${firstName} ${lastName}`.trim() },
-            ...(activationClaimPath
+            ...(emailConfirmationPath
               ? {
-                  emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(activationClaimPath)}`,
+                  emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(emailConfirmationPath)}`,
                 }
               : {}),
           },
@@ -166,8 +170,8 @@ export function AuthForm({
       await createClient().auth.resend({
         type: "signup",
         email,
-        ...(activationClaimPath
-          ? { options: { emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(activationClaimPath)}` } }
+        ...(emailConfirmationPath
+          ? { options: { emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(emailConfirmationPath)}` } }
           : {}),
       });
       // The auth provider may reject resends for already-confirmed addresses.
