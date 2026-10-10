@@ -13,6 +13,8 @@ test("saved detailed PDF preloads the same supplementary university research as 
   assert.match(page, /initialSupplemental=\{initialSupplemental\}/);
   assert.match(catalogue, /chooseDocumentedResearchPistes/);
   assert.match(catalogue, /filterSupplementalResearchPistes\(candidates, selected\)/);
+  assert.match(catalogue, /if \(error\) throw/);
+  assert.match(catalogue, /Orientation research catalogue unavailable/);
   assert.match(detailed, /initialSupplemental: readonly ResearchPiste\[\] \| null/);
   assert.match(detailed, /initialSupplemental !== null/);
   assert.match(detailed, /initialSupplemental !== null \? initialSupplemental :/);
