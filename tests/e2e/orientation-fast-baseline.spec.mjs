@@ -10,7 +10,7 @@ const answers = {
   higherEducationStatus: "not_started",
   currentStudyField: "",
   universitySemesters: "",
-  studyIntent: "restart_bachelor",
+  studyIntent: "",
   targetSpecialization: "",
   targetDegree: "Bachelor",
   targetField: "Lettres/Langues",
