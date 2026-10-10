@@ -165,6 +165,27 @@ function licenseHref(license: string): string | null {
   return match ? "https://creativecommons.org/licenses/by" + (match[1] ? "-sa" : "") + "/" + match[2] + "/" : null;
 }
 
+function localizedTeachingLanguage(value: string | null, locale: Locale): string {
+  if (!value) return "";
+  const normalized = value.trim().toLocaleLowerCase("de");
+  const languages: Record<string, Record<Locale, string>> = {
+    "vollständig auf deutsch": { fr: "En allemand", ar: "بالألمانية", en: "In German", de: "Vollständig auf Deutsch" },
+    "german and english": { fr: "Allemand et anglais", ar: "بالألمانية والإنجليزية", en: "German and English", de: "Deutsch und Englisch" },
+    "fully in german": { fr: "En allemand", ar: "بالألمانية", en: "In German", de: "Vollständig auf Deutsch" },
+    "fully in english": { fr: "En anglais", ar: "بالإنجليزية", en: "In English", de: "Vollständig auf Englisch" },
+  };
+  return languages[normalized]?.[locale] || value;
+}
+
+function documentedResearchReason(item: ResearchPiste, answers: PublicOrientationAnswers, locale: Locale): string {
+  const city = item.city || item.institution;
+  const field = answers.targetField;
+  if (locale === "fr") return `Cette formation à ${city} est une piste à examiner pour votre projet en ${field}. Avant de la retenir, nous devons confirmer le contenu du cursus, la langue d’enseignement et les conditions d’admission auprès de l’université.`;
+  if (locale === "ar") return `هذا التخصص في ${city} خيار يستحق الدراسة بالنسبة لمشروعك في ${field}. يجب التحقق من محتوى البرنامج ولغة التدريس وشروط القبول لدى الجامعة قبل اختياره.`;
+  if (locale === "de") return `Dieser Studiengang in ${city} könnte zu deinem Interesse am Bereich ${field} passen. Vor der Auswahl müssen Studieninhalte, Unterrichtssprache und Zulassungsbedingungen bei der Hochschule geprüft werden.`;
+  return `This course in ${city} may be worth exploring for your interest in ${field}. Its curriculum, teaching language and admission requirements must be checked with the university before making a choice.`;
+}
+
 function safeSource(url: string | null): string | null {
   return url && /^https:\/\//i.test(url) ? url : null;
 }
@@ -222,8 +243,12 @@ export function OrientationDetailedPrintReport({
   const detailedReady = research.ready && loadedPhotoKey === photoKey;
   useEffect(() => {
     onReadyChange?.(detailedReady);
+    document.documentElement.setAttribute("data-orientation-report-ready", detailedReady ? "true" : "false");
     setSavedPrintReady(detailedReady);
-    return () => setSavedPrintReady(false);
+    return () => {
+      document.documentElement.removeAttribute("data-orientation-report-ready");
+      setSavedPrintReady(false);
+    };
   }, [onReadyChange, detailedReady, setSavedPrintReady]);
   const content = personalized.content;
   const candidate = [identity?.firstName, identity?.lastName].filter(Boolean).join(" ");
@@ -369,8 +394,8 @@ export function OrientationDetailedPrintReport({
                 <div className="orientation-detail-research-text">
                   <span className="orientation-detail-eyebrow">{String(selected.length + index + 1).padStart(2, "0")} · {t.researchBadge}</span>
                   <h3>{item.institution} — {item.programme}</h3>
-                  <p>{[item.city, item.teachingLanguage].filter(Boolean).join(" · ")}</p>
-                  <p><strong>{t.researchWhy}: </strong>{item.city ? item.city + " · " : ""}{item.programme}</p>
+                  <p>{[item.city, localizedTeachingLanguage(item.teachingLanguage, locale)].filter(Boolean).join(" · ")}</p>
+                  <p><strong>{t.researchWhy}: </strong>{documentedResearchReason(item, answers, locale)}</p>
                   {officialUrl ? <a href={officialUrl} target="_blank" rel="noopener noreferrer">{t.researchSource} ↗</a> : null}
                 </div>
                 {media ? (
