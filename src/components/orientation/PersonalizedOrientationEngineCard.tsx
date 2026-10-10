@@ -509,7 +509,10 @@ export function PersonalizedOrientationEngineCard({
 
     function publish(payload: EngineResponse, isFull: boolean) {
       if (!alive || (!isFull && fullReady)) return;
-      if (isFull) fullReady = true;
+      if (isFull) {
+        fullReady = true;
+        previewController.abort();
+      }
       setRequestState({
         key: requestBody,
         result: payload,
@@ -565,7 +568,7 @@ export function PersonalizedOrientationEngineCard({
       });
 
     // Enrichment is independent, bounded client-side and replaceable on retry.
-    const deadline = window.setTimeout(() => fullController.abort(), 35_000);
+    const deadline = window.setTimeout(() => fullController.abort(), 45_000);
     void requestEngine("/api/orientation/engine", fullController.signal)
       .then((payload) => publish(payload, true))
       .catch(() => {
