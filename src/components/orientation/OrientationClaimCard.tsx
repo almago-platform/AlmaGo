@@ -1,12 +1,14 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { orientationActivationCopy } from "@/content/orientation-activation-copy";
 
 export function OrientationClaimCard({ token }: { token: string }) {
   const { locale } = useLocale();
+  const router = useRouter();
   const copy = orientationActivationCopy[locale];
   const started = useRef(false);
   const [status, setStatus] = useState<"working" | "success" | "error">("working");
@@ -23,12 +25,18 @@ export function OrientationClaimCard({ token }: { token: string }) {
           body: JSON.stringify({ token }),
         });
         const payload = await response.json().catch(() => null) as { linked?: boolean } | null;
-        setStatus(response.ok && payload?.linked ? "success" : "error");
+        if (response.ok && payload?.linked) {
+          setStatus("success");
+          // Only navigate once the authenticated claim has succeeded server-side.
+          router.replace("/prospect");
+        } else {
+          setStatus("error");
+        }
       } catch {
         setStatus("error");
       }
     })();
-  }, [token]);
+  }, [token, router]);
 
   return (
     <section className="professional-panel mx-auto max-w-2xl rounded-[var(--radius-panel)] p-6 sm:p-8">
