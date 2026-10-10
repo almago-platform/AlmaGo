@@ -530,7 +530,9 @@ export function PersonalizedOrientationEngineCard({
     }
 
     function failIfBothUnavailable() {
-      if (!alive) return;
+      // A delayed failure of the preview must never hide a successful
+      // enriched response that arrived first.
+      if (!alive || fullReady) return;
       setRequestState((current) => {
         if (current.key !== requestBody) return current;
         return {
@@ -540,7 +542,6 @@ export function PersonalizedOrientationEngineCard({
           degraded: fullFailed && Boolean(current.result),
         };
       });
-      if (previewFailed && fullFailed) onResultReady?.(false);
     }
 
     async function requestEngine(url: string, signal: AbortSignal): Promise<EngineResponse> {
