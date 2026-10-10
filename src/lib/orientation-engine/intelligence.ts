@@ -265,7 +265,7 @@ function personalBudgetNote(locale: Locale, budget: string): string {
   }[locale];
 }
 
-function deterministicLetter(
+export function deterministicLetter(
   locale: Locale,
   profile: PublicOrientationAnswers,
   engineResult: OrientationEngineResult,
