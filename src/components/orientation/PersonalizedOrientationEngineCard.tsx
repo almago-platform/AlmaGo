@@ -701,7 +701,7 @@ export function PersonalizedOrientationEngineCard({
                 {t.enriching}
               </p>
             ) : null}
-            {requestState.degraded ? (
+            {requestState.degraded && (personalized || fallbackRecommendations.length > 0) ? (
               <div role="status" className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-[var(--radius-control)] border border-[var(--warning-border)] bg-[var(--surface-subtle)] px-4 py-3 text-sm leading-6">
                 <span>{t.degraded}</span>
                 <button type="button" onClick={() => setRetryVersion((value) => value + 1)}
