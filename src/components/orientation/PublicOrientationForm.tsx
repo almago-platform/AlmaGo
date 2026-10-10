@@ -1243,29 +1243,35 @@ export function PublicOrientationForm({
                   />
                 ) : null}
 
-                <section className="orientation-print-hide orientation-tone-actions pc-panel mt-7 px-4 py-4 sm:flex sm:items-center sm:justify-between sm:gap-6 sm:px-5" aria-label={resultActionsCopy.title}>
-                  <p className="text-sm font-semibold">{resultActionsCopy.title}</p>
-                  <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-3 sm:mt-0 sm:justify-end">
-                    <button
-                      type="button"
-                      onClick={() => window.print()}
-                      className="rounded-[var(--radius-control)] bg-[var(--brand)] px-5 py-2.5 text-sm font-bold text-white hover:bg-[var(--brand-strong)]"
-                    >
-                      {resultActionsCopy.pdf}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setStep(1)}
-                      className="text-sm font-semibold text-[var(--foreground)] underline decoration-[var(--border-strong)] underline-offset-4 hover:decoration-[var(--foreground)]"
-                    >
-                      {resultActionsCopy.adjust}
-                    </button>
-                    <Link
-                      href="/"
-                      className="text-sm font-semibold text-[var(--muted)] underline decoration-[var(--border)] underline-offset-4 hover:text-[var(--foreground)]"
-                    >
-                      {resultActionsCopy.home}
-                    </Link>
+                <section className="orientation-print-hide mt-6 rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-4 sm:p-5" aria-label={resultActionsCopy.title}>
+                  <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+                    <div>
+                      <p className="text-sm font-semibold text-[var(--foreground)]">{resultActionsCopy.title}</p>
+                      <p className="mt-1 text-xs leading-5 text-[var(--muted)]">{prospectCopy.report.printHelp}</p>
+                    </div>
+                    <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-end sm:gap-4">
+                      <button
+                        type="button"
+                        onClick={() => window.print()}
+                        className="inline-flex min-h-11 items-center justify-center gap-2 rounded-[var(--radius-control)] border border-[var(--border-strong)] bg-[var(--surface)] px-4 py-2.5 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--brand)] hover:text-[var(--brand-strong)]"
+                      >
+                        <svg aria-hidden="true" className="size-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path strokeLinecap="round" strokeLinejoin="round" d="M12 3v12m-4-4 4 4 4-4M4 16v4h16v-4"/></svg>
+                        {resultActionsCopy.pdf}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setStep(1)}
+                        className="min-h-11 text-sm font-semibold text-[var(--foreground)] underline decoration-[var(--border-strong)] underline-offset-4 hover:decoration-[var(--foreground)]"
+                      >
+                        {resultActionsCopy.adjust}
+                      </button>
+                      <Link
+                        href="/"
+                        className="inline-flex min-h-11 items-center justify-center text-sm font-semibold text-[var(--muted)] underline decoration-[var(--border)] underline-offset-4 hover:text-[var(--foreground)]"
+                      >
+                        {resultActionsCopy.home}
+                      </Link>
+                    </div>
                   </div>
                 </section>
                   </>
