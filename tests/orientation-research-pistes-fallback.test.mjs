@@ -82,7 +82,9 @@ test("new API uses canonical existing research data, not fabricated programmes o
   assert.match(route, /enforceRequestRateLimit/);
   assert.match(route, /acquireRequestConcurrency/);
   assert.doesNotMatch(route, /\.insert\(|\.update\(|\.upsert\(|OPENAI_API_KEY/);
-  assert.match(parent, /result\.shortlist\.items\.length === 0/);
+  assert.match(parent, /result\.shortlist\.items\.length < 3/);
+  assert.match(parent, /existingShortlist=\{result\.shortlist\.items\}/);
+  assert.match(ui, /filterSupplementalResearchPistes\(items, existingShortlist\)/);
   assert.match(parent, /<OrientationResearchPistesCard/);
   assert.match(ui, /useOrientationUniversityMedia/);
   assert.match(ui, /<OrientationRealPhoto/);
