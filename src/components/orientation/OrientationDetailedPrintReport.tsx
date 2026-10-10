@@ -180,10 +180,10 @@ function localizedTeachingLanguage(value: string | null, locale: Locale): string
 function documentedResearchReason(item: ResearchPiste, answers: PublicOrientationAnswers, locale: Locale): string {
   const city = item.city || item.institution;
   const field = answers.targetField;
-  if (locale === "fr") return `Cette formation à ${city} est une piste à examiner pour votre projet en ${field}. Avant de la retenir, nous devons confirmer le contenu du cursus, la langue d’enseignement et les conditions d’admission auprès de l’université.`;
-  if (locale === "ar") return `هذا التخصص في ${city} خيار يستحق الدراسة بالنسبة لمشروعك في ${field}. يجب التحقق من محتوى البرنامج ولغة التدريس وشروط القبول لدى الجامعة قبل اختياره.`;
-  if (locale === "de") return `Dieser Studiengang in ${city} könnte zu deinem Interesse am Bereich ${field} passen. Vor der Auswahl müssen Studieninhalte, Unterrichtssprache und Zulassungsbedingungen bei der Hochschule geprüft werden.`;
-  return `This course in ${city} may be worth exploring for your interest in ${field}. Its curriculum, teaching language and admission requirements must be checked with the university before making a choice.`;
+  if (locale === "fr") return `Le programme « ${item.programme} » à ${city} est une piste à examiner pour votre projet en ${field}. Avant de la retenir, nous devons confirmer le contenu du cursus, la langue d’enseignement et les conditions d’admission auprès de l’université.`;
+  if (locale === "ar") return `برنامج « ${item.programme} » في ${city} خيار يستحق الدراسة بالنسبة لمشروعك في ${field}. يجب التحقق من محتوى البرنامج ولغة التدريس وشروط القبول لدى الجامعة قبل اختياره.`;
+  if (locale === "de") return `Der Studiengang „${item.programme}“ in ${city} könnte zu deinem Interesse am Bereich ${field} passen. Vor der Auswahl müssen Studieninhalte, Unterrichtssprache und Zulassungsbedingungen bei der Hochschule geprüft werden.`;
+  return `The “${item.programme}” programme in ${city} may be worth exploring for your interest in ${field}. Its curriculum, teaching language and admission requirements must be checked with the university before making a choice.`;
 }
 
 function safeSource(url: string | null): string | null {
