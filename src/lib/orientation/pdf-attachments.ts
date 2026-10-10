@@ -31,7 +31,7 @@ type PdfLocale = Exclude<Locale, "ar">;
 type PdfColor = readonly [number, number, number];
 type PdfImage = { name: string; bytes: Buffer; width: number; height: number };
 
-type PdfAttachment = {
+export type PdfAttachment = {
   filename: string;
   contentBase64: string;
   contentType: "application/pdf";
