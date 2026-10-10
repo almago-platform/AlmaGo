@@ -236,6 +236,35 @@ function academicOpening(locale: Locale, profile: PublicOrientationAnswers) {
   }[locale];
 }
 
+function personalBudgetNote(locale: Locale, budget: string): string {
+  const amounts: Record<string, Record<Locale, string>> = {
+    "Moins de 800 € / mois": {
+      fr: "moins de 800 € par mois", ar: "أقل من 800 يورو شهريًا",
+      en: "under €800 per month", de: "unter 800 € pro Monat",
+    },
+    "800–1 000 € / mois": {
+      fr: "800 à 1 000 € par mois", ar: "بين 800 و1 000 يورو شهريًا",
+      en: "€800–1,000 per month", de: "800 bis 1.000 € pro Monat",
+    },
+    "1 000–1 200 € / mois": {
+      fr: "1 000 à 1 200 € par mois", ar: "بين 1 000 و1 200 يورو شهريًا",
+      en: "€1,000–1,200 per month", de: "1.000 bis 1.200 € pro Monat",
+    },
+    "Plus de 1 200 € / mois": {
+      fr: "plus de 1 200 € par mois", ar: "أكثر من 1 200 يورو شهريًا",
+      en: "over €1,200 per month", de: "über 1.200 € pro Monat",
+    },
+  };
+  const amount = amounts[budget]?.[locale];
+  if (!amount) return "";
+  return {
+    fr: `Vous prévoyez un budget de ${amount}. Nous en tiendrons compte dans la recherche des options à étudier, sans présumer du coût réel de chaque ville.`,
+    ar: `ميزانيتك المعلنة هي ${amount}. سنأخذها في الاعتبار عند دراسة الخيارات، دون افتراض تكلفة المعيشة في أي مدينة.`,
+    en: `You have indicated a budget of ${amount}. We will take it into account when exploring options, without assuming the actual cost of any city.`,
+    de: `Du hast ein Budget von ${amount} angegeben. Wir beziehen es in die Suche nach Möglichkeiten ein, ohne die tatsächlichen Kosten einer Stadt vorauszusetzen.`,
+  }[locale];
+}
+
 function deterministicLetter(
   locale: Locale,
   profile: PublicOrientationAnswers,
@@ -247,6 +276,7 @@ function deterministicLetter(
     && engineResult.recommendations.length > 0;
   const project = degreeAndField(locale, profile);
   const opening = academicOpening(locale, profile);
+  const budgetNote = personalBudgetNote(locale, profile.budgetRange);
 
   const copy = {
     fr: {
@@ -254,8 +284,8 @@ function deterministicLetter(
       intro: `${opening} Vous souhaitez poursuivre en ${project}. Votre profil scolaire, votre niveau de langue et vos préférences nous donnent déjà une base concrète pour organiser la suite.`,
       academic: engineResult.academicAccessStatus === "likely_eligible"
         ? "Votre accès académique dispose déjà d’une base officielle vérifiée. La décision finale reste toujours celle de l’université."
-        : "Votre accès académique doit encore être confirmé avec la règle officielle correspondant exactement à votre situation. Nous le vérifierons avec vous avant toute candidature.",
-      language: `Votre niveau actuel est allemand ${profile.germanLevel || "à préciser"} et anglais ${profile.englishLevel || "à préciser"}. Nous allons comparer ces niveaux avec les exigences réelles des programmes retenus et définir la prochaine étape linguistique.`,
+        : "Votre projet mérite une étude adaptée à votre diplôme. L’accès universitaire n’est pas encore confirmé ; si vous poursuivez avec Campus Allemagne, notre équipe examinera les critères avant toute candidature.",
+      language: `Vous indiquez un niveau ${profile.germanLevel || "à préciser"} en allemand et ${profile.englishLevel || "à préciser"} en anglais. Ces informations nous aideront à explorer les programmes et à étudier les certificats demandés si vous poursuivez avec nous.`,
       city: city
         ? `Vous préférez étudier à ${city}. Nous gardons cette ville comme priorité, tout en restant ouverts à d’autres villes si elles offrent une meilleure piste pour votre projet.`
         : "Vous n’avez pas encore fixé de ville. C’est un avantage à ce stade : nous pouvons comparer plusieurs villes avant de retenir les meilleures pistes.",
@@ -269,8 +299,8 @@ function deterministicLetter(
       intro: `${opening} ترغب في متابعة ${project}. ملفك الدراسي ومستواك اللغوي وتفضيلاتك تعطينا أساسًا عمليًا لتنظيم الخطوات القادمة.`,
       academic: engineResult.academicAccessStatus === "likely_eligible"
         ? "يوجد أساس رسمي موثّق لمسارك الأكاديمي. ويبقى قرار القبول النهائي دائمًا من اختصاص الجامعة."
-        : "يجب تأكيد مسارك الأكاديمي وفق القاعدة الرسمية التي تنطبق بدقة على حالتك، وسنتحقق من ذلك معك قبل أي تقديم.",
-      language: `مستواك الحالي هو الألمانية ${profile.germanLevel || "يجب تحديده"} والإنجليزية ${profile.englishLevel || "يجب تحديدها"}. سنقارن ذلك بالشروط الحقيقية للبرامج التي نختارها ونحدد معك الخطوة اللغوية التالية.`,
+        : "مشروعك يستحق دراسة تناسب شهادتك. لم يتأكد بعد حق الالتحاق بالجامعة؛ وإذا اخترت المتابعة معنا فسيدرس فريقنا الشروط قبل أي تقديم.",
+      language: `ذكرت أن مستواك في الألمانية هو ${profile.germanLevel || "بحاجة إلى تحديد"} وفي الإنجليزية ${profile.englishLevel || "بحاجة إلى تحديد"}. ستساعدنا هذه المعلومات على استكشاف البرامج ودراسة الشهادات المطلوبة إذا واصلت معنا.`,
       city: city
         ? `تفضّل الدراسة في ${city}. سنعتبر هذه المدينة أولوية، مع إبقاء مدن أخرى مفتوحة إذا كانت توفر مسارًا أفضل لمشروعك.`
         : "لم تحدد مدينة بعد، وهذا مفيد في هذه المرحلة لأنه يسمح لنا بمقارنة عدة مدن قبل اختيار أفضل المسارات.",
@@ -284,8 +314,8 @@ function deterministicLetter(
       intro: `${opening} You want to continue with ${project}. Your academic profile, language level and preferences already give us a concrete base for the next steps.`,
       academic: engineResult.academicAccessStatus === "likely_eligible"
         ? "Your academic route already has a verified official basis. The final admission decision always remains with the university."
-        : "Your academic access still needs to be confirmed against the official rule that applies exactly to your situation. We will verify it with you before any application.",
-      language: `Your current levels are German ${profile.germanLevel || "to be confirmed"} and English ${profile.englishLevel || "to be confirmed"}. We will compare them with the real requirements of selected programmes and define the next language step.`,
+        : "Your study plans deserve a review tailored to your diploma. University access is not yet confirmed; if you continue with Campus Allemagne, our team can examine the requirements before any application.",
+      language: `You have indicated German ${profile.germanLevel || "to be confirmed"} and English ${profile.englishLevel || "to be confirmed"}. These levels help us explore courses; if you continue, our team can review the certificates they require.`,
       city: city
         ? `You prefer ${city}. We will keep it as a priority while staying open to other cities if they offer a stronger path for your project.`
         : "You have not fixed a city yet. That is useful at this stage because we can compare several places before selecting the strongest paths.",
@@ -299,8 +329,8 @@ function deterministicLetter(
       intro: `${opening} Du möchtest mit ${project} weitermachen. Dein schulisches Profil, deine Sprachen und deine Wünsche geben uns bereits eine konkrete Grundlage für die nächsten Schritte.`,
       academic: engineResult.academicAccessStatus === "likely_eligible"
         ? "Für deinen Hochschulzugang gibt es bereits eine geprüfte offizielle Grundlage. Die endgültige Zulassungsentscheidung trifft immer die Hochschule."
-        : "Dein Hochschulzugang muss noch mit der genau passenden offiziellen Regel bestätigt werden. Das prüfen wir gemeinsam vor einer Bewerbung.",
-      language: `Aktuell hast du Deutsch ${profile.germanLevel || "noch zu klären"} und Englisch ${profile.englishLevel || "noch zu klären"}. Wir vergleichen diese Niveaus mit den tatsächlichen Anforderungen der ausgewählten Programme und legen den nächsten Sprachschritt fest.`,
+        : "Dein Studienwunsch verdient eine Prüfung, die zu deinem Abschluss passt. Der Hochschulzugang ist noch nicht bestätigt; wenn du mit uns weitermachst, klärt unser Team die Voraussetzungen vor einer Bewerbung.",
+      language: `Du hast Deutsch ${profile.germanLevel || "noch zu klären"} und Englisch ${profile.englishLevel || "noch zu klären"} angegeben. Diese Angaben helfen uns bei der Suche; wenn du weitermachst, kann unser Team die benötigten Nachweise prüfen.`,
       city: city
         ? `Du bevorzugst ${city}. Diese Stadt bleibt Priorität, aber wir halten andere Städte offen, wenn sie eine bessere Studienoption für dein Projekt bieten.`
         : "Du hast noch keine Stadt festgelegt. Das ist in dieser Phase hilfreich, weil wir mehrere Orte vergleichen können, bevor wir die besten Optionen auswählen.",
@@ -332,7 +362,7 @@ function deterministicLetter(
     provider: "deterministic-letter-v1",
     mode: "deterministic",
     title: copy.title,
-    paragraphs: [copy.intro, copy.academic, copy.language, copy.city, routeOption],
+    paragraphs: [copy.intro, copy.academic, copy.language, [copy.city, budgetNote].filter(Boolean).join(" "), routeOption],
     closing: routeClosing,
     scoutUsed: false,
   };

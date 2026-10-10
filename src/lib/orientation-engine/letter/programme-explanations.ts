@@ -5,6 +5,8 @@ type Locale = "fr" | "ar" | "en" | "de";
 
 const copy = {
   fr: {
+    engineeringFocus: "Vous pouvez y découvrir une formation intitulée Information Engineering, à la croisée de l'informatique et de l'ingénierie.",
+    computerScienceFocus: "Cette formation porte directement sur les sciences informatiques.",
     start: (city: string) => `À ${city}, `,
     project: "cette formation rejoint le niveau et le domaine d'études que vous recherchez.",
     open: "cette formation est une piste supplémentaire à découvrir pour votre projet en Allemagne.",
@@ -15,6 +17,8 @@ const copy = {
     languages: { german: "allemand", english: "anglais", mixed: "allemand et anglais" },
   },
   ar: {
+    engineeringFocus: "ويمكنك اكتشاف تخصص هندسة المعلومات، الذي يجمع بين المعلوماتية والهندسة.",
+    computerScienceFocus: "يركز عنوان هذا البرنامج على علوم الحاسوب.",
     start: (city: string) => `في ${city}، `,
     project: "هذا البرنامج يتوافق مع مستوى الدراسة والمجال اللذين تبحث عنهما.",
     open: "هذا البرنامج فرصة أخرى لاستكشاف الخيارات المتاحة لمشروعك الدراسي في ألمانيا.",
@@ -25,6 +29,8 @@ const copy = {
     languages: { german: "الألمانية", english: "الإنجليزية", mixed: "الألمانية والإنجليزية" },
   },
   en: {
+    engineeringFocus: "You can explore Information Engineering, a course connecting computing and engineering.",
+    computerScienceFocus: "This course focuses on computer science.",
     start: (city: string) => `In ${city}, `,
     project: "this course matches the study level and subject you are looking for.",
     open: "this course offers another path to explore for your studies in Germany.",
@@ -35,6 +41,8 @@ const copy = {
     languages: { german: "German", english: "English", mixed: "German and English" },
   },
   de: {
+    engineeringFocus: "Du kannst Information Engineering entdecken, ein Studienfach an der Schnittstelle von Informatik und Ingenieurwesen.",
+    computerScienceFocus: "Dieser Studiengang widmet sich den Computerwissenschaften.",
     start: (city: string) => `In ${city} `,
     project: "passt dieser Studiengang zu deinem gewünschten Abschlussniveau und Fachgebiet.",
     open: "ist dieser Studiengang eine weitere Möglichkeit für dein Studium in Deutschland.",
@@ -74,6 +82,9 @@ export function explainDocumentedProgramme(
     && hasEligibleRule(recommendation, "field_match");
   const description = match ? t.project : t.open;
   const reasons = [place + description];
+  const programmeName = recommendation.programme.name.toLowerCase();
+  if (/information engineering/.test(programmeName)) reasons.push(t.engineeringFocus);
+  else if (/computer science/.test(programmeName)) reasons.push(t.computerScienceFocus);
 
   const language = languageKind(recommendation.programme.teachingLanguage);
   if (language) {

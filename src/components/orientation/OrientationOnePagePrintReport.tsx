@@ -565,6 +565,20 @@ export function OrientationOnePagePrintReport({
         answers.bacTrack || "—",
         answers.generalAverage ? `${answers.generalAverage}/20` : null,
       ].filter(Boolean).join(" · ");
+  const humanMessage = ({
+    obtained: {
+      fr: "Félicitations pour votre bac !", ar: "مبروك نجاحك في البكالوريا!",
+      en: "Congratulations on your Baccalaureate!", de: "Herzlichen Glückwunsch zum Baccalauréat!",
+    },
+    preparing: {
+      fr: "Bon courage pour la préparation de votre bac !", ar: "بالتوفيق في تحضير البكالوريا!",
+      en: "Best of luck preparing for your Baccalaureate!", de: "Viel Erfolg bei der Vorbereitung auf dein Baccalauréat!",
+    },
+    no_bac: {
+      fr: "Chaque parcours est différent : explorons les possibilités pour le vôtre.", ar: "لكل شخص مساره: لنستكشف الخيارات المناسبة لك.",
+      en: "Every journey is different: let us explore your options.", de: "Jeder Weg ist anders: Entdecken wir deine Möglichkeiten.",
+    },
+  } as const)[answers.bacStatus as "obtained" | "preparing" | "no_bac"]?.[locale] || null;
   const languageProfile = answers.studyLanguage === "Anglais"
     ? `${studyLanguage} · ${english}`
     : answers.studyLanguage === "Allemand et anglais"
@@ -658,6 +672,7 @@ export function OrientationOnePagePrintReport({
           <div className="orientation-pdf-hero-main">
             <p className="orientation-pdf-hero-eyebrow">{premium.heroEyebrow}</p>
             <h1>{premium.heroTitle}</h1>
+            {humanMessage ? <p className="orientation-pdf-hero-opening font-semibold">{humanMessage}</p> : null}
             <p className="orientation-pdf-hero-opening">{compactPrintText(content.opening, 320)}</p>
             <p className="orientation-pdf-hero-status">{compactPrintText(content.projectStatus, 260)}</p>
           </div>
@@ -772,6 +787,7 @@ export function OrientationOnePagePrintReport({
       <div className="orientation-one-page-profile">
         <b>{copy.profile}</b>
         <span>{profileLine}</span>
+        {humanMessage ? <strong className="text-[10.5px]">{humanMessage}</strong> : null}
       </div>
 
       <section className="orientation-one-page-conclusion">

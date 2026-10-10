@@ -32,8 +32,8 @@ test("evidence section does not claim missing admissions, language or deadlines 
 });
 
 test("report subtitle explains what the candidate actually receives in all four languages", () => {
-  assert.ok(reportCopy.includes("Votre profil, des pistes d’études et les prochaines étapes à préparer."));
-  assert.ok(reportCopy.includes("ملفك الدراسي، ومسارات للدراسة، والخطوات القادمة للتحضير."));
-  assert.ok(reportCopy.includes("Your profile, study options and practical next steps."));
-  assert.ok(reportCopy.includes("Dein Profil, mögliche Studienwege und die nächsten Schritte."));
+  assert.ok(reportCopy.includes("Votre projet, des formations à découvrir et la suite avec Campus Allemagne."));
+  assert.ok(reportCopy.includes("مشروعك الدراسي، وبرامج يمكنك اكتشافها، والخطوة التالية مع Campus Allemagne."));
+  assert.ok(reportCopy.includes("Your study plans, programmes to explore and how Campus Allemagne can help."));
+  assert.ok(reportCopy.includes("Dein Studienwunsch, mögliche Studiengänge und deine nächsten Schritte mit Campus Allemagne."));
 });
