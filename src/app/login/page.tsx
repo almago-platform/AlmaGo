@@ -4,6 +4,7 @@ import { AuthMobileHeader } from "@/components/auth/AuthMobileHeader";
 import { AuthStoryPanel } from "@/components/auth/AuthStoryPanel";
 import { resolveOrientationActivation } from "@/lib/orientation/account-activation";
 import { isPhase2AccountLinkingEnabled } from "@/lib/phase2/config";
+import { isProvisionalCandidateEnabled } from "@/lib/prospect/provisional-auth";
 import { isPartnerPrelaunchModeEnabled } from "@/lib/prelaunch";
 import { getRequestCopy } from "@/lib/i18n-server";
 
@@ -41,6 +42,7 @@ export default async function LoginPage({
           <AuthForm
             orientationActivation={orientationActivation ?? undefined}
             partnerPrelaunch={partnerPrelaunch}
+            provisionalAccessEnabled={isProvisionalCandidateEnabled()}
           />
         </section>
       </div>
