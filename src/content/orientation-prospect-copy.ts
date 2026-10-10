@@ -33,6 +33,11 @@ export type OrientationProspectCopy = {
     includedEmailEyebrow: string;
     includedEmailTitle: string;
     includedEmailText: string;
+    includedEmailSuccessTitle: string;
+    includedEmailSuccessText: string;
+    includedEmailFailureTitle: string;
+    optionalAccountLabel: string;
+    optionalAccountNote: string;
     automaticEmailMinorNotice: string;
     automaticEmailPreparing: string;
     automaticEmailAlreadyRequested: string;
@@ -92,6 +97,11 @@ const fr: OrientationProspectCopy = {
     includedEmailEyebrow: "Envoi automatique",
     includedEmailTitle: "Vos deux rapports PDF",
     includedEmailText: "Votre orientation est prête. Les deux rapports sont envoyés automatiquement à votre adresse e-mail, sans autre démarche.",
+    includedEmailSuccessTitle: "Vos deux rapports ont été envoyés",
+    includedEmailSuccessText: "Les deux PDF sont partis vers votre adresse e-mail. Vous pouvez aussi garder une copie depuis cette page.",
+    includedEmailFailureTitle: "Vos rapports sont prêts",
+    optionalAccountLabel: "Une option pour plus tard",
+    optionalAccountNote: "Facultatif : aucun compte n'a été créé automatiquement.",
     automaticEmailMinorNotice: "Vous pourrez enregistrer votre résultat en PDF. L’envoi par e-mail n’est pas disponible pour les moins de 18 ans pendant ce lancement.",
     automaticEmailPreparing: "Vous avez demandé l’envoi automatique. Préparation et envoi des deux rapports PDF en cours…",
     automaticEmailAlreadyRequested: "Une demande d’envoi a déjà été effectuée pendant cette orientation. Vérifiez votre boîte de réception et vos spams.",
@@ -151,6 +161,11 @@ const ar: OrientationProspectCopy = {
     includedEmailEyebrow: "إرسال تلقائي",
     includedEmailTitle: "تقريرا التوجيه PDF",
     includedEmailText: "نتيجة توجيهك جاهزة. سيتم إرسال التقريرين تلقائيًا إلى بريدك الإلكتروني دون أي إجراء إضافي.",
+    includedEmailSuccessTitle: "تم إرسال تقريريك",
+    includedEmailSuccessText: "أُرسل التقريران بصيغة PDF إلى بريدك الإلكتروني. يمكنك أيضًا حفظ نسخة من هذه الصفحة.",
+    includedEmailFailureTitle: "تقريرا التوجيه جاهزان",
+    optionalAccountLabel: "خيار يمكنك اتخاذه لاحقًا",
+    optionalAccountNote: "اختياري: لم يتم إنشاء حساب تلقائيًا.",
     automaticEmailMinorNotice: "يمكنك حفظ نتيجتك بصيغة PDF. إرسال التقارير بالبريد الإلكتروني غير متاح لمن هم دون 18 عامًا خلال هذا الإطلاق.",
     automaticEmailPreparing: "لقد طلبت الإرسال التلقائي. يتم الآن إعداد تقريريّ PDF وإرسالهما…",
     automaticEmailAlreadyRequested: "تم تقديم طلب إرسال سابقًا خلال هذه الجلسة. تحقق من بريدك الوارد والبريد غير المرغوب فيه.",
@@ -210,6 +225,11 @@ const en: OrientationProspectCopy = {
     includedEmailEyebrow: "Automatic delivery",
     includedEmailTitle: "Your two PDF reports",
     includedEmailText: "Your orientation is ready. Both reports are emailed automatically to your address without another action.",
+    includedEmailSuccessTitle: "Both reports have been sent",
+    includedEmailSuccessText: "Your two PDFs have been sent to your email address. You can also keep a copy from this page.",
+    includedEmailFailureTitle: "Your reports are ready",
+    optionalAccountLabel: "An option for later",
+    optionalAccountNote: "Optional: no account has been created automatically.",
     automaticEmailMinorNotice: "You can save your result as a PDF. Email delivery is not available to people under 18 during this launch.",
     automaticEmailPreparing: "Automatic email requested. Preparing and sending both PDF reports…",
     automaticEmailAlreadyRequested: "A delivery request has already been made during this orientation. Check your inbox and spam folder.",
@@ -269,6 +289,11 @@ const de: OrientationProspectCopy = {
     includedEmailEyebrow: "Automatischer Versand",
     includedEmailTitle: "Deine zwei PDF-Berichte",
     includedEmailText: "Deine Orientierung ist fertig. Beide Berichte werden ohne weiteren Klick automatisch an deine E-Mail-Adresse geschickt.",
+    includedEmailSuccessTitle: "Beide Berichte wurden versendet",
+    includedEmailSuccessText: "Deine zwei PDFs wurden an deine E-Mail-Adresse gesendet. Du kannst hier auch eine Kopie speichern.",
+    includedEmailFailureTitle: "Deine Berichte sind fertig",
+    optionalAccountLabel: "Eine Möglichkeit für später",
+    optionalAccountNote: "Freiwillig: Es wurde nicht automatisch ein Konto erstellt.",
     automaticEmailMinorNotice: "Du kannst dein Ergebnis als PDF speichern. Der E-Mail-Versand ist bei diesem Start für unter 18-Jährige nicht verfügbar.",
     automaticEmailPreparing: "Automatischen Versand angefordert. Beide PDF-Berichte werden vorbereitet und verschickt…",
     automaticEmailAlreadyRequested: "Während dieser Orientierung wurde bereits ein Versand angefordert. Überprüfe dein Postfach und den Spamordner.",
