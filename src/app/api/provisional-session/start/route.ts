@@ -20,8 +20,6 @@ export async function POST(request: Request) {
   if (!(await isTrustedProvisionalMutation(request))) {
     return NextResponse.json({ error: "Forbidden." }, { status: 403 });
   }
-  const limited = enforceRequestRateLimit(request, PUBLIC_ABUSE_POLICIES.orientationAccountMutation);
-  if (limited) return limited;
   if (Number(request.headers.get("content-length") || 0) > 2048) {
     return NextResponse.json({ error: "Invalid request." }, { status: 400 });
   }
@@ -39,6 +37,11 @@ export async function POST(request: Request) {
     || !firstName || firstName.length > 100 || !lastName || lastName.length > 100) {
     return NextResponse.json({ error: "Invalid request." }, { status: 400 });
   }
+
+  const limited = enforceRequestRateLimit(
+    request, PUBLIC_ABUSE_POLICIES.orientationAccountMutation, { accountId: email },
+  );
+  if (limited) return limited;
 
   try {
     const supabase = createPrivilegedSupabaseClient();
