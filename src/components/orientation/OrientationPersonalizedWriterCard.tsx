@@ -1234,7 +1234,7 @@ export function OrientationPersonalizedWriterCard({
                 </div>
 
                 <aside className="flex flex-col border-t border-white/[0.1] bg-white/[0.05] px-5 py-6 sm:px-7 lg:border-s lg:border-t-0 lg:px-7 lg:py-8">
-                  <p className="text-xs font-bold uppercase tracking-[0.08em] text-[var(--accent)]">{t.confirmed}</p>
+                  <p className="text-xs font-bold uppercase tracking-[0.08em] text-[var(--accent)]">{facts.length ? t.confirmed : t.checking}</p>
                   {facts.length ? (
                     <dl className="mt-3 grid gap-x-5 sm:grid-cols-2 lg:grid-cols-1">
                       {facts.map((fact) => {
