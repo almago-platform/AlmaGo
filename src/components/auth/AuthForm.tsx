@@ -130,14 +130,16 @@ export function AuthForm({
     if (resendState !== "idle" || restrictedAction) return;
     setResendState("sending");
     try {
-      const { error: resendError } = await createClient().auth.resend({
+      await createClient().auth.resend({
         type: "signup",
         email,
         ...(activationClaimPath
           ? { options: { emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(activationClaimPath)}` } }
           : {}),
       });
-      setResendState(resendError ? "error" : "done");
+      // The auth provider may reject resends for already-confirmed addresses.
+      // Its response must not disclose whether an account exists.
+      setResendState("done");
     } catch {
       setResendState("error");
     }
