@@ -4,6 +4,7 @@ import "./OrientationDetailedPrintReport.css";
 import { useEffect, useState } from "react";
 
 import { BrandLogo } from "@/components/brand/BrandLogo";
+import { useOrientationPrintReadiness } from "@/components/orientation/OrientationPrintReadinessProvider";
 import { useOrientationUniversityMedia, universityPhotoKey } from "@/components/orientation/useOrientationUniversityMedia";
 import { findCuratedUniversityMedia } from "@/lib/orientation-engine/discovery/curated-university-media";
 import { orientationCandidatePriority } from "@/lib/orientation-engine/writer/candidate-priority";
@@ -178,6 +179,7 @@ export function OrientationDetailedPrintReport({
   onReadyChange?: (ready: boolean) => void;
 }) {
   const t = copy[locale];
+  const { setReady: setSavedPrintReady } = useOrientationPrintReadiness();
   const priority = orientationCandidatePriority(answers, locale);
   const selected = [...personalized.selected].sort((a, b) => a.position - b.position);
   const research = useDetailedResearchPistes(answers, selected);
@@ -187,7 +189,11 @@ export function OrientationDetailedPrintReport({
       .map((option) => ({ institution: option.institution, city: option.city })),
     ...supplemental.map((option) => ({ institution: option.institution, city: option.city })),
   ]);
-  useEffect(() => { onReadyChange?.(research.ready); }, [onReadyChange, research.ready]);
+  useEffect(() => {
+    onReadyChange?.(research.ready);
+    setSavedPrintReady(research.ready);
+    return () => setSavedPrintReady(false);
+  }, [onReadyChange, research.ready, setSavedPrintReady]);
   const content = personalized.content;
   const candidate = [identity?.firstName, identity?.lastName].filter(Boolean).join(" ");
   const prioritized = [
