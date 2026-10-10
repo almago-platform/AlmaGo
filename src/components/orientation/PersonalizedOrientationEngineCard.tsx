@@ -7,7 +7,7 @@ import { OrientationPersonalizedWriterCard } from "@/components/orientation/Orie
 import type { Locale } from "@/lib/i18n";
 import type { PublicOrientationAnswers } from "@/lib/orientation/public";
 import type { OrientationPublicPersonalizedResult } from "@/lib/orientation-engine/result/types";
-import type { OrientationCanonicalShortlist } from "@/lib/orientation-engine/result/canonical";
+import { isSupportedCatalogueRecommendation, type OrientationCanonicalShortlist } from "@/lib/orientation-engine/result/canonical";
 import type {
   OrientationAdvisorOutput,
   OrientationEngineResult,
@@ -57,6 +57,12 @@ const copy = {
     enriching: "Votre première orientation est prête. Nous cherchons encore des formations vérifiées pour compléter votre résultat.",
     degraded: "Les recherches complémentaires sont indisponibles pour le moment. Votre lettre personnalisée reste accessible.",
     retry: "Réessayer la recherche complémentaire",
+    universityHeading: "Universités et formations à découvrir",
+    universitySearching: "Nous vérifions encore les programmes universitaires correspondant à votre projet. Votre lettre est déjà disponible.",
+    universityUnavailable: "La recherche d’universités n’a pas pu se terminer. Aucune formation ne peut être confirmée pour le moment.",
+    universityNone: "Nous n’avons pas trouvé de formation suffisamment vérifiée correspondant à ce domaine dans notre catalogue actuel. Cela ne signifie pas qu’aucune université ne propose ce cursus.",
+    universityBroaden: "Supprimer ma préférence de ville et relancer",
+    universityCaution: "Nous n’affichons pas de formation d’un autre domaine simplement pour remplir la liste. Les conditions d’admission et les sources officielles doivent être vérifiées.",
     details: "Comprendre notre analyse en détail",
     why: "Pourquoi cette option apparaît",
     missing: "À vérifier ou compléter",
@@ -97,6 +103,12 @@ const copy = {
     enriching: "توجيهك الأولي جاهز. نبحث الآن عن برامج موثوقة لإكمال النتيجة.",
     degraded: "البحث الإضافي غير متاح حاليًا. يمكنك دائمًا قراءة رسالتك الشخصية.",
     retry: "إعادة البحث الإضافي",
+    universityHeading: "جامعات وبرامج للاكتشاف",
+    universitySearching: "ما زلنا نتحقق من البرامج الجامعية المناسبة لمشروعك. رسالة التوجيه جاهزة بالفعل.",
+    universityUnavailable: "تعذّر إكمال البحث عن الجامعات. لا يمكن تأكيد برنامج في الوقت الحالي.",
+    universityNone: "لم نجد حتى الآن برنامجًا موثّقًا بما يكفي في هذا التخصص ضمن كتالوجنا الحالي. هذا لا يعني عدم وجود برامج مناسبة في جامعات أخرى.",
+    universityBroaden: "حذف تفضيل المدينة وإعادة البحث",
+    universityCaution: "لا نعرض برنامجًا في تخصص مختلف فقط لملء القائمة. يجب التحقق من شروط القبول والمصادر الرسمية.",
     details: "اكتشف تفاصيل تحليلنا",
     why: "لماذا يظهر هذا الخيار",
     missing: "ما يجب التحقق منه أو استكماله",
@@ -137,6 +149,12 @@ const copy = {
     enriching: "Your first orientation is ready. We're still checking verified programmes to enrich it.",
     degraded: "Further research is temporarily unavailable. Your personalised letter is still here.",
     retry: "Retry the additional research",
+    universityHeading: "Universities and degree programmes to explore",
+    universitySearching: "We are still checking university programmes relevant to your project. Your first letter is already available.",
+    universityUnavailable: "The university search could not be completed. We cannot confirm a suitable programme yet.",
+    universityNone: "No sufficiently verified programme in this field was found in our current catalogue. That does not mean universities do not offer this degree.",
+    universityBroaden: "Remove my city preference and search again",
+    universityCaution: "We will not suggest unrelated degrees just to fill a list. Official sources and entry requirements must be checked.",
     details: "Explore our detailed analysis",
     why: "Why this option appears",
     missing: "To verify or complete",
@@ -177,6 +195,12 @@ const copy = {
     enriching: "Deine erste Orientierung ist bereit. Wir prüfen weitere Studiengänge für das ausführliche Ergebnis.",
     degraded: "Die ergänzende Recherche ist derzeit nicht verfügbar. Dein persönlicher Brief bleibt sichtbar.",
     retry: "Ergänzende Recherche erneut versuchen",
+    universityHeading: "Hochschulen und Studiengänge entdecken",
+    universitySearching: "Wir prüfen noch Studiengänge, die zu deinem Projekt passen. Dein erster Orientierungsbrief ist bereits verfügbar.",
+    universityUnavailable: "Die Hochschulrecherche konnte nicht abgeschlossen werden. Wir können derzeit keinen Studiengang bestätigen.",
+    universityNone: "In unserem derzeitigen Katalog wurde kein ausreichend überprüfter Studiengang in diesem Fach gefunden. Das bedeutet nicht, dass Hochschulen diesen Studiengang nicht anbieten.",
+    universityBroaden: "Stadtpräferenz entfernen und erneut suchen",
+    universityCaution: "Wir zeigen keine fachfremden Studiengänge, nur um die Liste zu füllen. Offizielle Quellen und Zulassungsvoraussetzungen müssen geprüft werden.",
     details: "Unsere Analyse im Detail ansehen",
     why: "Warum diese Option erscheint",
     missing: "Zu prüfen oder zu ergänzen",
@@ -482,7 +506,7 @@ export function PersonalizedOrientationEngineCard({
       : null;
   const fallbackRecommendations =
     result?.shortlist.source === "deterministic_fallback"
-      ? result.engine.recommendations
+      ? result.engine.recommendations.filter(isSupportedCatalogueRecommendation)
       : [];
   const geographicFallback =
     result ? geographicFallbackMessage(locale, result.geography) : null;
@@ -716,6 +740,45 @@ export function PersonalizedOrientationEngineCard({
                 welcome={isBachelorFirstContact ? bacWelcome : null}
               />
             )}
+            {answers.bacStatus !== "no_bac" && !personalized && fallbackRecommendations.length === 0 ? (
+              <section
+                aria-labelledby="orientation-university-status-title"
+                className="mt-6 rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 sm:p-6"
+              >
+                <h3 id="orientation-university-status-title" className="text-xl font-semibold text-[var(--foreground)]">
+                  {t.universityHeading}
+                </h3>
+                <p role="status" className="mt-3 text-sm leading-7 text-[var(--foreground)]">
+                  {requestState.enhancing
+                    ? t.universitySearching
+                    : requestState.degraded
+                      ? t.universityUnavailable
+                      : t.universityNone}
+                </p>
+                {!requestState.enhancing ? (
+                  <div className="mt-4 flex flex-wrap gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setRetryVersion((value) => value + 1)}
+                      className="min-h-11 rounded-[var(--radius-control)] border border-[var(--border-strong)] px-4 text-sm font-semibold text-[var(--brand-strong)]"
+                    >
+                      {t.retry}
+                    </button>
+                    {answers.preferredCities.length > 0 && onRefineAnswers ? (
+                      <button
+                        type="button"
+                        onClick={() => onRefineAnswers({ preferredCities: [] })}
+                        className="min-h-11 rounded-[var(--radius-control)] border border-[var(--border-strong)] px-4 text-sm font-semibold text-[var(--foreground)]"
+                      >
+                        {t.universityBroaden}
+                      </button>
+                    ) : null}
+                  </div>
+                ) : null}
+                <p className="mt-4 text-xs leading-6 text-[var(--muted)]">{t.universityCaution}</p>
+              </section>
+            ) : null}
+
             {!isBachelorFirstContact && onRefineAnswers && result.engine.refinement.nextQuestion ? (
               <OrientationRefinementQuestionCard
                 question={result.engine.refinement.nextQuestion}
