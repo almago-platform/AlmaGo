@@ -128,7 +128,7 @@ test("automatic delivery requires explicit recorded consent and refuses missing 
   assert.match(route, /email_delivery_consent: true/);
   assert.match(route, /email_delivery_consent_at: new Date\(\)\.toISOString\(\)/);
   assert.match(route, /isAdultPublicOrientationIdentity\(identity\)/);
-  assert.match(route, /\(automaticDelivery \|\| includedDelivery\) && attachments\.length < 2/);
+  assert.match(route, /attachments\.length !== 2/);
   assert.match(route, /saved: true, delivery: "unavailable"/);
   assert.match(route, /sendTransactionalEmail\(\{/);
 });
@@ -167,6 +167,6 @@ test("automatic included emails are default-off and never bypass legal rollout, 
   assert.match(route, /privacy_acknowledged: privacyAcknowledged/);
   assert.match(route, /email_delivery_mode: "included"/);
   assert.match(route, /email_notice_shown: true/);
-  assert.match(route, /\(automaticDelivery \|\| includedDelivery\) && attachments\.length < 2/);
+  assert.match(route, /attachments\.length !== 2/);
   assert.doesNotMatch(emailTemplate, /signupUrl|accountCta|accountNote/);
 });
