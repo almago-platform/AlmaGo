@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { ProspectShell } from "@/components/layout/ProspectShell";
 import { getPhase2StudentAccess } from "@/lib/phase2/access";
+import { getProvisionalIdentity } from "@/lib/prospect/provisional-auth";
 
 export const metadata: Metadata = {
   robots: { index: false, follow: false },
@@ -13,7 +14,15 @@ export default async function ProspectLayout({
   const access = await getPhase2StudentAccess();
   const { supabase, user } = access;
 
-  if (!user) redirect("/login");
+  if (!user) {
+    const candidate = await getProvisionalIdentity();
+    if (!candidate) redirect("/login");
+    return (
+      <ProspectShell displayName={candidate.firstName} provisional provisionalExpiresAt={candidate.expiresAt}>
+        {children}
+      </ProspectShell>
+    );
+  }
 
   if (!access.isStudent) {
     const { data: role } = await supabase
