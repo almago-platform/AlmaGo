@@ -23,7 +23,7 @@ export function ProvisionalEmailVerification({ locale, initialEmail = "" }: { lo
         // Keep the confirmation on this site's secured callback. The Prospect
         // page can recover an orientation only after the account is verified.
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent("/prospect")}`,
+          emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(initialEmail ? "/orientation/verified-return" : "/prospect")}`,
         },
       });
     } catch {
