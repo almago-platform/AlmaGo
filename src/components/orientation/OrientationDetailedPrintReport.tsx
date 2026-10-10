@@ -112,6 +112,7 @@ type DocumentedState = { key: string; items: ResearchPiste[]; ready: boolean };
 function useDetailedResearchPistes(
   answers: PublicOrientationAnswers,
   selected: OrientationPublicPersonalizedResult["selected"],
+  initialSupplemental: readonly ResearchPiste[] | null,
 ) {
   const key = JSON.stringify({
     targetDegree: answers.targetDegree,
@@ -124,7 +125,7 @@ function useDetailedResearchPistes(
     scienceSpecialty: answers.scienceSpecialty,
   });
   const [state, setState] = useState<DocumentedState>({ key: "", items: [], ready: false });
-  const skip = answers.bacStatus === "no_bac" || selected.length >= 3;
+  const skip = initialSupplemental !== null || answers.bacStatus === "no_bac" || selected.length >= 3;
   useEffect(() => {
     if (skip) return;
     const controller = new AbortController();
@@ -145,7 +146,7 @@ function useDetailedResearchPistes(
     return () => controller.abort();
   }, [key, skip]);
   const ready = skip || (state.key === key && state.ready);
-  const items = state.key === key ? state.items : [];
+  const items = initialSupplemental !== null ? initialSupplemental : state.key === key ? state.items : [];
   return {
     supplemental: filterSupplementalResearchPistes(items, selected),
     ready,
@@ -191,19 +192,20 @@ function safeSource(url: string | null): string | null {
 }
 
 export function OrientationDetailedPrintReport({
-  answers, locale, personalized, identity = null, onReadyChange,
+  answers, locale, personalized, identity = null, onReadyChange, initialSupplemental = null,
 }: {
   answers: PublicOrientationAnswers;
   locale: Locale;
   personalized: OrientationPublicPersonalizedResult;
   identity?: PublicOrientationIdentity | null;
   onReadyChange?: (ready: boolean) => void;
+  initialSupplemental?: readonly ResearchPiste[] | null;
 }) {
   const t = copy[locale];
   const { setReady: setSavedPrintReady } = useOrientationPrintReadiness();
   const priority = orientationCandidatePriority(answers, locale);
   const selected = [...personalized.selected].sort((a, b) => a.position - b.position);
-  const research = useDetailedResearchPistes(answers, selected);
+  const research = useDetailedResearchPistes(answers, selected, initialSupplemental);
   const supplemental = research.supplemental;
   const dynamicMedia = useOrientationUniversityMedia([
     ...selected.filter((option) => !option.universityMedia?.coverImageUrl)
