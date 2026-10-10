@@ -53,18 +53,16 @@ test("post-orientation delivery distinguishes sent, pending and failure without 
   assert.match(copy, /Aucun compte n’a été créé/);
 });
 
-test("main continued-interest action and optional account remain separated and functional", () => {
+test("continuation and Prospect creation share one explicit, accessible action", () => {
   assert.match(capture, /aria-labelledby="orientation-continue-title"/);
-  assert.match(capture, /copy\.interestSubmit/);
   assert.match(capture, /onClick=\{submitInterest\}/);
-  assert.match(capture, /interestStatus === "success" \? \(/);
-  assert.match(capture, /copy\.interestSuccess/);
-  assert.match(capture, /status === "success" && emailDeliveryEnabled && signupPath/);
-  assert.match(capture, /href=\{signupPath\}/);
-  assert.match(capture, /copy\.optionalAccountLabel/);
+  assert.match(capture, /signupPath \? copy\.continueSubmit : copy\.interestSubmit/);
+  assert.match(capture, /if \(signupPath\) window\.location\.assign\(signupPath\)/);
+  assert.match(capture, /interestStatus === "success" && !signupPath/);
+  assert.match(capture, /copy\.continueBoundary/);
   assert.match(capture, /copy\.optionalAccountNote/);
-  assert.match(capture, /sm:w-auto/);
-  assert.match(capture, /w-full/);
+  assert.doesNotMatch(capture, /href=\{signupPath\}/);
+  assert.doesNotMatch(capture, /id="orientation-create-account-title"/);
   assert.match(capture, /contactConsent: false/);
   assert.match(capture, /\/api\/orientation\/interest/);
   assert.match(capture, /\/api\/orientation\/prospect/);
@@ -96,7 +94,7 @@ test("success, failure and optional labels exist in all four locales", () => {
 test("final result polish keeps the CTA punctuation with its title and a comfortable line length", () => {
   assert.ok(capture.includes("max-w-[54rem] text-balance"));
   assert.ok(!capture.includes("max-w-[39rem] text-xl"));
-  assert.ok(copy.includes("Souhaitez-vous poursuivre avec Campus Allemagne ?"));
+  assert.ok(copy.includes("Continuez votre projet avec Campus Allemagne"));
 });
 
 test("PDF status does not repeat the same sent message twice", () => {

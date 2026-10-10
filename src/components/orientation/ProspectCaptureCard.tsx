@@ -119,10 +119,23 @@ export function ProspectCaptureCard({
           : null;
       setSignupPath(verifiedSignupPath);
 
-      // The email request is complete: a free account is always a separate choice.
-      if (!emailDeliveryEnabled && verifiedSignupPath) {
-        window.location.assign(verifiedSignupPath);
-        return;
+      // In the no-email flow the explicit account CTA also requests support.
+      // Record the intent first. On failure, keep the saved orientation and
+      // offer the same action again in the unified continuation panel.
+      if (!emailDeliveryEnabled && verifiedSignupPath && typeof payload.interestToken === "string" && payload.interestToken.length > 0) {
+        try {
+          const interestResponse = await fetch("/api/orientation/interest", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({ token: payload.interestToken }),
+          });
+          const interestPayload = await interestResponse.json().catch(() => null) as InterestResponse | null;
+          if (!interestResponse.ok || !interestPayload?.recorded) throw new Error("interest_failed");
+          window.location.assign(verifiedSignupPath);
+          return;
+        } catch {
+          setInterestStatus("error");
+        }
       }
 
       if (payload.delivery === "sent") {
@@ -174,6 +187,7 @@ export function ProspectCaptureCard({
 
       if (!response.ok || !payload?.recorded) throw new Error("interest_failed");
       setInterestStatus("success");
+      if (signupPath) window.location.assign(signupPath);
     } catch {
       setInterestStatus("error");
     }
@@ -367,12 +381,12 @@ export function ProspectCaptureCard({
       {status === "success" && interestToken ? (
         <section className="relative mt-6 overflow-hidden rounded-[var(--radius-panel)] bg-[var(--foreground)] p-5 text-white shadow-[var(--shadow-card)] sm:p-7" aria-labelledby="orientation-continue-title">
           <div aria-hidden="true" className="absolute inset-y-0 start-0 w-1 bg-[var(--accent)]" />
-          <p className="text-[11px] font-bold uppercase tracking-[0.13em] text-[#f4cc78]">{copy.interestEyebrow}</p>
-          <h4 id="orientation-continue-title" className="mt-2 max-w-[54rem] text-balance text-xl font-semibold leading-snug tracking-tight sm:text-[1.55rem]">{copy.interestTitle}</h4>
+          <p className="text-[11px] font-bold uppercase tracking-[0.13em] text-[#f4cc78]">{signupPath ? copy.continueEyebrow : copy.interestEyebrow}</p>
+          <h4 id="orientation-continue-title" className="mt-2 max-w-[54rem] text-balance text-xl font-semibold leading-snug tracking-tight sm:text-[1.55rem]">{signupPath ? copy.continueTitle : copy.interestTitle}</h4>
           <p className="mt-3 max-w-[67ch] text-sm leading-7 text-white/85">
-            {copy.interestText}
+            {signupPath ? copy.continueText : copy.interestText}
           </p>
-          {interestStatus === "success" ? (
+          {interestStatus === "success" && !signupPath ? (
             <p role="status" className="mt-5 rounded-[var(--radius-control)] border border-[var(--success-border)] bg-[var(--success-soft)] px-4 py-3 text-sm font-semibold text-[var(--success-strong)]">
               {copy.interestSuccess}
             </p>
@@ -383,9 +397,16 @@ export function ProspectCaptureCard({
               disabled={interestStatus === "saving"}
               className="mt-5 inline-flex min-h-12 w-full items-center justify-center rounded-[var(--radius-control)] bg-[var(--brand)] px-5 py-3 text-center text-sm font-bold text-white transition hover:bg-[var(--brand-strong)] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
             >
-              {interestStatus === "saving" ? copy.interestSaving : copy.interestSubmit}
+              {interestStatus === "saving"
+                ? (signupPath ? copy.continueSaving : copy.interestSaving)
+                : (signupPath ? copy.continueSubmit : copy.interestSubmit)}
             </button>
           )}
+          {signupPath ? (
+            <p className="mt-4 max-w-[67ch] text-xs leading-6 text-white/75">
+              {copy.continueBoundary} {copy.optionalAccountNote}
+            </p>
+          ) : null}
           {interestStatus === "error" ? (
             <p role="alert" className="mt-3 text-sm font-semibold text-[#ffc1cb]">
               {copy.interestFailure}
@@ -394,28 +415,6 @@ export function ProspectCaptureCard({
         </section>
       ) : null}
 
-      {status === "success" && emailDeliveryEnabled && signupPath ? (
-        <section className="mt-4 rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 sm:p-6" aria-labelledby="orientation-create-account-title">
-          <div className="flex items-start gap-3">
-            <span aria-hidden="true" className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-[var(--surface-subtle)] text-[var(--foreground)]">
-              <svg className="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="4" y="4" width="16" height="16" rx="3"/><path strokeLinecap="round" strokeLinejoin="round" d="M8 10h8M8 14h6"/></svg>
-            </span>
-            <div className="min-w-0">
-              <p className="text-[11px] font-bold uppercase tracking-[0.11em] text-[var(--muted)]">{copy.optionalAccountLabel}</p>
-              <h4 id="orientation-create-account-title" className="mt-1 text-lg font-semibold tracking-tight text-[var(--foreground)] sm:text-xl">{copy.continueTitle}</h4>
-              <p className="mt-2 max-w-[70ch] text-sm leading-7 text-[var(--muted)]">{copy.emailOptionalAccount}</p>
-              <Link
-                href={signupPath}
-                className="mt-4 inline-flex min-h-11 w-full items-center justify-center rounded-[var(--radius-control)] border border-[var(--border-strong)] bg-[var(--surface)] px-5 py-2.5 text-center text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--brand)] hover:text-[var(--brand-strong)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brand)] sm:w-auto"
-              >
-                {copy.continueSubmit}
-                <span aria-hidden="true" className="ms-2">↗</span>
-              </Link>
-              <p className="mt-3 text-xs leading-5 text-[var(--muted)]">{copy.optionalAccountNote}</p>
-            </div>
-          </div>
-        </section>
-      ) : null}
     </section>
   );
 }
