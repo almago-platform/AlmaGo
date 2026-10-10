@@ -1,13 +1,19 @@
 import "server-only";
 
 import { createHash, randomBytes, scrypt as scryptCallback, timingSafeEqual } from "node:crypto";
-import { promisify } from "node:util";
 import { cookies } from "next/headers";
 import { createPrivilegedSupabaseClient } from "@/lib/supabase/privileged";
 import { getPublicOrigin } from "@/lib/public-origin";
 import { isPhase2AccountLinkingEnabled, isPhase2ProspectCaptureEnabled } from "@/lib/phase2/config";
 
-const scrypt = promisify(scryptCallback);
+function scrypt(password: string, salt: Buffer, length: number, options: { N: number; r: number; p: number; maxmem: number }): Promise<Buffer> {
+  return new Promise((resolve, reject) => {
+    scryptCallback(password, salt, length, options, (error, key) => {
+      if (error) reject(error);
+      else resolve(key);
+    });
+  });
+}
 const PROVISIONAL_DURATION_MS = 7 * 24 * 60 * 60 * 1000;
 const HASH_PREFIX = "scrypt-v1";
 const COOKIE_NAME = process.env.NODE_ENV === "production"
