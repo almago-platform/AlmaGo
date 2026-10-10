@@ -23,6 +23,7 @@ type OrientationCityMetadata = {
 const CITY_METADATA: readonly OrientationCityMetadata[] = [
   { value: "Aachen", aliases: ["Aachen"], land: "Nordrhein-Westfalen", latitude: 50.7753, longitude: 6.0839 },
   { value: "Augsburg", aliases: ["Augsburg"], land: "Bayern", latitude: 48.3705, longitude: 10.8978 },
+  { value: "Bamberg", aliases: ["Bamberg"], land: "Bayern", latitude: 49.8917, longitude: 10.8917 },
   { value: "Berlin", aliases: ["Berlin"], land: "Berlin", latitude: 52.52, longitude: 13.405, regionalLands: ["Berlin", "Brandenburg"] },
   { value: "Bielefeld", aliases: ["Bielefeld"], land: "Nordrhein-Westfalen", latitude: 52.0302, longitude: 8.5325 },
   { value: "Bochum", aliases: ["Bochum"], land: "Nordrhein-Westfalen", latitude: 51.4818, longitude: 7.2162 },
@@ -48,6 +49,7 @@ const CITY_METADATA: readonly OrientationCityMetadata[] = [
   { value: "Münster", aliases: ["Münster", "Munster"], land: "Nordrhein-Westfalen", latitude: 51.9607, longitude: 7.6261 },
   { value: "Nuremberg", aliases: ["Nuremberg", "Nürnberg", "Nurnberg"], land: "Bayern", latitude: 49.4521, longitude: 11.0767 },
   { value: "Potsdam", aliases: ["Potsdam"], land: "Brandenburg", latitude: 52.3906, longitude: 13.0645 },
+  { value: "Regensburg", aliases: ["Regensburg"], land: "Bayern", latitude: 49.0134, longitude: 12.1016 },
   { value: "Sarrebruck", aliases: ["Sarrebruck", "Saarbrücken", "Saarbrucken"], land: "Saarland", latitude: 49.2402, longitude: 6.9969 },
   { value: "Stuttgart", aliases: ["Stuttgart"], land: "Baden-Württemberg", latitude: 48.7758, longitude: 9.1829 },
   { value: "Tübingen", aliases: ["Tübingen", "Tubingen"], land: "Baden-Württemberg", latitude: 48.5216, longitude: 9.0576 },
