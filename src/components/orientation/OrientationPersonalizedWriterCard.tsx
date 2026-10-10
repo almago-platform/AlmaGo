@@ -1,6 +1,8 @@
 "use client";
 
 import { localizeProfileOptions } from "@/content/student-profile-copy";
+import { OrientationRealPhoto } from "@/components/orientation/OrientationRealPhoto";
+import { useOrientationUniversityMedia, universityPhotoKey } from "@/components/orientation/useOrientationUniversityMedia";
 import type { Locale } from "@/lib/i18n";
 import type { PublicOrientationAnswers } from "@/lib/orientation/public";
 import { buildUniversalOrientationGuidance } from "@/lib/orientation/universal-guidance";
@@ -831,6 +833,10 @@ export function OrientationPersonalizedWriterCard({
 }) {
   const t = copy[locale];
   const content = result.content;
+  const mediaByUniversity = useOrientationUniversityMedia(
+    result.selected.filter((option) => !option.universityMedia?.coverImageUrl)
+      .map((option) => ({ institution: option.institution, city: option.city })),
+  );
   const profileHighlights = buildProfileHighlights(answers, locale);
   const guidance = answers ? buildUniversalOrientationGuidance(answers, locale) : null;
   const roleTexts = [
@@ -1165,35 +1171,14 @@ export function OrientationPersonalizedWriterCard({
 
           return (
             <article className="relative mt-5 overflow-hidden rounded-[var(--radius-panel)] bg-[var(--foreground)] text-white shadow-[var(--shadow-card)]">
-              {selected?.universityMedia?.coverImageUrl ? (
-                <figure className="relative border-b border-white/[0.1] bg-black/20">
-                  <div className="h-44 overflow-hidden sm:h-52">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={selected.universityMedia.coverImageUrl}
-                      alt={selected.universityMedia.canonicalName}
-                      loading="lazy"
-                      decoding="async"
-                      className="h-full w-full object-cover"
-                    />
-                  </div>
-                  {selected.universityMedia.coverImageSourceUrl ? (
-                    <figcaption className="absolute bottom-2 end-2 max-w-[80%] rounded-md bg-black/65 px-2 py-1 text-[10px] leading-4 text-white/90 backdrop-blur-sm">
-                      <a
-                        href={selected.universityMedia.coverImageSourceUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="underline decoration-white/40 underline-offset-2"
-                      >
-                        {selected.universityMedia.coverImageAttribution || t.photoSource}
-                        {selected.universityMedia.coverImageLicense
-                          ? " · " + selected.universityMedia.coverImageLicense
-                          : ""}
-                      </a>
-                    </figcaption>
-                  ) : null}
-                </figure>
-              ) : null}
+              <OrientationRealPhoto
+                className="h-44 rounded-none sm:h-52"
+                universityName={featuredOption.institution}
+                locale={locale}
+                media={selected?.universityMedia?.coverImageUrl
+                  ? selected.universityMedia
+                  : mediaByUniversity[universityPhotoKey(featuredOption.institution, featuredOption.city)] || null}
+              />
               <div aria-hidden="true" className="absolute inset-y-0 start-0 w-1 bg-[var(--brand)]" />
               <div aria-hidden="true" className="absolute -end-16 -top-16 size-56 rounded-full border border-white/[0.06]" />
 
@@ -1298,18 +1283,14 @@ export function OrientationPersonalizedWriterCard({
                     <div>
                       <div className="flex flex-wrap items-start justify-between gap-3">
                         <div className="flex min-w-0 gap-3">
-                          {selected?.universityMedia?.coverImageUrl ? (
-                            <div className="mt-0.5 size-16 shrink-0 overflow-hidden rounded-lg bg-[var(--surface-subtle)] sm:size-20">
-                              {/* eslint-disable-next-line @next/next/no-img-element */}
-                              <img
-                                src={selected.universityMedia.coverImageUrl}
-                                alt=""
-                                loading="lazy"
-                                decoding="async"
-                                className="h-full w-full object-cover"
-                              />
-                            </div>
-                          ) : null}
+                          <OrientationRealPhoto
+                            className="h-24 w-28 shrink-0 sm:h-28 sm:w-32"
+                            universityName={option.institution}
+                            locale={locale}
+                            media={selected?.universityMedia?.coverImageUrl
+                              ? selected.universityMedia
+                              : mediaByUniversity[universityPhotoKey(option.institution, option.city)] || null}
+                          />
                           <div className="min-w-0">
                           <p className="text-xs font-bold text-[var(--brand-strong)]">
                             {String(option.position).padStart(2, "0")}
@@ -1318,16 +1299,6 @@ export function OrientationPersonalizedWriterCard({
                           <p className="mt-1 text-xs leading-5 text-[var(--muted)]">
                             {option.institution}{option.city ? " · " + option.city : ""}
                           </p>
-                          {selected?.universityMedia?.coverImageSourceUrl ? (
-                            <a
-                              href={selected.universityMedia.coverImageSourceUrl}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="mt-1 inline-block text-[10px] font-semibold text-[var(--brand-strong)] underline underline-offset-2"
-                            >
-                              {t.photoSource}
-                            </a>
-                          ) : null}
                           </div>
                         </div>
                         {status ? (
