@@ -68,7 +68,7 @@ const fr: OrientationProspectCopy = {
   report: {
     label: "Rapport Campus Allemagne",
     title: "Mon orientation Allemagne",
-    subtitle: "Votre profil, des pistes d’études et les prochaines étapes à préparer.",
+    subtitle: "Votre projet, des formations à découvrir et la suite avec Campus Allemagne.",
     print: "Enregistrer mon rapport en PDF",
     printHelp: "Le bouton ouvre l’impression du navigateur. Choisissez « Enregistrer au format PDF ».",
   },
@@ -132,7 +132,7 @@ const ar: OrientationProspectCopy = {
   report: {
     label: "تقرير Campus Allemagne",
     title: "توجيهي للدراسة في ألمانيا",
-    subtitle: "ملفك الدراسي، ومسارات للدراسة، والخطوات القادمة للتحضير.",
+    subtitle: "مشروعك الدراسي، وبرامج يمكنك اكتشافها، والخطوة التالية مع Campus Allemagne.",
     print: "حفظ تقريري بصيغة PDF",
     printHelp: "سيتم فتح نافذة الطباعة. اختر الحفظ بصيغة PDF.",
   },
@@ -196,7 +196,7 @@ const en: OrientationProspectCopy = {
   report: {
     label: "Campus Allemagne report",
     title: "My Germany orientation",
-    subtitle: "Your profile, study options and practical next steps.",
+    subtitle: "Your study plans, programmes to explore and how Campus Allemagne can help.",
     print: "Save my report as PDF",
     printHelp: "Your browser print dialog will open. Choose “Save as PDF”.",
   },
@@ -260,7 +260,7 @@ const de: OrientationProspectCopy = {
   report: {
     label: "Campus Allemagne Bericht",
     title: "Meine Deutschland-Orientierung",
-    subtitle: "Dein Profil, mögliche Studienwege und die nächsten Schritte.",
+    subtitle: "Dein Studienwunsch, mögliche Studiengänge und deine nächsten Schritte mit Campus Allemagne.",
     print: "Bericht als PDF speichern",
     printHelp: "Der Druckdialog deines Browsers öffnet sich. Wähle „Als PDF speichern“.",
   },
