@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { AuthForm } from "@/components/auth/AuthForm";
+import { getAuthenticatedUser } from "@/lib/auth/access";
+import { hasVerifiedEmail } from "@/lib/auth/verified";
 import { AuthMobileHeader } from "@/components/auth/AuthMobileHeader";
 import { AuthStoryPanel } from "@/components/auth/AuthStoryPanel";
 import { resolveOrientationActivation } from "@/lib/orientation/account-activation";
@@ -30,6 +33,19 @@ export default async function SignupPage({
   const orientationActivation = isPhase2AccountLinkingEnabled()
     ? await resolveOrientationActivation(rawToken)
     : null;
+
+  // An already verified candidate should claim the saved orientation with the
+  // existing session, not create a second account. Only the matching email may
+  // claim the token; the claim API independently enforces auth and ownership.
+  if (orientationActivation) {
+    const { user } = await getAuthenticatedUser();
+    if (
+      hasVerifiedEmail(user)
+      && user?.email?.trim().toLowerCase() === orientationActivation.email
+    ) {
+      redirect(`/orientation/claim/${encodeURIComponent(orientationActivation.token)}`);
+    }
+  }
 
   return (
     <main className="auth-page min-h-screen bg-[linear-gradient(180deg,#fffdf8_0%,#f7f4ec_48%,#f1ece4_100%)] px-4 py-5 text-[var(--foreground)] sm:px-6 sm:py-8 lg:px-8 lg:py-10">
