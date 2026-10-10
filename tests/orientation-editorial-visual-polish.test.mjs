@@ -52,5 +52,5 @@ test("the deterministic FR AR EN DE fallback also avoids repeated conditional in
   assert.match(fallback, /personalBudgetNote\(locale, profile\.budgetRange\)/);
   assert.match(fallback, /Si vous choisissez de continuer avec Campus Allemagne/);
   assert.match(admission, /academic_access_review/);
-  assert.doesNotMatch(gemini, /guaranteed admission/i);
+  assert.match(gemini, /No university names, contact details, URLs, citations, marketing promises, or claims of guaranteed results/);
 });
