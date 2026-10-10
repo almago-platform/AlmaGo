@@ -17,7 +17,15 @@ export function ProvisionalEmailVerification({ locale }: { locale: Locale }) {
     try {
       // Never disclose whether an email corresponds to a known account, or
       // whether Supabase suppresses sending to already-confirmed addresses.
-      await createClient().auth.resend({ type: "signup", email: email.trim() });
+      await createClient().auth.resend({
+        type: "signup",
+        email: email.trim(),
+        // Keep the confirmation on this site's secured callback. The Prospect
+        // page can recover an orientation only after the account is verified.
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent("/prospect")}`,
+        },
+      });
     } catch {
       // Generic response also covers transport failures; user can retry via Auth.
     }
