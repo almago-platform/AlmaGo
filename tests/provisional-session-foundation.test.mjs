@@ -74,3 +74,60 @@ test("logout revokes server-side session without opening paid Prospect access", 
   assert.match(currentClaim, /if \(!hasVerifiedEmail\(user\)\)/);
   assert.doesNotMatch(signup + login + logout, /\/api\/prospect\/documents\/upload|\/api\/prospect\/payment/);
 });
+
+const dashboard = read("src/app/prospect/page.tsx");
+const layout = read("src/app/prospect/layout.tsx");
+const shell = read("src/components/layout/ProspectShell.tsx");
+const documentPage = read("src/app/prospect/documents/page.tsx");
+const documentUI = read("src/components/prospect/StarterDocumentsPanel.tsx");
+const upload = read("src/app/api/provisional-documents/upload/route.ts");
+const readDocument = read("src/app/api/provisional-documents/[id]/view/route.ts");
+const deleteDocument = read("src/app/api/provisional-documents/[id]/route.ts");
+const documentMigration = read("supabase/migrations/20261010200200_provisional_candidate_documents.sql");
+const handoff = read("src/lib/prospect/provisional-handoff.ts");
+const claim = read("src/app/api/orientation/claim/route.ts");
+const payment = read("src/app/prospect/payment/page.tsx");
+
+test("same ProspectShell and free dashboard are used without Supabase role elevation", () => {
+  assert.match(layout, /getProvisionalIdentity\(\)/);
+  assert.match(layout, /<ProspectShell displayName=\{candidate\.firstName\} provisional/);
+  assert.match(dashboard, /<ProvisionalProspectDashboard identity=\{temporary\}/);
+  assert.match(shell, /provisionalExpiresAt/);
+  assert.match(shell, /\/api\/provisional-session\/logout/);
+  assert.match(shell, /journeyLinks\.filter/);
+  assert.doesNotMatch(payment, /getProvisionalIdentity/);
+});
+
+test("provisional documents are private and all file operations are credential-scoped", () => {
+  assert.match(documentMigration, /create table public\.provisional_candidate_documents/i);
+  assert.match(documentMigration, /enable row level security/i);
+  assert.match(documentMigration, /revoke all on public\.provisional_candidate_documents from public, anon, authenticated/i);
+  assert.match(documentMigration, /'provisional-starter-documents'/);
+  assert.match(documentMigration, /false,/);
+  assert.match(upload, /getProvisionalIdentity\(\)/);
+  assert.match(upload, /isTrustedProvisionalMutation\(request\)/);
+  assert.match(upload, /hasAllowedDocumentSignature\(file\)/);
+  assert.match(upload, /isSafeDocumentFile\(file\)/);
+  assert.match(upload, /credential_id: identity\.id/);
+  assert.match(readDocument, /\.eq\("credential_id", identity\.id\)/);
+  assert.match(deleteDocument, /\.eq\("credential_id", identity\.id\)/);
+  assert.match(deleteDocument, /isTrustedProvisionalMutation\(request\)/);
+  assert.match(documentPage, /\.eq\("credential_id", pending\.id\)/);
+  assert.match(documentUI, /provisional \? "\/api\/provisional-documents/);
+});
+
+test("verified claim migrates documents idempotently and revokes temporary access", () => {
+  assert.match(claim, /hasVerifiedEmail\(user\)/);
+  assert.match(claim, /rpc\("claim_phase2_orientation"/);
+  assert.match(claim, /isProvisionalCandidateEnabled\(\)/);
+  assert.match(claim, /handoffProvisionalDocuments\(\{/);
+  assert.match(handoff, /\.eq\("orientation_id", orientationId\)/);
+  assert.match(handoff, /\.eq\("email", verifiedEmail\.trim\(\)\.toLowerCase\(\)\)/);
+  assert.match(handoff, /\.eq\("credential_id", credential\.id\)/);
+  assert.match(handoff, /already\.student_id !== userId/);
+  assert.match(handoff, /\.from\("student-documents"\)/);
+  assert.match(handoff, /\.from\("documents"\)\.insert\(\{/);
+  assert.match(handoff, /verified_user_id: userId/);
+  assert.match(handoff, /\.from\("provisional_candidate_sessions"\)/);
+  assert.doesNotMatch(handoff, /select\("\*"\)/);
+});
