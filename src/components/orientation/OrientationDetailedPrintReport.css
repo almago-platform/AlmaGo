@@ -1,0 +1,284 @@
+.orientation-detailed-print-report {
+  display: none;
+}
+
+@media print {
+  html[data-orientation-print-mode="detailed"] .orientation-print-page .orientation-one-page-print {
+    display: none !important;
+  }
+
+  html[data-orientation-print-mode="detailed"] .orientation-print-page .orientation-detailed-print-report,
+  .orientation-print-page.orientation-detailed-document .orientation-detailed-print-report {
+    display: block !important;
+  }
+
+  .orientation-print-page .orientation-detailed-print-report {
+    color: #132131;
+    background: #fff;
+    font-size: 10pt;
+    line-height: 1.48;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .orientation-print-page .orientation-detailed-print-report section,
+  .orientation-print-page .orientation-detailed-print-report article {
+    break-inside: auto !important;
+  }
+
+  .orientation-print-page .orientation-detailed-print-report .orientation-detail-option,
+  .orientation-print-page .orientation-detailed-print-report .orientation-detail-profile,
+  .orientation-print-page .orientation-detailed-print-report .orientation-detail-priority,
+  .orientation-print-page .orientation-detailed-print-report .orientation-detail-roadmap li {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  .orientation-detail-cover {
+    break-after: page;
+    page-break-after: always;
+  }
+
+  .orientation-detail-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12mm;
+    padding-bottom: 5mm;
+    border-bottom: 1px solid #dfd6cb;
+  }
+
+  .orientation-detail-header span,
+  .orientation-detail-eyebrow {
+    color: #a40d25;
+    font-size: 9pt;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+  }
+
+  .orientation-detail-header span { text-align: end; }
+
+  .orientation-detail-hero {
+    margin-top: 8mm;
+    padding: 10mm;
+    border-radius: 4mm;
+    border-top: 3mm solid #d60929;
+    background: #132131;
+    color: #fff;
+  }
+
+  .orientation-detail-hero .orientation-detail-eyebrow {
+    margin: 0;
+    color: #ffc247;
+  }
+
+  .orientation-detail-hero h1 {
+    margin: 3mm 0;
+    color: #fff;
+    font-size: 25pt;
+    line-height: 1.13;
+    letter-spacing: -0.025em;
+  }
+
+  .orientation-detail-hero p { margin: 0; }
+  .orientation-detail-hero .orientation-detail-opening {
+    margin-top: 5mm;
+    color: #e5e7eb;
+    font-size: 10pt;
+    line-height: 1.55;
+  }
+
+  .orientation-detail-profile {
+    margin-top: 7mm;
+    padding: 6mm;
+    border-radius: 3mm;
+    background: #f7f2eb;
+  }
+
+  .orientation-detail-profile h2,
+  .orientation-detail-roadmap h2,
+  .orientation-detail-facts h4,
+  .orientation-detail-sources h4 {
+    margin: 0 0 3mm;
+    font-size: 12pt;
+    font-weight: 800;
+  }
+
+  .orientation-detail-profile dl {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 4mm;
+    margin: 0;
+  }
+
+  .orientation-detail-profile dt {
+    font-size: 8pt;
+    color: #655d55;
+  }
+
+  .orientation-detail-profile dd {
+    margin: 1mm 0 0;
+    font-size: 10pt;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+  }
+
+  .orientation-detail-priority {
+    margin-top: 7mm;
+    padding: 6mm;
+    border: 1px solid #e2d7c8;
+    border-inline-start: 1.2mm solid #d60929;
+    border-radius: 3mm;
+  }
+
+  .orientation-detail-priority .orientation-detail-eyebrow { margin: 0; }
+  .orientation-detail-priority h2 { margin: 2mm 0; font-size: 17pt; }
+  .orientation-detail-priority p { margin: 0 0 3mm; }
+  .orientation-detail-priority strong { display: block; color: #a40d25; }
+
+  .orientation-detail-roadmap { margin-top: 7mm; }
+  .orientation-detail-roadmap ol {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 3mm;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  .orientation-detail-roadmap li {
+    padding: 4mm;
+    border-radius: 2mm;
+    background: #fff6ed;
+  }
+
+  .orientation-detail-roadmap li strong { font-size: 9pt; }
+  .orientation-detail-roadmap li p { margin: 2mm 0 0; font-size: 8.5pt; }
+
+  .orientation-detail-chapter { margin: 1mm 0 6mm; }
+  .orientation-detail-chapter p { margin: 1mm 0; }
+  .orientation-detail-chapter h2 { margin: 2mm 0; font-size: 24pt; line-height: 1.2; }
+
+  .orientation-detail-option {
+    padding: 5mm;
+    margin: 0 0 7mm;
+    border: 1px solid #e2d7c8;
+    border-top: 1.5mm solid #d60929;
+    border-radius: 3mm;
+    background: #fff;
+  }
+
+  .orientation-detail-option-head {
+    display: grid;
+    grid-template-columns: 13mm minmax(0, 1fr) auto;
+    align-items: start;
+    gap: 3mm;
+  }
+
+  .orientation-detail-index {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 11mm;
+    height: 11mm;
+    border-radius: 50%;
+    background: #132131;
+    color: #fff;
+    font-size: 11pt;
+    font-weight: 800;
+  }
+
+  .orientation-detail-option-head h3 {
+    margin: 0;
+    font-size: 16pt;
+    line-height: 1.2;
+  }
+
+  .orientation-detail-option-head p {
+    margin: 1mm 0 0;
+    font-size: 9pt;
+    color: #655d55;
+  }
+
+  .orientation-detail-status {
+    border: 1px solid #bfb4aa;
+    border-radius: 3mm;
+    padding: 1.5mm 2mm;
+    font-size: 7pt;
+    font-weight: 700;
+    white-space: normal;
+    max-width: 37mm;
+  }
+
+  .orientation-detail-photo { margin: 4mm 0; }
+  .orientation-detail-photo img {
+    display: block;
+    width: 100%;
+    height: 46mm;
+    object-fit: cover;
+    background: #f3ede4;
+    border-radius: 2mm;
+  }
+
+  .orientation-detail-photo figcaption {
+    margin-top: 1mm;
+    font-size: 7.2pt;
+    line-height: 1.3;
+    color: #655d55;
+    overflow-wrap: anywhere;
+  }
+
+  .orientation-detail-photo-missing {
+    padding: 5mm;
+    background: #f7f2eb;
+    border-radius: 2mm;
+    font-size: 9pt;
+  }
+
+  .orientation-detail-why { margin-top: 4mm; }
+  .orientation-detail-why h4 { margin: 0 0 1mm; font-size: 10pt; }
+  .orientation-detail-why p { margin: 0; }
+
+  .orientation-detail-facts { margin-top: 4mm; }
+  .orientation-detail-facts dl {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 3mm;
+    margin: 0;
+  }
+
+  .orientation-detail-facts dl > div { padding: 2mm 3mm; background: #f7f2eb; }
+  .orientation-detail-facts dt { font-size: 8pt; color: #655d55; }
+  .orientation-detail-facts dd { margin: 0; font-weight: 700; overflow-wrap: anywhere; }
+
+  .orientation-detail-sources { margin-top: 3mm; font-size: 8pt; }
+  .orientation-detail-sources h4 { font-size: 9pt; margin-bottom: 1mm; }
+  .orientation-detail-sources ul { margin: 0; padding-inline-start: 5mm; }
+  .orientation-detail-sources li { overflow-wrap: anywhere; }
+  .orientation-detail-sources a, .orientation-detail-photo a { color: #a40d25; }
+
+  .orientation-detail-closing {
+    margin-top: 8mm;
+    padding: 8mm;
+    border-radius: 3mm;
+    background: #f7f2eb;
+    break-inside: avoid !important;
+  }
+
+  .orientation-detail-closing h2 { margin: 0 0 3mm; font-size: 17pt; }
+  .orientation-detail-closing p { margin: 2mm 0; }
+  .orientation-detail-closing a {
+    display: inline-block;
+    margin: 5mm 0;
+    padding: 4mm 7mm;
+    border-radius: 2mm;
+    background: #c20825;
+    color: #fff;
+    text-decoration: none;
+    font-weight: 800;
+  }
+
+  .orientation-detail-closing aside { padding-top: 4mm; border-top: 1px solid #dfd6cb; font-size: 9pt; }
+  .orientation-detail-closing footer { margin-top: 5mm; font-size: 8pt; color: #655d55; }
+  .orientation-detail-header, .orientation-detail-chapter { break-inside: avoid !important; }
+}
