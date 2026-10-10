@@ -98,12 +98,16 @@ export async function POST(request: Request) {
   if (!universities) return NextResponse.json({ error: "Invalid universities" }, { status: 400 });
   if (!universities.length) return NextResponse.json({ items: [] }, { headers: { "Cache-Control": "no-store" } });
 
+  const reviewedFallback = universities.flatMap((requested) => {
+    const media = findCuratedUniversityMedia(requested.institution, requested.city);
+    return media ? [{ ...requested, media }] : [];
+  });
   const lease = acquireRequestConcurrency("orientation_media", 3);
   if (!lease) return concurrencyLimitedResponse("orientation_media");
 
   try {
     if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SECRET_KEY) {
-      return NextResponse.json({ items: [] }, { headers: { "Cache-Control": "no-store" } });
+      return NextResponse.json({ items: reviewedFallback }, { headers: { "Cache-Control": "no-store" } });
     }
     const supabase = createPrivilegedSupabaseClient();
     const { data, error } = await supabase.from("universities")
@@ -184,7 +188,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ items }, { headers: { "Cache-Control": "no-store" } });
   } catch {
     // Media enrichment is optional: never turn a university orientation into a 503.
-    return NextResponse.json({ items: [] }, { headers: { "Cache-Control": "no-store" } });
+    return NextResponse.json({ items: reviewedFallback }, { headers: { "Cache-Control": "no-store" } });
   } finally {
     lease.release();
   }
