@@ -21,6 +21,11 @@
     print-color-adjust: exact;
   }
 
+  .orientation-print-page .orientation-print-report > .orientation-detailed-print-report {
+    break-inside: auto !important;
+    page-break-inside: auto !important;
+  }
+
   .orientation-print-page .orientation-detailed-print-report section,
   .orientation-print-page .orientation-detailed-print-report article {
     break-inside: auto !important;
