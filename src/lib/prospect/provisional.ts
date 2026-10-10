@@ -1,5 +1,6 @@
 import "server-only";
 import { cookies } from "next/headers";
+import { PROVISIONAL_COOKIE } from "@/lib/prospect/provisional-cookie";
 import { hashOrientationResumeToken } from "@/lib/orientation/resume-token";
 import { restorePublicOrientationAnswers, type PublicOrientationAnswers } from "@/lib/orientation/public";
 import { createPrivilegedSupabaseClient } from "@/lib/supabase/privileged";
@@ -10,7 +11,7 @@ import { createPrivilegedSupabaseClient } from "@/lib/supabase/privileged";
  * No mutation, linkage, auth elevation or email-based lookup is performed.
  */
 export async function loadProvisionalOrientation(): Promise<PublicOrientationAnswers | null> {
-  const token = (await cookies()).get("almago_prospect_preview")?.value;
+  const token = (await cookies()).get(PROVISIONAL_COOKIE)?.value;
   const hash = token && hashOrientationResumeToken(token);
   if (!hash) return null;
   try {
