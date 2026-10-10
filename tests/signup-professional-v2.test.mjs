@@ -12,7 +12,7 @@ const globals = readFileSync("src/app/globals.css", "utf8");
 const login = readFileSync("src/app/login/page.tsx", "utf8");
 
 test("signup page uses the new student registration composition", () => {
-  assert.ok(signup.includes('AuthStoryPanel mode="signup"'));
+  assert.ok(signup.includes('AuthStoryPanel mode="signup" prospectSignup={Boolean(orientationActivation)}'));
   assert.ok(signup.includes("linear-gradient"));
   assert.ok(form.includes("<StudentEntryProgress current={1} compact />"));
   assert.ok(progress.includes("Progression de création du dossier"));

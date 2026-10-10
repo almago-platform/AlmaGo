@@ -5,9 +5,11 @@ import Link from "next/link";
 import { BrandLogo } from "@/components/brand/BrandLogo";
 import { LanguageSwitcher } from "@/components/i18n/LanguageSwitcher";
 import { useLocale } from "@/components/i18n/LocaleProvider";
+import { orientationSignupCopy } from "@/content/orientation-signup-copy";
 
 type AuthStoryPanelProps = {
   mode: "login" | "signup";
+  prospectSignup?: boolean;
 };
 
 const images = {
@@ -19,9 +21,11 @@ const images = {
   },
 } as const;
 
-export function AuthStoryPanel({ mode }: AuthStoryPanelProps) {
-  const { copy, direction } = useLocale();
+export function AuthStoryPanel({ mode, prospectSignup = false }: AuthStoryPanelProps) {
+  const { copy, direction, locale } = useLocale();
   const story = mode === "login" ? copy.auth.loginStory : copy.auth.signupStory;
+  const orientation = orientationSignupCopy[locale];
+  const prospectStory = prospectSignup && mode === "signup";
 
   return (
     <section className="auth-story-panel pc-panel hidden min-h-[700px] overflow-hidden rounded-[1rem] lg:flex lg:flex-col">
@@ -32,7 +36,7 @@ export function AuthStoryPanel({ mode }: AuthStoryPanelProps) {
         <div className="flex items-center gap-2">
           <LanguageSwitcher compact />
           <span className="auth-student-badge rounded-full border border-[var(--border)] bg-[var(--surface-subtle)] px-3 py-1.5 text-[0.68rem] font-bold uppercase tracking-[0.12em] text-slate-600">
-            {copy.auth.studentSpace}
+            {prospectStory ? orientation.badge : copy.auth.studentSpace}
           </span>
         </div>
       </div>
@@ -47,19 +51,19 @@ export function AuthStoryPanel({ mode }: AuthStoryPanelProps) {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[rgba(28,33,36,0.58)] via-transparent to-transparent" />
         <p className={`absolute bottom-5 m-0 max-w-sm text-sm font-semibold leading-6 text-white ${direction === "rtl" ? "right-6 left-6" : "left-6 right-6"}`}>
-          {story.badge}
+          {prospectStory ? orientation.badge : story.badge}
         </p>
       </div>
 
       <div className="auth-story-body flex flex-1 flex-col p-7">
-        <p className="auth-story-eyebrow text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">{story.eyebrow}</p>
+        <p className="auth-story-eyebrow text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand)]">{prospectStory ? orientation.eyebrow : story.eyebrow}</p>
         <h1 className="auth-story-title editorial-accent mt-3 max-w-xl text-[2rem] leading-[1.08] text-[var(--foreground)]">
-          {story.title}
+          {prospectStory ? orientation.storyTitle : story.title}
         </h1>
-        <p className="mt-4 max-w-xl text-sm leading-6 text-[var(--muted)]">{story.description}</p>
+        <p className="mt-4 max-w-xl text-sm leading-6 text-[var(--muted)]">{prospectStory ? orientation.storyDescription : story.description}</p>
 
         <ol className="mt-6 grid gap-2">
-          {story.points.map(([title, detail], index) => (
+          {(prospectStory ? orientation.storyPoints : story.points).map(([title, detail], index) => (
             <li
               key={title}
               className="pc-soft-strip grid grid-cols-[2.75rem_1fr] gap-3 px-4 py-3"
@@ -78,7 +82,7 @@ export function AuthStoryPanel({ mode }: AuthStoryPanelProps) {
         <div className="mt-auto pt-6">
           <div className={`border-[var(--brand)] ${direction === "rtl" ? "border-r-2 pr-4" : "border-l-2 pl-4"}`}>
             <p className="text-sm font-bold text-[var(--foreground)]">{copy.auth.boundaryTitle}</p>
-            <p className="mt-1 text-xs leading-5 text-[var(--muted)]">{copy.auth.boundaryText}</p>
+            <p className="mt-1 text-xs leading-5 text-[var(--muted)]">{prospectStory ? orientation.boundary : copy.auth.boundaryText}</p>
           </div>
         </div>
       </div>
