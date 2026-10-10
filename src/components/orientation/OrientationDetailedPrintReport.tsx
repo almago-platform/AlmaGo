@@ -3,6 +3,7 @@
 import "./OrientationDetailedPrintReport.css";
 
 import { BrandLogo } from "@/components/brand/BrandLogo";
+import { useOrientationUniversityMedia, universityPhotoKey } from "@/components/orientation/useOrientationUniversityMedia";
 import { findCuratedUniversityMedia } from "@/lib/orientation-engine/discovery/curated-university-media";
 import { orientationCandidatePriority } from "@/lib/orientation-engine/writer/candidate-priority";
 import { formatPersonalizedFactValue } from "@/components/orientation/OrientationOnePagePrintReport";
@@ -100,6 +101,8 @@ export function OrientationDetailedPrintReport({
   const t = copy[locale];
   const priority = orientationCandidatePriority(answers, locale);
   const selected = [...personalized.selected].sort((a, b) => a.position - b.position);
+  const dynamicMedia = useOrientationUniversityMedia(selected.filter((option) => !option.universityMedia?.coverImageUrl)
+    .map((option) => ({ institution: option.institution, city: option.city })));
   const content = personalized.content;
   const candidate = [identity?.firstName, identity?.lastName].filter(Boolean).join(" ");
   const prioritized = [
@@ -157,6 +160,7 @@ export function OrientationDetailedPrintReport({
           const writer = content.studyOptions.find((item) => item.optionId === option.optionId)
             || content.studyOptions.find((item) => item.position === option.position);
           const photo = licensedPhoto(option.universityMedia)
+            || licensedPhoto(dynamicMedia[universityPhotoKey(option.institution, option.city)])
             || licensedPhoto(findCuratedUniversityMedia(option.institution, option.city));
           const verifiedFacts = option.facts.filter((fact) => fact.status === "verified");
           const references = [...new Set(verifiedFacts.map((fact) => safeSource(fact.sourceUrl)).filter((url): url is string => Boolean(url)))];
