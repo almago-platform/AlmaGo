@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getAuthenticatedUser } from "@/lib/auth/access";
+import { hasVerifiedEmail } from "@/lib/auth/verified";
 import { createPrivilegedSupabaseClient } from "@/lib/supabase/privileged";
 import { enforceRequestRateLimit, PUBLIC_ABUSE_POLICIES } from "@/lib/security/abuse";
 
@@ -23,7 +24,7 @@ export async function POST(request: Request) {
   );
   if (accountLimited) return accountLimited;
 
-  if (!user.email_confirmed_at) {
+  if (!hasVerifiedEmail(user)) {
     return NextResponse.json(
       { error: "Confirmez d’abord votre adresse e-mail." },
       { status: 409 },
