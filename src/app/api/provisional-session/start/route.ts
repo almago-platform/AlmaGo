@@ -20,6 +20,9 @@ export async function POST(request: Request) {
   if (!(await isTrustedProvisionalMutation(request))) {
     return NextResponse.json({ error: "Forbidden." }, { status: 403 });
   }
+  // Protect expensive password hashing from IP rotation across arbitrary emails.
+  const ipLimited = enforceRequestRateLimit(request, PUBLIC_ABUSE_POLICIES.orientationAccountMutation);
+  if (ipLimited) return ipLimited;
   if (Number(request.headers.get("content-length") || 0) > 2048) {
     return NextResponse.json({ error: "Invalid request." }, { status: 400 });
   }
