@@ -11,15 +11,22 @@ export const dynamic = "force-dynamic";
 // Never resolve or claim a prospect using only an unconfirmed email address.
 export async function GET(request: Request) {
   const url = new URL(request.url);
-  const destination = new URL("/prospect-preview", url.origin);
-  const response = NextResponse.redirect(destination, { status: 303 });
-  response.headers.set("Cache-Control", "private, no-store");
-  response.headers.set("Referrer-Policy", "no-referrer");
-  response.headers.set("X-Robots-Tag", "noindex, nofollow");
+  // Always return a relative Location. A reverse proxy may expose its
+  // internal localhost:3000 as request.url, which must never reach browsers.
+  const response = new NextResponse(null, {
+    status: 303,
+    headers: {
+      Location: "/prospect-preview",
+      "Cache-Control": "private, no-store",
+      "Referrer-Policy": "no-referrer",
+      "X-Robots-Tag": "noindex, nofollow",
+    },
+  });
   response.cookies.set(PROVISIONAL_COOKIE, "", { path: PROVISIONAL_COOKIE_PATH, maxAge: 0 });
 
   if (!isPhase2AccountLinkingEnabled()) {
-    return NextResponse.redirect(new URL("/orientation", url.origin));
+    response.headers.set("Location", "/orientation");
+    return response;
   }
 
   const raw = url.searchParams.get("orientation_token");
