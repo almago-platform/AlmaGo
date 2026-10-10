@@ -60,5 +60,23 @@ select ok(
   'provisional files are stored in a private bucket'
 );
 
+select ok(
+  exists (
+    select 1 from information_schema.columns
+    where table_schema='public'
+      and table_name='provisional_candidate_credentials'
+      and column_name='orientation_acknowledged_at'
+  ),
+  'free provisional orientation acknowledgement column exists'
+);
+select ok(
+  not has_table_privilege('anon','public.provisional_candidate_credentials','UPDATE'),
+  'anonymous visitor cannot forge confirmation'
+);
+select ok(
+  not has_table_privilege('authenticated','public.provisional_candidate_credentials','UPDATE'),
+  'other authenticated users cannot forge confirmation'
+);
+
 select * from finish();
 rollback;
