@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { OrientationRefinementQuestionCard } from "@/components/orientation/OrientationRefinementQuestionCard";
 import { OrientationLetterCard } from "@/components/orientation/OrientationLetterCard";
 import { OrientationPersonalizedWriterCard } from "@/components/orientation/OrientationPersonalizedWriterCard";
@@ -53,7 +53,10 @@ const copy = {
       "Préparation de votre rapport personnalisé",
     ],
     loadingNote: "Cela peut prendre quelques instants. Gardez cette page ouverte pendant la préparation.",
-    unavailable: "Votre lettre détaillée est momentanément indisponible. Votre orientation générale reste valable.",
+    unavailable: "Votre orientation personnalisée n’a pas pu être préparée. Vous pouvez réessayer.",
+    enriching: "Votre première orientation est prête. Nous cherchons encore des formations vérifiées pour compléter votre résultat.",
+    degraded: "Les recherches complémentaires sont indisponibles pour le moment. Votre lettre personnalisée reste accessible.",
+    retry: "Réessayer la recherche complémentaire",
     details: "Comprendre notre analyse en détail",
     why: "Pourquoi cette option apparaît",
     missing: "À vérifier ou compléter",
@@ -90,7 +93,10 @@ const copy = {
       "إعداد تقريرك الشخصي",
     ],
     loadingNote: "قد يستغرق ذلك بضع لحظات. أبقِ هذه الصفحة مفتوحة أثناء الإعداد.",
-    unavailable: "رسالة التوجيه التفصيلية غير متاحة مؤقتًا. يبقى توجيهك العام صالحًا.",
+    unavailable: "تعذر إعداد توجيهك الشخصي. يمكنك المحاولة مرة أخرى.",
+    enriching: "توجيهك الأولي جاهز. نبحث الآن عن برامج موثوقة لإكمال النتيجة.",
+    degraded: "البحث الإضافي غير متاح حاليًا. يمكنك دائمًا قراءة رسالتك الشخصية.",
+    retry: "إعادة البحث الإضافي",
     details: "اكتشف تفاصيل تحليلنا",
     why: "لماذا يظهر هذا الخيار",
     missing: "ما يجب التحقق منه أو استكماله",
@@ -127,7 +133,10 @@ const copy = {
       "Preparing your personalised report",
     ],
     loadingNote: "This can take a few moments. Keep this page open while we prepare your result.",
-    unavailable: "Your detailed orientation letter is temporarily unavailable. Your general orientation remains valid.",
+    unavailable: "We couldn't prepare your personalised orientation. Please try again.",
+    enriching: "Your first orientation is ready. We're still checking verified programmes to enrich it.",
+    degraded: "Further research is temporarily unavailable. Your personalised letter is still here.",
+    retry: "Retry the additional research",
     details: "Explore our detailed analysis",
     why: "Why this option appears",
     missing: "To verify or complete",
@@ -164,7 +173,10 @@ const copy = {
       "Persönlichen Bericht vorbereiten",
     ],
     loadingNote: "Das kann einige Augenblicke dauern. Lass diese Seite während der Vorbereitung geöffnet.",
-    unavailable: "Dein ausführliches Orientierungsschreiben ist vorübergehend nicht verfügbar. Die allgemeine Orientierung bleibt gültig.",
+    unavailable: "Deine persönliche Orientierung konnte nicht erstellt werden. Bitte versuche es erneut.",
+    enriching: "Deine erste Orientierung ist bereit. Wir prüfen weitere Studiengänge für das ausführliche Ergebnis.",
+    degraded: "Die ergänzende Recherche ist derzeit nicht verfügbar. Dein persönlicher Brief bleibt sichtbar.",
+    retry: "Ergänzende Recherche erneut versuchen",
     details: "Unsere Analyse im Detail ansehen",
     why: "Warum diese Option erscheint",
     missing: "Zu prüfen oder zu ergänzen",
@@ -439,14 +451,20 @@ export function PersonalizedOrientationEngineCard({
         ? t.bacNoBac
         : null;
   const requestBody = useMemo(() => JSON.stringify({ answers, locale }), [answers, locale]);
+  const lastRequestKey = useRef<string | null>(null);
+  const [retryVersion, setRetryVersion] = useState(0);
   const [requestState, setRequestState] = useState<{
     key: string | null;
     result: EngineResponse | null;
     error: boolean;
+    enhancing: boolean;
+    degraded: boolean;
   }>({
     key: null,
     result: null,
     error: false,
+    enhancing: false,
+    degraded: false,
   });
 
   const isCurrentRequest = requestState.key === requestBody;
@@ -455,7 +473,7 @@ export function PersonalizedOrientationEngineCard({
     ? "loading"
     : requestState.error
       ? "error"
-      : "ready";
+      : result ? "ready" : "loading";
   const personalized =
     result?.shortlist.source === "personalized_verified"
     && result.personalized
@@ -470,50 +488,98 @@ export function PersonalizedOrientationEngineCard({
     result ? geographicFallbackMessage(locale, result.geography) : null;
 
   useEffect(() => {
-    const controller = new AbortController();
-    onResultReady?.(false);
+    const newProfile = lastRequestKey.current !== requestBody;
+    lastRequestKey.current = requestBody;
+    const previewController = new AbortController();
+    const fullController = new AbortController();
+    let alive = true;
+    let fullReady = false;
+    let previewFailed = false;
+    let fullFailed = false;
 
-    fetch("/api/orientation/engine", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: requestBody,
-      signal: controller.signal,
-      cache: "no-store",
-    })
-      .then(async (response) => {
-        if (!response.ok) throw new Error("orientation-engine");
-        return response.json() as Promise<EngineResponse>;
-      })
-      .then((payload) => {
-        setRequestState({
-          key: requestBody,
-          result: payload,
-          error: false,
-        });
-        const printablePersonalized =
-          payload.shortlist.source === "personalized_verified"
-          && payload.personalized
-          && payload.personalized.selected.length > 0
-            ? payload.personalized
-            : null;
-        onReviewReady?.(payload.personalized?.reviewId || null);
-        onPersonalizedReady?.(printablePersonalized);
-        onResultReady?.(true);
-      })
-      .catch((error) => {
-        if (error instanceof DOMException && error.name === "AbortError") return;
-        setRequestState({
-          key: requestBody,
-          result: null,
-          error: true,
-        });
-        onReviewReady?.(null);
-        onPersonalizedReady?.(null);
-        onResultReady?.(false);
+    // On retry, keep the candidate's already available first letter visible.
+    setRequestState((current) => ({
+      key: requestBody,
+      result: !newProfile && current.key === requestBody ? current.result : null,
+      error: false,
+      enhancing: true,
+      degraded: false,
+    }));
+    if (newProfile) onResultReady?.(false);
+
+    function publish(payload: EngineResponse, isFull: boolean) {
+      if (!alive || (!isFull && fullReady)) return;
+      if (isFull) fullReady = true;
+      setRequestState({
+        key: requestBody,
+        result: payload,
+        error: false,
+        enhancing: !isFull && !fullFailed,
+        degraded: !isFull && fullFailed,
       });
 
-    return () => controller.abort();
-  }, [requestBody, onReviewReady, onPersonalizedReady, onResultReady]);
+      const printablePersonalized =
+        payload.shortlist.source === "personalized_verified"
+        && payload.personalized
+        && payload.personalized.selected.length > 0
+          ? payload.personalized
+          : null;
+      onReviewReady?.(payload.personalized?.reviewId || null);
+      onPersonalizedReady?.(printablePersonalized);
+      onResultReady?.(true);
+    }
+
+    function failIfBothUnavailable() {
+      if (!alive) return;
+      setRequestState((current) => {
+        if (current.key !== requestBody) return current;
+        return {
+          ...current,
+          error: previewFailed && fullFailed && !current.result,
+          enhancing: !fullFailed,
+          degraded: fullFailed && Boolean(current.result),
+        };
+      });
+      if (previewFailed && fullFailed) onResultReady?.(false);
+    }
+
+    async function requestEngine(url: string, signal: AbortSignal): Promise<EngineResponse> {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: requestBody,
+        signal,
+        cache: "no-store",
+      });
+      if (!response.ok) throw new Error(`orientation-engine-${response.status}`);
+      return response.json() as Promise<EngineResponse>;
+    }
+
+    // First-contact letter does not wait for any LLM, discovery or database call.
+    void requestEngine("/api/orientation/engine/preview", previewController.signal)
+      .then((payload) => publish(payload, false))
+      .catch(() => {
+        previewFailed = true;
+        failIfBothUnavailable();
+      });
+
+    // Enrichment is independent, bounded client-side and replaceable on retry.
+    const deadline = window.setTimeout(() => fullController.abort(), 35_000);
+    void requestEngine("/api/orientation/engine", fullController.signal)
+      .then((payload) => publish(payload, true))
+      .catch(() => {
+        fullFailed = true;
+        failIfBothUnavailable();
+      })
+      .finally(() => window.clearTimeout(deadline));
+
+    return () => {
+      alive = false;
+      window.clearTimeout(deadline);
+      previewController.abort();
+      fullController.abort();
+    };
+  }, [requestBody, retryVersion, onReviewReady, onPersonalizedReady, onResultReady]);
 
   return (
     <section
@@ -602,6 +668,20 @@ export function PersonalizedOrientationEngineCard({
 
         {state === "ready" && result ? (
           <>
+            {requestState.enhancing ? (
+              <p role="status" className="mb-5 rounded-[var(--radius-control)] border border-[var(--info-border)] bg-[var(--info-soft)] px-4 py-3 text-sm leading-6">
+                {t.enriching}
+              </p>
+            ) : null}
+            {requestState.degraded ? (
+              <div role="status" className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-[var(--radius-control)] border border-[var(--warning-border)] bg-[var(--surface-subtle)] px-4 py-3 text-sm leading-6">
+                <span>{t.degraded}</span>
+                <button type="button" onClick={() => setRetryVersion((value) => value + 1)}
+                  className="min-h-11 font-semibold text-[var(--brand-strong)] underline underline-offset-4">
+                  {t.retry}
+                </button>
+              </div>
+            ) : null}
             {isBachelorFirstContact && bacWelcome && personalized ? (
               <p className="mb-5 rounded-[var(--radius-control)] border border-[var(--premium-border)] bg-[var(--premium-cream-soft)] px-5 py-4 text-base font-medium leading-7 text-[var(--foreground)]">
                 {bacWelcome}
