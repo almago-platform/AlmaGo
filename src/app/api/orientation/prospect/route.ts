@@ -4,7 +4,8 @@ import { sendTransactionalEmail } from "@/lib/email/transactional";
 import { normalizeLocale } from "@/lib/i18n";
 import { buildPublicOrientationDiagnostic } from "@/lib/orientation/diagnostic";
 import { buildOrientationProspectEmail } from "@/lib/orientation/prospect-email";
-import { buildOrientationEmailPdfAttachments } from "@/lib/orientation/pdf-attachments";
+import { buildDetailedOrientationEmailPdfAttachment, buildOrientationEmailPdfAttachments } from "@/lib/orientation/pdf-attachments";
+import { readSupplementalOrientationEmailPistes } from "@/lib/orientation/email-research-pistes";
 import { validatePublicOrientationAnswers } from "@/lib/orientation/validate";
 import { createOrientationResumeToken } from "@/lib/orientation/resume-token";
 import {
@@ -351,6 +352,19 @@ export async function POST(request: Request) {
       attachments = [];
     }
 
+    // Original two PDFs are still mandatory; the detailed attachment is additive and resilient.
+    if (attachments.length === 2 && personalized?.selected.length) {
+      try {
+        const supplemental = await readSupplementalOrientationEmailPistes(answers, personalized.selected);
+        const detailed = await buildDetailedOrientationEmailPdfAttachment({
+          locale, answers, identity, email, personalized, supplemental,
+        });
+        if (detailed) attachments.push(detailed);
+      } catch {
+        // Do not block delivery of the two existing reports.
+      }
+    }
+
     // Do not claim to have emailed two PDFs if attachment generation failed.
     if ((automaticDelivery || includedDelivery) && attachments.length !== 2) {
       await supabase
@@ -369,7 +383,11 @@ export async function POST(request: Request) {
       orientationReportUrl,
       candidateReportUrl,
       interestUrl,
-      attachmentsIncluded: attachments.length === 2,
+      attachmentsIncluded: attachments.length >= 2,
+      detailedAttachmentIncluded: attachments.length === 3,
+      detailedReportUrl: personalized?.selected.length
+        ? new URL(`/orientation/report/${encodeURIComponent(resume.token)}?document=detailed`, baseUrl).toString()
+        : null,
     });
 
     const delivery = await sendTransactionalEmail({
