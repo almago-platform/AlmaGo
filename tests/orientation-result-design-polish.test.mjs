@@ -71,7 +71,7 @@ test("continuation and Prospect creation share one explicit, accessible action",
 test("report download is visually secondary without changing print, edit or return", () => {
   assert.match(form, /orientation-report/);
   assert.match(form, /prospectCopy\.report\.printHelp/);
-  assert.match(form, /onClick=\{\(\) => window\.print\(\)\}/);
+  assert.match(form, /onClick=\{\(\) => printOrientationDocument\("summary"\)\}/);
   assert.match(form, /onClick=\{\(\) => setStep\(1\)\}/);
   assert.match(form, /resultActionsCopy\.pdf/);
   assert.match(form, /resultActionsCopy\.home/);
