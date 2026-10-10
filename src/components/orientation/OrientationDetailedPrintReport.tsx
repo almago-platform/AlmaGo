@@ -1,6 +1,7 @@
 "use client";
 
 import "./OrientationDetailedPrintReport.css";
+import { useEffect, useState } from "react";
 
 import { BrandLogo } from "@/components/brand/BrandLogo";
 import { useOrientationUniversityMedia, universityPhotoKey } from "@/components/orientation/useOrientationUniversityMedia";
@@ -11,14 +12,22 @@ import type { Locale } from "@/lib/i18n";
 import type { PublicOrientationAnswers, PublicOrientationIdentity } from "@/lib/orientation/public";
 import type { OrientationPublicPersonalizedResult } from "@/lib/orientation-engine/result/types";
 import type { OrientationUniversityMedia } from "@/lib/orientation-engine/types";
+import type { ResearchPiste } from "@/lib/orientation-engine/discovery/research-pistes";
+import { filterSupplementalResearchPistes } from "@/lib/orientation-engine/result/supplemental";
 
 const copy = {
   fr: {
-    eyebrow: "Dossier d'orientation personnalisé",
-    title: "Votre projet d'études en Allemagne",
+    eyebrow: "Rapport Campus Allemagne",
+    title: "Votre projet pour l’Allemagne prend forme.",
     subtitle: "Les formations proposées, votre priorité et les étapes à préparer avec Campus Allemagne.",
-    profile: "Votre profil", degree: "Diplôme visé", field: "Domaine", german: "Allemand",
-    priority: "Votre priorité maintenant", next: "Votre première action",
+    profile: "Votre profil", degree: "Niveau visé", field: "Domaine", german: "Allemand",
+    priority: "Votre priorité maintenant", next: "Vous",
+    summary: "Ce que nous retenons de votre dossier", summaryLead: "Votre dossier est encourageant.", signal: "Ce qui ressort",
+    journey: "Votre parcours vers l’Allemagne", journeySteps: ["Orientation", "Préparation", "Sélection finale", "Candidatures", "Étapes administratives"],
+    preferredCity: "Votre ville reste prioritaire", cityFallback: "Votre ville de préférence reste au cœur de la recherche. Nous élargissons provisoirement les pistes et vérifierons les programmes dans cette ville avec vous.",
+    researchHeading: "Autres universités à découvrir", researchBadge: "Piste documentée", researchWhy: "Pourquoi découvrir cette formation", researchSource: "Découvrir le programme officiel",
+    researchNote: "Ces formations viennent de notre catalogue documentaire. Leur présence ne garantit pas votre admissibilité : notre équipe doit vérifier les conditions avant toute candidature.",
+    researchUnavailable: "Nous continuons à rechercher des pistes documentées complémentaires.",
     programmes: "Vos formations à explorer", programmeIntro: "Ces pistes proviennent de votre orientation. Elles ne constituent pas des admissions garanties.",
     verified: "Informations vérifiées", reviewing: "À vérifier avec l'université",
     why: "Pourquoi cette piste", facts: "Repères vérifiés", sources: "Sources des informations",
@@ -31,10 +40,16 @@ const copy = {
     factNames: { programme_exists: "Existence du programme", city: "Ville", accepted_language_certificates: "Certificats acceptés", application_url: "Lien de candidature", studienkolleg_requirement: "Studienkolleg", degree_level: "Diplôme", teaching_language: "Langue d'enseignement", intake_terms: "Rentrée", application_route: "Candidature", german_language_requirement: "Allemand requis", english_language_requirement: "Anglais requis", tuition_or_semester_fees: "Frais", winter_deadline: "Date limite (hiver)", summer_deadline: "Date limite (été)" },
   },
   ar: {
-    eyebrow: "ملف توجيه شخصي", title: "مشروعك للدراسة في ألمانيا",
+    eyebrow: "تقرير Campus Allemagne", title: "مشروعك للدراسة في ألمانيا يتضح.",
     subtitle: "التخصصات المقترحة وأولويتك الحالية والخطوات التي يمكنك إعدادها مع Campus Allemagne.",
     profile: "ملفك", degree: "الدرجة المطلوبة", field: "المجال", german: "الألمانية",
-    priority: "أولويتك الآن", next: "أول خطوة لك", programmes: "برامج تستحق الاستكشاف",
+    priority: "أولويتك الآن", next: "أنت",
+    summary: "ما نستخلصه من ملفك", summaryLead: "ملفك مشجع.", signal: "المسارات المقترحة",
+    journey: "مسارك نحو ألمانيا", journeySteps: ["التوجيه", "التحضير", "الاختيار النهائي", "التقديم", "الخطوات الإدارية"],
+    preferredCity: "مدينتك تبقى أولوية", cityFallback: "تظل مدينتك المختارة أولوية. ندرس مؤقتًا خيارات إضافية ونواصل التحقق من البرامج في مدينتك.",
+    researchHeading: "جامعات أخرى تستحق الاكتشاف", researchBadge: "مسار موثق للبحث", researchWhy: "لماذا تكتشف هذا التخصص", researchSource: "الموقع الرسمي للبرنامج",
+    researchNote: "هذه خيارات من قاعدة أبحاثنا وليست ضمانًا للأهلية أو القبول. يتأكد فريقنا من الشروط قبل التقديم.",
+    researchUnavailable: "ما زلنا نبحث عن برامج أخرى موثقة.", programmes: "برامج تستحق الاستكشاف",
     programmeIntro: "هذه مسارات ناتجة عن توجيهك ولا تعني ضمان القبول.",
     verified: "معلومات موثقة", reviewing: "يلزم التحقق من الجامعة",
     why: "لماذا هذا المسار", facts: "معلومات موثقة", sources: "مصادر المعلومات",
@@ -49,7 +64,13 @@ const copy = {
     eyebrow: "Personalised orientation dossier", title: "Your study project in Germany",
     subtitle: "The suggested programmes, your current priority, and the next steps with Campus Allemagne.",
     profile: "Your profile", degree: "Target degree", field: "Field", german: "German",
-    priority: "Your priority now", next: "Your first action", programmes: "Programmes to explore",
+    priority: "Your priority now", next: "You",
+    summary: "What we take from your profile", summaryLead: "Your profile looks encouraging.", signal: "Current suggestions",
+    journey: "Your journey to Germany", journeySteps: ["Orientation", "Preparation", "Final selection", "Applications", "Administration"],
+    preferredCity: "Your preferred city remains a priority", cityFallback: "Your chosen city remains a priority. We are exploring other options while we continue checking programmes there.",
+    researchHeading: "More universities to explore", researchBadge: "Documented option", researchWhy: "Why explore this programme", researchSource: "Official programme page",
+    researchNote: "These research catalogue options do not confirm eligibility or admission. Requirements must be checked before applying.",
+    researchUnavailable: "We are continuing to look for documented supplementary options.", programmes: "Programmes to explore",
     programmeIntro: "These options come from your orientation. They are not guaranteed admissions.",
     verified: "Verified information", reviewing: "University confirmation needed",
     why: "Why this option", facts: "Verified facts", sources: "Information sources",
@@ -65,7 +86,13 @@ const copy = {
     eyebrow: "Persönliches Orientierungsdossier", title: "Dein Studienprojekt in Deutschland",
     subtitle: "Studiengänge, deine aktuelle Priorität und die nächsten Schritte mit Campus Allemagne.",
     profile: "Dein Profil", degree: "Studienabschluss", field: "Fachgebiet", german: "Deutsch",
-    priority: "Deine Priorität jetzt", next: "Dein erster Schritt", programmes: "Studiengänge zum Prüfen",
+    priority: "Deine Priorität jetzt", next: "Du",
+    summary: "Was wir aus deinem Profil mitnehmen", summaryLead: "Dein Profil ist vielversprechend.", signal: "Aktuelle Vorschläge",
+    journey: "Dein Weg nach Deutschland", journeySteps: ["Orientierung", "Vorbereitung", "Endauswahl", "Bewerbungen", "Formalitäten"],
+    preferredCity: "Deine Wunschstadt bleibt wichtig", cityFallback: "Deine Wunschstadt bleibt unsere Priorität. Wir prüfen zusätzliche Möglichkeiten und suchen dort weiter.",
+    researchHeading: "Weitere Hochschulen entdecken", researchBadge: "Dokumentierte Möglichkeit", researchWhy: "Warum dieser Studiengang", researchSource: "Offizielle Programmseite",
+    researchNote: "Diese recherchierten Optionen sind keine Bestätigung der Zulassung. Wir prüfen die Anforderungen vor einer Bewerbung.",
+    researchUnavailable: "Wir recherchieren weitere dokumentierte Optionen.", programmes: "Studiengänge zum Prüfen",
     programmeIntro: "Diese Vorschläge stammen aus deiner Orientierung und sind keine Zulassungsgarantie.",
     verified: "Geprüfte Informationen", reviewing: "Noch mit der Hochschule zu prüfen",
     why: "Warum diese Option", facts: "Geprüfte Fakten", sources: "Informationsquellen",
@@ -78,6 +105,51 @@ const copy = {
     factNames: { programme_exists: "Studiengang vorhanden", city: "Stadt", accepted_language_certificates: "Anerkannte Zertifikate", application_url: "Bewerbungslink", studienkolleg_requirement: "Studienkolleg", degree_level: "Abschluss", teaching_language: "Unterrichtssprache", intake_terms: "Studienbeginn", application_route: "Bewerbung", german_language_requirement: "Deutsch", english_language_requirement: "Englisch", tuition_or_semester_fees: "Gebühren", winter_deadline: "Winterfrist", summer_deadline: "Sommerfrist" },
   },
 } as const;
+
+type DocumentedState = { key: string; items: ResearchPiste[]; ready: boolean };
+
+function useDetailedResearchPistes(
+  answers: PublicOrientationAnswers,
+  selected: OrientationPublicPersonalizedResult["selected"],
+) {
+  const key = JSON.stringify({
+    targetDegree: answers.targetDegree,
+    targetField: answers.targetField,
+    preferredCities: answers.preferredCities,
+    studyLanguage: answers.studyLanguage,
+    bacStatus: answers.bacStatus,
+    targetSpecialization: answers.targetSpecialization,
+    engineeringSpecialty: answers.engineeringSpecialty,
+    scienceSpecialty: answers.scienceSpecialty,
+  });
+  const [state, setState] = useState<DocumentedState>({ key: "", items: [], ready: false });
+  const skip = answers.bacStatus === "no_bac" || selected.length >= 3;
+  useEffect(() => {
+    if (skip) return;
+    const controller = new AbortController();
+    void fetch("/api/orientation/research-pistes", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: key,
+      cache: "no-store",
+      signal: controller.signal,
+    }).then((response) => {
+      if (!response.ok) throw new Error("research_unavailable");
+      return response.json() as Promise<{ items?: ResearchPiste[] }>;
+    }).then((data) => {
+      if (!controller.signal.aborted) setState({ key, items: Array.isArray(data.items) ? data.items.slice(0, 12) : [], ready: true });
+    }).catch(() => {
+      if (!controller.signal.aborted) setState({ key, items: [], ready: true });
+    });
+    return () => controller.abort();
+  }, [key, skip]);
+  const ready = skip || (state.key === key && state.ready);
+  const items = state.key === key ? state.items : [];
+  return {
+    supplemental: filterSupplementalResearchPistes(items, selected),
+    ready,
+  };
+}
 
 function licensedPhoto(media: OrientationUniversityMedia | null | undefined): OrientationUniversityMedia | null {
   if (!media?.coverImageUrl || !media.coverImageSourceUrl || !media.coverImageLicense) return null;
