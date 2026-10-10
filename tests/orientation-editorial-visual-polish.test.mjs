@@ -16,7 +16,8 @@ test("Bachelor first-contact welcome appears once inside the letter, with a warm
   assert.match(card, /bg-\[var\(--premium-gold-wash\)\]/);
   assert.match(card, /\{welcome\}/);
   assert.match(host, /welcome=\{isBachelorFirstContact \? bacWelcome : null\}/);
-  assert.match(host, /isBachelorFirstContact && bacWelcome && personalized/);
+  assert.doesNotMatch(host, /isBachelorFirstContact && bacWelcome && personalized/);
+  assert.match(host, /geographicFallback && !personalized/);
   assert.doesNotMatch(host, /isBachelorFirstContact && bacWelcome \? \(/);
   assert.match(host, /answers\.bacStatus === "obtained"/);
   assert.match(host, /answers\.bacStatus === "preparing"/);
