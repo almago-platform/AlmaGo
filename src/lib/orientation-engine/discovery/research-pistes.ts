@@ -65,6 +65,7 @@ export function researchFamiliesFor(criteria: ResearchPisteCriteria) {
 
 function researchInstitutionKey(institution: string, city: string | null) {
   const name = normalize(institution)
+    .replace(/[^a-z0-9]+/g, " ").trim()
     .replace(/ (?:and|und|et|y) (?:universidad|university|universitat|universite) .+$/, "");
   if (/^friedrich alexander universitat erlangen nurnberg(?: fau)?$/.test(name)) {
     return "erlangen|friedrich-alexander-universitat";
