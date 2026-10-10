@@ -43,5 +43,22 @@ select ok(
   'no permissive provisional row policies were created'
 );
 
+select ok(
+  (select relrowsecurity from pg_class where oid = 'public.provisional_candidate_documents'::regclass),
+  'provisional documents enforce RLS'
+);
+select ok(
+  not has_table_privilege('anon', 'public.provisional_candidate_documents', 'SELECT'),
+  'anonymous callers cannot read pending candidate documents'
+);
+select ok(
+  not has_table_privilege('authenticated', 'public.provisional_candidate_documents', 'SELECT'),
+  'verified accounts cannot read provisional candidate document metadata'
+);
+select ok(
+  (select not public from storage.buckets where id='provisional-starter-documents'),
+  'provisional files are stored in a private bucket'
+);
+
 select * from finish();
 rollback;
