@@ -27,6 +27,8 @@ jobs:
     env:
       CI: "true"
       ALMAGO_PHASE2_ENABLED: "true"
+      # Local-only browser test origin for the strict API POST host guard.
+      SITE_URL: "http://127.0.0.1:3000"
       NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
       NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
     steps:
