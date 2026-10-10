@@ -31,7 +31,7 @@ const bonn = row("English Studies", "Bonn", "University of Bonn", "https://www.i
 const wrong = row("Architecture", "Erlangen", "Architecture University", "https://university.de/bachelor-architecture", "verified", ["architecture"]);
 
 test("a preparing-Bac Letters candidate gets documented universities, with Erlangen first and institution diversity", () => {
-  const result = chooseDocumentedResearchPistes([bonn, fauExtra, wrong, bamberg, fau], criteria);
+  const result = chooseDocumentedResearchPistes([bonn, fauExtra, wrong, bamberg, fau], criteria, 3, { nearbyCities: ["Bamberg"], regionCities: [] });
   assert.equal(result.length, 3);
   assert.equal(result[0].programme, "Germanistik");
   assert.deepEqual(result.slice(0, 2).map((v) => v.city), ["Erlangen","Bamberg"]);
