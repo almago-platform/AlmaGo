@@ -4,6 +4,7 @@ import { JourneyRail, type JourneyRailStep } from "@/components/product/JourneyR
 import { NextActionPanel } from "@/components/product/NextActionPanel";
 import { PremiumSectionHeader } from "@/components/product/PremiumSectionHeader";
 import { ProspectProgrammeRecommendationCard } from "@/components/prospect/ProspectProgrammeRecommendationCard";
+import { ProvisionalEmailVerification } from "@/components/prospect/ProvisionalEmailVerification";
 import { buttonClassName } from "@/components/ui/Button";
 import { prospectHubCopy } from "@/content/prospect-hub-copy";
 import { getRequestLocale } from "@/lib/i18n-server";
@@ -75,6 +76,15 @@ export async function ProvisionalProspectDashboard({ identity }: { identity: Pro
         imageSrc={prospectMedia.dashboardHero}
         imagePriority
       />
+      <section className="pc-panel border border-amber-200 bg-amber-50 p-4 sm:p-5">
+        <p className="font-bold text-amber-950">{l.pending}</p>
+        <p className="mt-2 text-sm text-amber-900">{locale === "fr"
+          ? "Confirmez votre e-mail pour sécuriser définitivement votre dossier. Votre accès gratuit reste ouvert temporairement."
+          : locale === "ar" ? "أكد بريدك لحفظ ملفك بشكل نهائي. الوصول المجاني متاح مؤقتًا."
+            : locale === "de" ? "Bestätige deine E-Mail, um dein Dossier dauerhaft zu sichern."
+              : "Verify your email to secure your dossier permanently."}</p>
+        <ProvisionalEmailVerification locale={locale} initialEmail={identity.email} />
+      </section>
       <section className="space-y-3">
         <PremiumSectionHeader eyebrow={t.progress} title={t.progress} />
         <JourneyRail steps={steps} />
