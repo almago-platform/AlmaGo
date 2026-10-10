@@ -164,15 +164,18 @@ export async function POST(request: Request) {
       profile,
       engineResult,
     });
+    const shortlist = buildOrientationCanonicalShortlist(
+      engineResult,
+      personalized,
+    );
+
     const intelligence = await buildOrientationIntelligence(
       locale,
       profile,
       engineResult,
-    );
-
-    const shortlist = buildOrientationCanonicalShortlist(
-      engineResult,
-      personalized,
+      // The verified personalized result has its own Gemini writer.
+      // Avoid an unused second AI letter request for that pathway.
+      { generateLetter: shortlist.source !== "personalized_verified" },
     );
 
     return NextResponse.json(

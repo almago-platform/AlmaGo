@@ -1,5 +1,7 @@
 import "server-only";
 
+import { writeOrientationLetterWithGemini } from "@/lib/orientation-engine/letter/gemini";
+
 import type { PublicOrientationAnswers } from "@/lib/orientation/public";
 import { hasPreferredCityCatalogueMatch } from "@/lib/orientation-engine/service";
 import type {
@@ -565,7 +567,7 @@ const responseSchema = {
   required: ["letter", "candidates"],
 } as const;
 
-export async function buildOrientationIntelligence(
+async function buildLegacyOrientationIntelligence(
   locale: Locale,
   profile: PublicOrientationAnswers,
   engineResult: OrientationEngineResult,
@@ -654,4 +656,24 @@ export async function buildOrientationIntelligence(
       letter: fallbackLetter,
     };
   }
+}
+
+
+/**
+ * The exploratory Gemini scout and the user-visible AI letter have independent
+ * availability. A catalogue match or scout failure must never by itself
+ * disable Gemini copywriting. Keep the verified result as the source of facts.
+ */
+export async function buildOrientationIntelligence(
+  locale: Locale,
+  profile: PublicOrientationAnswers,
+  engineResult: OrientationEngineResult,
+  options: { generateLetter?: boolean } = {},
+): Promise<IntelligenceResult> {
+  const result = await buildLegacyOrientationIntelligence(locale, profile, engineResult);
+  if (options.generateLetter === false || result.letter.mode !== "deterministic") {
+    return result;
+  }
+  const letter = await writeOrientationLetterWithGemini(locale, result.letter);
+  return { ...result, letter };
 }
