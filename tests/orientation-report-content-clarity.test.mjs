@@ -15,9 +15,9 @@ test("priority actions are numbered once, semantically and visibly", () => {
 
 test("evidence section does not claim missing admissions, language or deadlines are verified", () => {
   assert.ok(card.includes("Comprendre notre analyse en détail"));
-  assert.ok(card.includes("View criteria and items to check"));
-  assert.ok(card.includes("عرض المعايير والنقاط التي يجب التحقق منها"));
-  assert.ok(card.includes("Kriterien und offene Punkte anzeigen"));
+  assert.ok(card.includes("Explore our detailed analysis"));
+  assert.ok(card.includes("اكتشف تفاصيل تحليلنا"));
+  assert.ok(card.includes("Unsere Analyse im Detail ansehen"));
   assert.ok(card.includes("Date limite de candidature"));
   assert.ok(card.includes("Application deadline"));
   assert.ok(card.includes("آخر موعد للتقديم"));
