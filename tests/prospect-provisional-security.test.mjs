@@ -79,7 +79,7 @@ test("resend never reveals email registration status; catalogue comes from publi
   assert.doesNotMatch(resend, /getUserByEmail|listUsers|isRegistered/);
   assert.match(catalogue, /loadVerifiedProgrammeCatalogue/);
   assert.match(catalogue, /loadProvisionalProspectHubState\(provisional\)/);
-  assert.match(catalogueCard, /noopener noreferrer/);
+  assert.match(catalogueCard, /rel="noreferrer"/);
   assert.match(preview, /safeSource\(item\.programmeSourceUrl\)/);
   assert.match(copy, /aucun compte n'est confirmé|Aucun compte n'est considéré comme vérifié/);
   for (const lang of ["fr:", "ar:", "en:", "de:"]) assert.ok(copy.includes(lang));
