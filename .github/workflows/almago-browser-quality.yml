@@ -79,6 +79,9 @@ jobs:
             --project=desktop-1280-chromium \
             --project=desktop-chromium
 
+      - name: Orientation fast fallback on detailed provider failure
+        run: npx playwright test tests/e2e/orientation-fast-baseline.spec.mjs --config=playwright.config.mjs --project=desktop-chromium
+
       - name: Full browser suite
         if: github.event_name == 'workflow_dispatch'
         run: npx playwright test --config=playwright.config.mjs
