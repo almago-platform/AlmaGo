@@ -66,3 +66,36 @@ test("saved token route only offers the detailed document when a personalized sh
   assert.match(reportPage, /\?document=detailed/);
   assert.match(reportPage, /orientation_human_reviews/);
 });
+
+
+test("detailed PDF includes the same secondary documented universities as the website", () => {
+  const website = readFileSync("src/components/orientation/OrientationResearchPistesCard.tsx", "utf8");
+  assert.match(website, /\/api\/orientation\/research-pistes/);
+  assert.match(website, /filterSupplementalResearchPistes\(items, existingShortlist\)/);
+  assert.match(detailed, /\/api\/orientation\/research-pistes/);
+  assert.match(detailed, /filterSupplementalResearchPistes\(items, selected\)/);
+  assert.match(detailed, /supplemental\.map\(/);
+  assert.match(detailed, /item\.officialUrl/);
+  assert.match(detailed, /licensedPhoto\(dynamicMedia\[universityPhotoKey\(item\.institution, item\.city\)\]\)/);
+  assert.match(detailed, /findCuratedUniversityMedia\(item\.institution, item\.city\)/);
+  assert.match(detailed, /researchNote/);
+});
+
+test("cover mirrors the web hero, learner journey and city priority without inventing candidate eligibility", () => {
+  assert.match(detailed, /orientation-detail-hero-summary/);
+  assert.match(detailed, /orientation-detail-journey/);
+  assert.match(detailed, /journeySteps/);
+  assert.match(detailed, /needsCityFallback/);
+  assert.match(detailed, /orientation-detail-city-fallback/);
+  assert.match(detailed, /content\.projectStatus/);
+  assert.match(detailed, /option\.overallStatus === "verified"/);
+  assert.match(detailedCss, /orientation-detail-featured/);
+  assert.match(detailedCss, /orientation-detail-research-card/);
+});
+
+test("live report does not offer a potentially incomplete detailed PDF before catalogued options resolve", () => {
+  assert.match(form, /handleDetailedPrintReady/);
+  assert.match(form, /onReadyChange=\{handleDetailedPrintReady\}/);
+  assert.match(form, /disabled=\{!detailedPrintReady\}/);
+  assert.match(detailed, /onReadyChange\?\.\(research\.ready\)/);
+});
