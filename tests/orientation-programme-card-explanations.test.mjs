@@ -43,7 +43,8 @@ test("bac économie B1: academic access, German C1 and deadline stay unconfirmed
   assert.match(result.reason, /niveau et le domaine/);
   assert.match(result.reason, /enseignement en allemand/);
   assert.match(result.checks.join(" "), /votre diplôme/);
-  assert.match(result.checks.join(" "), /catalogue indique C1/);
+  assert.match(result.checks.join(" "), /Vous indiquez B1 en allemand/);
+  assert.match(result.checks.join(" "), /catalogue mentionne C1/);
   assert.match(result.checks.join(" "), /certificat accepté/);
   assert.match(result.checks.join(" "), /date limite/);
   assert.doesNotMatch(result.reason, /admis|admission garantie|éligible/i);
