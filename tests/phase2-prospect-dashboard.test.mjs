@@ -36,7 +36,9 @@ test("Phase 1 student space redirects a free prospect before rendering client pa
 
 test("prospect space is available only to authenticated non-client students", () => {
   assert.match(prospectLayout, /getPhase2StudentAccess/);
-  assert.match(prospectLayout, /if \(!user\) redirect\("\/login"\)/);
+  assert.match(prospectLayout, /if \(!user\) \{/);
+  assert.match(prospectLayout, /getProvisionalIdentity\(\)/);
+  assert.match(prospectLayout, /if \(!candidate\) redirect\("\/login"\)/);
   assert.match(prospectLayout, /!access\.phase2Enabled \|\| access\.canUseClientFeatures/);
   assert.match(prospectLayout, /redirect\("\/student"\)/);
   assert.match(prospectLayout, /ProspectShell/);
