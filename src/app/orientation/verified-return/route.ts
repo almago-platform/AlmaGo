@@ -32,16 +32,16 @@ export async function GET() {
 
   try {
     const privileged = createPrivilegedSupabaseClient();
+    const { data: pending } = await privileged
+      .from("provisional_candidate_credentials")
+      .select("orientation_id")
+      .eq("email", user.email.trim().toLowerCase())
+      .maybeSingle();
     const { data: linked } = await privileged.from("prospects")
       .select("id").eq("user_id", user.id).maybeSingle();
     if (linked?.id) {
       // A previous claim may already have linked the orientation while the
       // storage handoff failed. Never lose those documents on a later callback.
-      const { data: pending } = await privileged
-        .from("provisional_candidate_credentials")
-        .select("orientation_id")
-        .eq("email", user.email.trim().toLowerCase())
-        .maybeSingle();
       if (pending?.orientation_id) {
         const { data: ownOrientation } = await privileged.from("orientations")
           .select("id")
@@ -60,8 +60,13 @@ export async function GET() {
       return responseTo("/prospect");
     }
 
+    // Public users can retake orientation while awaiting their email link.
+    // For a pending account, recover its original orientation UUID exactly.
+    const recoveryProcedure = pending?.orientation_id
+      ? "service_recover_and_confirm_provisional_orientation"
+      : "service_recover_and_confirm_latest_orientation";
     const { data: recovered, error } = await privileged.rpc(
-      "service_recover_and_confirm_latest_orientation",
+      recoveryProcedure,
       { p_user_id: user.id, p_user_email: user.email },
     );
     if (error || typeof recovered !== "string") return responseTo("/prospect/orientation");
