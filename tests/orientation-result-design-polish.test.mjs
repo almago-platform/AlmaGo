@@ -94,20 +94,22 @@ test("success, failure and optional labels exist in all four locales", () => {
 });
 
 test("final result polish keeps the CTA punctuation with its title and a comfortable line length", () => {
-  assert.match(capture, /max-w-\\[54rem\\] text-balance/);
-  assert.doesNotMatch(capture, /max-w-\\[39rem\\] text-xl/);
-  assert.match(copy, /Souhaitez-vous poursuivre avec Campus Allemagne \\?/);
+  assert.ok(capture.includes("max-w-[54rem] text-balance"));
+  assert.ok(!capture.includes("max-w-[39rem] text-xl"));
+  assert.ok(copy.includes("Souhaitez-vous poursuivre avec Campus Allemagne ?"));
 });
 
 test("PDF status does not repeat the same sent message twice", () => {
-  assert.match(capture, /autoEmailSent \\? copy\\.success : message/);
-  assert.match(copy, /Vos deux rapports PDF ont été envoyés à l’adresse indiquée/);
-  assert.match(copy, /Orientation sauvegardée\\. Aucun compte n’a été créé/);
+  assert.ok(capture.includes("autoEmailSent ? copy.success : message"));
+  assert.ok(copy.includes("Vos deux rapports PDF ont été envoyés à l’adresse indiquée"));
+  assert.ok(copy.includes("Orientation sauvegardée. Aucun compte n’a été créé"));
 });
 
 test("result toolbar has a dedicated action row to prevent desktop orphans", () => {
-  assert.match(form, /<div className="flex flex-col gap-4">[\\s\\S]*?resultActionsCopy\\.title[\\s\\S]*?sm:justify-start sm:gap-x-6/);
-  assert.match(form, /resultActionsCopy\\.pdf/);
-  assert.match(form, /resultActionsCopy\\.adjust/);
-  assert.match(form, /resultActionsCopy\\.home/);
+  const toolbar = form.slice(form.indexOf('aria-label={resultActionsCopy.title}'));
+  assert.ok(toolbar.includes('className="flex flex-col gap-4"'));
+  assert.ok(toolbar.includes("sm:justify-start sm:gap-x-6"));
+  assert.ok(toolbar.includes("resultActionsCopy.pdf"));
+  assert.ok(toolbar.includes("resultActionsCopy.adjust"));
+  assert.ok(toolbar.includes("resultActionsCopy.home"));
 });
