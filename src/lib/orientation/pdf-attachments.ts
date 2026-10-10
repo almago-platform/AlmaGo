@@ -2,6 +2,8 @@ import "server-only";
 
 import { orientationDiagnosticCopy } from "@/content/orientation-diagnostic-copy";
 import { orientationCandidatePriority } from "@/lib/orientation-engine/writer/candidate-priority";
+import { findCuratedUniversityMedia } from "@/lib/orientation-engine/discovery/curated-university-media";
+import type { ResearchPiste } from "@/lib/orientation-engine/discovery/research-pistes";
 import type { Locale } from "@/lib/i18n";
 import type {
   PublicOrientationAnswers,
@@ -27,6 +29,7 @@ const WHITE = [1, 1, 1] as const;
 
 type PdfLocale = Exclude<Locale, "ar">;
 type PdfColor = readonly [number, number, number];
+type PdfImage = { name: string; bytes: Buffer; width: number; height: number };
 
 type PdfAttachment = {
   filename: string;
@@ -306,6 +309,7 @@ function wrapText(text: string, maxWidth: number, size: number, bold = false) {
 
 class PdfLayout {
   readonly pages: string[][] = [[]];
+  readonly images: PdfImage[] = [];
   private pageIndex = 0;
   y = TOP_Y;
 
@@ -389,6 +393,12 @@ class PdfLayout {
     this.line(MARGIN_X, this.y + 6, PAGE_WIDTH - MARGIN_X, this.y + 6, LIGHT, 0.6);
   }
 
+  drawPhoto(bytes: Buffer, imageWidth: number, imageHeight: number, x: number, y: number, width: number, height: number) {
+    const name = `Im${this.images.length + 1}`;
+    this.images.push({ name, bytes, width: imageWidth, height: imageHeight });
+    this.commands.push(`q ${width} 0 0 ${height} ${x} ${y} cm /${name} Do Q`);
+  }
+
   drawPageBrand() {
     this.rect(0, PAGE_HEIGHT - 10, PAGE_WIDTH, 10, RED);
     this.text("CAMPUS", MARGIN_X, PAGE_HEIGHT - 31, 8.5, { bold: true, color: NAVY });
@@ -397,7 +407,7 @@ class PdfLayout {
   }
 }
 
-function buildPdf(pages: string[][]) {
+function buildPdf(pages: string[][], images: readonly PdfImage[] = []) {
   const objects = new Map<number, Buffer>();
   const pageIds: number[] = [];
 
@@ -406,6 +416,19 @@ function buildPdf(pages: string[][]) {
   objects.set(4, Buffer.from("<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>", "ascii"));
 
   let nextId = 5;
+  const imageResourceIds = new Map<string, number>();
+  for (const image of images) {
+    const imageId = nextId++;
+    imageResourceIds.set(image.name, imageId);
+    objects.set(imageId, Buffer.concat([
+      Buffer.from(`<< /Type /XObject /Subtype /Image /Width ${image.width} /Height ${image.height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${image.bytes.length} >>\nstream\n`, "ascii"),
+      image.bytes,
+      Buffer.from("\nendstream", "ascii"),
+    ]));
+  }
+  const resources = imageResourceIds.size
+    ? ` /XObject << ${[...imageResourceIds].map(([name, id]) => `/${name} ${id} 0 R`).join(" ")} >>`
+    : "";
   for (const commands of pages) {
     const pageId = nextId++;
     const contentId = nextId++;
@@ -424,7 +447,7 @@ function buildPdf(pages: string[][]) {
     objects.set(
       pageId,
       Buffer.from(
-        `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${PAGE_WIDTH} ${PAGE_HEIGHT}] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents ${contentId} 0 R >>`,
+        `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${PAGE_WIDTH} ${PAGE_HEIGHT}] /Resources << /Font << /F1 3 0 R /F2 4 0 R >>${resources} >> /Contents ${contentId} 0 R >>`,
         "ascii",
       ),
     );
