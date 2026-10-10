@@ -131,3 +131,19 @@ test("verified claim migrates documents idempotently and revokes temporary acces
   assert.match(handoff, /\.from\("provisional_candidate_sessions"\)/);
   assert.doesNotMatch(handoff, /select\("\*"\)/);
 });
+
+const verifiedReturn = read("src/app/orientation/verified-return/route.ts");
+const emailVerificationUI = read("src/components/prospect/ProvisionalEmailVerification.tsx");
+
+test("Supabase resend confirmation performs verified-only recovery and file handoff", () => {
+  assert.match(emailVerificationUI, /initialEmail \? "\/orientation\/verified-return" : "\/prospect"/);
+  assert.match(verifiedReturn, /getAuthenticatedUser\(\)/);
+  assert.match(verifiedReturn, /hasVerifiedEmail\(user\)/);
+  assert.match(verifiedReturn, /service_recover_and_confirm_latest_orientation/);
+  assert.match(verifiedReturn, /p_user_id: user\.id, p_user_email: user\.email/);
+  assert.match(verifiedReturn, /handoffProvisionalDocuments\(\{/);
+  assert.match(verifiedReturn, /if \(!moved\) return responseTo\("\/prospect\/orientation"\)/);
+  assert.match(verifiedReturn, /"Cache-Control": "private, no-store"/);
+  assert.match(verifiedReturn, /Location: path/);
+  assert.doesNotMatch(verifiedReturn, /request\.url|searchParams|admin\.updateUserById/);
+});
