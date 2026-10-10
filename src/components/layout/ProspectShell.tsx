@@ -39,10 +39,14 @@ export function ProspectShell({
   children,
   displayName,
   showPayment = false,
+  provisional = false,
+  provisionalExpiresAt = null,
 }: Readonly<{
   children: ReactNode;
   displayName?: string | null;
   showPayment?: boolean;
+  provisional?: boolean;
+  provisionalExpiresAt?: string | null;
 }>) {
   const pathname = usePathname();
   const router = useRouter();
@@ -68,7 +72,7 @@ export function ProspectShell({
     { href: "/prospect/proposal", label: t.links.proposal, icon: icons.proposal },
     { href: "/prospect/roadmap", label: t.links.roadmap, icon: icons.roadmap },
   ];
-  const serviceLinks: NavItem[] = [
+  const serviceLinks: NavItem[] = provisional ? [] : [
     { href: "/prospect/solutions", label: t.links.solutions, icon: icons.solutions },
     { href: "/prospect/offers", label: offersCopy.nav || t.links.offers, icon: icons.offers },
     ...(showPayment || pathname.startsWith("/prospect/payment")
@@ -76,13 +80,21 @@ export function ProspectShell({
       : []),
   ];
 
+  const availableJourneyLinks = provisional
+    ? journeyLinks.filter((item) => !["/prospect/messages", "/prospect/proposal"].includes(item.href))
+    : journeyLinks;
+
   const activeFor = (href: string) =>
     href === "/prospect"
       ? pathname === href
       : pathname === href || pathname.startsWith(`${href}/`);
 
   async function signOut() {
-    await createClient().auth.signOut();
+    if (provisional) {
+      await fetch("/api/provisional-session/logout", { method: "POST" });
+    } else {
+      await createClient().auth.signOut();
+    }
     router.push("/");
     router.refresh();
   }
@@ -93,7 +105,7 @@ export function ProspectShell({
         {t.journeyGroup}
       </p>
       <div className="grid gap-1">
-        {journeyLinks.map((item) => {
+        {availableJourneyLinks.map((item) => {
           const active = activeFor(item.href);
           return (
             <Link
@@ -241,6 +253,16 @@ export function ProspectShell({
         </aside>
 
         <div id="main-content" tabIndex={-1} className="min-w-0 scroll-mt-24 lg:px-5 lg:py-6 xl:px-6">
+          {provisional ? (
+            <p role="status" className="mb-4 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-950">
+              {locale === "fr" ? "E-mail à confirmer — accès provisoire jusqu’au "
+                : locale === "ar" ? "البريد غير مؤكد — صلاحية الوصول حتى "
+                  : locale === "de" ? "E-Mail unbestätigt — Zugang bis " : "Email not verified — access until "}
+              <time dateTime={provisionalExpiresAt || undefined}>
+                {provisionalExpiresAt ? new Intl.DateTimeFormat(locale, { dateStyle: "medium" }).format(new Date(provisionalExpiresAt)) : "—"}
+              </time>
+            </p>
+          ) : null}
           {children}
         </div>
       </div>
