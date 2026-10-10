@@ -97,5 +97,7 @@ test("live report does not offer a potentially incomplete detailed PDF before ca
   assert.match(form, /handleDetailedPrintReady/);
   assert.match(form, /onReadyChange=\{handleDetailedPrintReady\}/);
   assert.match(form, /disabled=\{!detailedPrintReady\}/);
-  assert.match(detailed, /onReadyChange\?\.\(research\.ready\)/);
+  assert.match(detailed, /onReadyChange\?\.\(detailedReady\)/);
+  assert.match(detailed, /new window\.Image\(\)/);
+  assert.match(detailed, /research\.ready && loadedPhotoKey === photoKey/);
 });
