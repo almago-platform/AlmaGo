@@ -122,7 +122,7 @@ async function renderPage(
         && Array.from(report.querySelectorAll("img")).every(img => img.complete)
         && (!detailed || Array.from(report.querySelectorAll(".orientation-detail-photo img, .orientation-detail-research-photo img")).every(img => img.naturalWidth > 0))
         && document.fonts.status === "loaded";
-    })()`);
+    })()`).catch(() => false); // navigation can briefly replace the JS context
     if (ready) {
       const result = await page.command("Page.printToPDF", {
         printBackground: true, preferCSSPageSize: true,
