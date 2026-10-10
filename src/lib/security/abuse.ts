@@ -22,6 +22,12 @@ export const PUBLIC_ABUSE_POLICIES = {
     sustained: { limit: 20, windowMs: 60 * 60_000 },
     global: { limit: 100, windowMs: 24 * 60 * 60_000 },
   },
+  orientationMedia: {
+    route: "orientation_media",
+    burst: { limit: 30, windowMs: 60_000 },
+    sustained: { limit: 300, windowMs: 60 * 60_000 },
+    global: { limit: 2_000, windowMs: 24 * 60 * 60_000 },
+  },
   orientationProspect: {
     route: "orientation_prospect",
     burst: { limit: 3, windowMs: 10 * 60_000 },
