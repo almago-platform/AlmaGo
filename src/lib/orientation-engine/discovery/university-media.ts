@@ -166,6 +166,7 @@ export async function findWikimediaUniversityMedia(
     [shortName, city, "campus"],
     [shortName, city],
     [universityName, city],
+    [universityName, city, "campus"],
   ]
     .map((parts) =>
       parts
