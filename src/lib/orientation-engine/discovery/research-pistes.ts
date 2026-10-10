@@ -1,5 +1,3 @@
-import { canonicalOrientationCity, orientationCityDistanceKm, orientationCityLand } from "@/lib/orientation-engine/geography";
-
 /** Public-facing, informational-only options from prior official-site research. */
 export type ResearchPiste = {
   institution: string;
@@ -85,14 +83,16 @@ export function chooseDocumentedResearchPistes(
   rows: readonly ResearchPisteRow[],
   criteria: ResearchPisteCriteria,
   maxItems = 3,
+  geography: { nearbyCities: string[]; regionCities: string[] } = { nearbyCities: [], regionCities: [] },
 ): ResearchPiste[] {
   // A candidate with no Bac must follow the academic-route review, not a
   // regular Bachelor university shortlist.
   if (criteria.bacStatus === "no_bac") return [];
   const families = researchFamiliesFor(criteria);
   if (!families.length) return [];
-  const preferences = criteria.preferredCities.slice(0, 3).map(canonicalOrientationCity);
-  const preferredRegion = new Set(preferences.map(orientationCityLand).filter(Boolean));
+  const preferences = criteria.preferredCities.slice(0, 3).map(normalize);
+  const nearby = new Set(geography.nearbyCities.map(normalize));
+  const region = new Set(geography.regionCities.map(normalize));
   const wantsGerman = criteria.studyLanguage === "Allemand";
   const wantsEnglish = criteria.studyLanguage === "Anglais";
   const wantedSpecialization = criteria.targetDegree === "Master"
@@ -110,15 +110,11 @@ export function chooseDocumentedResearchPistes(
   });
 
   const withScore = viable.map((entry) => {
-    const city = canonicalOrientationCity(entry.city);
+    const city = normalize(entry.city);
     const cityMatch = preferences.includes(city);
-    const distances = preferences
-      .map((preferred) => orientationCityDistanceKm(preferred, entry.city))
-      .filter((distance): distance is number => distance !== null);
-    const nearest = distances.length ? Math.min(...distances) : null;
     const local = preferences.length === 0 ? 0 : cityMatch ? 450
-      : nearest !== null && nearest <= 100 ? 300
-      : preferredRegion.has(orientationCityLand(entry.city)) ? 200
+      : nearby.has(city) ? 300
+      : region.has(city) ? 200
       : 0;
     const verified = entry.verificationStatus === "verified" ? 24
       : entry.verificationStatus === "needs_review" ? 12 : 0;
