@@ -4,8 +4,8 @@ import { sendTransactionalEmail } from "@/lib/email/transactional";
 import { normalizeLocale } from "@/lib/i18n";
 import { buildPublicOrientationDiagnostic } from "@/lib/orientation/diagnostic";
 import { buildOrientationProspectEmail } from "@/lib/orientation/prospect-email";
-import { buildDetailedOrientationEmailPdfAttachment, buildOrientationEmailPdfAttachments } from "@/lib/orientation/pdf-attachments";
-import { readSupplementalOrientationEmailPistes } from "@/lib/orientation/email-research-pistes";
+import { buildWebsiteOrientationPdfAttachments } from "@/lib/orientation/browser-pdf";
+import type { PdfAttachment } from "@/lib/orientation/pdf-attachments";
 import { validatePublicOrientationAnswers } from "@/lib/orientation/validate";
 import { createOrientationResumeToken } from "@/lib/orientation/resume-token";
 import {
@@ -338,35 +338,19 @@ export async function POST(request: Request) {
         ).toString()
       : null;
 
-    let attachments: ReturnType<typeof buildOrientationEmailPdfAttachments> = [];
+    // Exactly the two printable website documents are attached. Never fall back
+    // to the legacy PDF writer: a visually different PDF would mislead students.
+    // If Chromium is unavailable, save the orientation but do not claim delivery.
+    let attachments: PdfAttachment[] = [];
     try {
-      attachments = buildOrientationEmailPdfAttachments({
-        locale,
-        answers,
-        identity,
-        email,
-        diagnostic,
-        personalized,
-      });
+      attachments = await buildWebsiteOrientationPdfAttachments(
+        resume.token, Boolean(personalized?.selected.length),
+      );
     } catch {
       attachments = [];
     }
 
-    // Original two PDFs are still mandatory; the detailed attachment is additive and resilient.
-    if (attachments.length === 2 && personalized?.selected.length) {
-      try {
-        const supplemental = await readSupplementalOrientationEmailPistes(answers, personalized.selected);
-        const detailed = await buildDetailedOrientationEmailPdfAttachment({
-          locale, answers, identity, email, personalized, supplemental,
-        });
-        if (detailed) attachments.push(detailed);
-      } catch {
-        // Do not block delivery of the two existing reports.
-      }
-    }
-
-    // Do not claim to have emailed two PDFs if attachment generation failed.
-    if ((automaticDelivery || includedDelivery) && attachments.length < 2) {
+    if (attachments.length !== 2) {
       await supabase
         .from("orientations")
         .update({ delivery_attempted_at: new Date().toISOString() })
@@ -383,8 +367,8 @@ export async function POST(request: Request) {
       orientationReportUrl,
       candidateReportUrl,
       interestUrl,
-      attachmentsIncluded: attachments.length >= 2,
-      detailedAttachmentIncluded: attachments.length === 3,
+      attachmentsIncluded: attachments.length === 2,
+      detailedAttachmentIncluded: attachments.length === 2 && Boolean(personalized?.selected.length),
       detailedReportUrl: personalized?.selected.length
         ? new URL(`/orientation/report/${encodeURIComponent(resume.token)}?document=detailed`, baseUrl).toString()
         : null,
@@ -418,7 +402,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json(
       { saved: true, delivery: delivery.status, interestToken: interest.token, signupPath,
-        detailedPdfAttached: delivery.status === "sent" && attachments.length === 3 },
+        detailedPdfAttached: delivery.status === "sent" && attachments.length === 2 && Boolean(personalized?.selected.length) },
       { status: 201 },
     );
   } catch {
