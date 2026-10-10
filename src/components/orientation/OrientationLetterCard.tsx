@@ -111,12 +111,14 @@ export function OrientationLetterCard({
   recommendations,
   answers,
   locale,
+  welcome = null,
 }: {
   letter: OrientationLetterOutput;
   scout: OrientationScoutResult;
   recommendations: OrientationProgrammeEvaluation[];
   answers: PublicOrientationAnswers;
   locale: Locale;
+  welcome?: string | null;
 }) {
   const t = copy[locale];
 
@@ -179,6 +181,17 @@ export function OrientationLetterCard({
         <h3 className="mt-4 max-w-[45rem] text-[1.6rem] font-semibold leading-[1.18] tracking-[-0.025em] text-[var(--foreground)] sm:text-[2rem]">
           {letter.title}
         </h3>
+        {welcome ? (
+          <div className="mt-5 flex max-w-[71ch] items-start gap-3" role="note">
+            <span aria-hidden="true" className="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-[var(--premium-gold-wash)] text-[var(--accent-strong)]">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" className="size-5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="m12 3 1.9 5.9L20 11l-6.1 2.1L12 19l-1.9-5.9L4 11l6.1-2.1L12 3Z" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="m19 17 .65 1.35L21 19l-1.35.65L19 21l-.65-1.35L17 19l1.35-.65L19 17Z" />
+              </svg>
+            </span>
+            <p className="pt-1 text-[15px] font-medium leading-7 text-[var(--foreground)] sm:text-base">{welcome}</p>
+          </div>
+        ) : null}
 
         <div className="mt-7 max-w-[71ch] space-y-5 text-[15px] leading-[1.85] text-[var(--foreground)] sm:space-y-6 sm:text-[16px]">
           {letter.paragraphs.map((paragraph, index) => (
@@ -211,9 +224,9 @@ export function OrientationLetterCard({
                     {String(index + 1).padStart(2, "0")}
                   </span>
                   <div className="min-w-0 flex-1">
-                    <div className="flex flex-wrap items-start justify-between gap-x-5 gap-y-2">
-                      <h5 dir="auto" className="min-w-0 max-w-[42rem] text-base font-semibold leading-6 [overflow-wrap:anywhere]">{piste.institution} — {piste.programme}</h5>
-                      <span className="shrink-0 rounded-full border border-[var(--border)] bg-[var(--surface-subtle)] px-2.5 py-1 text-[11px] font-semibold text-[var(--muted)]">
+                    <div className="grid min-w-0 grid-cols-1 items-start gap-2 sm:grid-cols-[minmax(0,1fr)_auto] sm:gap-x-4">
+                      <h5 dir="auto" className="min-w-0 text-base font-semibold leading-6 [overflow-wrap:anywhere]">{piste.institution} — {piste.programme}</h5>
+                      <span className="w-fit shrink-0 whitespace-nowrap rounded-full border border-[var(--border)] bg-[var(--surface-subtle)] px-2.5 py-1 text-[11px] font-semibold text-[var(--muted)] sm:justify-self-end">
                         {piste.badge}
                       </span>
                     </div>

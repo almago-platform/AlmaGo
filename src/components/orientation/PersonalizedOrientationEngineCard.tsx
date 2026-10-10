@@ -602,7 +602,7 @@ export function PersonalizedOrientationEngineCard({
 
         {state === "ready" && result ? (
           <>
-            {isBachelorFirstContact && bacWelcome ? (
+            {isBachelorFirstContact && bacWelcome && personalized ? (
               <p className="mb-5 rounded-[var(--radius-control)] border border-[var(--premium-border)] bg-[var(--premium-cream-soft)] px-5 py-4 text-base font-medium leading-7 text-[var(--foreground)]">
                 {bacWelcome}
               </p>
@@ -629,6 +629,7 @@ export function PersonalizedOrientationEngineCard({
                 recommendations={fallbackRecommendations}
                 answers={answers}
                 locale={locale}
+                welcome={isBachelorFirstContact ? bacWelcome : null}
               />
             )}
             {!isBachelorFirstContact && onRefineAnswers && result.engine.refinement.nextQuestion ? (

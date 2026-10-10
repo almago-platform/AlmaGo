@@ -284,13 +284,13 @@ function deterministicLetter(
       intro: `${opening} Vous souhaitez poursuivre en ${project}. Votre profil scolaire, votre niveau de langue et vos préférences nous donnent déjà une base concrète pour organiser la suite.`,
       academic: engineResult.academicAccessStatus === "likely_eligible"
         ? "Votre accès académique dispose déjà d’une base officielle vérifiée. La décision finale reste toujours celle de l’université."
-        : "Votre projet mérite une étude adaptée à votre diplôme. L’accès universitaire n’est pas encore confirmé ; si vous poursuivez avec Campus Allemagne, notre équipe examinera les critères avant toute candidature.",
-      language: `Vous indiquez un niveau ${profile.germanLevel || "à préciser"} en allemand et ${profile.englishLevel || "à préciser"} en anglais. Ces informations nous aideront à explorer les programmes et à étudier les certificats demandés si vous poursuivez avec nous.`,
+        : "L’accès universitaire avec votre diplôme n’est pas encore confirmé. Notre équipe pourra examiner ce point avant de préparer une candidature.",
+      language: `Vous indiquez un niveau ${profile.germanLevel || "à préciser"} en allemand et ${profile.englishLevel || "à préciser"} en anglais. Ces informations nous aident à explorer des formations et à identifier les certificats requis.`,
       city: city
         ? `Vous préférez étudier à ${city}. Nous gardons cette ville comme priorité, tout en restant ouverts à d’autres villes si elles offrent une meilleure piste pour votre projet.`
-        : "Vous n’avez pas encore fixé de ville. C’est un avantage à ce stade : nous pouvons comparer plusieurs villes avant de retenir les meilleures pistes.",
+        : "Vous n’avez pas encore choisi de ville. Plusieurs destinations restent donc ouvertes pour explorer votre projet.",
       option: hasVerifiedOption
-        ? "Nous avons déjà identifié des premières pistes à examiner. Elles servent de point de départ ; nous les comparerons avec vous avant de choisir les candidatures."
+        ? "Nous avons repéré quelques formations à découvrir. Elles offrent un premier aperçu des possibilités à explorer."
         : "Nous allons maintenant chercher des premières pistes adaptées à votre projet. L’objectif n’est pas de vous faire choisir seul, mais de préparer ensemble une sélection sérieuse avant les candidatures.",
       closing: "Vous nous avez présenté votre projet. Si vous choisissez de continuer avec Campus Allemagne, notre équipe étudiera les possibilités et vous accompagnera vers les candidatures adaptées.",
     },
@@ -299,13 +299,13 @@ function deterministicLetter(
       intro: `${opening} ترغب في متابعة ${project}. ملفك الدراسي ومستواك اللغوي وتفضيلاتك تعطينا أساسًا عمليًا لتنظيم الخطوات القادمة.`,
       academic: engineResult.academicAccessStatus === "likely_eligible"
         ? "يوجد أساس رسمي موثّق لمسارك الأكاديمي. ويبقى قرار القبول النهائي دائمًا من اختصاص الجامعة."
-        : "مشروعك يستحق دراسة تناسب شهادتك. لم يتأكد بعد حق الالتحاق بالجامعة؛ وإذا اخترت المتابعة معنا فسيدرس فريقنا الشروط قبل أي تقديم.",
-      language: `ذكرت أن مستواك في الألمانية هو ${profile.germanLevel || "بحاجة إلى تحديد"} وفي الإنجليزية ${profile.englishLevel || "بحاجة إلى تحديد"}. ستساعدنا هذه المعلومات على استكشاف البرامج ودراسة الشهادات المطلوبة إذا واصلت معنا.`,
+        : "لم يتأكد بعد إمكان الالتحاق بالجامعة بشهادتك. يمكن لفريقنا دراسة هذه النقطة قبل إعداد أي طلب تقديم.",
+      language: `ذكرت أن مستواك في الألمانية هو ${profile.germanLevel || "بحاجة إلى تحديد"} وفي الإنجليزية ${profile.englishLevel || "بحاجة إلى تحديد"}. تساعدنا هذه المعلومات على استكشاف البرامج ومعرفة شهادات اللغة المطلوبة.`,
       city: city
         ? `تفضّل الدراسة في ${city}. سنعتبر هذه المدينة أولوية، مع إبقاء مدن أخرى مفتوحة إذا كانت توفر مسارًا أفضل لمشروعك.`
-        : "لم تحدد مدينة بعد، وهذا مفيد في هذه المرحلة لأنه يسمح لنا بمقارنة عدة مدن قبل اختيار أفضل المسارات.",
+        : "لم تختر مدينة بعد، ولذلك ما زالت أمامك عدة وجهات لاستكشاف مشروعك.",
       option: hasVerifiedOption
-        ? "لدينا بالفعل مسارات أولية تستحق المراجعة. هي نقطة انطلاق، وسنقارنها معك قبل اختيار طلبات التقديم."
+        ? "وجدنا برامج أولية يمكنك التعرف عليها. وهي نقطة انطلاق لاستكشاف الخيارات المتاحة."
         : "سنبدأ الآن بالبحث عن مسارات أولية تناسب مشروعك. الهدف ليس أن تختار وحدك، بل أن نبني معًا قائمة جدية قبل التقديم.",
       closing: "لقد شاركتنا مشروعك الدراسي. إذا اخترت مواصلة الطريق مع Campus Allemagne، فسيدرس فريقنا الخيارات الممكنة ويرافقك نحو طلبات التقديم المناسبة.",
     },
@@ -314,13 +314,13 @@ function deterministicLetter(
       intro: `${opening} You want to continue with ${project}. Your academic profile, language level and preferences already give us a concrete base for the next steps.`,
       academic: engineResult.academicAccessStatus === "likely_eligible"
         ? "Your academic route already has a verified official basis. The final admission decision always remains with the university."
-        : "Your study plans deserve a review tailored to your diploma. University access is not yet confirmed; if you continue with Campus Allemagne, our team can examine the requirements before any application.",
-      language: `You have indicated German ${profile.germanLevel || "to be confirmed"} and English ${profile.englishLevel || "to be confirmed"}. These levels help us explore courses; if you continue, our team can review the certificates they require.`,
+        : "University access with your diploma is not yet confirmed. Our team can examine this before preparing an application.",
+      language: `You have indicated German ${profile.germanLevel || "to be confirmed"} and English ${profile.englishLevel || "to be confirmed"}. This helps us explore courses and identify the language certificates they require.`,
       city: city
         ? `You prefer ${city}. We will keep it as a priority while staying open to other cities if they offer a stronger path for your project.`
-        : "You have not fixed a city yet. That is useful at this stage because we can compare several places before selecting the strongest paths.",
+        : "You have not chosen a city yet, so several destinations remain open for your study plans.",
       option: hasVerifiedOption
-        ? "We have already identified first paths worth examining. They are a starting point; we will compare them with you before choosing applications."
+        ? "We have found a few programmes to discover. They offer a first glimpse of the possibilities to explore."
         : "We will now look for first programme paths that fit your project. The goal is not to make you choose alone, but to prepare a serious shortlist together before applications.",
       closing: "You have shared your study plans with us. If you choose to continue with Campus Allemagne, our team will review your options and guide you towards suitable applications.",
     },
@@ -329,13 +329,13 @@ function deterministicLetter(
       intro: `${opening} Du möchtest mit ${project} weitermachen. Dein schulisches Profil, deine Sprachen und deine Wünsche geben uns bereits eine konkrete Grundlage für die nächsten Schritte.`,
       academic: engineResult.academicAccessStatus === "likely_eligible"
         ? "Für deinen Hochschulzugang gibt es bereits eine geprüfte offizielle Grundlage. Die endgültige Zulassungsentscheidung trifft immer die Hochschule."
-        : "Dein Studienwunsch verdient eine Prüfung, die zu deinem Abschluss passt. Der Hochschulzugang ist noch nicht bestätigt; wenn du mit uns weitermachst, klärt unser Team die Voraussetzungen vor einer Bewerbung.",
-      language: `Du hast Deutsch ${profile.germanLevel || "noch zu klären"} und Englisch ${profile.englishLevel || "noch zu klären"} angegeben. Diese Angaben helfen uns bei der Suche; wenn du weitermachst, kann unser Team die benötigten Nachweise prüfen.`,
+        : "Der Hochschulzugang mit deinem Abschluss ist noch nicht bestätigt. Unser Team kann das vor einer Bewerbung klären.",
+      language: `Du hast Deutsch ${profile.germanLevel || "noch zu klären"} und Englisch ${profile.englishLevel || "noch zu klären"} angegeben. Diese Angaben helfen bei der Suche nach Studiengängen und passenden Sprachnachweisen.`,
       city: city
         ? `Du bevorzugst ${city}. Diese Stadt bleibt Priorität, aber wir halten andere Städte offen, wenn sie eine bessere Studienoption für dein Projekt bieten.`
-        : "Du hast noch keine Stadt festgelegt. Das ist in dieser Phase hilfreich, weil wir mehrere Orte vergleichen können, bevor wir die besten Optionen auswählen.",
+        : "Du hast noch keine Stadt gewählt. So bleiben mehrere Studienorte für dein Vorhaben offen.",
       option: hasVerifiedOption
-        ? "Wir haben bereits erste Studienoptionen identifiziert, die wir gemeinsam prüfen können. Sie sind ein Ausgangspunkt; vor Bewerbungen vergleichen wir weitere Möglichkeiten."
+        ? "Wir haben erste Studiengänge gefunden, die du entdecken kannst. Sie zeigen, welche Möglichkeiten wir näher betrachten können."
         : "Wir suchen jetzt nach ersten Studienoptionen, die zu deinem Projekt passen. Du sollst nicht allein entscheiden; wir erstellen gemeinsam eine seriöse Auswahl vor den Bewerbungen.",
       closing: "Du hast uns von deinem Studienwunsch erzählt. Wenn du mit Campus Allemagne weitermachst, prüft unser Team die Möglichkeiten und begleitet dich zu passenden Bewerbungen.",
     },
