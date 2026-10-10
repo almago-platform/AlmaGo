@@ -522,6 +522,7 @@ export function PersonalizedOrientationEngineCard({
     const fullController = new AbortController();
     let alive = true;
     let fullReady = false;
+    let previewReady = false;
     let previewFailed = false;
     let fullFailed = false;
 
@@ -540,6 +541,8 @@ export function PersonalizedOrientationEngineCard({
       if (isFull) {
         fullReady = true;
         previewController.abort();
+      } else {
+        previewReady = true;
       }
       setRequestState({
         key: requestBody,
@@ -557,7 +560,9 @@ export function PersonalizedOrientationEngineCard({
           : null;
       onReviewReady?.(payload.personalized?.reviewId || null);
       onPersonalizedReady?.(printablePersonalized);
-      onResultReady?.(true);
+      // The first letter can be shown immediately, but automatic PDF/email
+      // delivery waits until the university search succeeds or finishes.
+      if (isFull || fullFailed) onResultReady?.(true);
     }
 
     function failIfBothUnavailable() {
@@ -602,6 +607,7 @@ export function PersonalizedOrientationEngineCard({
       .catch(() => {
         fullFailed = true;
         failIfBothUnavailable();
+        if (alive && previewReady) onResultReady?.(true);
       })
       .finally(() => window.clearTimeout(deadline));
 
