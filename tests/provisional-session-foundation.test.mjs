@@ -156,3 +156,29 @@ test("existing Supabase-verified email cannot gain a competing temporary credent
   assert.match(verifiedEmailCollision, /before insert on public\.provisional_candidate_credentials/i);
   assert.match(verifiedEmailCollision, /revoke execute on function public\.reject_provisional_confirmed_email_collision\(\)/i);
 });
+
+const exactProvisionalRecovery = read("supabase/migrations/20261010200400_recover_exact_provisional_orientation.sql");
+
+test("verified recovery preserves the specific pending orientation across re-orientations", () => {
+  assert.match(verifiedReturn, /service_recover_and_confirm_provisional_orientation/);
+  assert.match(verifiedReturn, /pending\?\.orientation_id/);
+  assert.match(exactProvisionalRecovery, /service_claim_prospect_by_verified_email/);
+  assert.match(exactProvisionalRecovery, /c\.email = lower\(btrim\(p_user_email\)\)/);
+  assert.match(exactProvisionalRecovery, /o\.prospect_id = v_prospect_id/);
+  assert.match(exactProvisionalRecovery, /c\.verified_user_id is null or c\.verified_user_id = p_user_id/);
+  assert.match(exactProvisionalRecovery, /service_confirm_student_orientation\(p_user_id, v_orientation_id\)/);
+  assert.match(exactProvisionalRecovery, /revoke execute on function public\.service_recover_and_confirm_provisional_orientation/);
+});
+
+test("rate limits are enforced both per network and account for expensive password routes", () => {
+  assert.match(signup, /const ipLimited = enforceRequestRateLimit\(request, PUBLIC_ABUSE_POLICIES\.orientationAccountMutation\)/);
+  assert.match(login, /const ipLimited = enforceRequestRateLimit\(request, PUBLIC_ABUSE_POLICIES\.orientationAccountMutation\)/);
+  assert.match(signup, /accountId: email/);
+  assert.match(login, /accountId: email/);
+});
+
+test("provisional sign-out refuses success when server-side revocation fails", () => {
+  assert.match(auth, /if \(error\) return false;/);
+  assert.match(logout, /if \(!revoked\) \{/);
+  assert.match(logout, /status: 503/);
+});
