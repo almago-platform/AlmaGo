@@ -45,3 +45,34 @@ Privilégier un revert Git du commit fautif, suivi d'un déploiement automatique
 ## Limites
 
 Le script `/usr/local/sbin/almago-autodeploy` et l'unité systemd du VPS sont gérés **hors repository**. Ce runbook ne prétend pas les avoir modifiés. Vérifier opérationnellement que le build s'exécute dans un checkout Git valide ; sinon `revision` restera nul et les gates échoueront correctement.
+
+## Impression des PDF par e-mail — même présentation que le site
+
+Le système doit joindre EXACTEMENT deux PDF imprimés par Chromium depuis les pages enregistrées :
+- Résumé A4 (document=orientation).
+- Dossier détaillé (document=detailed) si une shortlist existe ; sinon rapport candidat (document=candidate).
+Les anciens PDF différents générés avec le PDF writer serveur ne sont plus envoyés.
+
+### Prérequis VPS obligatoires
+
+Chromium doit être installé et utilisable par le compte de service Next.js, avec son sandbox actif.
+
+Commande diagnostic : command -v chromium || command -v chromium-browser || command -v google-chrome
+Vérifier le compte exécutant Next.js via systemctl et la santé de http://127.0.0.1:3000/api/health.
+Ne jamais faire tourner le navigateur en root ni désactiver le sandbox pour contourner les erreurs.
+
+Variables d’environnement facultatives :
+- ALMAGO_PDF_CHROMIUM_PATH=/usr/bin/chromium (chemin absolu, ou détection Ubuntu par défaut).
+- ALMAGO_PDF_ORIGIN=http://127.0.0.1:3000 (seules les origines HTTP loopback sont permises).
+
+Le token privé n’est jamais placé dans les arguments du processus Chromium ; il est transmis par le protocole CDP local.
+Le profil temporaire Chromium est effacé après chaque opération et les fichiers sont bornés en taille.
+Si les deux PDF ne peuvent pas être générés, l’orientation est sauvegardée mais aucun ancien PDF divergent n’est envoyé.
+
+### Recette impérative avant fusion et déploiement
+
+Confirmer la présence et le sandbox de Chromium sur le VPS. Faire un test avec une identité de test autorisée
+et une boîte de test : deux pièces jointes, résumé A4 + détaillé avec universités/photos/crédits et liens.
+Comparer visuellement avec les PDF imprimés depuis les mêmes pages du site. Tester également le cas sans shortlist
+(résumé + candidat) et le rendu arabe RTL. Ne pas utiliser les données d’un vrai candidat comme test.
+Un CI vert ne confirme pas que Chromium est installé sur le VPS.

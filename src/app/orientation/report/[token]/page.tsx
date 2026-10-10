@@ -7,6 +7,7 @@ import { OrientationReportActions } from "@/components/orientation/OrientationRe
 import { OrientationRouteCard } from "@/components/orientation/OrientationRouteCard";
 import { OrientationOnePagePrintReport } from "@/components/orientation/OrientationOnePagePrintReport";
 import { OrientationDetailedPrintReport } from "@/components/orientation/OrientationDetailedPrintReport";
+import { readSupplementalOrientationEmailPistes } from "@/lib/orientation/email-research-pistes";
 import { OrientationPrintReadinessProvider } from "@/components/orientation/OrientationPrintReadinessProvider";
 import { OrientationCandidatePrintReport } from "@/components/orientation/OrientationCandidatePrintReport";
 import { orientationCopy } from "@/content/orientation-copy";
@@ -147,6 +148,9 @@ export default async function OrientationReportPage({
   const direction = localeDirection(locale);
   const detailedDocumentLabel = { fr: "Dossier détaillé (PDF)", ar: "الملف المفصل (PDF)", en: "Detailed dossier (PDF)", de: "Ausführliches Dossier (PDF)" }[locale];
   const answers = restorePublicOrientationAnswers(input.answers);
+  const initialSupplemental = documentMode === "detailed" && personalized?.selected.length
+    ? await readSupplementalOrientationEmailPistes(answers, personalized.selected)
+    : null;
   const identity = restorePublicOrientationIdentity(input.identity);
   const copy = rebrandCopy(orientationCopy[locale]);
   const prospectCopy = rebrandCopy(orientationProspectCopy[locale]);
@@ -382,7 +386,7 @@ export default async function OrientationReportPage({
               sections={candidateSections}
             />
           ) : documentMode === "detailed" && personalized ? (
-            <OrientationDetailedPrintReport answers={answers} locale={locale} personalized={personalized} identity={identity} />
+            <OrientationDetailedPrintReport answers={answers} locale={locale} personalized={personalized} identity={identity} initialSupplemental={initialSupplemental} />
           ) : (
             <OrientationOnePagePrintReport answers={answers} locale={locale} personalized={personalized} identity={identity} />
           )}

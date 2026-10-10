@@ -24,7 +24,11 @@ export async function readSupplementalOrientationEmailPistes(
 ): Promise<ResearchPiste[]> {
   if (answers.bacStatus === "no_bac" || selected.length >= 3) return [];
   if (answers.targetDegree !== "Bachelor" && answers.targetDegree !== "Master") return [];
-  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SECRET_KEY) return [];
+  // Do not present an incomplete detailed dossier as ready if the catalogue is offline.
+  // The saved report already requires the same database to retrieve the orientation.
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SECRET_KEY) {
+    throw new Error("Orientation research catalogue is not configured");
+  }
   const criteria: ResearchPisteCriteria = {
     targetDegree: answers.targetDegree,
     targetField: answers.targetField,
@@ -43,7 +47,7 @@ export async function readSupplementalOrientationEmailPistes(
       .overlaps("family_ids", researchFamiliesFor(criteria))
       .not("official_programme_url", "is", null)
       .limit(180);
-    if (error) return [];
+    if (error) throw new Error("Orientation research catalogue query failed");
     const rows: ResearchPisteRow[] = (data || []).map((row) => ({
       institution: row.institution,
       programme: row.programme,
@@ -67,7 +71,8 @@ export async function readSupplementalOrientationEmailPistes(
     );
     return filterSupplementalResearchPistes(candidates, selected);
   } catch {
-    // The regular email and its two original attachments remain available.
-    return [];
+    // Printing must fail instead of silently claiming all the recommended
+    // universities have been included when the research database is unavailable.
+    throw new Error("Orientation research catalogue unavailable");
   }
 }
