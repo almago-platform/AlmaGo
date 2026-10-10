@@ -99,7 +99,7 @@ const copy = {
     reviewNeeded: "À confirmer",
     source: "Source",
     checked: "Vérifié le",
-    noFacts: "Aucun fait publiable supplémentaire n’est disponible pour cette piste.",
+    noFacts: "Notre équipe complète les informations officielles sur cette formation.",
     germanLabel: "Allemand",
     pathsCount: "pistes",
   },
