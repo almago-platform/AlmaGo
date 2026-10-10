@@ -277,7 +277,7 @@ export function ProspectCaptureCard({
             <span>
             {previouslyRequested
               ? copy.automaticEmailAlreadyRequested
-              : status === "saving" || status === "idle" ? copy.automaticEmailPreparing : message}
+              : status === "saving" || status === "idle" ? copy.automaticEmailPreparing : autoEmailSent ? copy.success : message}
             </span>
           </p>
           {status === "error" || (status === "success" && message === copy.deliveryFailure) ? (
@@ -368,7 +368,7 @@ export function ProspectCaptureCard({
         <section className="relative mt-6 overflow-hidden rounded-[var(--radius-panel)] bg-[var(--foreground)] p-5 text-white shadow-[var(--shadow-card)] sm:p-7" aria-labelledby="orientation-continue-title">
           <div aria-hidden="true" className="absolute inset-y-0 start-0 w-1 bg-[var(--accent)]" />
           <p className="text-[11px] font-bold uppercase tracking-[0.13em] text-[#f4cc78]">{copy.interestEyebrow}</p>
-          <h4 id="orientation-continue-title" className="mt-2 max-w-[39rem] text-xl font-semibold leading-snug tracking-tight sm:text-[1.55rem]">{copy.interestTitle}</h4>
+          <h4 id="orientation-continue-title" className="mt-2 max-w-[54rem] text-balance text-xl font-semibold leading-snug tracking-tight sm:text-[1.55rem]">{copy.interestTitle}</h4>
           <p className="mt-3 max-w-[67ch] text-sm leading-7 text-white/85">
             {copy.interestText}
           </p>
