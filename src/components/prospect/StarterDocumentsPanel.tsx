@@ -35,9 +35,11 @@ function statusClass(status: string) {
 export function StarterDocumentsPanel({
   documents,
   preBac = false,
+  provisional = false,
 }: {
   documents: StarterDocument[];
   preBac?: boolean;
+  provisional?: boolean;
 }) {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
@@ -91,7 +93,7 @@ export function StarterDocumentsPanel({
       formData.append("category", category);
       formData.append("file", file);
 
-      const response = await fetch("/api/prospect/documents/upload", {
+      const response = await fetch(provisional ? "/api/provisional-documents/upload" : "/api/prospect/documents/upload", {
         method: "POST",
         body: formData,
       });
@@ -139,7 +141,7 @@ export function StarterDocumentsPanel({
     setError(null);
 
     try {
-      const response = await fetch(`/api/prospect/documents/${documentId}`, {
+      const response = await fetch(`${provisional ? "/api/provisional-documents" : "/api/prospect/documents"}/${documentId}`, {
         method: "DELETE",
       });
       const result = await response.json().catch(() => ({}));
@@ -255,7 +257,7 @@ export function StarterDocumentsPanel({
                     ) : null}
                     <div className="mt-3 flex flex-wrap gap-3 text-sm font-semibold">
                       <a
-                        href={`/api/prospect/documents/${document.id}/view`}
+                        href={`${provisional ? "/api/provisional-documents" : "/api/prospect/documents"}/${document.id}/view`}
                         target="_blank"
                         rel="noreferrer"
                         className="text-[var(--brand-strong)] underline underline-offset-4"
