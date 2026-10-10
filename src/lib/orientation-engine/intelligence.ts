@@ -262,7 +262,7 @@ function deterministicLetter(
       option: hasVerifiedOption
         ? "Nous avons déjà identifié des premières pistes à examiner. Elles servent de point de départ ; nous les comparerons avec vous avant de choisir les candidatures."
         : "Nous allons maintenant chercher des premières pistes adaptées à votre projet. L’objectif n’est pas de vous faire choisir seul, mais de préparer ensemble une sélection sérieuse avant les candidatures.",
-      closing: "Votre prochaine étape est simple : continuer la préparation de la langue et du dossier, puis choisir avec Campus Allemagne les universités à vérifier et les candidatures à préparer.",
+      closing: "Vous nous avez présenté votre projet. Si vous choisissez de continuer avec Campus Allemagne, notre équipe étudiera les possibilités et vous accompagnera vers les candidatures adaptées.",
     },
     ar: {
       title: "توجيهك للدراسة في ألمانيا",
@@ -277,7 +277,7 @@ function deterministicLetter(
       option: hasVerifiedOption
         ? "لدينا بالفعل مسارات أولية تستحق المراجعة. هي نقطة انطلاق، وسنقارنها معك قبل اختيار طلبات التقديم."
         : "سنبدأ الآن بالبحث عن مسارات أولية تناسب مشروعك. الهدف ليس أن تختار وحدك، بل أن نبني معًا قائمة جدية قبل التقديم.",
-      closing: "الخطوة التالية بسيطة: واصل تحضير اللغة والملف، ثم نختار معك الجامعات التي سنراجعها وطلبات التقديم التي سنجهزها.",
+      closing: "لقد شاركتنا مشروعك الدراسي. إذا اخترت مواصلة الطريق مع Campus Allemagne، فسيدرس فريقنا الخيارات الممكنة ويرافقك نحو طلبات التقديم المناسبة.",
     },
     en: {
       title: "Your orientation for studying in Germany",
@@ -292,7 +292,7 @@ function deterministicLetter(
       option: hasVerifiedOption
         ? "We have already identified first paths worth examining. They are a starting point; we will compare them with you before choosing applications."
         : "We will now look for first programme paths that fit your project. The goal is not to make you choose alone, but to prepare a serious shortlist together before applications.",
-      closing: "Your next step is simple: continue preparing the language and documents, then choose with Campus Allemagne which universities to verify and which applications to prepare.",
+      closing: "You have shared your study plans with us. If you choose to continue with Campus Allemagne, our team will review your options and guide you towards suitable applications.",
     },
     de: {
       title: "Deine Orientierung für ein Studium in Deutschland",
@@ -307,7 +307,7 @@ function deterministicLetter(
       option: hasVerifiedOption
         ? "Wir haben bereits erste Studienoptionen identifiziert, die wir gemeinsam prüfen können. Sie sind ein Ausgangspunkt; vor Bewerbungen vergleichen wir weitere Möglichkeiten."
         : "Wir suchen jetzt nach ersten Studienoptionen, die zu deinem Projekt passen. Du sollst nicht allein entscheiden; wir erstellen gemeinsam eine seriöse Auswahl vor den Bewerbungen.",
-      closing: "Der nächste Schritt ist einfach: Sprache und Unterlagen weiter vorbereiten und anschließend gemeinsam mit Campus Allemagne die zu prüfenden Hochschulen und Bewerbungen auswählen.",
+      closing: "Du hast uns von deinem Studienwunsch erzählt. Wenn du mit Campus Allemagne weitermachst, prüft unser Team die Möglichkeiten und begleitet dich zu passenden Bewerbungen.",
     },
   }[locale];
 
@@ -321,10 +321,10 @@ function deterministicLetter(
     : copy.option;
   const routeClosing = profile.bacStatus === "no_bac"
     ? {
-        fr: "Votre prochaine étape est de clarifier votre situation académique avec Campus Allemagne ; les universités viendront ensuite, lorsque la voie sera suffisamment établie.",
-        ar: "خطوتك التالية هي توضيح وضعك الأكاديمي مع Campus Allemagne؛ ننتقل إلى الجامعات بعد تحديد المسار بشكل كافٍ.",
-        en: "Your next step is to clarify your academic situation with Campus Allemagne; universities come afterwards, once the route is sufficiently established.",
-        de: "Dein nächster Schritt ist, deine akademische Situation mit Campus Allemagne zu klären; Hochschulen folgen erst, wenn der passende Weg ausreichend feststeht.",
+        fr: "Votre parcours mérite une étude adaptée. Si vous continuez avec Campus Allemagne, notre équipe explorera les voies possibles et vous guidera pour la suite.",
+        ar: "مشروعك يستحق دراسة تناسب مسارك. إذا واصلت مع Campus Allemagne، سيبحث فريقنا عن الطرق الممكنة ويرافقك في الخطوات القادمة.",
+        en: "Your study project deserves a review suited to your background. If you continue with Campus Allemagne, our team will explore the available paths and guide you from there.",
+        de: "Dein Studienwunsch verdient eine Prüfung, die zu deinem Werdegang passt. Wenn du mit Campus Allemagne weitermachst, sucht unser Team nach möglichen Wegen und begleitet dich weiter.",
       }[locale]
     : copy.closing;
 

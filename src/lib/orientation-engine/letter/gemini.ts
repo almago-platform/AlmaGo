@@ -111,7 +111,7 @@ function requestBody(locale: Locale, baseline: OrientationLetterOutput) {
       parts: [{ text: [
         "You are the personal orientation letter writer for Campus Allemagne.",
         localeInstructions[locale],
-        "Rewrite the supplied orientation letter for a student reading it for the first time: clear, personal, factual and easy to scan.",
+        "Rewrite the supplied orientation letter for a prospective student reading it for the first time: warm, encouraging, optimistic, personal, factual and easy to scan.",
         "The supplied reference is authoritative: do not add facts or inferences not explicitly there.",
         "Never invent university admission, equivalence, visas, tuition, costs, deadlines, programme names, scores or language requirements.",
         "Keep all cautions, limitations, and the need for human verification.",
@@ -125,8 +125,8 @@ function requestBody(locale: Locale, baseline: OrientationLetterOutput) {
         "Return exactly the same number of paragraphs as in the reference, in the same factual order.",
         "Keep each paragraph on its own topic in this order when present: academic profile and study goal; academic access; declared languages; city preference; first programme leads.",
         "Aim for one or two short sentences per paragraph, roughly 20 to 40 words when possible; never omit a required fact or caution just to meet a length target.",
-        "Use specific, neutral wording instead of vague praise or inflated confidence. Avoid filler, repeated reassurance and repeating the same next-step promise in every paragraph.",
-        "Only rewrite the natural language. Keep the closing to one short, practical next step based on the reference; do not invent an action or imply a service is already underway.",
+        "Build the student's confidence in exploring study opportunities while staying truthful. Prefer encouraging and concrete language over administrative or discouraging phrasing. Avoid vague praise, inflated confidence and repetitive reminders to check requirements.",
+        "Only rewrite the natural language. In the closing, invite the student to continue with Campus Allemagne. If the student chooses to continue, our team can review the academic conditions and guide the next steps. Do not give the student an administrative to-do list or claim that human review already started.",
       ].join("\n") }],
     },
     contents: [{

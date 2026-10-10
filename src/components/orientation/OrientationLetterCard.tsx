@@ -12,59 +12,47 @@ import type {
 const copy = {
   fr: {
     label: "Lettre d’orientation",
-    pistes: "Premières pistes à examiner ensemble",
-    pisteNote: "Ces pistes servent de point de départ. Campus Allemagne vérifiera avec vous les conditions officielles avant de choisir les candidatures.",
-    source: "Page officielle",
+    pistes: "Des formations à découvrir pour votre avenir en Allemagne",
+    pisteNote: "Voici des formations en lien avec votre projet. Vous nous confiez vos envies, vos moyens et vos préférences ; si vous choisissez de poursuivre, notre équipe étudiera les conditions et vous accompagnera dans la sélection des candidatures.",
+    source: "Site officiel",
     closing: "Prochaine étape",
-    verified: "Piste documentée",
-    research: "Piste à vérifier ensemble",
-    why: "Pourquoi cette piste",
-    toCheck: "À vérifier avant de candidater",
-    researchReason: "Cette piste vient d’une recherche exploratoire. Son adéquation à votre profil n’est pas encore confirmée.",
-    researchChecks: ["Vérifier si votre diplôme donne accès à ce programme.", "Vérifier la langue, le certificat demandé et la date limite."],
-    alternativeLanguage: (language: string) => `Alternative intéressante en ${language}. Elle diffère de votre préférence actuelle, mais mérite d’être comparée.`,
+    verified: "Formation à découvrir",
+    research: "Autre piste à explorer",
+    why: "Ce qui rend cette piste intéressante",
+    researchReason: "Une autre formation à découvrir pour élargir vos possibilités d'études en Allemagne.",
   },
   ar: {
     label: "رسالة التوجيه",
-    pistes: "مسارات أولية نراجعها معًا",
-    pisteNote: "هذه المسارات هي نقطة بداية. سيتحقق Campus Allemagne معك من الشروط الرسمية قبل اختيار طلبات التقديم.",
-    source: "الصفحة الرسمية",
-    closing: "الخطوة التالية",
-    verified: "مسار موثّق بالمصادر",
-    research: "مسار نتحقق منه معًا",
-    why: "لماذا هذا البرنامج؟",
-    toCheck: "ما يجب التحقق منه قبل التقديم",
-    researchReason: "هذا مسار ظهر أثناء بحث أولي، ولم يتم تأكيد ملاءمته لملفك بعد.",
-    researchChecks: ["التأكد من أن شهادتك تتيح الالتحاق بهذا البرنامج.", "التحقق من لغة الدراسة والشهادة المقبولة وموعد التقديم."],
-    alternativeLanguage: (language: string) => `مسار بديل مثير للاهتمام باللغة ${language}. يختلف عن تفضيلك الحالي، لكنه يستحق المقارنة.`,
+    pistes: "اكتشف برامج دراسية لمستقبلك في ألمانيا",
+    pisteNote: "هذه برامج مرتبطة بمشروعك الدراسي. شاركنا طموحاتك وإمكاناتك وتفضيلاتك، وإذا اخترت مواصلة الطريق معنا فسيتولى فريقنا دراسة الشروط ومرافقتك في اختيار طلبات التقديم.",
+    source: "الموقع الرسمي",
+    closing: "الخطوة القادمة",
+    verified: "برنامج يستحق الاستكشاف",
+    research: "خيار آخر للاستكشاف",
+    why: "ما الذي يميز هذا الخيار؟",
+    researchReason: "برنامج آخر يمكنك اكتشافه لتوسيع خيارات الدراسة في ألمانيا.",
   },
   en: {
     label: "Orientation letter",
-    pistes: "First paths to review together",
-    pisteNote: "These paths are a starting point. Campus Allemagne will verify the official conditions with you before applications are chosen.",
-    source: "Official page",
+    pistes: "Explore study programmes for your future in Germany",
+    pisteNote: "Here are programmes connected to your study plans. Tell us your goals, budget and preferences; if you choose to continue, our team will review the requirements and guide you through choosing applications.",
+    source: "Official website",
     closing: "Next step",
-    verified: "Documented path",
-    research: "Path to verify together",
-    why: "Why this option",
-    toCheck: "Check before applying",
-    researchReason: "This option came from exploratory research. Its fit with your profile has not been confirmed.",
-    researchChecks: ["Check whether your diploma gives access to this programme.", "Check the teaching language, accepted certificate and deadline."],
-    alternativeLanguage: (language: string) => `An interesting alternative in ${language}. It differs from your current preference, but is worth comparing.`,
+    verified: "Explore this programme",
+    research: "Another option to explore",
+    why: "What makes this option interesting",
+    researchReason: "Another course to discover as you explore study opportunities in Germany.",
   },
   de: {
     label: "Orientierungsschreiben",
-    pistes: "Erste Optionen, die wir gemeinsam prüfen",
-    pisteNote: "Diese Optionen sind ein Ausgangspunkt. Campus Allemagne prüft mit dir die offiziellen Bedingungen, bevor Bewerbungen ausgewählt werden.",
-    source: "Offizielle Seite",
+    pistes: "Entdecke Studiengänge für deine Zukunft in Deutschland",
+    pisteNote: "Hier findest du Studiengänge, die zu deinem Vorhaben passen könnten. Teile uns deine Ziele, Möglichkeiten und Wünsche mit. Wenn du mit uns weitermachst, prüft unser Team die Voraussetzungen und begleitet dich bei der Auswahl deiner Bewerbungen.",
+    source: "Offizielle Website",
     closing: "Nächster Schritt",
-    verified: "Dokumentierte Option",
-    research: "Gemeinsam zu prüfende Option",
-    why: "Warum diese Option?",
-    toCheck: "Vor der Bewerbung prüfen",
-    researchReason: "Diese Option stammt aus einer ersten Recherche. Ob sie zu deinem Profil passt, ist noch nicht bestätigt.",
-    researchChecks: ["Prüfen, ob dein Abschluss Zugang zu diesem Studiengang ermöglicht.", "Unterrichtssprache, Zertifikat und Bewerbungsfrist prüfen."],
-    alternativeLanguage: (language: string) => `Eine interessante Alternative auf ${language}. Sie weicht von deiner aktuellen Präferenz ab, ist aber einen Vergleich wert.`,
+    verified: "Studiengang entdecken",
+    research: "Weitere Möglichkeit entdecken",
+    why: "Warum diese Möglichkeit interessant ist",
+    researchReason: "Ein weiterer Studiengang, den du bei der Suche nach passenden Möglichkeiten entdecken kannst.",
   },
 } as const;
 
@@ -167,7 +155,6 @@ export function OrientationLetterCard({
           source: candidate.officialUrl,
           badge: t.research,
           reason: t.researchReason,
-          checks: [...t.researchChecks],
         }))
     : [];
 
@@ -236,12 +223,6 @@ export function OrientationLetterCard({
                     <p className="mt-3 max-w-[73ch] text-sm leading-6 text-[var(--foreground)]">
                       <span className="font-semibold">{t.why} : </span>{piste.reason}
                     </p>
-                    <div className="mt-3 max-w-[73ch] rounded-[var(--radius-control)] bg-[var(--surface-subtle)] px-3 py-3">
-                      <p className="text-xs font-semibold text-[var(--foreground)]">{t.toCheck}</p>
-                      <ul className="mt-1 list-disc space-y-1 ps-5 text-sm leading-6 text-[var(--muted)]">
-                        {piste.checks.map((check) => <li key={check}>{check}</li>)}
-                      </ul>
-                    </div>
                     {piste.source ? (
                       <a
                         href={piste.source}

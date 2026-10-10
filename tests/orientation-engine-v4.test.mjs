@@ -93,14 +93,14 @@ test("Orientation V4 advisor is provider-abstracted and defaults to zero-cost de
 test("Orientation V4 makes the simple letter primary and keeps technical evidence available", () => {
   assert.match(ui, /OrientationLetterCard/);
   assert.match(ui, /Votre orientation personnalisée/);
-  assert.match(ui, /Voir les critères et points à vérifier/);
+  assert.match(ui, /Comprendre notre analyse en détail/);
   assert.match(ui, /Pourquoi cette option apparaît/);
   assert.match(ui, /À vérifier ou compléter/);
   assert.match(ui, /Sources/);
   assert.match(ui, /Qualité des informations/);
   assert.doesNotMatch(ui, /Notre catalogue vérifié ne contient pas encore trois options/);
   assert.match(letterUi, /Lettre d’orientation/);
-  assert.match(letterUi, /Premières pistes à examiner ensemble/);
+  assert.match(letterUi, /Des formations à découvrir pour votre avenir en Allemagne/);
 });
 
 test("Orientation V4 makes Bachelor first contact letter-first while retaining legacy paths elsewhere", () => {
@@ -112,7 +112,7 @@ test("Orientation V4 makes Bachelor first contact letter-first while retaining l
   assert.match(ui, /isBachelorFirstContact/);
   assert.match(ui, /!isBachelorFirstContact && onRefineAnswers/);
   assert.match(letterUi, /recommendations: OrientationProgrammeEvaluation\[\]/);
-  assert.match(letterUi, /Premières pistes à examiner ensemble/);
+  assert.match(letterUi, /Des formations à découvrir pour votre avenir en Allemagne/);
 });
 
 test("Orientation V4 audit documents privacy, cost and incremental conversation architecture", () => {
