@@ -147,3 +147,12 @@ test("Supabase resend confirmation performs verified-only recovery and file hand
   assert.match(verifiedReturn, /Location: path/);
   assert.doesNotMatch(verifiedReturn, /request\.url|searchParams|admin\.updateUserById/);
 });
+
+const verifiedEmailCollision = read("supabase/migrations/20261010200300_block_provisional_verified_email_collisions.sql");
+
+test("existing Supabase-verified email cannot gain a competing temporary credential", () => {
+  assert.match(verifiedEmailCollision, /from auth\.users u/i);
+  assert.match(verifiedEmailCollision, /u\.email_confirmed_at is not null/i);
+  assert.match(verifiedEmailCollision, /before insert on public\.provisional_candidate_credentials/i);
+  assert.match(verifiedEmailCollision, /revoke execute on function public\.reject_provisional_confirmed_email_collision\(\)/i);
+});
