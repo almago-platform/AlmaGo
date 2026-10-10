@@ -40,11 +40,15 @@ test("progressive UI preserves a factual letter on provider failures and can ret
 });
 
 test("four languages distinguish basic orientation from optional research", () => {
+  const translations = form.slice(
+    form.indexOf("const copy = {"),
+    form.indexOf("function geographicFallbackMessage("),
+  );
   for (const lang of ["fr", "ar", "en", "de"]) {
-    assert.ok(form.includes(lang + ": {"));
+    assert.ok(translations.includes(lang + ": {"));
   }
   for (const key of ["enriching:", "degraded:", "retry:"]) {
-    assert.equal((form.match(new RegExp(key, "g")) || []).length, 4, key);
+    assert.equal((translations.match(new RegExp(key, "g")) || []).length, 4, key);
   }
 });
 
