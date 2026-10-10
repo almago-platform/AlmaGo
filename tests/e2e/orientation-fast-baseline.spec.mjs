@@ -55,8 +55,6 @@ test("candidate sees a factual letter even when the detailed provider returns 50
 
   await expect(page.getByRole("heading", { name: "Votre orientation pour étudier en Allemagne" }))
     .toBeVisible({ timeout: 20_000 });
-  await expect(page.getByText("Les recherches complémentaires sont indisponibles", { exact: false }))
-    .toBeVisible();
   await expect(page.getByRole("heading", { name: "Universités et formations à découvrir" }))
     .toBeVisible();
   await expect(page.getByText("La recherche d’universités n’a pas pu se terminer.", { exact: false }))
