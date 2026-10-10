@@ -177,12 +177,11 @@ export function buildOrientationProspectEmail({
       copy.orientationReportDescription,
       `${copy.orientationReportCta}: ${orientationReportUrl}`,
       "",
-      copy.candidateReportDescription,
-      `${copy.candidateReportCta}: ${candidateReportUrl}`,
+      ...(detailedReportUrl
+        ? [copy.detailedReportDescription, `${copy.detailedReportCta}: ${detailedReportUrl}`]
+        : [copy.candidateReportDescription, `${copy.candidateReportCta}: ${candidateReportUrl}`]),
       copy.reportsNote,
-      ...(detailedReportUrl ? [copy.detailedReportDescription, `${copy.detailedReportCta}: ${detailedReportUrl}`] : []),
       ...(attachmentsIncluded ? [copy.attachmentsNote] : []),
-      ...(detailedAttachmentIncluded ? [copy.detailedAttachmentsNote] : []),
       "",
       ...(interestUrl
         ? ["", `${copy.interestCta}: ${interestUrl}`, copy.interestNote]
@@ -212,14 +211,13 @@ export function buildOrientationProspectEmail({
           <p style="margin:0 0 14px">
             <a href="${escapeHtml(orientationReportUrl)}" style="display:inline-block;background:#db0423;color:#ffffff;text-decoration:none;font-weight:700;padding:12px 18px;border-radius:10px">${escapeHtml(copy.orientationReportCta)}</a>
           </p>
-          <p style="margin:0 0 8px;font-size:13px;line-height:1.6;color:#182442">${escapeHtml(copy.candidateReportDescription)}</p>
-          <p style="margin:0 0 14px">
-            <a href="${escapeHtml(candidateReportUrl)}" style="display:inline-block;background:#182442;color:#ffffff;text-decoration:none;font-weight:700;padding:12px 18px;border-radius:10px">${escapeHtml(copy.candidateReportCta)}</a>
-          </p>
+          ${detailedReportUrl
+            ? `<p style="margin:0 0 8px;font-size:13px;line-height:1.6;color:#182442">${escapeHtml(copy.detailedReportDescription)}</p>
+                <p style="margin:0 0 14px"><a href="${escapeHtml(detailedReportUrl)}" style="display:inline-block;background:#182442;color:#ffffff;text-decoration:none;font-weight:700;padding:12px 18px;border-radius:10px">${escapeHtml(copy.detailedReportCta)}</a></p>`
+            : `<p style="margin:0 0 8px;font-size:13px;line-height:1.6;color:#182442">${escapeHtml(copy.candidateReportDescription)}</p>
+                <p style="margin:0 0 14px"><a href="${escapeHtml(candidateReportUrl)}" style="display:inline-block;background:#182442;color:#ffffff;text-decoration:none;font-weight:700;padding:12px 18px;border-radius:10px">${escapeHtml(copy.candidateReportCta)}</a></p>`}
           <p style="margin:0;font-size:12px;line-height:1.6;color:#546078">${escapeHtml(copy.reportsNote)}</p>
-          ${detailedReportUrl ? `<p style="margin:12px 0 8px;font-size:13px;line-height:1.6">${escapeHtml(copy.detailedReportDescription)}</p><p><a href="${escapeHtml(detailedReportUrl)}" style="display:inline-block;background:#182442;color:white;text-decoration:none;font-weight:700;padding:12px 18px;border-radius:10px">${escapeHtml(copy.detailedReportCta)}</a></p>` : ""}
           ${attachmentsIncluded ? `<p style="margin:8px 0 0;font-size:12px;line-height:1.6;font-weight:700;color:#182442">${escapeHtml(copy.attachmentsNote)}</p>` : ""}
-          ${detailedAttachmentIncluded ? `<p style="margin:8px 0 0;font-size:12px;line-height:1.6;font-weight:700;color:#182442">${escapeHtml(copy.detailedAttachmentsNote)}</p>` : ""}
         </div>
         ${interestUrl ? `<div style="margin:0 0 22px;padding:18px;border:1px solid #eadbb7;border-radius:12px;background:#fff9eb">
           <p style="margin:0 0 12px"><a href="${escapeHtml(interestUrl)}" style="display:inline-block;background:#182442;color:#ffffff;text-decoration:none;font-weight:700;padding:11px 16px;border-radius:10px">${escapeHtml(copy.interestCta)}</a></p>
