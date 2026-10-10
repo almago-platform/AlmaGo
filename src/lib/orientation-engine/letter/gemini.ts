@@ -23,7 +23,7 @@ const cache = new Map<string, { expiresAt: number; value: OrientationLetterOutpu
 const inFlight = new Map<string, Promise<OrientationLetterOutput>>();
 
 const localeInstructions: Record<Locale, string> = {
-  fr: "Écris en français naturel, concret et facile à comprendre par un lycéen tunisien. Adresse-toi directement à l'étudiant.",
+  fr: "Écris en français simple, naturel et chaleureux, compréhensible par un lycéen tunisien. Vouvoie toujours le candidat : « vous », « votre », « vos » ; jamais « tu », « ton », « ta » ou « tes ». Reste concis et précis.",
   ar: "اكتب بالعربية الفصحى السهلة والواضحة لطالب تونسي، وخاطبه مباشرةً.",
   en: "Write natural, personal, clear English appropriate for a prospective Tunisian student.",
   de: "Schreibe natürliches, persönliches und leicht verständliches Deutsch für Studieninteressierte.",
