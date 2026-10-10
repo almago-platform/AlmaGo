@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { OrientationRefinementQuestionCard } from "@/components/orientation/OrientationRefinementQuestionCard";
 import { OrientationLetterCard } from "@/components/orientation/OrientationLetterCard";
 import { OrientationPersonalizedWriterCard } from "@/components/orientation/OrientationPersonalizedWriterCard";
 import type { Locale } from "@/lib/i18n";
 import type { PublicOrientationAnswers } from "@/lib/orientation/public";
 import type { OrientationPublicPersonalizedResult } from "@/lib/orientation-engine/result/types";
-import type { OrientationCanonicalShortlist } from "@/lib/orientation-engine/result/canonical";
+import { isSupportedCatalogueRecommendation, type OrientationCanonicalShortlist } from "@/lib/orientation-engine/result/canonical";
 import type {
   OrientationAdvisorOutput,
   OrientationEngineResult,
@@ -53,7 +53,17 @@ const copy = {
       "Préparation de votre rapport personnalisé",
     ],
     loadingNote: "Cela peut prendre quelques instants. Gardez cette page ouverte pendant la préparation.",
-    unavailable: "Votre lettre détaillée est momentanément indisponible. Votre orientation générale reste valable.",
+    unavailable: "Votre orientation personnalisée n’a pas pu être préparée. Vous pouvez réessayer.",
+    enriching: "Votre première orientation est prête. Nous cherchons encore des formations vérifiées pour compléter votre résultat.",
+    degraded: "Les recherches complémentaires sont indisponibles pour le moment. Votre lettre personnalisée reste accessible.",
+    retry: "Réessayer la recherche complémentaire",
+    universityHeading: "Universités et formations à découvrir",
+    universitySearching: "Nous vérifions encore les programmes universitaires correspondant à votre projet. Votre lettre est déjà disponible.",
+    universityUnavailable: "La recherche d’universités n’a pas pu se terminer. Aucune formation ne peut être confirmée pour le moment.",
+    universityNone: "Nous n’avons pas trouvé de formation suffisamment vérifiée correspondant à ce domaine dans notre catalogue actuel. Cela ne signifie pas qu’aucune université ne propose ce cursus.",
+    universityBroaden: "Supprimer ma préférence de ville et relancer",
+    universityOfficialSearch: "Explorer les formations sur Hochschulkompass",
+    universityCaution: "Nous n’affichons pas de formation d’un autre domaine simplement pour remplir la liste. Les conditions d’admission et les sources officielles doivent être vérifiées.",
     details: "Comprendre notre analyse en détail",
     why: "Pourquoi cette option apparaît",
     missing: "À vérifier ou compléter",
@@ -90,7 +100,17 @@ const copy = {
       "إعداد تقريرك الشخصي",
     ],
     loadingNote: "قد يستغرق ذلك بضع لحظات. أبقِ هذه الصفحة مفتوحة أثناء الإعداد.",
-    unavailable: "رسالة التوجيه التفصيلية غير متاحة مؤقتًا. يبقى توجيهك العام صالحًا.",
+    unavailable: "تعذر إعداد توجيهك الشخصي. يمكنك المحاولة مرة أخرى.",
+    enriching: "توجيهك الأولي جاهز. نبحث الآن عن برامج موثوقة لإكمال النتيجة.",
+    degraded: "البحث الإضافي غير متاح حاليًا. يمكنك دائمًا قراءة رسالتك الشخصية.",
+    retry: "إعادة البحث الإضافي",
+    universityHeading: "جامعات وبرامج للاكتشاف",
+    universitySearching: "ما زلنا نتحقق من البرامج الجامعية المناسبة لمشروعك. رسالة التوجيه جاهزة بالفعل.",
+    universityUnavailable: "تعذّر إكمال البحث عن الجامعات. لا يمكن تأكيد برنامج في الوقت الحالي.",
+    universityNone: "لم نجد حتى الآن برنامجًا موثّقًا بما يكفي في هذا التخصص ضمن كتالوجنا الحالي. هذا لا يعني عدم وجود برامج مناسبة في جامعات أخرى.",
+    universityBroaden: "حذف تفضيل المدينة وإعادة البحث",
+    universityOfficialSearch: "البحث في الجامعات عبر Hochschulkompass",
+    universityCaution: "لا نعرض برنامجًا في تخصص مختلف فقط لملء القائمة. يجب التحقق من شروط القبول والمصادر الرسمية.",
     details: "اكتشف تفاصيل تحليلنا",
     why: "لماذا يظهر هذا الخيار",
     missing: "ما يجب التحقق منه أو استكماله",
@@ -127,7 +147,17 @@ const copy = {
       "Preparing your personalised report",
     ],
     loadingNote: "This can take a few moments. Keep this page open while we prepare your result.",
-    unavailable: "Your detailed orientation letter is temporarily unavailable. Your general orientation remains valid.",
+    unavailable: "We couldn't prepare your personalised orientation. Please try again.",
+    enriching: "Your first orientation is ready. We're still checking verified programmes to enrich it.",
+    degraded: "Further research is temporarily unavailable. Your personalised letter is still here.",
+    retry: "Retry the additional research",
+    universityHeading: "Universities and degree programmes to explore",
+    universitySearching: "We are still checking university programmes relevant to your project. Your first letter is already available.",
+    universityUnavailable: "The university search could not be completed. We cannot confirm a suitable programme yet.",
+    universityNone: "No sufficiently verified programme in this field was found in our current catalogue. That does not mean universities do not offer this degree.",
+    universityBroaden: "Remove my city preference and search again",
+    universityOfficialSearch: "Explore degrees on Hochschulkompass",
+    universityCaution: "We will not suggest unrelated degrees just to fill a list. Official sources and entry requirements must be checked.",
     details: "Explore our detailed analysis",
     why: "Why this option appears",
     missing: "To verify or complete",
@@ -164,7 +194,17 @@ const copy = {
       "Persönlichen Bericht vorbereiten",
     ],
     loadingNote: "Das kann einige Augenblicke dauern. Lass diese Seite während der Vorbereitung geöffnet.",
-    unavailable: "Dein ausführliches Orientierungsschreiben ist vorübergehend nicht verfügbar. Die allgemeine Orientierung bleibt gültig.",
+    unavailable: "Deine persönliche Orientierung konnte nicht erstellt werden. Bitte versuche es erneut.",
+    enriching: "Deine erste Orientierung ist bereit. Wir prüfen weitere Studiengänge für das ausführliche Ergebnis.",
+    degraded: "Die ergänzende Recherche ist derzeit nicht verfügbar. Dein persönlicher Brief bleibt sichtbar.",
+    retry: "Ergänzende Recherche erneut versuchen",
+    universityHeading: "Hochschulen und Studiengänge entdecken",
+    universitySearching: "Wir prüfen noch Studiengänge, die zu deinem Projekt passen. Dein erster Orientierungsbrief ist bereits verfügbar.",
+    universityUnavailable: "Die Hochschulrecherche konnte nicht abgeschlossen werden. Wir können derzeit keinen Studiengang bestätigen.",
+    universityNone: "In unserem derzeitigen Katalog wurde kein ausreichend überprüfter Studiengang in diesem Fach gefunden. Das bedeutet nicht, dass Hochschulen diesen Studiengang nicht anbieten.",
+    universityBroaden: "Stadtpräferenz entfernen und erneut suchen",
+    universityOfficialSearch: "Studiengänge im Hochschulkompass suchen",
+    universityCaution: "Wir zeigen keine fachfremden Studiengänge, nur um die Liste zu füllen. Offizielle Quellen und Zulassungsvoraussetzungen müssen geprüft werden.",
     details: "Unsere Analyse im Detail ansehen",
     why: "Warum diese Option erscheint",
     missing: "Zu prüfen oder zu ergänzen",
@@ -439,14 +479,20 @@ export function PersonalizedOrientationEngineCard({
         ? t.bacNoBac
         : null;
   const requestBody = useMemo(() => JSON.stringify({ answers, locale }), [answers, locale]);
+  const lastRequestKey = useRef<string | null>(null);
+  const [retryVersion, setRetryVersion] = useState(0);
   const [requestState, setRequestState] = useState<{
     key: string | null;
     result: EngineResponse | null;
     error: boolean;
+    enhancing: boolean;
+    degraded: boolean;
   }>({
     key: null,
     result: null,
     error: false,
+    enhancing: false,
+    degraded: false,
   });
 
   const isCurrentRequest = requestState.key === requestBody;
@@ -455,7 +501,7 @@ export function PersonalizedOrientationEngineCard({
     ? "loading"
     : requestState.error
       ? "error"
-      : "ready";
+      : result ? "ready" : "loading";
   const personalized =
     result?.shortlist.source === "personalized_verified"
     && result.personalized
@@ -464,56 +510,114 @@ export function PersonalizedOrientationEngineCard({
       : null;
   const fallbackRecommendations =
     result?.shortlist.source === "deterministic_fallback"
-      ? result.engine.recommendations
+      ? result.engine.recommendations.filter(isSupportedCatalogueRecommendation)
       : [];
   const geographicFallback =
     result ? geographicFallbackMessage(locale, result.geography) : null;
 
   useEffect(() => {
-    const controller = new AbortController();
-    onResultReady?.(false);
+    const newProfile = lastRequestKey.current !== requestBody;
+    lastRequestKey.current = requestBody;
+    const previewController = new AbortController();
+    const fullController = new AbortController();
+    let alive = true;
+    let fullReady = false;
+    let previewReady = false;
+    let previewFailed = false;
+    let fullFailed = false;
 
-    fetch("/api/orientation/engine", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: requestBody,
-      signal: controller.signal,
-      cache: "no-store",
-    })
-      .then(async (response) => {
-        if (!response.ok) throw new Error("orientation-engine");
-        return response.json() as Promise<EngineResponse>;
-      })
-      .then((payload) => {
-        setRequestState({
-          key: requestBody,
-          result: payload,
-          error: false,
-        });
-        const printablePersonalized =
-          payload.shortlist.source === "personalized_verified"
-          && payload.personalized
-          && payload.personalized.selected.length > 0
-            ? payload.personalized
-            : null;
-        onReviewReady?.(payload.personalized?.reviewId || null);
-        onPersonalizedReady?.(printablePersonalized);
-        onResultReady?.(true);
-      })
-      .catch((error) => {
-        if (error instanceof DOMException && error.name === "AbortError") return;
-        setRequestState({
-          key: requestBody,
-          result: null,
-          error: true,
-        });
-        onReviewReady?.(null);
-        onPersonalizedReady?.(null);
-        onResultReady?.(false);
+    // On retry, keep the candidate's already available first letter visible.
+    setRequestState((current) => ({
+      key: requestBody,
+      result: !newProfile && current.key === requestBody ? current.result : null,
+      error: false,
+      enhancing: true,
+      degraded: false,
+    }));
+    if (newProfile) onResultReady?.(false);
+
+    function publish(payload: EngineResponse, isFull: boolean) {
+      if (!alive || (!isFull && fullReady)) return;
+      if (isFull) {
+        fullReady = true;
+        previewController.abort();
+      } else {
+        previewReady = true;
+      }
+      setRequestState({
+        key: requestBody,
+        result: payload,
+        error: false,
+        enhancing: !isFull && !fullFailed,
+        degraded: !isFull && fullFailed,
       });
 
-    return () => controller.abort();
-  }, [requestBody, onReviewReady, onPersonalizedReady, onResultReady]);
+      const printablePersonalized =
+        payload.shortlist.source === "personalized_verified"
+        && payload.personalized
+        && payload.personalized.selected.length > 0
+          ? payload.personalized
+          : null;
+      onReviewReady?.(payload.personalized?.reviewId || null);
+      onPersonalizedReady?.(printablePersonalized);
+      // The first letter can be shown immediately, but automatic PDF/email
+      // delivery waits until the university search succeeds or finishes.
+      if (isFull || fullFailed) onResultReady?.(true);
+    }
+
+    function failIfBothUnavailable() {
+      // A delayed failure of the preview must never hide a successful
+      // enriched response that arrived first.
+      if (!alive || fullReady) return;
+      setRequestState((current) => {
+        if (current.key !== requestBody) return current;
+        return {
+          ...current,
+          error: previewFailed && fullFailed && !current.result,
+          enhancing: !fullFailed,
+          degraded: fullFailed && Boolean(current.result),
+        };
+      });
+    }
+
+    async function requestEngine(url: string, signal: AbortSignal): Promise<EngineResponse> {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: requestBody,
+        signal,
+        cache: "no-store",
+      });
+      if (!response.ok) throw new Error(`orientation-engine-${response.status}`);
+      return response.json() as Promise<EngineResponse>;
+    }
+
+    // First-contact letter does not wait for any LLM, discovery or database call.
+    void requestEngine("/api/orientation/engine/preview", previewController.signal)
+      .then((payload) => publish(payload, false))
+      .catch(() => {
+        previewFailed = true;
+        failIfBothUnavailable();
+      });
+
+    // Enrichment is independent, bounded client-side and replaceable on retry.
+    const deadline = window.setTimeout(() => fullController.abort(), 45_000);
+    void requestEngine("/api/orientation/engine", fullController.signal)
+      .then((payload) => publish(payload, true))
+      .catch(() => {
+        fullFailed = true;
+        failIfBothUnavailable();
+        if (alive && previewReady) onResultReady?.(true);
+      })
+      .finally(() => window.clearTimeout(deadline));
+
+    return () => {
+      alive = false;
+      window.clearTimeout(deadline);
+      previewController.abort();
+      fullController.abort();
+    };
+  }, [requestBody, retryVersion, onReviewReady, onPersonalizedReady, onResultReady]);
 
   return (
     <section
@@ -602,6 +706,20 @@ export function PersonalizedOrientationEngineCard({
 
         {state === "ready" && result ? (
           <>
+            {requestState.enhancing ? (
+              <p role="status" className="mb-5 rounded-[var(--radius-control)] border border-[var(--info-border)] bg-[var(--info-soft)] px-4 py-3 text-sm leading-6">
+                {t.enriching}
+              </p>
+            ) : null}
+            {requestState.degraded && (personalized || fallbackRecommendations.length > 0) ? (
+              <div role="status" className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-[var(--radius-control)] border border-[var(--warning-border)] bg-[var(--surface-subtle)] px-4 py-3 text-sm leading-6">
+                <span>{t.degraded}</span>
+                <button type="button" onClick={() => setRetryVersion((value) => value + 1)}
+                  className="min-h-11 font-semibold text-[var(--brand-strong)] underline underline-offset-4">
+                  {t.retry}
+                </button>
+              </div>
+            ) : null}
             {isBachelorFirstContact && bacWelcome && personalized ? (
               <p className="mb-5 rounded-[var(--radius-control)] border border-[var(--premium-border)] bg-[var(--premium-cream-soft)] px-5 py-4 text-base font-medium leading-7 text-[var(--foreground)]">
                 {bacWelcome}
@@ -632,6 +750,55 @@ export function PersonalizedOrientationEngineCard({
                 welcome={isBachelorFirstContact ? bacWelcome : null}
               />
             )}
+            {answers.bacStatus !== "no_bac" && !personalized && fallbackRecommendations.length === 0 ? (
+              <section
+                aria-labelledby="orientation-university-status-title"
+                className="mt-6 rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 sm:p-6"
+              >
+                <h3 id="orientation-university-status-title" className="text-xl font-semibold text-[var(--foreground)]">
+                  {t.universityHeading}
+                </h3>
+                <p role="status" className="mt-3 text-sm leading-7 text-[var(--foreground)]">
+                  {requestState.enhancing
+                    ? t.universitySearching
+                    : requestState.degraded
+                      ? t.universityUnavailable
+                      : t.universityNone}
+                </p>
+                {!requestState.enhancing ? (
+                  <div className="mt-4 flex flex-wrap gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setRetryVersion((value) => value + 1)}
+                      className="min-h-11 rounded-[var(--radius-control)] border border-[var(--border-strong)] px-4 text-sm font-semibold text-[var(--brand-strong)]"
+                    >
+                      {t.retry}
+                    </button>
+                    {answers.preferredCities.length > 0 && onRefineAnswers ? (
+                      <button
+                        type="button"
+                        onClick={() => onRefineAnswers({ preferredCities: [] })}
+                        className="min-h-11 rounded-[var(--radius-control)] border border-[var(--border-strong)] px-4 text-sm font-semibold text-[var(--foreground)]"
+                      >
+                        {t.universityBroaden}
+                      </button>
+                    ) : null}
+                  </div>
+                ) : null}
+                {!requestState.enhancing ? (
+                  <a
+                    href="https://www.hochschulkompass.de/studium/studiengangsuche.html"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-3 inline-flex min-h-11 items-center text-sm font-semibold text-[var(--brand-strong)] underline underline-offset-4"
+                  >
+                    {t.universityOfficialSearch} ↗
+                  </a>
+                ) : null}
+                <p className="mt-4 text-xs leading-6 text-[var(--muted)]">{t.universityCaution}</p>
+              </section>
+            ) : null}
+
             {!isBachelorFirstContact && onRefineAnswers && result.engine.refinement.nextQuestion ? (
               <OrientationRefinementQuestionCard
                 question={result.engine.refinement.nextQuestion}
@@ -645,7 +812,7 @@ export function PersonalizedOrientationEngineCard({
             <details className="mt-5 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface)] p-4">
               <summary className="cursor-pointer text-sm font-bold">{t.details}</summary>
               <div className="mt-4 grid gap-4">
-              {result.engine.recommendations.map((recommendation) => {
+              {fallbackRecommendations.map((recommendation) => {
                 const sources = recommendation.sources.slice(0, 3);
                 const deadlineRule = recommendation.rules.find((rule) =>
                   ["deadline_open", "deadline_to_verify", "deadline_unknown"].includes(rule.code)

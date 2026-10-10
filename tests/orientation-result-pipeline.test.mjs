@@ -57,7 +57,8 @@ test("E exposes one canonical shortlist source and lets it drive presentation", 
   assert.match(canonical, /source: "deterministic_fallback"/);
   assert.match(canonical, /source: "none"/);
   assert.match(canonical, /personalized\.selected\.map/);
-  assert.match(canonical, /engine\.recommendations\.map/);
+  assert.match(canonical, /engine\.recommendations\.filter\(isSupportedCatalogueRecommendation\)/);
+  assert.match(canonical, /supported\.map/);
   assert.match(engineCard, /result\?\.shortlist\.source === "personalized_verified"/);
   assert.match(engineCard, /<OrientationPersonalizedWriterCard/);
   assert.match(engineCard, /personalized \? \(/);

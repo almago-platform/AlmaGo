@@ -31,6 +31,7 @@ import {
 const MAX_BODY_BYTES = 24_000;
 
 export async function POST(request: Request) {
+  const startedAt = Date.now();
   const policy = PUBLIC_ABUSE_POLICIES.orientationEngine;
   const limited = enforceRequestRateLimit(request, policy);
   if (limited) return limited;
@@ -109,6 +110,10 @@ export async function POST(request: Request) {
           break;
         }
 
+        // Catalogue checks retain all geographic tiers. To prevent four
+        // serial remote discovery pipelines on sparse cities, run the remote
+        // search at most once, after local/regional catalogue checks.
+        if (scope.tier !== "germany") continue;
         geography.attempted.push({ tier: scope.tier, source: "openai" });
 
         try {
@@ -175,9 +180,16 @@ export async function POST(request: Request) {
       engineResult,
       // The verified personalized result has its own Gemini writer.
       // Avoid an unused second AI letter request for that pathway.
-      { generateLetter: shortlist.source !== "personalized_verified" },
+      { generateLetter: shortlist.source !== "personalized_verified", enableScout: false },
     );
 
+    console.info("orientation_v4_engine", JSON.stringify({
+      outcome: "ready",
+      durationMs: Date.now() - startedAt,
+      shortlistSource: shortlist.source,
+      selected: shortlist.items.length,
+      geographicAttempts: geography.attempted.length,
+    }));
     return NextResponse.json(
       {
         engine: engineResult,
@@ -196,6 +208,11 @@ export async function POST(request: Request) {
       },
     );
   } catch {
+    // Never log student answers, location preferences or provider secrets.
+    console.warn("orientation_v4_engine", JSON.stringify({
+      outcome: "error",
+      durationMs: Date.now() - startedAt,
+    }));
     return NextResponse.json(
       { error: "Orientation engine is temporarily unavailable." },
       { status: 503 },

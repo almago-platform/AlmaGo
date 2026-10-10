@@ -1,5 +1,6 @@
 import type {
   OrientationEngineResult,
+  OrientationProgrammeEvaluation,
   OrientationUniversityMedia,
 } from "@/lib/orientation-engine/types";
 import type {
@@ -23,6 +24,31 @@ export type OrientationCanonicalShortlist = {
   source: OrientationCanonicalShortlistSource;
   items: OrientationCanonicalShortlistItem[];
 };
+
+/** A programme can appear as a candidate only if the degree and field match
+ * the student's request and its official source has a verification date.
+ * A top-ranked, unrelated catalogue record is never a recommendation.
+ */
+export function isSupportedCatalogueRecommendation(
+  recommendation: OrientationProgrammeEvaluation,
+): boolean {
+  const accepted = (code: "degree_match" | "field_match" | "source_verified") =>
+    recommendation.rules.some((rule) => rule.code === code && rule.status === "eligible");
+
+  return (
+    recommendation.status !== "not_eligible"
+    && accepted("degree_match")
+    && accepted("field_match")
+    && accepted("source_verified")
+    && recommendation.sources.some((source) => {
+      try {
+        return new URL(source.url).protocol === "https:";
+      } catch {
+        return false;
+      }
+    })
+  );
+}
 
 export function buildOrientationCanonicalShortlist(
   engine: OrientationEngineResult,
@@ -50,10 +76,11 @@ export function buildOrientationCanonicalShortlist(
     };
   }
 
-  if (engine.recommendations.length > 0) {
+  const supported = engine.recommendations.filter(isSupportedCatalogueRecommendation);
+  if (supported.length > 0) {
     return {
       source: "deterministic_fallback",
-      items: engine.recommendations.map((recommendation, index) => ({
+      items: supported.map((recommendation, index) => ({
         position: index + 1,
         institution: recommendation.programme.university.name,
         programme: recommendation.programme.name,

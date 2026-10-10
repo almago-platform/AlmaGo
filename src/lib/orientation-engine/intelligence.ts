@@ -4,6 +4,7 @@ import { writeOrientationLetterWithGemini } from "@/lib/orientation-engine/lette
 
 import type { PublicOrientationAnswers } from "@/lib/orientation/public";
 import { hasPreferredCityCatalogueMatch } from "@/lib/orientation-engine/service";
+import { isSupportedCatalogueRecommendation } from "@/lib/orientation-engine/result/canonical";
 import type {
   OrientationEngineResult,
   OrientationLetterOutput,
@@ -265,7 +266,7 @@ function personalBudgetNote(locale: Locale, budget: string): string {
   }[locale];
 }
 
-function deterministicLetter(
+export function deterministicLetter(
   locale: Locale,
   profile: PublicOrientationAnswers,
   engineResult: OrientationEngineResult,
@@ -273,7 +274,7 @@ function deterministicLetter(
   const city = preferredCity(profile);
   const hasVerifiedOption =
     profile.bacStatus !== "no_bac"
-    && engineResult.recommendations.length > 0;
+    && engineResult.recommendations.some(isSupportedCatalogueRecommendation);
   const project = degreeAndField(locale, profile);
   const opening = academicOpening(locale, profile);
   const budgetNote = personalBudgetNote(locale, profile.budgetRange);
@@ -698,9 +699,13 @@ export async function buildOrientationIntelligence(
   locale: Locale,
   profile: PublicOrientationAnswers,
   engineResult: OrientationEngineResult,
-  options: { generateLetter?: boolean } = {},
+  options: { generateLetter?: boolean; enableScout?: boolean } = {},
 ): Promise<IntelligenceResult> {
-  const result = await buildLegacyOrientationIntelligence(locale, profile, engineResult);
+  // The verified research pipeline already performs university discovery.
+  // Avoid an additional legacy Gemini scouting call on this request.
+  const result: IntelligenceResult = options.enableScout === false
+    ? { scout: disabledScout(), letter: deterministicLetter(locale, profile, engineResult) }
+    : await buildLegacyOrientationIntelligence(locale, profile, engineResult);
   if (options.generateLetter === false || result.letter.mode !== "deterministic") {
     return result;
   }

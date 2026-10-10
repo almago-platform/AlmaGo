@@ -27,6 +27,8 @@ jobs:
     env:
       CI: "true"
       ALMAGO_PHASE2_ENABLED: "true"
+      # Local-only browser test origin for the strict API POST host guard.
+      SITE_URL: "http://127.0.0.1:3000"
       NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
       NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
     steps:
@@ -78,6 +80,9 @@ jobs:
             --project=mobile-chromium \
             --project=desktop-1280-chromium \
             --project=desktop-chromium
+
+      - name: Orientation fast fallback on detailed provider failure
+        run: npx playwright test tests/e2e/orientation-fast-baseline.spec.mjs --config=playwright.config.mjs --project=desktop-chromium
 
       - name: Full browser suite
         if: github.event_name == 'workflow_dispatch'
