@@ -4,6 +4,8 @@ import { hasVerifiedEmail } from "@/lib/auth/verified";
 import { hashOrientationResumeToken } from "@/lib/orientation/resume-token";
 import { isPhase2AccountLinkingEnabled } from "@/lib/phase2/config";
 import { createPrivilegedSupabaseClient } from "@/lib/supabase/privileged";
+import { isProvisionalCandidateEnabled } from "@/lib/prospect/provisional-auth";
+import { handoffProvisionalDocuments } from "@/lib/prospect/provisional-handoff";
 import { enforceRequestRateLimit, PUBLIC_ABUSE_POLICIES } from "@/lib/security/abuse";
 
 const MAX_BODY_BYTES = 1_024;
@@ -75,6 +77,18 @@ export async function POST(request: Request) {
 
   if (error || typeof data !== "string") {
     return NextResponse.json({ error: "Unable to link orientation." }, { status: 409 });
+  }
+
+  // The user is verified and the existing atomic claim has succeeded.
+  // Transfer provisional documents before acknowledging success, so a failed
+  // handoff remains retryable without silently discarding the pending files.
+  if (isProvisionalCandidateEnabled()) {
+    const moved = await handoffProvisionalDocuments({
+      supabase: privileged, userId: user.id, verifiedEmail: user.email, orientationId: data,
+    });
+    if (!moved) {
+      return NextResponse.json({ error: "Document handoff pending. Retry activation." }, { status: 503 });
+    }
   }
 
   return NextResponse.json({ linked: true }, { status: 200 });

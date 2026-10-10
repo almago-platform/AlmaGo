@@ -5,9 +5,9 @@ import { createClient } from "@/lib/supabase/client";
 import { provisionalCopy } from "@/content/prospect-provisional-copy";
 import type { Locale } from "@/lib/i18n";
 
-export function ProvisionalEmailVerification({ locale }: { locale: Locale }) {
+export function ProvisionalEmailVerification({ locale, initialEmail = "" }: { locale: Locale; initialEmail?: string }) {
   const t = provisionalCopy[locale];
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(initialEmail);
   const [state, setState] = useState<"idle" | "sending" | "sent">("idle");
 
   async function requestResend(event: React.FormEvent<HTMLFormElement>) {
@@ -23,7 +23,7 @@ export function ProvisionalEmailVerification({ locale }: { locale: Locale }) {
         // Keep the confirmation on this site's secured callback. The Prospect
         // page can recover an orientation only after the account is verified.
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent("/prospect")}`,
+          emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(initialEmail ? "/orientation/verified-return" : "/prospect")}`,
         },
       });
     } catch {
@@ -47,6 +47,7 @@ export function ProvisionalEmailVerification({ locale }: { locale: Locale }) {
           type="email"
           required
           autoComplete="email"
+          readOnly={Boolean(initialEmail)}
           dir="ltr"
           className="field mt-2 min-h-11 w-full"
           value={email}

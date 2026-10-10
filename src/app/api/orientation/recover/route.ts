@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { getAuthenticatedUser } from "@/lib/auth/access";
 import { hasVerifiedEmail } from "@/lib/auth/verified";
 import { createPrivilegedSupabaseClient } from "@/lib/supabase/privileged";
+import { isProvisionalCandidateEnabled } from "@/lib/prospect/provisional-auth";
+import { handoffProvisionalDocuments } from "@/lib/prospect/provisional-handoff";
 import { enforceRequestRateLimit, PUBLIC_ABUSE_POLICIES } from "@/lib/security/abuse";
 
 export async function POST(request: Request) {
@@ -53,5 +55,13 @@ export async function POST(request: Request) {
     );
   }
 
+  if (isProvisionalCandidateEnabled()) {
+    const moved = await handoffProvisionalDocuments({
+      supabase: privileged, userId: user.id, verifiedEmail: user.email, orientationId: data,
+    });
+    if (!moved) {
+      return NextResponse.json({ error: "Document handoff pending. Retry recovery." }, { status: 503 });
+    }
+  }
   return NextResponse.json({ recovered: true, orientationId: data }, { status: 200 });
 }

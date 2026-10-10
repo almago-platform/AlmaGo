@@ -30,7 +30,7 @@ test("unconfirmed signups remain in read-only preview rather than bypassing veri
   assert.match(authForm, /else if \(data\.session\) router\.push\(activationClaimPath/);
   assert.match(authForm, /else if \(prospectSignup && activationToken\)/);
   assert.match(authForm, /router\.replace\(`\/prospect-preview\/start\?orientation_token=/);
-  assert.doesNotMatch(authForm, /router\.replace\("\/prospect"\)/);
+  assert.match(authForm, /if \(provisionalAccessEnabled\) \{[\s\S]*?temporary\?\.ok[\s\S]*?router\.replace\("\/prospect"\)/);
   assert.match(claimApi, /if \(!hasVerifiedEmail\(user\)\)/);
   assert.match(claimApi, /status: 403/);
 });

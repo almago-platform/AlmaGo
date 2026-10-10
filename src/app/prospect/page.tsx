@@ -16,6 +16,8 @@ import { loadProspectHubState } from "@/lib/prospect/hub";
 import { orientationProjectFacts } from "@/lib/prospect/orientation-presentation";
 import { prospectCatalogueRecommendations } from "@/lib/prospect/programmes";
 import { prospectMedia } from "@/lib/prospect/media";
+import { getProvisionalIdentity } from "@/lib/prospect/provisional-auth";
+import { ProvisionalProspectDashboard } from "@/components/prospect/ProvisionalProspectDashboard";
 
 function proposalStatus(
   intake: Awaited<ReturnType<typeof loadProspectHubState>>["intake"],
@@ -309,7 +311,11 @@ export default async function ProspectDashboardPage() {
     getRequestLocale(),
   ]);
 
-  if (!access.user) redirect("/login");
+  if (!access.user) {
+    const temporary = await getProvisionalIdentity();
+    if (temporary) return <ProvisionalProspectDashboard identity={temporary} />;
+    redirect("/login");
+  }
   if (!access.isStudent) redirect("/unauthorized");
   if (!access.phase2Enabled || access.canUseClientFeatures) redirect("/student");
 

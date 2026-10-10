@@ -7,6 +7,7 @@ import { buttonClassName } from "@/components/ui/Button";
 import { prospectHubCopy } from "@/content/prospect-hub-copy";
 import { getRequestLocale } from "@/lib/i18n-server";
 import { getPhase2StudentAccess } from "@/lib/phase2/access";
+import { getProvisionalIdentity } from "@/lib/prospect/provisional-auth";
 import { loadProspectHubState } from "@/lib/prospect/hub";
 
 type Step = {
@@ -149,7 +150,35 @@ export default async function ProspectRoadmapPage() {
     getRequestLocale(),
   ]);
 
-  if (!access.user) redirect("/login");
+  if (!access.user) {
+    const candidate = await getProvisionalIdentity();
+    if (!candidate) redirect("/login");
+    const plan = steps(locale);
+    const t = prospectHubCopy[locale].roadmap;
+    return (
+      <main className="space-y-5">
+        <ProspectPageHero eyebrow={t.eyebrow} title={t.title} subtitle={t.subtitle} variant="compact" />
+        <section className="pc-panel p-5">
+          <ol className="space-y-4">
+            {plan.map((step, index) => (
+              <li key={step.title} className="rounded-xl border border-[var(--border)] p-4">
+                <p className="font-semibold">{index + 1}. {step.title}</p>
+                <p className="mt-2 text-sm text-[var(--muted)]">{step.body}</p>
+                {index < 2 ? <Link href={step.href} className={buttonClassName("secondary", "mt-3")}>
+                  {step.title}
+                </Link> : <p className="mt-2 text-xs text-[var(--muted)]">
+                  {locale === "fr" ? "Disponible après confirmation de l’e-mail et validation du dossier"
+                    : locale === "ar" ? "متاح بعد تأكيد البريد والموافقة على الملف"
+                      : locale === "de" ? "Nach E-Mail-Bestätigung und Dossierfreigabe"
+                        : "Available after email confirmation and dossier approval"}
+                </p>}
+              </li>
+            ))}
+          </ol>
+        </section>
+      </main>
+    );
+  }
   if (!access.isStudent) redirect("/unauthorized");
   if (!access.phase2Enabled || access.canUseClientFeatures) redirect("/student");
 
