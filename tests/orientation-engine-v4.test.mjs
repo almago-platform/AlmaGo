@@ -93,7 +93,7 @@ test("Orientation V4 advisor is provider-abstracted and defaults to zero-cost de
 test("Orientation V4 makes the simple letter primary and keeps technical evidence available", () => {
   assert.match(ui, /OrientationLetterCard/);
   assert.match(ui, /Votre orientation personnalisée/);
-  assert.match(ui, /Voir les détails vérifiés/);
+  assert.match(ui, /Voir les critères et points à vérifier/);
   assert.match(ui, /Pourquoi cette option apparaît/);
   assert.match(ui, /À vérifier ou compléter/);
   assert.match(ui, /Sources/);
