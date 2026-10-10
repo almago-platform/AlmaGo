@@ -147,7 +147,7 @@ test("post-payment activation maps study preparation to the existing project pat
 
 test("student and admin surfaces project the same intake truth", () => {
   assert.match(prospectPage, /loadProspectHubState/);
-  assert.match(prospectHub, /loadProspectIntakeState/);
+  assert.match(prospectHub, /loadProspectIntakeData/);
   assert.match(prospectProposalPage, /<IntakeFlowCard/);
   assert.doesNotMatch(prospectPage, /from\("documents"\)/);
   assert.match(prospectIntake, /from\("student_intake_cases"\)/);

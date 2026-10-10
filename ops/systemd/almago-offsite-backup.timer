@@ -1,0 +1,12 @@
+# Enable only after an operator has completed a successful backup/restore drill.
+[Unit]
+Description=Nightly AlmaGo encrypted off-site backup
+
+[Timer]
+OnCalendar=daily
+RandomizedDelaySec=2h
+Persistent=true
+Unit=almago-offsite-backup.service
+
+[Install]
+WantedBy=timers.target

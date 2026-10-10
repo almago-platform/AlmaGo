@@ -17,7 +17,8 @@ import {
   type ProspectRoadmap,
 } from "@/lib/orientation/roadmap";
 import {
-  loadProspectIntakeState,
+  loadProspectIntakeData,
+  summarizeProspectIntakeData,
   type ProspectIntakeRecord,
   type StarterDocumentSummary,
 } from "@/lib/prospect/intake";
@@ -141,6 +142,8 @@ export async function loadProspectHubState({
   emailConfirmed: boolean;
 }): Promise<ProspectHubState> {
   const supabase = await createClient();
+  // No cache of dossier data: only read independent user-scoped records concurrently.
+  const intakeDataPromise = loadProspectIntakeData(userId);
 
   const { data: prospect } = await supabase
     .from("prospects")
@@ -208,8 +211,8 @@ export async function loadProspectHubState({
     if (validStoredQualification(data)) qualification = data;
   }
 
-  const { intake, starterSummary } = await loadProspectIntakeState(
-    userId,
+  const { intake, starterSummary } = summarizeProspectIntakeData(
+    await intakeDataPromise,
     answers?.bacStatus,
   );
   const orientationConfirmed = Boolean(

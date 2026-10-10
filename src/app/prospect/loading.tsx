@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useState } from "react";
+
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { prospectDashboardCopy } from "@/content/prospect-dashboard-copy";
 import type { Locale } from "@/lib/i18n";
@@ -11,19 +13,70 @@ const loadingLabel: Record<Locale, string> = {
   de: "Dein kostenloser Bereich wird geladen…",
 };
 
+const slowLoadingCopy: Record<Locale, { message: string; retry: string; home: string }> = {
+  fr: {
+    message: "Le chargement prend plus de temps que prévu. Vous pouvez réessayer ou retourner à votre tableau de bord.",
+    retry: "Réessayer",
+    home: "Tableau de bord",
+  },
+  ar: {
+    message: "التحميل يستغرق وقتًا أطول من المتوقع. يمكنك إعادة المحاولة أو الرجوع إلى لوحة التحكم.",
+    retry: "إعادة المحاولة",
+    home: "لوحة التحكم",
+  },
+  en: {
+    message: "This page is taking longer than expected. You can try again or return to your dashboard.",
+    retry: "Try again",
+    home: "Dashboard",
+  },
+  de: {
+    message: "Das Laden dauert länger als erwartet. Du kannst es erneut versuchen oder zum Dashboard zurückkehren.",
+    retry: "Erneut versuchen",
+    home: "Dashboard",
+  },
+};
+
 export default function ProspectLoading() {
   const { locale, direction } = useLocale();
   const t = prospectDashboardCopy[locale].page;
+  const [slow, setSlow] = useState(false);
+  useEffect(() => {
+    const timer = window.setTimeout(() => setSlow(true), 12_000);
+    return () => window.clearTimeout(timer);
+  }, []);
+  const recovery = slowLoadingCopy[locale];
 
   return (
     <main
       dir={direction}
-      aria-busy="true"
+      aria-busy={!slow}
       aria-live="polite"
       role="status"
       className="min-w-0"
     >
       <span className="sr-only">{loadingLabel[locale]}</span>
+
+      {slow ? (
+        <section
+          role="alert"
+          aria-busy="false"
+          className="mb-5 rounded-[var(--radius-panel)] border border-amber-300 bg-amber-50 p-4 text-slate-900"
+        >
+          <p className="text-sm leading-6">{recovery.message}</p>
+          <div className="mt-3 flex flex-wrap gap-3">
+            <button
+              type="button"
+              onClick={() => window.location.reload()}
+              className="rounded-[var(--radius-control)] bg-[var(--brand)] px-4 py-2 text-sm font-semibold text-white"
+            >
+              {recovery.retry}
+            </button>
+            <a href="/prospect" className="rounded-[var(--radius-control)] border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-900">
+              {recovery.home}
+            </a>
+          </div>
+        </section>
+      ) : null}
 
       <section className="overflow-hidden rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)]" aria-hidden="true">
         <div className="bg-[linear-gradient(115deg,#1c2124_0%,#252b2f_68%,#332a22_100%)] px-5 py-7 sm:px-7 sm:py-9">
