@@ -1244,12 +1244,12 @@ export function PublicOrientationForm({
                 ) : null}
 
                 <section className="orientation-print-hide mt-6 rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-4 sm:p-5" aria-label={resultActionsCopy.title}>
-                  <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+                  <div className="flex flex-col gap-4">
                     <div>
                       <p className="text-sm font-semibold text-[var(--foreground)]">{resultActionsCopy.title}</p>
                       <p className="mt-1 text-xs leading-5 text-[var(--muted)]">{prospectCopy.report.printHelp}</p>
                     </div>
-                    <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-end sm:gap-4">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-start sm:gap-x-6 sm:gap-y-2">
                       <button
                         type="button"
                         onClick={() => window.print()}
