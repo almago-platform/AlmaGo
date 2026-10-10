@@ -92,3 +92,22 @@ test("success, failure and optional labels exist in all four locales", () => {
     assert.equal(occurrences.length, 5, `${key} interface + FR/AR/EN/DE`);
   }
 });
+
+test("final result polish keeps the CTA punctuation with its title and a comfortable line length", () => {
+  assert.match(capture, /max-w-\\[54rem\\] text-balance/);
+  assert.doesNotMatch(capture, /max-w-\\[39rem\\] text-xl/);
+  assert.match(copy, /Souhaitez-vous poursuivre avec Campus Allemagne \\?/);
+});
+
+test("PDF status does not repeat the same sent message twice", () => {
+  assert.match(capture, /autoEmailSent \\? copy\\.success : message/);
+  assert.match(copy, /Vos deux rapports PDF ont été envoyés à l’adresse indiquée/);
+  assert.match(copy, /Orientation sauvegardée\\. Aucun compte n’a été créé/);
+});
+
+test("result toolbar has a dedicated action row to prevent desktop orphans", () => {
+  assert.match(form, /<div className="flex flex-col gap-4">[\\s\\S]*?resultActionsCopy\\.title[\\s\\S]*?sm:justify-start sm:gap-x-6/);
+  assert.match(form, /resultActionsCopy\\.pdf/);
+  assert.match(form, /resultActionsCopy\\.adjust/);
+  assert.match(form, /resultActionsCopy\\.home/);
+});
