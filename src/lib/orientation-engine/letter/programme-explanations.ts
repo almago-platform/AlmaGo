@@ -13,7 +13,7 @@ const wording = {
     cityMatch: (city: string) => `Elle se trouve à ${city}, une ville que vous avez choisie.`,
     cityOther: (city: string) => `Elle se trouve à ${city}, hors des villes que vous avez choisies.`,
     academic: "Vérifier si votre diplôme permet l'accès à cette formation.",
-    languageGap: (language: string, level: string) => `En ${language}, le catalogue indique ${level} ; vérifiez le niveau demandé et le certificat accepté.`,
+    languageGap: (language: string, level: string, declared: string | null) => `${declared ? `Vous indiquez ${declared} en ${language} ; ` : `En ${language}, `}le catalogue mentionne ${level}. Vérifiez le niveau demandé et le certificat accepté.`,
     languageUnknown: "Vérifier le niveau de langue demandé et le certificat accepté.",
     certificate: "Vérifier le certificat de langue accepté par cette formation, même si votre niveau déclaré semble suffisant.",
     studienkolleg: "Vérifier si un Studienkolleg est nécessaire pour votre diplôme.",
@@ -30,7 +30,7 @@ const wording = {
     cityMatch: (city: string) => `تقع الجامعة في ${city}، وهي مدينة اخترتها.`,
     cityOther: (city: string) => `تقع الجامعة في ${city}، خارج المدن التي اخترتها.`,
     academic: "التحقق مما إذا كانت شهادتك تتيح لك الالتحاق بهذا البرنامج.",
-    languageGap: (language: string, level: string) => `يذكر الدليل مستوى ${level} في ${language}؛ يجب تأكيد المستوى والشهادة المقبولة.`,
+    languageGap: (language: string, level: string, declared: string | null) => `${declared ? `لقد صرّحت بمستوى ${declared} في ${language}؛ ` : ""}يذكر الدليل مستوى ${level}. يجب تأكيد المستوى والشهادة المقبولة.`,
     languageUnknown: "التحقق من مستوى اللغة المطلوب والشهادة المقبولة.",
     certificate: "التحقق من شهادة اللغة المقبولة، حتى إن بدا مستواك المصرّح به كافيًا.",
     studienkolleg: "التحقق مما إذا كنت تحتاج إلى سنة Studienkolleg حسب شهادتك.",
@@ -47,7 +47,7 @@ const wording = {
     cityMatch: (city: string) => `It is in ${city}, a city you selected.`,
     cityOther: (city: string) => `It is in ${city}, outside your selected cities.`,
     academic: "Check whether your diploma gives access to this programme.",
-    languageGap: (language: string, level: string) => `The catalogue lists ${level} for ${language}; confirm the required level and accepted certificate.`,
+    languageGap: (language: string, level: string, declared: string | null) => `${declared ? `You stated ${declared} in ${language}; ` : ""}the catalogue lists ${level}. Confirm the required level and accepted certificate.`,
     languageUnknown: "Check the required language level and accepted certificate.",
     certificate: "Check which language certificate the programme accepts, even if your stated level appears sufficient.",
     studienkolleg: "Check whether a Studienkolleg applies to your diploma.",
@@ -64,7 +64,7 @@ const wording = {
     cityMatch: (city: string) => `Er liegt in ${city}, einer Stadt, die du ausgewählt hast.`,
     cityOther: (city: string) => `Er liegt in ${city}, außerhalb deiner ausgewählten Städte.`,
     academic: "Prüfen, ob dein Abschluss Zugang zu diesem Studiengang ermöglicht.",
-    languageGap: (language: string, level: string) => `Der Katalog nennt ${level} für ${language}; Niveau und akzeptiertes Zertifikat prüfen.`,
+    languageGap: (language: string, level: string, declared: string | null) => `${declared ? `Du hast ${declared} in ${language} angegeben; ` : ""}der Katalog nennt ${level}. Niveau und akzeptiertes Zertifikat prüfen.`,
     languageUnknown: "Erforderliches Sprachniveau und akzeptiertes Zertifikat prüfen.",
     certificate: "Akzeptiertes Sprachzertifikat prüfen, auch wenn dein angegebenes Niveau ausreichend erscheint.",
     studienkolleg: "Prüfen, ob für deinen Abschluss ein Studienkolleg nötig ist.",
@@ -99,11 +99,13 @@ function languageKind(value: string | null): "german" | "english" | "mixed" | "u
   return de && en ? "mixed" : de ? "german" : en ? "english" : "unknown";
 }
 
-function levelGap(recommendation: OrientationProgrammeEvaluation, locale: Locale) {
+function levelGap(recommendation: OrientationProgrammeEvaluation, answers: PublicOrientationAnswers, locale: Locale) {
   const item = recommendation.rules.find((rule) => rule.code === "language_insufficient" && rule.status === "conditional");
   const match = typeof item?.value === "string" ? /^(DE|EN) (A1|A2|B1|B2|C1|C2)$/.exec(item.value) : null;
   if (!match) return null;
-  return wording[locale].languageGap(languageName(locale, match[1] === "DE" ? "german" : "english"), match[2]);
+  const stated = match[1] === "DE" ? answers.germanLevel : answers.englishLevel;
+  const declared = /^(A1|A2|B1|B2|C1|C2)$/.test(stated) ? stated : null;
+  return wording[locale].languageGap(languageName(locale, match[1] === "DE" ? "german" : "english"), match[2], declared);
 }
 
 /** Explains recorded matches and verification work; never decides eligibility. */
@@ -145,7 +147,7 @@ export function explainDocumentedProgramme(
   if (hasRule(recommendation, "academic_access_review", ["conditional", "missing_information", "unknown"])) {
     checks.push(t.academic);
   }
-  const gap = levelGap(recommendation, locale);
+  const gap = levelGap(recommendation, answers, locale);
   if (gap) {
     checks.push(gap);
   } else if (hasRule(recommendation, "language_missing", ["missing_information", "unknown"]) || kind === "unknown") {
