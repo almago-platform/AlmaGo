@@ -698,9 +698,13 @@ export async function buildOrientationIntelligence(
   locale: Locale,
   profile: PublicOrientationAnswers,
   engineResult: OrientationEngineResult,
-  options: { generateLetter?: boolean } = {},
+  options: { generateLetter?: boolean; enableScout?: boolean } = {},
 ): Promise<IntelligenceResult> {
-  const result = await buildLegacyOrientationIntelligence(locale, profile, engineResult);
+  // The verified research pipeline already performs university discovery.
+  // Avoid an additional legacy Gemini scouting call on this request.
+  const result = options.enableScout === false
+    ? { scout: disabledScout(), letter: deterministicLetter(locale, profile, engineResult) }
+    : await buildLegacyOrientationIntelligence(locale, profile, engineResult);
   if (options.generateLetter === false || result.letter.mode !== "deterministic") {
     return result;
   }
