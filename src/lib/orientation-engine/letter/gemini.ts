@@ -117,6 +117,7 @@ function requestBody(locale: Locale, baseline: OrientationLetterOutput) {
         "Keep all cautions, limitations, and the need for human verification.",
         "If academic access is unconfirmed in the reference, say plainly that it still needs checking. Never turn uncertainty into eligibility or admission.",
         "Language levels in the reference are student-declared levels, not accepted certificates unless explicitly identified as such. Never imply that a university accepted a certificate.",
+        "If the reference contains a monthly budget, preserve its amount and currency in the rewritten letter. Explain that Campus Allemagne will take the declared budget into account if the student continues. Do not claim that any city or programme is affordable before actual costs are checked.",
         "If no city was chosen, say that the choice is still open; do not call it an advantage or imply better admission chances.",
         "Programme leads are options to examine, not confirmed admissions or proof that requirements are met.",
         "Do not claim that Campus Allemagne already contacted or verified a university unless the reference says so.",
