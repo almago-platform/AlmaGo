@@ -51,7 +51,7 @@ export function AuthStoryPanel({ mode, prospectSignup = false }: AuthStoryPanelP
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[rgba(28,33,36,0.58)] via-transparent to-transparent" />
         <p className={`absolute bottom-5 m-0 max-w-sm text-sm font-semibold leading-6 text-white ${direction === "rtl" ? "right-6 left-6" : "left-6 right-6"}`}>
-          {story.badge}
+          {prospectStory ? orientation.badge : story.badge}
         </p>
       </div>
 
