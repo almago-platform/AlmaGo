@@ -14,6 +14,8 @@ import type { OrientationProgrammeRecord } from "@/lib/orientation-engine/types"
 import { enrichProspectCatalogueUniversityMedia } from "@/lib/prospect/catalogue-media";
 import { loadProspectHubState } from "@/lib/prospect/hub";
 import { prospectMedia } from "@/lib/prospect/media";
+import { getProvisionalIdentity } from "@/lib/prospect/provisional-auth";
+import { ProvisionalProspectCatalogue } from "@/components/prospect/ProvisionalProspectCatalogue";
 import {
   prospectCatalogueProfileDefaults,
   prospectCatalogueRecommendations,
@@ -63,7 +65,11 @@ export default async function ProspectCataloguePage({
     loadVerifiedProgrammeCatalogue(),
   ]);
 
-  if (!access.user) redirect("/login");
+  if (!access.user) {
+    const provisional = await getProvisionalIdentity();
+    if (provisional) return <ProvisionalProspectCatalogue identity={provisional} catalogue={rawCatalogue} />;
+    redirect("/login");
+  }
   if (!access.isStudent) redirect("/unauthorized");
   if (!access.phase2Enabled || access.canUseClientFeatures) redirect("/student");
 
