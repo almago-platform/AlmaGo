@@ -20,9 +20,22 @@ function builder(withPhoto) {
   };
   const sandbox = {
     Buffer, URL, AbortSignal, Response, exports, setTimeout, clearTimeout,
-    fetch: async () => withPhoto
-      ? new Response(imageBytes, { headers: { "content-type": "image/jpeg" } })
-      : Promise.reject(new Error("offline fixture")),
+    fetch: async () => {
+      if (!withPhoto) throw new Error("offline fixture");
+      let readOnce = false;
+      return {
+        ok: true,
+        headers: { get: (name) => name === "content-type" ? "image/jpeg" : null },
+        body: { getReader: () => ({
+          read: async () => {
+            if (readOnce) return { done: true };
+            readOnce = true;
+            return { done: false, value: imageBytes };
+          },
+          cancel: async () => {},
+        }) },
+      };
+    },
     require: (name) => {
       if (name === "server-only") return {};
       if (name.includes("orientation-diagnostic-copy")) return { orientationDiagnosticCopy: {} };
