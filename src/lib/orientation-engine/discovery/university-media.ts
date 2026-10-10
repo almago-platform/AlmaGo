@@ -133,15 +133,20 @@ async function searchCommonsPhoto(query: string): Promise<UniversityMediaLookup 
     if (!coverImageUrl || !coverImageSourceUrl) return null;
 
     const metadata = info.extmetadata || {};
+    // Commons search ranking alone is not enough to establish usage rights.
+    // Reject unknown/non-commercial/no-derivatives licences rather than
+    // storing a photo that the public orientation cannot lawfully display.
+    const license = stripHtml(metadata.LicenseShortName?.value)
+      || stripHtml(metadata.UsageTerms?.value);
+    const author = stripHtml(metadata.Artist?.value)
+      || stripHtml(metadata.Credit?.value);
+    if (!license || !/^(?:CC BY(?:-SA)?(?:\\s|$)|CC0)/i.test(license)) return null;
+    if (!author && license !== "CC0") return null;
     return {
       coverImageUrl,
       coverImageSourceUrl,
-      coverImageAttribution:
-        stripHtml(metadata.Artist?.value)
-        || stripHtml(metadata.Credit?.value),
-      coverImageLicense:
-        stripHtml(metadata.LicenseShortName?.value)
-        || stripHtml(metadata.UsageTerms?.value),
+      coverImageAttribution: author,
+      coverImageLicense: license,
     };
   } catch {
     return null;
