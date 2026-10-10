@@ -702,7 +702,7 @@ export async function buildOrientationIntelligence(
 ): Promise<IntelligenceResult> {
   // The verified research pipeline already performs university discovery.
   // Avoid an additional legacy Gemini scouting call on this request.
-  const result = options.enableScout === false
+  const result: IntelligenceResult = options.enableScout === false
     ? { scout: disabledScout(), letter: deterministicLetter(locale, profile, engineResult) }
     : await buildLegacyOrientationIntelligence(locale, profile, engineResult);
   if (options.generateLetter === false || result.letter.mode !== "deterministic") {
