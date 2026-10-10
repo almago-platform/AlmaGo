@@ -124,10 +124,14 @@ test("public results and verified catalogue expose only reusable university medi
   assert.doesNotMatch(migration, /u\.aliases as|u\.canonical_key as/);
 });
 
-test("orientation cards render the cached university photo with its source", () => {
-  assert.match(card, /selected\?\.universityMedia\?\.coverImageUrl/);
-  assert.match(card, /selected\.universityMedia\.coverImageSourceUrl/);
-  assert.match(card, /selected\.universityMedia\.coverImageAttribution/);
-  assert.match(card, /selected\.universityMedia\.coverImageLicense/);
-  assert.match(card, /t\.photoSource/);
+test("orientation cards reuse the university media registry and centralize photo attribution", () => {
+  const sharedPhoto = readFileSync(
+    "src/components/orientation/OrientationRealPhoto.tsx", "utf8",
+  );
+  assert.match(card, /selected\\?\\.universityMedia\\?\\.coverImageUrl/);
+  assert.match(card, /<OrientationRealPhoto/);
+  assert.match(sharedPhoto, /media\\?\\.coverImageSourceUrl/);
+  assert.match(sharedPhoto, /media\\?\\.coverImageAttribution/);
+  assert.match(sharedPhoto, /media\\?\\.coverImageLicense/);
+  assert.match(sharedPhoto, /<figcaption/);
 });
