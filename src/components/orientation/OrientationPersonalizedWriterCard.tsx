@@ -1135,7 +1135,7 @@ export function OrientationPersonalizedWriterCard({
             </h4>
           </div>
           <span className="text-xs font-semibold text-[var(--muted)]">
-            {result.selected.length} {t.pathsCount}
+            {result.selected.length} {locale === "fr" && result.selected.length === 1 ? "piste" : t.pathsCount}
           </span>
         </div>
         <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">{t.outlookSectionNote}</p>
