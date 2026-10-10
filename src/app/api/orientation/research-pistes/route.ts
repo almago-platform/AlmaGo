@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { buildOrientationGeographicScopes } from "@/lib/orientation-engine/geography";
 import { createPrivilegedSupabaseClient } from "@/lib/supabase/privileged";
 import {
   chooseDocumentedResearchPistes,
@@ -93,8 +94,15 @@ export async function POST(request: Request) {
       verificationStatus: row.verification_status,
       researchStatus: row.research_status,
     }));
+    const scopes = buildOrientationGeographicScopes(criteria.preferredCities);
     return NextResponse.json(
-      { items: chooseDocumentedResearchPistes(rows, criteria) },
+      { items: chooseDocumentedResearchPistes(rows, {
+        ...criteria,
+        preferredCities: scopes[0]?.cities || [],
+      }, 3, {
+        nearbyCities: scopes.find((scope) => scope.tier === "nearby")?.cities || [],
+        regionCities: scopes.find((scope) => scope.tier === "land")?.cities || [],
+      }) },
       { headers: { "Cache-Control": "no-store" } },
     );
   } catch {
