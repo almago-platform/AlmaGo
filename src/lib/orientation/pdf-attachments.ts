@@ -791,3 +791,251 @@ export function buildOrientationEmailPdfAttachments(input: {
     },
   ];
 }
+
+
+/**
+ * Third email attachment: a bounded, server-generated, multi-page dossier.
+ * Does not depend on Chromium, third-party PDF services or user-provided image URLs.
+ * Curated Wikimedia pictures are optional. The two existing attachments remain unchanged.
+ */
+type DetailedPdfInput = {
+  locale: Locale;
+  answers: PublicOrientationAnswers;
+  identity: PublicOrientationIdentity | null;
+  email: string;
+  personalized: OrientationPublicPersonalizedResult;
+  supplemental: readonly ResearchPiste[];
+  generatedAt?: Date;
+};
+
+const DETAIL_NAVY: PdfColor = [0.075, 0.13, 0.20];
+const DETAIL_SOFT: PdfColor = [0.965, 0.95, 0.93];
+const DETAIL_GREEN: PdfColor = [0.14, 0.38, 0.28];
+const MAX_IMAGE_BYTES = 900_000;
+
+/** Supports ordinary 8-bit RGB JPEG; rejects oversized / unusual images. */
+function jpegSize(bytes: Buffer): { width: number; height: number } | null {
+  if (bytes.length < 100 || bytes[0] !== 0xff || bytes[1] !== 0xd8) return null;
+  let index = 2;
+  while (index + 10 < bytes.length) {
+    if (bytes[index] !== 0xff) return null;
+    while (bytes[index] === 0xff) index += 1;
+    const marker = bytes[index++];
+    if (marker === 0xd9 || marker === 0xda) break;
+    if ([0x01, ...Array.from({ length: 8 }, (_, n) => 0xd0 + n)].includes(marker)) continue;
+    const length = bytes.readUInt16BE(index);
+    if (length < 2 || index + length > bytes.length) return null;
+    if ([0xc0, 0xc1, 0xc2].includes(marker)) {
+      const height = bytes.readUInt16BE(index + 3);
+      const width = bytes.readUInt16BE(index + 5);
+      const channels = bytes[index + 7];
+      return width > 0 && height > 0 && width <= 3000 && height <= 3000 && channels === 3
+        ? { width, height } : null;
+    }
+    index += length;
+  }
+  return null;
+}
+
+async function licensedCuratedJpeg(institution: string, city: string | null) {
+  const media = findCuratedUniversityMedia(institution, city);
+  if (!media || !/^(?:CC0|CC BY(?:-SA)?\s)/i.test(media.coverImageLicense || "")) return null;
+  const link = media.coverImageUrl;
+  if (!link) return null;
+  const url = new URL(link);
+  if (url.protocol !== "https:" || url.hostname !== "upload.wikimedia.org") return null;
+  try {
+    const response = await fetch(url.toString(), {
+      redirect: "error", cache: "no-store", signal: AbortSignal.timeout(3500),
+      headers: { Accept: "image/jpeg" },
+    });
+    if (!response.ok || !/^image\/jpeg/i.test(response.headers.get("content-type") || "")) return null;
+    if (Number(response.headers.get("content-length") || "0") > MAX_IMAGE_BYTES) return null;
+    const reader = response.body?.getReader();
+    if (!reader) return null;
+    const chunks: Uint8Array[] = [];
+    let size = 0;
+    while (true) {
+      const next = await reader.read();
+      if (next.done) break;
+      size += next.value.length;
+      if (size > MAX_IMAGE_BYTES) { await reader.cancel(); return null; }
+      chunks.push(next.value);
+    }
+    const bytes = Buffer.concat(chunks);
+    const geometry = jpegSize(bytes);
+    return geometry ? { bytes, ...geometry, media } : null;
+  } catch {
+    // Network/media failure never prevents the confidential orientation email.
+    return null;
+  }
+}
+
+function detailTitle(locale: PdfLocale) {
+  return locale === "fr" ? "Votre projet pour l'Allemagne prend forme."
+    : locale === "de" ? "Dein Studienprojekt in Deutschland nimmt Form an."
+    : "Your study project in Germany is taking shape.";
+}
+
+function detailLabel(locale: PdfLocale, fr: string, en: string, de: string) {
+  return locale === "fr" ? fr : locale === "de" ? de : en;
+}
+
+function detailDivider(layout: PdfLayout, label: string) {
+  layout.ensure(39);
+  layout.rect(MARGIN_X, layout.y - 24, PAGE_WIDTH - MARGIN_X * 2, 30, DETAIL_NAVY);
+  layout.text(label, MARGIN_X + 13, layout.y - 13, 13, { bold: true, color: WHITE });
+  layout.y -= 44;
+}
+
+function detailParagraph(layout: PdfLayout, label: string, body: string, maxLines = 6) {
+  layout.ensure(30);
+  layout.text(label, MARGIN_X, layout.y, 9, { bold: true, color: RED });
+  layout.y -= 16;
+  const lines = wrapText(body, PAGE_WIDTH - MARGIN_X * 2, 9.4).slice(0, maxLines);
+  for (const line of lines) {
+    layout.ensure(13);
+    layout.text(line, MARGIN_X, layout.y, 9.4, { color: NAVY });
+    layout.y -= 13;
+  }
+  layout.y -= 9;
+}
+
+function safePdfSource(value: string | null | undefined) {
+  if (!value) return null;
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" ? url.hostname : null;
+  } catch { return null; }
+}
+
+export async function buildDetailedOrientationEmailPdfAttachment(
+  input: DetailedPdfInput,
+): Promise<PdfAttachment | null> {
+  if (!input.personalized.selected.length) return null;
+  const locale = pdfLocale(input.locale);
+  const copy = COPY[locale];
+  const layout = new PdfLayout();
+  const content = input.personalized.content;
+  const student = nameForPdf(input.identity, input.email);
+  const priority = orientationCandidatePriority(input.answers, input.locale);
+  const selected = [...input.personalized.selected].sort((a, b) => a.position - b.position).slice(0, 6);
+  const supplemental = input.supplemental.slice(0, Math.max(0, 3 - selected.length));
+  const entries = [...selected, ...supplemental];
+  const photos = await Promise.all(entries.map((entry) => licensedCuratedJpeg(entry.institution, entry.city)));
+
+  // Page 1: website-inspired branded dossier cover and personalised project plan.
+  layout.drawPageBrand();
+  layout.rect(MARGIN_X, layout.y - 164, PAGE_WIDTH - MARGIN_X * 2, 164, DETAIL_NAVY);
+  layout.rect(MARGIN_X, layout.y - 4, PAGE_WIDTH - MARGIN_X * 2, 4, RED);
+  layout.text("CAMPUS ALLEMAGNE", MARGIN_X + 18, layout.y - 28, 10, { bold: true, color: GOLD });
+  layout.y -= 51;
+  for (const line of wrapText(detailTitle(locale), PAGE_WIDTH - MARGIN_X * 2 - 38, 19, true).slice(0, 3)) {
+    layout.text(line, MARGIN_X + 18, layout.y, 19, { bold: true, color: WHITE });
+    layout.y -= 27;
+  }
+  layout.y = PAGE_HEIGHT - 54 - 151;
+  layout.text(student, MARGIN_X + 18, layout.y, 10, { bold: true, color: WHITE });
+  layout.y -= 37;
+  layout.text(copy.generated + " " + generatedDate(locale, input.generatedAt || new Date()), MARGIN_X, layout.y, 9, { color: MUTED });
+  layout.y -= 25;
+  layout.heading(detailLabel(locale, "Votre profil", "Your profile", "Dein Profil"), 15);
+  layout.labelValue(copy.degree, input.answers.targetDegree);
+  layout.labelValue(copy.field, input.answers.targetField);
+  layout.labelValue(copy.german, input.answers.germanLevel);
+  layout.labelValue(copy.cities, input.answers.preferredCities.join(", ") || "—");
+
+  detailDivider(layout, copy.priority);
+  detailParagraph(layout, priority?.title || content.mainPriority.title,
+    priority?.text || content.mainPriority.text, 8);
+  detailParagraph(layout, copy.nextStep,
+    priority?.yourStep || content.mainPriority.nextStep, 5);
+  detailParagraph(layout, detailLabel(locale, "Notre suivi", "Our support", "Unsere Begleitung"),
+    content.campusValue, 5);
+  layout.wrapped(copy.disclaimer, MARGIN_X, PAGE_WIDTH - MARGIN_X * 2, 8.5, {
+    color: MUTED,
+  });
+
+  // Subsequent pages: primary recommendations and separate, research-only programmes.
+  for (let index = 0; index < entries.length; index += 1) {
+    const option = entries[index];
+    const primary = index < selected.length;
+    const image = photos[index];
+    layout.newPage();
+    detailDivider(layout, primary
+      ? detailLabel(locale, "Formation prioritaire", "Primary programme", "Vorrangiger Studiengang")
+      : detailLabel(locale, "Université à découvrir", "University to explore", "Weitere Hochschule"));
+    layout.text(String(index + 1).padStart(2, "0"), MARGIN_X, layout.y, 13, { bold: true, color: RED });
+    layout.y -= 25;
+    layout.wrapped(option.programme, MARGIN_X, PAGE_WIDTH - MARGIN_X * 2, 17, {
+      bold: true, gapAfter: 3, lineHeight: 21,
+    });
+    layout.wrapped(option.institution + (option.city ? " - " + option.city : ""),
+      MARGIN_X, PAGE_WIDTH - MARGIN_X * 2, 11, { bold: true, gapAfter: 10 });
+    if (image) {
+      const photoHeight = 185;
+      layout.ensure(photoHeight + 50);
+      // Letterbox (no unlicensed crop or misleading enlargement).
+      const ratio = image.width / image.height;
+      const width = Math.min(PAGE_WIDTH - MARGIN_X * 2, photoHeight * ratio);
+      layout.drawPhoto(image.bytes, image.width, image.height, MARGIN_X, layout.y - photoHeight, width, photoHeight);
+      layout.y -= photoHeight + 8;
+      layout.wrapped(
+        "Photo: " + (image.media.coverImageAttribution || "Wikimedia Commons") + " - "
+          + image.media.coverImageLicense + " - " + image.media.coverImageSourceUrl,
+        MARGIN_X, PAGE_WIDTH - MARGIN_X * 2, 7, { color: MUTED, gapAfter: 10 },
+      );
+    } else {
+      layout.wrapped(detailLabel(locale, "Photo autorisée indisponible", "Licensed photo unavailable", "Lizenziertes Foto nicht verfügbar"),
+        MARGIN_X, PAGE_WIDTH - MARGIN_X * 2, 8, { color: MUTED, gapAfter: 10 });
+    }
+    const writer = primary ? content.studyOptions.find((item) => item.optionId === selected[index].optionId) : null;
+    const reason = primary ? writer?.whyItFits || ""
+      : detailLabel(locale,
+        "Piste documentée dans notre catalogue, à vérifier avec l'université avant toute candidature.",
+        "Documented research option; university requirements remain to be checked.",
+        "Dokumentierte Möglichkeit, Zulassungsvoraussetzungen müssen geprüft werden.");
+    detailParagraph(layout, detailLabel(locale, "Pourquoi cette piste ?", "Why explore this option?", "Warum diese Option?"),
+      reason.split(/première estimation campus allemagne|first campus allemagne estimate|erste einschätzung campus allemagne/i)[0], 7);
+    const status = primary && selected[index].overallStatus === "verified"
+      ? detailLabel(locale, "Informations vérifiées", "Verified information", "Verifizierte Angaben")
+      : detailLabel(locale, "Vérification nécessaire", "Confirmation needed", "Prüfung erforderlich");
+    layout.text(status, MARGIN_X, layout.y, 10, { bold: true, color: primary ? DETAIL_GREEN : RED });
+    layout.y -= 19;
+    if (primary) {
+      const facts = selected[index].facts.filter((fact) => fact.status === "verified").slice(0, 5);
+      for (const fact of facts) {
+        const value = typeof fact.value === "string" ? fact.value
+          : Array.isArray(fact.value) ? fact.value.join(", ") : String(fact.value);
+        layout.wrapped(fact.field.replaceAll("_", " ") + ": " + value,
+          MARGIN_X + 7, PAGE_WIDTH - MARGIN_X * 2 - 7, 8.6, { gapAfter: 3 });
+      }
+      const origins = [...new Set(facts.map((fact) => safePdfSource(fact.sourceUrl)).filter(Boolean))];
+      if (origins.length) layout.wrapped(copy.project + ": " + origins.join(" / "),
+        MARGIN_X, PAGE_WIDTH - MARGIN_X * 2, 8.5, { color: MUTED, gapAfter: 3 });
+    } else {
+      layout.wrapped(detailLabel(locale, "Programme officiel", "Official programme", "Offizieller Studiengang")
+        + ": " + option.officialUrl,
+      MARGIN_X, PAGE_WIDTH - MARGIN_X * 2, 8.3, { color: RED, gapAfter: 5 });
+    }
+    layout.wrapped(copy.disclaimer, MARGIN_X, PAGE_WIDTH - MARGIN_X * 2, 8, { color: MUTED });
+  }
+
+  layout.ensure(100);
+  detailDivider(layout, copy.roadmap);
+  for (const [index, step] of content.roadmap.slice(0, 5).entries()) {
+    layout.wrapped(String(index + 1) + ". " + step.label + ": "
+      + (index === 0 && priority ? priority.yourStep : step.text),
+      MARGIN_X, PAGE_WIDTH - MARGIN_X * 2, 8.8, { gapAfter: 6 });
+  }
+  layout.wrapped("Campus Allemagne - https://campusallemagne.tn/orientation",
+    MARGIN_X, PAGE_WIDTH - MARGIN_X * 2, 10.2, { color: RED, bold: true });
+  if (input.locale === "ar") layout.wrapped(copy.arabicFallback,
+    MARGIN_X, PAGE_WIDTH - MARGIN_X * 2, 8, { color: MUTED });
+
+  return {
+    filename: "dossier-detaille-campus-allemagne.pdf",
+    contentBase64: buildPdf(layout.pages, layout.images).toString("base64"),
+    contentType: "application/pdf",
+  };
+}
