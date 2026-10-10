@@ -323,7 +323,7 @@ function compactPrintText(value: string, max = 220) {
   return (lastSpace > 80 ? clipped.slice(0, lastSpace) : clipped.slice(0, max)).trimEnd() + "…";
 }
 
-function formatPersonalizedFactValue(
+export function formatPersonalizedFactValue(
   fact: OrientationPublicPersonalizedFact,
   locale: Locale,
 ): string {
