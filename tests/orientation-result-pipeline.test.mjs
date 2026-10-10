@@ -108,9 +108,9 @@ test("E writer UI presents a premium progressive result with one CTA and verifie
   assert.match(writerCard, /Ce que nous retenons de votre dossier/);
   assert.match(writerCard, /Votre dossier est encourageant/);
   assert.match(writerCard, /Ce qui ressort/);
-  assert.match(writerCard, /Compatibilité avec les critères vérifiés/);
-  assert.match(writerCard, /Profil compatible avec les critères actuellement vérifiés/);
-  assert.match(writerCard, /Profil globalement compatible, avec des points à confirmer/);
+  assert.match(writerCard, /Pourquoi cette piste mérite votre attention/);
+  assert.match(writerCard, /Une piste prometteuse, à approfondir avec notre équipe/);
+  assert.match(writerCard, /Une formation en lien avec votre projet, à approfondir avec notre équipe/);
   assert.match(writerCard, /Seule l’université peut décider d’une admission/);
   assert.match(writerCard, /Nous avançons en parallèle/);
   assert.match(writerCard, /Vous avancez sur le B1\. Nous avançons sur le reste/);

@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { OrientationRefinementQuestionCard } from "@/components/orientation/OrientationRefinementQuestionCard";
 import { OrientationLetterCard } from "@/components/orientation/OrientationLetterCard";
-import { OrientationPersonalizedWriterCard } from "@/components/orientation/OrientationPersonalizedWriterCard";
+import { OrientationPersonalizedWriterCard, OrientationHumanClosingCard } from "@/components/orientation/OrientationPersonalizedWriterCard";
 import { OrientationResearchPistesCard } from "@/components/orientation/OrientationResearchPistesCard";
 import type { Locale } from "@/lib/i18n";
 import type { PublicOrientationAnswers } from "@/lib/orientation/public";
@@ -622,6 +622,7 @@ export function PersonalizedOrientationEngineCard({
                 answers={answers}
                 showCta={prospectCaptureEnabled && isBachelorFirstContact}
                 continueAccount={accountLinkingEnabled && prospectCaptureEnabled && isBachelorFirstContact}
+                showClosing={false}
               />
             ) : (
               <OrientationLetterCard
@@ -639,6 +640,15 @@ export function PersonalizedOrientationEngineCard({
                 locale={locale}
                 existingShortlist={result.shortlist.items}
               />
+            ) : null}
+            {personalized ? (
+              <div className="mt-5 rounded-[var(--radius-panel)] border border-[var(--premium-border)] bg-[var(--surface)] p-3 sm:p-4">
+                <OrientationHumanClosingCard
+                  locale={locale}
+                  showCta={prospectCaptureEnabled && isBachelorFirstContact}
+                  continueAccount={accountLinkingEnabled && prospectCaptureEnabled && isBachelorFirstContact}
+                />
+              </div>
             ) : null}
             {!isBachelorFirstContact && onRefineAnswers && result.engine.refinement.nextQuestion ? (
               <OrientationRefinementQuestionCard

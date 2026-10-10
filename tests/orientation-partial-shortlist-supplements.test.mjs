@@ -64,5 +64,5 @@ test("supplemental cards preserve labels and never replace verified choices", ()
   assert.match(cardUi, /existingShortlist\.length \+ 1/);
   assert.match(cardUi, /filterSupplementalResearchPistes\(items, existingShortlist\)/);
   assert.match(cardUi, /t\.disclaimer/);
-  assert.match(writer, /result\.selected\.length === 1 \? "piste" : t\.pathsCount/);
+  assert.match(writer, /primarySelectionCount\(result\.selected\.length, locale\)/);
 });
