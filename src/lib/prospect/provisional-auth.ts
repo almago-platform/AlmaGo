@@ -5,6 +5,7 @@ import { promisify } from "node:util";
 import { cookies } from "next/headers";
 import { createPrivilegedSupabaseClient } from "@/lib/supabase/privileged";
 import { getPublicOrigin } from "@/lib/public-origin";
+import { isPhase2AccountLinkingEnabled, isPhase2ProspectCaptureEnabled } from "@/lib/phase2/config";
 
 const scrypt = promisify(scryptCallback);
 const PROVISIONAL_DURATION_MS = 7 * 24 * 60 * 60 * 1000;
@@ -13,7 +14,9 @@ const COOKIE_NAME = process.env.NODE_ENV === "production"
   ? "__Host-almago-provisional" : "almago-provisional-dev";
 
 export function isProvisionalCandidateEnabled() {
-  return process.env.ALMAGO_PROVISIONAL_AUTH_ENABLED === "true";
+  return process.env.ALMAGO_PROVISIONAL_AUTH_ENABLED === "true"
+    && isPhase2AccountLinkingEnabled()
+    && isPhase2ProspectCaptureEnabled();
 }
 
 export function normalizeProvisionalEmail(input: unknown): string | null {
