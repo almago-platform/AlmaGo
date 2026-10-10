@@ -15,7 +15,7 @@ import { enrichProspectCatalogueUniversityMedia } from "@/lib/prospect/catalogue
 import { loadProspectHubState } from "@/lib/prospect/hub";
 import { prospectMedia } from "@/lib/prospect/media";
 import { getProvisionalIdentity } from "@/lib/prospect/provisional-auth";
-import { ProvisionalProspectCatalogue } from "@/components/prospect/ProvisionalProspectCatalogue";
+import { loadProvisionalProspectHubState } from "@/lib/prospect/provisional-hub";
 import {
   prospectCatalogueProfileDefaults,
   prospectCatalogueRecommendations,
@@ -65,20 +65,19 @@ export default async function ProspectCataloguePage({
     loadVerifiedProgrammeCatalogue(),
   ]);
 
-  if (!access.user) {
-    const provisional = await getProvisionalIdentity();
-    if (provisional) return <ProvisionalProspectCatalogue identity={provisional} catalogue={rawCatalogue} />;
-    redirect("/login");
-  }
-  if (!access.isStudent) redirect("/unauthorized");
-  if (!access.phase2Enabled || access.canUseClientFeatures) redirect("/student");
+  const provisional = !access.user ? await getProvisionalIdentity() : null;
+  if (!access.user && !provisional) redirect("/login");
+  if (access.user && !access.isStudent) redirect("/unauthorized");
+  if (access.user && (!access.phase2Enabled || access.canUseClientFeatures)) redirect("/student");
 
   const [state, catalogue] = await Promise.all([
-    loadProspectHubState({
-      userId: access.user.id,
-      email: access.user.email,
-      emailConfirmed: Boolean(access.user.email_confirmed_at),
-    }),
+    provisional
+      ? loadProvisionalProspectHubState(provisional)
+      : loadProspectHubState({
+          userId: access.user!.id,
+          email: access.user!.email,
+          emailConfirmed: Boolean(access.user!.email_confirmed_at),
+        }),
     enrichProspectCatalogueUniversityMedia(rawCatalogue),
   ]);
 
