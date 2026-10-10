@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getAuthenticatedUser } from "@/lib/auth/access";
+import { hasVerifiedEmail } from "@/lib/auth/verified";
 import { createPrivilegedSupabaseClient } from "@/lib/supabase/privileged";
 
 const MAX_NOTE_LENGTH = 1000;
@@ -7,6 +8,7 @@ const MAX_NOTE_LENGTH = 1000;
 export async function POST(request: Request) {
   const { user } = await getAuthenticatedUser();
   if (!user) return NextResponse.json({ error: "Non authentifié." }, { status: 401 });
+  if (!hasVerifiedEmail(user)) return NextResponse.json({ error: "Vérifiez votre e-mail." }, { status: 403 });
 
   let body: unknown = {};
   try {
