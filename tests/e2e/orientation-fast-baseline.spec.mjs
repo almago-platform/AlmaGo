@@ -36,7 +36,7 @@ test("candidate sees a factual letter even when the detailed provider returns 50
     });
   });
 
-  await page.goto("/orientation", { waitUntil: "domcontentloaded" });
+  await page.goto("/orientation", { waitUntil: "networkidle" });
   await page.evaluate(({ key, value }) => {
     window.sessionStorage.setItem(key, JSON.stringify({
       identity: {
@@ -50,7 +50,8 @@ test("candidate sees a factual letter even when the detailed provider returns 50
       step: 5,
     }));
   }, { key: SESSION_KEY, value: answers });
-  await page.reload({ waitUntil: "domcontentloaded" });
+  await page.reload({ waitUntil: "networkidle" });
+  await expect(page.locator("#orientation-report")).toBeVisible();
 
   await expect(page.getByRole("heading", { name: "Votre orientation pour étudier en Allemagne" }))
     .toBeVisible({ timeout: 20_000 });
