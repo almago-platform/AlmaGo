@@ -212,14 +212,20 @@ export function ProspectCaptureCard({
   const privacyLabel = emailDeliveryEnabled
     ? copy.emailPrivacyLabel
     : accountLinkingEnabled ? copy.continuePrivacyLabel : copy.privacyLabel;
+  const autoEmailSent = autoEmailRequested && status === "success" && message === copy.emailSent;
+  const autoEmailFailed = autoEmailRequested && status === "success" && message === copy.deliveryFailure;
+  const displayTitle = autoEmailSent
+    ? copy.includedEmailSuccessTitle
+    : autoEmailFailed ? copy.includedEmailFailureTitle : title;
+  const displayText = autoEmailSent ? copy.includedEmailSuccessText : textCopy;
 
   return (
     <section
       id="orientation-prospect-capture"
-      className={`orientation-print-hide mt-8 scroll-mt-6 rounded-[var(--radius-lg)] border p-5 sm:p-6 ${
+      className={`orientation-print-hide mt-8 scroll-mt-6 overflow-hidden rounded-[var(--radius-panel)] border p-5 sm:p-7 ${
         accountLinkingEnabled && !emailDeliveryEnabled
           ? "border-[var(--brand-border)] bg-[var(--surface)]"
-          : "border-[var(--border)] bg-[var(--surface-subtle)]"
+          : "border-[var(--border)] bg-[var(--premium-cream-soft)]"
       }`}
     >
       {accountLinkingEnabled && !emailDeliveryEnabled ? (
@@ -233,9 +239,24 @@ export function ProspectCaptureCard({
           <span className="font-medium text-[var(--foreground)]">{copy.continueReady}</span>
         </div>
       ) : null}
-      <p className="eyebrow">{eyebrow}</p>
-      <h3 className="mt-2 text-xl font-bold">{title}</h3>
-      <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">{textCopy}</p>
+      <div className="flex items-start gap-4">
+        <span aria-hidden="true" className={`flex size-11 shrink-0 items-center justify-center rounded-xl ${
+          autoEmailSent
+            ? "bg-[var(--success-soft)] text-[var(--success-strong)]"
+            : "bg-[var(--surface)] text-[var(--brand-strong)]"
+        }`}>
+          {autoEmailSent ? (
+            <svg className="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="m5 12 4 4L19 6" /></svg>
+          ) : (
+            <svg className="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="3.5" y="5.5" width="17" height="13" rx="2" /><path strokeLinecap="round" strokeLinejoin="round" d="m4 7 8 6 8-6" /></svg>
+          )}
+        </span>
+        <div className="min-w-0">
+          <p className="text-[11px] font-bold uppercase tracking-[0.13em] text-[var(--accent-strong)]">{eyebrow}</p>
+          <h3 className="mt-1 text-[1.4rem] font-semibold leading-snug tracking-[-0.02em] text-[var(--foreground)] sm:text-[1.6rem]">{displayTitle}</h3>
+          <p className="mt-2 max-w-[67ch] text-sm leading-6 text-[var(--muted)]">{displayText}</p>
+        </div>
+      </div>
 
       {accountLinkingEnabled && !emailDeliveryEnabled ? (
         <div className="mt-4 rounded-[var(--radius-control)] border border-[var(--warning-border)] bg-[var(--warning-soft)] px-4 py-3 text-xs leading-5 text-[var(--foreground-soft)]">
@@ -244,17 +265,26 @@ export function ProspectCaptureCard({
       ) : null}
 
       {autoEmailRequested ? (
-        <div className="mt-5 rounded-[var(--radius-control)] border border-[var(--info-border)] bg-[var(--info-soft)] p-4 text-sm leading-6">
-          <p role={status === "error" ? "alert" : "status"}>
+        <div className={`mt-5 rounded-[var(--radius-control)] border px-4 py-3.5 text-sm leading-6 ${
+          autoEmailSent
+            ? "border-[var(--success-border)] bg-[var(--success-soft)] text-[var(--success-strong)]"
+            : status === "error" || autoEmailFailed
+              ? "border-[var(--warning-border)] bg-[var(--warning-soft)] text-[var(--foreground)]"
+              : "border-[var(--info-border)] bg-[var(--info-soft)] text-[var(--foreground)]"
+        }`}>
+          <p role={status === "error" ? "alert" : "status"} className="flex items-start gap-2 font-medium">
+            <span className="mt-0.5 shrink-0" aria-hidden="true">{autoEmailSent ? "✓" : status === "error" || autoEmailFailed ? "!" : "↗"}</span>
+            <span>
             {previouslyRequested
               ? copy.automaticEmailAlreadyRequested
               : status === "saving" || status === "idle" ? copy.automaticEmailPreparing : message}
+            </span>
           </p>
           {status === "error" || (status === "success" && message === copy.deliveryFailure) ? (
             <button
               type="button"
               onClick={() => void submit(undefined, true)}
-              className="mt-3 rounded-[var(--radius-control)] bg-[var(--brand)] px-4 py-2 font-semibold text-white disabled:opacity-50"
+              className="mt-3 inline-flex min-h-11 items-center rounded-[var(--radius-control)] bg-[var(--brand)] px-4 py-2.5 font-semibold text-white hover:bg-[var(--brand-strong)] disabled:opacity-50"
             >
               {copy.automaticEmailRetry}
             </button>
@@ -335,14 +365,15 @@ export function ProspectCaptureCard({
       ) : null}
 
       {status === "success" && interestToken ? (
-        <div className="mt-5 rounded-[var(--radius-control)] border border-[var(--brand-border)] bg-[var(--brand-soft)] p-4">
-          <p className="eyebrow">{copy.interestEyebrow}</p>
-          <h4 className="mt-2 text-lg font-bold">{copy.interestTitle}</h4>
-          <p className="mt-2 text-sm leading-6 text-[var(--foreground)]">
+        <section className="relative mt-6 overflow-hidden rounded-[var(--radius-panel)] bg-[var(--foreground)] p-5 text-white shadow-[var(--shadow-card)] sm:p-7" aria-labelledby="orientation-continue-title">
+          <div aria-hidden="true" className="absolute inset-y-0 start-0 w-1 bg-[var(--accent)]" />
+          <p className="text-[11px] font-bold uppercase tracking-[0.13em] text-[#f4cc78]">{copy.interestEyebrow}</p>
+          <h4 id="orientation-continue-title" className="mt-2 max-w-[39rem] text-xl font-semibold leading-snug tracking-tight sm:text-[1.55rem]">{copy.interestTitle}</h4>
+          <p className="mt-3 max-w-[67ch] text-sm leading-7 text-white/85">
             {copy.interestText}
           </p>
           {interestStatus === "success" ? (
-            <p role="status" className="mt-4 rounded-[var(--radius-control)] border border-[var(--success-border)] bg-[var(--success-soft)] px-4 py-3 text-sm font-semibold text-[var(--foreground)]">
+            <p role="status" className="mt-5 rounded-[var(--radius-control)] border border-[var(--success-border)] bg-[var(--success-soft)] px-4 py-3 text-sm font-semibold text-[var(--success-strong)]">
               {copy.interestSuccess}
             </p>
           ) : (
@@ -350,30 +381,40 @@ export function ProspectCaptureCard({
               type="button"
               onClick={submitInterest}
               disabled={interestStatus === "saving"}
-              className="mt-4 rounded-[var(--radius-control)] bg-[var(--brand)] px-5 py-2.5 text-sm font-bold text-white disabled:cursor-not-allowed disabled:opacity-50"
+              className="mt-5 inline-flex min-h-12 w-full items-center justify-center rounded-[var(--radius-control)] bg-[var(--brand)] px-5 py-3 text-center text-sm font-bold text-white transition hover:bg-[var(--brand-strong)] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
             >
               {interestStatus === "saving" ? copy.interestSaving : copy.interestSubmit}
             </button>
           )}
           {interestStatus === "error" ? (
-            <p role="alert" className="mt-3 text-sm font-semibold text-[var(--danger)]">
+            <p role="alert" className="mt-3 text-sm font-semibold text-[#ffc1cb]">
               {copy.interestFailure}
             </p>
           ) : null}
-        </div>
+        </section>
       ) : null}
 
       {status === "success" && emailDeliveryEnabled && signupPath ? (
-        <div className="mt-5 rounded-[var(--radius-control)] border border-[var(--brand-border)] bg-[var(--surface)] p-4 sm:p-5">
-          <h4 className="text-lg font-bold text-[var(--foreground)]">{copy.continueTitle}</h4>
-          <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{copy.emailOptionalAccount}</p>
-          <Link
-            href={signupPath}
-            className="mt-4 inline-flex min-h-11 items-center justify-center rounded-[var(--radius-control)] bg-[var(--brand)] px-5 py-3 text-center text-sm font-bold text-white hover:bg-[var(--brand-strong)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brand)]"
-          >
-            {copy.continueSubmit}
-          </Link>
-        </div>
+        <section className="mt-4 rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--surface)] p-5 sm:p-6" aria-labelledby="orientation-create-account-title">
+          <div className="flex items-start gap-3">
+            <span aria-hidden="true" className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-[var(--surface-subtle)] text-[var(--foreground)]">
+              <svg className="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="4" y="4" width="16" height="16" rx="3"/><path strokeLinecap="round" strokeLinejoin="round" d="M8 10h8M8 14h6"/></svg>
+            </span>
+            <div className="min-w-0">
+              <p className="text-[11px] font-bold uppercase tracking-[0.11em] text-[var(--muted)]">{copy.optionalAccountLabel}</p>
+              <h4 id="orientation-create-account-title" className="mt-1 text-lg font-semibold tracking-tight text-[var(--foreground)] sm:text-xl">{copy.continueTitle}</h4>
+              <p className="mt-2 max-w-[70ch] text-sm leading-7 text-[var(--muted)]">{copy.emailOptionalAccount}</p>
+              <Link
+                href={signupPath}
+                className="mt-4 inline-flex min-h-11 w-full items-center justify-center rounded-[var(--radius-control)] border border-[var(--border-strong)] bg-[var(--surface)] px-5 py-2.5 text-center text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--brand)] hover:text-[var(--brand-strong)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brand)] sm:w-auto"
+              >
+                {copy.continueSubmit}
+                <span aria-hidden="true" className="ms-2">↗</span>
+              </Link>
+              <p className="mt-3 text-xs leading-5 text-[var(--muted)]">{copy.optionalAccountNote}</p>
+            </div>
+          </div>
+        </section>
       ) : null}
     </section>
   );
