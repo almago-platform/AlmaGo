@@ -54,6 +54,9 @@ export function ProvisionalProgrammeSearch({
             <div className="mt-5 grid gap-3 md:grid-cols-2" aria-live="polite">
               {filtered.map((item) => (
                 <article key={item.id} className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4">
+                  {item.recommended ? (
+                    <p className="mb-2 text-xs font-bold text-[var(--brand)]">{t.suggested}</p>
+                  ) : null}
                   <h3 className="text-base font-bold text-[var(--foreground)]">{item.name}</h3>
                   <p className="mt-1 text-sm text-[var(--muted)]">{item.university}{item.city ? ` · ${item.city}` : ""}</p>
                   <p className="mt-2 text-xs text-[var(--muted)]">{[item.degree, item.field, item.language].filter(Boolean).join(" · ")}</p>
