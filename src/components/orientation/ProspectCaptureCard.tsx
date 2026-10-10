@@ -235,10 +235,10 @@ export function ProspectCaptureCard({
   const autoEmailFailed = autoEmailRequested && status === "success" && message === copy.deliveryFailure;
   const detailedSent = autoEmailSent && detailedPdfAttached;
   const detailedSuccess = {
-    fr: { title: "Vos trois rapports ont été envoyés", text: "Votre résumé d'orientation, votre profil candidat et votre dossier détaillé ont été envoyés par e-mail. Vous pouvez aussi enregistrer une copie ici." },
-    ar: { title: "تم إرسال تقاريرك الثلاثة", text: "أُرسلت التقارير الثلاثة إلى بريدك: التوجيه، وملف المترشح، والملف المفصل. ويمكنك حفظ نسخة هنا أيضًا." },
-    en: { title: "Your three reports have been sent", text: "Your orientation summary, candidate profile and detailed dossier have been emailed. You can save a copy here too." },
-    de: { title: "Deine drei Berichte wurden versendet", text: "Orientierung, Bewerberprofil und ausführliches Dossier wurden per E-Mail verschickt. Hier kannst du zusätzlich eine Kopie speichern." },
+    fr: { title: "Vos deux rapports ont été envoyés", text: "Vous avez reçu le résumé A4 et le dossier détaillé, dans les mêmes versions que celles enregistrables sur Campus Allemagne." },
+    ar: { title: "تم إرسال التقريرين", text: "أرسلنا ملخص التوجيه والملف المفصل بصيغة PDF، بنفس النسخة المتاحة على Campus Allemagne." },
+    en: { title: "Your two reports have been sent", text: "Your A4 summary and detailed dossier have been emailed in the same format as the PDFs available on Campus Allemagne." },
+    de: { title: "Deine zwei Berichte wurden versendet", text: "Dein A4-Kurzbericht und das ausführliche Dossier wurden in derselben Form wie auf Campus Allemagne per E-Mail verschickt." },
   }[locale];
   const displayTitle = autoEmailSent
     ? detailedSent ? detailedSuccess.title : copy.includedEmailSuccessTitle
