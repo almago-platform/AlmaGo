@@ -13,7 +13,9 @@ import type { PdfAttachment } from "@/lib/orientation/pdf-attachments";
  * Never include that token in subprocess arguments, paths or application logs.
  */
 const PDF_TIMEOUT_MS = 47000;
-const MAX_PDF_BYTES = 9_000_000;
+const MAX_PDF_BYTES = 6_000_000;
+let activePdfBrowsers = 0;
+const MAX_ACTIVE_PDF_BROWSERS = 2;
 const PRINT_ORIGIN = "http://127.0.0.1:3000";
 
 type CdpResponse = { id?: number; result?: Record<string, unknown>; error?: { message?: string } };
@@ -118,6 +120,7 @@ async function renderPage(
       return document.readyState === "complete" && !!report
         && (!detailed || document.documentElement.getAttribute("data-orientation-report-ready") === "true")
         && Array.from(report.querySelectorAll("img")).every(img => img.complete)
+        && (!detailed || Array.from(report.querySelectorAll(".orientation-detail-photo img, .orientation-detail-research-photo img")).every(img => img.naturalWidth > 0))
         && document.fonts.status === "loaded";
     })()`);
     if (ready) {
@@ -147,8 +150,19 @@ export async function buildWebsiteOrientationPdfAttachments(
   token: string, hasPersonalizedShortlist: boolean,
 ): Promise<[PdfAttachment, PdfAttachment]> {
   if (!/^[A-Za-z0-9_-]{20,250}$/.test(token)) throw new Error("Invalid orientation token");
-  const browser = await executablePath();
-  const profile = await mkdtemp(join(tmpdir(), "almago-orientation-print-"));
+  if (activePdfBrowsers >= MAX_ACTIVE_PDF_BROWSERS) throw new Error("PDF export capacity reached");
+  activePdfBrowsers++;
+  let profile: string | null = null;
+  try {
+    profile = await mkdtemp(join(tmpdir(), "almago-orientation-print-"));
+  } catch (error) {
+    activePdfBrowsers--;
+    throw error;
+  }
+  const browser = await executablePath().catch((error: unknown) => {
+    activePdfBrowsers--;
+    throw error;
+  });
   let child: ChildProcess | null = null;
   let page: CdpPage | null = null;
   const timeout = setTimeout(() => { child?.kill("SIGKILL"); }, PDF_TIMEOUT_MS);
@@ -171,5 +185,6 @@ export async function buildWebsiteOrientationPdfAttachments(
     try { page?.close(); } catch { /* already closed */ }
     child?.kill("SIGKILL");
     await rm(profile, { recursive: true, force: true }).catch(() => undefined);
+    activePdfBrowsers--;
   }
 }
