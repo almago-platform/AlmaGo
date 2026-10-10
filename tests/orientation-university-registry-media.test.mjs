@@ -128,10 +128,10 @@ test("orientation cards reuse the university media registry and centralize photo
   const sharedPhoto = readFileSync(
     "src/components/orientation/OrientationRealPhoto.tsx", "utf8",
   );
-  assert.match(card, /selected\\?\\.universityMedia\\?\\.coverImageUrl/);
-  assert.match(card, /<OrientationRealPhoto/);
-  assert.match(sharedPhoto, /media\\?\\.coverImageSourceUrl/);
-  assert.match(sharedPhoto, /media\\?\\.coverImageAttribution/);
-  assert.match(sharedPhoto, /media\\?\\.coverImageLicense/);
-  assert.match(sharedPhoto, /<figcaption/);
+  assert.ok(card.includes("selected?.universityMedia?.coverImageUrl"));
+  assert.ok(card.includes("<OrientationRealPhoto"));
+  assert.ok(sharedPhoto.includes("media?.coverImageSourceUrl"));
+  assert.ok(sharedPhoto.includes("media?.coverImageAttribution"));
+  assert.ok(sharedPhoto.includes("media?.coverImageLicense"));
+  assert.ok(sharedPhoto.includes("<figcaption"));
 });
