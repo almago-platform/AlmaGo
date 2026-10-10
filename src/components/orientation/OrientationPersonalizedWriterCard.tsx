@@ -32,9 +32,9 @@ const copy = {
     summaryAction: "Votre priorité maintenant",
     summaryCampus: "Pendant ce temps, nous",
     summaryCampusText: "Nous vérifions les programmes et préparons avec vous la sélection finale.",
-    outlookEyebrow: "Compatibilité avec les critères vérifiés",
-    outlookStrong: "Profil compatible avec les critères actuellement vérifiés",
-    outlookGood: "Profil globalement compatible, avec des points à confirmer",
+    outlookEyebrow: "Pourquoi cette piste mérite votre attention",
+    outlookStrong: "Une piste prometteuse, à approfondir avec notre équipe",
+    outlookGood: "Une formation en lien avec votre projet, à approfondir avec notre équipe",
     outlookNote: "Cette lecture aide à organiser la suite. Seule l’université peut décider d’une admission." ,
     options: "Les programmes que nous étudions pour votre projet",
     cityFallbackEyebrow: "Votre ville reste prioritaire",
@@ -113,9 +113,9 @@ const copy = {
     summaryAction: "أولويتك الآن",
     summaryCampus: "وفي الوقت نفسه، نحن",
     summaryCampusText: "نراجع البرامج ونحضّر معك الاختيار النهائي.",
-    outlookEyebrow: "التوافق مع الشروط التي تم التحقق منها",
-    outlookStrong: "ملف متوافق مع الشروط التي تم التحقق منها حاليًا",
-    outlookGood: "ملف متوافق عمومًا مع نقاط ما زالت تحتاج إلى تأكيد",
+    outlookEyebrow: "لماذا يستحق هذا البرنامج اهتمامك",
+    outlookStrong: "خيار واعد يستحق المزيد من الدراسة مع فريقنا",
+    outlookGood: "برنامج قريب من مشروعك وسندرس تفاصيله معك",
     outlookNote: "يساعد هذا التقييم على تنظيم الخطوات التالية، لكن قرار القبول يعود للجامعة وحدها.",
     options: "البرامج التي ندرسها لمشروعك",
     cityFallbackEyebrow: "مدينتك ما زالت أولوية",
@@ -194,9 +194,9 @@ const copy = {
     summaryAction: "Your priority now",
     summaryCampus: "Meanwhile, we",
     summaryCampusText: "We check the programmes and prepare the final selection with you.",
-    outlookEyebrow: "Compatibility with verified criteria",
-    outlookStrong: "Profile compatible with the criteria currently verified",
-    outlookGood: "Profile broadly compatible, with points still to confirm",
+    outlookEyebrow: "Why this option deserves your attention",
+    outlookStrong: "A promising option to explore further with our team",
+    outlookGood: "A programme related to your goals, to explore with our team",
     outlookNote: "This assessment helps organise the next steps. Only the university can make an admission decision.",
     options: "Programmes we are reviewing for your project",
     cityFallbackEyebrow: "Your city remains the priority",
@@ -275,9 +275,9 @@ const copy = {
     summaryAction: "Deine Priorität jetzt",
     summaryCampus: "Währenddessen wir",
     summaryCampusText: "Wir prüfen die Studiengänge und bereiten mit dir die finale Auswahl vor.",
-    outlookEyebrow: "Kompatibilität mit den geprüften Kriterien",
-    outlookStrong: "Profil mit den aktuell geprüften Kriterien vereinbar",
-    outlookGood: "Profil weitgehend vereinbar, einige Punkte sind noch zu klären",
+    outlookEyebrow: "Warum sich ein Blick auf diese Option lohnt",
+    outlookStrong: "Eine interessante Option, die wir gemeinsam näher prüfen",
+    outlookGood: "Ein Studiengang passend zu deinen Zielen, den wir gemeinsam näher prüfen",
     outlookNote: "Diese Einschätzung hilft bei der Planung der nächsten Schritte. Über eine Zulassung entscheidet ausschließlich die Hochschule.",
     options: "Studiengänge, die wir für dein Projekt prüfen",
     cityFallbackEyebrow: "Deine Stadt bleibt Priorität",
@@ -826,18 +826,27 @@ function splitGuidanceChoice(choice: string, locale: Locale) {
   };
 }
 
+function primarySelectionCount(count: number, locale: Locale) {
+  if (locale === "fr") return count === 1 ? "1 piste prioritaire" : count === 0 ? "Aucune piste prioritaire" : `${count} pistes sélectionnées`;
+  if (locale === "ar") return count === 1 ? "خيار رئيسي واحد" : count === 0 ? "لا توجد خيارات رئيسية بعد" : `${count} خيارات مختارة`;
+  if (locale === "de") return count === 1 ? "1 bevorzugte Option" : count === 0 ? "Noch keine vorrangige Option" : `${count} ausgewählte Optionen`;
+  return count === 1 ? "1 priority option" : count === 0 ? "No priority option yet" : `${count} selected options`;
+}
+
 export function OrientationPersonalizedWriterCard({
   result,
   locale,
   answers = null,
   showCta = false,
   continueAccount = false,
+  showClosing = true,
 }: {
   result: OrientationPublicPersonalizedResult;
   locale: Locale;
   answers?: PublicOrientationAnswers | null;
   showCta?: boolean;
   continueAccount?: boolean;
+  showClosing?: boolean;
 }) {
   const t = copy[locale];
   const content = result.content;
@@ -1143,7 +1152,7 @@ export function OrientationPersonalizedWriterCard({
             </h4>
           </div>
           <span className="text-xs font-semibold text-[var(--muted)]">
-            {result.selected.length} {locale === "fr" && result.selected.length === 1 ? "piste" : t.pathsCount}
+            {primarySelectionCount(result.selected.length, locale)}
           </span>
         </div>
         <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">{t.outlookSectionNote}</p>
@@ -1336,31 +1345,9 @@ export function OrientationPersonalizedWriterCard({
         ) : null}
       </section>
 
-      <section className="orientation-chapter relative mt-8 overflow-hidden rounded-[var(--radius-panel)] bg-[var(--surface-subtle)] px-5 py-6 sm:px-7 sm:py-7">
-        <div aria-hidden="true" className="absolute inset-y-0 start-0 w-1 bg-[var(--accent)]" />
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(16rem,0.85fr)] lg:items-center lg:gap-10">
-          <div>
-            <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--accent-strong)]">{t.closingEyebrow}</p>
-            <h4 className="mt-2 max-w-3xl text-2xl font-semibold tracking-tight sm:text-3xl">{t.humanTitle}</h4>
-            <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">{t.humanText}</p>
-          </div>
-
-          <div className="border-t border-[var(--border)] pt-5 lg:border-s lg:border-t-0 lg:ps-7 lg:pt-0">
-            <p className="text-xs font-bold uppercase tracking-[0.1em] text-[var(--brand-strong)]">{t.togetherLabel}</p>
-            <p className="mt-2 text-sm font-semibold leading-6 text-[var(--foreground)]">{t.togetherText}</p>
-            <p className="mt-4 text-xs font-semibold text-[var(--muted)]">Campus Allemagne</p>
-          </div>
-        </div>
-
-        {showCta ? (
-          <a
-            href="#orientation-prospect-capture"
-            className="mt-6 inline-flex min-h-11 items-center justify-center rounded-[var(--radius-control)] bg-[var(--brand)] px-5 py-2.5 text-sm font-bold text-white transition hover:bg-[var(--brand-strong)]"
-          >
-            {continueAccount ? t.continueCta : t.humanCta}
-          </a>
-        ) : null}
-      </section>
+      {showClosing ? (
+        <OrientationHumanClosingCard locale={locale} showCta={showCta} continueAccount={continueAccount} />
+      ) : null}
 
       <details className="orientation-chapter mt-5 px-2 pt-4 sm:px-4">
         <summary className="cursor-pointer text-sm font-semibold text-[var(--foreground)]">{t.details}</summary>
@@ -1415,5 +1402,48 @@ export function OrientationPersonalizedWriterCard({
         </div>
       </details>
     </article>
+  );
+}
+
+/**
+ * A candidate should see every documented university before the invitation to
+ * continue. The orientation parent mounts this card AFTER supplemental choices.
+ */
+export function OrientationHumanClosingCard({
+  locale,
+  showCta = false,
+  continueAccount = false,
+}: {
+  locale: Locale;
+  showCta?: boolean;
+  continueAccount?: boolean;
+}) {
+  const t = copy[locale];
+  return (
+    <section className="orientation-chapter relative mt-8 overflow-hidden rounded-[var(--radius-panel)] bg-[var(--surface-subtle)] px-5 py-6 sm:px-7 sm:py-7">
+    <div aria-hidden="true" className="absolute inset-y-0 start-0 w-1 bg-[var(--accent)]" />
+    <div className="grid gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(16rem,0.85fr)] lg:items-center lg:gap-10">
+    <div>
+    <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--accent-strong)]">{t.closingEyebrow}</p>
+    <h4 className="mt-2 max-w-3xl text-2xl font-semibold tracking-tight sm:text-3xl">{t.humanTitle}</h4>
+    <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">{t.humanText}</p>
+    </div>
+    
+    <div className="border-t border-[var(--border)] pt-5 lg:border-s lg:border-t-0 lg:ps-7 lg:pt-0">
+    <p className="text-xs font-bold uppercase tracking-[0.1em] text-[var(--brand-strong)]">{t.togetherLabel}</p>
+    <p className="mt-2 text-sm font-semibold leading-6 text-[var(--foreground)]">{t.togetherText}</p>
+    <p className="mt-4 text-xs font-semibold text-[var(--muted)]">Campus Allemagne</p>
+    </div>
+    </div>
+    
+    {showCta ? (
+    <a
+    href="#orientation-prospect-capture"
+    className="mt-6 inline-flex min-h-11 items-center justify-center rounded-[var(--radius-control)] bg-[var(--brand)] px-5 py-2.5 text-sm font-bold text-white transition hover:bg-[var(--brand-strong)]"
+    >
+    {continueAccount ? t.continueCta : t.humanCta}
+    </a>
+    ) : null}
+    </section>
   );
 }
