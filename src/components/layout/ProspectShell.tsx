@@ -91,7 +91,9 @@ export function ProspectShell({
 
   async function signOut() {
     if (provisional) {
-      await fetch("/api/provisional-session/logout", { method: "POST" });
+      const response = await fetch("/api/provisional-session/logout", { method: "POST" });
+      // Do not imply that a temporary session was closed if revocation failed.
+      if (!response.ok) return;
     } else {
       await createClient().auth.signOut();
     }
