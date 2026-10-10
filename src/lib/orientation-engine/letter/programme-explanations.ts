@@ -1,4 +1,5 @@
 import type { OrientationProgrammeEvaluation, OrientationRuleCode } from "@/lib/orientation-engine/types";
+import type { PublicOrientationAnswers } from "@/lib/orientation/public";
 
 type Locale = "fr" | "ar" | "en" | "de";
 
@@ -63,6 +64,7 @@ function languageKind(value: string | null) {
  */
 export function explainDocumentedProgramme(
   recommendation: OrientationProgrammeEvaluation,
+  answers: PublicOrientationAnswers,
   locale: Locale,
 ): { reason: string } {
   const t = copy[locale];
@@ -76,7 +78,7 @@ export function explainDocumentedProgramme(
   const language = languageKind(recommendation.programme.teachingLanguage);
   if (language) {
     const label = t.languages[language];
-    if (hasEligibleRule(recommendation, "teaching_language_match")) {
+    if (answers.studyLanguage && answers.studyLanguage !== "À définir" && hasEligibleRule(recommendation, "teaching_language_match")) {
       reasons.push(t.languageMatch(label));
     } else if (recommendation.rules.some(
       (rule) => rule.code === "teaching_language_other" && rule.status === "conditional",
