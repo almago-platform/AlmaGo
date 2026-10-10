@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { DossierHeader } from "@/components/product/DossierHeader";
 import { JourneyRail, type JourneyRailStep } from "@/components/product/JourneyRail";
@@ -12,6 +13,8 @@ import { prospectHubCopy } from "@/content/prospect-hub-copy";
 import { getRequestLocale } from "@/lib/i18n-server";
 import { getPhase2StudentAccess } from "@/lib/phase2/access";
 import { loadVerifiedProgrammeCatalogue } from "@/lib/orientation-engine/catalog";
+import type { OrientationProgrammeRecord } from "@/lib/orientation-engine/types";
+import type { PublicOrientationAnswers } from "@/lib/orientation/public";
 import { loadProspectHubState } from "@/lib/prospect/hub";
 import { orientationProjectFacts } from "@/lib/prospect/orientation-presentation";
 import { prospectCatalogueRecommendations } from "@/lib/prospect/programmes";
@@ -301,6 +304,71 @@ function prospectWaitingState(
     || state.intake?.status === "paid_pending_validation";
 }
 
+
+async function ProspectDashboardRecommendations({
+  cataloguePromise,
+  answers,
+  locale,
+}: {
+  cataloguePromise: Promise<OrientationProgrammeRecord[]>;
+  answers: PublicOrientationAnswers | null;
+  locale: "fr" | "ar" | "en" | "de";
+}) {
+  // Never let optional academic recommendations delay the main authenticated dossier.
+  const catalogue = await cataloguePromise.catch(() => [] as OrientationProgrammeRecord[]);
+  const recommendations = prospectCatalogueRecommendations(answers, catalogue);
+  if (recommendations.length === 0) return null;
+
+  const t = prospectHubCopy[locale].dashboard;
+  const catalogueT = prospectHubCopy[locale].catalogue;
+  const recommendationLabels = {
+    projectMatch: catalogueT.projectMatch,
+    preferredCity: catalogueT.preferredCity,
+    requirementCheck: catalogueT.requirementCheck,
+    field: catalogueT.field,
+    german: catalogueT.german,
+    uniAssist: catalogueT.uniAssist,
+    yes: catalogueT.yes,
+    source: catalogueT.source,
+    applyLink: catalogueT.applyLink,
+  };
+
+  return (
+    <section className="pc-panel pc-premium-card pc-theme-gold p-4 sm:p-5">
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <p className="inline-flex items-center gap-2 text-[11px] font-extrabold uppercase tracking-[0.15em] text-[var(--success-strong)]">
+                <span className="size-1.5 rounded-full bg-[var(--success)]" aria-hidden="true" />
+                {catalogueT.projectMatch}
+              </p>
+              <h2 className="mt-2 text-[clamp(1.5rem,2.4vw,2rem)] font-semibold tracking-[-0.035em] text-[#1b1e20]">{t.recommendedTitle}</h2>
+              <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)] sm:text-[0.95rem]">
+                {t.recommendedText}
+              </p>
+            </div>
+            <Link
+              href="/prospect/catalogue"
+              className={buttonClassName("secondary", "min-h-10 px-4 py-2")}
+            >
+              {t.recommendedViewAll}
+            </Link>
+          </div>
+
+          <div className="mt-4 grid items-start gap-3 xl:grid-cols-3">
+            {recommendations.map((recommendation) => (
+              <ProspectProgrammeRecommendationCard
+                key={recommendation.programme.id}
+                recommendation={recommendation}
+                labels={recommendationLabels}
+                locale={locale}
+                compact
+              />
+            ))}
+          </div>
+        </section>
+  );
+}
+
 export const dynamic = "force-dynamic";
 
 export default async function ProspectDashboardPage() {
@@ -313,18 +381,19 @@ export default async function ProspectDashboardPage() {
   if (!access.isStudent) redirect("/unauthorized");
   if (!access.phase2Enabled || access.canUseClientFeatures) redirect("/student");
 
-  const [state, catalogue] = await Promise.all([
-    loadProspectHubState({
-      userId: access.user.id,
-      email: access.user.email,
-      emailConfirmed: Boolean(access.user.email_confirmed_at),
-    }),
-    loadVerifiedProgrammeCatalogue(),
-  ]);
+  // Start the catalogue request concurrently, but do not block the core dashboard on it.
+  const cataloguePromise = loadVerifiedProgrammeCatalogue().catch(() => {
+    // The personalised dossier must remain usable if the public catalogue is down.
+    console.warn("Prospect recommendations unavailable: catalogue read failed");
+    return [] as OrientationProgrammeRecord[];
+  });
+  const state = await loadProspectHubState({
+    userId: access.user.id,
+    email: access.user.email,
+    emailConfirmed: Boolean(access.user.email_confirmed_at),
+  });
 
   const t = prospectHubCopy[locale].dashboard;
-  const catalogueT = prospectHubCopy[locale].catalogue;
-  const recommendations = prospectCatalogueRecommendations(state.answers, catalogue);
   const preBac = state.answers?.bacStatus === "preparing";
   const action = nextAction(state, t, locale);
   const v2 = prospectV2Labels(locale);
@@ -335,17 +404,6 @@ export default async function ProspectDashboardPage() {
       ? v2.waitingValidation
       : v2.waitingReview;
   const facts = state.answers ? orientationProjectFacts(state.answers, locale) : [];
-  const recommendationLabels = {
-    projectMatch: catalogueT.projectMatch,
-    preferredCity: catalogueT.preferredCity,
-    requirementCheck: catalogueT.requirementCheck,
-    field: catalogueT.field,
-    german: catalogueT.german,
-    uniAssist: catalogueT.uniAssist,
-    yes: catalogueT.yes,
-    source: catalogueT.source,
-    applyLink: catalogueT.applyLink,
-  };
 
   return (
     <main className="space-y-5">
@@ -426,40 +484,13 @@ export default async function ProspectDashboardPage() {
         ]}
       />
 
-      {recommendations.length ? (
-        <section className="pc-panel pc-premium-card pc-theme-gold p-4 sm:p-5">
-          <div className="flex flex-wrap items-end justify-between gap-4">
-            <div>
-              <p className="inline-flex items-center gap-2 text-[11px] font-extrabold uppercase tracking-[0.15em] text-[var(--success-strong)]">
-                <span className="size-1.5 rounded-full bg-[var(--success)]" aria-hidden="true" />
-                {catalogueT.projectMatch}
-              </p>
-              <h2 className="mt-2 text-[clamp(1.5rem,2.4vw,2rem)] font-semibold tracking-[-0.035em] text-[#1b1e20]">{t.recommendedTitle}</h2>
-              <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)] sm:text-[0.95rem]">
-                {t.recommendedText}
-              </p>
-            </div>
-            <Link
-              href="/prospect/catalogue"
-              className={buttonClassName("secondary", "min-h-10 px-4 py-2")}
-            >
-              {t.recommendedViewAll}
-            </Link>
-          </div>
-
-          <div className="mt-4 grid items-start gap-3 xl:grid-cols-3">
-            {recommendations.map((recommendation) => (
-              <ProspectProgrammeRecommendationCard
-                key={recommendation.programme.id}
-                recommendation={recommendation}
-                labels={recommendationLabels}
-                locale={locale}
-                compact
-              />
-            ))}
-          </div>
-        </section>
-      ) : null}
+      <Suspense fallback={null}>
+        <ProspectDashboardRecommendations
+          cataloguePromise={cataloguePromise}
+          answers={state.answers}
+          locale={locale}
+        />
+      </Suspense>
 
       {!state.current ? (
         <PremiumEmptyState
