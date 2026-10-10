@@ -38,7 +38,7 @@ export function OrientationRealPhoto({
       && /^(?:CC BY(?:-SA)?(?:\s|$)|CC0)/i.test(media.coverImageLicense));
   const universityUrl = validUniversityMedia ? media?.coverImageUrl || null : null;
   const useUniversityPhoto = universityUrl !== null && brokenUrl !== universityUrl;
-  const imageUrl = useUniversityPhoto ? universityUrl : lifePhoto.imageUrl;
+  const imageUrl = useUniversityPhoto && universityUrl ? universityUrl : lifePhoto.imageUrl;
   const imageIsBroken = brokenUrl === imageUrl;
   const sourceUrl = useUniversityPhoto ? media?.coverImageSourceUrl || lifePhoto.sourceUrl : lifePhoto.sourceUrl;
   const author = useUniversityPhoto ? media?.coverImageAttribution || t.source : lifePhoto.author;
@@ -64,7 +64,7 @@ export function OrientationRealPhoto({
           loading="lazy"
           decoding="async"
           onError={() => setBrokenUrl(imageUrl)}
-          className="h-full min-h-36 w-full object-cover"
+          className="h-full w-full object-cover"
         />
       )}
       <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 to-transparent p-2 pt-8 text-[10px] leading-4 text-white">
