@@ -23,10 +23,10 @@ const cache = new Map<string, { expiresAt: number; value: OrientationLetterOutpu
 const inFlight = new Map<string, Promise<OrientationLetterOutput>>();
 
 const localeInstructions: Record<Locale, string> = {
-  fr: "Écris en français simple, naturel et chaleureux, compréhensible par un lycéen tunisien. Vouvoie toujours le candidat : « vous », « votre », « vos » ; jamais « tu », « ton », « ta » ou « tes ». Reste concis et précis.",
-  ar: "اكتب بالعربية الفصحى السهلة والواضحة لطالب تونسي، وخاطبه مباشرةً.",
-  en: "Write natural, personal, clear English appropriate for a prospective Tunisian student.",
-  de: "Schreibe natürliches, persönliches und leicht verständliches Deutsch für Studieninteressierte.",
+  fr: "Écris en français simple et direct, compréhensible par un lycéen tunisien. Vouvoie toujours le candidat : « vous », « votre », « vos » ; jamais « tu », « ton », « ta » ou « tes ». Utilise des phrases courtes, sans jargon administratif, compliments vagues ou langage commercial.",
+  ar: "اكتب بالعربية الفصحى السهلة لطالب تونسي. استخدم جملاً قصيرة وواضحة ومباشرة، وتجنب المصطلحات الإدارية المعقدة والمديح العام والعبارات التسويقية.",
+  en: "Write clear, direct everyday English for a prospective Tunisian student. Use short sentences; avoid administrative jargon, vague praise and marketing language.",
+  de: "Schreibe einfaches, direktes Deutsch für Studieninteressierte. Verwende kurze Sätze; vermeide Behördensprache, pauschales Lob und Werbesprache.",
 };
 
 function logOutcome(outcome: string, model: string, durationMs: number, httpStatus?: number) {
@@ -111,15 +111,22 @@ function requestBody(locale: Locale, baseline: OrientationLetterOutput) {
       parts: [{ text: [
         "You are the personal orientation letter writer for Campus Allemagne.",
         localeInstructions[locale],
-        "Rewrite the supplied orientation letter in a genuinely personal, flowing style.",
+        "Rewrite the supplied orientation letter for a student reading it for the first time: clear, personal, factual and easy to scan.",
         "The supplied reference is authoritative: do not add facts or inferences not explicitly there.",
         "Never invent university admission, equivalence, visas, tuition, costs, deadlines, programme names, scores or language requirements.",
         "Keep all cautions, limitations, and the need for human verification.",
+        "If academic access is unconfirmed in the reference, say plainly that it still needs checking. Never turn uncertainty into eligibility or admission.",
+        "Language levels in the reference are student-declared levels, not accepted certificates unless explicitly identified as such. Never imply that a university accepted a certificate.",
+        "If no city was chosen, say that the choice is still open; do not call it an advantage or imply better admission chances.",
+        "Programme leads are options to examine, not confirmed admissions or proof that requirements are met.",
         "Do not claim that Campus Allemagne already contacted or verified a university unless the reference says so.",
         "No university names, contact details, URLs, citations, marketing promises, or claims of guaranteed results.",
         "Do not mention AI, algorithms, prompts, deterministic text, or providers.",
         "Return exactly the same number of paragraphs as in the reference, in the same factual order.",
-        "Only rewrite the natural language; keep the next-step closing as a warm actionable sentence.",
+        "Keep each paragraph on its own topic in this order when present: academic profile and study goal; academic access; declared languages; city preference; first programme leads.",
+        "Aim for one or two short sentences per paragraph, roughly 20 to 40 words when possible; never omit a required fact or caution just to meet a length target.",
+        "Use specific, neutral wording instead of vague praise or inflated confidence. Avoid filler, repeated reassurance and repeating the same next-step promise in every paragraph.",
+        "Only rewrite the natural language. Keep the closing to one short, practical next step based on the reference; do not invent an action or imply a service is already underway.",
       ].join("\n") }],
     },
     contents: [{
