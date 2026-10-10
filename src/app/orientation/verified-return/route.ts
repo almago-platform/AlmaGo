@@ -34,7 +34,31 @@ export async function GET() {
     const privileged = createPrivilegedSupabaseClient();
     const { data: linked } = await privileged.from("prospects")
       .select("id").eq("user_id", user.id).maybeSingle();
-    if (linked?.id) return responseTo("/prospect");
+    if (linked?.id) {
+      // A previous claim may already have linked the orientation while the
+      // storage handoff failed. Never lose those documents on a later callback.
+      const { data: pending } = await privileged
+        .from("provisional_candidate_credentials")
+        .select("orientation_id")
+        .eq("email", user.email.trim().toLowerCase())
+        .maybeSingle();
+      if (pending?.orientation_id) {
+        const { data: ownOrientation } = await privileged.from("orientations")
+          .select("id")
+          .eq("id", pending.orientation_id)
+          .eq("prospect_id", linked.id)
+          .maybeSingle();
+        if (!ownOrientation?.id) return responseTo("/prospect/orientation");
+        const moved = await handoffProvisionalDocuments({
+          supabase: privileged,
+          userId: user.id,
+          verifiedEmail: user.email,
+          orientationId: ownOrientation.id,
+        });
+        if (!moved) return responseTo("/prospect/orientation");
+      }
+      return responseTo("/prospect");
+    }
 
     const { data: recovered, error } = await privileged.rpc(
       "service_recover_and_confirm_latest_orientation",
