@@ -1421,29 +1421,29 @@ export function OrientationHumanClosingCard({
   const t = copy[locale];
   return (
     <section className="orientation-chapter relative mt-8 overflow-hidden rounded-[var(--radius-panel)] bg-[var(--surface-subtle)] px-5 py-6 sm:px-7 sm:py-7">
-    <div aria-hidden="true" className="absolute inset-y-0 start-0 w-1 bg-[var(--accent)]" />
-    <div className="grid gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(16rem,0.85fr)] lg:items-center lg:gap-10">
-    <div>
-    <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--accent-strong)]">{t.closingEyebrow}</p>
-    <h4 className="mt-2 max-w-3xl text-2xl font-semibold tracking-tight sm:text-3xl">{t.humanTitle}</h4>
-    <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">{t.humanText}</p>
-    </div>
-    
-    <div className="border-t border-[var(--border)] pt-5 lg:border-s lg:border-t-0 lg:ps-7 lg:pt-0">
-    <p className="text-xs font-bold uppercase tracking-[0.1em] text-[var(--brand-strong)]">{t.togetherLabel}</p>
-    <p className="mt-2 text-sm font-semibold leading-6 text-[var(--foreground)]">{t.togetherText}</p>
-    <p className="mt-4 text-xs font-semibold text-[var(--muted)]">Campus Allemagne</p>
-    </div>
-    </div>
-    
-    {showCta ? (
-    <a
-    href="#orientation-prospect-capture"
-    className="mt-6 inline-flex min-h-11 items-center justify-center rounded-[var(--radius-control)] bg-[var(--brand)] px-5 py-2.5 text-sm font-bold text-white transition hover:bg-[var(--brand-strong)]"
-    >
-    {continueAccount ? t.continueCta : t.humanCta}
-    </a>
-    ) : null}
+      <div aria-hidden="true" className="absolute inset-y-0 start-0 w-1 bg-[var(--accent)]" />
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(16rem,0.85fr)] lg:items-center lg:gap-10">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--accent-strong)]">{t.closingEyebrow}</p>
+          <h4 className="mt-2 max-w-3xl text-2xl font-semibold tracking-tight sm:text-3xl">{t.humanTitle}</h4>
+          <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">{t.humanText}</p>
+        </div>
+
+        <div className="border-t border-[var(--border)] pt-5 lg:border-s lg:border-t-0 lg:ps-7 lg:pt-0">
+          <p className="text-xs font-bold uppercase tracking-[0.1em] text-[var(--brand-strong)]">{t.togetherLabel}</p>
+          <p className="mt-2 text-sm font-semibold leading-6 text-[var(--foreground)]">{t.togetherText}</p>
+          <p className="mt-4 text-xs font-semibold text-[var(--muted)]">Campus Allemagne</p>
+        </div>
+      </div>
+
+      {showCta ? (
+        <a
+          href="#orientation-prospect-capture"
+          className="mt-6 inline-flex min-h-11 items-center justify-center rounded-[var(--radius-control)] bg-[var(--brand)] px-5 py-2.5 text-sm font-bold text-white transition hover:bg-[var(--brand-strong)]"
+        >
+          {continueAccount ? t.continueCta : t.humanCta}
+        </a>
+      ) : null}
     </section>
   );
 }
