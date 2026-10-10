@@ -18,6 +18,15 @@ function deterministicRecommendation({
   city = "Berlin",
 } = {}) {
   return {
+    status: "eligible",
+    rules: [
+      { code: "degree_match", status: "eligible" },
+      { code: "field_match", status: "eligible" },
+      { code: "source_verified", status: "eligible" },
+    ],
+    sources: [
+      { kind: "university", url: "https://university.example/programme", verifiedAt: "2026-09-01" },
+    ],
     programme: {
       name: programme,
       university: {
@@ -133,5 +142,38 @@ test("canonical shortlist is empty only when neither pipeline has a candidate", 
       source: "none",
       items: [],
     },
+  );
+});
+
+test("canonical shortlist excludes unrelated programmes even when they rank in the catalogue", () => {
+  const unrelated = deterministicRecommendation({
+    institution: "Example University",
+    programme: "Electrical Engineering",
+    city: "Erlangen",
+  });
+  unrelated.rules = [
+    { code: "degree_match", status: "eligible" },
+    { code: "field_match", status: "not_eligible" },
+    { code: "source_verified", status: "eligible" },
+  ];
+  const shortlist = buildOrientationCanonicalShortlist(
+    engine([unrelated]),
+    null,
+  );
+  assert.deepEqual(shortlist, { source: "none", items: [] });
+});
+
+test("canonical shortlist does not present undated sources or unverified recommendations as confirmed", () => {
+  const undated = deterministicRecommendation();
+  undated.rules = undated.rules.filter((rule) => rule.code !== "source_verified");
+  assert.deepEqual(
+    buildOrientationCanonicalShortlist(engine([undated]), null),
+    { source: "none", items: [] },
+  );
+  const unlinked = deterministicRecommendation();
+  unlinked.sources = [{ kind: "university", url: "http://university.example/programme", verifiedAt: "2026-09-01" }];
+  assert.deepEqual(
+    buildOrientationCanonicalShortlist(engine([unlinked]), null),
+    { source: "none", items: [] },
   );
 });
