@@ -469,3 +469,46 @@
     break-inside: avoid !important;
   }
 }
+
+
+/* Keep every documented university, its photo, its credits and its link together.
+   The generic section/article rule above was more specific than the card rule. */
+@media print {
+  .orientation-print-page .orientation-detailed-print-report .orientation-detail-research-card,
+  .orientation-print-page .orientation-detailed-print-report .orientation-detail-research-photo,
+  .orientation-print-page .orientation-detailed-print-report .orientation-detail-research-photo figcaption {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  .orientation-print-page .orientation-detailed-print-report .orientation-detail-research-card {
+    display: grid;
+    grid-template-columns: minmax(0, 1.55fr) minmax(0, 0.8fr);
+    margin-bottom: 5mm;
+  }
+
+  .orientation-detail-research-photo img {
+    height: 29mm;
+  }
+
+  .orientation-detail-research-text p {
+    font-size: 8.6pt;
+    line-height: 1.35;
+  }
+
+  .orientation-detail-research-photo figcaption {
+    font-size: 6.8pt;
+    line-height: 1.3;
+  }
+
+  .orientation-print-page .orientation-detailed-print-report .orientation-detail-research > .orientation-detail-chapter {
+    break-after: avoid !important;
+    page-break-after: avoid !important;
+  }
+
+  .orientation-print-page .orientation-detailed-print-report .orientation-detail-follow-up,
+  .orientation-print-page .orientation-detailed-print-report .orientation-detail-closing {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+}
