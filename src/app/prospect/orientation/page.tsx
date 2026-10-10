@@ -49,13 +49,13 @@ export default async function ProspectOrientationPage() {
   const qualificationCopy = prospectQualificationCopy[locale];
   const dateFormatter = new Intl.DateTimeFormat(locale, { dateStyle: "long" });
   const preBac = state.answers?.bacStatus === "preparing";
-  const showIntakeAction = !provisional && Boolean(
+  const showIntakeAction = Boolean(
     state.recovery
     || (state.current && !state.orientationConfirmed)
     || (preBac && state.orientationConfirmed && state.intake?.status === "starter_documents"),
   );
   const waitingForDocuments =
-    !provisional && !preBac
+    !preBac
     && state.orientationConfirmed
     && state.intake?.status === "starter_documents";
   const recommendations = prospectCatalogueRecommendations(state.answers, catalogue);
@@ -94,6 +94,7 @@ export default async function ProspectOrientationPage() {
             : null}
           starterSummary={state.starterSummary}
           bacStatus={state.answers?.bacStatus}
+          provisional={Boolean(provisional)}
         />
       ) : null}
 
