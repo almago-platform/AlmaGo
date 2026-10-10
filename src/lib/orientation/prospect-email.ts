@@ -11,6 +11,9 @@ type EmailCopy = {
   preparation: string;
   paths: string;
   orientationReportDescription: string;
+  detailedReportDescription: string;
+  detailedReportCta: string;
+  detailedAttachmentsNote: string;
   candidateReportDescription: string;
   orientationReportCta: string;
   candidateReportCta: string;
@@ -32,6 +35,9 @@ const emailCopy: Record<Locale, EmailCopy> = {
     preparation: "Nous avons analysé les informations de votre profil afin de vous proposer une première direction claire pour la suite de votre parcours.",
     paths: "Pistes à explorer",
     orientationReportDescription: "Votre rapport d’orientation contient votre recommandation principale, les pistes d’études retenues, les programmes à explorer, vos priorités et les prochaines étapes.",
+    detailedReportDescription: "Votre dossier détaillé présente les formations principales et les autres universités à découvrir, avec leurs sources et, lorsque disponibles, des photos autorisées.",
+    detailedReportCta: "Ouvrir mon dossier détaillé",
+    detailedAttachmentsNote: "Le dossier détaillé est également joint à cet e-mail au format PDF.",
     candidateReportDescription: "Votre rapport candidat reprend les informations principales de votre profil : parcours scolaire, langues, projet d’études, budget et préférences.",
     orientationReportCta: "Voir mon orientation PDF",
     candidateReportCta: "Voir mon rapport candidat PDF",
@@ -51,6 +57,9 @@ const emailCopy: Record<Locale, EmailCopy> = {
     preparation: "قمنا بتحليل معلومات ملفك لنقدم لك اتجاهًا أوليًا واضحًا للخطوات القادمة في مسارك.",
     paths: "مسارات للاستكشاف",
     orientationReportDescription: "يتضمن تقرير التوجيه توصيتك الرئيسية والمسارات الدراسية المقترحة والبرامج التي يمكنك استكشافها وأولوياتك والخطوات القادمة.",
+    detailedReportDescription: "يتضمن الملف المفصل البرامج الأساسية والجامعات الأخرى التي يمكنك استكشافها، مع المصادر والصور المسموح باستخدامها عند توفرها.",
+    detailedReportCta: "فتح الملف المفصل",
+    detailedAttachmentsNote: "أرفقنا أيضًا الملف المفصل بصيغة PDF. تتوفر النسخة العربية الكاملة عبر الرابط الآمن.",
     candidateReportDescription: "يلخص تقرير المترشح أهم معلومات ملفك: المسار الدراسي واللغات ومشروع الدراسة والميزانية والتفضيلات.",
     orientationReportCta: "التوجيه (PDF)",
     candidateReportCta: "تقرير المترشح (PDF)",
@@ -70,6 +79,9 @@ const emailCopy: Record<Locale, EmailCopy> = {
     preparation: "We analysed the information in your profile to give you a clear first direction for the next stage of your journey.",
     paths: "Paths to explore",
     orientationReportDescription: "Your orientation report contains your main recommendation, selected study paths, programmes to explore, priorities and next steps.",
+    detailedReportDescription: "Your detailed dossier includes the primary programmes and additional universities to explore, with sources and licensed photographs when available.",
+    detailedReportCta: "Open my detailed dossier",
+    detailedAttachmentsNote: "The detailed dossier is also attached to this email as a PDF.",
     candidateReportDescription: "Your candidate report summarises the key information in your profile: education, languages, study project, budget and preferences.",
     orientationReportCta: "Orientation (PDF)",
     candidateReportCta: "Candidate report (PDF)",
@@ -89,6 +101,9 @@ const emailCopy: Record<Locale, EmailCopy> = {
     preparation: "Wir haben die Angaben in deinem Profil ausgewertet, um dir eine klare erste Richtung für die nächsten Schritte zu geben.",
     paths: "Mögliche Wege",
     orientationReportDescription: "Dein Orientierungsbericht enthält deine wichtigste Empfehlung, passende Studienwege, Programme zur weiteren Prüfung, Prioritäten und nächste Schritte.",
+    detailedReportDescription: "Das ausführliche Dossier enthält die wichtigsten Studiengänge und weitere Hochschulen mit Quellen und zulässigen Fotos, soweit verfügbar.",
+    detailedReportCta: "Ausführliches Dossier öffnen",
+    detailedAttachmentsNote: "Das ausführliche Dossier ist ebenfalls als PDF angehängt.",
     candidateReportDescription: "Dein Bewerberbericht fasst die wichtigsten Angaben deines Profils zusammen: Ausbildung, Sprachen, Studienprojekt, Budget und Präferenzen.",
     orientationReportCta: "Orientierung (PDF)",
     candidateReportCta: "Bewerberbericht (PDF)",
@@ -119,6 +134,8 @@ export function buildOrientationProspectEmail({
   candidateReportUrl,
   interestUrl,
   attachmentsIncluded = false,
+  detailedAttachmentIncluded = false,
+  detailedReportUrl = null,
 }: {
   locale: Locale;
   diagnostic: PublicOrientationDiagnostic;
@@ -126,6 +143,8 @@ export function buildOrientationProspectEmail({
   candidateReportUrl: string;
   interestUrl?: string | null;
   attachmentsIncluded?: boolean;
+  detailedAttachmentIncluded?: boolean;
+  detailedReportUrl?: string | null;
 }) {
   const copy = emailCopy[locale];
   const diagnosticCopy = orientationDiagnosticCopy[locale];
@@ -161,7 +180,9 @@ export function buildOrientationProspectEmail({
       copy.candidateReportDescription,
       `${copy.candidateReportCta}: ${candidateReportUrl}`,
       copy.reportsNote,
+      ...(detailedReportUrl ? [copy.detailedReportDescription, `${copy.detailedReportCta}: ${detailedReportUrl}`] : []),
       ...(attachmentsIncluded ? [copy.attachmentsNote] : []),
+      ...(detailedAttachmentIncluded ? [copy.detailedAttachmentsNote] : []),
       "",
       ...(interestUrl
         ? ["", `${copy.interestCta}: ${interestUrl}`, copy.interestNote]
@@ -196,7 +217,9 @@ export function buildOrientationProspectEmail({
             <a href="${escapeHtml(candidateReportUrl)}" style="display:inline-block;background:#182442;color:#ffffff;text-decoration:none;font-weight:700;padding:12px 18px;border-radius:10px">${escapeHtml(copy.candidateReportCta)}</a>
           </p>
           <p style="margin:0;font-size:12px;line-height:1.6;color:#546078">${escapeHtml(copy.reportsNote)}</p>
+          ${detailedReportUrl ? `<p style="margin:12px 0 8px;font-size:13px;line-height:1.6">${escapeHtml(copy.detailedReportDescription)}</p><p><a href="${escapeHtml(detailedReportUrl)}" style="display:inline-block;background:#182442;color:white;text-decoration:none;font-weight:700;padding:12px 18px;border-radius:10px">${escapeHtml(copy.detailedReportCta)}</a></p>` : ""}
           ${attachmentsIncluded ? `<p style="margin:8px 0 0;font-size:12px;line-height:1.6;font-weight:700;color:#182442">${escapeHtml(copy.attachmentsNote)}</p>` : ""}
+          ${detailedAttachmentIncluded ? `<p style="margin:8px 0 0;font-size:12px;line-height:1.6;font-weight:700;color:#182442">${escapeHtml(copy.detailedAttachmentsNote)}</p>` : ""}
         </div>
         ${interestUrl ? `<div style="margin:0 0 22px;padding:18px;border:1px solid #eadbb7;border-radius:12px;background:#fff9eb">
           <p style="margin:0 0 12px"><a href="${escapeHtml(interestUrl)}" style="display:inline-block;background:#182442;color:#ffffff;text-decoration:none;font-weight:700;padding:11px 16px;border-radius:10px">${escapeHtml(copy.interestCta)}</a></p>
