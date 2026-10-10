@@ -10,10 +10,10 @@ import {
 type Locale = "fr" | "ar" | "en" | "de";
 
 const captions = {
-  fr: { life: "Vie étudiante en Allemagne", illustrative: "Illustration de la vie universitaire en Allemagne", photo: "Photo associée à l'université", source: "Crédit photo" },
-  ar: { life: "الحياة الطلابية في ألمانيا", illustrative: "صورة توضيحية للحياة الجامعية في ألمانيا", photo: "صورة مرتبطة بالجامعة", source: "حقوق الصورة" },
-  en: { life: "Student life in Germany", illustrative: "Illustration of university life in Germany", photo: "Photo associated with the university", source: "Photo credit" },
-  de: { life: "Studierendenleben in Deutschland", illustrative: "Beispielfoto aus dem Studierendenleben in Deutschland", photo: "Foto zur Hochschule", source: "Bildnachweis" },
+  fr: { life: "Vie étudiante en Allemagne", illustrative: "Illustration de la vie universitaire en Allemagne", photo: "Photo associée à l'université", source: "Crédit photo", alt: "Étudiants sur un campus universitaire en Allemagne" },
+  ar: { life: "الحياة الطلابية في ألمانيا", illustrative: "صورة توضيحية للحياة الجامعية في ألمانيا", photo: "صورة مرتبطة بالجامعة", source: "حقوق الصورة", alt: "طلبة في حرم جامعي في ألمانيا" },
+  en: { life: "Student life in Germany", illustrative: "Illustration of university life in Germany", photo: "Photo associated with the university", source: "Photo credit", alt: "Students on a university campus in Germany" },
+  de: { life: "Studierendenleben in Deutschland", illustrative: "Beispielfoto aus dem Studierendenleben in Deutschland", photo: "Foto zur Hochschule", source: "Bildnachweis", alt: "Studierende auf einem Universitätscampus in Deutschland" },
 } as const;
 
 export function OrientationRealPhoto({
@@ -45,10 +45,10 @@ export function OrientationRealPhoto({
   const license = useUniversityPhoto ? media?.coverImageLicense || "" : lifePhoto.license;
   const label = kind === "student-life" ? t.life : useUniversityPhoto ? t.photo : t.illustrative;
   const alt = kind === "student-life"
-    ? lifePhoto.description
+    ? t.alt
     : useUniversityPhoto
       ? `${t.photo}: ${universityName || media?.canonicalName || ""}`
-      : lifePhoto.description;
+      : t.alt;
 
   return (
     <figure className={`relative overflow-hidden rounded-xl bg-[var(--surface-subtle)] ${className}`}>
