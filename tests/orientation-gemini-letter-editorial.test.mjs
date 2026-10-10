@@ -83,7 +83,7 @@ test("Gemini prompt keeps safety, plain language and paragraph roles explicit", 
     "Programme leads are options to examine",
     "Return exactly the same number of paragraphs",
     "one or two short sentences per paragraph",
-    "Avoid filler, repeated reassurance",
+    "Avoid vague praise, inflated confidence",
     "invite the student to continue with Campus Allemagne",
   ]) {
     assert.ok(instruction.includes(phrase), `Missing instruction: ${phrase}`);
