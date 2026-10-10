@@ -94,7 +94,7 @@ test("success, failure and optional labels exist in all four locales", () => {
 test("final result polish keeps the CTA punctuation with its title and a comfortable line length", () => {
   assert.ok(capture.includes("max-w-[54rem] text-balance"));
   assert.ok(!capture.includes("max-w-[39rem] text-xl"));
-  assert.ok(copy.includes("Continuez votre projet avec Campus Allemagne"));
+  assert.ok(copy.includes("Votre avenir en Allemagne commence ici"));
 });
 
 test("PDF status does not repeat the same sent message twice", () => {
