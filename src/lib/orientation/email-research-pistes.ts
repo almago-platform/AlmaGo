@@ -23,6 +23,7 @@ export async function readSupplementalOrientationEmailPistes(
   selected: OrientationPublicPersonalizedResult["selected"],
 ): Promise<ResearchPiste[]> {
   if (answers.bacStatus === "no_bac" || selected.length >= 3) return [];
+  if (answers.targetDegree !== "Bachelor" && answers.targetDegree !== "Master") return [];
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SECRET_KEY) return [];
   const criteria: ResearchPisteCriteria = {
     targetDegree: answers.targetDegree,
