@@ -17,7 +17,7 @@ import { orientationProjectFacts, orientationVersionSummary } from "@/lib/prospe
 import { prospectCatalogueRecommendations } from "@/lib/prospect/programmes";
 import { prospectMedia } from "@/lib/prospect/media";
 import { getProvisionalIdentity } from "@/lib/prospect/provisional-auth";
-import { ProvisionalProspectOrientation } from "@/components/prospect/ProvisionalProspectOrientation";
+import { loadProvisionalProspectHubState } from "@/lib/prospect/provisional-hub";
 
 export const dynamic = "force-dynamic";
 
@@ -27,20 +27,19 @@ export default async function ProspectOrientationPage() {
     getRequestLocale(),
   ]);
 
-  if (!access.user) {
-    const provisional = await getProvisionalIdentity();
-    if (provisional) return <ProvisionalProspectOrientation identity={provisional} />;
-    redirect("/login");
-  }
-  if (!access.isStudent) redirect("/unauthorized");
-  if (!access.phase2Enabled || access.canUseClientFeatures) redirect("/student");
+  const provisional = !access.user ? await getProvisionalIdentity() : null;
+  if (!access.user && !provisional) redirect("/login");
+  if (access.user && !access.isStudent) redirect("/unauthorized");
+  if (access.user && (!access.phase2Enabled || access.canUseClientFeatures)) redirect("/student");
 
   const [state, catalogue] = await Promise.all([
-    loadProspectHubState({
-      userId: access.user.id,
-      email: access.user.email,
-      emailConfirmed: Boolean(access.user.email_confirmed_at),
-    }),
+    provisional
+      ? loadProvisionalProspectHubState(provisional)
+      : loadProspectHubState({
+          userId: access.user!.id,
+          email: access.user!.email,
+          emailConfirmed: Boolean(access.user!.email_confirmed_at),
+        }),
     loadVerifiedProgrammeCatalogue(),
   ]);
   const t = prospectHubCopy[locale].orientation;
@@ -50,13 +49,13 @@ export default async function ProspectOrientationPage() {
   const qualificationCopy = prospectQualificationCopy[locale];
   const dateFormatter = new Intl.DateTimeFormat(locale, { dateStyle: "long" });
   const preBac = state.answers?.bacStatus === "preparing";
-  const showIntakeAction = Boolean(
+  const showIntakeAction = !provisional && Boolean(
     state.recovery
     || (state.current && !state.orientationConfirmed)
     || (preBac && state.orientationConfirmed && state.intake?.status === "starter_documents"),
   );
   const waitingForDocuments =
-    !preBac
+    !provisional && !preBac
     && state.orientationConfirmed
     && state.intake?.status === "starter_documents";
   const recommendations = prospectCatalogueRecommendations(state.answers, catalogue);
