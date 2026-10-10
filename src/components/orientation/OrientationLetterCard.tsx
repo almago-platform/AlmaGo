@@ -11,6 +11,7 @@ import type {
 
 const copy = {
   fr: {
+    programmeDisclaimer: "Ces formations sont des possibilités à explorer, pas des admissions confirmées. Notre équipe pourra étudier les conditions avant toute candidature, si vous souhaitez poursuivre avec nous.",
     label: "Lettre d’orientation",
     pistes: "Des formations à découvrir pour votre avenir en Allemagne",
     pisteNote: "Voici des formations en lien avec votre projet. Vous nous confiez vos envies, vos moyens et vos préférences ; si vous choisissez de poursuivre, notre équipe étudiera les conditions et vous accompagnera dans la sélection des candidatures.",
@@ -22,6 +23,7 @@ const copy = {
     researchReason: "Une autre formation à découvrir pour élargir vos possibilités d'études en Allemagne.",
   },
   ar: {
+    programmeDisclaimer: "هذه البرامج فرص للاستكشاف وليست قبولًا جامعيًا مؤكدًا. إذا اخترت مواصلة الطريق معنا، يمكن لفريقنا دراسة الشروط قبل التقديم.",
     label: "رسالة التوجيه",
     pistes: "اكتشف برامج دراسية لمستقبلك في ألمانيا",
     pisteNote: "هذه برامج مرتبطة بمشروعك الدراسي. شاركنا طموحاتك وإمكاناتك وتفضيلاتك، وإذا اخترت مواصلة الطريق معنا فسيتولى فريقنا دراسة الشروط ومرافقتك في اختيار طلبات التقديم.",
@@ -33,6 +35,7 @@ const copy = {
     researchReason: "برنامج آخر يمكنك اكتشافه لتوسيع خيارات الدراسة في ألمانيا.",
   },
   en: {
+    programmeDisclaimer: "These are programmes to explore, not confirmed admissions. If you continue with us, our team can review the requirements before any application.",
     label: "Orientation letter",
     pistes: "Explore study programmes for your future in Germany",
     pisteNote: "Here are programmes connected to your study plans. Tell us your goals, budget and preferences; if you choose to continue, our team will review the requirements and guide you through choosing applications.",
@@ -44,6 +47,7 @@ const copy = {
     researchReason: "Another course to discover as you explore study opportunities in Germany.",
   },
   de: {
+    programmeDisclaimer: "Diese Studiengänge sind Möglichkeiten zum Entdecken, keine bestätigten Zulassungen. Wenn du mit uns weitermachst, kann unser Team vor einer Bewerbung die Voraussetzungen prüfen.",
     label: "Orientierungsschreiben",
     pistes: "Entdecke Studiengänge für deine Zukunft in Deutschland",
     pisteNote: "Hier findest du Studiengänge, die zu deinem Vorhaben passen könnten. Teile uns deine Ziele, Möglichkeiten und Wünsche mit. Wenn du mit uns weitermachst, prüft unser Team die Voraussetzungen und begleitet dich bei der Auswahl deiner Bewerbungen.",
@@ -239,6 +243,7 @@ export function OrientationLetterCard({
               </article>
             ))}
           </div>
+          <p className="mt-4 max-w-[68ch] text-xs leading-5 text-[var(--muted)]">{t.programmeDisclaimer}</p>
         </section>
       ) : null}
 
