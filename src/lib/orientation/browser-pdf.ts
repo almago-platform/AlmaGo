@@ -152,14 +152,11 @@ export async function buildWebsiteOrientationPdfAttachments(
   if (!/^[A-Za-z0-9_-]{20,250}$/.test(token)) throw new Error("Invalid orientation token");
   if (activePdfBrowsers >= MAX_ACTIVE_PDF_BROWSERS) throw new Error("PDF export capacity reached");
   activePdfBrowsers++;
-  let profile: string | null = null;
-  try {
-    profile = await mkdtemp(join(tmpdir(), "almago-orientation-print-"));
-  } catch (error) {
+  const browser = await executablePath().catch((error: unknown) => {
     activePdfBrowsers--;
     throw error;
-  }
-  const browser = await executablePath().catch((error: unknown) => {
+  });
+  const profile = await mkdtemp(join(tmpdir(), "almago-orientation-print-")).catch((error: unknown) => {
     activePdfBrowsers--;
     throw error;
   });
