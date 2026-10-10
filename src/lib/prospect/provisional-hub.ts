@@ -39,12 +39,19 @@ export async function loadProvisionalProspectHubState(
     ? { ...row, diagnostic, answers }
     : null;
   const required = requiredStarterDocumentCategoriesForBacStatus(answers?.bacStatus);
-  const { data: files, error: fileError } = await db
-    .from("provisional_candidate_documents")
-    .select("category,status")
-    .eq("credential_id", identity.id)
-    .eq("status", "pending");
-  if (fileError) throw new Error("Temporary dossier unavailable");
+  const [fileResult, acknowledgementResult] = await Promise.all([
+    db.from("provisional_candidate_documents")
+      .select("category,status")
+      .eq("credential_id", identity.id)
+      .eq("status", "pending"),
+    db.from("provisional_candidate_credentials")
+      .select("orientation_acknowledged_at")
+      .eq("id", identity.id)
+      .eq("orientation_id", identity.orientationId)
+      .maybeSingle(),
+  ]);
+  const { data: files, error: fileError } = fileResult;
+  if (fileError || acknowledgementResult.error) throw new Error("Temporary dossier unavailable");
   const pendingCategories = new Set((files || []).map((file) => file.category));
 
   return {
@@ -56,14 +63,28 @@ export async function loadProvisionalProspectHubState(
     diagnostic,
     roadmap: answers && diagnostic ? buildProspectRoadmap(answers, diagnostic) : null,
     qualification: null,
-    // No commercial review/proposal/payment is fabricated for an unverified identity.
-    intake: null,
+    // Only an acknowledgement of the pending candidate's own orientation.
+    // No Campus review, proposal, purchase or verified Supabase intake is claimed.
+    intake: acknowledgementResult.data?.orientation_acknowledged_at
+      ? {
+          orientation_id: identity.orientationId,
+          orientation_confirmed_at: acknowledgementResult.data.orientation_acknowledged_at,
+          status: "starter_documents",
+          proposed_route_key: null,
+          proposal_reason: null,
+          proposed_offer_version_id: null,
+          purchase_id: null,
+          accepted_at: null,
+          payment_validated_at: null,
+          procedure_id: null,
+        }
+      : null,
     starterSummary: {
       approved: 0,
       required: required.length,
       pending: required.filter((category) => pendingCategories.has(category)).length,
       needsReplacement: 0,
     },
-    orientationConfirmed: false,
+    orientationConfirmed: Boolean(acknowledgementResult.data?.orientation_acknowledged_at),
   };
 }
