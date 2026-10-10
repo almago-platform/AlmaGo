@@ -161,67 +161,92 @@ export function OrientationLetterCard({
 
   const pistes = [...verifiedPistes, ...researchPistes].slice(0, 3);
 
-  return (
-    <article className="rounded-[var(--radius-panel)] border border-[var(--premium-border)] bg-[var(--premium-cream-soft)] p-5 sm:p-7">
-      <p className="text-xs font-bold uppercase tracking-wide text-[var(--brand-strong)]">
-        {t.label}
-      </p>
-      <h3 className="mt-2 text-2xl font-bold leading-tight sm:text-3xl">
-        {letter.title}
-      </h3>
 
-      <div className="mt-5 space-y-4 text-[15px] leading-7 text-[var(--foreground)] sm:text-base">
-        {letter.paragraphs.map((paragraph, index) => (
-          <p key={`${index}-${paragraph.slice(0, 24)}`}>{paragraph}</p>
-        ))}
+  return (
+    <article className="orientation-letter-card overflow-hidden rounded-[var(--radius-panel)] border border-[var(--premium-border)] bg-[var(--surface)] shadow-[0_12px_35px_-32px_rgba(19,33,49,0.30)]">
+      <div className="px-5 pb-7 pt-7 sm:px-8 sm:pb-9 sm:pt-9 lg:px-10">
+        <div className="flex flex-wrap items-center gap-3">
+          <span aria-hidden="true" className="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-[var(--brand-soft)] text-[var(--brand-strong)]">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="size-5" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" d="M4 19.5h16M6.5 4.5h8l3 3v10h-11v-13Zm8 0v3h3M9 11h6M9 14h5" /></svg>
+          </span>
+          <p className="text-[11px] font-bold uppercase tracking-[0.13em] text-[var(--brand-strong)]">
+            {t.label}
+          </p>
+        </div>
+        <h3 className="mt-4 max-w-[45rem] text-[1.6rem] font-semibold leading-[1.18] tracking-[-0.025em] text-[var(--foreground)] sm:text-[2rem]">
+          {letter.title}
+        </h3>
+
+        <div className="mt-7 max-w-[71ch] space-y-5 text-[15px] leading-[1.85] text-[var(--foreground)] sm:space-y-6 sm:text-[16px]">
+          {letter.paragraphs.map((paragraph, index) => (
+            <p
+              key={index}
+              className={index === 0
+                ? "border-s-[3px] border-[var(--accent)] ps-4 font-medium leading-[1.85] sm:ps-5"
+                : ""}
+            >
+              {paragraph}
+            </p>
+          ))}
+        </div>
       </div>
 
       {pistes.length ? (
-        <section className="mt-7 border-t border-[var(--brand-border)] pt-5">
-          <h4 className="text-lg font-bold">{t.pistes}</h4>
-          <div className="mt-4 grid gap-3">
-            {pistes.map((piste) => (
+        <section className="border-t border-[var(--border)] bg-[var(--premium-cream-soft)] px-5 py-7 sm:px-8 sm:py-8 lg:px-10" aria-labelledby="orientation-programme-pistes-heading">
+          <div className="max-w-[62rem]">
+            <h4 id="orientation-programme-pistes-heading" className="text-xl font-semibold tracking-tight text-[var(--foreground)] sm:text-2xl">{t.pistes}</h4>
+            <p className="mt-2 max-w-[68ch] text-sm leading-6 text-[var(--muted)]">{t.pisteNote}</p>
+          </div>
+          <div className="mt-6 grid gap-3 sm:gap-4">
+            {pistes.map((piste, index) => (
               <article
                 key={piste.key}
-                className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface)] p-4"
+                className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface)] p-4 transition-colors hover:border-[var(--brand-border)] sm:p-5"
               >
-                <div className="flex flex-wrap items-start justify-between gap-2">
-                  <div>
-                    <h5 className="font-bold">{piste.institution} — {piste.programme}</h5>
-                    <p className="mt-1 text-sm text-[var(--muted)]">
-                      {[piste.city, piste.language ? languageLabel(locale, piste.language) : null]
-                        .filter(Boolean)
-                        .join(" · ")}
-                    </p>
-                  </div>
-                  <span className="rounded-full border border-[var(--border)] bg-[var(--surface-subtle)] px-2.5 py-1 text-xs font-semibold">
-                    {piste.badge}
+                <div className="flex min-w-0 items-start gap-3 sm:gap-4">
+                  <span aria-hidden="true" className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-[var(--surface-subtle)] text-xs font-bold tabular-nums text-[var(--foreground)]">
+                    {String(index + 1).padStart(2, "0")}
                   </span>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-start justify-between gap-x-5 gap-y-2">
+                      <h5 dir="auto" className="min-w-0 max-w-[42rem] text-base font-semibold leading-6 [overflow-wrap:anywhere]">{piste.institution} — {piste.programme}</h5>
+                      <span className="shrink-0 rounded-full border border-[var(--border)] bg-[var(--surface-subtle)] px-2.5 py-1 text-[11px] font-semibold text-[var(--muted)]">
+                        {piste.badge}
+                      </span>
+                    </div>
+                    {piste.city || piste.language ? (
+                      <p className="mt-2 text-[13px] font-medium leading-5 text-[var(--muted)]">
+                        {[piste.city, piste.language ? languageLabel(locale, piste.language) : null]
+                          .filter(Boolean)
+                          .join(" · ")}
+                      </p>
+                    ) : null}
+                    <p className="mt-3 max-w-[73ch] text-sm leading-6 text-[var(--foreground)]">{piste.reason}</p>
+                    {piste.source ? (
+                      <a
+                        href={piste.source}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-3 inline-flex min-h-10 items-center gap-2 text-sm font-semibold text-[var(--brand-strong)] underline decoration-[var(--brand-border)] underline-offset-4 hover:decoration-current"
+                      >
+                        {t.source}
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="size-4 shrink-0" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" d="M7 17 17 7M8 7h9v9" /></svg>
+                      </a>
+                    ) : null}
+                  </div>
                 </div>
-                <p className="mt-2 text-sm leading-6">{piste.reason}</p>
-                {piste.source ? (
-                  <a
-                    href={piste.source}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="mt-2 inline-block text-sm font-semibold underline underline-offset-2"
-                  >
-                    {t.source}
-                  </a>
-                ) : null}
               </article>
             ))}
           </div>
-          <p className="mt-3 text-xs leading-5 text-[var(--muted)]">{t.pisteNote}</p>
         </section>
       ) : null}
 
-      <div className="mt-7 border-t border-[var(--brand-border)] pt-5">
-        <p className="text-xs font-bold uppercase tracking-wide text-[var(--brand-strong)]">
-          {t.closing}
-        </p>
-        <p className="mt-2 text-base font-semibold leading-7">{letter.closing}</p>
-      </div>
+      <section className="border-t border-[var(--border)] bg-[var(--surface)] px-5 py-6 sm:px-8 sm:py-7 lg:px-10" aria-label={t.closing}>
+        <div className="max-w-[76ch] border-s-[3px] border-[var(--brand)] ps-4 sm:ps-5">
+          <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-[var(--brand-strong)]">{t.closing}</p>
+          <p className="mt-2 text-base font-semibold leading-7 text-[var(--foreground)]">{letter.closing}</p>
+        </div>
+      </section>
     </article>
   );
 }
