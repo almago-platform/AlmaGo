@@ -1015,7 +1015,7 @@ export async function buildDetailedOrientationEmailPdfAttachment(
         MARGIN_X, PAGE_WIDTH - MARGIN_X * 2, 8.5, { color: MUTED, gapAfter: 3 });
     } else {
       layout.wrapped(detailLabel(locale, "Programme officiel", "Official programme", "Offizieller Studiengang")
-        + ": " + option.officialUrl,
+        + ": " + ("officialUrl" in option ? option.officialUrl : ""),
       MARGIN_X, PAGE_WIDTH - MARGIN_X * 2, 8.3, { color: RED, gapAfter: 5 });
     }
     layout.wrapped(copy.disclaimer, MARGIN_X, PAGE_WIDTH - MARGIN_X * 2, 8, { color: MUTED });
