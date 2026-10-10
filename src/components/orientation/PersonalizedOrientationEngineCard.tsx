@@ -38,6 +38,9 @@ type EngineResponse = {
 
 const copy = {
   fr: {
+    bacObtained: "Félicitations pour votre bac ! C’est une belle étape franchie pour votre projet d’études.",
+    bacPreparing: "Bon courage pour la préparation de votre bac ! Votre projet d’études en Allemagne peut déjà prendre forme.",
+    bacNoBac: "Chaque parcours a son point de départ. Nous sommes là pour explorer les possibilités qui correspondent à votre situation.",
     eyebrow: "Orientation personnalisée V4",
     title: "Votre orientation personnalisée",
     lead: "Une lettre simple pour comprendre votre chemin, puis choisir les universités avec Campus Allemagne.",
@@ -72,6 +75,9 @@ const copy = {
     summer: "été",
   },
   ar: {
+    bacObtained: "مبروك نجاحك في البكالوريا! إنها خطوة جميلة نحو مشروعك الدراسي.",
+    bacPreparing: "بالتوفيق في تحضير البكالوريا! يمكنك من الآن البدء في رسم مشروعك للدراسة في ألمانيا.",
+    bacNoBac: "لكل شخص مساره الخاص. نحن هنا لاستكشاف الخيارات التي تناسب وضعك الدراسي.",
     eyebrow: "توجيه شخصي V4",
     title: "توجيهك الشخصي",
     lead: "رسالة بسيطة تساعدك على فهم طريقك، ثم نختار الجامعات معًا مع Campus Allemagne.",
@@ -106,6 +112,9 @@ const copy = {
     summer: "الصيف",
   },
   en: {
+    bacObtained: "Congratulations on your Baccalaureate! It is a great milestone for your study plans.",
+    bacPreparing: "Best of luck as you prepare for your Baccalaureate! You can already start planning your studies in Germany.",
+    bacNoBac: "Every educational journey starts somewhere. We are here to explore options suited to your situation.",
     eyebrow: "Personalised orientation V4",
     title: "Your personalised orientation",
     lead: "A simple letter to understand your path, then choose universities together with Campus Allemagne.",
@@ -140,6 +149,9 @@ const copy = {
     summer: "summer",
   },
   de: {
+    bacObtained: "Herzlichen Glückwunsch zum Abitur beziehungsweise Baccalauréat! Ein schöner Schritt für dein Studienvorhaben.",
+    bacPreparing: "Viel Erfolg bei der Vorbereitung auf dein Baccalauréat! Du kannst dein Studium in Deutschland schon jetzt planen.",
+    bacNoBac: "Jeder Bildungsweg beginnt anders. Wir möchten mit dir passende Möglichkeiten erkunden.",
     eyebrow: "Personalisierte Orientierung V4",
     title: "Deine persönliche Orientierung",
     lead: "Ein einfacher Brief, der deinen Weg erklärt. Danach wählen wir die Hochschulen gemeinsam mit Campus Allemagne aus.",
@@ -419,6 +431,13 @@ export function PersonalizedOrientationEngineCard({
 }) {
   const t = copy[locale] as (typeof copy)["fr"];
   const isBachelorFirstContact = answers.targetDegree === "Bachelor";
+  const bacWelcome = answers.bacStatus === "obtained"
+    ? t.bacObtained
+    : answers.bacStatus === "preparing"
+      ? t.bacPreparing
+      : answers.bacStatus === "no_bac"
+        ? t.bacNoBac
+        : null;
   const requestBody = useMemo(() => JSON.stringify({ answers, locale }), [answers, locale]);
   const [requestState, setRequestState] = useState<{
     key: string | null;
@@ -583,6 +602,11 @@ export function PersonalizedOrientationEngineCard({
 
         {state === "ready" && result ? (
           <>
+            {isBachelorFirstContact && bacWelcome ? (
+              <p className="mb-5 rounded-[var(--radius-control)] border border-[var(--premium-border)] bg-[var(--premium-cream-soft)] px-5 py-4 text-base font-medium leading-7 text-[var(--foreground)]">
+                {bacWelcome}
+              </p>
+            ) : null}
             {geographicFallback ? (
               <div className="mb-5 rounded-[var(--radius-control)] border border-[var(--warning-border)] bg-[var(--premium-gold-wash)] px-4 py-3.5">
                 <p className="text-sm leading-6 text-[var(--foreground)]">
@@ -616,7 +640,7 @@ export function PersonalizedOrientationEngineCard({
               />
             ) : null}
 
-            {!personalized && result.shortlist.source === "deterministic_fallback" ? (
+            {!isBachelorFirstContact && !personalized && result.shortlist.source === "deterministic_fallback" ? (
             <details className="mt-5 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface)] p-4">
               <summary className="cursor-pointer text-sm font-bold">{t.details}</summary>
               <div className="mt-4 grid gap-4">
