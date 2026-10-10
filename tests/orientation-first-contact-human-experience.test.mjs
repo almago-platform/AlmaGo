@@ -16,7 +16,9 @@ test("human opening uses only the actual bac status; no congratulation for missi
   assert.match(ui, /answers\.bacStatus === "obtained"\s*\? t\.bacObtained/);
   assert.match(ui, /answers\.bacStatus === "preparing"\s*\? t\.bacPreparing/);
   assert.match(ui, /answers\.bacStatus === "no_bac"\s*\? t\.bacNoBac/);
-  assert.match(ui, /isBachelorFirstContact && bacWelcome/);
+  assert.match(ui, /welcome=\{isBachelorFirstContact \? bacWelcome : null\}/);
+  assert.match(ui, /geographicFallback && !personalized/);
+  assert.doesNotMatch(ui, /isBachelorFirstContact && bacWelcome && personalized/);
   for (const message of [
     "Félicitations pour votre bac !",
     "Bon courage pour la préparation de votre bac !",
