@@ -236,6 +236,35 @@ function academicOpening(locale: Locale, profile: PublicOrientationAnswers) {
   }[locale];
 }
 
+function personalBudgetNote(locale: Locale, budget: string): string {
+  const amounts: Record<string, Record<Locale, string>> = {
+    "Moins de 800 € / mois": {
+      fr: "moins de 800 € par mois", ar: "أقل من 800 يورو شهريًا",
+      en: "under €800 per month", de: "unter 800 € pro Monat",
+    },
+    "800–1 000 € / mois": {
+      fr: "800 à 1 000 € par mois", ar: "بين 800 و1 000 يورو شهريًا",
+      en: "€800–1,000 per month", de: "800 bis 1.000 € pro Monat",
+    },
+    "1 000–1 200 € / mois": {
+      fr: "1 000 à 1 200 € par mois", ar: "بين 1 000 و1 200 يورو شهريًا",
+      en: "€1,000–1,200 per month", de: "1.000 bis 1.200 € pro Monat",
+    },
+    "Plus de 1 200 € / mois": {
+      fr: "plus de 1 200 € par mois", ar: "أكثر من 1 200 يورو شهريًا",
+      en: "over €1,200 per month", de: "über 1.200 € pro Monat",
+    },
+  };
+  const amount = amounts[budget]?.[locale];
+  if (!amount) return "";
+  return {
+    fr: `Vous prévoyez un budget de ${amount}. Nous en tiendrons compte dans la recherche des options à étudier, sans présumer du coût réel de chaque ville.`,
+    ar: `ميزانيتك المعلنة هي ${amount}. سنأخذها في الاعتبار عند دراسة الخيارات، دون افتراض تكلفة المعيشة في أي مدينة.`,
+    en: `You have indicated a budget of ${amount}. We will take it into account when exploring options, without assuming the actual cost of any city.`,
+    de: `Du hast ein Budget von ${amount} angegeben. Wir beziehen es in die Suche nach Möglichkeiten ein, ohne die tatsächlichen Kosten einer Stadt vorauszusetzen.`,
+  }[locale];
+}
+
 function deterministicLetter(
   locale: Locale,
   profile: PublicOrientationAnswers,
@@ -247,6 +276,7 @@ function deterministicLetter(
     && engineResult.recommendations.length > 0;
   const project = degreeAndField(locale, profile);
   const opening = academicOpening(locale, profile);
+  const budgetNote = personalBudgetNote(locale, profile.budgetRange);
 
   const copy = {
     fr: {
@@ -332,7 +362,7 @@ function deterministicLetter(
     provider: "deterministic-letter-v1",
     mode: "deterministic",
     title: copy.title,
-    paragraphs: [copy.intro, copy.academic, copy.language, copy.city, routeOption],
+    paragraphs: [copy.intro, copy.academic, copy.language, [copy.city, budgetNote].filter(Boolean).join(" "), routeOption],
     closing: routeClosing,
     scoutUsed: false,
   };
