@@ -12,7 +12,7 @@ const compiled = ts.transpileModule(source, {
 
 function builder(withPhoto) {
   const exports = {};
-  const stats = { curate: 0, fetch: 0 };
+  const stats = { curate: 0, fetch: 0, read: 0 };
   const curated = {
     coverImageUrl: "https://upload.wikimedia.org/wikipedia/commons/example.jpg",
     coverImageSourceUrl: "https://commons.wikimedia.org/wiki/File:example.jpg",
@@ -30,6 +30,7 @@ function builder(withPhoto) {
         headers: { get: (name) => name === "content-type" ? "image/jpeg" : null },
         body: { getReader: () => ({
           read: async () => {
+            stats.read += 1;
             if (readOnce) return { done: true };
             readOnce = true;
             return { done: false, value: imageBytes };
@@ -59,6 +60,7 @@ function builder(withPhoto) {
   vm.runInNewContext(compiled, sandbox, { filename: "pdf-attachments.ts", timeout: 3000 });
   const renderer = sandbox.exports.buildDetailedOrientationEmailPdfAttachment;
   renderer.stats = stats;
+  renderer.fixtureSize = vm.runInNewContext("jpegSize(imageBytes)", { ...sandbox, imageBytes });
   return renderer;
 }
 
@@ -107,6 +109,8 @@ test("licensed Wikimedia image is embedded using JPEG DCT without blocking outpu
   const pdf = await renderer(input());
   assert.ok(renderer.stats.curate > 0, "curated calls = " + renderer.stats.curate);
   assert.equal(renderer.stats.fetch, 1, "photo requests = " + renderer.stats.fetch);
+  assert.equal(renderer.fixtureSize?.width, 8, "fixture parsed = " + JSON.stringify(renderer.fixtureSize));
+  assert.equal(renderer.stats.read, 2, "body stream reads = " + renderer.stats.read);
   const bytes = Buffer.from(pdf.contentBase64, "base64");
   assert.match(bytes.toString("latin1"), /\/Subtype \/Image \/Width 8 \/Height 8/);
   assert.match(bytes.toString("latin1"), /\/Filter \/DCTDecode/);
