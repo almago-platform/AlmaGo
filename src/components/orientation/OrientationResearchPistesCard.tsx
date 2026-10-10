@@ -12,6 +12,7 @@ const copy = {
   fr: {
     heading: "Des universités à découvrir pour votre projet",
     supplementaryHeading: "D’autres universités à découvrir",
+    additionalCount: (count: number) => count === 1 ? "1 autre université à découvrir" : `${count} autres universités à découvrir`, 
     supplementaryLead: "Voici d’autres programmes déjà documentés dans notre catalogue, en privilégiant vos villes souhaitées. Notre équipe étudiera leurs critères avant toute candidature.",
     lead: "Nous avons déjà retrouvé des programmes universitaires liés à votre domaine. Voici de premières pistes concrètes, en privilégiant votre ville lorsque c'est possible.",
     badge: "Piste documentée",
@@ -24,6 +25,7 @@ const copy = {
   ar: {
     heading: "جامعات وبرامج يمكنك اكتشافها",
     supplementaryHeading: "جامعات أخرى تستحق الاكتشاف",
+    additionalCount: (count: number) => count === 1 ? "جامعة أخرى لاكتشافها" : `${count} جامعات أخرى لاكتشافها`, 
     supplementaryLead: "هذه برامج إضافية موثقة في قاعدة أبحاثنا، مع أولوية للمدن التي اخترتها. سيتحقق فريقنا من شروطها قبل أي تقديم.",
     lead: "وجدنا في قاعدة معلوماتنا برامج مرتبطة بمجال اهتمامك. نعرض لك مسارات أولية مع إعطاء الأفضلية للمدينة التي اخترتها كلما أمكن.",
     badge: "برنامج موثق للبحث",
@@ -36,6 +38,7 @@ const copy = {
   en: {
     heading: "Universities to explore for your studies",
     supplementaryHeading: "More universities to explore",
+    additionalCount: (count: number) => count === 1 ? "1 more university to explore" : `${count} more universities to explore`, 
     supplementaryLead: "Here are further documented degree programmes, prioritising your chosen cities. Our team will review their entry requirements before any application.",
     lead: "We have found documented university programmes connected to your chosen field, prioritising your preferred city where possible.",
     badge: "Documented option",
@@ -48,6 +51,7 @@ const copy = {
   de: {
     heading: "Hochschulen, die du entdecken kannst",
     supplementaryHeading: "Weitere Hochschulen entdecken",
+    additionalCount: (count: number) => count === 1 ? "1 weitere Hochschule entdecken" : `${count} weitere Hochschulen entdecken`, 
     supplementaryLead: "Wir zeigen dir weitere dokumentierte Studiengänge mit Vorrang für deine Wunschstädte. Unser Team wird die Voraussetzungen vor jeder Bewerbung prüfen.",
     lead: "Wir haben bereits dokumentierte Studiengänge in deinem Fachgebiet gefunden. Wo möglich, bevorzugen wir deine Wunschstadt.",
     badge: "Dokumentierte Möglichkeit",
@@ -134,7 +138,9 @@ export function OrientationResearchPistesCard({
 
   return (
     <section className="mt-5 rounded-[var(--radius-panel)] border border-[var(--premium-border)] bg-[var(--surface)] p-5 sm:p-7" aria-labelledby="orientation-research-pistes-title">
-      <h3 id="orientation-research-pistes-title" className="text-xl font-semibold tracking-tight sm:text-2xl">{existingShortlist.length ? t.supplementaryHeading : t.heading}</h3>
+      <h3 id="orientation-research-pistes-title" className="text-xl font-semibold tracking-tight sm:text-2xl">{existingShortlist.length
+        ? (status === "ready" && supplemental.length > 0 ? t.additionalCount(supplemental.length) : t.supplementaryHeading)
+        : t.heading}</h3>
       <p className="mt-2 max-w-[72ch] text-sm leading-6 text-[var(--muted)]">{existingShortlist.length ? t.supplementaryLead : t.lead}</p>
       {status === "loading" ? (
         <div className="mt-5 h-32 animate-pulse rounded-[var(--radius-control)] bg-[var(--premium-cream-soft)]" role="status" aria-label={t.heading} />
