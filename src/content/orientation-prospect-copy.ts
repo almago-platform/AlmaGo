@@ -33,6 +33,11 @@ export type OrientationProspectCopy = {
     includedEmailEyebrow: string;
     includedEmailTitle: string;
     includedEmailText: string;
+    includedEmailSuccessTitle: string;
+    includedEmailSuccessText: string;
+    includedEmailFailureTitle: string;
+    optionalAccountLabel: string;
+    optionalAccountNote: string;
     automaticEmailMinorNotice: string;
     automaticEmailPreparing: string;
     automaticEmailAlreadyRequested: string;
@@ -86,12 +91,17 @@ const fr: OrientationProspectCopy = {
     emailTitle: "Recevoir mes deux rapports PDF",
     emailText: "Facultatif. Vous recevrez votre orientation personnalisée et votre rapport candidat en pièces jointes. Aucun compte n’est nécessaire.",
     emailPrivacyLabel: "J’ai lu l’information de confidentialité et je demande l’enregistrement et l’envoi de mes rapports à cette adresse e-mail.",
-    emailOptionalAccount: "Votre orientation est sauvegardée. Créez votre compte gratuit avec la même adresse e-mail pour la retrouver dans votre espace Prospect après validation de votre inscription. Cette étape est facultative.",
+    emailOptionalAccount: "Votre orientation est sauvegardée. Avec la même adresse e-mail, retrouvez-la dans votre espace Prospect après confirmation de l’inscription. Créer un compte reste votre choix.",
     automaticEmailConsent: "Oui, je souhaite recevoir automatiquement mes deux rapports PDF par e-mail dès que mon orientation est prête. J’ai lu la notice de confidentialité et j’accepte leur enregistrement et leur envoi à l’adresse indiquée. C’est facultatif et aucun compte n’est créé.",
     includedEmailNotice: "Pour les candidats majeurs, le service comprend l’enregistrement du résultat et l’envoi automatique de deux rapports PDF à l’adresse indiquée, dès que l’orientation est prête. Aucun compte n’est créé. Ces données servent uniquement à ce service ; aucun e-mail publicitaire n’est envoyé.",
     includedEmailEyebrow: "Envoi automatique",
     includedEmailTitle: "Vos deux rapports PDF",
     includedEmailText: "Votre orientation est prête. Les deux rapports sont envoyés automatiquement à votre adresse e-mail, sans autre démarche.",
+    includedEmailSuccessTitle: "Vos deux rapports ont été envoyés",
+    includedEmailSuccessText: "Les deux PDF sont partis vers votre adresse e-mail. Vous pouvez aussi garder une copie depuis cette page.",
+    includedEmailFailureTitle: "Vos rapports sont prêts",
+    optionalAccountLabel: "Une option pour plus tard",
+    optionalAccountNote: "Facultatif : aucun compte n'a été créé automatiquement.",
     automaticEmailMinorNotice: "Vous pourrez enregistrer votre résultat en PDF. L’envoi par e-mail n’est pas disponible pour les moins de 18 ans pendant ce lancement.",
     automaticEmailPreparing: "Vous avez demandé l’envoi automatique. Préparation et envoi des deux rapports PDF en cours…",
     automaticEmailAlreadyRequested: "Une demande d’envoi a déjà été effectuée pendant cette orientation. Vérifiez votre boîte de réception et vos spams.",
@@ -101,7 +111,7 @@ const fr: OrientationProspectCopy = {
     deliveryFailure: "Orientation sauvegardée, mais l’e-mail n’a pas pu être envoyé. Vous pouvez toujours enregistrer le rapport en PDF depuis cette page.",
     interestEyebrow: "Continuer avec nous",
     interestTitle: "Vous souhaitez aller plus loin avec Campus Allemagne ?",
-    interestText: "Dites-le explicitement si vous souhaitez que votre projet soit considéré pour la prochaine étape ou un pilote gratuit. Aucun paiement n’est demandé et ce choix n’ouvre pas automatiquement l’espace documents.",
+    interestText: "Demandez à Campus Allemagne d’examiner votre projet pour une prochaine étape ou un éventuel pilote gratuit. Aucun paiement n’est demandé ici. Ce choix n’ouvre pas automatiquement l’espace documents.",
     interestSubmit: "Je veux continuer avec Campus Allemagne",
     interestSaving: "Enregistrement…",
     interestSuccess: "Votre intérêt est enregistré. Campus Allemagne pourra examiner votre projet pour la prochaine étape.",
@@ -151,6 +161,11 @@ const ar: OrientationProspectCopy = {
     includedEmailEyebrow: "إرسال تلقائي",
     includedEmailTitle: "تقريرا التوجيه PDF",
     includedEmailText: "نتيجة توجيهك جاهزة. سيتم إرسال التقريرين تلقائيًا إلى بريدك الإلكتروني دون أي إجراء إضافي.",
+    includedEmailSuccessTitle: "تم إرسال تقريريك",
+    includedEmailSuccessText: "أُرسل التقريران بصيغة PDF إلى بريدك الإلكتروني. يمكنك أيضًا حفظ نسخة من هذه الصفحة.",
+    includedEmailFailureTitle: "تقريرا التوجيه جاهزان",
+    optionalAccountLabel: "خيار يمكنك اتخاذه لاحقًا",
+    optionalAccountNote: "اختياري: لم يتم إنشاء حساب تلقائيًا.",
     automaticEmailMinorNotice: "يمكنك حفظ نتيجتك بصيغة PDF. إرسال التقارير بالبريد الإلكتروني غير متاح لمن هم دون 18 عامًا خلال هذا الإطلاق.",
     automaticEmailPreparing: "لقد طلبت الإرسال التلقائي. يتم الآن إعداد تقريريّ PDF وإرسالهما…",
     automaticEmailAlreadyRequested: "تم تقديم طلب إرسال سابقًا خلال هذه الجلسة. تحقق من بريدك الوارد والبريد غير المرغوب فيه.",
@@ -160,7 +175,7 @@ const ar: OrientationProspectCopy = {
     deliveryFailure: "تم حفظ التوجيه، لكن تعذر إرسال البريد الإلكتروني. يمكنك ما زلت حفظ التقرير بصيغة PDF من هذه الصفحة.",
     interestEyebrow: "المتابعة معنا",
     interestTitle: "هل ترغب في متابعة مشروعك مع Campus Allemagne؟",
-    interestText: "اختر ذلك بوضوح إذا كنت تريد أن نأخذ مشروعك بعين الاعتبار للمرحلة التالية أو لبرنامج تجريبي مجاني. لا يوجد أي دفع، ولن يتم فتح مساحة الوثائق تلقائيًا.",
+    interestText: "يمكنك طلب دراسة مشروعك للمرحلة التالية أو لبرنامج تجريبي مجاني محتمل. لا يوجد أي دفع الآن، ولن يتم فتح مساحة الوثائق تلقائيًا.",
     interestSubmit: "أريد المتابعة مع Campus Allemagne",
     interestSaving: "جارٍ التسجيل…",
     interestSuccess: "تم تسجيل اهتمامك. يمكن لـ Campus Allemagne مراجعة مشروعك للمرحلة التالية.",
@@ -210,6 +225,11 @@ const en: OrientationProspectCopy = {
     includedEmailEyebrow: "Automatic delivery",
     includedEmailTitle: "Your two PDF reports",
     includedEmailText: "Your orientation is ready. Both reports are emailed automatically to your address without another action.",
+    includedEmailSuccessTitle: "Both reports have been sent",
+    includedEmailSuccessText: "Your two PDFs have been sent to your email address. You can also keep a copy from this page.",
+    includedEmailFailureTitle: "Your reports are ready",
+    optionalAccountLabel: "An option for later",
+    optionalAccountNote: "Optional: no account has been created automatically.",
     automaticEmailMinorNotice: "You can save your result as a PDF. Email delivery is not available to people under 18 during this launch.",
     automaticEmailPreparing: "Automatic email requested. Preparing and sending both PDF reports…",
     automaticEmailAlreadyRequested: "A delivery request has already been made during this orientation. Check your inbox and spam folder.",
@@ -219,7 +239,7 @@ const en: OrientationProspectCopy = {
     deliveryFailure: "Orientation saved, but the email could not be sent. You can still save the report as a PDF from this page.",
     interestEyebrow: "Continue with us",
     interestTitle: "Would you like to go further with Campus Allemagne?",
-    interestText: "Say so explicitly if you would like your project to be considered for the next step or a free pilot. No payment is requested and this does not automatically open document access.",
+    interestText: "Ask Campus Allemagne to review your project for a next step or a possible free pilot. No payment is requested here, and this does not automatically open document access.",
     interestSubmit: "I want to continue with Campus Allemagne",
     interestSaving: "Recording…",
     interestSuccess: "Your interest has been recorded. Campus Allemagne can review your project for the next step.",
@@ -269,6 +289,11 @@ const de: OrientationProspectCopy = {
     includedEmailEyebrow: "Automatischer Versand",
     includedEmailTitle: "Deine zwei PDF-Berichte",
     includedEmailText: "Deine Orientierung ist fertig. Beide Berichte werden ohne weiteren Klick automatisch an deine E-Mail-Adresse geschickt.",
+    includedEmailSuccessTitle: "Beide Berichte wurden versendet",
+    includedEmailSuccessText: "Deine zwei PDFs wurden an deine E-Mail-Adresse gesendet. Du kannst hier auch eine Kopie speichern.",
+    includedEmailFailureTitle: "Deine Berichte sind fertig",
+    optionalAccountLabel: "Eine Möglichkeit für später",
+    optionalAccountNote: "Freiwillig: Es wurde nicht automatisch ein Konto erstellt.",
     automaticEmailMinorNotice: "Du kannst dein Ergebnis als PDF speichern. Der E-Mail-Versand ist bei diesem Start für unter 18-Jährige nicht verfügbar.",
     automaticEmailPreparing: "Automatischen Versand angefordert. Beide PDF-Berichte werden vorbereitet und verschickt…",
     automaticEmailAlreadyRequested: "Während dieser Orientierung wurde bereits ein Versand angefordert. Überprüfe dein Postfach und den Spamordner.",
@@ -278,7 +303,7 @@ const de: OrientationProspectCopy = {
     deliveryFailure: "Orientierung gespeichert, aber die E-Mail konnte nicht gesendet werden. Du kannst den Bericht weiterhin auf dieser Seite als PDF speichern.",
     interestEyebrow: "Mit uns weitermachen",
     interestTitle: "Möchtest du mit Campus Allemagne weitergehen?",
-    interestText: "Bestätige dies ausdrücklich, wenn dein Projekt für den nächsten Schritt oder einen kostenlosen Pilot berücksichtigt werden soll. Es wird keine Zahlung verlangt und der Dokumentenbereich wird nicht automatisch freigeschaltet.",
+    interestText: "Bitte Campus Allemagne, dein Projekt für einen nächsten Schritt oder ein mögliches kostenloses Pilotprojekt zu prüfen. Dafür ist jetzt keine Zahlung nötig. Der Dokumentenbereich öffnet sich nicht automatisch.",
     interestSubmit: "Ich möchte mit Campus Allemagne weitermachen",
     interestSaving: "Wird gespeichert…",
     interestSuccess: "Dein Interesse wurde gespeichert. Campus Allemagne kann dein Projekt für den nächsten Schritt prüfen.",
