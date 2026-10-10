@@ -136,7 +136,7 @@ test("transactional email is the primary post-orientation action and account cre
   assert.match(capture, /copy\.emailTitle/);
   assert.match(capture, /copy\.emailPrivacyLabel/);
   assert.match(capture, /setSignupPath\(verifiedSignupPath\)/);
-  assert.match(capture, /status === "success" && emailDeliveryEnabled && signupPath/);
+  assert.match(capture, /status === "success" && interestToken/);
   assert.match(prospectCopy, /Recevoir mes deux rapports par e-mail/);
   assert.match(prospectCopy, /Aucun compte n’est nécessaire/);
   assert.match(route, /const signupPath = isPhase2AccountLinkingEnabled\(\)/);
@@ -173,13 +173,13 @@ test("auto-email triggers once after the result is ready, with a strict adult gu
   assert.match(capture, /automaticEmailRetry/);
 });
 
-test("saved orientation offers a prominent on-site account link rather than an inert interest button", () => {
-  assert.match(capture, /interestStatus === "success" \? \(/);
-  assert.match(capture, /copy\.interestSuccess/);
-  assert.match(capture, /status === "success" && emailDeliveryEnabled && signupPath/);
-  assert.match(capture, /href=\{signupPath\}/);
+test("saved orientation combines account creation and explicit interest in a single CTA", () => {
+  assert.match(capture, /interestStatus === "success" && !signupPath/);
+  assert.match(capture, /if \(signupPath\) window\.location\.assign\(signupPath\)/);
+  assert.match(capture, /status === "success" && interestToken/);
+  assert.match(capture, /onClick=\{submitInterest\}/);
   assert.match(capture, /copy\.continueTitle/);
-  assert.match(capture, /copy\.emailOptionalAccount/);
+  assert.match(capture, /copy\.continueText/);
   assert.match(prospectCopy, /Votre orientation est sauvegardée/);
   assert.match(route, /resume_token_hash: resume\.hash/);
   assert.match(route, /signupPath/);
