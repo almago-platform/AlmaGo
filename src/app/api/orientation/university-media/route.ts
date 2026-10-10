@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createPrivilegedSupabaseClient } from "@/lib/supabase/privileged";
 import { findWikimediaUniversityMedia } from "@/lib/orientation-engine/discovery/university-media";
+import { persistUniversityMediaFile } from "@/lib/orientation-engine/discovery/university-storage";
 import type { OrientationUniversityMedia } from "@/lib/orientation-engine/types";
 import {
   acquireRequestConcurrency,
@@ -119,10 +120,14 @@ export async function POST(request: Request) {
         budget -= 1;
         const found = await findWikimediaUniversityMedia(row.name, row.city);
         const checkedAt = new Date().toISOString();
-        const update = found && /^(?:CC BY(?:-SA)?(?:\s|$)|CC0)/i.test(found.coverImageLicense || "")
-          && Boolean(found.coverImageAttribution || found.coverImageLicense === "CC0")
+        const licensedFound = found && /^(?:CC BY(?:-SA)?(?:\s|$)|CC0)/i.test(found.coverImageLicense || "")
+          && Boolean(found.coverImageAttribution || found.coverImageLicense === "CC0");
+        const durableUrl = licensedFound
+          ? await persistUniversityMediaFile(supabase, row.id, found)
+          : null;
+        const update = licensedFound && found
           ? {
-              cover_image_url: found.coverImageUrl,
+              cover_image_url: durableUrl || found.coverImageUrl,
               cover_image_source_url: found.coverImageSourceUrl,
               cover_image_attribution: found.coverImageAttribution,
               cover_image_license: found.coverImageLicense,
@@ -132,6 +137,24 @@ export async function POST(request: Request) {
           : { media_verified_at: checkedAt, updated_at: checkedAt };
         const { error: updateError } = await supabase.from("universities").update(update).eq("id", row.id);
         if (!updateError) Object.assign(row, update);
+      } else if (budget > 0 && licensed(row)
+        && row.cover_image_url
+        && /^https:\/\/(?:upload|thumb)\.wikimedia\.org\//.test(row.cover_image_url)) {
+        // Existing cached Commons photo: upgrade to durable Storage once.
+        // No new discovery call; preserve the original Commons source + credit.
+        budget -= 1;
+        const storedUrl = await persistUniversityMediaFile(supabase, row.id, {
+          coverImageUrl: row.cover_image_url,
+          coverImageSourceUrl: row.cover_image_source_url!,
+          coverImageAttribution: row.cover_image_attribution,
+          coverImageLicense: row.cover_image_license,
+        });
+        if (storedUrl !== row.cover_image_url) {
+          const { error: migrationError } = await supabase.from("universities")
+            .update({ cover_image_url: storedUrl, updated_at: new Date().toISOString() })
+            .eq("id", row.id);
+          if (!migrationError) row.cover_image_url = storedUrl;
+        }
       }
       items.push({ ...requested, media: toMedia(row) });
     }
