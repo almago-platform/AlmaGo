@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { getTechnicalStudentUser } from "@/lib/auth/access";
 import { hasClientLifecycleEntitlement } from "@/lib/auth/entitlement";
 import { isPhase2AccessEnabled } from "@/lib/phase2/config";
@@ -31,7 +32,9 @@ export function canUseClientFeatures(status: CustomerLifecycleStatus | null) {
   return hasClientLifecycleEntitlement(status);
 }
 
-export async function getPhase2StudentAccess() {
+// React caches this authorization result only within a single request/render.
+// Never use a cross-request cache for identity or commercial entitlements.
+export const getPhase2StudentAccess = cache(async function getPhase2StudentAccess() {
   const auth = await getTechnicalStudentUser();
   const phase2Enabled = isPhase2AccessEnabled();
 
@@ -61,4 +64,4 @@ export async function getPhase2StudentAccess() {
     customerStatus,
     canUseClientFeatures: canUseClientFeatures(customerStatus),
   };
-}
+});
